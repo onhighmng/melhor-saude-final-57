@@ -10,6 +10,7 @@ import { MusicProvider } from "@/contexts/MusicContext";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import MusicPlayer from "@/components/MusicPlayer";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import DemoControlPanel from "@/components/DemoControlPanel";
 import { usePageTracking } from "@/hooks/usePageTracking";
 // Lazy load pages for better performance
 import { lazy } from "react";
@@ -119,6 +120,7 @@ const App = () => (
             <ScrollIndicator />
             <MusicPlayer />
             <PWAInstallPrompt />
+            <DemoControlPanel />
             <PerformanceMonitor />
           </MusicProvider>
         </AuthProvider>
