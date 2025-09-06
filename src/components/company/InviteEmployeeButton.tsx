@@ -1,0 +1,64 @@
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { UserPlus, AlertTriangle } from "lucide-react";
+import { Company, canInviteEmployee } from "@/data/companyMockData";
+
+interface InviteEmployeeButtonProps {
+  company: Company;
+  onInvite?: () => void;
+}
+
+export function InviteEmployeeButton({ company, onInvite }: InviteEmployeeButtonProps) {
+  const canInvite = canInviteEmployee(company);
+
+  if (!canInvite) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Button 
+              disabled 
+              className="w-full sm:w-auto"
+              variant="default"
+            >
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              Convidar Colaborador
+            </Button>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <div className="text-sm max-w-xs">
+            <p className="font-medium mb-1">Limite atingido</p>
+            <p>
+              A empresa atingiu o limite de {company.seatLimit} contas ativas. 
+              Contacte o administrador para aumentar o limite ou desative contas inativas.
+            </p>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button 
+          onClick={onInvite}
+          className="w-full sm:w-auto"
+          variant="default"
+        >
+          <UserPlus className="h-4 w-4 mr-2" />
+          Convidar Colaborador
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <div className="text-sm">
+          <p>
+            {company.seatAvailable} conta{company.seatAvailable !== 1 ? 's' : ''} disponível{company.seatAvailable !== 1 ? 's' : ''} 
+            de {company.seatLimit}
+          </p>
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+}

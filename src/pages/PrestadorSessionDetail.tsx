@@ -1,0 +1,499 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { StatusBadge, SessionStatus } from '@/components/ui/status-badge';
+import { PageHeader } from '@/components/ui/page-header';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  Monitor, 
+  Play, 
+  CheckCircle, 
+  XCircle, 
+  AlertTriangle,
+  FileText,
+  Upload,
+  Trash2,
+  Save,
+  Building2,
+  User,
+  Timer
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { pt } from 'date-fns/locale';
+
+interface SessionDetailData {
+  id: string;
+  userName: string;
+  userAvatar?: string;
+  pillar: 'psicologica' | 'juridica' | 'financeira' | 'fisica';
+  date: string;
+  time: string;
+  duration: number;
+  location: 'online' | 'presencial';
+  status: SessionStatus;
+  deductionType: 'empresa' | 'pessoal';
+  companyName?: string;
+  notes?: string;
+  attachments: Array<{
+    id: string;
+    name: string;
+    type: string;
+    size: number;
+    uploadedAt: string;
+  }>;
+}
+
+const pillarLabels = {
+  psicologica: 'Saúde Mental',
+  fisica: 'Bem-Estar Físico',
+  financeira: 'Assistência Financeira',
+  juridica: 'Assistência Jurídica'
+};
+
+const mockSessionData: SessionDetailData = {
+  id: 'sess-1',
+  userName: 'Manuel Silva',
+  userAvatar: '/lovable-uploads/537ae6d8-8bad-4984-87ef-5165033fdc1c.png',
+  pillar: 'psicologica',
+  date: '2024-05-28',
+  time: '15:00',
+  duration: 50,
+  location: 'online',
+  status: 'confirmed',
+  deductionType: 'empresa',
+  companyName: 'TechCorp Lda.',
+  notes: 'Primeira consulta - questões de ansiedade laboral',
+  attachments: [
+    {
+      id: 'att-1',
+      name: 'avaliacao_inicial.pdf',
+      type: 'application/pdf',
+      size: 245760,
+      uploadedAt: '2024-05-27T10:30:00Z'
+    }
+  ]
+};
+
+export default function PrestadorSessionDetail() {
+  const { id } = useParams();
+  const [session] = useState<SessionDetailData>(mockSessionData);
+  const [privateNotes, setPrivateNotes] = useState(session.notes || '');
+  const [timeUntilSession, setTimeUntilSession] = useState<string>('');
+  const [noShowReason, setNoShowReason] = useState('');
+  const [noShowDescription, setNoShowDescription] = useState('');
+  const [showNoShowDialog, setShowNoShowDialog] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [attachments, setAttachments] = useState(session.attachments);
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const sessionDateTime = new Date(`${session.date}T${session.time}`);
+      const now = new Date();
+      const diff = sessionDateTime.getTime() - now.getTime();
+
+      if (diff > 0) {
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        if (hours > 0) {
+          setTimeUntilSession(`${hours}h ${minutes}m ${seconds}s`);
+        } else if (minutes > 0) {
+          setTimeUntilSession(`${minutes}m ${seconds}s`);
+        } else {
+          setTimeUntilSession(`${seconds}s`);
+        }
+      } else {
+        setTimeUntilSession('');
+      }
+    };
+
+    const interval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    return () => clearInterval(interval);
+  }, [session.date, session.time]);
+
+  const formatSessionDateTime = () => {
+    const dateTime = new Date(`${session.date}T${session.time}`);
+    return {
+      date: format(dateTime, "dd 'de' MMMM 'de' yyyy", { locale: pt }),
+      time: format(dateTime, 'HH:mm'),
+      dayOfWeek: format(dateTime, 'EEEE', { locale: pt })
+    };
+  };
+
+  const savePrivateNotes = () => {
+    // Mock save functionality
+    console.log('Saving private notes:', privateNotes);
+  };
+
+  const startSession = () => {
+    console.log('Starting session:', id);
+  };
+
+  const completeSession = () => {
+    console.log('Completing session:', id);
+  };
+
+  const markNoShow = () => {
+    console.log('Marking no-show:', { reason: noShowReason, description: noShowDescription });
+    setShowNoShowDialog(false);
+  };
+
+  const cancelSession = () => {
+    console.log('Cancelling session:', id);
+    setShowCancelDialog(false);
+  };
+
+  const removeAttachment = (attachmentId: string) => {
+    setAttachments(attachments.filter(att => att.id !== attachmentId));
+  };
+
+  const { date, time, dayOfWeek } = formatSessionDateTime();
+  const canCancel = session.status === 'scheduled' || session.status === 'confirmed';
+  const canStart = session.status === 'confirmed' && timeUntilSession === '';
+  const canComplete = session.status === 'in-progress';
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader
+        title="Detalhes da Sessão"
+        subtitle={`${session.userName} • ${pillarLabels[session.pillar]}`}
+        showBackButton
+        backUrl="/prestador/sessoes"
+        actions={
+          <div className="flex items-center gap-2">
+            <StatusBadge status={session.status} />
+            {timeUntilSession && (
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                <Timer className="h-3 w-3 mr-1" />
+                {timeUntilSession}
+              </Badge>
+            )}
+          </div>
+        }
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Session Info */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* User & Session Details */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={session.userAvatar} alt={session.userName} />
+                      <AvatarFallback className="text-lg font-semibold">
+                        {session.userName.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900">{session.userName}</h2>
+                      <p className="text-lg text-gray-600">{pillarLabels[session.pillar]}</p>
+                    </div>
+                  </div>
+                  
+                  {timeUntilSession && (
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-blue-600">{timeUntilSession}</div>
+                      <div className="text-sm text-gray-500">até iniciar</div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                        <Calendar className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Data e Hora</p>
+                        <p className="text-gray-900">{date} às {time}</p>
+                        <p className="text-sm text-gray-500 capitalize">{dayOfWeek}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                        {session.location === 'online' ? (
+                          <Monitor className="h-5 w-5 text-green-600" />
+                        ) : (
+                          <MapPin className="h-5 w-5 text-green-600" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Local</p>
+                        <p className="text-gray-900 capitalize">{session.location}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
+                        <Clock className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Duração</p>
+                        <p className="text-gray-900">{session.duration} minutos</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
+                        {session.deductionType === 'empresa' ? (
+                          <Building2 className="h-5 w-5 text-orange-600" />
+                        ) : (
+                          <User className="h-5 w-5 text-orange-600" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Dedução</p>
+                        <p className="text-gray-900 capitalize">{session.deductionType}</p>
+                        {session.companyName && (
+                          <p className="text-sm text-gray-500">{session.companyName}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Private Notes */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Notas Privadas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Textarea
+                  placeholder="Escreva as suas notas privadas aqui..."
+                  value={privateNotes}
+                  onChange={(e) => setPrivateNotes(e.target.value)}
+                  className="min-h-[120px]"
+                />
+                <Button onClick={savePrivateNotes} className="gap-2">
+                  <Save className="h-4 w-4" />
+                  Guardar Notas
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Attachments */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Upload className="h-5 w-5" />
+                  Anexos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-4">
+                  <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600 mb-2">Anexar ficheiro</p>
+                  <p className="text-sm text-gray-500">PDF, DOC, JPG até 10MB</p>
+                </div>
+
+                {attachments.length > 0 && (
+                  <div className="space-y-2">
+                    {attachments.map((attachment) => (
+                      <div key={attachment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-5 w-5 text-gray-600" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{attachment.name}</p>
+                            <p className="text-xs text-gray-500">
+                              {(attachment.size / 1024).toFixed(1)} KB
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeAttachment(attachment.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Actions Panel */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Ações da Sessão</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {session.location === 'online' && canStart && (
+                  <Button onClick={startSession} className="w-full gap-2" size="lg">
+                    <Play className="h-5 w-5" />
+                    Iniciar Sessão
+                  </Button>
+                )}
+
+                {canComplete && (
+                  <Button onClick={completeSession} className="w-full gap-2" size="lg">
+                    <CheckCircle className="h-5 w-5" />
+                    Concluir
+                  </Button>
+                )}
+
+                <Button
+                  onClick={() => setShowNoShowDialog(true)}
+                  variant="outline"
+                  className="w-full gap-2 border-yellow-200 text-yellow-700 hover:bg-yellow-50"
+                >
+                  <AlertTriangle className="h-5 w-5" />
+                  Falta
+                </Button>
+
+                {canCancel && (
+                  <Button
+                    onClick={() => setShowCancelDialog(true)}
+                    variant="outline"
+                    className="w-full gap-2 border-red-200 text-red-700 hover:bg-red-50"
+                  >
+                    <XCircle className="h-5 w-5" />
+                    Cancelar
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Status Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Estado da Sessão</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Estado Atual</span>
+                    <StatusBadge status={session.status} />
+                  </div>
+                  
+                  {session.status === 'completed' && (
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        Quota já deduzida
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* No Show Dialog */}
+      {showNoShowDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Registar Falta</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Motivo da Falta
+                </label>
+                <Select value={noShowReason} onValueChange={setNoShowReason}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o motivo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="no_response">Sem resposta</SelectItem>
+                    <SelectItem value="technical_issues">Problemas técnicos</SelectItem>
+                    <SelectItem value="personal_emergency">Emergência pessoal</SelectItem>
+                    <SelectItem value="other">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Observações (opcional)
+                </label>
+                <Textarea
+                  value={noShowDescription}
+                  onChange={(e) => setNoShowDescription(e.target.value)}
+                  placeholder="Detalhes adicionais..."
+                  className="min-h-[80px]"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowNoShowDialog(false)}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button onClick={markNoShow} className="flex-1">
+                  Confirmar Falta
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Cancel Dialog */}
+      {showCancelDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Cancelar Sessão</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-gray-600">
+                Tem a certeza de que pretende cancelar esta sessão? Esta ação não pode ser desfeita.
+              </p>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCancelDialog(false)}
+                  className="flex-1"
+                >
+                  Manter Sessão
+                </Button>
+                <Button
+                  onClick={cancelSession}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  Cancelar Sessão
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+}

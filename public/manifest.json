@@ -1,0 +1,59 @@
+{
+  "name": "Melhor Saúde - Plataforma de Bem-Estar Corporativo",
+  "short_name": "Melhor Saúde",
+  "description": "Plataforma líder em bem-estar corporativo em Moçambique",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt",
+  "categories": ["health", "business", "medical"],
+  "icons": [
+    {
+      "src": "/lovable-uploads/9d0fb76e-9ffa-46c8-a40d-dcc3396e7d51.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/9d0fb76e-9ffa-46c8-a40d-dcc3396e7d51.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/9d0fb76e-9ffa-46c8-a40d-dcc3396e7d51.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Minha Saúde",
+      "short_name": "Saúde",
+      "description": "Acesse seu dashboard de saúde",
+      "url": "/minha-saude",
+      "icons": [
+        {
+          "src": "/lovable-uploads/9d0fb76e-9ffa-46c8-a40d-dcc3396e7d51.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Agendar Sessão",
+      "short_name": "Agendar",
+      "description": "Agende uma consulta",
+      "url": "/agendar-sessao",
+      "icons": [
+        {
+          "src": "/lovable-uploads/9d0fb76e-9ffa-46c8-a40d-dcc3396e7d51.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
