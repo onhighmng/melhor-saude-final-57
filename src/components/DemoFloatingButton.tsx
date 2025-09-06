@@ -7,6 +7,7 @@ const DemoFloatingButton = () => {
   const navigate = useNavigate();
 
   const handleDemoClick = () => {
+    console.log('Demo button clicked - navigating to /demo');
     navigate('/demo');
   };
 

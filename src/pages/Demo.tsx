@@ -65,8 +65,10 @@ const Demo = () => {
   ];
 
   const handleRoleSwitch = async (demoUser: typeof demoUsers[0]) => {
+    console.log('Switching to role:', demoUser.role, 'with email:', demoUser.email);
     // Simulate login with the demo user's email
-    await login(demoUser.email, 'demo-password');
+    const result = await login(demoUser.email, 'demo-password');
+    console.log('Login result:', result);
     navigate(demoUser.dashboardPath);
   };
 
