@@ -1,5 +1,4 @@
 import React from 'react';
-import Navigation from "@/components/Navigation";
 import { mockProviders } from '@/data/mockData';
 import { BookingPillar } from './BookingFlow';
 import { ArrowLeft } from 'lucide-react';
@@ -43,8 +42,6 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
 
   return (
     <div className="min-h-screen bg-soft-white text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
-      <Navigation />
-      
       <section className="relative pt-32 pb-24">
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <button 

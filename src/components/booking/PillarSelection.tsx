@@ -1,6 +1,5 @@
 
 import React from 'react';
-import Navigation from "@/components/Navigation";
 import BackButton from '@/components/navigation/BackButton';
 import { BookingPillar } from './BookingFlow';
 import { Brain, Heart, DollarSign, Scale } from 'lucide-react';
@@ -47,8 +46,6 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
 
   return (
     <div className="min-h-screen bg-soft-white text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
-      <Navigation />
-      
       <section className="relative pt-20 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-3xl mx-auto">
           

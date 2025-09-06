@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Navigation from "@/components/Navigation";
 import { Provider } from '@/types/provider';
 import { ArrowLeft, Calendar, Clock, MapPin, Video } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -49,7 +48,7 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
 
   return (
     <div className="min-h-screen bg-soft-white text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
-      <Navigation />
+      
       
       <section className="relative pt-32 pb-24">
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
