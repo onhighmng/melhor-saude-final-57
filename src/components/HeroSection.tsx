@@ -51,7 +51,7 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative w-full aspect-video overflow-hidden bg-gray-900 mt-20 sm:mt-0">
+    <div className="relative w-full aspect-video overflow-hidden bg-deep-navy mt-20 sm:mt-0">
       {/* Video Background */}
       <video 
         ref={videoRef}
@@ -74,7 +74,7 @@ const HeroSection = () => {
 
       {/* Static background as reliable fallback */}
       <div 
-        className="absolute inset-0 bg-white"
+        className="absolute inset-0 bg-background"
         style={{ 
           zIndex: 1,
         }}

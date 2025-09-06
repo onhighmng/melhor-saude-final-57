@@ -26,7 +26,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
 const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const AdminCompanies = lazy(() => import("./pages/AdminCompanies"));
+
 const AdminCompanyInvites = lazy(() => import("./pages/AdminCompanyInvites"));
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const CompanyInvites = lazy(() => import("./pages/CompanyInvites"));
@@ -38,13 +38,7 @@ const AdminMatching = lazy(() => import("./pages/AdminMatching"));
 const AdminProviderChangeRequests = lazy(() => import("./pages/AdminProviderChangeRequests"));
 const AdminScheduling = lazy(() => import("./pages/AdminScheduling"));
 const AdminSessions = lazy(() => import("./pages/AdminSessions"));
-const AdminEmails = lazy(() => 
-  import("./pages/AdminEmails").then(module => {
-    // Preload critical resources for faster subsequent loads
-    import("./components/admin/EmailNotificationsPanel");
-    return module;
-  })
-);
+const AdminEmails = lazy(() => import("./pages/AdminEmails"));
 const AdminLogs = lazy(() => import("./pages/AdminLogs"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
@@ -119,7 +113,7 @@ const AppWithTracking = () => {
           
           {/* Admin Dashboard */}
           <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-          <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
+          
           <Route path="/admin/usuarios" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/usuarios/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
           <Route path="/admin/companies/:id/invites" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />

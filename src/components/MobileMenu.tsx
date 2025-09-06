@@ -56,10 +56,10 @@ const MobileMenu = ({ isOpen, onClose, menuItems }: MobileMenuProps) => {
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/20" onClick={onClose} />
+      <div className="fixed inset-0 bg-deep-navy/20" onClick={onClose} />
       
       {/* Menu Panel */}
-      <div className="fixed inset-0 bg-white p-4 sm:p-8 overflow-y-auto">
+      <div className="fixed inset-0 bg-background p-4 sm:p-8 overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
