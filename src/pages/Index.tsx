@@ -10,6 +10,7 @@ import MembershipCardsSection from '@/components/MembershipCardsSection';
 import FAQSection from '@/components/FAQSection';
 import CloudsScrollProvider from '@/components/clouds/CloudsScrollProvider';
 import ScrollAnimationProvider from '@/components/guides/ScrollAnimationProvider';
+import DemoFloatingButton from '@/components/DemoFloatingButton';
 
 const Index = () => {
   return (
@@ -25,6 +26,7 @@ const Index = () => {
           <PillarCarousel />
           <MembershipCardsSection />
           <FAQSection />
+          <DemoFloatingButton />
         </div>
       </ScrollAnimationProvider>
     </CloudsScrollProvider>

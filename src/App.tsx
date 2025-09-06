@@ -59,6 +59,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const PrestadorSessionGuide = lazy(() => import("./pages/PrestadorSessionGuide"));
 const Support = lazy(() => import("./pages/Support"));
 const AdminSupport = lazy(() => import("./pages/AdminSupport"));
+const Demo = lazy(() => import("./pages/Demo"));
 import { Suspense } from "react";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
 import { PerformanceMonitor } from "@/components/ui/performance-monitor";
@@ -91,6 +92,9 @@ const AppWithTracking = () => {
           
           {/* Home page */}
           <Route path="/" element={<Index />} />
+          
+          {/* Demo page */}
+          <Route path="/demo" element={<Demo />} />
           
           
           {/* User routes */}
