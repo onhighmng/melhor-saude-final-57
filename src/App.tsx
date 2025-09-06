@@ -25,9 +25,7 @@ const Login = lazy(() => import("./pages/Login"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
 const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-
-const AdminCompanyInvites = lazy(() => import("./pages/AdminCompanyInvites"));
+// Removed deleted pages for demo
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const CompanyInvites = lazy(() => import("./pages/CompanyInvites"));
 const AdminUserDetail = lazy(() => import("./pages/AdminUserDetail"));
@@ -36,9 +34,7 @@ const AdminProviderDetail = lazy(() => import("./pages/AdminProviderDetail"));
 const AdminProviderNew = lazy(() => import("./pages/AdminProviderNew"));
 const AdminMatching = lazy(() => import("./pages/AdminMatching"));
 const AdminProviderChangeRequests = lazy(() => import("./pages/AdminProviderChangeRequests"));
-const AdminScheduling = lazy(() => import("./pages/AdminScheduling"));
 const AdminSessions = lazy(() => import("./pages/AdminSessions"));
-const AdminEmails = lazy(() => import("./pages/AdminEmails"));
 const AdminLogs = lazy(() => import("./pages/AdminLogs"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
@@ -47,7 +43,6 @@ const CompanyEmployeeDetail = lazy(() => import("./pages/CompanyEmployeeDetail")
 const CompanyReports = lazy(() => import("./pages/CompanyReports"));
 const CompanySettings = lazy(() => import("./pages/CompanySettings"));
 const UserSessions = lazy(() => import("./pages/UserSessions"));
-const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const Terms = lazy(() => import("./pages/Terms"));
 const PrestadorSessionGuide = lazy(() => import("./pages/PrestadorSessionGuide"));
@@ -91,43 +86,9 @@ const AppWithTracking = () => {
           <Route path="/demo" element={<Demo />} />
           
           
-          {/* User routes */}
-          <Route path="/user/dashboard" element={<UserLayout><UserDashboard /></UserLayout>} />
-          <Route path="/user/book" element={<UserLayout><BookingFlow /></UserLayout>} />
-          <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
-          <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />
-          <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
-          
           {/* Static pages */}
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />
-          
-          
-          {/* Provider Dashboard */}
-          <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
-          <Route path="/prestador/availability" element={<PrestadorLayout><PrestadorAvailability /></PrestadorLayout>} />
-          <Route path="/prestador/sessoes" element={<PrestadorLayout><PrestadorSessions /></PrestadorLayout>} />
-          <Route path="/prestador/sessoes/guia" element={<PrestadorLayout><PrestadorSessionGuide /></PrestadorLayout>} />
-          <Route path="/prestador/sessoes/:id" element={<PrestadorLayout><PrestadorSessionDetail /></PrestadorLayout>} />
-          <Route path="/prestador/profile" element={<PrestadorLayout><PrestadorProfile /></PrestadorLayout>} />
-          
-          {/* Admin Dashboard */}
-          <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-          
-          <Route path="/admin/usuarios" element={<AdminLayout><AdminUsers /></AdminLayout>} />
-          <Route path="/admin/usuarios/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
-          <Route path="/admin/companies/:id/invites" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
-          <Route path="/admin/prestadores" element={<AdminLayout><AdminProviders /></AdminLayout>} />
-          <Route path="/admin/prestadores/:id" element={<AdminLayout><AdminProviderDetail /></AdminLayout>} />
-          <Route path="/admin/prestadores/novo" element={<AdminLayout><AdminProviderNew /></AdminLayout>} />
-          <Route path="/admin/matching" element={<AdminLayout><AdminMatching /></AdminLayout>} />
-          <Route path="/admin/provider-change-requests" element={<AdminLayout><AdminProviderChangeRequests /></AdminLayout>} />
-          <Route path="/admin/agendamentos" element={<AdminLayout><AdminScheduling /></AdminLayout>} />
-          <Route path="/admin/sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
-          <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
-          <Route path="/admin/emails" element={<AdminLayout><AdminEmails /></AdminLayout>} />
-          <Route path="/admin/logs" element={<AdminLayout><AdminLogs /></AdminLayout>} />
-          <Route path="/admin/configuracoes" element={<AdminLayout><AdminSettings /></AdminLayout>} />
           
           {/* Company HR Dashboard */}
           <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />

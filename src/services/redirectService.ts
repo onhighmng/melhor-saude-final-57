@@ -4,5 +4,8 @@ export const redirectTo = (path: string) => {
 };
 
 export const redirectService = {
-  redirectTo
+  redirectTo,
+  setRedirectIntent: (intent: string) => {
+    localStorage.setItem('redirect_intent', intent);
+  }
 };
