@@ -102,7 +102,7 @@ export function CompanySidebar() {
                 {user?.name?.charAt(0) || user?.email?.charAt(0) || 'C'}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0 flex-1">
               <span className="text-sm font-medium truncate">
                 {user?.name || user?.email}
               </span>
