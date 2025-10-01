@@ -201,7 +201,32 @@ export default function CompanyInvites() {
             {loading ? 'A gerar...' : 'Gerar códigos em falta'}
           </Button>
           
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => {
+            const csvData = activeCodes.map(code => ({
+              Código: code.code,
+              Estado: code.status,
+              'Data de Criação': code.createdAt
+            }));
+
+            const csvContent = [
+              Object.keys(csvData[0]).join(','),
+              ...csvData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `codigos_ativos_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            toast({
+              title: "Exportação concluída",
+              description: `${activeCodes.length} códigos ativos exportados com sucesso.`,
+            });
+          }}>
             <Download className="h-4 w-4 mr-2" />
             Exportar códigos ativos
           </Button>

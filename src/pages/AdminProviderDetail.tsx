@@ -35,6 +35,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { getProviderById, generateMockProviderDetail } from '@/data/adminMockData';
 
 interface ProviderDetail {
   id: string;
@@ -145,11 +146,17 @@ const AdminProviderDetail = () => {
   const loadProvider = async () => {
     setIsLoading(true);
     try {
-      // Replace with actual API call
+      // Fetch provider from centralized mock data
       setTimeout(() => {
-        setProvider(mockProvider);
+        const baseProvider = getProviderById(id || '1');
+        
+        if (baseProvider) {
+          const providerDetail = generateMockProviderDetail(baseProvider);
+          setProvider(providerDetail as ProviderDetail);
+        }
+        
         setIsLoading(false);
-      }, 1000);
+      }, 800);
     } catch (error) {
       toast({
         title: "Erro",
@@ -178,6 +185,13 @@ const AdminProviderDetail = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleEdit = () => {
+    toast({
+      title: "Editar Prestador",
+      description: "Funcionalidade de edição será implementada em breve."
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -297,7 +311,7 @@ const AdminProviderDetail = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleEdit}>
               <Edit className="w-4 h-4 mr-2" />
               Editar
             </Button>

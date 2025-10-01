@@ -115,10 +115,10 @@ export const createMenuItems = (
     hasDropdown: false,
     requiresAuth: true,
     onClick: isAuthenticated ? () => {
-      console.log('🎯 Agendamento navigation');
+      console.log('[Menu] Agendamento navigation');
       handleNavigation('/user/book');
     } : () => {
-      console.log('🔒 Agendamento auth redirect');
+      console.log('[Auth] Agendamento auth redirect');
       handleAuthRedirect('agendamento');
     }
   },
@@ -128,10 +128,10 @@ export const createMenuItems = (
     hasDropdown: false,
     requiresAuth: true,
     onClick: isAuthenticated ? () => {
-      console.log('🎯 Minha Saúde navigation');
+      console.log('[Menu] Minha Saúde navigation');
       handleNavigation('/user/dashboard');
     } : () => {
-      console.log('🔒 Minha Saúde auth redirect');
+      console.log('[Auth] Minha Saúde auth redirect');
       handleAuthRedirect('minha-saude');
     }
   }
@@ -241,23 +241,25 @@ export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
 
 export const createMobileMenuItems = (
   isAuthenticated: boolean,
-  handleAuthRedirect: (section: string) => void
+  handleAuthRedirect: (section: string) => void,
+  handleSobreNosClick?: () => void,
+  handlePillarClick?: (pillarIndex: number) => void
 ): MobileMenuItem[] => [
   {
     title: 'Sobre Nós',
     key: 'sobre',
     hasDropdown: false,
-    path: '/#sobre-nos'
+    onClick: handleSobreNosClick
   },
   {
     title: '4 Pilares',
     key: 'pilares',
     hasDropdown: true,
     items: [
-      { title: 'Saúde mental', path: '/#pilar-0' },
-      { title: 'Bem estar físico', path: '/#pilar-1' },
-      { title: 'Assistência financeira', path: '/#pilar-2' },
-      { title: 'Assistência Jurídica', path: '/#pilar-3' }
+      { title: 'Saúde mental', onClick: () => handlePillarClick?.(0) },
+      { title: 'Bem estar físico', onClick: () => handlePillarClick?.(1) },
+      { title: 'Assistência financeira', onClick: () => handlePillarClick?.(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick?.(3) }
     ]
   },
   {

@@ -95,9 +95,31 @@ const CompanyReports = () => {
   const [emailNotifications, setEmailNotifications] = useState<boolean>(true);
 
   const handleGenerateReport = (reportId: string, format: "csv" | "pdf") => {
-    // In a real app, this would generate the actual report
     const report = availableReports.find(r => r.id === reportId);
-    console.log(`Generating ${format.toUpperCase()} report:`, report?.name);
+    
+    if (format === "csv") {
+      // Generate mock CSV data based on report type
+      const mockData = [
+        { Métrica: 'Total de Sessões', Valor: '145', Período: 'Janeiro 2024' },
+        { Métrica: 'Colaboradores Ativos', Valor: '78', Período: 'Janeiro 2024' },
+        { Métrica: 'Taxa de Utilização', Valor: '87%', Período: 'Janeiro 2024' },
+        { Métrica: 'Satisfação Média', Valor: '4.6/5', Período: 'Janeiro 2024' }
+      ];
+
+      const csvContent = [
+        Object.keys(mockData[0]).join(','),
+        ...mockData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `relatorio_${report?.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    }
     
     toast({
       title: "Relatório gerado",

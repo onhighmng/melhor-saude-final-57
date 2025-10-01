@@ -15,6 +15,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   useSidebar,
+  SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -76,6 +77,9 @@ export function UserSidebar() {
       className="transition-all duration-300"
     >
       <SidebarHeader className="p-4 border-b">
+        <div className="flex items-center justify-between mb-2">
+          <SidebarTrigger />
+        </div>
         {!isCollapsed && (
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
@@ -84,7 +88,7 @@ export function UserSidebar() {
                 {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0 flex-1">
               <span className="text-sm font-medium truncate">
                 {user?.name || user?.email}
               </span>

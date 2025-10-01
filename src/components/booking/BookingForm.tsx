@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Provider } from '@/types/provider';
-import { ArrowLeft, Calendar, Clock, MapPin, Video } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Video, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useSessionBalance } from "@/hooks/useSessionBalance";
 
@@ -156,8 +156,9 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
                   <span>Microsoft Teams</span>
                 </div>
               </div>
-              <div className="p-3 bg-blue-100 rounded-lg text-sm text-blue-800">
-                ⚡ <strong>Link automático:</strong> Receberá o link da videochamada automaticamente 5 minutos antes da sessão
+              <div className="p-3 bg-blue-100 rounded-lg text-sm text-blue-800 flex items-start gap-2">
+                <Zap className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <span><strong>Link automático:</strong> Receberá o link da videochamada automaticamente 5 minutos antes da sessão</span>
               </div>
             </div>
 

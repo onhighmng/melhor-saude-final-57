@@ -4,8 +4,9 @@ import PillarSelection from './PillarSelection';
 import { mockProviders } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
+import { BookingCalendar } from '@/components/ui/booking-calendar';
 import { useToast } from '@/hooks/use-toast';
+import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -23,7 +24,7 @@ interface MockProvider {
 const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'pillar' | 'datetime' | 'confirmation'>('pillar');
+  const [currentStep, setCurrentStep] = useState<'pillar' | 'assessment' | 'datetime' | 'confirmation'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -35,7 +36,15 @@ const BookingFlow = () => {
   ];
 
   const handlePillarSelect = (pillar: BookingPillar) => {
-    // Round-robin assignment logic using mock data
+    setSelectedPillar(pillar);
+    
+    // If juridica pillar, go to assessment flow
+    if (pillar === 'juridica') {
+      setCurrentStep('assessment');
+      return;
+    }
+    
+    // For other pillars, assign provider and go to datetime
     const pillarMapping = {
       'psicologica': 'saude_mental',
       'fisica': 'bem_estar_fisico', 
@@ -49,9 +58,7 @@ const BookingFlow = () => {
     );
 
     if (availableProviders.length > 0) {
-      // Simple round-robin: use index 0 for now (in real app, this would be stored/tracked)
       const assignedProvider = availableProviders[0];
-      setSelectedPillar(pillar);
       setSelectedProvider(assignedProvider);
       setCurrentStep('datetime');
       
@@ -97,6 +104,45 @@ const BookingFlow = () => {
       case 'pillar':
         return <PillarSelection onPillarSelect={handlePillarSelect} />;
       
+      case 'assessment':
+        return (
+          <LegalAssessmentFlow 
+            onBack={() => setCurrentStep('pillar')}
+            onComplete={() => navigate('/user/dashboard')}
+            onChooseHuman={() => {
+              // Assign a legal provider and go to datetime selection
+              const pillarMapping = {
+                'psicologica': 'saude_mental',
+                'fisica': 'bem_estar_fisico', 
+                'financeira': 'assistencia_financeira',
+                'juridica': 'assistencia_juridica'
+              };
+
+              const mappedPillar = pillarMapping['juridica'];
+              const availableProviders = mockProviders.filter(provider => 
+                provider.pillar === mappedPillar
+              );
+
+              if (availableProviders.length > 0) {
+                const assignedProvider = availableProviders[0];
+                setSelectedProvider(assignedProvider);
+                setCurrentStep('datetime');
+                
+                toast({
+                  title: "Prestador Atribuído",
+                  description: `Foi atribuído: ${assignedProvider.name} - ${assignedProvider.specialty}`,
+                });
+              } else {
+                toast({
+                  title: "Erro", 
+                  description: "Nenhum prestador disponível para este pilar no momento.",
+                  variant: "destructive"
+                });
+              }
+            }}
+          />
+        );
+      
       case 'datetime':
         return (
           <div className="min-h-screen bg-soft-white">
@@ -116,36 +162,20 @@ const BookingFlow = () => {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div>
-                      <h3 className="font-semibold mb-3">Selecionar Data</h3>
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        disabled={(date) => date < new Date()}
-                        className="rounded-md border"
+                      <h3 className="text-h3 mb-3">Selecionar Data e Horário</h3>
+                      <BookingCalendar
+                        selectedDate={selectedDate || undefined}
+                        onDateSelect={(date) => setSelectedDate(date || null)}
+                        selectedTime={selectedTime}
+                        onTimeSelect={(time) => setSelectedTime(time)}
+                        timeSlots={timeSlots.map(time => ({ time, available: true }))}
+                        showTimeSelection={true}
+                        className="w-full"
                       />
                     </div>
                     
-                    {selectedDate && (
-                      <div>
-                        <h3 className="font-semibold mb-3">Selecionar Horário</h3>
-                        <div className="grid grid-cols-3 gap-2">
-                          {timeSlots.map((time) => (
-                            <Button
-                              key={time}
-                              variant={selectedTime === time ? "default" : "outline"}
-                              onClick={() => setSelectedTime(time)}
-                              className="text-sm"
-                            >
-                              {time}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
                     {selectedDate && selectedTime && (
-                      <Button onClick={handleDateTimeConfirm} className="w-full">
+                      <Button onClick={handleDateTimeConfirm} className="w-full mt-6">
                         Confirmar Data e Hora
                       </Button>
                     )}

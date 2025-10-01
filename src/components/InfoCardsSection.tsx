@@ -79,7 +79,7 @@ const InfoCardsSection = () => {
   return (
     <section 
       ref={sectionRef}
-      className="relative z-20 h-[500vh] mt-0"
+      className="relative z-20 h-[500vh] pt-24 scroll-mt-24"
       style={{
         background: `linear-gradient(to bottom, 
           hsl(var(--sky-blue) / ${Math.max(0.8 - scrollProgress * 0.6, 0.1)}) 0%, 
@@ -124,7 +124,7 @@ const InfoCardsSection = () => {
         >
           <div className="w-full max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12">
             {/* Header Section */}
-            <div className="flex flex-col justify-start items-center w-full max-w-2xl mx-auto text-center mb-6 sm:mb-12 lg:mb-16">
+            <div className="flex flex-col justify-start items-center w-full max-w-2xl mx-auto text-center mb-6 sm:mb-12 lg:mb-16 pt-8">
               <h2 className="text-h1 text-navy-blue">
                 <div className="block text-center w-full">Os 4 Pilares</div>
                 <div className="block text-center w-full text-white">

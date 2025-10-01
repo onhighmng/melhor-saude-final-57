@@ -13,6 +13,7 @@ import {
   useSidebar,
   SidebarFooter,
   SidebarHeader,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -76,8 +77,8 @@ const groupedItems = {
     title: "Monitorização",
     icon: Shield,
     items: [
-      { title: "Emails", url: "/admin/emails", icon: Mail, badge: "emailsFailed" },
-      { title: "Pedidos de troca", url: "/admin/provider-change-requests", icon: Shuffle, badge: "pendingRequests" },
+      { title: "Suporte", url: "/admin/support", icon: Mail, badge: "emailsFailed" },
+      { title: "Pedidos de troca", url: "/admin/providers/change-requests", icon: Shuffle, badge: "pendingRequests" },
       { title: "Logs", url: "/admin/logs", icon: FileSearch, badge: "logAlerts" },
     ] as MenuItem[]
   }
@@ -172,6 +173,9 @@ export function AdminSidebar() {
       collapsible="icon"
     >
       <SidebarHeader className="p-6 border-b">
+        <div className="flex items-center justify-between mb-3">
+          <SidebarTrigger />
+        </div>
         {!isCollapsed && (
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12">
@@ -180,7 +184,7 @@ export function AdminSidebar() {
                 {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0 flex-1">
               <span className="text-base font-medium truncate">
                 {user?.name || user?.email}
               </span>
@@ -190,9 +194,9 @@ export function AdminSidebar() {
         )}
         {isCollapsed && (
           <div className="flex justify-center">
-            <Avatar className="h-12 w-12">
+            <Avatar className="h-10 w-10">
               <AvatarImage src={user?.avatar_url} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+              <AvatarFallback className="bg-primary text-primary-foreground text-base">
                 {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
               </AvatarFallback>
             </Avatar>
@@ -312,8 +316,8 @@ export function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-6 border-t">
-        <SidebarMenu>
+      <SidebarFooter className={`p-6 border-t ${isCollapsed ? 'flex justify-center' : ''}`}>
+        <SidebarMenu className={isCollapsed ? 'items-center' : ''}>
           <SidebarMenuItem>
             <SidebarMenuItemWithTooltip item={{ title: "Suporte" }}>
               <SidebarMenuButton asChild size="sm">

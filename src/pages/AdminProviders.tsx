@@ -28,21 +28,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-
-interface Provider {
-  id: string;
-  name: string;
-  email: string;
-  pillars: ('mental-health' | 'physical-wellness' | 'financial-assistance' | 'legal-assistance')[];
-  availability: 'active' | 'inactive';
-  licenseStatus: 'valid' | 'expired' | 'pending';
-  capacity: number; // sessions per week
-  defaultSlot: number; // minutes
-  licenseExpiry?: string;
-  avatar?: string;
-  bio?: string;
-  languages: string[];
-}
+import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
 
 const AdminProviders = () => {
   const navigate = useNavigate();
@@ -54,57 +40,6 @@ const AdminProviders = () => {
   const [licenseFilter, setLicenseFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-
-  // Mock data - replace with actual API calls
-  const mockProviders: Provider[] = [
-    {
-      id: '1',
-      name: 'Dra. Maria Santos',
-      email: 'maria.santos@clinic.pt',
-      pillars: ['mental-health', 'physical-wellness'],
-      availability: 'active',
-      licenseStatus: 'valid',
-      capacity: 20,
-      defaultSlot: 50,
-      licenseExpiry: '2025-12-31',
-      languages: ['PT', 'EN']
-    },
-    {
-      id: '2',
-      name: 'Dr. Paulo Reis',
-      email: 'paulo.reis@financial.pt',
-      pillars: ['financial-assistance'],
-      availability: 'active',
-      licenseStatus: 'pending',
-      capacity: 15,
-      defaultSlot: 45,
-      languages: ['PT']
-    },
-    {
-      id: '3',
-      name: 'Dra. Sofia Alves',
-      email: 'sofia.alves@legal.pt',
-      pillars: ['legal-assistance'],
-      availability: 'inactive',
-      licenseStatus: 'expired',
-      capacity: 12,
-      defaultSlot: 60,
-      licenseExpiry: '2024-01-15',
-      languages: ['PT', 'ES']
-    },
-    {
-      id: '4',
-      name: 'Prof. Ana Rodrigues',
-      email: 'ana.rodrigues@wellness.pt',
-      pillars: ['physical-wellness', 'mental-health'],
-      availability: 'active',
-      licenseStatus: 'valid',
-      capacity: 25,
-      defaultSlot: 30,
-      licenseExpiry: '2026-06-30',
-      languages: ['PT', 'EN', 'FR']
-    }
-  ];
 
   useEffect(() => {
     loadProviders();
@@ -183,6 +118,30 @@ const AdminProviders = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleExportProviders = () => {
+    const csv = [
+      ['Nome', 'Email', 'Pilares', 'Disponibilidade', 'Licença', 'Capacidade/Semana', 'Slot Padrão'].join(','),
+      ...filteredProviders.map(p => 
+        [p.name, p.email, p.pillars.join(';'), p.availability, p.licenseStatus, p.capacity, p.defaultSlot].join(',')
+      )
+    ].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prestadores_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Exportação completa",
+      description: `${filteredProviders.length} prestadores exportados com sucesso.`
+    });
   };
 
   // Calculate summary metrics
@@ -325,6 +284,11 @@ const AdminProviders = () => {
                 <SelectItem value="expired">Expirada</SelectItem>
               </SelectContent>
             </Select>
+            
+            <Button variant="outline" onClick={handleExportProviders}>
+              <Search className="h-4 w-4 mr-2" />
+              Exportar
+            </Button>
             
             <Button onClick={() => navigate('/admin/prestadores/novo')}>
               <Plus className="h-4 w-4 mr-2" />

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useParallaxScroll } from '../../hooks/useScrollAnimation';
+import { Link } from 'react-router-dom';
 
 interface BenefitCardProps {
   benefit: {
@@ -51,18 +52,35 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ benefit, index, children }) =
           ))}
         </ul>
         <div className="relative z-10">
-          <a 
-            href={benefit.link}
-            className="bg-[#054f31] text-[#d1fad1] rounded-[20px] w-[11.5rem] h-12 flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-md group"
-          >
-            <div className="relative z-10 text-base leading-[22px] tracking-[-0.064px]">
-              Tell me more
-            </div>
-            <div 
-              className="absolute bottom-0 left-0 right-0 h-12 bg-[#d1fad1] rounded-[20px] transform scale-y-0 origin-bottom transition-transform duration-600 ease-out group-hover:scale-y-100"
-              style={{ transformOrigin: '92px 48px' }}
-            />
-          </a>
+          {benefit.link.startsWith('http') ? (
+            <a 
+              href={benefit.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#054f31] text-[#d1fad1] rounded-[20px] w-[11.5rem] h-12 flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-md group"
+            >
+              <div className="relative z-10 text-base leading-[22px] tracking-[-0.064px]">
+                Tell me more
+              </div>
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-12 bg-[#d1fad1] rounded-[20px] transform scale-y-0 origin-bottom transition-transform duration-600 ease-out group-hover:scale-y-100"
+                style={{ transformOrigin: '92px 48px' }}
+              />
+            </a>
+          ) : (
+            <Link 
+              to={benefit.link}
+              className="bg-[#054f31] text-[#d1fad1] rounded-[20px] w-[11.5rem] h-12 flex items-center justify-center relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-md group"
+            >
+              <div className="relative z-10 text-base leading-[22px] tracking-[-0.064px]">
+                Tell me more
+              </div>
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-12 bg-[#d1fad1] rounded-[20px] transform scale-y-0 origin-bottom transition-transform duration-600 ease-out group-hover:scale-y-100"
+                style={{ transformOrigin: '92px 48px' }}
+              />
+            </Link>
+          )}
         </div>
       </div>
       

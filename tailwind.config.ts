@@ -22,9 +22,11 @@ export default {
       fontFamily: {
         sans: ["Baskervville", "serif"],
         body: ["Baskervville", "serif"],
+        baskervville: ["Baskervville", "serif"],
         heading: ["Noto Serif", "serif"],
         display: ["Noto Serif", "serif"],
-        accent: ["Comfortaa", "sans-serif"], // Using Comfortaa as Maname Colombo alternative
+        accent: ["Comfortaa", "sans-serif"],
+        comfortaa: ["Comfortaa", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -13,16 +13,16 @@ interface DesktopMenuProps {
 
 const DesktopMenu = ({ menuItems, activeDropdown, onDropdownToggle, onNavigation }: DesktopMenuProps) => {
   const handleMenuItemClick = (item: MenuItem) => {
-    console.log('🎯 MENU ITEM CLICKED:', item.title, 'requiresAuth:', item.requiresAuth, 'hasItems:', item.items?.length);
+    console.log('[Menu] Item clicked:', item.title, 'requiresAuth:', item.requiresAuth, 'hasItems:', item.items?.length);
     
     if (item.onClick) {
-      console.log('👆 Executing onClick for:', item.title);
+      console.log('[Menu] Executing onClick for:', item.title);
       item.onClick();
     }
   };
 
   const handleAuthRedirect = (item: MenuItem) => {
-    console.log('🔒 Auth redirect for:', item.title);
+    console.log('[Auth] Auth redirect for:', item.title);
     if (item.onClick) {
       item.onClick();
     }

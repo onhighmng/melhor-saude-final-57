@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { values } from './InfoCardsData';
 
 interface ValuesStepProps {
@@ -9,6 +10,21 @@ interface ValuesStepProps {
 }
 
 const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, onLearnMore }) => {
+  const navigate = useNavigate();
+  
+  const handleImplementPillars = () => {
+    onImplementPillars();
+    navigate('/register-company');
+  };
+  
+  const handleLearnMore = () => {
+    onLearnMore();
+    const element = document.getElementById('sobre-nos');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return (
     <div 
       className={`absolute inset-0 flex items-center justify-center transition-all duration-1200 ease-out ${
@@ -53,13 +69,13 @@ const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, 
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in animation-delay-1400">
           <button 
-            onClick={onImplementPillars}
+            onClick={handleImplementPillars}
             className="bg-royal-blue text-white px-8 py-3 rounded-2xl font-semibold hover:bg-navy-blue transition-all duration-500 hover:scale-110 transform shadow-lg hover:shadow-xl"
           >
             Implementar os 4 Pilares
           </button>
           <button 
-            onClick={onLearnMore}
+            onClick={handleLearnMore}
             className="bg-soft-white text-royal-blue border-2 border-royal-blue px-8 py-3 rounded-2xl font-semibold hover:bg-sky-blue/10 transition-all duration-500 hover:scale-110 transform shadow-lg hover:shadow-xl"
           >
             Saber mais

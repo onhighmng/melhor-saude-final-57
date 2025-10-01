@@ -89,7 +89,7 @@ const MembershipCardsSection = () => {
 
   return (
     <section 
-      className="relative bg-soft-white pt-12 sm:pt-16 lg:pt-20 pb-6 sm:pb-8 lg:pb-12"
+      className="relative bg-soft-white pt-28 sm:pt-32 lg:pt-36 pb-6 sm:pb-8 lg:pb-12 scroll-mt-24"
     >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}

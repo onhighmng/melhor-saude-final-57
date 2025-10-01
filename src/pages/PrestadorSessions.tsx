@@ -11,6 +11,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Calendar, Download, Filter, RefreshCw, ExternalLink, Users, Activity, Clock, Target } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
+import { useToast } from '@/hooks/use-toast';
 
 interface SessionData {
   id: string;
@@ -102,6 +103,7 @@ const locationLabels = {
 
 export default function PrestadorSessions() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -140,8 +142,55 @@ export default function PrestadorSessions() {
   };
 
   const exportToCsv = () => {
-    // Mock CSV export
-    console.log('Exporting sessions to CSV...');
+    const pillarLabels: Record<string, string> = {
+      psicologica: 'Psicológica',
+      juridica: 'Jurídica', 
+      financeira: 'Financeira',
+      fisica: 'Física'
+    };
+
+    const statusLabels: Record<string, string> = {
+      completed: 'Concluída',
+      confirmed: 'Confirmada',
+      pending: 'Pendente',
+      cancelled: 'Cancelada',
+      'no-show': 'Falta'
+    };
+
+    const locationLabels: Record<string, string> = {
+      online: 'Online',
+      presencial: 'Presencial'
+    };
+
+    const csvData = filteredSessions.map(session => ({
+      Data: session.date,
+      Hora: session.time,
+      Utilizador: session.userName,
+      Pilar: pillarLabels[session.pillar] || session.pillar,
+      Estado: statusLabels[session.status] || session.status,
+      Local: locationLabels[session.location] || session.location,
+      'Duração (min)': session.duration,
+      Notas: session.notes || ''
+    }));
+
+    const csvContent = [
+      Object.keys(csvData[0]).join(','),
+      ...csvData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `sessoes_prestador_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+
+    toast({
+      title: "Exportação concluída",
+      description: `${filteredSessions.length} sessões exportadas com sucesso.`,
+    });
   };
 
   const formatSessionDateTime = (date: string, time: string) => {

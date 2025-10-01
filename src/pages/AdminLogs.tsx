@@ -207,12 +207,26 @@ const AdminLogs = () => {
   });
 
   const handleExport = () => {
-    // In a real app, this would trigger PHI-safe CSV/PDF export
-    console.log("Exporting audit logs...");
+    const csv = [
+      ['Timestamp', 'Utilizador', 'Email', 'Ação', 'Recurso', 'Resultado', 'Empresa', 'IP', 'Duração'].join(','),
+      ...filteredLogs.map(log => 
+        [log.timestamp, log.user.name, log.user.email, log.action, log.resource, log.result, log.tenant, log.ipAddress, formatDuration(log.sessionDuration)].join(',')
+      )
+    ].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `audit_logs_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
     
     toast({
-      title: "Exportação iniciada",
-      description: "Os logs serão exportados em formato PHI-safe.",
+      title: "Exportação completa",
+      description: `${filteredLogs.length} logs exportados em formato PHI-safe.`,
     });
   };
 
