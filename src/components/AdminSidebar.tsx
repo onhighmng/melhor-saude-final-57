@@ -316,8 +316,8 @@ export function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-6 border-t">
-        <SidebarMenu>
+      <SidebarFooter className={`p-6 border-t ${isCollapsed ? 'flex justify-center' : ''}`}>
+        <SidebarMenu className={isCollapsed ? 'items-center' : ''}>
           <SidebarMenuItem>
             <SidebarMenuItemWithTooltip item={{ title: "Suporte" }}>
               <SidebarMenuButton asChild size="sm">
