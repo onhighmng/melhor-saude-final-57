@@ -20,54 +20,6 @@ export default function CompanyDashboard() {
     });
   };
 
-  const handleViewMonthlyReport = () => {
-    toast({
-      title: "Relatório Mensal",
-      description: "A gerar relatório com métricas de utilização e KPIs..."
-    });
-  };
-
-  const handleExportData = () => {
-    const data = {
-      company: company.name,
-      activeEmployees: company.seatUsed,
-      totalSeats: company.seatLimit,
-      plan: company.planType,
-      exportDate: new Date().toISOString()
-    };
-    
-    const csv = [
-      ['Métrica', 'Valor'].join(','),
-      ['Empresa', data.company].join(','),
-      ['Colaboradores Ativos', data.activeEmployees].join(','),
-      ['Total de Contas', data.totalSeats].join(','),
-      ['Plano', data.plan].join(','),
-      ['Data Exportação', data.exportDate].join(',')
-    ].join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `dados_empresa_${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Dados exportados",
-      description: "Ficheiro CSV gerado com sucesso."
-    });
-  };
-
-  const handleConfigureNotifications = () => {
-    toast({
-      title: "Notificações",
-      description: "A abrir painel de configuração de alertas e notificações..."
-    });
-  };
-
   return (
     <div className="container mx-auto p-6">
       <div className="space-y-6">
@@ -150,13 +102,13 @@ export default function CompanyDashboard() {
               <CardTitle>Ações Rápidas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-start" onClick={handleViewMonthlyReport}>
+              <Button variant="outline" className="w-full justify-start">
                 Ver Relatório Mensal
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={handleExportData}>
+              <Button variant="outline" className="w-full justify-start">
                 Exportar Dados
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={handleConfigureNotifications}>
+              <Button variant="outline" className="w-full justify-start">
                 Configurar Notificações
               </Button>
             </CardContent>

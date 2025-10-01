@@ -42,7 +42,7 @@ export const PerformanceMonitor = () => {
 
         // Log metrics periodically
         setTimeout(() => {
-          console.group('[Performance] Metrics');
+          console.group('🚀 Performance Metrics');
           console.log('First Contentful Paint:', metrics.fcp?.toFixed(2), 'ms');
           console.log('Largest Contentful Paint:', metrics.lcp?.toFixed(2), 'ms');
           console.log('First Input Delay:', metrics.fid?.toFixed(2), 'ms');

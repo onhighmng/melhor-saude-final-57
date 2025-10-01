@@ -23,7 +23,7 @@ const MissionVisionValuesSection = () => {
   ];
 
   return (
-    <section className="pt-28 pb-16 px-4 bg-gradient-to-b from-gray-50 to-white scroll-mt-24">
+    <section className="py-16 px-4 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-3 gap-8">
           {cards.map((card, index) => (

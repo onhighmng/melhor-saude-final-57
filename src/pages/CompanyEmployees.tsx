@@ -6,7 +6,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Search, MoreHorizontal, UserPlus, Users, Filter } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { mockCompanies, CompanyUser, deactivateUser, activateUser } from "@/data/companyMockData";
 import { SeatUsageCard } from "@/components/company/SeatUsageCard";
@@ -181,10 +180,8 @@ export default function CompanyEmployees() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link to={`/company/employees/${user.id}`}>
-                                Ver Detalhes
-                              </Link>
+                            <DropdownMenuItem>
+                              Ver Detalhes
                             </DropdownMenuItem>
                             {user.isActive ? (
                               <DropdownMenuItem 

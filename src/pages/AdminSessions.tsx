@@ -10,7 +10,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 import { 
   Calendar as CalendarIcon, 
   Users, 
@@ -182,7 +181,6 @@ const getPillarColor = (pillar: string) => {
 };
 
 const AdminSessions = () => {
-  const { toast } = useToast();
   const [sessions] = useState(mockSessions);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -209,120 +207,20 @@ const AdminSessions = () => {
   });
 
   const handleExport = () => {
-    const csvData = filteredSessions.map(session => ({
-      ID: session.id,
-      Utilizador: session.user.name,
-      Empresa: session.user.company,
-      Prestador: session.provider.name,
-      Pilar: session.pillar,
-      Estado: getStatusText(session.status),
-      Dedução: session.deduction === 'company' ? 'Empresa' : 'Pessoal',
-      Reembolso: session.refundApplied ? 'Sim' : 'Não',
-      'Data/Hora': session.datetime
-    }));
-
-    const csvContent = [
-      Object.keys(csvData[0]).join(','),
-      ...csvData.map(row => Object.values(row).join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `sessoes_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-
-    toast({
-      title: "Exportação concluída",
-      description: "Dados das sessões exportados com sucesso.",
-    });
+    console.log("Exporting sessions data...");
+    // In a real app, this would trigger CSV/PDF export
   };
 
   const handleCorrectDeduction = (sessionId: string) => {
-    setSelectedSession(prev => {
-      if (!prev || prev.id !== sessionId) return prev;
-      
-      const correctedSession = {
-        ...prev,
-        deduction: prev.deduction === 'company' ? 'personal' as const : 'company' as const,
-        auditTrail: {
-          ...prev.auditTrail,
-          actions: [
-            ...prev.auditTrail.actions,
-            {
-              action: 'Dedução corrigida manualmente',
-              by: 'Admin',
-              at: new Date().toLocaleString('pt-PT')
-            }
-          ]
-        }
-      };
-      
-      return correctedSession;
-    });
-
-    toast({
-      title: "Dedução corrigida",
-      description: "O tipo de dedução foi alterado com sucesso.",
-    });
+    console.log("Correcting deduction for session:", sessionId);
   };
 
   const handleApplyRefund = (sessionId: string) => {
-    setSelectedSession(prev => {
-      if (!prev || prev.id !== sessionId) return prev;
-      
-      const refundedSession = {
-        ...prev,
-        refundApplied: true,
-        auditTrail: {
-          ...prev.auditTrail,
-          actions: [
-            ...prev.auditTrail.actions,
-            {
-              action: 'Reembolso aplicado manualmente',
-              by: 'Admin',
-              at: new Date().toLocaleString('pt-PT')
-            }
-          ]
-        }
-      };
-      
-      return refundedSession;
-    });
-
-    toast({
-      title: "Reembolso aplicado",
-      description: "O reembolso foi aplicado à sessão com sucesso.",
-    });
+    console.log("Applying refund for session:", sessionId);
   };
 
   const handleMarkException = (sessionId: string) => {
-    setSelectedSession(prev => {
-      if (!prev || prev.id !== sessionId) return prev;
-      
-      const exceptionSession = {
-        ...prev,
-        auditTrail: {
-          ...prev.auditTrail,
-          policies: [...prev.auditTrail.policies, 'Marcado como exceção - requer revisão'],
-          actions: [
-            ...prev.auditTrail.actions,
-            {
-              action: 'Marcado como exceção',
-              by: 'Admin',
-              at: new Date().toLocaleString('pt-PT')
-            }
-          ]
-        }
-      };
-      
-      return exceptionSession;
-    });
-
-    toast({
-      title: "Exceção marcada",
-      description: "A sessão foi marcada como exceção para revisão.",
-    });
+    console.log("Marking as exception:", sessionId);
   };
 
   return (

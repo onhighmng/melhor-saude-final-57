@@ -1,7 +1,7 @@
 import React from 'react';
 import { mockProviders } from '@/data/mockData';
 import { BookingPillar } from './BookingFlow';
-import { ArrowLeft, Star } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface MockProvider {
   id: string;
@@ -92,7 +92,7 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
                     </p>
                     
                     <div className="flex items-center mb-4">
-                      <Star className="h-4 w-4 text-yellow-500 mr-1 fill-yellow-500" />
+                      <span className="text-yellow-500 mr-1">⭐</span>
                       <span className="text-sm font-medium">{provider.rating}</span>
                     </div>
                     

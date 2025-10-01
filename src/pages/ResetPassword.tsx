@@ -1,87 +1,185 @@
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import heroBrain from '@/assets/hero-brain.jpg';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
-const ResetPassword = () => {
+export default function ResetPassword() {
   const [email, setEmail] = useState('');
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const { toast } = useToast();
 
-  const handleReset = () => {
-    // Mock reset for demo
-    console.log('Password reset for:', email);
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password/confirm`
+      });
+
+      if (error) throw error;
+
+      setIsSuccess(true);
+      toast({
+        title: "Email enviado",
+        description: "Verifique a sua caixa de email para instruções de recuperação.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível enviar o email de recuperação",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen w-full flex">
-      {/* Left side - Image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <img
-          src={heroBrain}
-          alt="Saúde Mental"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
-        <div className="relative z-10 flex flex-col justify-end p-12 text-white">
-          <h1 className="text-4xl font-bold mb-4">Melhor Saúde</h1>
-          <p className="text-lg text-white/90">
-            Recupere o acesso à sua conta de forma segura.
-          </p>
+    <div className="min-h-screen flex">
+      {/* Left side - Hero Image */}
+      <div className="hidden lg:flex flex-1 relative">
+        <div className="absolute inset-0">
+          <img 
+            src="/lovable-uploads/6f3eb5fe-a35b-4f90-afff-d0cc84a6cf3c.png"
+            alt="Background" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20"></div>
         </div>
       </div>
 
-      {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
+      {/* Right side - Reset Password Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md space-y-8">
-          <div className="text-center lg:text-left">
-            <h2 className="text-3xl font-bold tracking-tight">Recuperar Palavra-passe</h2>
-            <p className="text-muted-foreground mt-2">
-              Insira o seu email para receber instruções de recuperação
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <Link
+              to="/"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-800 mb-6"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar à página inicial
+            </Link>
+            <img 
+              src="/lovable-uploads/c207c3c2-eab3-483e-93b6-a55cf5e5fdf2.png" 
+              alt="Melhor Saúde Logo" 
+              className="w-20 h-20 mx-auto object-contain lg:hidden"
+            />
+            <div className="w-12 h-12 bg-blue-100 rounded-full mx-auto flex items-center justify-center mb-4">
+              {isSuccess ? (
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              ) : (
+                <Mail className="h-6 w-6 text-blue-600" />
+              )}
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {isSuccess ? 'Email Enviado!' : 'Recuperar Password'}
+            </h1>
+            <p className="text-gray-600">
+              {isSuccess 
+                ? 'Enviámos instruções de recuperação para o seu email.'
+                : 'Introduza o seu email para receber instruções de recuperação.'
+              }
             </p>
           </div>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleReset();
-            }}
-            className="space-y-6"
-          >
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="h-11"
-              />
-            </div>
+          {/* Reset Password Form */}
+          <Card className="border-0 shadow-none">
+            <CardContent className="p-0">
+              {isSuccess ? (
+                <div className="space-y-6">
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm text-green-800">
+                      Verifique a sua caixa de entrada e siga as instruções no email.
+                      Se não receber o email em alguns minutos, verifique a pasta de spam.
+                    </p>
+                  </div>
 
-            <Button type="submit" className="w-full h-11">
-              Enviar Instruções
-            </Button>
+                  <div className="space-y-3">
+                    <Button
+                      onClick={() => {
+                        setIsSuccess(false);
+                        setEmail('');
+                      }}
+                      variant="outline"
+                      className="w-full h-12"
+                    >
+                      Enviar novo email
+                    </Button>
+                    
+                    <Button asChild className="w-full h-12 bg-bright-royal hover:bg-bright-royal/90">
+                      <Link to="/login">
+                        Voltar ao login
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleResetPassword} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                      Endereço de Email
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="pl-10 h-12 border-gray-200 focus:border-bright-royal"
+                        required
+                      />
+                    </div>
+                  </div>
 
-            <div className="text-center text-sm text-muted-foreground">
-              Lembrou-se da palavra-passe?{' '}
-              <Button
-                type="button"
-                variant="link"
-                className="px-1"
-                onClick={() => navigate('/login')}
-              >
-                Voltar ao login
-              </Button>
-            </div>
-          </form>
+                  <Button
+                    type="submit"
+                    className="w-full h-12 bg-bright-royal hover:bg-bright-royal/90"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Enviando...
+                      </div>
+                    ) : (
+                      'Enviar Instruções'
+                    )}
+                  </Button>
+
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">
+                      Lembrou-se da password?{' '}
+                      <Link to="/login" className="text-bright-royal hover:text-bright-royal/80 font-medium">
+                        Fazer login
+                      </Link>
+                    </p>
+                  </div>
+                </form>
+              )}
+
+              <div className="mt-6 text-center">
+                <Link
+                  to="/login"
+                  className="inline-flex items-center text-sm text-gray-600 hover:text-gray-800"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Voltar ao login
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
   );
-};
-
-export default ResetPassword;
+}

@@ -39,15 +39,7 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   handleGoHome = () => {
-    // Use React Router navigation if available, otherwise fallback
-    if (typeof window !== 'undefined') {
-      const navigate = (window as any).__routerNavigate;
-      if (navigate) {
-        navigate('/');
-      } else {
-        window.location.href = '/';
-      }
-    }
+    window.location.href = '/';
   };
 
   render() {

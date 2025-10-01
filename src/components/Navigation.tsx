@@ -102,7 +102,7 @@ const Navigation = () => {
 
   // Choose menu items based on user role
   const menuItems = isAdmin ? createAdminMenuItems(handleNavigation) : isHR ? createHRMenuItems(handleNavigation) : createMenuItems(handleSobreNosClick, handlePillarClick, handleNavigation, isAuthenticated, handleAuthRedirect);
-  const mobileMenuItems = isAdmin ? createAdminMobileMenuItems() : isHR ? createHRMobileMenuItems() : createMobileMenuItems(isAuthenticated, handleAuthRedirect, handleSobreNosClick, handlePillarClick);
+  const mobileMenuItems = isAdmin ? createAdminMobileMenuItems() : isHR ? createHRMobileMenuItems() : createMobileMenuItems(isAuthenticated, handleAuthRedirect);
   return <>
       <nav className="fixed top-2 left-0 right-0 z-50 w-full max-w-none">
         <div className="relative z-50 w-full max-w-[1500px] mx-auto px-2 sm:px-8 my-0 py-0">
@@ -118,7 +118,7 @@ const Navigation = () => {
             <DesktopMenu menuItems={menuItems} activeDropdown={activeDropdown} onDropdownToggle={handleDropdownToggle} onNavigation={handleNavigation} />
 
             {/* Right Side Actions */}
-            <NavigationActions onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick} onMobileMenuOpen={() => setIsMobileMenuOpen(true)} onLogoutClick={handleLogoutClick} isAuthenticated={isAuthenticated} user={profile} />
+            <NavigationActions onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick} onMobileMenuOpen={() => setIsMobileMenuOpen(true)} onLogoutClick={handleLogoutClick} isAuthenticated={false} user={null} />
           </div>
         </div>
 

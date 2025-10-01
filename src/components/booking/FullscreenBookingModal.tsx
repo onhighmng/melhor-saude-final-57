@@ -26,7 +26,7 @@ export default function FullscreenBookingModal({
   const [step, setStep] = useState<'calendar' | 'details'>('calendar');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState('');
-  const [selectedDuration, setSelectedDuration] = useState(50);
+  const [selectedDuration, setSelectedDuration] = useState(50); // Default to 50 minutes
   const [objective, setObjective] = useState('');
   const [isBooking, setIsBooking] = useState(false);
 
@@ -34,18 +34,18 @@ export default function FullscreenBookingModal({
     setSelectedDate(date);
   };
 
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time);
-  };
-
   const handleNextToDetails = () => {
-    if (selectedDate && selectedTime) {
+    if (selectedDate) {
       setStep('details');
     }
   };
 
   const handleBackToCalendar = () => {
     setStep('calendar');
+  };
+
+  const handleTimeSelect = (time: string) => {
+    setSelectedTime(time);
   };
 
   const handleDurationSelect = (duration: number) => {
@@ -70,10 +70,12 @@ export default function FullscreenBookingModal({
     setIsBooking(true);
     
     try {
+      // Create booking date
       const [hours, minutes] = selectedTime.split(':');
       const bookingDate = new Date(selectedDate);
       bookingDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
+      // In real app, would call booking API with duration
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast.success('Sessão confirmada com sucesso!');
@@ -102,30 +104,30 @@ export default function FullscreenBookingModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-none w-screen h-screen p-0 bg-background">
+      <DialogContent className="max-w-none w-screen h-screen p-0 bg-gray-50">
         <div className="flex flex-col h-full">
-          <div className="bg-card border-b border-border p-6 flex justify-between items-center">
-            <h1 className="text-h2 text-foreground">
-              {step === 'calendar' ? 'Escolher Data e Horário' : 'Detalhes da Sessão'}
+          {/* Header */}
+          <div className="bg-white border-b border-gray-100 p-6 flex justify-between items-center">
+            <h1 className="text-xl font-semibold text-gray-900">
+              {step === 'calendar' ? 'Escolher Data' : 'Detalhes da Sessão'}
             </h1>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleClose}
-              className="h-10 w-10 hover:bg-muted rounded-full"
+              className="h-10 w-10 hover:bg-gray-100 rounded-full"
             >
               <X className="h-5 w-5" />
             </Button>
           </div>
 
+          {/* Content */}
           <div className="flex-1 p-6 overflow-auto">
-            <div className="max-w-6xl mx-auto h-full">
+            <div className="max-w-4xl mx-auto h-full">
               {step === 'calendar' && (
                 <CalendarStep
                   selectedDate={selectedDate}
                   onDateSelect={handleDateSelect}
-                  selectedTime={selectedTime}
-                  onTimeSelect={handleTimeSelect}
                   onNext={handleNextToDetails}
                   pillarName={pillarName}
                 />

@@ -3,14 +3,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { SkipLink } from "@/components/ui/accessibility";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { setNavigateFunction } from "@/services/redirectService";
-import { useEffect } from "react";
+import { MusicProvider } from "@/contexts/MusicContext";
 
 import ScrollIndicator from "@/components/ScrollIndicator";
+import MusicPlayer from "@/components/MusicPlayer";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
-import DemoControlPanel from "@/components/DemoControlPanel";
 import { usePageTracking } from "@/hooks/usePageTracking";
 // Lazy load pages for better performance
 import { lazy } from "react";
@@ -26,18 +25,26 @@ const Login = lazy(() => import("./pages/Login"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
 const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
-// Removed deleted pages for demo
-const AdminUsers = lazy(() => import("./pages/AdminUsers"));
-const CompanyInvites = lazy(() => import("./pages/CompanyInvites"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminCompanies = lazy(() => import("./pages/AdminCompanies"));
 const AdminCompanyInvites = lazy(() => import("./pages/AdminCompanyInvites"));
+const AdminUsers = lazy(() => import("./pages/AdminUsers"));
+const CompanyInvites = lazy(() => import("./pages/CompanyInvites"));
 const AdminUserDetail = lazy(() => import("./pages/AdminUserDetail"));
 const AdminProviders = lazy(() => import("./pages/AdminProviders"));
 const AdminProviderDetail = lazy(() => import("./pages/AdminProviderDetail"));
 const AdminProviderNew = lazy(() => import("./pages/AdminProviderNew"));
 const AdminMatching = lazy(() => import("./pages/AdminMatching"));
 const AdminProviderChangeRequests = lazy(() => import("./pages/AdminProviderChangeRequests"));
+const AdminScheduling = lazy(() => import("./pages/AdminScheduling"));
 const AdminSessions = lazy(() => import("./pages/AdminSessions"));
+const AdminEmails = lazy(() => 
+  import("./pages/AdminEmails").then(module => {
+    // Preload critical resources for faster subsequent loads
+    import("./components/admin/EmailNotificationsPanel");
+    return module;
+  })
+);
 const AdminLogs = lazy(() => import("./pages/AdminLogs"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
@@ -63,14 +70,7 @@ import { CompanyLayout } from "@/components/layouts/CompanyLayout";
 import { AuthenticatedLayout } from "@/components/layouts/AuthenticatedLayout";
 
 const AppWithTracking = () => {
-  const navigate = useNavigate();
   usePageTracking();
-  
-  // Set up navigate function for redirectService and error boundary
-  useEffect(() => {
-    setNavigateFunction(navigate);
-    (window as any).__routerNavigate = navigate;
-  }, [navigate]);
   
   return (
     <>
@@ -96,53 +96,46 @@ const AppWithTracking = () => {
           {/* Demo page */}
           <Route path="/demo" element={<Demo />} />
           
+          
+          {/* User routes */}
+          <Route path="/user/dashboard" element={<UserLayout><UserDashboard /></UserLayout>} />
+          <Route path="/user/book" element={<UserLayout><BookingFlow /></UserLayout>} />
+          <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
+          <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />
+          <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
+          
           {/* Static pages */}
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />
           
-          {/* User routes */}
-          <Route path="/user/dashboard" element={<UserLayout><UserDashboard /></UserLayout>} />
-          <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
-          <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
-          <Route path="/user/book" element={<UserLayout><BookingFlow /></UserLayout>} />
-          <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />
           
-          {/* Public help center */}
-          <Route path="/help" element={<HelpCenter />} />
-          
-          {/* Prestador routes */}
+          {/* Provider Dashboard */}
           <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
-          <Route path="/prestador/sessoes" element={<PrestadorLayout><PrestadorSessions /></PrestadorLayout>} />
-          <Route path="/prestador/sessoes/:id" element={<PrestadorLayout><PrestadorSessionDetail /></PrestadorLayout>} />
-          <Route path="/prestador/sessoes/guia" element={<PrestadorLayout><PrestadorSessionGuide /></PrestadorLayout>} />
           <Route path="/prestador/availability" element={<PrestadorLayout><PrestadorAvailability /></PrestadorLayout>} />
+          <Route path="/prestador/sessoes" element={<PrestadorLayout><PrestadorSessions /></PrestadorLayout>} />
+          <Route path="/prestador/sessoes/guia" element={<PrestadorLayout><PrestadorSessionGuide /></PrestadorLayout>} />
+          <Route path="/prestador/sessoes/:id" element={<PrestadorLayout><PrestadorSessionDetail /></PrestadorLayout>} />
           <Route path="/prestador/profile" element={<PrestadorLayout><PrestadorProfile /></PrestadorLayout>} />
           
-          {/* Admin routes */}
-          <Route path="/admin/dashboard" element={<AdminLayout><AdminUsers /></AdminLayout>} />
-          <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
+          {/* Admin Dashboard */}
+          <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+          <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
           <Route path="/admin/usuarios" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/usuarios/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
-          <Route path="/admin/users/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
-          <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
+          <Route path="/admin/companies/:id/invites" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
           <Route path="/admin/prestadores" element={<AdminLayout><AdminProviders /></AdminLayout>} />
-          <Route path="/admin/providers/new" element={<AdminLayout><AdminProviderNew /></AdminLayout>} />
-          <Route path="/admin/prestadores/novo" element={<AdminLayout><AdminProviderNew /></AdminLayout>} />
           <Route path="/admin/prestadores/:id" element={<AdminLayout><AdminProviderDetail /></AdminLayout>} />
-          <Route path="/admin/providers/:id" element={<AdminLayout><AdminProviderDetail /></AdminLayout>} />
-          <Route path="/admin/providers/change-requests" element={<AdminLayout><AdminProviderChangeRequests /></AdminLayout>} />
-          <Route path="/admin/sessions" element={<AdminLayout><AdminSessions /></AdminLayout>} />
-          <Route path="/admin/sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
+          <Route path="/admin/prestadores/novo" element={<AdminLayout><AdminProviderNew /></AdminLayout>} />
           <Route path="/admin/matching" element={<AdminLayout><AdminMatching /></AdminLayout>} />
-          <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
-          <Route path="/admin/companies/:id" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
-          <Route path="/admin/agendamentos" element={<AdminLayout><AdminSessions /></AdminLayout>} />
-          <Route path="/admin/logs" element={<AdminLayout><AdminLogs /></AdminLayout>} />
+          <Route path="/admin/provider-change-requests" element={<AdminLayout><AdminProviderChangeRequests /></AdminLayout>} />
+          <Route path="/admin/agendamentos" element={<AdminLayout><AdminScheduling /></AdminLayout>} />
+          <Route path="/admin/sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
-          <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
+          <Route path="/admin/emails" element={<AdminLayout><AdminEmails /></AdminLayout>} />
+          <Route path="/admin/logs" element={<AdminLayout><AdminLogs /></AdminLayout>} />
           <Route path="/admin/configuracoes" element={<AdminLayout><AdminSettings /></AdminLayout>} />
           
-          {/* Company HR routes */}
+          {/* Company HR Dashboard */}
           <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />
           <Route path="/company/employees" element={<CompanyLayout><CompanyEmployees /></CompanyLayout>} />
           <Route path="/company/employees/:id" element={<CompanyLayout><CompanyEmployeeDetail /></CompanyLayout>} />
@@ -163,14 +156,16 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
-          <SkipLink />
-          <Toaster />
-          <Sonner />
-          <AppWithTracking />
-          <ScrollIndicator />
-          <PWAInstallPrompt />
-          <DemoControlPanel />
-          <PerformanceMonitor />
+          <MusicProvider>
+            <SkipLink />
+            <Toaster />
+            <Sonner />
+            <AppWithTracking />
+            <ScrollIndicator />
+            <MusicPlayer />
+            <PWAInstallPrompt />
+            <PerformanceMonitor />
+          </MusicProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

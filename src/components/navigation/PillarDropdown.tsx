@@ -21,15 +21,15 @@ const PillarDropdownCore: React.FC<PillarDropdownProps> = ({ onClose }) => {
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('[PillarDropdown] Toggle clicked - current isOpen:', isOpen);
+    console.log('🔽 PillarDropdown toggle clicked - current isOpen:', isOpen);
     setIsOpen(!isOpen);
-    console.log('[PillarDropdown] Setting isOpen to:', !isOpen);
+    console.log('🔽 PillarDropdown setting isOpen to:', !isOpen);
   };
 
   const handlePillarClick = (pillar: any, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(`[Pillar] Clicking pillar: ${pillar.label} (index: ${pillar.pillarIndex})`);
+    console.log(`🎯 Clicking pillar: ${pillar.label} (index: ${pillar.pillarIndex})`);
     setIsOpen(false);
     onClose?.();
     scrollToPillar(pillar.pillarIndex);

@@ -280,32 +280,7 @@ export default function AdminCompanyInvites() {
             {loading ? 'A gerar...' : 'Gerar códigos em falta'}
           </Button>
           
-          <Button variant="outline" onClick={() => {
-            const csvData = filteredCodes.map(code => ({
-              Código: code.code,
-              Estado: code.status,
-              'Utilizado Por': code.issuedToUserName || '—',
-              Email: code.issuedToUserEmail || '—',
-              'Data de Utilização': code.redeemedAt || '—',
-              'Data de Criação': code.createdAt
-            }));
-
-            const csvContent = [
-              Object.keys(csvData[0]).join(','),
-              ...csvData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
-            ].join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `convites_${company?.name}_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-
-            toast({
-              title: "Exportação concluída",
-              description: "Códigos de convite exportados com sucesso.",
-            });
-          }}>
+          <Button variant="outline">
             <Download className="h-4 w-4 mr-2" />
             Exportar CSV
           </Button>

@@ -44,17 +44,17 @@ const AuthenticatedDropdown = ({
     event.stopPropagation();
     
     if (!isAuthenticated) {
-      console.log('[Auth] Auth required for:', title);
+      console.log('🔒 Auth required for:', title);
       onAuthRedirect();
       return;
     }
 
     if (items.length === 0) {
-      console.log('[Dropdown] No items in dropdown for:', title);
+      console.log('⚠️ No items in dropdown for:', title);
       return;
     }
 
-    console.log('[Dropdown] Toggling dropdown for:', title, 'isOpen:', !isOpen);
+    console.log('📋 Toggling dropdown for:', title, 'isOpen:', !isOpen);
     setIsOpen(!isOpen);
   };
 
@@ -62,17 +62,17 @@ const AuthenticatedDropdown = ({
     event.preventDefault();
     event.stopPropagation();
     
-    console.log('[Dropdown] Item clicked:', item.title, 'path:', item.path);
+    console.log('🎯 Dropdown item clicked:', item.title, 'path:', item.path);
     
     // Close dropdown immediately
     setIsOpen(false);
     
     // Execute the action
     if (item.onClick) {
-      console.log('[Dropdown] Executing onClick for:', item.title);
+      console.log('🔄 Executing onClick for:', item.title);
       item.onClick();
     } else if (item.path) {
-      console.log('[Navigation] Navigating to:', item.path);
+      console.log('🚀 Navigating to:', item.path);
       navigate(item.path);
     }
   };

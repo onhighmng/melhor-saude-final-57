@@ -65,6 +65,6 @@ export const values = [
   {
     title: "Compromisso com Bem-estar Integral", 
     description: "Promovemos equilíbrio emocional, segurança jurídica, estabilidade financeira e saúde física de forma integrada e sustentável.",
-    icon: "Heart"
+    icon: "❤️"
   }
 ];

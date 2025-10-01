@@ -91,7 +91,7 @@ const FAQSection = () => {
 
   return (
     <section 
-      className="relative bg-background pt-28 sm:pt-32 lg:pt-36 pb-12 sm:pb-16 lg:pb-20 scroll-mt-24"
+      className="relative bg-white py-12 sm:py-16 lg:py-20"
     >
       <div className="w-full px-4 sm:px-6 lg:px-12">
         <h3 className="text-center text-h1 mt-0 mb-8 sm:mb-12 lg:mb-16">

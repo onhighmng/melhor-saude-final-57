@@ -1,5 +1,5 @@
 import React from 'react';
-import { Book, Heart, Scale, Stethoscope, Sparkles } from 'lucide-react';
+import { Book, Heart, Scale, Stethoscope } from 'lucide-react';
 
 interface SelfHelpHeaderProps {
   selectedCategory: string | null;
@@ -17,8 +17,8 @@ const SelfHelpHeader: React.FC<SelfHelpHeaderProps> = ({ selectedCategory, onCat
   return (
     <div className="glass-effect border-accent-sage/20 rounded-2xl p-8 mb-8 hover:shadow-custom-lg transition-smooth">
       <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-navy-blue mb-4 animate-fade-in flex items-center justify-center gap-3">
-          Centro de Autoajuda <Sparkles className="h-10 w-10 text-yellow-500" />
+        <h1 className="text-4xl md:text-5xl font-bold text-navy-blue mb-4 animate-fade-in">
+          Centro de Autoajuda 🌟
         </h1>
         <p className="text-xl text-navy-blue/80 max-w-2xl mx-auto animate-fade-in">
           Recursos abrangentes para apoiar o seu bem-estar em todas as áreas da vida
