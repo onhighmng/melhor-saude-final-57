@@ -132,17 +132,72 @@ export const mockProviders = [
 ];
 
 export const mockBookings = [
+  // Upcoming confirmed session - Today
   {
-    id: 'book-1',
+    id: 'book-today',
     provider_name: 'Dra. Ana Silva',
     provider_avatar: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png',
     pillar: 'saude_mental',
-    date: '2024-01-15',
+    date: new Date().toISOString().split('T')[0],
     time: '14:30',
-    status: 'confirmado',
+    status: 'confirmed',
     session_type: 'individual',
     notes: 'Sessão de acompanhamento psicológico',
-    booking_date: '2024-01-15T14:30:00Z',
+    booking_date: new Date().toISOString(),
+    prestadores: {
+      name: 'Dra. Ana Silva',
+      pillar: 'saude_mental',
+      avatar_url: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png'
+    }
+  },
+  // Upcoming confirmed session - Tomorrow
+  {
+    id: 'book-tomorrow',
+    provider_name: 'Dr. Carlos Santos',
+    provider_avatar: '/lovable-uploads/537ae6d8-8bad-4984-87ef-5165033fdc1c.png',
+    pillar: 'bem_estar_fisico',
+    date: new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0],
+    time: '10:00',
+    status: 'confirmed',
+    session_type: 'individual',
+    notes: 'Consulta nutricional e plano de exercícios',
+    booking_date: new Date(Date.now() + 24*60*60*1000).toISOString(),
+    prestadores: {
+      name: 'Dr. Carlos Santos',
+      pillar: 'bem_estar_fisico',
+      avatar_url: '/lovable-uploads/537ae6d8-8bad-4984-87ef-5165033fdc1c.png'
+    }
+  },
+  // Upcoming confirmed session - 3 days from now
+  {
+    id: 'book-3days',
+    provider_name: 'Dra. Maria Costa',
+    provider_avatar: '/lovable-uploads/676d62ef-5d2a-46ab-9c4f-1c94521aabed.png',
+    pillar: 'assistencia_financeira',
+    date: new Date(Date.now() + 3*24*60*60*1000).toISOString().split('T')[0],
+    time: '15:00',
+    status: 'confirmed',
+    session_type: 'individual',
+    notes: 'Planejamento financeiro pessoal',
+    booking_date: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
+    prestadores: {
+      name: 'Dra. Maria Costa',
+      pillar: 'assistencia_financeira',
+      avatar_url: '/lovable-uploads/676d62ef-5d2a-46ab-9c4f-1c94521aabed.png'
+    }
+  },
+  // Completed sessions for history
+  {
+    id: 'book-completed-1',
+    provider_name: 'Dra. Ana Silva',
+    provider_avatar: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png',
+    pillar: 'saude_mental',
+    date: new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0],
+    time: '14:30',
+    status: 'completed',
+    session_type: 'individual',
+    notes: 'Gestão de stress no trabalho',
+    booking_date: new Date(Date.now() - 7*24*60*60*1000).toISOString(),
     prestadores: {
       name: 'Dra. Ana Silva',
       pillar: 'saude_mental',
@@ -150,20 +205,54 @@ export const mockBookings = [
     }
   },
   {
-    id: 'book-2',
+    id: 'book-completed-2',
     provider_name: 'Dr. Carlos Santos',
     provider_avatar: '/lovable-uploads/537ae6d8-8bad-4984-87ef-5165033fdc1c.png',
     pillar: 'bem_estar_fisico',
-    date: '2024-01-18',
-    time: '10:00',
-    status: 'agendado',
+    date: new Date(Date.now() - 14*24*60*60*1000).toISOString().split('T')[0],
+    time: '09:00',
+    status: 'completed',
     session_type: 'individual',
-    notes: 'Consulta nutricional e plano de exercícios',
-    booking_date: '2024-01-18T10:00:00Z',
+    notes: 'Avaliação física e plano de treino',
+    booking_date: new Date(Date.now() - 14*24*60*60*1000).toISOString(),
     prestadores: {
       name: 'Dr. Carlos Santos',
       pillar: 'bem_estar_fisico',
       avatar_url: '/lovable-uploads/537ae6d8-8bad-4984-87ef-5165033fdc1c.png'
+    }
+  },
+  {
+    id: 'book-completed-3',
+    provider_name: 'Dr. João Ferreira',
+    provider_avatar: '/lovable-uploads/8e2df1aa-a1c7-4f91-b724-fc348e3347ee.png',
+    pillar: 'assistencia_juridica',
+    date: new Date(Date.now() - 21*24*60*60*1000).toISOString().split('T')[0],
+    time: '11:00',
+    status: 'completed',
+    session_type: 'individual',
+    notes: 'Consultoria sobre direito laboral',
+    booking_date: new Date(Date.now() - 21*24*60*60*1000).toISOString(),
+    prestadores: {
+      name: 'Dr. João Ferreira',
+      pillar: 'assistencia_juridica',
+      avatar_url: '/lovable-uploads/8e2df1aa-a1c7-4f91-b724-fc348e3347ee.png'
+    }
+  },
+  {
+    id: 'book-completed-4',
+    provider_name: 'Dra. Maria Costa',
+    provider_avatar: '/lovable-uploads/676d62ef-5d2a-46ab-9c4f-1c94521aabed.png',
+    pillar: 'assistencia_financeira',
+    date: new Date(Date.now() - 28*24*60*60*1000).toISOString().split('T')[0],
+    time: '16:00',
+    status: 'completed',
+    session_type: 'individual',
+    notes: 'Análise de investimentos',
+    booking_date: new Date(Date.now() - 28*24*60*60*1000).toISOString(),
+    prestadores: {
+      name: 'Dra. Maria Costa',
+      pillar: 'assistencia_financeira',
+      avatar_url: '/lovable-uploads/676d62ef-5d2a-46ab-9c4f-1c94521aabed.png'
     }
   }
 ];

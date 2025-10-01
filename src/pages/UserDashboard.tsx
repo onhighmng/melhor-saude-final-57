@@ -231,7 +231,7 @@ const UserDashboard = () => {
                 <Button 
                   variant="outline" 
                   className="bg-white"
-                  onClick={() => navigate('/help-center')}
+                  onClick={() => navigate('/help')}
                 >
                   Explorar Recursos
                 </Button>

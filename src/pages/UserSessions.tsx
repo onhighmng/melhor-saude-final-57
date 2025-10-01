@@ -3,11 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { mockSessions, mockUserBalance } from "@/data/sessionMockData";
 import { QuotaDisplayCard } from "@/components/sessions/QuotaDisplayCard";
 import { SessionHistoryCard } from "@/components/sessions/SessionHistoryCard";
 
 export default function UserSessions() {
+  const navigate = useNavigate();
   const [sessions] = useState(mockSessions);
   const [userBalance] = useState(mockUserBalance);
 
@@ -58,7 +60,7 @@ export default function UserSessions() {
                 <p className="text-muted-foreground mb-4">
                   Ainda não tem sessões agendadas
                 </p>
-                <Button>Marcar Primeira Sessão</Button>
+                <Button onClick={() => navigate('/user/book')}>Marcar Primeira Sessão</Button>
               </div>
             </CardContent>
           </Card>
