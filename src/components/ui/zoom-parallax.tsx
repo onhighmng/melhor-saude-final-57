@@ -22,7 +22,7 @@ export function ZoomParallax({ images, videoElement }: ZoomParallaxProps) {
 		offset: ['start start', 'end end'],
 	});
 
-	const scaleVideo = useTransform(scrollYProgress, [0, 1], [1, 2.5]);
+	const scaleVideo = useTransform(scrollYProgress, [0, 1], [1, 1.5]);
 	const scale4 = useTransform(scrollYProgress, [0, 1], [1, 4]);
 	const scale5 = useTransform(scrollYProgress, [0, 1], [1, 5]);
 	const scale6 = useTransform(scrollYProgress, [0, 1], [1, 6]);
