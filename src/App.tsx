@@ -3,8 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { SkipLink } from "@/components/ui/accessibility";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { setNavigateFunction } from "@/services/redirectService";
+import { useEffect } from "react";
 
 import ScrollIndicator from "@/components/ScrollIndicator";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
@@ -59,7 +61,14 @@ import { CompanyLayout } from "@/components/layouts/CompanyLayout";
 import { AuthenticatedLayout } from "@/components/layouts/AuthenticatedLayout";
 
 const AppWithTracking = () => {
+  const navigate = useNavigate();
   usePageTracking();
+  
+  // Set up navigate function for redirectService and error boundary
+  useEffect(() => {
+    setNavigateFunction(navigate);
+    (window as any).__routerNavigate = navigate;
+  }, [navigate]);
   
   return (
     <>

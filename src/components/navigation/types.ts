@@ -22,6 +22,7 @@ export interface MobileMenuItem {
   onClick?: () => void;
   items?: {
     title: string;
-    path: string;
+    path?: string;
+    onClick?: () => void;
   }[];
 }
