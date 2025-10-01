@@ -1,10 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { useParallaxScroll } from '../hooks/useScrollAnimation';
-import { useNavigate } from 'react-router-dom';
+import { ZoomParallax } from '@/components/ui/zoom-parallax';
 
 const HeroSection = () => {
-  const scrollY = useParallaxScroll();
-  const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   
   useEffect(() => {
@@ -16,78 +13,59 @@ const HeroSection = () => {
         });
       };
       
-      const handleError = () => {
-        // Video load failed - fallback to static background
-      };
-
-      const handleLoadStart = () => {
-        // Video loading started
-      };
-
       video.addEventListener('canplay', handleCanPlay);
-      video.addEventListener('error', handleError);
-      video.addEventListener('loadstart', handleLoadStart);
-
       return () => {
         video.removeEventListener('canplay', handleCanPlay);
-        video.removeEventListener('error', handleError);
-        video.removeEventListener('loadstart', handleLoadStart);
       };
     }
   }, []);
-  
-  const handleGetStarted = () => {
-    navigate('/');
-  };
-  
-  const handleKnowMore = () => {
-    const guidesSection = document.querySelector('[data-section="guides"]');
-    if (guidesSection) {
-      guidesSection.scrollIntoView({
-        behavior: 'smooth'
-      });
-    }
-  };
+
+  const images = [
+    {
+      src: '/lovable-uploads/8e051ede-f5b9-47a0-a9a1-53e8db6bf84f.png',
+      alt: 'Saúde Mental',
+    },
+    {
+      src: '/lovable-uploads/676d62ef-5d2a-46ab-9c4f-1c94521aabed.png',
+      alt: 'Bem-estar',
+    },
+    {
+      src: '/lovable-uploads/5d2071d4-8909-4e5f-b30d-cf52091ffba9.png',
+      alt: 'Terapia',
+    },
+    {
+      src: '/lovable-uploads/6f3eb5fe-a35b-4f90-afff-d0cc84a6cf3c.png',
+      alt: 'Apoio',
+    },
+    {
+      src: '/lovable-uploads/64839ced-48a0-4bc0-96d3-55b3c2d871a9.png',
+      alt: 'Cuidado',
+    },
+    {
+      src: '/lovable-uploads/5098d52a-638c-4f18-8bf0-36058ff94187.png',
+      alt: 'Equilíbrio',
+    },
+  ];
+
+  const videoElement = (
+    <video 
+      ref={videoRef}
+      className="w-full h-full object-cover rounded-lg shadow-2xl"
+      autoPlay 
+      muted 
+      loop 
+      playsInline
+      controls={false}
+      preload="metadata"
+    >
+      <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Platform%20Ms(1).webm" type="video/webm" />
+      <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.mp4" type="video/mp4" />
+    </video>
+  );
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-deep-navy mt-20 sm:mt-0 flex items-center justify-center">
-      {/* Video Background */}
-      <video 
-        ref={videoRef}
-        className="w-full h-full object-contain max-h-[calc(100vh-100px)]"
-        autoPlay 
-        muted 
-        loop 
-        playsInline
-        controls={false}
-        preload="metadata"
-        style={{ 
-          zIndex: 2,
-          objectPosition: 'center center',
-        }}
-      >
-        <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Platform%20Ms(1).webm" type="video/webm" />
-        <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
-      {/* Static background as reliable fallback */}
-      <div 
-        className="absolute inset-0 bg-background"
-        style={{ 
-          zIndex: 1,
-        }}
-      />
-
-      {/* Logo positioned at bottom left */}
-      <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 lg:bottom-12 lg:left-12 z-10">
-        <img 
-          src="/lovable-uploads/0dce0993-5b13-4451-8cf3-bfc35211e2da.png" 
-          alt="Melhor Saúde Logo" 
-          className="h-8 w-auto sm:h-12 md:h-16 lg:h-20 object-contain"
-        />
-      </div>
-
+    <div className="mt-20 sm:mt-0">
+      <ZoomParallax images={images} videoElement={videoElement} />
     </div>
   );
 };
