@@ -117,7 +117,7 @@ const PillarCarousel = () => {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12 pt-4">
+        <div className="text-center mb-8">
           <h2 className="text-4xl font-bold text-navy-blue mb-4">
             Nossos Pilares em Ação
           </h2>
@@ -137,7 +137,7 @@ const PillarCarousel = () => {
                 key={`slide-${slide.id}-${index}`}
                 className="w-full flex-shrink-0 relative"
               >
-                <div className={`relative h-[600px] bg-gradient-to-r ${slide.gradient} overflow-hidden`}>
+                <div className={`relative h-[500px] sm:h-[550px] md:h-[600px] bg-gradient-to-r ${slide.gradient} overflow-hidden`}>
                   {/* Background Image */}
                   <img
                     src={slide.image}
