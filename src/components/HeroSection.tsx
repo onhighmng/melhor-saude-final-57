@@ -11,18 +11,17 @@ const HeroSection = () => {
     const video = videoRef.current;
     if (video) {
       const handleCanPlay = () => {
-        console.log('Hero video ready to play');
-        video.play().catch(err => {
-          console.warn('Hero video autoplay failed:', err);
+        video.play().catch(() => {
+          // Autoplay blocked - user interaction required
         });
       };
       
-      const handleError = (e: Event) => {
-        console.error('Hero video failed to load:', e);
+      const handleError = () => {
+        // Video load failed - fallback to static background
       };
 
       const handleLoadStart = () => {
-        console.log('Hero video loading started');
+        // Video loading started
       };
 
       video.addEventListener('canplay', handleCanPlay);
