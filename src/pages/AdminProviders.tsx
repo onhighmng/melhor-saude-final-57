@@ -185,6 +185,30 @@ const AdminProviders = () => {
     }
   };
 
+  const handleExportProviders = () => {
+    const csv = [
+      ['Nome', 'Email', 'Pilares', 'Disponibilidade', 'Licença', 'Capacidade/Semana', 'Slot Padrão'].join(','),
+      ...filteredProviders.map(p => 
+        [p.name, p.email, p.pillars.join(';'), p.availability, p.licenseStatus, p.capacity, p.defaultSlot].join(',')
+      )
+    ].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prestadores_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Exportação completa",
+      description: `${filteredProviders.length} prestadores exportados com sucesso.`
+    });
+  };
+
   // Calculate summary metrics
   const totalProviders = providers.length;
   const activeProviders = providers.filter(p => p.availability === 'active').length;
@@ -325,6 +349,11 @@ const AdminProviders = () => {
                 <SelectItem value="expired">Expirada</SelectItem>
               </SelectContent>
             </Select>
+            
+            <Button variant="outline" onClick={handleExportProviders}>
+              <Search className="h-4 w-4 mr-2" />
+              Exportar
+            </Button>
             
             <Button onClick={() => navigate('/admin/prestadores/novo')}>
               <Plus className="h-4 w-4 mr-2" />

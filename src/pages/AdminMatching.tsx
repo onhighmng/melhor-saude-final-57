@@ -264,6 +264,10 @@ const AdminMatching = () => {
 
   const simulateDistribution = () => {
     setShowSimulation(true);
+    toast({
+      title: "Simulação iniciada",
+      description: "A distribuir 100 sessões pelos prestadores de acordo com os pesos configurados..."
+    });
   };
 
   const getStatusBadge = (status: string) => {

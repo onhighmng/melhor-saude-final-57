@@ -176,6 +176,37 @@ const AdminUsers = () => {
     }
   };
 
+  const handleCreateUser = () => {
+    toast({
+      title: "Criar Novo Utilizador",
+      description: "Funcionalidade em desenvolvimento. Em breve poderá criar utilizadores diretamente."
+    });
+  };
+
+  const handleExportUsers = () => {
+    const csv = [
+      ['Nome', 'Email', 'Empresa', 'Sessões Empresa', 'Sessões Pessoais', 'Status', 'Data Criação'].join(','),
+      ...filteredUsers.map(user => 
+        [user.name, user.email, user.company, user.companySessions, user.personalSessions, user.status, user.createdAt].join(',')
+      )
+    ].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `utilizadores_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Exportação completa",
+      description: `${filteredUsers.length} utilizadores exportados com sucesso.`
+    });
+  };
+
 
   // Calculate summary metrics
   const totalUsers = users.length;
@@ -270,7 +301,12 @@ const AdminUsers = () => {
               </SelectContent>
             </Select>
             
-            <Button>
+            <Button variant="outline" onClick={handleExportUsers}>
+              <Search className="h-4 w-4 mr-2" />
+              Exportar
+            </Button>
+            
+            <Button onClick={handleCreateUser}>
               <Plus className="h-4 w-4 mr-2" />
               Criar Utilizador
             </Button>

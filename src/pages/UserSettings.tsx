@@ -106,6 +106,49 @@ const UserSettings = () => {
     setIsChangeProviderOpen(true);
   };
 
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [show2FADialog, setShow2FADialog] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    current: '',
+    new: '',
+    confirm: ''
+  });
+
+  const handleChangePassword = () => {
+    if (passwordData.new !== passwordData.confirm) {
+      toast({
+        title: "Erro",
+        description: "As palavras-passe não coincidem.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (passwordData.new.length < 8) {
+      toast({
+        title: "Erro",
+        description: "A palavra-passe deve ter pelo menos 8 caracteres.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setShowPasswordDialog(false);
+    setPasswordData({ current: '', new: '', confirm: '' });
+    toast({
+      title: "Palavra-passe alterada",
+      description: "A sua palavra-passe foi atualizada com sucesso."
+    });
+  };
+
+  const handleEnable2FA = () => {
+    setShow2FADialog(false);
+    toast({
+      title: "2FA Ativado",
+      description: "Autenticação de dois fatores foi ativada na sua conta."
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -347,9 +390,58 @@ const UserSettings = () => {
                         Última alteração em 15 de Janeiro, 2024
                       </p>
                     </div>
-                    <Button variant="outline">
-                      Alterar Palavra-Passe
-                    </Button>
+                    <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">
+                          Alterar Palavra-Passe
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Alterar Palavra-Passe</DialogTitle>
+                          <DialogDescription>
+                            Introduza a sua palavra-passe atual e escolha uma nova palavra-passe.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="current-password">Palavra-passe atual</Label>
+                            <Input
+                              id="current-password"
+                              type="password"
+                              value={passwordData.current}
+                              onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="new-password">Nova palavra-passe</Label>
+                            <Input
+                              id="new-password"
+                              type="password"
+                              value={passwordData.new}
+                              onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="confirm-password">Confirmar nova palavra-passe</Label>
+                            <Input
+                              id="confirm-password"
+                              type="password"
+                              value={passwordData.confirm}
+                              onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-3">
+                          <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
+                            Cancelar
+                          </Button>
+                          <Button onClick={handleChangePassword}>
+                            Alterar Palavra-Passe
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
 
                   <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -359,9 +451,45 @@ const UserSettings = () => {
                         Estado: Desativado
                       </p>
                     </div>
-                    <Button variant="outline">
-                      Ativar 2FA
-                    </Button>
+                    <Dialog open={show2FADialog} onOpenChange={setShow2FADialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">
+                          Ativar 2FA
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Ativar Autenticação de Dois Fatores</DialogTitle>
+                          <DialogDescription>
+                            Adicione uma camada extra de segurança à sua conta.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="bg-muted p-4 rounded-lg text-center">
+                            <p className="text-sm mb-2">Digitalize este código QR com a sua aplicação de autenticação:</p>
+                            <div className="w-48 h-48 bg-white mx-auto flex items-center justify-center rounded">
+                              <div className="text-xs text-muted-foreground">[QR Code simulado]</div>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="2fa-code">Código de verificação</Label>
+                            <Input
+                              id="2fa-code"
+                              placeholder="000000"
+                              maxLength={6}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-3">
+                          <Button variant="outline" onClick={() => setShow2FADialog(false)}>
+                            Cancelar
+                          </Button>
+                          <Button onClick={handleEnable2FA}>
+                            Ativar 2FA
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </CardContent>
