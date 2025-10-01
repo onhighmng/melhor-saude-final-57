@@ -27,6 +27,7 @@ const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
 // Removed deleted pages for demo
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const CompanyInvites = lazy(() => import("./pages/CompanyInvites"));
+const AdminCompanyInvites = lazy(() => import("./pages/AdminCompanyInvites"));
 const AdminUserDetail = lazy(() => import("./pages/AdminUserDetail"));
 const AdminProviders = lazy(() => import("./pages/AdminProviders"));
 const AdminProviderDetail = lazy(() => import("./pages/AdminProviderDetail"));
@@ -84,12 +85,39 @@ const AppWithTracking = () => {
           {/* Demo page */}
           <Route path="/demo" element={<Demo />} />
           
-          
           {/* Static pages */}
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />
+          <Route path="/help" element={<HelpCenter />} />
           
-          {/* Company HR Dashboard */}
+          {/* User routes */}
+          <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
+          <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
+          <Route path="/user/book" element={<UserLayout><BookingFlow /></UserLayout>} />
+          
+          {/* Prestador routes */}
+          <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
+          <Route path="/prestador/sessoes" element={<PrestadorLayout><PrestadorSessions /></PrestadorLayout>} />
+          <Route path="/prestador/sessoes/:id" element={<PrestadorLayout><PrestadorSessionDetail /></PrestadorLayout>} />
+          <Route path="/prestador/sessoes/guia" element={<PrestadorLayout><PrestadorSessionGuide /></PrestadorLayout>} />
+          <Route path="/prestador/availability" element={<PrestadorLayout><PrestadorAvailability /></PrestadorLayout>} />
+          <Route path="/prestador/profile" element={<PrestadorLayout><PrestadorProfile /></PrestadorLayout>} />
+          
+          {/* Admin routes */}
+          <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
+          <Route path="/admin/users/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
+          <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
+          <Route path="/admin/providers/new" element={<AdminLayout><AdminProviderNew /></AdminLayout>} />
+          <Route path="/admin/providers/:id" element={<AdminLayout><AdminProviderDetail /></AdminLayout>} />
+          <Route path="/admin/providers/change-requests" element={<AdminLayout><AdminProviderChangeRequests /></AdminLayout>} />
+          <Route path="/admin/sessions" element={<AdminLayout><AdminSessions /></AdminLayout>} />
+          <Route path="/admin/matching" element={<AdminLayout><AdminMatching /></AdminLayout>} />
+          <Route path="/admin/company-invites" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
+          <Route path="/admin/logs" element={<AdminLayout><AdminLogs /></AdminLayout>} />
+          <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
+          <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
+          
+          {/* Company HR routes */}
           <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />
           <Route path="/company/employees" element={<CompanyLayout><CompanyEmployees /></CompanyLayout>} />
           <Route path="/company/employees/:id" element={<CompanyLayout><CompanyEmployeeDetail /></CompanyLayout>} />
