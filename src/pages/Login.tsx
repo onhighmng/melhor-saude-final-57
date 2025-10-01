@@ -1,42 +1,110 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import heroNeural from '@/assets/hero-neural.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = () => {
     // Mock login for demo
     console.log('Login attempt:', { email, password });
+    navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-h2">Login</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button onClick={handleLogin} className="w-full">
-            Login
-          </Button>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen w-full flex">
+      {/* Left side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <img
+          src={heroNeural}
+          alt="Saúde Mental"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
+        <div className="relative z-10 flex flex-col justify-end p-12 text-white">
+          <h1 className="text-4xl font-bold mb-4">Melhor Saúde</h1>
+          <p className="text-lg text-white/90">
+            Cuidamos da sua saúde mental e bem-estar com profissionais qualificados.
+          </p>
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center lg:text-left">
+            <h2 className="text-3xl font-bold tracking-tight">Bem-vindo de volta</h2>
+            <p className="text-muted-foreground mt-2">
+              Entre na sua conta para continuar
+            </p>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin();
+            }}
+            className="space-y-6"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-11"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Palavra-passe</Label>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="px-0 text-sm"
+                  onClick={() => navigate('/reset-password')}
+                >
+                  Esqueceu a palavra-passe?
+                </Button>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="h-11"
+              />
+            </div>
+
+            <Button type="submit" className="w-full h-11">
+              Entrar
+            </Button>
+
+            <div className="text-center text-sm text-muted-foreground">
+              Não tem uma conta?{' '}
+              <Button
+                type="button"
+                variant="link"
+                className="px-1"
+                onClick={() => navigate('/register/employee')}
+              >
+                Registar agora
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
