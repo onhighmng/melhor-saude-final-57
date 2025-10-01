@@ -2,28 +2,27 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Bot } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { LegalAssessment } from '@/types/legalAssessment';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-interface LegalChatInterfaceProps {
-  assessment: LegalAssessment;
+interface PreDiagnosticChatProps {
   onBack: () => void;
   onComplete: () => void;
 }
 
-const LegalChatInterface: React.FC<LegalChatInterfaceProps> = ({
-  assessment,
-  onBack,
-  onComplete
-}) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+const PreDiagnosticChat: React.FC<PreDiagnosticChatProps> = ({ onBack, onComplete }) => {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: 'assistant',
+      content: 'Olá! Sou seu assistente de pré-diagnóstico jurídico. Estou aqui para ajudá-lo a organizar suas questões antes da sua consulta com o especialista humano. Por favor, descreva sua situação jurídica da forma mais detalhada possível.'
+    }
+  ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -49,7 +48,7 @@ const LegalChatInterface: React.FC<LegalChatInterfaceProps> = ({
       const { data, error } = await supabase.functions.invoke('legal-chat', {
         body: {
           messages: [...messages, userMessage],
-          assessment
+          mode: 'prediagnostic'
         }
       });
 
@@ -59,12 +58,13 @@ const LegalChatInterface: React.FC<LegalChatInterfaceProps> = ({
         role: 'assistant',
         content: data.response
       };
+
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
         title: 'Erro',
-        description: 'Não foi possível enviar a mensagem. Tente novamente.',
+        description: 'Não foi possível enviar sua mensagem. Tente novamente.',
         variant: 'destructive'
       });
     } finally {
@@ -82,38 +82,36 @@ const LegalChatInterface: React.FC<LegalChatInterfaceProps> = ({
   return (
     <div className="min-h-screen bg-soft-white">
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
+        <div className="w-full max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <Button variant="ghost" onClick={onBack}>
-              ← Voltar ao Resumo
+              ← Voltar
             </Button>
             <Button variant="outline" onClick={onComplete}>
-              Finalizar Consulta
+              Concluir Mais Tarde
             </Button>
           </div>
 
-          <Card className="flex-1 flex flex-col overflow-hidden">
-            <div className="p-6 border-b bg-primary/5">
-              <h2 className="font-semibold text-lg">Assistente Jurídico</h2>
-              <p className="text-sm text-muted-foreground">
-                Faça perguntas sobre sua situação jurídica
-              </p>
+          <Card className="mb-6 p-6 bg-primary/5 border-primary/20">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Bot className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">Pré-Diagnóstico Jurídico</h3>
+                <p className="text-sm text-muted-foreground">
+                  Este diagnóstico será compartilhado com seu especialista para preparar melhor sua consulta.
+                </p>
+              </div>
             </div>
+          </Card>
 
+          <Card className="flex flex-col h-[600px]">
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {messages.length === 0 && (
-                <div className="text-center text-muted-foreground py-8">
-                  <p>Olá! Estou aqui para ajudar com suas questões jurídicas.</p>
-                  <p className="text-sm mt-2">Envie uma mensagem para começar.</p>
-                </div>
-              )}
-              
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`flex ${
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
                     className={`max-w-[80%] rounded-lg p-4 ${
@@ -122,48 +120,58 @@ const LegalChatInterface: React.FC<LegalChatInterfaceProps> = ({
                         : 'bg-muted'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    <p className="whitespace-pre-wrap">{message.content}</p>
                   </div>
                 </div>
               ))}
-              
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-muted rounded-lg p-4">
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.2s]" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.4s]" />
+                    </div>
                   </div>
                 </div>
               )}
-              
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 border-t">
+            <div className="border-t p-4">
               <div className="flex gap-2">
                 <Textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Digite sua pergunta..."
-                  className="resize-none"
-                  rows={2}
+                  placeholder="Descreva sua situação jurídica..."
+                  className="min-h-[60px] resize-none"
                   disabled={isLoading}
                 />
                 <Button
                   onClick={sendMessage}
-                  disabled={!input.trim() || isLoading}
+                  disabled={isLoading || !input.trim()}
                   size="icon"
-                  className="h-full"
+                  className="h-[60px] w-[60px]"
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-5 w-5" />
                 </Button>
               </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Pressione Enter para enviar, Shift+Enter para nova linha
+              </p>
             </div>
           </Card>
+
+          <div className="mt-6 flex justify-end">
+            <Button onClick={onComplete} size="lg">
+              Finalizar Pré-Diagnóstico
+            </Button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default LegalChatInterface;
+export default PreDiagnosticChat;

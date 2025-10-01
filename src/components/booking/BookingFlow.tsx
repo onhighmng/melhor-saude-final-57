@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
 import { useToast } from '@/hooks/use-toast';
 import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
+import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -24,7 +25,7 @@ interface MockProvider {
 const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'pillar' | 'assessment' | 'datetime' | 'confirmation' | 'legal-cta'>('pillar');
+  const [currentStep, setCurrentStep] = useState<'pillar' | 'specialist-choice' | 'assessment' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -38,7 +39,13 @@ const BookingFlow = () => {
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
     
-    // For all pillars (including juridica), assign provider and go to datetime
+    // For juridica pillar, show specialist choice first
+    if (pillar === 'juridica') {
+      setCurrentStep('specialist-choice');
+      return;
+    }
+    
+    // For other pillars, assign provider and go to datetime
     const pillarMapping = {
       'psicologica': 'saude_mental',
       'fisica': 'bem_estar_fisico', 
@@ -69,6 +76,28 @@ const BookingFlow = () => {
     }
   };
 
+  const handleChooseAI = () => {
+    setCurrentStep('assessment');
+  };
+
+  const handleChooseHuman = () => {
+    // Assign a juridica provider and go to datetime
+    const availableProviders = mockProviders.filter(provider => 
+      provider.pillar === 'assistencia_juridica'
+    );
+
+    if (availableProviders.length > 0) {
+      const assignedProvider = availableProviders[0];
+      setSelectedProvider(assignedProvider);
+      setCurrentStep('datetime');
+      
+      toast({
+        title: "Prestador Atribuído",
+        description: `Foi atribuído: ${assignedProvider.name} - ${assignedProvider.specialty}`,
+      });
+    }
+  };
+
   const handleDateTimeConfirm = () => {
     if (!selectedDate || !selectedTime) {
       toast({
@@ -87,10 +116,10 @@ const BookingFlow = () => {
       description: `Sua sessão com ${selectedProvider?.name} foi agendada para ${selectedDate?.toLocaleDateString()} às ${selectedTime}`,
     });
     
-    // If juridica pillar, show CTA for pre-diagnostic
+    // If juridica pillar, show pre-diagnostic CTA
     if (selectedPillar === 'juridica') {
       setTimeout(() => {
-        setCurrentStep('legal-cta');
+        setCurrentStep('prediagnostic-cta');
       }, 1500);
     } else {
       // Navigate back to dashboard after booking
@@ -105,16 +134,84 @@ const BookingFlow = () => {
       case 'pillar':
         return <PillarSelection onPillarSelect={handlePillarSelect} />;
       
+      case 'specialist-choice':
+        return (
+          <div className="min-h-screen bg-soft-white">
+            <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
+              <div className="w-full max-w-4xl mx-auto">
+                <Button
+                  variant="ghost"
+                  onClick={() => setCurrentStep('pillar')}
+                  className="mb-6"
+                >
+                  ← Voltar
+                </Button>
+
+                <div className="text-center mb-12">
+                  <h1 className="text-3xl font-bold text-navy-blue mb-3">
+                    Escolha o Tipo de Assistência
+                  </h1>
+                  <p className="text-royal-blue">
+                    Selecione como prefere obter ajuda jurídica
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <Card 
+                    className="p-8 cursor-pointer hover:shadow-lg transition-all border-2 hover:border-primary"
+                    onClick={handleChooseAI}
+                  >
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                        <svg className="h-10 w-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-semibold">Assistente Jurídico AI</h3>
+                      <p className="text-muted-foreground">
+                        Obtenha respostas imediatas através do nosso assistente inteligente especializado em questões jurídicas
+                      </p>
+                      <Button className="w-full mt-4">
+                        Falar com AI
+                      </Button>
+                    </div>
+                  </Card>
+
+                  <Card 
+                    className="p-8 cursor-pointer hover:shadow-lg transition-all border-2 hover:border-primary"
+                    onClick={handleChooseHuman}
+                  >
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                        <svg className="h-10 w-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-semibold">Especialista Humano</h3>
+                      <p className="text-muted-foreground">
+                        Agende uma consulta personalizada com um dos nossos especialistas jurídicos
+                      </p>
+                      <Button className="w-full mt-4">
+                        Agendar Consulta
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      
       case 'assessment':
         return (
           <LegalAssessmentFlow 
-            onBack={() => setCurrentStep('legal-cta')}
+            onBack={() => setCurrentStep('specialist-choice')}
             onComplete={() => navigate('/user/dashboard')}
             onChooseHuman={() => navigate('/user/dashboard')}
           />
         );
       
-      case 'legal-cta':
+      case 'prediagnostic-cta':
         return (
           <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center px-4">
             <Card className="max-w-2xl w-full">
@@ -161,7 +258,7 @@ const BookingFlow = () => {
                     Pular por Agora
                   </Button>
                   <Button 
-                    onClick={() => setCurrentStep('assessment')}
+                    onClick={() => setCurrentStep('prediagnostic-chat')}
                     className="flex-1"
                   >
                     Fazer Pré-Diagnóstico
@@ -170,6 +267,14 @@ const BookingFlow = () => {
               </CardContent>
             </Card>
           </div>
+        );
+      
+      case 'prediagnostic-chat':
+        return (
+          <PreDiagnosticChat
+            onBack={() => setCurrentStep('prediagnostic-cta')}
+            onComplete={() => navigate('/user/dashboard')}
+          />
         );
       
       case 'datetime':

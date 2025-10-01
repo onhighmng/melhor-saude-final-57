@@ -12,19 +12,40 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, assessment } = await req.json();
+    const { messages, assessment, mode } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    // Build context from assessment
-    const topicContext = assessment.selectedTopics.join(', ');
-    const symptomContext = assessment.selectedSymptoms.join(', ');
-    const notesContext = assessment.additionalNotes || 'Nenhuma informação adicional';
+    let systemPrompt: string;
 
-    const systemPrompt = `Você é um assistente jurídico especializado em fornecer orientações gerais sobre questões legais em Portugal. 
+    if (mode === 'prediagnostic') {
+      // Pre-diagnostic mode: Act as a diagnostician to help prepare for human consultation
+      systemPrompt = `Você é um assistente de pré-diagnóstico jurídico especializado. Sua função é ajudar o utilizador a organizar e entender sua situação jurídica ANTES da consulta com um especialista humano.
+
+Seu objetivo é:
+1. Fazer perguntas diagnósticas relevantes para entender a situação completa
+2. Identificar as áreas jurídicas envolvidas
+3. Ajudar o utilizador a organizar os fatos e documentos relevantes
+4. Criar um resumo estruturado que será útil para o especialista humano
+5. Preparar uma lista de questões que o utilizador deve fazer ao advogado
+
+IMPORTANTE:
+- Faça perguntas específicas e direcionadas
+- Seja empático e profissional
+- Ajude o utilizador a identificar informações e documentos importantes
+- Não forneça aconselhamento jurídico específico - seu papel é preparatório
+- Ao final, resuma os principais pontos discutidos
+- Mantenha um tom profissional mas acessível`;
+    } else {
+      // Full assessment mode: Provide legal guidance based on assessment
+      const topicContext = assessment?.selectedTopics?.join(', ') || '';
+      const symptomContext = assessment?.selectedSymptoms?.join(', ') || '';
+      const notesContext = assessment?.additionalNotes || 'Nenhuma informação adicional';
+
+      systemPrompt = `Você é um assistente jurídico especializado em fornecer orientações gerais sobre questões legais em Portugal. 
     
 O utilizador forneceu as seguintes informações sobre sua situação:
 
@@ -45,6 +66,7 @@ IMPORTANTE:
 - Seja empático e compreensivo
 - Adapte suas respostas ao contexto fornecido pelo utilizador
 - Mantenha respostas concisas mas informativas`;
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -71,7 +93,7 @@ IMPORTANTE:
     const aiMessage = data.choices[0].message.content;
 
     return new Response(
-      JSON.stringify({ message: aiMessage }),
+      JSON.stringify({ response: aiMessage }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
