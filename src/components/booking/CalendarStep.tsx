@@ -6,31 +6,57 @@ import { ArrowRight } from 'lucide-react';
 interface CalendarStepProps {
   selectedDate: Date | undefined;
   onDateSelect: (date: Date | undefined) => void;
+  selectedTime: string;
+  onTimeSelect: (time: string) => void;
   onNext: () => void;
   pillarName: string;
 }
 
-export default function CalendarStep({ selectedDate, onDateSelect, onNext, pillarName }: CalendarStepProps) {
+const generateTimeSlots = () => {
+  const slots = [];
+  for (let hour = 5; hour <= 18; hour++) {
+    for (let minute of [0, 30]) {
+      if (hour === 18 && minute === 30) break;
+      const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+      slots.push({
+        time,
+        available: Math.random() > 0.3, // Mock availability
+      });
+    }
+  }
+  return slots;
+};
+
+export default function CalendarStep({ 
+  selectedDate, 
+  onDateSelect, 
+  selectedTime,
+  onTimeSelect,
+  onNext, 
+  pillarName 
+}: CalendarStepProps) {
+  const timeSlots = generateTimeSlots();
+
   return (
     <div className="flex flex-col h-full">
-      <div className="text-center mb-8">
-        <h2 className="text-h2 text-foreground mb-2">Escolha uma Data</h2>
-        <p className="text-body text-muted-foreground">Selecione o dia para a sua sessão de {pillarName}</p>
+      <div className="mb-8">
+        <h2 className="text-h2 text-foreground mb-2">Escolha uma Data e Horário</h2>
+        <p className="text-body text-muted-foreground">Selecione o dia e horário para a sua sessão de {pillarName}</p>
       </div>
 
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1">
         <BookingCalendar
-          title="Selecione a data da sua sessão"
-          description={`Agendamento para ${pillarName}`}
-          showBookButton={false}
           selectedDate={selectedDate}
           onDateSelect={onDateSelect}
-          className="max-w-2xl w-full"
+          selectedTime={selectedTime}
+          onTimeSelect={onTimeSelect}
+          timeSlots={timeSlots}
+          showTimeSelection={true}
         />
       </div>
 
-      {selectedDate && (
-        <div className="mt-8 flex justify-center">
+      {selectedDate && selectedTime && (
+        <div className="mt-8 flex justify-end">
           <Button
             onClick={onNext}
             size="lg"

@@ -116,37 +116,20 @@ const BookingFlow = () => {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div>
-                      <h3 className="text-h3 mb-3">Selecionar Data</h3>
+                      <h3 className="text-h3 mb-3">Selecionar Data e Horário</h3>
                       <BookingCalendar
-                        title="Escolha a data da sua sessão"
-                        description={`Agendamento com ${selectedProvider?.name}`}
-                        showBookButton={false}
                         selectedDate={selectedDate || undefined}
                         onDateSelect={(date) => setSelectedDate(date || null)}
+                        selectedTime={selectedTime}
+                        onTimeSelect={(time) => setSelectedTime(time)}
+                        timeSlots={timeSlots.map(time => ({ time, available: true }))}
+                        showTimeSelection={true}
                         className="w-full"
                       />
                     </div>
                     
-                    {selectedDate && (
-                      <div>
-                        <h3 className="font-semibold mb-3">Selecionar Horário</h3>
-                        <div className="grid grid-cols-3 gap-2">
-                          {timeSlots.map((time) => (
-                            <Button
-                              key={time}
-                              variant={selectedTime === time ? "default" : "outline"}
-                              onClick={() => setSelectedTime(time)}
-                              className="text-sm"
-                            >
-                              {time}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
                     {selectedDate && selectedTime && (
-                      <Button onClick={handleDateTimeConfirm} className="w-full">
+                      <Button onClick={handleDateTimeConfirm} className="w-full mt-6">
                         Confirmar Data e Hora
                       </Button>
                     )}
