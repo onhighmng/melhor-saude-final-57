@@ -12,7 +12,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div className="min-h-screen flex w-full bg-background">
         <AdminSidebar />
         <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-12 flex items-center border-b bg-background px-4 md:hidden sticky top-0 z-40">
+          <header className="h-12 flex items-center border-b bg-background px-4 sticky top-0 z-40">
             <SidebarTrigger />
           </header>
           <div className="flex-1 overflow-auto p-6 bg-background">
