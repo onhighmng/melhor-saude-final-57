@@ -12,6 +12,7 @@ import {
   useSidebar,
   SidebarFooter,
   SidebarHeader,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -72,6 +73,9 @@ export function PrestadorSidebar() {
       className="transition-all duration-300"
     >
       <SidebarHeader className="p-4 border-b">
+        <div className="flex items-center justify-between mb-2">
+          <SidebarTrigger />
+        </div>
         {!isCollapsed && (
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">

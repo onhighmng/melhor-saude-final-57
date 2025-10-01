@@ -115,10 +115,10 @@ export const createMenuItems = (
     hasDropdown: false,
     requiresAuth: true,
     onClick: isAuthenticated ? () => {
-      console.log('🎯 Agendamento navigation');
+      console.log('[Menu] Agendamento navigation');
       handleNavigation('/user/book');
     } : () => {
-      console.log('🔒 Agendamento auth redirect');
+      console.log('[Auth] Agendamento auth redirect');
       handleAuthRedirect('agendamento');
     }
   },
@@ -128,10 +128,10 @@ export const createMenuItems = (
     hasDropdown: false,
     requiresAuth: true,
     onClick: isAuthenticated ? () => {
-      console.log('🎯 Minha Saúde navigation');
+      console.log('[Menu] Minha Saúde navigation');
       handleNavigation('/user/dashboard');
     } : () => {
-      console.log('🔒 Minha Saúde auth redirect');
+      console.log('[Auth] Minha Saúde auth redirect');
       handleAuthRedirect('minha-saude');
     }
   }

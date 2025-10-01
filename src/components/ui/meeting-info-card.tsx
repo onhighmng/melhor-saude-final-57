@@ -27,13 +27,13 @@ export function MeetingInfoCard({ session, userRole = 'user' }: MeetingInfoCardP
   const getPlatformIcon = () => {
     switch (session.meetingPlatform) {
       case 'zoom':
-        return '📹';
+        return <Video className="h-4 w-4" />;
       case 'google_meet':
-        return '📱';
+        return <Video className="h-4 w-4" />;
       case 'teams':
-        return '💼';
+        return <Video className="h-4 w-4" />;
       default:
-        return '🎥';
+        return <Video className="h-4 w-4" />;
     }
   };
 
@@ -139,8 +139,9 @@ export function MeetingInfoCard({ session, userRole = 'user' }: MeetingInfoCardP
         )}
 
         {/* System Notes */}
-        <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
-          <p>ℹ️ <strong>Sistema automatizado:</strong> Links são gerados e enviados automaticamente. Não há sessões em grupo - todas as consultas são individuais.</p>
+        <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded flex items-start gap-2">
+          <Clock className="h-3 w-3 flex-shrink-0 mt-0.5" />
+          <p><strong>Sistema automatizado:</strong> Links são gerados e enviados automaticamente. Não há sessões em grupo - todas as consultas são individuais.</p>
         </div>
       </CardContent>
     </Card>

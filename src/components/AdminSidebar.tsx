@@ -13,6 +13,7 @@ import {
   useSidebar,
   SidebarFooter,
   SidebarHeader,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -172,6 +173,9 @@ export function AdminSidebar() {
       collapsible="icon"
     >
       <SidebarHeader className="p-6 border-b">
+        <div className="flex items-center justify-between mb-3">
+          <SidebarTrigger />
+        </div>
         {!isCollapsed && (
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12">
