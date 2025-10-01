@@ -39,7 +39,7 @@ export function ZoomParallax({ images, videoElement }: ZoomParallaxProps) {
 						style={{ scale: scale4 }}
 						className="absolute top-0 flex h-full w-full items-center justify-center"
 					>
-						<div className="relative h-[50vh] w-[60vw]">
+						<div className="relative w-[70vw] aspect-video">
 							{videoElement}
 						</div>
 					</motion.div>
