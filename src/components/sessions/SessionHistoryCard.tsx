@@ -1,10 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Building2, User as UserIcon, ExternalLink } from "lucide-react";
+import { Calendar, Clock, User, Building2, User as UserIcon } from "lucide-react";
 import { Session, getStatusLabel, getPillarLabel, getPayerSourceLabel } from "@/data/sessionMockData";
 import { SessionDeductionBadge } from "./SessionDeductionBadge";
-import { useState, useEffect } from "react";
 
 interface SessionHistoryCardProps {
   session: Session;
@@ -19,29 +18,6 @@ export function SessionHistoryCard({
   onReschedule,
   onCancel 
 }: SessionHistoryCardProps) {
-  const [showMeetingLink, setShowMeetingLink] = useState(false);
-
-  useEffect(() => {
-    const checkMeetingLinkAvailability = () => {
-      if (!session.meetingLink) {
-        setShowMeetingLink(false);
-        return;
-      }
-
-      const sessionDateTime = new Date(`${session.date} ${session.time}`);
-      const now = new Date();
-      const minutesUntilSession = (sessionDateTime.getTime() - now.getTime()) / (1000 * 60);
-
-      // Show link if within 5 minutes before session or if session is in progress/past
-      setShowMeetingLink(minutesUntilSession <= 5);
-    };
-
-    checkMeetingLinkAvailability();
-    const interval = setInterval(checkMeetingLinkAvailability, 30000); // Check every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [session.date, session.time, session.meetingLink]);
-
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('pt-PT', {
       day: '2-digit',
@@ -145,24 +121,6 @@ export function SessionHistoryCard({
                   {session.status === 'no_show' && 'Faltas não consomem sessões da sua quota.'}
                   {session.status === 'rescheduled' && 'Reagendamentos não consomem sessões da sua quota.'}
                 </p>
-              </div>
-            </div>
-          )}
-
-          {/* Meeting Link */}
-          {showMeetingLink && session.meetingLink && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <div className="text-sm text-blue-800">
-                <p className="font-medium mb-2">Link da Reunião Disponível</p>
-                <a 
-                  href={session.meetingLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 underline"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Entrar na reunião {session.meetingPlatform && `(${session.meetingPlatform})`}
-                </a>
               </div>
             </div>
           )}

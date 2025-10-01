@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,13 +8,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { StatusBadge, SessionStatus } from '@/components/ui/status-badge';
 import { PageHeader } from '@/components/ui/page-header';
-import { Calendar, Download, Filter, RefreshCw, ExternalLink, Users, Activity, Clock, Target, Link as LinkIcon } from 'lucide-react';
+import { Calendar, Download, Filter, RefreshCw, ExternalLink, Users, Activity, Clock, Target } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 
 interface SessionData {
   id: string;
@@ -26,9 +23,71 @@ interface SessionData {
   location: 'online' | 'presencial';
   duration: number;
   notes?: string;
-  meeting_link?: string;
-  meeting_platform?: string;
 }
+
+const mockSessions: SessionData[] = [
+  {
+    id: '1',
+    date: '2024-01-20',
+    time: '14:00',
+    userName: 'Maria Silva',
+    pillar: 'psicologica',
+    status: 'completed',
+    location: 'online',
+    duration: 50,
+    notes: 'Sessão de follow-up'
+  },
+  {
+    id: '2',
+    date: '2024-01-20',
+    time: '15:00',
+    userName: 'João Santos',
+    pillar: 'fisica',
+    status: 'confirmed',
+    location: 'presencial',
+    duration: 45
+  },
+  {
+    id: '3',
+    date: '2024-01-19',
+    time: '10:30',
+    userName: 'Ana Costa',
+    pillar: 'financeira',
+    status: 'completed',
+    location: 'online',
+    duration: 60
+  },
+  {
+    id: '4',
+    date: '2024-01-19',
+    time: '16:00',
+    userName: 'Pedro Lima',
+    pillar: 'juridica',
+    status: 'no-show',
+    location: 'online',
+    duration: 50
+  },
+  {
+    id: '5',
+    date: '2024-01-18',
+    time: '09:00',
+    userName: 'Carla Mendes',
+    pillar: 'psicologica',
+    status: 'cancelled',
+    location: 'presencial',
+    duration: 45
+  },
+  {
+    id: '6',
+    date: '2024-01-22',
+    time: '11:00',
+    userName: 'Ricardo Alves',
+    pillar: 'fisica',
+    status: 'scheduled',
+    location: 'online',
+    duration: 50
+  }
+];
 
 const pillarLabels = {
   psicologica: 'Saúde Mental',
@@ -50,126 +109,9 @@ export default function PrestadorSessions() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [pillarFilter, setPillarFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
-  const [sessions, setSessions] = useState<SessionData[]>([]);
-  const [editingSession, setEditingSession] = useState<string | null>(null);
-  const [meetingLink, setMeetingLink] = useState('');
-  const [meetingPlatform, setMeetingPlatform] = useState('');
-
-  useEffect(() => {
-    fetchSessions();
-  }, []);
-
-  const fetchSessions = async () => {
-    try {
-      setIsLoading(true);
-      const { data: userData } = await supabase.auth.getUser();
-      
-      if (!userData.user) return;
-
-      // Find prestador_id from profiles
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', userData.user.id)
-        .single();
-
-      if (!profile) return;
-
-      // Fetch bookings for this prestador
-      const { data: bookings, error } = await supabase
-        .from('bookings')
-        .select(`
-          id,
-          booking_date,
-          notes,
-          status,
-          meeting_link,
-          meeting_platform,
-          user_id
-        `)
-        .eq('prestador_id', profile.id)
-        .order('booking_date', { ascending: false });
-
-      if (error) throw error;
-
-      // Fetch user names separately
-      const userIds = bookings?.map(b => b.user_id).filter(Boolean) || [];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, name')
-        .in('id', userIds);
-
-      const profilesMap = new Map(profiles?.map(p => [p.id, p.name]) || []);
-
-      const formattedSessions: SessionData[] = (bookings || []).map(booking => {
-        const bookingDate = new Date(booking.booking_date);
-        return {
-          id: booking.id,
-          date: bookingDate.toISOString().split('T')[0],
-          time: format(bookingDate, 'HH:mm'),
-          userName: profilesMap.get(booking.user_id) || 'Utilizador',
-          pillar: 'juridica',
-          status: (booking.status as SessionStatus) || 'scheduled',
-          location: 'online',
-          duration: 50,
-          notes: booking.notes || undefined,
-          meeting_link: booking.meeting_link || undefined,
-          meeting_platform: booking.meeting_platform || undefined,
-        };
-      });
-
-      setSessions(formattedSessions);
-    } catch (error) {
-      console.error('Error fetching sessions:', error);
-      toast({
-        title: "Erro ao carregar sessões",
-        description: "Não foi possível carregar as sessões.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSaveMeetingLink = async (sessionId: string) => {
-    try {
-      const { error } = await supabase
-        .from('bookings')
-        .update({
-          meeting_link: meetingLink,
-          meeting_platform: meetingPlatform,
-        })
-        .eq('id', sessionId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Link guardado",
-        description: "O link da reunião foi guardado com sucesso.",
-      });
-
-      setEditingSession(null);
-      setMeetingLink('');
-      setMeetingPlatform('');
-      fetchSessions();
-    } catch (error) {
-      console.error('Error saving meeting link:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível guardar o link.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const openMeetingLinkDialog = (session: SessionData) => {
-    setEditingSession(session.id);
-    setMeetingLink(session.meeting_link || '');
-    setMeetingPlatform(session.meeting_platform || '');
-  };
 
   const filteredSessions = useMemo(() => {
-    return sessions.filter(session => {
+    return mockSessions.filter(session => {
       const sessionDate = new Date(session.date);
       const fromDate = dateFrom ? new Date(dateFrom) : null;
       const toDate = dateTo ? new Date(dateTo) : null;
@@ -181,7 +123,7 @@ export default function PrestadorSessions() {
       
       return true;
     });
-  }, [sessions, dateFrom, dateTo, statusFilter, pillarFilter]);
+  }, [dateFrom, dateTo, statusFilter, pillarFilter]);
 
   const sessionStats = useMemo(() => {
     const completed = filteredSessions.filter(s => s.status === 'completed').length;
@@ -432,7 +374,6 @@ export default function PrestadorSessions() {
                       <TableHead>Estado</TableHead>
                       <TableHead>Local</TableHead>
                       <TableHead>Duração</TableHead>
-                      <TableHead>Link Reunião</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -471,78 +412,16 @@ export default function PrestadorSessions() {
                               {session.duration}min
                             </span>
                           </TableCell>
-                          <TableCell>
-                            {session.meeting_link ? (
-                              <Badge variant="secondary" className="gap-1">
-                                <LinkIcon className="h-3 w-3" />
-                                {session.meeting_platform || 'Link'}
-                              </Badge>
-                            ) : (
-                              <span className="text-sm text-gray-400">Sem link</span>
-                            )}
-                          </TableCell>
                           <TableCell className="text-right">
-                            <div className="flex gap-2 justify-end">
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="gap-1"
-                                    onClick={() => openMeetingLinkDialog(session)}
-                                  >
-                                    <LinkIcon className="h-4 w-4" />
-                                    {session.meeting_link ? 'Editar' : 'Adicionar'} Link
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Link da Reunião</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-4">
-                                    <div className="space-y-2">
-                                      <Label htmlFor="platform">Plataforma</Label>
-                                      <Select value={meetingPlatform} onValueChange={setMeetingPlatform}>
-                                        <SelectTrigger id="platform">
-                                          <SelectValue placeholder="Selecione a plataforma" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="Zoom">Zoom</SelectItem>
-                                          <SelectItem value="Google Meet">Google Meet</SelectItem>
-                                          <SelectItem value="Microsoft Teams">Microsoft Teams</SelectItem>
-                                          <SelectItem value="Outro">Outro</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                      <Label htmlFor="link">Link da Reunião</Label>
-                                      <Input
-                                        id="link"
-                                        type="url"
-                                        placeholder="https://..."
-                                        value={meetingLink}
-                                        onChange={(e) => setMeetingLink(e.target.value)}
-                                      />
-                                    </div>
-                                    <Button 
-                                      onClick={() => handleSaveMeetingLink(session.id)}
-                                      disabled={!meetingLink || !meetingPlatform}
-                                    >
-                                      Guardar Link
-                                    </Button>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="gap-1"
-                                onClick={() => navigate(`/prestador/sessoes/${session.id}`)}
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                                Detalhes
-                              </Button>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="gap-1"
+                              onClick={() => navigate(`/prestador/sessoes/${session.id}`)}
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                              Detalhes
+                            </Button>
                           </TableCell>
                         </TableRow>
                       );
