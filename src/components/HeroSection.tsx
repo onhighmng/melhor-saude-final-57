@@ -4,6 +4,8 @@ import heroBrain from '@/assets/hero-brain.jpg';
 import heroCalculator from '@/assets/hero-calculator.jpg';
 import heroFitness from '@/assets/hero-fitness.jpg';
 import heroBalance from '@/assets/hero-balance.png';
+import heroNeural from '@/assets/hero-neural.jpg';
+import heroPlanning from '@/assets/hero-planning.jpg';
 
 const HeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -42,12 +44,12 @@ const HeroSection = () => {
       alt: 'Equilíbrio',
     },
     {
-      src: '/lovable-uploads/9d0fb76e-9ffa-46c8-a40d-dcc3396e7d51.png',
-      alt: 'Melhor Saúde',
+      src: heroNeural,
+      alt: 'Conexões Neurais',
     },
     {
-      src: heroFitness,
-      alt: 'Atividade Física',
+      src: heroPlanning,
+      alt: 'Planeamento',
     },
   ];
 
