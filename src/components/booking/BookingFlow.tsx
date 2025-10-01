@@ -4,7 +4,7 @@ import PillarSelection from './PillarSelection';
 import { mockProviders } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
+import { BookingCalendar } from '@/components/ui/booking-calendar';
 import { useToast } from '@/hooks/use-toast';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
@@ -116,13 +116,14 @@ const BookingFlow = () => {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div>
-                      <h3 className="font-semibold mb-3">Selecionar Data</h3>
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        disabled={(date) => date < new Date()}
-                        className="rounded-md border"
+                      <h3 className="text-h3 mb-3">Selecionar Data</h3>
+                      <BookingCalendar
+                        title="Escolha a data da sua sessão"
+                        description={`Agendamento com ${selectedProvider?.name}`}
+                        showBookButton={false}
+                        selectedDate={selectedDate || undefined}
+                        onDateSelect={(date) => setSelectedDate(date || null)}
+                        className="w-full"
                       />
                     </div>
                     
