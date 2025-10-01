@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
 import { useToast } from '@/hooks/use-toast';
+import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -23,7 +24,7 @@ interface MockProvider {
 const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'pillar' | 'datetime' | 'confirmation'>('pillar');
+  const [currentStep, setCurrentStep] = useState<'pillar' | 'assessment' | 'datetime' | 'confirmation'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -35,7 +36,15 @@ const BookingFlow = () => {
   ];
 
   const handlePillarSelect = (pillar: BookingPillar) => {
-    // Round-robin assignment logic using mock data
+    setSelectedPillar(pillar);
+    
+    // If juridica pillar, go to assessment flow
+    if (pillar === 'juridica') {
+      setCurrentStep('assessment');
+      return;
+    }
+    
+    // For other pillars, assign provider and go to datetime
     const pillarMapping = {
       'psicologica': 'saude_mental',
       'fisica': 'bem_estar_fisico', 
@@ -49,9 +58,7 @@ const BookingFlow = () => {
     );
 
     if (availableProviders.length > 0) {
-      // Simple round-robin: use index 0 for now (in real app, this would be stored/tracked)
       const assignedProvider = availableProviders[0];
-      setSelectedPillar(pillar);
       setSelectedProvider(assignedProvider);
       setCurrentStep('datetime');
       
@@ -96,6 +103,14 @@ const BookingFlow = () => {
     switch (currentStep) {
       case 'pillar':
         return <PillarSelection onPillarSelect={handlePillarSelect} />;
+      
+      case 'assessment':
+        return (
+          <LegalAssessmentFlow 
+            onBack={() => setCurrentStep('pillar')}
+            onComplete={() => navigate('/user/dashboard')}
+          />
+        );
       
       case 'datetime':
         return (
