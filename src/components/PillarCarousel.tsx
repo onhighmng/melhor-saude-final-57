@@ -111,7 +111,7 @@ const PillarCarousel = () => {
   return (
     <section 
       ref={sectionRef}
-      className={`relative z-10 bg-gradient-to-b from-white to-gray-50 py-20 transition-all duration-1000 ${
+      className={`relative z-10 bg-gradient-to-b from-white to-gray-50 pt-28 pb-20 scroll-mt-24 transition-all duration-1000 ${
         isSectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}
     >

@@ -97,7 +97,7 @@ const MainGuidesSection: React.FC = () => {
   }, [isInView]);
   
   return (
-    <section ref={sectionRef} className="relative w-full aspect-video sm:h-screen bg-white py-8 sm:py-12 overflow-hidden">
+    <section ref={sectionRef} className="relative w-full aspect-video sm:h-screen bg-white pt-28 pb-8 sm:pb-12 scroll-mt-24 overflow-hidden">
       <div className="h-full flex items-center justify-center">
         <div className="w-full px-4 sm:px-8 lg:px-12 max-w-6xl mx-auto">
           <div className="w-full max-w-5xl mx-auto">
