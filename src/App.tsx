@@ -88,14 +88,16 @@ const AppWithTracking = () => {
           {/* Static pages */}
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />
-          <Route path="/help" element={<HelpCenter />} />
           
           {/* User routes */}
           <Route path="/user/dashboard" element={<UserLayout><UserSessions /></UserLayout>} />
           <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
           <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
           <Route path="/user/book" element={<UserLayout><BookingFlow /></UserLayout>} />
-          <Route path="/user/help" element={<HelpCenter />} />
+          <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />
+          
+          {/* Public help center */}
+          <Route path="/help" element={<HelpCenter />} />
           
           {/* Prestador routes */}
           <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
