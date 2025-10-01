@@ -132,6 +132,26 @@ export const mockProviders = [
 ];
 
 export const mockBookings = [
+  // Session starting in 2 minutes - Link should be visible NOW
+  {
+    id: 'book-now',
+    provider_name: 'Dra. Ana Silva',
+    provider_avatar: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png',
+    pillar: 'saude_mental',
+    date: new Date().toISOString().split('T')[0],
+    time: `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes() + 2).padStart(2, '0')}`,
+    status: 'confirmed',
+    session_type: 'individual',
+    notes: 'Sessão de terapia - Link disponível agora',
+    booking_date: new Date().toISOString(),
+    meeting_link: 'https://meet.google.com/live-session-now',
+    meeting_platform: 'Google Meet',
+    prestadores: {
+      name: 'Dra. Ana Silva',
+      pillar: 'saude_mental',
+      avatar_url: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png'
+    }
+  },
   // Upcoming confirmed session - Today
   {
     id: 'book-today',
