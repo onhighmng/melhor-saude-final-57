@@ -91,9 +91,11 @@ const AppWithTracking = () => {
           <Route path="/help" element={<HelpCenter />} />
           
           {/* User routes */}
+          <Route path="/user/dashboard" element={<UserLayout><UserSessions /></UserLayout>} />
           <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
           <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
           <Route path="/user/book" element={<UserLayout><BookingFlow /></UserLayout>} />
+          <Route path="/user/help" element={<HelpCenter />} />
           
           {/* Prestador routes */}
           <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
@@ -104,18 +106,25 @@ const AppWithTracking = () => {
           <Route path="/prestador/profile" element={<PrestadorLayout><PrestadorProfile /></PrestadorLayout>} />
           
           {/* Admin routes */}
+          <Route path="/admin/dashboard" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
+          <Route path="/admin/usuarios" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/users/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
           <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
+          <Route path="/admin/prestadores" element={<AdminLayout><AdminProviders /></AdminLayout>} />
           <Route path="/admin/providers/new" element={<AdminLayout><AdminProviderNew /></AdminLayout>} />
           <Route path="/admin/providers/:id" element={<AdminLayout><AdminProviderDetail /></AdminLayout>} />
           <Route path="/admin/providers/change-requests" element={<AdminLayout><AdminProviderChangeRequests /></AdminLayout>} />
           <Route path="/admin/sessions" element={<AdminLayout><AdminSessions /></AdminLayout>} />
+          <Route path="/admin/sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/matching" element={<AdminLayout><AdminMatching /></AdminLayout>} />
           <Route path="/admin/company-invites" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
+          <Route path="/admin/companies" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
+          <Route path="/admin/agendamentos" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/logs" element={<AdminLayout><AdminLogs /></AdminLayout>} />
           <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
           <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
+          <Route path="/admin/configuracoes" element={<AdminLayout><AdminSettings /></AdminLayout>} />
           
           {/* Company HR routes */}
           <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />

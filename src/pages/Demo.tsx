@@ -52,7 +52,7 @@ const Demo = () => {
       dashboardPath: '/prestador/dashboard',
       quickLinks: [
         { label: 'Dashboard', path: '/prestador/dashboard', icon: BarChart3 },
-        { label: 'Sessões', path: '/prestador/sessions', icon: Calendar },
+        { label: 'Sessões', path: '/prestador/sessoes', icon: Calendar },
         { label: 'Disponibilidade', path: '/prestador/availability', icon: Settings },
         { label: 'Perfil', path: '/prestador/profile', icon: User }
       ],
