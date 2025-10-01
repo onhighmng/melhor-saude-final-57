@@ -214,6 +214,13 @@ const AdminUserDetail = () => {
     }
   };
 
+  const handleEditProfile = () => {
+    toast({
+      title: "Editar Perfil",
+      description: "Funcionalidade de edição será implementada em breve."
+    });
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
@@ -311,7 +318,7 @@ const AdminUserDetail = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleEditProfile}>
               <Edit className="h-4 w-4 mr-2" />
               Editar Perfil
             </Button>

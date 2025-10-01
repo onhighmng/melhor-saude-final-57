@@ -180,6 +180,13 @@ const AdminProviderDetail = () => {
     }
   };
 
+  const handleEdit = () => {
+    toast({
+      title: "Editar Prestador",
+      description: "Funcionalidade de edição será implementada em breve."
+    });
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
@@ -297,7 +304,7 @@ const AdminProviderDetail = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleEdit}>
               <Edit className="w-4 h-4 mr-2" />
               Editar
             </Button>
