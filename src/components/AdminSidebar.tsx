@@ -77,8 +77,8 @@ const groupedItems = {
     title: "Monitorização",
     icon: Shield,
     items: [
-      { title: "Emails", url: "/admin/emails", icon: Mail, badge: "emailsFailed" },
-      { title: "Pedidos de troca", url: "/admin/provider-change-requests", icon: Shuffle, badge: "pendingRequests" },
+      { title: "Suporte", url: "/admin/support", icon: Mail, badge: "emailsFailed" },
+      { title: "Pedidos de troca", url: "/admin/providers/change-requests", icon: Shuffle, badge: "pendingRequests" },
       { title: "Logs", url: "/admin/logs", icon: FileSearch, badge: "logAlerts" },
     ] as MenuItem[]
   }

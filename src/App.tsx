@@ -120,10 +120,13 @@ const AppWithTracking = () => {
           <Route path="/admin/dashboard" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
           <Route path="/admin/usuarios" element={<AdminLayout><AdminUsers /></AdminLayout>} />
+          <Route path="/admin/usuarios/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
           <Route path="/admin/users/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
           <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
           <Route path="/admin/prestadores" element={<AdminLayout><AdminProviders /></AdminLayout>} />
           <Route path="/admin/providers/new" element={<AdminLayout><AdminProviderNew /></AdminLayout>} />
+          <Route path="/admin/prestadores/novo" element={<AdminLayout><AdminProviderNew /></AdminLayout>} />
+          <Route path="/admin/prestadores/:id" element={<AdminLayout><AdminProviderDetail /></AdminLayout>} />
           <Route path="/admin/providers/:id" element={<AdminLayout><AdminProviderDetail /></AdminLayout>} />
           <Route path="/admin/providers/change-requests" element={<AdminLayout><AdminProviderChangeRequests /></AdminLayout>} />
           <Route path="/admin/sessions" element={<AdminLayout><AdminSessions /></AdminLayout>} />
