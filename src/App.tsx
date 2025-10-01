@@ -29,6 +29,7 @@ const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
 // Removed deleted pages for demo
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const CompanyInvites = lazy(() => import("./pages/CompanyInvites"));
+const AdminCompanies = lazy(() => import("./pages/AdminCompanies"));
 const AdminCompanyInvites = lazy(() => import("./pages/AdminCompanyInvites"));
 const AdminUserDetail = lazy(() => import("./pages/AdminUserDetail"));
 const AdminProviders = lazy(() => import("./pages/AdminProviders"));
@@ -132,8 +133,8 @@ const AppWithTracking = () => {
           <Route path="/admin/sessions" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/matching" element={<AdminLayout><AdminMatching /></AdminLayout>} />
-          <Route path="/admin/company-invites" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
-          <Route path="/admin/companies" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
+          <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
+          <Route path="/admin/companies/:id" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
           <Route path="/admin/agendamentos" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/logs" element={<AdminLayout><AdminLogs /></AdminLayout>} />
           <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
