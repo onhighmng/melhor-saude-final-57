@@ -109,6 +109,37 @@ const BookingFlow = () => {
           <LegalAssessmentFlow 
             onBack={() => setCurrentStep('pillar')}
             onComplete={() => navigate('/user/dashboard')}
+            onChooseHuman={() => {
+              // Assign a legal provider and go to datetime selection
+              const pillarMapping = {
+                'psicologica': 'saude_mental',
+                'fisica': 'bem_estar_fisico', 
+                'financeira': 'assistencia_financeira',
+                'juridica': 'assistencia_juridica'
+              };
+
+              const mappedPillar = pillarMapping['juridica'];
+              const availableProviders = mockProviders.filter(provider => 
+                provider.pillar === mappedPillar
+              );
+
+              if (availableProviders.length > 0) {
+                const assignedProvider = availableProviders[0];
+                setSelectedProvider(assignedProvider);
+                setCurrentStep('datetime');
+                
+                toast({
+                  title: "Prestador Atribuído",
+                  description: `Foi atribuído: ${assignedProvider.name} - ${assignedProvider.specialty}`,
+                });
+              } else {
+                toast({
+                  title: "Erro", 
+                  description: "Nenhum prestador disponível para este pilar no momento.",
+                  variant: "destructive"
+                });
+              }
+            }}
           />
         );
       

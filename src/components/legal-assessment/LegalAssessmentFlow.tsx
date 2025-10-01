@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import TopicSelection from './TopicSelection';
+import SpecialistChoice from './SpecialistChoice';
 import SymptomSelection from './SymptomSelection';
 import AssessmentResult from './AssessmentResult';
 import LegalChatInterface from './LegalChatInterface';
 import { LegalAssessment } from '@/types/legalAssessment';
 
-type Step = 'topics' | 'symptoms' | 'result' | 'chat';
+type Step = 'topics' | 'specialist-choice' | 'symptoms' | 'result' | 'chat';
 
 interface LegalAssessmentFlowProps {
   onBack: () => void;
   onComplete: () => void;
+  onChooseHuman: () => void;
 }
 
 const LegalAssessmentFlow: React.FC<LegalAssessmentFlowProps> = ({
   onBack,
-  onComplete
+  onComplete,
+  onChooseHuman
 }) => {
   const [step, setStep] = useState<Step>('topics');
   const [assessment, setAssessment] = useState<LegalAssessment>({
@@ -52,8 +55,17 @@ const LegalAssessmentFlow: React.FC<LegalAssessmentFlowProps> = ({
           <TopicSelection
             selectedTopics={assessment.selectedTopics}
             onTopicToggle={handleTopicToggle}
-            onNext={() => setStep('symptoms')}
+            onNext={() => setStep('specialist-choice')}
             onBack={onBack}
+          />
+        );
+      
+      case 'specialist-choice':
+        return (
+          <SpecialistChoice
+            onChooseAI={() => setStep('symptoms')}
+            onChooseHuman={onChooseHuman}
+            onBack={() => setStep('topics')}
           />
         );
       
@@ -66,7 +78,7 @@ const LegalAssessmentFlow: React.FC<LegalAssessmentFlowProps> = ({
             additionalNotes={assessment.additionalNotes || ''}
             onNotesChange={handleNotesChange}
             onNext={() => setStep('result')}
-            onBack={() => setStep('topics')}
+            onBack={() => setStep('specialist-choice')}
           />
         );
       
