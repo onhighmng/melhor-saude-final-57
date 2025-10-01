@@ -117,7 +117,7 @@ const PillarCarousel = () => {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 pt-4">
           <h2 className="text-4xl font-bold text-navy-blue mb-4">
             Nossos Pilares em Ação
           </h2>
