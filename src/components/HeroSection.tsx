@@ -64,8 +64,7 @@ const HeroSection = () => {
       controls={false}
       preload="metadata"
     >
-      <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Platform%20Ms(1).webm" type="video/webm" />
-      <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.mp4" type="video/mp4" />
+      <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Ms%20Hero%20Section%20Updated.mp4" type="video/mp4" />
     </video>
   );
 
