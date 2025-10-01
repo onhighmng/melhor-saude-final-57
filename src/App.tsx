@@ -5,10 +5,8 @@ import { SkipLink } from "@/components/ui/accessibility";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { MusicProvider } from "@/contexts/MusicContext";
 
 import ScrollIndicator from "@/components/ScrollIndicator";
-import MusicPlayer from "@/components/MusicPlayer";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import DemoControlPanel from "@/components/DemoControlPanel";
 import { usePageTracking } from "@/hooks/usePageTracking";
@@ -112,17 +110,14 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
-          <MusicProvider>
-            <SkipLink />
-            <Toaster />
-            <Sonner />
-            <AppWithTracking />
-            <ScrollIndicator />
-            <MusicPlayer />
-            <PWAInstallPrompt />
-            <DemoControlPanel />
-            <PerformanceMonitor />
-          </MusicProvider>
+          <SkipLink />
+          <Toaster />
+          <Sonner />
+          <AppWithTracking />
+          <ScrollIndicator />
+          <PWAInstallPrompt />
+          <DemoControlPanel />
+          <PerformanceMonitor />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
