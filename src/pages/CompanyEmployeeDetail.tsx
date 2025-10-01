@@ -175,12 +175,33 @@ const CompanyEmployeeDetail = () => {
   };
 
   const handleExportHistory = () => {
-    // In a real app, this would generate and download CSV/PDF
-    console.log("Exporting history for employee:", id);
+    const csvData = employee.sessionHistory.map(session => ({
+      Data: session.date,
+      Prestador: session.provider,
+      Pilar: session.pillar,
+      Estado: session.status === 'completed' ? 'Concluída' : 
+              session.status === 'cancelled' ? 'Cancelada' : 
+              session.status === 'no_show' ? 'Falta' : 'Agendada',
+      Tipo: session.type === 'company' ? 'Empresa' : 'Pessoal'
+    }));
+
+    const csvContent = [
+      Object.keys(csvData[0]).join(','),
+      ...csvData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `historico_${employee.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
     
     toast({
       title: "Histórico exportado",
-      description: "Ficheiro CSV foi descarregado com sucesso.",
+      description: `${csvData.length} sessões exportadas com sucesso.`,
     });
   };
 
