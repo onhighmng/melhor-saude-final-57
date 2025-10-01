@@ -44,6 +44,59 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          booking_date: string
+          created_at: string | null
+          id: string
+          meeting_link: string | null
+          meeting_platform: string | null
+          notes: string | null
+          pillar_specialties: string[] | null
+          prestador_id: string | null
+          session_type: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          created_at?: string | null
+          id?: string
+          meeting_link?: string | null
+          meeting_platform?: string | null
+          notes?: string | null
+          pillar_specialties?: string[] | null
+          prestador_id?: string | null
+          session_type?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          created_at?: string | null
+          id?: string
+          meeting_link?: string | null
+          meeting_platform?: string | null
+          notes?: string | null
+          pillar_specialties?: string[] | null
+          prestador_id?: string | null
+          session_type?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       change_requests: {
         Row: {
           created_at: string | null
@@ -166,6 +219,33 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          category: string | null
+          comment: string | null
+          created_at: string | null
+          id: string
+          rating: number | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       prestadores: {
         Row: {
           biography: string | null
@@ -176,6 +256,8 @@ export type Database = {
           languages: string[] | null
           name: string
           photo_url: string | null
+          pillar_specialties: string[] | null
+          session_duration: number | null
           specialties: string[] | null
           updated_at: string | null
           user_id: string | null
@@ -190,6 +272,8 @@ export type Database = {
           languages?: string[] | null
           name: string
           photo_url?: string | null
+          pillar_specialties?: string[] | null
+          session_duration?: number | null
           specialties?: string[] | null
           updated_at?: string | null
           user_id?: string | null
@@ -204,6 +288,8 @@ export type Database = {
           languages?: string[] | null
           name?: string
           photo_url?: string | null
+          pillar_specialties?: string[] | null
+          session_duration?: number | null
           specialties?: string[] | null
           updated_at?: string | null
           user_id?: string | null
