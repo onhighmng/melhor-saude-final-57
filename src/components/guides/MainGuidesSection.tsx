@@ -114,8 +114,8 @@ const MainGuidesSection: React.FC = () => {
                     : 'scale-75 opacity-60 shadow-lg'
                 } ${isInView ? 'ring-2 ring-primary/20' : ''}`}
               >
-                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Platform%20Ms(1).webm" type="video/webm" />
-                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.mp4" type="video/mp4" />
+                <source src="/Loreno Melhor Saude.webm" type="video/webm" />
+                <source src="/Loreno Melhor Saude.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>

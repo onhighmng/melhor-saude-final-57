@@ -66,8 +66,8 @@ const HeroSection = () => {
           objectPosition: 'center center',
         }}
       >
-        <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Platform%20Ms(1).webm" type="video/webm" />
-        <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.mp4" type="video/mp4" />
+        <source src="/Platform Ms(1).webm" type="video/webm" />
+        <source src="/Loreno Melhor Saude.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
