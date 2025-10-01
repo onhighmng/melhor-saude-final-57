@@ -24,7 +24,7 @@ interface MockProvider {
 const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'pillar' | 'assessment' | 'datetime' | 'confirmation'>('pillar');
+  const [currentStep, setCurrentStep] = useState<'pillar' | 'assessment' | 'datetime' | 'confirmation' | 'legal-cta'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -38,13 +38,7 @@ const BookingFlow = () => {
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
     
-    // If juridica pillar, go to assessment flow
-    if (pillar === 'juridica') {
-      setCurrentStep('assessment');
-      return;
-    }
-    
-    // For other pillars, assign provider and go to datetime
+    // For all pillars (including juridica), assign provider and go to datetime
     const pillarMapping = {
       'psicologica': 'saude_mental',
       'fisica': 'bem_estar_fisico', 
@@ -93,10 +87,17 @@ const BookingFlow = () => {
       description: `Sua sessão com ${selectedProvider?.name} foi agendada para ${selectedDate?.toLocaleDateString()} às ${selectedTime}`,
     });
     
-    // Navigate back to dashboard after booking
-    setTimeout(() => {
-      navigate('/user/dashboard');
-    }, 2000);
+    // If juridica pillar, show CTA for pre-diagnostic
+    if (selectedPillar === 'juridica') {
+      setTimeout(() => {
+        setCurrentStep('legal-cta');
+      }, 1500);
+    } else {
+      // Navigate back to dashboard after booking
+      setTimeout(() => {
+        navigate('/user/dashboard');
+      }, 2000);
+    }
   };
 
   const renderCurrentStep = () => {
@@ -107,40 +108,68 @@ const BookingFlow = () => {
       case 'assessment':
         return (
           <LegalAssessmentFlow 
-            onBack={() => setCurrentStep('pillar')}
+            onBack={() => setCurrentStep('legal-cta')}
             onComplete={() => navigate('/user/dashboard')}
-            onChooseHuman={() => {
-              // Assign a legal provider and go to datetime selection
-              const pillarMapping = {
-                'psicologica': 'saude_mental',
-                'fisica': 'bem_estar_fisico', 
-                'financeira': 'assistencia_financeira',
-                'juridica': 'assistencia_juridica'
-              };
-
-              const mappedPillar = pillarMapping['juridica'];
-              const availableProviders = mockProviders.filter(provider => 
-                provider.pillar === mappedPillar
-              );
-
-              if (availableProviders.length > 0) {
-                const assignedProvider = availableProviders[0];
-                setSelectedProvider(assignedProvider);
-                setCurrentStep('datetime');
-                
-                toast({
-                  title: "Prestador Atribuído",
-                  description: `Foi atribuído: ${assignedProvider.name} - ${assignedProvider.specialty}`,
-                });
-              } else {
-                toast({
-                  title: "Erro", 
-                  description: "Nenhum prestador disponível para este pilar no momento.",
-                  variant: "destructive"
-                });
-              }
-            }}
+            onChooseHuman={() => navigate('/user/dashboard')}
           />
+        );
+      
+      case 'legal-cta':
+        return (
+          <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center px-4">
+            <Card className="max-w-2xl w-full">
+              <CardHeader className="text-center space-y-4">
+                <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <CardTitle className="text-2xl">Sessão Agendada com Sucesso!</CardTitle>
+                <p className="text-muted-foreground">
+                  Sua consulta jurídica está confirmada para {selectedDate?.toLocaleDateString()} às {selectedTime}
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 space-y-3">
+                  <h3 className="font-semibold text-lg">Ajude o especialista a preparar sua consulta</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Faça um pré-diagnóstico com nossa IA. Isso ajudará o especialista humano a entender melhor 
+                    seu caso e preparar uma consulta mais eficaz quando chegar o momento da sessão.
+                  </p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">✓</span>
+                      <span>Identifique rapidamente as áreas jurídicas relevantes</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">✓</span>
+                      <span>Organize suas questões e preocupações</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5">✓</span>
+                      <span>Receba orientações preliminares instantaneamente</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => navigate('/user/dashboard')}
+                    className="flex-1"
+                  >
+                    Pular por Agora
+                  </Button>
+                  <Button 
+                    onClick={() => setCurrentStep('assessment')}
+                    className="flex-1"
+                  >
+                    Fazer Pré-Diagnóstico
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         );
       
       case 'datetime':
