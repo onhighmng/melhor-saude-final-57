@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser } from '@/data/mockData';
 import { 
   User, 
@@ -14,14 +14,23 @@ import {
   Settings,
   ChevronUp,
   ChevronDown,
-  Play
+  Play,
+  Minimize2,
+  Maximize2,
+  GripVertical
 } from 'lucide-react';
 
 const DemoControlPanel = () => {
   const { profile, login, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [position, setPosition] = useState({ x: 16, y: window.innerHeight - 200 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const demoUsers = [
     { ...mockUser, title: 'Utilizador', icon: User, role: 'user' as const, color: 'bg-blue-500' },
@@ -65,32 +74,107 @@ const DemoControlPanel = () => {
     }
   };
 
+  // Reset position on page change
+  useEffect(() => {
+    setPosition({ x: 16, y: window.innerHeight - 200 });
+    setIsExpanded(false);
+  }, [location.pathname]);
+
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      
+      const newX = e.clientX - dragOffset.x;
+      const newY = e.clientY - dragOffset.y;
+      
+      // Keep within viewport bounds
+      const maxX = window.innerWidth - (panelRef.current?.offsetWidth || 200);
+      const maxY = window.innerHeight - (panelRef.current?.offsetHeight || 100);
+      
+      setPosition({
+        x: Math.max(0, Math.min(newX, maxX)),
+        y: Math.max(0, Math.min(newY, maxY))
+      });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
+
   // Don't show on demo page itself
   if (window.location.pathname === '/demo') return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-50">
+    <div 
+      ref={panelRef}
+      className="fixed z-50 transition-opacity"
+      style={{ 
+        left: `${position.x}px`, 
+        top: `${position.y}px`,
+        cursor: isDragging ? 'grabbing' : 'grab'
+      }}
+    >
       <Card className="bg-card/95 backdrop-blur-sm border shadow-lg">
-        <CardContent className="p-3">
+        <CardContent className="p-3" onMouseDown={handleMouseDown}>
           {/* Header with current user info */}
-          <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="flex items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-primary/20 rounded-full">
-                <Play className="h-3 w-3 text-primary" />
-              </div>
-              <span className="text-xs font-medium text-primary">Demo</span>
+              <GripVertical className="h-3 w-3 text-muted-foreground cursor-grab" />
+              {!isMinimized && (
+                <>
+                  <div className="p-1.5 bg-primary/20 rounded-full">
+                    <Play className="h-3 w-3 text-primary" />
+                  </div>
+                  <span className="text-xs font-medium text-primary">Demo</span>
+                </>
+              )}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="h-6 w-6 p-0"
-            >
-              {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMinimized(!isMinimized)}
+                className="h-6 w-6 p-0"
+                title={isMinimized ? "Maximizar" : "Minimizar"}
+              >
+                {isMinimized ? <Maximize2 className="h-3 w-3" /> : <Minimize2 className="h-3 w-3" />}
+              </Button>
+              {!isMinimized && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="h-6 w-6 p-0"
+                  title={isExpanded ? "Recolher" : "Expandir"}
+                >
+                  {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
+                </Button>
+              )}
+            </div>
           </div>
 
-          {profile && (
+          {!isMinimized && profile && (
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="secondary" className="text-xs">
                 {demoUsers.find(u => u.role === profile.role)?.title}
@@ -101,7 +185,7 @@ const DemoControlPanel = () => {
             </div>
           )}
 
-          {isExpanded && (
+          {!isMinimized && isExpanded && (
             <div className="space-y-2 pt-2 border-t">
               {/* Quick actions */}
               <div className="flex gap-1">
