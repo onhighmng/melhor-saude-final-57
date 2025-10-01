@@ -4,14 +4,37 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockSessions, mockUserBalance } from "@/data/sessionMockData";
+import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/sessionMockData";
+import { mockBookings } from "@/data/mockData";
 import { QuotaDisplayCard } from "@/components/sessions/QuotaDisplayCard";
 import { SessionHistoryCard } from "@/components/sessions/SessionHistoryCard";
 
 export default function UserSessions() {
   const navigate = useNavigate();
-  const [sessions] = useState(mockSessions);
   const [userBalance] = useState(mockUserBalance);
+  
+  // Convert mockBookings to Session format
+  const [sessions] = useState<Session[]>(
+    mockBookings.map(booking => ({
+      id: booking.id,
+      userId: 'user123',
+      prestadorId: 'prest123',
+      date: booking.date,
+      time: booking.time,
+      prestadorName: booking.provider_name,
+      pillar: booking.pillar as 'saude_mental' | 'assistencia_juridica' | 'assistencia_financeira' | 'bem_estar_fisico',
+      status: booking.status as SessionStatus,
+      minutes: 60,
+      wasDeducted: booking.status === 'completed',
+      payerSource: 'company' as const,
+      deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
+      createdAt: booking.booking_date,
+      updatedAt: booking.booking_date,
+      sessionType: 'individual' as const,
+      meetingPlatform: (booking.meeting_platform?.includes('Zoom') ? 'zoom' : booking.meeting_platform?.includes('Teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
+      meetingLink: booking.meeting_link
+    }))
+  );
 
   const handleViewDetails = (sessionId: string) => {
     console.log('View details for session:', sessionId);

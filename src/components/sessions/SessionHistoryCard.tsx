@@ -1,9 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Building2, User as UserIcon } from "lucide-react";
+import { Calendar, Clock, User, Building2, User as UserIcon, ExternalLink } from "lucide-react";
 import { Session, getStatusLabel, getPillarLabel, getPayerSourceLabel } from "@/data/sessionMockData";
 import { SessionDeductionBadge } from "./SessionDeductionBadge";
+import { useState, useEffect } from "react";
 
 interface SessionHistoryCardProps {
   session: Session;
@@ -18,6 +19,32 @@ export function SessionHistoryCard({
   onReschedule,
   onCancel 
 }: SessionHistoryCardProps) {
+  const [showMeetingLink, setShowMeetingLink] = useState(false);
+
+  useEffect(() => {
+    const checkMeetingLinkAvailability = () => {
+      const sessionDateTime = new Date(`${session.date}T${session.time}`);
+      const now = new Date();
+      const fiveMinutesBefore = new Date(sessionDateTime.getTime() - 5 * 60 * 1000);
+      
+      setShowMeetingLink(now >= fiveMinutesBefore && now <= sessionDateTime);
+    };
+
+    checkMeetingLinkAvailability();
+    const interval = setInterval(checkMeetingLinkAvailability, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [session.date, session.time]);
+
+  const getMeetingPlatformDisplay = (platform: 'zoom' | 'google_meet' | 'teams') => {
+    const platformMap = {
+      'zoom': 'Zoom',
+      'google_meet': 'Google Meet',
+      'teams': 'Microsoft Teams'
+    };
+    return platformMap[platform];
+  };
+
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('pt-PT', {
       day: '2-digit',
@@ -121,6 +148,26 @@ export function SessionHistoryCard({
                   {session.status === 'no_show' && 'Faltas não consomem sessões da sua quota.'}
                   {session.status === 'rescheduled' && 'Reagendamentos não consomem sessões da sua quota.'}
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* Meeting Link - Only show 5 minutes before session */}
+          {showMeetingLink && session.meetingLink && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-blue-800">Link da Reunião Disponível</p>
+                  <p className="text-xs text-blue-600">{getMeetingPlatformDisplay(session.meetingPlatform)}</p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => window.open(session.meetingLink, '_blank')}
+                  className="gap-2"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Entrar na Reunião
+                </Button>
               </div>
             </div>
           )}

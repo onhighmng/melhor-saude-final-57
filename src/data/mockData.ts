@@ -144,6 +144,8 @@ export const mockBookings = [
     session_type: 'individual',
     notes: 'Sessão de acompanhamento psicológico',
     booking_date: new Date().toISOString(),
+    meeting_link: 'https://meet.google.com/abc-defg-hij',
+    meeting_platform: 'Google Meet',
     prestadores: {
       name: 'Dra. Ana Silva',
       pillar: 'saude_mental',
@@ -162,6 +164,8 @@ export const mockBookings = [
     session_type: 'individual',
     notes: 'Consulta nutricional e plano de exercícios',
     booking_date: new Date(Date.now() + 24*60*60*1000).toISOString(),
+    meeting_link: 'https://zoom.us/j/123456789',
+    meeting_platform: 'Zoom',
     prestadores: {
       name: 'Dr. Carlos Santos',
       pillar: 'bem_estar_fisico',
@@ -180,6 +184,8 @@ export const mockBookings = [
     session_type: 'individual',
     notes: 'Planejamento financeiro pessoal',
     booking_date: new Date(Date.now() + 3*24*60*60*1000).toISOString(),
+    meeting_link: '',
+    meeting_platform: '',
     prestadores: {
       name: 'Dra. Maria Costa',
       pillar: 'assistencia_financeira',
@@ -198,6 +204,8 @@ export const mockBookings = [
     session_type: 'individual',
     notes: 'Gestão de stress no trabalho',
     booking_date: new Date(Date.now() - 7*24*60*60*1000).toISOString(),
+    meeting_link: 'https://meet.google.com/past-session',
+    meeting_platform: 'Google Meet',
     prestadores: {
       name: 'Dra. Ana Silva',
       pillar: 'saude_mental',

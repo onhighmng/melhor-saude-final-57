@@ -8,92 +8,33 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { StatusBadge, SessionStatus } from '@/components/ui/status-badge';
 import { PageHeader } from '@/components/ui/page-header';
-import { Calendar, Download, Filter, RefreshCw, ExternalLink, Users, Activity, Clock, Target } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Calendar, Download, Filter, RefreshCw, ExternalLink, Users, Activity, Clock, Target, Link as LinkIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
+import { mockBookings } from '@/data/mockData';
 
 interface SessionData {
   id: string;
   date: string;
   time: string;
   userName: string;
-  pillar: 'psicologica' | 'juridica' | 'financeira' | 'fisica';
+  pillar: 'saude_mental' | 'assistencia_juridica' | 'assistencia_financeira' | 'bem_estar_fisico';
   status: SessionStatus;
   location: 'online' | 'presencial';
   duration: number;
   notes?: string;
+  meeting_link?: string;
+  meeting_platform?: string;
 }
 
-const mockSessions: SessionData[] = [
-  {
-    id: '1',
-    date: '2024-01-20',
-    time: '14:00',
-    userName: 'Maria Silva',
-    pillar: 'psicologica',
-    status: 'completed',
-    location: 'online',
-    duration: 50,
-    notes: 'Sessão de follow-up'
-  },
-  {
-    id: '2',
-    date: '2024-01-20',
-    time: '15:00',
-    userName: 'João Santos',
-    pillar: 'fisica',
-    status: 'confirmed',
-    location: 'presencial',
-    duration: 45
-  },
-  {
-    id: '3',
-    date: '2024-01-19',
-    time: '10:30',
-    userName: 'Ana Costa',
-    pillar: 'financeira',
-    status: 'completed',
-    location: 'online',
-    duration: 60
-  },
-  {
-    id: '4',
-    date: '2024-01-19',
-    time: '16:00',
-    userName: 'Pedro Lima',
-    pillar: 'juridica',
-    status: 'no-show',
-    location: 'online',
-    duration: 50
-  },
-  {
-    id: '5',
-    date: '2024-01-18',
-    time: '09:00',
-    userName: 'Carla Mendes',
-    pillar: 'psicologica',
-    status: 'cancelled',
-    location: 'presencial',
-    duration: 45
-  },
-  {
-    id: '6',
-    date: '2024-01-22',
-    time: '11:00',
-    userName: 'Ricardo Alves',
-    pillar: 'fisica',
-    status: 'scheduled',
-    location: 'online',
-    duration: 50
-  }
-];
-
 const pillarLabels = {
-  psicologica: 'Saúde Mental',
-  fisica: 'Bem-Estar Físico', 
-  financeira: 'Assistência Financeira',
-  juridica: 'Assistência Jurídica'
+  saude_mental: 'Saúde Mental',
+  bem_estar_fisico: 'Bem-Estar Físico', 
+  assistencia_financeira: 'Assistência Financeira',
+  assistencia_juridica: 'Assistência Jurídica'
 };
 
 const locationLabels = {
@@ -109,9 +50,27 @@ export default function PrestadorSessions() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [pillarFilter, setPillarFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
+  const [sessions, setSessions] = useState<SessionData[]>(
+    mockBookings.map(booking => ({
+      id: booking.id,
+      date: booking.date,
+      time: booking.time,
+      userName: booking.prestadores?.name || 'Utilizador',
+      pillar: booking.pillar as 'saude_mental' | 'assistencia_juridica' | 'assistencia_financeira' | 'bem_estar_fisico',
+      status: booking.status as SessionStatus,
+      location: 'online' as const,
+      duration: 60,
+      notes: booking.notes,
+      meeting_link: booking.meeting_link || '',
+      meeting_platform: booking.meeting_platform || ''
+    }))
+  );
+  const [editingSession, setEditingSession] = useState<SessionData | null>(null);
+  const [meetingLink, setMeetingLink] = useState('');
+  const [meetingPlatform, setMeetingPlatform] = useState('');
 
   const filteredSessions = useMemo(() => {
-    return mockSessions.filter(session => {
+    return sessions.filter(session => {
       const sessionDate = new Date(session.date);
       const fromDate = dateFrom ? new Date(dateFrom) : null;
       const toDate = dateTo ? new Date(dateTo) : null;
@@ -123,7 +82,7 @@ export default function PrestadorSessions() {
       
       return true;
     });
-  }, [dateFrom, dateTo, statusFilter, pillarFilter]);
+  }, [sessions, dateFrom, dateTo, statusFilter, pillarFilter]);
 
   const sessionStats = useMemo(() => {
     const completed = filteredSessions.filter(s => s.status === 'completed').length;
@@ -141,12 +100,37 @@ export default function PrestadorSessions() {
     setPillarFilter('all');
   };
 
+  const handleAddMeetingLink = (session: SessionData) => {
+    setEditingSession(session);
+    setMeetingLink(session.meeting_link || '');
+    setMeetingPlatform(session.meeting_platform || '');
+  };
+
+  const handleSaveMeetingLink = () => {
+    if (!editingSession) return;
+
+    setSessions(prev => prev.map(s => 
+      s.id === editingSession.id 
+        ? { ...s, meeting_link: meetingLink, meeting_platform: meetingPlatform }
+        : s
+    ));
+
+    toast({
+      title: "Link adicionado",
+      description: "O link da reunião foi adicionado com sucesso.",
+    });
+
+    setEditingSession(null);
+    setMeetingLink('');
+    setMeetingPlatform('');
+  };
+
   const exportToCsv = () => {
     const pillarLabels: Record<string, string> = {
-      psicologica: 'Psicológica',
-      juridica: 'Jurídica', 
-      financeira: 'Financeira',
-      fisica: 'Física'
+      saude_mental: 'Saúde Mental',
+      assistencia_juridica: 'Assistência Jurídica', 
+      assistencia_financeira: 'Assistência Financeira',
+      bem_estar_fisico: 'Bem-Estar Físico'
     };
 
     const statusLabels: Record<string, string> = {
@@ -330,10 +314,10 @@ export default function PrestadorSessions() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos os pilares</SelectItem>
-                    <SelectItem value="psicologica">Saúde Mental</SelectItem>
-                    <SelectItem value="fisica">Bem-Estar Físico</SelectItem>
-                    <SelectItem value="financeira">Assistência Financeira</SelectItem>
-                    <SelectItem value="juridica">Assistência Jurídica</SelectItem>
+                    <SelectItem value="saude_mental">Saúde Mental</SelectItem>
+                    <SelectItem value="bem_estar_fisico">Bem-Estar Físico</SelectItem>
+                    <SelectItem value="assistencia_financeira">Assistência Financeira</SelectItem>
+                    <SelectItem value="assistencia_juridica">Assistência Jurídica</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -373,7 +357,7 @@ export default function PrestadorSessions() {
                       <TableHead>Pilar</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Local</TableHead>
-                      <TableHead>Duração</TableHead>
+                      <TableHead>Link da Reunião</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -408,9 +392,37 @@ export default function PrestadorSessions() {
                             </span>
                           </TableCell>
                           <TableCell>
-                            <span className="text-sm text-gray-600">
-                              {session.duration}min
-                            </span>
+                            {session.meeting_link ? (
+                              <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="text-xs">
+                                  {session.meeting_platform}
+                                </Badge>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleAddMeetingLink(session)}
+                                    >
+                                      <LinkIcon className="h-4 w-4" />
+                                    </Button>
+                                  </DialogTrigger>
+                                </Dialog>
+                              </div>
+                            ) : (
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleAddMeetingLink(session)}
+                                  >
+                                    <LinkIcon className="h-4 w-4 mr-1" />
+                                    Adicionar Link
+                                  </Button>
+                                </DialogTrigger>
+                              </Dialog>
+                            )}
                           </TableCell>
                           <TableCell className="text-right">
                             <Button
@@ -433,6 +445,48 @@ export default function PrestadorSessions() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Meeting Link Dialog */}
+      <Dialog open={!!editingSession} onOpenChange={() => setEditingSession(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adicionar Link da Reunião</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="platform">Plataforma</Label>
+              <Select value={meetingPlatform} onValueChange={setMeetingPlatform}>
+                <SelectTrigger id="platform">
+                  <SelectValue placeholder="Selecione a plataforma" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Google Meet">Google Meet</SelectItem>
+                  <SelectItem value="Zoom">Zoom</SelectItem>
+                  <SelectItem value="Microsoft Teams">Microsoft Teams</SelectItem>
+                  <SelectItem value="Outra">Outra</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="link">Link da Reunião</Label>
+              <Input
+                id="link"
+                value={meetingLink}
+                onChange={(e) => setMeetingLink(e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setEditingSession(null)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleSaveMeetingLink}>
+                Guardar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
