@@ -194,9 +194,9 @@ export function AdminSidebar() {
         )}
         {isCollapsed && (
           <div className="flex justify-center">
-            <Avatar className="h-12 w-12">
+            <Avatar className="h-10 w-10">
               <AvatarImage src={user?.avatar_url} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+              <AvatarFallback className="bg-primary text-primary-foreground text-base">
                 {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
               </AvatarFallback>
             </Avatar>
