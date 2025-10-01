@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import Navigation from '@/components/Navigation';
 import HeroSection from '@/components/HeroSection';
 import SobreNosSection from '@/components/SobreNosSection';
-import MissionVisionValuesSection from '@/components/MissionVisionValuesSection';
-import InfoCardsSection from '@/components/InfoCardsSection';
-import GuidesSection from '@/components/GuidesSection';
-import PillarCarousel from '@/components/PillarCarousel';
-import MembershipCardsSection from '@/components/MembershipCardsSection';
-import FAQSection from '@/components/FAQSection';
 import CloudsScrollProvider from '@/components/clouds/CloudsScrollProvider';
 import ScrollAnimationProvider from '@/components/guides/ScrollAnimationProvider';
 import DemoFloatingButton from '@/components/DemoFloatingButton';
+
+// Lazy load heavy below-the-fold components
+const MissionVisionValuesSection = lazy(() => import('@/components/MissionVisionValuesSection'));
+const InfoCardsSection = lazy(() => import('@/components/InfoCardsSection'));
+const GuidesSection = lazy(() => import('@/components/GuidesSection'));
+const PillarCarousel = lazy(() => import('@/components/PillarCarousel'));
+const MembershipCardsSection = lazy(() => import('@/components/MembershipCardsSection'));
+const FAQSection = lazy(() => import('@/components/FAQSection'));
 
 const Index = () => {
   return (
@@ -20,12 +22,14 @@ const Index = () => {
           <Navigation />
           <HeroSection />
           <SobreNosSection />
-          <MissionVisionValuesSection />
-          <InfoCardsSection />
-          <GuidesSection />
-          <PillarCarousel />
-          <MembershipCardsSection />
-          <FAQSection />
+          <Suspense fallback={<div className="h-screen" />}>
+            <MissionVisionValuesSection />
+            <InfoCardsSection />
+            <GuidesSection />
+            <PillarCarousel />
+            <MembershipCardsSection />
+            <FAQSection />
+          </Suspense>
           <DemoFloatingButton />
         </div>
       </ScrollAnimationProvider>

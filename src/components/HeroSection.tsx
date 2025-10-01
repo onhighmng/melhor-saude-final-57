@@ -61,7 +61,7 @@ const HeroSection = () => {
         loop 
         playsInline
         controls={false}
-        preload="auto"
+        preload="metadata"
         style={{ 
           zIndex: 2,
           objectPosition: 'center center',
