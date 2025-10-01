@@ -22,6 +22,7 @@ export function ZoomParallax({ images, videoElement }: ZoomParallaxProps) {
 		offset: ['start start', 'end end'],
 	});
 
+	const scaleVideo = useTransform(scrollYProgress, [0, 1], [1, 2.5]);
 	const scale4 = useTransform(scrollYProgress, [0, 1], [1, 4]);
 	const scale5 = useTransform(scrollYProgress, [0, 1], [1, 5]);
 	const scale6 = useTransform(scrollYProgress, [0, 1], [1, 6]);
@@ -36,7 +37,7 @@ export function ZoomParallax({ images, videoElement }: ZoomParallaxProps) {
 				{/* Center video element */}
 				{videoElement && (
 					<motion.div
-						style={{ scale: scale4 }}
+						style={{ scale: scaleVideo }}
 						className="absolute top-0 flex h-full w-full items-center justify-center"
 					>
 						<div className="relative w-[70vw] aspect-video">
