@@ -42,8 +42,8 @@ const HeroSection = () => {
       alt: 'Equilíbrio',
     },
     {
-      src: heroBrain,
-      alt: 'Saúde Mental',
+      src: '/lovable-uploads/9d0fb76e-9ffa-46c8-a40d-dcc3396e7d51.png',
+      alt: 'Melhor Saúde',
     },
     {
       src: heroFitness,
