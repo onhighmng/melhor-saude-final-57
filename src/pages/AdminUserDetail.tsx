@@ -31,6 +31,7 @@ import {
   ArrowUpDown
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { getUserById, generateMockUserDetail } from '@/data/adminMockData';
 
 interface UserDetail {
   id: string;
@@ -81,67 +82,6 @@ const AdminUserDetail = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const { toast } = useToast();
 
-  // Mock data - replace with actual API calls
-  const mockUser: UserDetail = {
-    id: '1',
-    name: 'João Silva',
-    email: 'joao@techcorp.pt',
-    company: 'TechCorp Lda',
-    companySessions: 12,
-    personalSessions: 3,
-    usedCompanySessions: 8,
-    usedPersonalSessions: 1,
-    status: 'active',
-    createdAt: '2024-01-15',
-    fixedProviders: {
-      mentalHealth: { name: 'Dra. Maria Santos', id: '1' },
-      physicalWellness: { name: 'Prof. Ana Rodrigues', id: '2' },
-      legalAssistance: { name: 'Dra. Sofia Alves', id: '3' }
-    },
-    changeRequests: [
-      {
-        id: '1',
-        pillar: 'Saúde Mental',
-        currentProvider: 'Dra. Maria Santos',
-        requestedProvider: 'Dr. Paulo Reis',
-        reason: 'Melhor disponibilidade de horários',
-        status: 'pending',
-        createdAt: '2024-03-01'
-      }
-    ],
-    sessionHistory: [
-      {
-        id: '1',
-        date: '2024-02-28',
-        pillar: 'Saúde Mental',
-        provider: 'Dra. Maria Santos',
-        status: 'completed',
-        type: 'company'
-      },
-      {
-        id: '2',
-        date: '2024-02-26',
-        pillar: 'Bem-Estar Físico',
-        provider: 'Prof. Ana Rodrigues',
-        status: 'completed',
-        type: 'company'
-      },
-      {
-        id: '3',
-        date: '2024-02-20',
-        pillar: 'Saúde Mental',
-        provider: 'Dra. Maria Santos',
-        status: 'no-show',
-        type: 'company'
-      }
-    ],
-    sessionUsageData: [
-      { month: 'Jan', company: 3, personal: 1 },
-      { month: 'Fev', company: 5, personal: 0 },
-      { month: 'Mar', company: 0, personal: 0 }
-    ]
-  };
-
   useEffect(() => {
     loadUser();
   }, [id]);
@@ -149,11 +89,17 @@ const AdminUserDetail = () => {
   const loadUser = async () => {
     setIsLoading(true);
     try {
-      // Replace with actual API call
+      // Fetch user from centralized mock data
       setTimeout(() => {
-        setUser(mockUser);
+        const baseUser = getUserById(id || '1');
+        
+        if (baseUser) {
+          const userDetail = generateMockUserDetail(baseUser);
+          setUser(userDetail as UserDetail);
+        }
+        
         setIsLoading(false);
-      }, 1000);
+      }, 800);
     } catch (error) {
       toast({
         title: "Erro",

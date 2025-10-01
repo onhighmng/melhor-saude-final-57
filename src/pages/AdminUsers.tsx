@@ -22,25 +22,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  company: string;
-  companySessions: number;
-  personalSessions: number;
-  usedCompanySessions: number;
-  usedPersonalSessions: number;
-  fixedProviders: {
-    mentalHealth?: string;
-    physicalWellness?: string;
-    financialAssistance?: string;
-    legalAssistance?: string;
-  };
-  status: 'active' | 'inactive';
-  createdAt: string;
-}
+import { mockUsers, AdminUser as User } from '@/data/adminMockData';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -50,57 +32,6 @@ const AdminUsers = () => {
   const [companyFilter, setCompanyFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-
-  // Mock data - replace with actual API calls
-  const mockUsers: User[] = [
-    {
-      id: '1',
-      name: 'João Silva',
-      email: 'joao@techcorp.pt',
-      company: 'TechCorp Lda',
-      companySessions: 12,
-      personalSessions: 3,
-      usedCompanySessions: 8,
-      usedPersonalSessions: 1,
-      fixedProviders: {
-        mentalHealth: 'Dra. Maria Santos',
-        physicalWellness: 'Prof. Ana Rodrigues'
-      },
-      status: 'active',
-      createdAt: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Maria Oliveira',
-      email: 'maria@healthplus.pt',
-      company: 'HealthPlus SA',
-      companySessions: 8,
-      personalSessions: 5,
-      usedCompanySessions: 3,
-      usedPersonalSessions: 2,
-      fixedProviders: {
-        mentalHealth: 'Dr. Paulo Reis',
-        legalAssistance: 'Dra. Sofia Alves'
-      },
-      status: 'active',
-      createdAt: '2024-02-01'
-    },
-    {
-      id: '3',
-      name: 'Carlos Santos',
-      email: 'carlos@innovatelab.pt',
-      company: 'InnovateLab',
-      companySessions: 0,
-      personalSessions: 8,
-      usedCompanySessions: 0,
-      usedPersonalSessions: 5,
-      fixedProviders: {
-        financialAssistance: 'Dr. Fernando Alves'
-      },
-      status: 'inactive',
-      createdAt: '2024-01-28'
-    }
-  ];
 
   const companies = Array.from(new Set(mockUsers.map(user => user.company))).sort();
 

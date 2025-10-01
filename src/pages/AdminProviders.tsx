@@ -28,21 +28,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-
-interface Provider {
-  id: string;
-  name: string;
-  email: string;
-  pillars: ('mental-health' | 'physical-wellness' | 'financial-assistance' | 'legal-assistance')[];
-  availability: 'active' | 'inactive';
-  licenseStatus: 'valid' | 'expired' | 'pending';
-  capacity: number; // sessions per week
-  defaultSlot: number; // minutes
-  licenseExpiry?: string;
-  avatar?: string;
-  bio?: string;
-  languages: string[];
-}
+import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
 
 const AdminProviders = () => {
   const navigate = useNavigate();
@@ -54,57 +40,6 @@ const AdminProviders = () => {
   const [licenseFilter, setLicenseFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-
-  // Mock data - replace with actual API calls
-  const mockProviders: Provider[] = [
-    {
-      id: '1',
-      name: 'Dra. Maria Santos',
-      email: 'maria.santos@clinic.pt',
-      pillars: ['mental-health', 'physical-wellness'],
-      availability: 'active',
-      licenseStatus: 'valid',
-      capacity: 20,
-      defaultSlot: 50,
-      licenseExpiry: '2025-12-31',
-      languages: ['PT', 'EN']
-    },
-    {
-      id: '2',
-      name: 'Dr. Paulo Reis',
-      email: 'paulo.reis@financial.pt',
-      pillars: ['financial-assistance'],
-      availability: 'active',
-      licenseStatus: 'pending',
-      capacity: 15,
-      defaultSlot: 45,
-      languages: ['PT']
-    },
-    {
-      id: '3',
-      name: 'Dra. Sofia Alves',
-      email: 'sofia.alves@legal.pt',
-      pillars: ['legal-assistance'],
-      availability: 'inactive',
-      licenseStatus: 'expired',
-      capacity: 12,
-      defaultSlot: 60,
-      licenseExpiry: '2024-01-15',
-      languages: ['PT', 'ES']
-    },
-    {
-      id: '4',
-      name: 'Prof. Ana Rodrigues',
-      email: 'ana.rodrigues@wellness.pt',
-      pillars: ['physical-wellness', 'mental-health'],
-      availability: 'active',
-      licenseStatus: 'valid',
-      capacity: 25,
-      defaultSlot: 30,
-      licenseExpiry: '2026-06-30',
-      languages: ['PT', 'EN', 'FR']
-    }
-  ];
 
   useEffect(() => {
     loadProviders();
