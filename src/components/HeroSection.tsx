@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { ZoomParallax } from '@/components/ui/zoom-parallax';
+import heroBrain from '@/assets/hero-brain.jpg';
+import heroCalculator from '@/assets/hero-calculator.jpg';
+import heroFitness from '@/assets/hero-fitness.jpg';
+import heroBalance from '@/assets/hero-balance.png';
 
 const HeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -22,28 +26,28 @@ const HeroSection = () => {
 
   const images = [
     {
-      src: '/lovable-uploads/8e051ede-f5b9-47a0-a9a1-53e8db6bf84f.png',
+      src: heroBrain,
       alt: 'Saúde Mental',
     },
     {
-      src: '/lovable-uploads/676d62ef-5d2a-46ab-9c4f-1c94521aabed.png',
-      alt: 'Bem-estar',
+      src: heroCalculator,
+      alt: 'Bem-estar Financeiro',
     },
     {
-      src: '/lovable-uploads/5d2071d4-8909-4e5f-b30d-cf52091ffba9.png',
-      alt: 'Terapia',
+      src: heroFitness,
+      alt: 'Bem-estar Físico',
     },
     {
-      src: '/lovable-uploads/6f3eb5fe-a35b-4f90-afff-d0cc84a6cf3c.png',
-      alt: 'Apoio',
-    },
-    {
-      src: '/lovable-uploads/64839ced-48a0-4bc0-96d3-55b3c2d871a9.png',
-      alt: 'Cuidado',
-    },
-    {
-      src: '/lovable-uploads/5098d52a-638c-4f18-8bf0-36058ff94187.png',
+      src: heroBalance,
       alt: 'Equilíbrio',
+    },
+    {
+      src: heroBrain,
+      alt: 'Saúde Mental',
+    },
+    {
+      src: heroFitness,
+      alt: 'Atividade Física',
     },
   ];
 
