@@ -118,7 +118,7 @@ const Navigation = () => {
             <DesktopMenu menuItems={menuItems} activeDropdown={activeDropdown} onDropdownToggle={handleDropdownToggle} onNavigation={handleNavigation} />
 
             {/* Right Side Actions */}
-            <NavigationActions onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick} onMobileMenuOpen={() => setIsMobileMenuOpen(true)} onLogoutClick={handleLogoutClick} isAuthenticated={false} user={null} />
+            <NavigationActions onLoginClick={handleLoginClick} onRegisterClick={handleRegisterClick} onMobileMenuOpen={() => setIsMobileMenuOpen(true)} onLogoutClick={handleLogoutClick} isAuthenticated={isAuthenticated} user={profile} />
           </div>
         </div>
 
