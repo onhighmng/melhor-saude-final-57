@@ -297,14 +297,18 @@ export default function RegisterCompany() {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Hero Image */}
-      <div className="hidden lg:flex flex-1 relative">
-        <div className="absolute inset-0">
-          <img 
-            src="/lovable-uploads/6f3eb5fe-a35b-4f90-afff-d0cc84a6cf3c.png"
-            alt="Background" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/20"></div>
+      <div className="hidden lg:flex flex-1 relative overflow-hidden">
+        <img 
+          src="/src/assets/hero-calculator.jpg"
+          alt="Gestão Empresarial" 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
+        <div className="relative z-10 flex flex-col justify-end p-12 text-white">
+          <h1 className="text-4xl font-bold mb-4">Melhor Saúde</h1>
+          <p className="text-lg text-white/90">
+            Invista no bem-estar da sua equipa com soluções profissionais.
+          </p>
         </div>
       </div>
 

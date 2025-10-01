@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import heroBrain from '@/assets/hero-brain.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const ResetPassword = () => {
   const [email, setEmail] = useState('');
+  const navigate = useNavigate();
 
   const handleReset = () => {
     // Mock reset for demo
@@ -12,24 +15,71 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-h2">Reset Password</CardTitle>
-          <CardDescription>Enter your email to reset your password</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Button onClick={handleReset} className="w-full">
-            Reset Password
-          </Button>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen w-full flex">
+      {/* Left side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <img
+          src={heroBrain}
+          alt="Saúde Mental"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
+        <div className="relative z-10 flex flex-col justify-end p-12 text-white">
+          <h1 className="text-4xl font-bold mb-4">Melhor Saúde</h1>
+          <p className="text-lg text-white/90">
+            Recupere o acesso à sua conta de forma segura.
+          </p>
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center lg:text-left">
+            <h2 className="text-3xl font-bold tracking-tight">Recuperar Palavra-passe</h2>
+            <p className="text-muted-foreground mt-2">
+              Insira o seu email para receber instruções de recuperação
+            </p>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleReset();
+            }}
+            className="space-y-6"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-11"
+              />
+            </div>
+
+            <Button type="submit" className="w-full h-11">
+              Enviar Instruções
+            </Button>
+
+            <div className="text-center text-sm text-muted-foreground">
+              Lembrou-se da palavra-passe?{' '}
+              <Button
+                type="button"
+                variant="link"
+                className="px-1"
+                onClick={() => navigate('/login')}
+              >
+                Voltar ao login
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
