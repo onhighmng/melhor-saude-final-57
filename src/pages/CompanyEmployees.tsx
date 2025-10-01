@@ -180,7 +180,12 @@ export default function CompanyEmployees() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => {
+                              toast({
+                                title: "Detalhes do Colaborador",
+                                description: `${user.name} - ${user.email}. Quota: ${user.usedQuota}/${user.companyQuota}`,
+                              });
+                            }}>
                               Ver Detalhes
                             </DropdownMenuItem>
                             {user.isActive ? (
