@@ -50,11 +50,11 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative w-full aspect-video overflow-hidden bg-deep-navy mt-20 sm:mt-0">
+    <div className="relative w-full h-screen overflow-hidden bg-deep-navy mt-20 sm:mt-0 flex items-center justify-center">
       {/* Video Background */}
       <video 
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-contain"
+        className="w-full h-full object-contain max-h-[calc(100vh-100px)]"
         autoPlay 
         muted 
         loop 
@@ -80,7 +80,7 @@ const HeroSection = () => {
       />
 
       {/* Logo positioned at bottom left */}
-      <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 lg:bottom-12 lg:left-12" style={{ zIndex: 10 }}>
+      <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 lg:bottom-12 lg:left-12 z-10">
         <img 
           src="/lovable-uploads/0dce0993-5b13-4451-8cf3-bfc35211e2da.png" 
           alt="Melhor Saúde Logo" 
