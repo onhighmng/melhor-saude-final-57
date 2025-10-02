@@ -33,6 +33,15 @@ const UserDashboard = () => {
     return date.toDateString() === today.toDateString();
   };
 
+  const isWithin5Minutes = (dateStr: string, timeStr: string) => {
+    const sessionDateTime = new Date(`${dateStr}T${timeStr}:00`);
+    const now = new Date();
+    const diffMinutes = (sessionDateTime.getTime() - now.getTime()) / (1000 * 60);
+    
+    // Session starts within 5 minutes (but not passed)
+    return diffMinutes <= 5 && diffMinutes >= -60; // Can join up to 1 hour after start
+  };
+
   // Calculate sessions based on mock data structure
   const remainingSessions = sessionBalance?.totalRemaining || 0;
   const totalSessions = 28; // Mock total from design
@@ -117,11 +126,12 @@ const UserDashboard = () => {
                 upcomingBookings.slice(0, 3).map((booking) => {
                   const statusBadge = getStatusBadge(booking.status);
                   const isTodaySession = isToday(booking.date);
+                  const canJoinNow = isWithin5Minutes(booking.date, booking.time);
                   
                   return (
                     <Card 
                       key={booking.id} 
-                      className={`${booking.status === 'cancelled' ? 'bg-muted/30 border-muted' : isTodaySession ? 'border-[#22C55E] border-2 bg-[#F0FDF4]' : 'border bg-background'}`}
+                      className={`${booking.status === 'cancelled' ? 'bg-muted/30 border-muted' : canJoinNow ? 'border-[#22C55E] border-2 bg-[#F0FDF4]' : isTodaySession ? 'border-[#4A90E2] bg-[#EFF6FF]' : 'border bg-background'}`}
                     >
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-3">
@@ -135,8 +145,11 @@ const UserDashboard = () => {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            {isTodaySession && booking.status === 'confirmed' && (
-                              <Badge className="bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full px-3">Hoje</Badge>
+                            {canJoinNow && booking.status === 'confirmed' && (
+                              <Badge className="bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full px-3">Começar em breve</Badge>
+                            )}
+                            {isTodaySession && !canJoinNow && booking.status === 'confirmed' && (
+                              <Badge className="bg-[#4A90E2] hover:bg-[#3A7BC8] text-white rounded-full px-3">Hoje</Badge>
                             )}
                             <Badge 
                               variant={statusBadge.variant}
@@ -156,16 +169,25 @@ const UserDashboard = () => {
                         </div>
 
                         <div className="flex gap-2">
-                          {isTodaySession && booking.status === 'confirmed' && (
-                            <Button size="sm" className="flex-1 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-lg">
+                          {canJoinNow && booking.status === 'confirmed' && (
+                            <Button 
+                              size="sm" 
+                              className="flex-1 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-lg"
+                              onClick={() => window.open('https://meet.google.com/demo-session-link', '_blank')}
+                            >
                               <Video className="w-4 h-4 mr-2" />
-                              Entrar
+                              Entrar na Sessão
                             </Button>
                           )}
-                          {booking.status === 'confirmed' && !isTodaySession && (
+                          {!canJoinNow && booking.status === 'confirmed' && (
                             <Button size="sm" variant="outline" className="flex-1 text-[#DC2626] border-[#DC2626] hover:bg-[#FEE2E2] rounded-lg">
                               <X className="w-4 h-4 mr-2" />
-                              Cancelar
+                              Cancelar Sessão
+                            </Button>
+                          )}
+                          {!canJoinNow && booking.status === 'confirmed' && (
+                            <Button size="sm" variant="outline" className="flex-1 rounded-lg">
+                              Ver Detalhes
                             </Button>
                           )}
                         </div>
