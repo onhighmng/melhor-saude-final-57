@@ -23,8 +23,6 @@ import {
 interface SessionHistory {
   id: string;
   date: string;
-  provider: string;
-  pillar: string;
   status: "completed" | "cancelled" | "no_show" | "scheduled";
   type: "company" | "personal";
 }
@@ -40,12 +38,6 @@ interface EmployeeDetail {
   personalSessions: number;
   totalSessions: number;
   usedSessions: number;
-  providers: {
-    mentalHealth?: string;
-    physicalWellness?: string;
-    financialAssistance?: string;
-    legalAssistance?: string;
-  };
   sessionHistory: SessionHistory[];
 }
 
@@ -60,49 +52,34 @@ const mockEmployee: EmployeeDetail = {
   personalSessions: 3,
   totalSessions: 15,
   usedSessions: 8,
-  providers: {
-    mentalHealth: "Dr. Pedro Santos",
-    physicalWellness: "Dra. Maria Costa",
-    financialAssistance: "Dr. João Ferreira"
-  },
   sessionHistory: [
     {
       id: "1",
       date: "2024-01-20 14:00",
-      provider: "Dr. Pedro Santos",
-      pillar: "Saúde Mental",
       status: "completed",
       type: "company"
     },
     {
       id: "2", 
       date: "2024-01-15 10:30",
-      provider: "Dra. Maria Costa",
-      pillar: "Bem-estar Físico",
       status: "completed",
       type: "company"
     },
     {
       id: "3",
       date: "2024-01-10 16:00",
-      provider: "Dr. João Ferreira", 
-      pillar: "Assistência Financeira",
       status: "no_show",
       type: "personal"
     },
     {
       id: "4",
       date: "2024-01-05 09:00",
-      provider: "Dr. Pedro Santos",
-      pillar: "Saúde Mental",
       status: "cancelled",
       type: "company"
     },
     {
       id: "5",
       date: "2024-02-01 11:00",
-      provider: "Dra. Maria Costa",
-      pillar: "Bem-estar Físico",
       status: "scheduled",
       type: "company"
     }
@@ -175,8 +152,6 @@ const CompanyEmployeeDetail = () => {
   const handleExportHistory = () => {
     const csvData = employee.sessionHistory.map(session => ({
       Data: session.date,
-      Prestador: session.provider,
-      Pilar: session.pillar,
       Estado: session.status === 'completed' ? 'Concluída' : 
               session.status === 'cancelled' ? 'Cancelada' : 
               session.status === 'no_show' ? 'Falta' : 'Agendada',
@@ -204,10 +179,10 @@ const CompanyEmployeeDetail = () => {
   };
 
   const pillarNames = {
-    "Saúde Mental": "mentalHealth",
-    "Bem-estar Físico": "physicalWellness", 
-    "Assistência Financeira": "financialAssistance",
-    "Assistência Jurídica": "legalAssistance"
+    "Mental Health": "mentalHealth",
+    "Physical Wellness": "physicalWellness", 
+    "Financial Assistance": "financialAssistance",
+    "Legal Assistance": "legalAssistance"
   } as const;
 
   return (
@@ -341,22 +316,8 @@ const CompanyEmployeeDetail = () => {
             </CardContent>
           </Card>
 
-          {/* Assigned Providers */}
-          <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Prestadores Atribuídos</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {Object.entries(pillarNames).map(([pillarName, pillarKey]) => (
-                <div key={pillarKey} className="flex justify-between items-center">
-                  <span className="text-sm font-medium">{pillarName}:</span>
-                  <span className="text-sm text-muted-foreground">
-                    {employee.providers[pillarKey] || "Não atribuído"}
-                  </span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          {/* Assigned Providers - REMOVED FOR PRIVACY */}
+          {/* Companies cannot see which pillars employees are using */}
         </div>
 
         {/* Actions */}
@@ -416,15 +377,12 @@ const CompanyEmployeeDetail = () => {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="font-medium text-sm">{session.provider}</div>
+                      <div className="font-medium text-sm">Sessão de Bem-Estar</div>
                       <div className="text-xs text-muted-foreground">
                         {new Date(session.date).toLocaleDateString('pt-PT')} às {new Date(session.date).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Badge variant="outline" className="text-xs">
-                        {session.pillar}
-                      </Badge>
                       <Badge variant={session.type === 'company' ? 'default' : 'secondary'} className="text-xs">
                         {session.type === 'company' ? 'Empresa' : 'Pessoal'}
                       </Badge>
