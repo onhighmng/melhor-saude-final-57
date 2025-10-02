@@ -23,6 +23,7 @@ const VideoCards: React.FC<VideoCardsProps> = ({ isVisible }) => {
               autoPlay 
               muted 
               playsInline
+              preload="none"
               className="absolute inset-0 z-10 w-full h-full object-cover"
             >
               <source src="https://d1pwidzl9kib4u.cloudfront.net/marketing/video/web_graphics/20250512_Fruitful_Web_Get_Comfortable_Bri.mp4" />
@@ -51,6 +52,7 @@ const VideoCards: React.FC<VideoCardsProps> = ({ isVisible }) => {
               autoPlay 
               muted 
               playsInline
+              preload="none"
               className="absolute inset-0 z-10 w-full h-full object-cover"
             >
               <source src="https://d1pwidzl9kib4u.cloudfront.net/marketing/video/web_graphics/20250512_Fruitful_Web_Get_Comfortable_Member.mp4" />

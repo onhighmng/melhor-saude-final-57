@@ -1,61 +1,64 @@
-import React, { Suspense, lazy, useEffect } from 'react';
-import Lenis from '@studio-freight/lenis';
+import React, { Suspense, lazy } from 'react';
 import Navigation from '@/components/Navigation';
-import HeroSection from '@/components/HeroSection';
-import { ModernHeroSection } from '@/components/ModernHeroSection';
 import SobreNosSection from '@/components/SobreNosSection';
-import CloudsScrollProvider from '@/components/clouds/CloudsScrollProvider';
-import ScrollAnimationProvider from '@/components/guides/ScrollAnimationProvider';
-import DemoFloatingButton from '@/components/DemoFloatingButton';
+import { ModernHeroSection } from '@/components/ModernHeroSection';
 
-// Lazy load heavy below-the-fold components
+// Lazy load ALL heavy components
+const HeroSection = lazy(() => import('@/components/HeroSection'));
+const CloudsScrollProvider = lazy(() => import('@/components/clouds/CloudsScrollProvider'));
+const ScrollAnimationProvider = lazy(() => import('@/components/guides/ScrollAnimationProvider'));
 const MissionVisionValuesSection = lazy(() => import('@/components/MissionVisionValuesSection'));
 const InfoCardsSection = lazy(() => import('@/components/InfoCardsSection'));
 const GuidesSection = lazy(() => import('@/components/GuidesSection'));
 const PillarCarousel = lazy(() => import('@/components/PillarCarousel'));
 const MembershipCardsSection = lazy(() => import('@/components/MembershipCardsSection'));
 const FAQSection = lazy(() => import('@/components/FAQSection'));
+const DemoFloatingButton = lazy(() => import('@/components/DemoFloatingButton'));
+
+// Lightweight loading skeleton
+const LoadingSkeleton = () => (
+  <div className="w-full bg-muted/20 animate-pulse" style={{ height: '60vh' }} />
+);
 
 const Index = () => {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
-
   return (
-    <CloudsScrollProvider>
-      <ScrollAnimationProvider>
-        <div className="min-h-screen bg-background">
-          <Navigation />
-          <HeroSection />
-          <ModernHeroSection />
-          <SobreNosSection />
-          <Suspense fallback={<div className="h-screen" />}>
-            <MissionVisionValuesSection />
-            <InfoCardsSection />
-            <GuidesSection />
-            <PillarCarousel />
-            <MembershipCardsSection />
-            <FAQSection />
-          </Suspense>
-          <DemoFloatingButton />
-        </div>
-      </ScrollAnimationProvider>
-    </CloudsScrollProvider>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <ModernHeroSection />
+      <SobreNosSection />
+      
+      <Suspense fallback={<LoadingSkeleton />}>
+        <CloudsScrollProvider>
+          <ScrollAnimationProvider>
+            <Suspense fallback={<LoadingSkeleton />}>
+              <HeroSection />
+            </Suspense>
+            <Suspense fallback={<LoadingSkeleton />}>
+              <MissionVisionValuesSection />
+            </Suspense>
+            <Suspense fallback={<LoadingSkeleton />}>
+              <InfoCardsSection />
+            </Suspense>
+            <Suspense fallback={<LoadingSkeleton />}>
+              <GuidesSection />
+            </Suspense>
+            <Suspense fallback={<LoadingSkeleton />}>
+              <PillarCarousel />
+            </Suspense>
+            <Suspense fallback={<LoadingSkeleton />}>
+              <MembershipCardsSection />
+            </Suspense>
+            <Suspense fallback={<LoadingSkeleton />}>
+              <FAQSection />
+            </Suspense>
+          </ScrollAnimationProvider>
+        </CloudsScrollProvider>
+      </Suspense>
+      
+      <Suspense fallback={null}>
+        <DemoFloatingButton />
+      </Suspense>
+    </div>
   );
 };
 

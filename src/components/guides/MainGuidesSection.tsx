@@ -107,7 +107,8 @@ const MainGuidesSection: React.FC = () => {
                 controls
                 loop
                 playsInline
-                preload="auto"
+                preload="none"
+                poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect fill='%23000' width='16' height='9'/%3E%3C/svg%3E"
                 className={`w-full h-full rounded-lg object-contain bg-black shadow-2xl transition-all duration-[1500ms] ease-out transform ${
                   currentStep >= 0 
                     ? 'scale-100 opacity-100 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.3)]' 

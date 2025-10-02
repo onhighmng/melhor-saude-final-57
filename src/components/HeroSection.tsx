@@ -62,7 +62,7 @@ const HeroSection = () => {
       loop 
       playsInline
       controls={false}
-      preload="metadata"
+      preload="none"
     >
       <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Ms%20Hero%20Section%20Updated.mp4" type="video/mp4" />
     </video>
