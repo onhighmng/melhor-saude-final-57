@@ -1,10 +1,10 @@
 import React, { Suspense, lazy } from 'react';
 import Navigation from '@/components/Navigation';
-import SobreNosSection from '@/components/SobreNosSection';
+import HeroSection from '@/components/HeroSection';
 import { ModernHeroSection } from '@/components/ModernHeroSection';
+import SobreNosSection from '@/components/SobreNosSection';
 
-// Lazy load ALL heavy components
-const HeroSection = lazy(() => import('@/components/HeroSection'));
+// Lazy load heavy below-the-fold components
 const CloudsScrollProvider = lazy(() => import('@/components/clouds/CloudsScrollProvider'));
 const ScrollAnimationProvider = lazy(() => import('@/components/guides/ScrollAnimationProvider'));
 const MissionVisionValuesSection = lazy(() => import('@/components/MissionVisionValuesSection'));
@@ -24,15 +24,13 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      <HeroSection />
       <ModernHeroSection />
       <SobreNosSection />
       
       <Suspense fallback={<LoadingSkeleton />}>
         <CloudsScrollProvider>
           <ScrollAnimationProvider>
-            <Suspense fallback={<LoadingSkeleton />}>
-              <HeroSection />
-            </Suspense>
             <Suspense fallback={<LoadingSkeleton />}>
               <MissionVisionValuesSection />
             </Suspense>
