@@ -7,8 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AdminSidebar } from "@/components/AdminSidebar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Clock, 
@@ -129,26 +128,22 @@ const AdminSettings = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50">
-        <AdminSidebar />
-        
-        <div className="flex-1 flex flex-col">
-          {/* Header */}
-          <header className="h-16 flex items-center justify-between border-b border-border bg-white px-6">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger />
-              <div>
+    <div className="space-y-6">
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="h-16 flex items-center justify-between border-b border-border bg-white px-6">
+          <div className="flex items-center gap-4">
+            <div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">
                   Configurações da Plataforma
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   Defina as regras e políticas aplicadas globalmente às marcações e sessões
                 </p>
-              </div>
             </div>
-            
-            <div className="flex items-center gap-3">
+          </div>
+          
+          <div className="flex items-center gap-3">
               {hasUnsavedChanges && (
                 <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
                   <AlertTriangle className="h-3 w-3 mr-1" />
@@ -162,12 +157,12 @@ const AdminSettings = () => {
               <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Save className="h-4 w-4 mr-2" />
                 Guardar Configurações
-              </Button>
-            </div>
-          </header>
+            </Button>
+          </div>
+        </header>
 
-          {/* Main Content */}
-          <main className="flex-1 p-6 space-y-8 overflow-y-auto">
+        {/* Main Content */}
+        <main className="flex-1 p-6 space-y-8 overflow-y-auto">
             {/* Granularity & Buffers */}
             <Card className="border-0 shadow-lg bg-white">
               <CardHeader className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-t-lg">
@@ -353,12 +348,11 @@ const AdminSettings = () => {
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </main>
-        </div>
+            </CardContent>
+          </Card>
+        </main>
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 
