@@ -84,13 +84,9 @@ const groupedItems = {
   }
 };
 
+// Settings - standalone section (NOT part of monitoring group)
 const settingsItems: MenuItem[] = [
   { title: "Configurações", url: "/admin/configuracoes", icon: Settings },
-];
-
-const footerItems: MenuItem[] = [
-  { title: "Suporte", url: "/support", icon: HelpCircle },
-  { title: "Termos", url: "/terms", icon: FileText },
 ];
 
 // Mock badge data - in real app this would come from API/state
@@ -318,28 +314,6 @@ export function AdminSidebar() {
 
       <SidebarFooter className={`p-6 border-t ${isCollapsed ? 'flex justify-center' : ''}`}>
         <SidebarMenu className={isCollapsed ? 'items-center' : ''}>
-          <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: "Suporte" }}>
-              <SidebarMenuButton asChild size="sm">
-                <NavLink to="/support" className="text-muted-foreground hover:text-foreground">
-                  <HelpCircle className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base">Suporte</span>}
-                </NavLink>
-              </SidebarMenuButton>
-            </SidebarMenuItemWithTooltip>
-          </SidebarMenuItem>
-          
-          <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: "Termos" }}>
-              <SidebarMenuButton asChild size="sm">
-                <NavLink to="/terms" className="text-muted-foreground hover:text-foreground">
-                  <FileText className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base">Termos</span>}
-                </NavLink>
-              </SidebarMenuButton>
-            </SidebarMenuItemWithTooltip>
-          </SidebarMenuItem>
-          
           <SidebarMenuItem>
             <SidebarMenuItemWithTooltip item={{ title: "Sair" }}>
               <SidebarMenuButton 
