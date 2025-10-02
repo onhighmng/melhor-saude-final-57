@@ -7,6 +7,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { companyUIcopy } from "@/data/companyUIcopy";
+import { companyToasts } from "@/data/companyToastMessages";
 import { 
   Download,
   Calendar as CalendarIcon,
@@ -88,7 +90,6 @@ const availableReports: Report[] = [
 ];
 
 const CompanyReports = () => {
-  const { toast } = useToast();
   const [selectedPeriod, setSelectedPeriod] = useState<string>("monthly");
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
@@ -121,20 +122,14 @@ const CompanyReports = () => {
       URL.revokeObjectURL(link.href);
     }
     
-    toast({
-      title: "Relatório gerado",
-      description: `${report?.name} foi exportado em formato ${format.toUpperCase()}`,
-    });
+    companyToasts.dataExported();
   };
 
   const handleScheduleReport = (reportId: string) => {
     const report = availableReports.find(r => r.id === reportId);
     console.log("Scheduling report:", report?.name);
     
-    toast({
-      title: "Relatório agendado",
-      description: `${report?.name} será enviado automaticamente por email`,
-    });
+    companyToasts.reportScheduled();
   };
 
   const getReportIcon = (type: string) => {
@@ -356,7 +351,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Download className="h-3 w-3 mr-1" />
-                        CSV
+                        {companyUIcopy.reports.actions.downloadCSV}
                       </Button>
                       
                       <Button 
@@ -366,7 +361,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Download className="h-3 w-3 mr-1" />
-                        PDF
+                        {companyUIcopy.reports.actions.exportPDF}
                       </Button>
                       
                       <Button 
@@ -376,7 +371,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Mail className="h-3 w-3 mr-1" />
-                        Agendar
+                        {companyUIcopy.reports.actions.scheduleEmail}
                       </Button>
                     </div>
                   </CardContent>

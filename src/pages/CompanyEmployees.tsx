@@ -7,18 +7,25 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Search, MoreHorizontal, UserPlus, Users, Filter } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { mockCompanies, CompanyUser, deactivateUser, activateUser } from "@/data/companyMockData";
 import { SeatUsageCard } from "@/components/company/SeatUsageCard";
 import { InviteEmployeeButton } from "@/components/company/InviteEmployeeButton";
 import { InviteEmployeeModal } from "@/components/company/InviteEmployeeModal";
+import { DeactivateUserDialog } from "@/components/company/ConfirmationDialogs/DeactivateUserDialog";
+import { companyUIcopy } from "@/data/companyUIcopy";
+import { companyToasts } from "@/data/companyToastMessages";
 
 export default function CompanyEmployees() {
-  const { toast } = useToast();
   const [company, setCompany] = useState(mockCompanies[0]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [deactivateDialog, setDeactivateDialog] = useState<{ open: boolean; userId: string; userName: string }>({
+    open: false,
+    userId: '',
+    userName: ''
+  });
 
   const filteredUsers = company.users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,31 +52,26 @@ export default function CompanyEmployees() {
     setCompany(updatedCompany);
   };
 
-  const handleDeactivateUser = (userId: string) => {
-    const updatedCompany = deactivateUser(company, userId);
+  const handleDeactivateUser = (userId: string, userName: string) => {
+    setDeactivateDialog({ open: true, userId, userName });
+  };
+
+  const confirmDeactivateUser = () => {
+    const updatedCompany = deactivateUser(company, deactivateDialog.userId);
     setCompany(updatedCompany);
-    toast({
-      title: "Colaborador desativado",
-      description: "A conta foi desativada e libertou uma vaga."
-    });
+    companyToasts.employeeDeactivated();
+    setDeactivateDialog({ open: false, userId: '', userName: '' });
   };
 
   const handleActivateUser = (userId: string) => {
     if (company.isAtSeatLimit) {
-      toast({
-        title: "Não é possível ativar",
-        description: "Limite de contas atingido. Desative outras contas primeiro.",
-        variant: "destructive"
-      });
+      companyToasts.employeeActivationBlocked();
       return;
     }
 
     const updatedCompany = activateUser(company, userId);
     setCompany(updatedCompany);
-    toast({
-      title: "Colaborador ativado",
-      description: "A conta foi ativada com sucesso."
-    });
+    companyToasts.employeeActivated();
   };
 
   const formatDate = (dateStr: string) => {
@@ -120,19 +122,19 @@ export default function CompanyEmployees() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">
                     <Filter className="h-4 w-4 mr-2" />
-                    {filterStatus === 'all' ? 'Todos' : 
-                     filterStatus === 'active' ? 'Ativos' : 'Inativos'}
+                    {filterStatus === 'all' ? companyUIcopy.employees.filters.all : 
+                     filterStatus === 'active' ? companyUIcopy.employees.filters.viewActive : companyUIcopy.employees.filters.viewInactive}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem onClick={() => setFilterStatus('all')}>
-                    Todos
+                    {companyUIcopy.employees.filters.all}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterStatus('active')}>
-                    Ativos apenas
+                    {companyUIcopy.employees.filters.viewActive}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterStatus('inactive')}>
-                    Inativos apenas
+                    {companyUIcopy.employees.filters.viewInactive}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -159,7 +161,7 @@ export default function CompanyEmployees() {
                       <TableCell className="text-muted-foreground">{user.email}</TableCell>
                       <TableCell>
                         <Badge variant={user.role === 'hr' ? 'default' : 'secondary'}>
-                          {user.role === 'hr' ? 'RH' : 'Colaborador'}
+                          {user.role === 'hr' ? companyUIcopy.employees.roles.hr : companyUIcopy.employees.roles.employee}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -168,7 +170,14 @@ export default function CompanyEmployees() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {user.usedQuota} / {user.companyQuota}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span>{user.usedQuota} / {user.companyQuota}</span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {companyUIcopy.employees.quotaTooltip(user.usedQuota, user.companyQuota)}
+                          </TooltipContent>
+                        </Tooltip>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {formatDate(user.joinedAt)}
@@ -183,22 +192,22 @@ export default function CompanyEmployees() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
                               <Link to={`/company/employees/${user.id}`}>
-                                Ver Detalhes
+                                {companyUIcopy.employees.actions.viewDetails}
                               </Link>
                             </DropdownMenuItem>
                             {user.isActive ? (
                               <DropdownMenuItem 
-                                onClick={() => handleDeactivateUser(user.id)}
+                                onClick={() => handleDeactivateUser(user.id, user.name)}
                                 className="text-red-600"
                               >
-                                Desativar Conta
+                                {companyUIcopy.employees.actions.deactivate}
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem 
                                 onClick={() => handleActivateUser(user.id)}
                                 disabled={company.isAtSeatLimit}
                               >
-                                Ativar Conta
+                                {companyUIcopy.employees.actions.activate}
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
@@ -224,6 +233,13 @@ export default function CompanyEmployees() {
         onClose={() => setShowInviteModal(false)}
         company={company}
         onInviteSuccess={handleInviteSuccess}
+      />
+
+      <DeactivateUserDialog
+        open={deactivateDialog.open}
+        onOpenChange={(open) => !open && setDeactivateDialog({ open: false, userId: '', userName: '' })}
+        onConfirm={confirmDeactivateUser}
+        userName={deactivateDialog.userName}
       />
     </div>
   );

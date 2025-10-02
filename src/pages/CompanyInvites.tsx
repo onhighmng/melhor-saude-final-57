@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Copy, Download, Plus, Search, Share, QrCode } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { companyUIcopy } from '@/data/companyUIcopy';
+import { companyToasts } from '@/data/companyToastMessages';
 import { 
   InviteCode, 
   getInviteCodesByCompany, 
@@ -17,7 +18,6 @@ import {
 } from '@/data/inviteCodesMockData';
 
 export default function CompanyInvites() {
-  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
@@ -45,28 +45,19 @@ export default function CompanyInvites() {
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast({
-      title: "Código copiado",
-      description: "Código de convite copiado para a área de transferência.",
-    });
+    companyToasts.codesCopied(1);
   };
 
   const handleCopyInviteLink = (code: string) => {
     const link = `${window.location.origin}/register/employee?code=${code}`;
     navigator.clipboard.writeText(link);
-    toast({
-      title: "Link copiado",
-      description: "Link de convite copiado para a área de transferência.",
-    });
+    companyToasts.linkCopied();
   };
 
   const handleCopyAllActiveCodes = () => {
     const codes = activeCodes.map(code => code.code).join('\n');
     navigator.clipboard.writeText(codes);
-    toast({
-      title: "Códigos copiados",
-      description: `${activeCodes.length} códigos ativos copiados para a área de transferência.`,
-    });
+    companyToasts.codesCopied(activeCodes.length);
   };
 
   const handleGenerateMissingCodes = () => {
@@ -99,21 +90,18 @@ export default function CompanyInvites() {
       setInviteCodes(prev => [...prev, ...newCodes]);
       setLoading(false);
       
-      toast({
-        title: "Códigos gerados",
-        description: `${codesNeeded} novo${codesNeeded > 1 ? 's' : ''} código${codesNeeded > 1 ? 's' : ''} de convite gerado${codesNeeded > 1 ? 's' : ''}.`,
-      });
+      companyToasts.codesGenerated(codesNeeded);
     }, 1000);
   };
 
   const getStatusBadge = (status: InviteCode['status']) => {
     switch (status) {
       case 'active':
-        return <Badge variant="secondary">Ativo</Badge>;
+        return <Badge variant="secondary">{companyUIcopy.inviteCodes.status.active}</Badge>;
       case 'used':
-        return <Badge variant="default">Utilizado</Badge>;
+        return <Badge variant="default">{companyUIcopy.inviteCodes.status.used}</Badge>;
       case 'revoked':
-        return <Badge variant="destructive">Revogado</Badge>;
+        return <Badge variant="destructive">{companyUIcopy.inviteCodes.status.revoked}</Badge>;
       default:
         return <Badge variant="outline">Desconhecido</Badge>;
     }
@@ -189,7 +177,7 @@ export default function CompanyInvites() {
             variant="outline"
           >
             <Copy className="h-4 w-4 mr-2" />
-            Copiar códigos ativos ({activeCodes.length})
+            {companyUIcopy.inviteCodes.actions.copyActive} ({activeCodes.length})
           </Button>
           
           <Button
@@ -198,7 +186,7 @@ export default function CompanyInvites() {
             variant="outline"
           >
             <Plus className="h-4 w-4 mr-2" />
-            {loading ? 'A gerar...' : 'Gerar códigos em falta'}
+            {loading ? 'A gerar...' : companyUIcopy.inviteCodes.actions.generate}
           </Button>
           
           <Button variant="outline" onClick={() => {
@@ -222,13 +210,10 @@ export default function CompanyInvites() {
             document.body.removeChild(link);
             URL.revokeObjectURL(link.href);
 
-            toast({
-              title: "Exportação concluída",
-              description: `${activeCodes.length} códigos ativos exportados com sucesso.`,
-            });
+            companyToasts.dataExported();
           }}>
             <Download className="h-4 w-4 mr-2" />
-            Exportar códigos ativos
+            {companyUIcopy.inviteCodes.actions.export}
           </Button>
         </CardContent>
       </Card>
@@ -236,8 +221,7 @@ export default function CompanyInvites() {
       {/* Helper Text */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-blue-800 text-sm">
-          <strong>Instrução para a equipa:</strong> Cada colaborador usa 1 código para criar a sua conta. 
-          Partilhe os códigos ativos ou os links de convite diretamente com os novos colaboradores.
+          <strong>{companyUIcopy.inviteCodes.banner}</strong>
         </p>
       </div>
 
@@ -328,16 +312,16 @@ export default function CompanyInvites() {
                             variant="ghost"
                             onClick={() => handleCopyInviteLink(code.code)}
                             className="h-8 w-8 p-0"
-                            title="Copiar link de convite"
+                            title={companyUIcopy.inviteCodes.actions.copyLink}
                           >
                             <Share className="h-3 w-3" />
                           </Button>
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => toast({ title: "Em desenvolvimento", description: "QR Code em breve disponível." })}
+                            onClick={() => companyToasts.actionFailed("gerar QR Code – funcionalidade em breve")}
                             className="h-8 w-8 p-0"
-                            title="Gerar QR Code"
+                            title={companyUIcopy.inviteCodes.actions.qrCode}
                           >
                             <QrCode className="h-3 w-3" />
                           </Button>

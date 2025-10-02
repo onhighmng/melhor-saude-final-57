@@ -6,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
 import { Mail, User, Key, Eye, EyeOff, Building, Users } from 'lucide-react';
 import { Company } from "@/data/companyMockData";
+import { companyUIcopy } from "@/data/companyUIcopy";
+import { companyToasts } from "@/data/companyToastMessages";
 
 interface InviteEmployeeModalProps {
   isOpen: boolean;
@@ -26,7 +27,6 @@ interface InviteFormData {
 }
 
 export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess }: InviteEmployeeModalProps) {
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<InviteFormData>({
@@ -78,19 +78,14 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
 
       onInviteSuccess(newUser);
       
-      toast({
-        title: "Colaborador convidado com sucesso!",
-        description: `${formData.name} foi adicionado à empresa. Um email com as credenciais foi enviado para ${formData.email}.`
-      });
+      // Copy credentials to clipboard
+      navigator.clipboard.writeText(`Email: ${formData.email}\nPassword: ${formData.password}`);
+      companyToasts.employeeInvited();
       
       resetForm();
       onClose();
     } catch (error) {
-      toast({
-        title: "Erro ao convidar colaborador",
-        description: "Ocorreu um erro ao processar o convite. Tente novamente.",
-        variant: "destructive"
-      });
+      companyToasts.actionFailed("convidar colaborador");
     } finally {
       setIsSubmitting(false);
     }
@@ -107,7 +102,7 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Convidar Colaborador
+            {companyUIcopy.invite.modal.title}
           </DialogTitle>
           <DialogDescription>
             Adicione um novo colaborador à {company.name}. As credenciais de acesso serão enviadas por email.
@@ -246,10 +241,10 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
               disabled={isSubmitting || !formData.name || !formData.email || !formData.password}
               className="flex-1"
             >
-              {isSubmitting ? 'A enviar convite...' : 'Enviar Convite'}
+              {isSubmitting ? 'A enviar convite...' : companyUIcopy.invite.modal.submit}
             </Button>
             <Button type="button" variant="outline" onClick={handleClose}>
-              Cancelar
+              {companyUIcopy.invite.modal.cancel}
             </Button>
           </div>
         </form>

@@ -2,29 +2,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, TrendingUp, Calendar, Building2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { mockCompanies } from "@/data/companyMockData";
 import { SeatUsageCard } from "@/components/company/SeatUsageCard";
 import { InviteEmployeeButton } from "@/components/company/InviteEmployeeButton";
+import { InviteEmployeeModal } from "@/components/company/InviteEmployeeModal";
+import { companyUIcopy } from "@/data/companyUIcopy";
+import { companyToasts } from "@/data/companyToastMessages";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function CompanyDashboard() {
-  const { toast } = useToast();
-  // Mock data - in real app this would come from API/context
+  const navigate = useNavigate();
   const [company] = useState(mockCompanies[0]);
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   const handleInviteEmployee = () => {
-    toast({
-      title: "Convidar Colaborador",
-      description: "Funcionalidade de convite será implementada em breve."
-    });
+    setShowInviteModal(true);
   };
 
   const handleViewMonthlyReport = () => {
-    toast({
-      title: "Relatório Mensal",
-      description: "A gerar relatório com métricas de utilização e KPIs..."
-    });
+    navigate('/company/reports');
   };
 
   const handleExportData = () => {
@@ -55,17 +52,11 @@ export default function CompanyDashboard() {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
     
-    toast({
-      title: "Dados exportados",
-      description: "Ficheiro CSV gerado com sucesso."
-    });
+    companyToasts.dataExported();
   };
 
   const handleConfigureNotifications = () => {
-    toast({
-      title: "Notificações",
-      description: "A abrir painel de configuração de alertas e notificações..."
-    });
+    navigate('/company/settings');
   };
 
   return (
@@ -151,13 +142,13 @@ export default function CompanyDashboard() {
             </CardHeader>
             <CardContent className="space-y-2">
               <Button variant="outline" className="w-full justify-start" onClick={handleViewMonthlyReport}>
-                Ver Relatório Mensal
+                {companyUIcopy.dashboard.quickActions.viewReport}
               </Button>
               <Button variant="outline" className="w-full justify-start" onClick={handleExportData}>
-                Exportar Dados
+                {companyUIcopy.dashboard.quickActions.exportData}
               </Button>
               <Button variant="outline" className="w-full justify-start" onClick={handleConfigureNotifications}>
-                Configurar Notificações
+                {companyUIcopy.dashboard.quickActions.configureNotifications}
               </Button>
             </CardContent>
           </Card>
@@ -182,6 +173,16 @@ export default function CompanyDashboard() {
           </Card>
         </div>
       </div>
+
+      <InviteEmployeeModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        company={company}
+        onInviteSuccess={() => {
+          companyToasts.employeeInvited();
+          setShowInviteModal(false);
+        }}
+      />
     </div>
   );
 }

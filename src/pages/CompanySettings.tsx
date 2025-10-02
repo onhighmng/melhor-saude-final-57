@@ -8,6 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { companyUIcopy } from "@/data/companyUIcopy";
+import { companyToasts } from "@/data/companyToastMessages";
+import { UnsavedChangesBanner } from "@/components/company/UnsavedChangesBanner";
 import { 
   Settings,
   Users,
@@ -120,7 +123,6 @@ const defaultSettings: CompanySettings = {
 };
 
 const CompanySettings = () => {
-  const { toast } = useToast();
   const [settings, setSettings] = useState<CompanySettings>(defaultSettings);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [newCustomField, setNewCustomField] = useState({
@@ -146,11 +148,7 @@ const CompanySettings = () => {
 
   const addCustomField = () => {
     if (!newCustomField.name) {
-      toast({
-        title: "Campo obrigatório",
-        description: "O nome do campo é obrigatório.",
-        variant: "destructive"
-      });
+      companyToasts.actionFailed("adicionar campo – nome é obrigatório");
       return;
     }
 
@@ -183,11 +181,7 @@ const CompanySettings = () => {
 
   const addSupportContact = () => {
     if (!newContact.name || !newContact.email) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Nome e email são obrigatórios.",
-        variant: "destructive"
-      });
+      companyToasts.actionFailed("adicionar contacto – nome e email são obrigatórios");
       return;
     }
 
@@ -223,15 +217,15 @@ const CompanySettings = () => {
     console.log("Saving company settings:", settings);
     setHasUnsavedChanges(false);
     
-    toast({
-      title: "Configurações guardadas",
-      description: "Todas as alterações foram guardadas com sucesso.",
-    });
+    companyToasts.settingsSaved();
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8">
-      <div className="mx-auto max-w-4xl space-y-8">
+      {hasUnsavedChanges && <UnsavedChangesBanner onSave={handleSave} />}
+      
+      <div className="mx-auto max-w-4xl space-y-8"
+           style={{ paddingTop: hasUnsavedChanges ? '3rem' : '0' }}>
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -243,17 +237,10 @@ const CompanySettings = () => {
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
-            {hasUnsavedChanges && (
-              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                Alterações não guardadas
-              </Badge>
-            )}
-            <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
-              <Save className="h-4 w-4 mr-2" />
-              Guardar Alterações
-            </Button>
-          </div>
+          <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Save className="h-4 w-4 mr-2" />
+            {companyUIcopy.settings.save}
+          </Button>
         </div>
 
         {/* Company Information */}
@@ -364,7 +351,7 @@ const CompanySettings = () => {
               <div>
                 <Label className="text-sm font-medium">Permitir rollover de sessões</Label>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Sessões não utilizadas são transferidas para o próximo período
+                  {companyUIcopy.settings.rolloverTooltip}
                 </p>
               </div>
               <Switch
@@ -454,7 +441,7 @@ const CompanySettings = () => {
                 <div className="flex items-end">
                   <Button onClick={addCustomField} className="w-full">
                     <Plus className="h-4 w-4 mr-2" />
-                    Adicionar
+                    {companyUIcopy.settings.customFields.add}
                   </Button>
                 </div>
               </div>
@@ -621,7 +608,7 @@ const CompanySettings = () => {
               </div>
               <Button onClick={addSupportContact} className="w-full md:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
-                Adicionar Contacto
+                {companyUIcopy.settings.contacts.add}
               </Button>
             </div>
           </CardContent>
