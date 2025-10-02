@@ -47,6 +47,9 @@ const CompanyReports = lazy(() => import("./pages/CompanyReports"));
 const CompanySettings = lazy(() => import("./pages/CompanySettings"));
 const UserSessions = lazy(() => import("./pages/UserSessions"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
+const UserNotifications = lazy(() => import("./pages/UserNotifications"));
+const UserResources = lazy(() => import("./pages/UserResources"));
+const UserFeedback = lazy(() => import("./pages/UserFeedback"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const Terms = lazy(() => import("./pages/Terms"));
 const PrestadorSessionGuide = lazy(() => import("./pages/PrestadorSessionGuide"));
@@ -103,6 +106,9 @@ const AppWithTracking = () => {
           {/* User routes */}
           <Route path="/user/dashboard" element={<UserLayout><UserDashboard /></UserLayout>} />
           <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
+          <Route path="/user/notifications" element={<UserLayout><UserNotifications /></UserLayout>} />
+          <Route path="/user/resources" element={<UserLayout><UserResources /></UserLayout>} />
+          <Route path="/user/feedback/:sessionId" element={<UserLayout><UserFeedback /></UserLayout>} />
           <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
           <Route path="/user/book" element={<UserLayout><BookingFlow /></UserLayout>} />
           <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />

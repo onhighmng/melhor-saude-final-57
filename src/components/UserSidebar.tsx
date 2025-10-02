@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { LayoutDashboard, CalendarPlus, CalendarCheck, BookOpen, Settings, HelpCircle, FileText, LogOut } from "lucide-react"
+import { LayoutDashboard, CalendarPlus, CalendarCheck, BookOpen, Settings, HelpCircle, FileText, LogOut, Bell } from "lucide-react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -20,12 +20,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { SupportContact } from "@/components/ui/support-contact"
+import { NotificationBadge } from "@/components/notifications/NotificationBadge"
 
 const mainItems = [
   { title: "Dashboard", url: "/user/dashboard", icon: LayoutDashboard },
   { title: "Marcar sessão", url: "/user/book", icon: CalendarPlus },
   { title: "Minhas sessões", url: "/user/sessions", icon: CalendarCheck },
-  { title: "Ajuda", url: "/user/help", icon: BookOpen },
+  { title: "Notificações", url: "/user/notifications", icon: Bell, badge: 3 }, // Mock unread count
+  { title: "Recursos", url: "/user/resources", icon: BookOpen },
+  { title: "Ajuda", url: "/user/help", icon: HelpCircle },
   { title: "Definições", url: "/user/settings", icon: Settings },
 ]
 
@@ -118,7 +121,12 @@ export function UserSidebar() {
                     <SidebarMenuButton asChild size="lg">
                       <NavLink to={item.url} end className={getNavCls}>
                         <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                        {!isCollapsed && <span className="text-base">{item.title}</span>}
+                        {!isCollapsed && (
+                          <span className="text-base flex items-center justify-between flex-1">
+                            {item.title}
+                            {'badge' in item && item.badge && <NotificationBadge count={item.badge} />}
+                          </span>
+                        )}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItemWithTooltip>

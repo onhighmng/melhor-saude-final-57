@@ -8,6 +8,7 @@ import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/se
 import { mockBookings } from "@/data/mockData";
 import { QuotaDisplayCard } from "@/components/sessions/QuotaDisplayCard";
 import { SessionHistoryCard } from "@/components/sessions/SessionHistoryCard";
+import { userUIcopy } from "@/data/userUIcopy";
 
 export default function UserSessions() {
   const navigate = useNavigate();
@@ -37,11 +38,11 @@ export default function UserSessions() {
   );
 
   const handleViewDetails = (sessionId: string) => {
-    console.log('View details for session:', sessionId);
+    navigate(`/user/sessions`);
   };
 
   const handleReschedule = (sessionId: string) => {
-    console.log('Reschedule session:', sessionId);
+    navigate('/user/book');
   };
 
   const handleCancel = (sessionId: string) => {
@@ -52,10 +53,8 @@ export default function UserSessions() {
     <div className="container mx-auto p-6">
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Minhas Sessões</h1>
-          <p className="text-muted-foreground">
-            Histórico e próximas sessões agendadas
-          </p>
+          <h1 className="text-3xl font-bold text-foreground">{userUIcopy.sessions.title}</h1>
+          <p className="text-muted-foreground">{userUIcopy.sessions.subtitle}</p>
         </div>
 
         {/* Quota Display */}

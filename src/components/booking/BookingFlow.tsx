@@ -149,7 +149,7 @@ const BookingFlow = () => {
 
                 <div className="text-center mb-12">
                   <h1 className="text-3xl font-bold text-navy-blue mb-3">
-                    Escolha o Tipo de Assistência
+                    Como Prefere Obter Ajuda?
                   </h1>
                   <p className="text-royal-blue">
                     Selecione como prefere obter ajuda jurídica
@@ -172,7 +172,7 @@ const BookingFlow = () => {
                         Obtenha respostas imediatas através do nosso assistente inteligente especializado em questões jurídicas
                       </p>
                       <Button className="w-full mt-4">
-                        Falar com AI
+                        Experimentar Assistente Inteligente
                       </Button>
                     </div>
                   </Card>
@@ -192,7 +192,7 @@ const BookingFlow = () => {
                         Agende uma consulta personalizada com um dos nossos especialistas jurídicos
                       </p>
                       <Button className="w-full mt-4">
-                        Agendar Consulta
+                        Falar com um Especialista
                       </Button>
                     </div>
                   </Card>
@@ -310,7 +310,7 @@ const BookingFlow = () => {
                     
                     {selectedDate && selectedTime && (
                       <Button onClick={handleDateTimeConfirm} className="w-full mt-6">
-                        Confirmar Data e Hora
+                        Confirmar Sessão
                       </Button>
                     )}
                   </CardContent>
@@ -345,7 +345,7 @@ const BookingFlow = () => {
                         Voltar
                       </Button>
                       <Button onClick={handleBookingConfirm} className="flex-1">
-                        Confirmar Agendamento
+                        Confirmar Sessão
                       </Button>
                     </div>
                   </CardContent>

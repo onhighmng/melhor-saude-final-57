@@ -82,7 +82,7 @@ const UserDashboard = () => {
                 onClick={() => navigate('/user/book')}
               >
                 <Calendar className="mr-2 h-5 w-5" />
-                Marcar Nova Sessão
+                Agendar uma Sessão
               </Button>
             </CardContent>
           </Card>
@@ -174,7 +174,12 @@ const UserDashboard = () => {
                   );
                 })
               ) : (
-                <p className="text-sm text-muted-foreground py-4">Nenhuma sessão agendada</p>
+                <div className="text-center py-8">
+                  <p className="text-sm text-muted-foreground mb-4">Não tem sessões agendadas</p>
+                  <Button onClick={() => navigate('/user/book')} variant="outline">
+                    Marcar Primeira Sessão
+                  </Button>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -215,7 +220,12 @@ const UserDashboard = () => {
                   )}
                 </>
               ) : (
-                <p className="text-sm text-muted-foreground py-4">Nenhuma sessão concluída ainda</p>
+                <div className="text-center py-8">
+                  <p className="text-sm text-muted-foreground mb-4">Ainda não realizou sessões</p>
+                  <Button onClick={() => navigate('/user/book')} variant="outline" size="sm">
+                    Agendar Primeira Sessão
+                  </Button>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -236,9 +246,9 @@ const UserDashboard = () => {
                 <Button 
                   variant="outline" 
                   className="bg-white hover:bg-white/90 border-gray-200"
-                  onClick={() => navigate('/user/help')}
+                  onClick={() => navigate('/user/resources')}
                 >
-                  Explorar Recursos
+                  Explorar Recursos de Bem-Estar
                 </Button>
               </div>
             </div>
