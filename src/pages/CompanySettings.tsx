@@ -57,7 +57,6 @@ interface CompanySettings {
     name: string;
     email: string;
     role: string;
-    department: string;
   }>;
 }
 
@@ -109,15 +108,13 @@ const defaultSettings: CompanySettings = {
       id: "1",
       name: "Ana Silva",
       email: "ana.silva@techsolutions.com",
-      role: "HR Manager",
-      department: "Recursos Humanos"
+      role: "HR Manager"
     },
     {
       id: "2",
       name: "Carlos Santos",
       email: "carlos.santos@techsolutions.com", 
-      role: "Wellness Coordinator",
-      department: "Recursos Humanos"
+      role: "Wellness Coordinator"
     }
   ]
 };
@@ -134,8 +131,7 @@ const CompanySettings = () => {
   const [newContact, setNewContact] = useState({
     name: "",
     email: "",
-    role: "",
-    department: ""
+    role: ""
   });
 
   const updateSettings = (section: keyof CompanySettings, updates: any) => {
@@ -198,8 +194,7 @@ const CompanySettings = () => {
     setNewContact({
       name: "",
       email: "",
-      role: "",
-      department: ""
+      role: ""
     });
     setHasUnsavedChanges(true);
   };
@@ -547,9 +542,6 @@ const CompanySettings = () => {
                       <Badge variant="outline" className="text-xs">
                         {contact.role}
                       </Badge>
-                      <Badge variant="secondary" className="text-xs">
-                        {contact.department}
-                      </Badge>
                     </div>
                   </div>
                   <Button
@@ -594,15 +586,6 @@ const CompanySettings = () => {
                     value={newContact.role}
                     onChange={(e) => setNewContact({ ...newContact, role: e.target.value })}
                     placeholder="HR Manager, etc..."
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="contactDepartment">Departamento</Label>
-                  <Input
-                    id="contactDepartment"
-                    value={newContact.department}
-                    onChange={(e) => setNewContact({ ...newContact, department: e.target.value })}
-                    placeholder="Recursos Humanos, etc..."
                   />
                 </div>
               </div>

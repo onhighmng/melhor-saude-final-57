@@ -28,13 +28,7 @@ const pillarUsageData = [
   { name: "Assist. Jurídica", sessions: 23, noShows: 1, color: "#8B5CF6" }
 ];
 
-const departmentData = [
-  { department: "Tecnologia", employees: 45, adoptionRate: 89, averageSessions: 8.2 },
-  { department: "Marketing", employees: 23, adoptionRate: 76, averageSessions: 6.1 },
-  { department: "Recursos Humanos", employees: 12, adoptionRate: 94, averageSessions: 9.8 },
-  { department: "Vendas", employees: 38, adoptionRate: 65, averageSessions: 4.7 },
-  { department: "Operações", employees: 29, adoptionRate: 72, averageSessions: 5.9 }
-];
+// Department tracking removed for employee privacy
 
 const monthlyTrends = [
   { month: "Jan", sessions: 245, adoption: 68 },
@@ -60,14 +54,6 @@ const availableReports: Report[] = [
     name: "Relatório de Utilização por Pilar",
     description: "Distribuição de sessões por área de wellbeing",
     type: "usage",
-    frequency: "monthly",
-    lastGenerated: "2024-01-15"
-  },
-  {
-    id: "2",
-    name: "Taxa de Adesão por Departamento",
-    description: "Percentagem de colaboradores que utilizaram pelo menos uma sessão",
-    type: "adoption", 
     frequency: "monthly",
     lastGenerated: "2024-01-15"
   },
@@ -248,31 +234,28 @@ const CompanyReports = () => {
             </CardContent>
           </Card>
 
-          {/* Department Adoption */}
+          {/* Employee Engagement Overview */}
           <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">Adesão por Departamento</CardTitle>
+              <CardTitle className="text-lg font-semibold">Visão Geral de Engagement</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={departmentData} layout="horizontal">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis type="number" stroke="#888" />
-                  <YAxis dataKey="department" type="category" stroke="#888" fontSize={12} width={80} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px'
-                    }}
-                    formatter={(value, name) => [
-                      name === 'adoptionRate' ? `${value}%` : value,
-                      name === 'adoptionRate' ? 'Taxa Adesão' : name === 'employees' ? 'Colaboradores' : 'Média Sessões'
-                    ]}
-                  />
-                  <Bar dataKey="adoptionRate" fill="#10B981" name="Taxa de Adesão (%)" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="space-y-6">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">147</div>
+                    <div className="text-sm text-muted-foreground">Colaboradores Ativos</div>
+                  </div>
+                  <div className="p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">78%</div>
+                    <div className="text-sm text-muted-foreground">Taxa de Adesão</div>
+                  </div>
+                  <div className="p-4 bg-purple-50 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600">6.8</div>
+                    <div className="text-sm text-muted-foreground">Média Sessões</div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -381,53 +364,6 @@ const CompanyReports = () => {
           </CardContent>
         </Card>
 
-        {/* Department Details Table */}
-        <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Detalhes por Departamento</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left p-4 font-medium text-muted-foreground">Departamento</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Colaboradores</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Taxa Adesão</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Média Sessões</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {departmentData.map((dept, index) => (
-                    <tr key={index} className="border-b border-border hover:bg-muted/50">
-                      <td className="p-4 font-medium">{dept.department}</td>
-                      <td className="p-4">{dept.employees}</td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <span className={`font-medium ${dept.adoptionRate >= 80 ? 'text-green-600' : dept.adoptionRate >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
-                            {dept.adoptionRate}%
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-4">{dept.averageSessions}</td>
-                      <td className="p-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          dept.adoptionRate >= 80 ? 'bg-green-100 text-green-800' :
-                          dept.adoptionRate >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {dept.adoptionRate >= 80 ? 'Excelente' :
-                           dept.adoptionRate >= 60 ? 'Bom' : 'Necessita atenção'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
