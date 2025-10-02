@@ -18,7 +18,7 @@ const DemoFloatingButton = () => {
         size="lg"
       >
         <TestTube className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
-        <span className="font-medium">Demo</span>
+        <span className="font-medium">Demonstração</span>
       </Button>
     </div>
   );

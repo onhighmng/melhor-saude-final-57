@@ -22,10 +22,10 @@ const SectionHeader: React.FC = () => {
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}>
           <h2 className="font-semibold text-[40px] leading-[44px] tracking-[-0.4px] mb-4">
-            Financial membership that gets you ahead
+            Adesão financeira que o coloca à frente
           </h2>
           <p className="text-lg leading-6 tracking-[-0.072px] text-gray-700">
-            Everything you need to save more, spend responsibly, invest smarter, and get personalized guidance to reach your financial goals.
+            Tudo o que precisa para poupar mais, gastar com responsabilidade, investir de forma inteligente e obter orientação personalizada para alcançar os seus objetivos financeiros.
           </p>
         </div>
       </div>

@@ -31,11 +31,11 @@ const MainCloudsSection: React.FC = () => {
           >
             <div className="text-center text-navy-blue">
               <h3 className="text-[3.25em] leading-[57.2px] font-medium mb-3">
-                Membership<br />Benefits
+                Benefícios da<br />Adesão
               </h3>
               <div className="w-full max-w-[380px] mx-auto">
                 <p className="text-lg leading-6 tracking-[-0.072px] mb-0">
-                  One money membership.<br />Four game-changing benefits.
+                  Uma adesão completa.<br />Quatro benefícios transformadores.
                 </p>
               </div>
             </div>
@@ -49,24 +49,24 @@ const MainCloudsSection: React.FC = () => {
           >
             <div className="text-center text-navy-blue max-w-md">
               <h3 className="text-4xl font-medium mb-6">
-                Your Benefits
+                Os Seus Benefícios
               </h3>
               <div className="space-y-4 text-left">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-mint-green rounded-full flex items-center justify-center text-navy-blue font-bold">1</div>
-                  <span className="text-lg">Personal CFP® Guide</span>
+                  <span className="text-lg">Guia Financeiro Pessoal CFP®</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-mint-green rounded-full flex items-center justify-center text-navy-blue font-bold">2</div>
-                  <span className="text-lg">Custom Money System</span>
+                  <span className="text-lg">Sistema Financeiro Personalizado</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-mint-green rounded-full flex items-center justify-center text-navy-blue font-bold">3</div>
-                  <span className="text-lg">Smart Spending Card</span>
+                  <span className="text-lg">Cartão de Gastos Inteligente</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-mint-green rounded-full flex items-center justify-center text-navy-blue font-bold">4</div>
-                  <span className="text-lg">Automated Investing</span>
+                  <span className="text-lg">Investimento Automatizado</span>
                 </div>
               </div>
             </div>
@@ -80,16 +80,16 @@ const MainCloudsSection: React.FC = () => {
           >
             <div className="text-center text-navy-blue">
               <h3 className="text-4xl font-medium mb-6">
-                Ready to Get Started?
+                Pronto para Começar?
               </h3>
               <p className="text-lg mb-8 max-w-md mx-auto">
-                Join thousands who've transformed their financial future with Fruitful.
+                Junte-se a milhares que transformaram o seu futuro financeiro com a Fruitful.
               </p>
               <a 
                 href="https://my.fruitful.com/sign-up/start?promo=FIRSTMONTH50"
                 className="bg-royal-blue text-soft-white rounded-[20px] px-8 py-3 inline-block transition-colors duration-300 hover:bg-navy-blue"
               >
-                Start Your Journey
+                Comece a Sua Jornada
               </a>
             </div>
           </div>
