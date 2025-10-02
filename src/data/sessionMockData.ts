@@ -43,36 +43,8 @@ export interface SessionDeduction {
   payerSource: PayerSource;
 }
 
-// Helper to create session in 5 minutes from now
-const createUpcomingSession = (): Session => {
-  const now = new Date();
-  const sessionTime = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes from now
-  
-  return {
-    id: 'upcoming-demo',
-    userId: 'user123',
-    prestadorId: 'prest1',
-    prestadorName: 'Dra. Maria Costa',
-    date: sessionTime.toISOString().split('T')[0],
-    time: sessionTime.toTimeString().slice(0, 5),
-    status: 'confirmed',
-    pillar: 'saude_mental',
-    payerSource: 'company',
-    minutes: 60,
-    wasDeducted: false,
-    createdAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-    updatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    meetingPlatform: 'google_meet',
-    meetingLink: 'https://meet.google.com/demo-session-link',
-    meetingId: 'demo-session-link',
-    linkSentAt: now.toISOString(), // Link already sent (since it's <5 min away)
-    sessionType: 'individual'
-  };
-};
-
-// Mock sessions data
-export const mockSessions: Session[] = [
-  createUpcomingSession(), // Always 5 minutes from now
+// Static sessions data
+const staticSessions: Session[] = [
   {
     id: '1',
     userId: 'user123',
@@ -193,6 +165,41 @@ export const mockSessions: Session[] = [
     sessionType: 'individual'
   }
 ];
+
+// Helper to create session that's always 5 minutes from current time
+const createUpcomingSession = (): Session => {
+  const now = new Date();
+  const sessionTime = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes from now
+  
+  return {
+    id: 'upcoming-demo',
+    userId: 'user123',
+    prestadorId: 'prest1',
+    prestadorName: 'Dra. Maria Costa',
+    date: sessionTime.toISOString().split('T')[0],
+    time: sessionTime.toTimeString().slice(0, 5),
+    status: 'confirmed',
+    pillar: 'saude_mental',
+    payerSource: 'company',
+    minutes: 60,
+    wasDeducted: false,
+    createdAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+    updatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    meetingPlatform: 'google_meet',
+    meetingLink: 'https://meet.google.com/demo-session-link',
+    meetingId: 'demo-session-link',
+    linkSentAt: now.toISOString(), // Link already sent (since it's <5 min away)
+    sessionType: 'individual'
+  };
+};
+
+// Export function to get sessions with dynamically updated upcoming session
+export const getMockSessions = (): Session[] => {
+  return [createUpcomingSession(), ...staticSessions];
+};
+
+// Export static array for backward compatibility (but includes dynamic session)
+export const mockSessions: Session[] = getMockSessions();
 
 // Mock user balance
 export const mockUserBalance: UserBalance = {

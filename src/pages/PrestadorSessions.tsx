@@ -14,7 +14,7 @@ import { Calendar, Download, Filter, RefreshCw, ExternalLink, Users, Activity, C
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
-import { mockBookings } from '@/data/mockData';
+import { mockBookings, getMockBookings } from '@/data/mockData';
 
 interface SessionData {
   id: string;
@@ -24,6 +24,7 @@ interface SessionData {
   pillar: 'saude_mental' | 'assistencia_juridica' | 'assistencia_financeira' | 'bem_estar_fisico';
   status: SessionStatus;
   location: 'online' | 'presencial';
+
   duration: number;
   notes?: string;
   meeting_link?: string;
@@ -51,7 +52,7 @@ export default function PrestadorSessions() {
   const [pillarFilter, setPillarFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [sessions, setSessions] = useState<SessionData[]>(
-    mockBookings.map(booking => ({
+    getMockBookings().map(booking => ({
       id: booking.id,
       date: booking.date,
       time: booking.time,

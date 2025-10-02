@@ -1,6 +1,6 @@
 // Mock useBookings hook to replace Supabase calls
-import { useState } from 'react';
-import { mockBookings } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { getMockBookings } from '@/data/mockData';
 
 export interface Booking {
   id: string;
@@ -20,18 +20,33 @@ export interface Booking {
   };
 }
 
-const mockBookingStats = {
-  totalBookings: 15,
-  upcomingBookings: 3,
-  completedBookings: 12,
-  nextAppointment: mockBookings[0]
-};
-
 export const useBookings = () => {
-  const [allBookings] = useState<Booking[]>(mockBookings);
-  const [upcomingBookings] = useState<Booking[]>(mockBookings.slice(0, 3));
-  const [bookingStats] = useState(mockBookingStats);
+  const [allBookings, setAllBookings] = useState<Booking[]>([]);
+  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [loading] = useState(false);
+
+  // Update bookings to get fresh time calculation
+  useEffect(() => {
+    const updateBookings = () => {
+      const bookings = getMockBookings();
+      setAllBookings(bookings);
+      setUpcomingBookings(bookings.slice(0, 3));
+    };
+
+    updateBookings();
+    
+    // Refresh every 30 seconds to keep time accurate
+    const interval = setInterval(updateBookings, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const bookingStats = {
+    totalBookings: 15,
+    upcomingBookings: 3,
+    completedBookings: 12,
+    nextAppointment: upcomingBookings[0]
+  };
 
   const refetch = () => {
     // Mock refetch - do nothing since it's static data

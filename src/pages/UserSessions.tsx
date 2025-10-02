@@ -5,7 +5,7 @@ import { Calendar, Clock, User } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/sessionMockData";
-import { mockBookings } from "@/data/mockData";
+import { mockBookings, getMockBookings } from "@/data/mockData";
 import { QuotaDisplayCard } from "@/components/sessions/QuotaDisplayCard";
 import { SessionHistoryCard } from "@/components/sessions/SessionHistoryCard";
 import { userUIcopy } from "@/data/userUIcopy";
@@ -16,7 +16,7 @@ export default function UserSessions() {
   
   // Convert mockBookings to Session format
   const [sessions] = useState<Session[]>(
-    mockBookings.map(booking => ({
+    getMockBookings().map(booking => ({
       id: booking.id,
       userId: 'user123',
       prestadorId: 'prest123',

@@ -131,27 +131,36 @@ export const mockProviders = [
   }
 ];
 
-export const mockBookings = [
-  // Session starting in 2 minutes - Link should be visible NOW
-  {
+// Helper to create upcoming session that's always 5 minutes from now
+const createUpcomingSession = () => {
+  const now = new Date();
+  const sessionTime = new Date(now.getTime() + 5 * 60 * 1000);
+  const hours = String(sessionTime.getHours()).padStart(2, '0');
+  const minutes = String(sessionTime.getMinutes()).padStart(2, '0');
+  
+  return {
     id: 'book-now',
-    provider_name: 'Dra. Ana Silva',
+    provider_name: 'Dra. Maria Costa',
     provider_avatar: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png',
     pillar: 'saude_mental',
-    date: new Date().toISOString().split('T')[0],
-    time: `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes() + 2).padStart(2, '0')}`,
+    date: sessionTime.toISOString().split('T')[0],
+    time: `${hours}:${minutes}`,
     status: 'confirmed',
     session_type: 'individual',
-    notes: 'Sessão de terapia - Link disponível agora',
-    booking_date: new Date().toISOString(),
-    meeting_link: 'https://meet.google.com/live-session-now',
+    notes: 'Sessão de terapia - Começa em 5 minutos',
+    booking_date: now.toISOString(),
+    meeting_link: 'https://meet.google.com/demo-session-link',
     meeting_platform: 'Google Meet',
     prestadores: {
-      name: 'Dra. Ana Silva',
+      name: 'Dra. Maria Costa',
       pillar: 'saude_mental',
       avatar_url: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png'
     }
-  },
+  };
+};
+
+// Static bookings data
+const staticBookings = [
   // Upcoming confirmed session - Today
   {
     id: 'book-today',
@@ -284,6 +293,14 @@ export const mockBookings = [
     }
   }
 ];
+
+// Function to get bookings with dynamically updated upcoming session
+export const getMockBookings = () => {
+  return [createUpcomingSession(), ...staticBookings];
+};
+
+// Export for backward compatibility
+export const mockBookings = getMockBookings();
 
 export const mockSelfHelpContent = [
   {
