@@ -116,9 +116,9 @@ const AdminUsers = () => {
 
   const handleExportUsers = () => {
     const csv = [
-      ['Nome', 'Email', 'Empresa', 'Sessões Empresa', 'Sessões Pessoais', 'Status', 'Data Criação'].join(','),
+      ['Nome', 'Email', 'Empresa', 'Departamento', 'Sessões Empresa', 'Sessões Pessoais', 'Status', 'Data Criação'].join(','),
       ...filteredUsers.map(user => 
-        [user.name, user.email, user.company, user.companySessions, user.personalSessions, user.status, user.createdAt].join(',')
+        [user.name, user.email, user.company, user.department || '', user.companySessions, user.personalSessions, user.status, user.createdAt].join(',')
       )
     ].join('\n');
     
@@ -323,6 +323,7 @@ const AdminUsers = () => {
                 <TableRow>
                   <TableHead>Utilizador</TableHead>
                   <TableHead>Empresa</TableHead>
+                  <TableHead>Departamento</TableHead>
                   <TableHead>Sessões Disponíveis</TableHead>
                   <TableHead>Prestadores Fixos</TableHead>
                   <TableHead>Estado</TableHead>
@@ -332,7 +333,7 @@ const AdminUsers = () => {
               <TableBody>
                 {filteredUsers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       {searchQuery || statusFilter !== 'all' || companyFilter !== 'all' 
                         ? 'Nenhum utilizador encontrado com os filtros aplicados.' 
                         : 'Nenhum utilizador encontrado.'}
@@ -355,10 +356,13 @@ const AdminUsers = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <p className="font-medium">{user.company}</p>
-                      </TableCell>
-                      <TableCell>
+                       <TableCell>
+                         <p className="font-medium">{user.company}</p>
+                       </TableCell>
+                       <TableCell>
+                         <p className="text-sm text-muted-foreground">{user.department || '—'}</p>
+                       </TableCell>
+                       <TableCell>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">Empresa:</span>

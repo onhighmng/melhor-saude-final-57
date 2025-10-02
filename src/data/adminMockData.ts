@@ -5,6 +5,7 @@ export interface AdminUser {
   name: string;
   email: string;
   company: string;
+  department?: string;
   companySessions: number;
   personalSessions: number;
   usedCompanySessions: number;
@@ -41,6 +42,7 @@ export const mockUsers: AdminUser[] = [
     name: 'João Silva',
     email: 'joao@techcorp.pt',
     company: 'TechCorp Lda',
+    department: 'Tecnologia',
     companySessions: 12,
     personalSessions: 3,
     usedCompanySessions: 8,
@@ -57,6 +59,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Maria Oliveira',
     email: 'maria@healthplus.pt',
     company: 'HealthPlus SA',
+    department: 'Recursos Humanos',
     companySessions: 8,
     personalSessions: 5,
     usedCompanySessions: 3,
@@ -73,6 +76,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Carlos Santos',
     email: 'carlos@innovatelab.pt',
     company: 'InnovateLab',
+    department: 'Marketing',
     companySessions: 0,
     personalSessions: 8,
     usedCompanySessions: 0,
@@ -88,6 +92,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Ana Costa',
     email: 'ana.costa@startup.pt',
     company: 'StartupHub',
+    department: 'Vendas',
     companySessions: 15,
     personalSessions: 0,
     usedCompanySessions: 10,
@@ -104,6 +109,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Pedro Ferreira',
     email: 'pedro@consulting.pt',
     company: 'ConsultPro',
+    department: 'Operações',
     companySessions: 20,
     personalSessions: 5,
     usedCompanySessions: 15,
@@ -121,6 +127,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Rita Mendes',
     email: 'rita@techcorp.pt',
     company: 'TechCorp Lda',
+    department: 'Design',
     companySessions: 12,
     personalSessions: 2,
     usedCompanySessions: 5,
@@ -136,6 +143,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Tiago Pereira',
     email: 'tiago@mediagroup.pt',
     company: 'MediaGroup SA',
+    department: 'Produção',
     companySessions: 10,
     personalSessions: 4,
     usedCompanySessions: 2,
@@ -151,6 +159,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Luísa Rodrigues',
     email: 'luisa@healthplus.pt',
     company: 'HealthPlus SA',
+    department: 'Financeiro',
     companySessions: 8,
     personalSessions: 6,
     usedCompanySessions: 8,
@@ -168,6 +177,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Miguel Alves',
     email: 'miguel@innovatelab.pt',
     company: 'InnovateLab',
+    department: 'Investigação',
     companySessions: 0,
     personalSessions: 10,
     usedCompanySessions: 0,
@@ -184,6 +194,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Sofia Martins',
     email: 'sofia@consulting.pt',
     company: 'ConsultPro',
+    department: 'Legal',
     companySessions: 20,
     personalSessions: 0,
     usedCompanySessions: 12,
@@ -200,6 +211,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Bruno Sousa',
     email: 'bruno@startup.pt',
     company: 'StartupHub',
+    department: 'Produto',
     companySessions: 15,
     personalSessions: 3,
     usedCompanySessions: 6,
@@ -215,6 +227,7 @@ export const mockUsers: AdminUser[] = [
     name: 'Cláudia Lopes',
     email: 'claudia@mediagroup.pt',
     company: 'MediaGroup SA',
+    department: 'Comunicação',
     companySessions: 10,
     personalSessions: 5,
     usedCompanySessions: 9,
@@ -391,7 +404,6 @@ export const generateMockUserDetail = (user: AdminUser) => {
   return {
     ...user,
     phone: '+351 ' + Math.floor(900000000 + Math.random() * 100000000),
-    department: ['Tecnologia', 'Recursos Humanos', 'Vendas', 'Marketing', 'Operações'][Math.floor(Math.random() * 5)],
     dateOfBirth: new Date(1980 + Math.floor(Math.random() * 30), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
     fixedProviders: mappedFixedProviders,
     changeRequests: generateChangeRequests(user.id),

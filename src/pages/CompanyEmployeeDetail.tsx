@@ -35,7 +35,6 @@ interface EmployeeDetail {
   email: string;
   avatar?: string;
   status: "active" | "inactive";
-  department: string;
   joinDate: string;
   companySessions: number;
   personalSessions: number;
@@ -56,7 +55,6 @@ const mockEmployee: EmployeeDetail = {
   email: "ana.silva@empresa.com",
   avatar: "/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png",
   status: "active",
-  department: "Tecnologia",
   joinDate: "2023-03-15",
   companySessions: 12,
   personalSessions: 3,
@@ -257,10 +255,6 @@ const CompanyEmployeeDetail = () => {
               </div>
 
               <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Departamento:</span>
-                  <span className="text-sm">{employee.department}</span>
-                </div>
                 <div className="flex justify-between">
                   <span className="text-sm font-medium">Data de entrada:</span>
                   <span className="text-sm">{new Date(employee.joinDate).toLocaleDateString('pt-PT')}</span>

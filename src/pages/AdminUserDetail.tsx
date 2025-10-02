@@ -38,6 +38,7 @@ interface UserDetail {
   name: string;
   email: string;
   company: string;
+  department?: string;
   companySessions: number;
   personalSessions: number;
   usedCompanySessions: number;
@@ -320,6 +321,12 @@ const AdminUserDetail = () => {
                     <Label>Empresa</Label>
                     <Input value={user.company} readOnly className="mt-1" />
                   </div>
+                  {user.department && (
+                    <div>
+                      <Label>Departamento</Label>
+                      <Input value={user.department} readOnly className="mt-1" />
+                    </div>
+                  )}
                   <div>
                     <Label>Data de Criação</Label>
                     <Input value={new Date(user.createdAt).toLocaleDateString('pt-PT')} readOnly className="mt-1" />
