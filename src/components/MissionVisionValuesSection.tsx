@@ -1,22 +1,25 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const MissionVisionValuesSection = () => {
+  const { t } = useTranslation('common');
+  
   const cards = [
     {
-      title: "Nossa Missão",
-      content: "Promovemos o bem-estar integral dos colaboradores através de soluções digitais seguras, personalizadas e sustentadas nos quatro pilares da saúde: psicológica, jurídica, financeira e física. Nosso objetivo é ajudar as empresas a criar ambientes de trabalho saudáveis, positivos e sustentáveis, onde todos possam prosperar com equilíbrio e autonomia.",
+      title: t('mission.title'),
+      content: t('mission.content'),
       gradient: "from-vibrant-blue/10 to-sky-blue/10",
       border: "border-vibrant-blue"
     },
     {
-      title: "Nossa Visão", 
-      content: "Queremos ser a principal referência nacional em soluções de bem-estar corporativo. Trabalhamos para construir uma nova cultura organizacional em Moçambique — mais consciente, humana e comprometida com o cuidado completo e contínuo dos colaboradores em todas as áreas essenciais da sua vida.",
+      title: t('vision.title'), 
+      content: t('vision.content'),
       gradient: "from-sky-blue/10 to-mint-green/10",
       border: "border-sky-blue"
     },
     {
-      title: "Nossos Valores",
-      content: "Agimos com ética, transparência e foco humano. Valorizamos a confidencialidade, o uso responsável da tecnologia e a escuta ativa. Acreditamos no impacto real dos cuidados psicológicos, jurídicos, financeiros e físicos — com soluções mensuráveis, acessíveis e centradas nas necessidades de cada pessoa.",
+      title: t('values.title'),
+      content: t('values.content'),
       gradient: "from-mint-green/10 to-accent-sage/10", 
       border: "border-mint-green"
     }

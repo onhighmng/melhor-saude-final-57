@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionContent,
@@ -95,7 +96,7 @@ const FAQSection = () => {
     >
       <div className="w-full px-4 sm:px-6 lg:px-12">
         <h3 className="text-center text-h1 mt-0 mb-8 sm:mb-12 lg:mb-16">
-          Perguntas Frequentes
+          {t('faq.title')}
         </h3>
         
         <div className="w-full max-w-6xl mx-auto px-0 sm:px-4 md:px-8 lg:px-16 relative">

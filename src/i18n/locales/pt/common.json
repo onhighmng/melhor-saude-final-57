@@ -46,5 +46,222 @@
     "lastWeek": "Semana Passada",
     "thisMonth": "Este Mês",
     "lastMonth": "Mês Passado"
+  },
+  "hero": {
+    "mainTitle": "Melhor Saúde",
+    "subtitle": "Cuidamos da sua saúde mental e bem-estar com profissionais qualificados e uma plataforma completa.",
+    "startNow": "Começar Agora",
+    "learnMore": "Saber Mais"
+  },
+  "about": {
+    "title": "Sobre Nós",
+    "description": "A Melhor Saúde é a plataforma líder em bem-estar corporativo em Moçambique, criada para transformar a forma como as empresas cuidam das suas pessoas. Nascemos da necessidade de soluções completas, acessíveis e eficazes, que promovam ambientes organizacionais mais fortes, humanos e produtivos. Unimos tecnologia, confiança profissional e uma abordagem centrada nas pessoas para conectar empresas, colaboradores e especialistas em saúde e bem-estar. Atuamos com rigor ético, valorizando a confidencialidade e o sigilo profissional em todos os atendimentos, e oferecemos um cuidado humanizado, estratégico e digital que redefine a experiência de bem-estar no meio corporativo."
+  },
+  "mission": {
+    "title": "Nossa Missão",
+    "content": "Promovemos o bem-estar integral dos colaboradores através de soluções digitais seguras, personalizadas e sustentadas nos quatro pilares da saúde: psicológica, jurídica, financeira e física. Nosso objetivo é ajudar as empresas a criar ambientes de trabalho saudáveis, positivos e sustentáveis, onde todos possam prosperar com equilíbrio e autonomia."
+  },
+  "vision": {
+    "title": "Nossa Visão",
+    "content": "Queremos ser a principal referência nacional em soluções de bem-estar corporativo. Trabalhamos para construir uma nova cultura organizacional em Moçambique — mais consciente, humana e comprometida com o cuidado completo e contínuo dos colaboradores em todas as áreas essenciais da sua vida."
+  },
+  "values": {
+    "title": "Nossos Valores",
+    "content": "Agimos com ética, transparência e foco humano. Valorizamos a confidencialidade, o uso responsável da tecnologia e a escuta ativa. Acreditamos no impacto real dos cuidados psicológicos, jurídicos, financeiros e físicos — com soluções mensuráveis, acessíveis e centradas nas necessidades de cada pessoa."
+  },
+  "pillars": {
+    "sectionTitle": "Os 4 Pilares",
+    "subtitle": "do Bem-Estar da Melhor Saúde",
+    "psychological": {
+      "title": "Saúde Psicológica",
+      "description": "Cuidar da saúde mental é essencial para manter o equilíbrio emocional, a produtividade e a qualidade de vida no ambiente de trabalho.",
+      "features": [
+        "Sessões individuais com psicólogos certificados",
+        "Atendimento em situações de crise emocional",
+        "Aconselhamento sobre stress laboral e burnout",
+        "Programas de mindfulness e autocuidado",
+        "Apoio psicológico 24/7",
+        "Terapia de grupo especializada"
+      ]
+    },
+    "financial": {
+      "title": "Saúde Financeira",
+      "description": "Reduzir o stress financeiro através de literacia financeira abrangente e apoio prático na gestão económica pessoal e familiar.",
+      "features": [
+        "Sessões com consultores financeiros certificados",
+        "Apoio na elaboração de orçamentos personalizados",
+        "Programas educativos sobre gestão de dinheiro",
+        "Orientação para reorganizar finanças",
+        "Planeamento de poupanças e investimentos",
+        "Renegociação de dívidas"
+      ]
+    },
+    "physical": {
+      "title": "Saúde Física",
+      "description": "Promover vitalidade e bem-estar através de medicina preventiva, nutrição balanceada e programas de exercício físico adaptados ao ambiente empresarial.",
+      "features": [
+        "Acesso a médicos e nutricionistas qualificados",
+        "Planos alimentares personalizados",
+        "Programas de exercício e pausas ativas",
+        "Avaliações de saúde ocupacional",
+        "Fisioterapia e reabilitação",
+        "Rastreios de saúde regulares"
+      ]
+    },
+    "legal": {
+      "title": "Saúde Jurídica e Social",
+      "description": "Segurança jurídica é parte essencial do bem-estar, permitindo decisões informadas e proteção legal completa para colaboradores e suas famílias.",
+      "features": [
+        "Consultoria com advogados especializados",
+        "Esclarecimento sobre contratos e direitos",
+        "Acompanhamento preventivo para evitar litígios",
+        "Direito da família e civil",
+        "Direito do trabalho",
+        "Representação legal quando necessário"
+      ]
+    }
+  },
+  "carousel": {
+    "title": "Nossos Pilares em Ação",
+    "subtitle": "Descubra como transformamos o bem-estar corporativo através dos nossos quatro pilares fundamentais",
+    "autoScroll": "Carrossel automático",
+    "slides": "slides",
+    "learnMore": "Saiba Mais",
+    "physicalWellness": {
+      "title": "Bem-estar Físico",
+      "subtitle": "Saúde e Vitalidade",
+      "description": "Promovemos vitalidade através de medicina preventiva, nutrição balanceada e programas de exercício físico adaptados ao ambiente empresarial."
+    },
+    "mentalHealth": {
+      "title": "Saúde Mental",
+      "subtitle": "Equilíbrio Emocional",
+      "description": "Cuidar da saúde mental é essencial para manter o equilíbrio emocional, a produtividade e a qualidade de vida no ambiente de trabalho."
+    },
+    "legalAssistance": {
+      "title": "Assistência Jurídica",
+      "subtitle": "Segurança Legal",
+      "description": "Segurança jurídica é parte essencial do bem-estar, permitindo decisões informadas e proteção legal completa para colaboradores e suas famílias."
+    },
+    "financialAssistance": {
+      "title": "Assistência Financeira",
+      "subtitle": "Estabilidade Económica",
+      "description": "Reduzir o stress financeiro através de literacia financeira abrangente e apoio prático na gestão económica pessoal e familiar."
+    },
+    "golfEvent": {
+      "title": "Executive Golf Experience",
+      "subtitle": "Evento Especial",
+      "description": "Junte-se a nós no prestigiado torneio de golfe executivo. Uma oportunidade única de networking e bem-estar para líderes empresariais."
+    }
+  },
+  "clouds": {
+    "mainTitle": "Os 4 Pilares do Bem-estar Corporativo",
+    "subtitle": "A nossa abordagem holística ao bem-estar empresarial baseia-se em quatro pilares fundamentais.",
+    "results": {
+      "title": "Resultados Comprovados",
+      "satisfaction": "Satisfação",
+      "lessAbsenteeism": "Menos absentismo",
+      "support": "Suporte"
+    },
+    "implementPillars": "Implementar os 4 Pilares",
+    "psychological": {
+      "title": "Saúde Psicológica",
+      "description": "Consultas de psicologia, gestão de stress e programas de bem-estar emocional.",
+      "features": [
+        "Apoio psicológico 24/7",
+        "Prevenção do burnout",
+        "Terapia de grupo"
+      ]
+    },
+    "financial": {
+      "title": "Saúde Financeira",
+      "description": "Planeamento financeiro e educação para reduzir o stress económico.",
+      "features": [
+        "Consultoria financeira",
+        "Educação financeira",
+        "Renegociação de dívidas"
+      ]
+    },
+    "physical": {
+      "title": "Saúde Física",
+      "description": "Programas de exercício e nutrição para um desempenho sustentável.",
+      "features": [
+        "Exercício no local de trabalho",
+        "Consultas de nutrição",
+        "Rastreios de saúde"
+      ]
+    },
+    "legal": {
+      "title": "Saúde Jurídica e Social",
+      "description": "Consultoria jurídica completa para questões pessoais e familiares.",
+      "features": [
+        "Direito da família e civil",
+        "Direito do trabalho",
+        "Representação legal"
+      ]
+    }
+  },
+  "faq": {
+    "title": "Perguntas Frequentes",
+    "questions": {
+      "whatIs": {
+        "question": "O que é a Melhor Saúde?",
+        "intro": "A Melhor Saúde é uma plataforma digital de bem-estar corporativo líder em Moçambique que oferece quatro pilares essenciais:",
+        "mental": "Saúde mental: Sessões individuais com psicólogos certificados, apoio 24/7 e terapia de grupo especializada.",
+        "physical": "Bem estar físico: Acesso a médicos e nutricionistas, planos alimentares personalizados e programas de exercício.",
+        "financial": "Assistência financeira: Consultoria com especialistas certificados, elaboração de orçamentos e planeamento de investimentos.",
+        "legal": "Assistência Jurídica: Consultoria com advogados especializados em direito da família, civil e do trabalho."
+      },
+      "howToBook": {
+        "question": "Como funciona o agendamento de sessões?",
+        "answer": "O agendamento é simples: escolha um dos quatro pilares (Saúde mental, Bem estar físico, Assistência financeira ou Assistência Jurídica), e o sistema atribui automaticamente um prestador disponível especializado na área. Pode agendar sessões online ou presenciais através da nossa plataforma."
+      },
+      "sessionsQuota": {
+        "question": "Quantas sessões tenho direito?",
+        "answer": "O número de sessões varia conforme o seu plano. Empresas recebem quotas mensais baseadas no número de colaboradores, enquanto utilizadores individuais têm planos mensais, trimestrais ou anuais. Pode verificar o seu saldo de sessões disponíveis na sua conta pessoal."
+      },
+      "individualPlans": {
+        "question": "Quanto custam os planos individuais?",
+        "intro": "Oferecemos três opções de planos individuais:",
+        "monthly": "Mensal: MZN 7,599 por mês",
+        "quarterly": "Trimestral: MZN 6,649 por mês (MZN 19,947 a cada 3 meses) - Mais popular",
+        "annual": "Anual: MZN 6,019 por mês (MZN 72,228 por ano) - Melhor valor",
+        "access": "Todos os planos incluem acesso completo aos quatro pilares de bem-estar."
+      },
+      "businessPlans": {
+        "question": "Há planos para empresas?",
+        "intro": "Sim, oferecemos soluções empresariais personalizadas:",
+        "small": "Equipas Pequenas: A partir de MZN 6,019 por utilizador/mês com descontos por volume.",
+        "large": "Empresas Grandes: Preços personalizados com integração com RH, gestão centralizada e suporte dedicado.",
+        "contact": "Entre em contacto connosco para uma proposta personalizada para a sua empresa."
+      },
+      "selfHelp": {
+        "question": "Posso aceder a conteúdo de autoajuda?",
+        "answer": "Sim! A nossa plataforma inclui uma secção de Self-Help com artigos educativos organizados por categorias como gestão de stress, nutrição, exercício físico e bem-estar mental. Também oferecemos testes psicológicos para autoavaliação."
+      },
+      "providers": {
+        "question": "Que tipos de prestadores estão disponíveis?",
+        "answer": "Temos uma rede de prestadores certificados em cada pilar: psicólogos clínicos, médicos de família, nutricionistas, fisioterapeutas, consultores financeiros certificados, advogados especializados em direito da família, civil e do trabalho. Todos os prestadores são rigorosamente selecionados e certificados."
+      },
+      "confidentiality": {
+        "question": "As consultas são confidenciais?",
+        "answer": "Absolutamente. Respeitamos a privacidade e dignidade de cada utilizador com o mais alto grau de sigilo profissional. Todas as sessões são confidenciais e os dados são protegidos conforme as melhores práticas de segurança. Nenhuma informação é partilhada com empregadores ou terceiros sem consentimento expresso."
+      },
+      "sessionTypes": {
+        "question": "Posso ter sessões presenciais ou são apenas online?",
+        "answer": "Oferecemos ambas as opções. Pode escolher entre sessões online (através de videochamada) ou presenciais, dependendo da disponibilidade do prestador e da sua localização. As sessões online proporcionam maior flexibilidade, enquanto as presenciais oferecem contacto directo."
+      },
+      "cancelReschedule": {
+        "question": "Como posso cancelar ou alterar uma sessão agendada?",
+        "answer": "Pode gerir os seus agendamentos através da sua conta pessoal na plataforma. Para cancelar ou reagendar uma sessão, aceda ao seu histórico de agendamentos e selecione as opções disponíveis. Recomendamos pelo menos 24 horas de antecedência para alterações."
+      },
+      "extraServices": {
+        "question": "Há serviços extras disponíveis?",
+        "answer": "Sim, oferecemos serviços extras especializados além dos quatro pilares principais. Estes incluem workshops corporativos, avaliações de saúde ocupacional, programas de bem-estar personalizados e outros serviços complementares. Pode consultar e solicitar serviços extras através da plataforma."
+      },
+      "getStarted": {
+        "question": "Como posso começar a usar a plataforma?",
+        "answer": "É simples: registe-se na plataforma, escolha o seu plano (individual ou empresarial), complete o seu perfil e comece a agendar sessões. Novos utilizadores podem experimentar a plataforma e, se não estiverem satisfeitos, podem cancelar dentro do período de garantia."
+      }
+    }
   }
 }
