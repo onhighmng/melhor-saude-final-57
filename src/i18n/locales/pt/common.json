@@ -408,5 +408,39 @@
       "title": "Nossos Valores",
       "content": "Agimos com ética, transparência e foco humano. Valorizamos a confidencialidade, o uso responsável da tecnologia e a escuta ativa. Acreditamos no impacto real dos cuidados psicológicos, jurídicos, financeiros e físicos — com soluções mensuráveis, acessíveis e centradas nas necessidades de cada pessoa."
     }
+  },
+  "heroImages": {
+    "mentalHealth": "Saúde Mental",
+    "financialWellbeing": "Bem-estar Financeiro",
+    "physicalWellbeing": "Bem-estar Físico",
+    "balance": "Equilíbrio",
+    "neuralConnections": "Conexões Neurais",
+    "planning": "Planeamento"
+  },
+  "testimonials": {
+    "title": "Já ajudámos mais de 2.000 colaboradores a alcançar os seus objetivos",
+    "subtitle": "Não aceite apenas a nossa palavra. Ouça as suas histórias inspiradoras.*"
+  },
+  "guides": {
+    "playingWithSound": "A reproduzir com som",
+    "browserNotSupported": "O seu navegador não suporta a etiqueta de vídeo.",
+    "steps": {
+      "chooseSpecialist": {
+        "title": "Escolha o seu especialista",
+        "description": "Selecione entre os nossos profissionais qualificados nas áreas de psicologia, direito, finanças e fitness."
+      },
+      "bookSession": {
+        "title": "Agende uma consulta",
+        "description": "Marque uma sessão individual ou em grupo, presencial ou online, conforme a sua preferência."
+      },
+      "developPlan": {
+        "title": "Desenvolva o seu plano",
+        "description": "Trabalhe com o especialista para criar um plano personalizado de bem-estar integral."
+      },
+      "trackProgress": {
+        "title": "Acompanhe o progresso",
+        "description": "Monitorize os seus resultados e ajuste o plano conforme necessário com apoio contínuo."
+      }
+    }
   }
 }

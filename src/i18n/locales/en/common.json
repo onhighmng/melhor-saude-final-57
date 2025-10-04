@@ -408,5 +408,39 @@
       "title": "Our Values",
       "content": "We act with ethics, transparency, and human focus. We value confidentiality, responsible use of technology, and active listening. We believe in the real impact of psychological, legal, financial, and physical care — with measurable, accessible solutions centered on each person's needs."
     }
+  },
+  "heroImages": {
+    "mentalHealth": "Mental Health",
+    "financialWellbeing": "Financial Wellbeing",
+    "physicalWellbeing": "Physical Wellbeing",
+    "balance": "Balance",
+    "neuralConnections": "Neural Connections",
+    "planning": "Planning"
+  },
+  "testimonials": {
+    "title": "We've helped over 2,000 employees achieve their goals",
+    "subtitle": "Don't just take our word for it. Hear their inspiring stories.*"
+  },
+  "guides": {
+    "playingWithSound": "Playing with sound",
+    "browserNotSupported": "Your browser does not support the video tag.",
+    "steps": {
+      "chooseSpecialist": {
+        "title": "Choose your specialist",
+        "description": "Select from our qualified professionals in psychology, law, finance, and fitness."
+      },
+      "bookSession": {
+        "title": "Book a consultation",
+        "description": "Schedule an individual or group session, in-person or online, according to your preference."
+      },
+      "developPlan": {
+        "title": "Develop your plan",
+        "description": "Work with the specialist to create a personalized integrated wellness plan."
+      },
+      "trackProgress": {
+        "title": "Track your progress",
+        "description": "Monitor your results and adjust the plan as needed with ongoing support."
+      }
+    }
   }
 }

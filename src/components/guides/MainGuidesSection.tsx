@@ -1,8 +1,9 @@
-
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useScrollAnimation } from './ScrollAnimationProvider';
 
 const MainGuidesSection: React.FC = () => {
+  const { t } = useTranslation('common');
   const {
     currentStep,
     sectionRef
@@ -117,7 +118,7 @@ const MainGuidesSection: React.FC = () => {
               >
                 <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.webm" type="video/webm" />
                 <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
+                {t('guides.browserNotSupported')}
               </video>
             </div>
             
@@ -126,7 +127,7 @@ const MainGuidesSection: React.FC = () => {
               <div className="mt-4 flex items-center justify-center">
                 <div className="flex items-center gap-2 px-3 py-2 bg-primary/10 rounded-full animate-fade-in">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                  <span className="text-sm text-primary font-medium">Playing with sound</span>
+                  <span className="text-sm text-primary font-medium">{t('guides.playingWithSound')}</span>
                 </div>
               </div>
             )}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ZoomParallax } from '@/components/ui/zoom-parallax';
 import heroBrain from '@/assets/hero-brain.jpg';
 import heroCalculator from '@/assets/hero-calculator.jpg';
@@ -8,6 +9,7 @@ import heroNeural from '@/assets/hero-neural.jpg';
 import heroPlanning from '@/assets/hero-planning.jpg';
 
 const HeroSection = () => {
+  const { t } = useTranslation('common');
   const videoRef = useRef<HTMLVideoElement>(null);
   
   useEffect(() => {
@@ -29,27 +31,27 @@ const HeroSection = () => {
   const images = [
     {
       src: heroBrain,
-      alt: 'Saúde Mental',
+      alt: t('heroImages.mentalHealth'),
     },
     {
       src: heroCalculator,
-      alt: 'Bem-estar Financeiro',
+      alt: t('heroImages.financialWellbeing'),
     },
     {
       src: heroFitness,
-      alt: 'Bem-estar Físico',
+      alt: t('heroImages.physicalWellbeing'),
     },
     {
       src: heroBalance,
-      alt: 'Equilíbrio',
+      alt: t('heroImages.balance'),
     },
     {
       src: heroNeural,
-      alt: 'Conexões Neurais',
+      alt: t('heroImages.neuralConnections'),
     },
     {
       src: heroPlanning,
-      alt: 'Planeamento',
+      alt: t('heroImages.planning'),
     },
   ];
 
