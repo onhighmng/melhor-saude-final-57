@@ -12,83 +12,83 @@ const FAQSection = () => {
   
   const faqData = [
     {
-      question: "O que é a Melhor Saúde?",
+      question: t('faq.questions.whatIs.question'),
       answer: (
         <div>
-          <p>A Melhor Saúde é uma plataforma digital de bem-estar corporativo líder em Moçambique que oferece quatro pilares essenciais:</p>
+          <p>{t('faq.questions.whatIs.intro')}</p>
           <br />
-          <p><strong>1. Saúde mental:</strong> Sessões individuais com psicólogos certificados, apoio 24/7 e terapia de grupo especializada.</p>
+          <p><strong>1.</strong> {t('faq.questions.whatIs.mental')}</p>
           <br />
-          <p><strong>2. Bem estar físico:</strong> Acesso a médicos e nutricionistas, planos alimentares personalizados e programas de exercício.</p>
+          <p><strong>2.</strong> {t('faq.questions.whatIs.physical')}</p>
           <br />
-          <p><strong>3. Assistência financeira:</strong> Consultoria com especialistas certificados, elaboração de orçamentos e planeamento de investimentos.</p>
+          <p><strong>3.</strong> {t('faq.questions.whatIs.financial')}</p>
           <br />
-          <p><strong>4. Assistência Jurídica:</strong> Consultoria com advogados especializados em direito da família, civil e do trabalho.</p>
+          <p><strong>4.</strong> {t('faq.questions.whatIs.legal')}</p>
         </div>
       )
     },
     {
-      question: "Como funciona o agendamento de sessões?",
-      answer: "O agendamento é simples: escolha um dos quatro pilares (Saúde mental, Bem estar físico, Assistência financeira ou Assistência Jurídica), e o sistema atribui automaticamente um prestador disponível especializado na área. Pode agendar sessões online ou presenciais através da nossa plataforma."
+      question: t('faq.questions.howToBook.question'),
+      answer: t('faq.questions.howToBook.answer')
     },
     {
-      question: "Quantas sessões tenho direito?",
-      answer: "O número de sessões varia conforme o seu plano. Empresas recebem quotas mensais baseadas no número de colaboradores, enquanto utilizadores individuais têm planos mensais, trimestrais ou anuais. Pode verificar o seu saldo de sessões disponíveis na sua conta pessoal."
+      question: t('faq.questions.sessionsQuota.question'),
+      answer: t('faq.questions.sessionsQuota.answer')
     },
     {
-      question: "Quanto custam os planos individuais?",
+      question: t('faq.questions.individualPlans.question'),
       answer: (
         <div>
-          <p>Oferecemos três opções de planos individuais:</p>
+          <p>{t('faq.questions.individualPlans.intro')}</p>
           <br />
-          <p><strong>Mensal:</strong> MZN 7,599 por mês</p>
-          <p><strong>Trimestral:</strong> MZN 6,649 por mês (MZN 19,947 a cada 3 meses) - Mais popular</p>
-          <p><strong>Anual:</strong> MZN 6,019 por mês (MZN 72,228 por ano) - Melhor valor</p>
+          <p><strong>{t('faq.questions.individualPlans.monthly')}</strong></p>
+          <p><strong>{t('faq.questions.individualPlans.quarterly')}</strong></p>
+          <p><strong>{t('faq.questions.individualPlans.annual')}</strong></p>
           <br />
-          <p>Todos os planos incluem acesso completo aos quatro pilares de bem-estar.</p>
+          <p>{t('faq.questions.individualPlans.access')}</p>
         </div>
       )
     },
     {
-      question: "Há planos para empresas?",
+      question: t('faq.questions.businessPlans.question'),
       answer: (
         <div>
-          <p>Sim, oferecemos soluções empresariais personalizadas:</p>
+          <p>{t('faq.questions.businessPlans.intro')}</p>
           <br />
-          <p><strong>Equipas Pequenas:</strong> A partir de MZN 6,019 por utilizador/mês com descontos por volume.</p>
-          <p><strong>Empresas Grandes:</strong> Preços personalizados com integração com RH, gestão centralizada e suporte dedicado.</p>
+          <p><strong>{t('faq.questions.businessPlans.small')}</strong></p>
+          <p><strong>{t('faq.questions.businessPlans.large')}</strong></p>
           <br />
-          <p>Entre em contacto connosco para uma proposta personalizada para a sua empresa.</p>
+          <p>{t('faq.questions.businessPlans.contact')}</p>
         </div>
       )
     },
     {
-      question: "Posso aceder a conteúdo de autoajuda?",
-      answer: "Sim! A nossa plataforma inclui uma secção de Self-Help com artigos educativos organizados por categorias como gestão de stress, nutrição, exercício físico e bem-estar mental. Também oferecemos testes psicológicos para autoavaliação."
+      question: t('faq.questions.selfHelp.question'),
+      answer: t('faq.questions.selfHelp.answer')
     },
     {
-      question: "Que tipos de prestadores estão disponíveis?",
-      answer: "Temos uma rede de prestadores certificados em cada pilar: psicólogos clínicos, médicos de família, nutricionistas, fisioterapeutas, consultores financeiros certificados, advogados especializados em direito da família, civil e do trabalho. Todos os prestadores são rigorosamente selecionados e certificados."
+      question: t('faq.questions.providers.question'),
+      answer: t('faq.questions.providers.answer')
     },
     {
-      question: "As consultas são confidenciais?",
-      answer: "Absolutamente. Respeitamos a privacidade e dignidade de cada utilizador com o mais alto grau de sigilo profissional. Todas as sessões são confidenciais e os dados são protegidos conforme as melhores práticas de segurança. Nenhuma informação é partilhada com empregadores ou terceiros sem consentimento expresso."
+      question: t('faq.questions.confidentiality.question'),
+      answer: t('faq.questions.confidentiality.answer')
     },
     {
-      question: "Posso ter sessões presenciais ou são apenas online?",
-      answer: "Oferecemos ambas as opções. Pode escolher entre sessões online (através de videochamada) ou presenciais, dependendo da disponibilidade do prestador e da sua localização. As sessões online proporcionam maior flexibilidade, enquanto as presenciais oferecem contacto directo."
+      question: t('faq.questions.sessionTypes.question'),
+      answer: t('faq.questions.sessionTypes.answer')
     },
     {
-      question: "Como posso cancelar ou alterar uma sessão agendada?",
-      answer: "Pode gerir os seus agendamentos através da sua conta pessoal na plataforma. Para cancelar ou reagendar uma sessão, aceda ao seu histórico de agendamentos e selecione as opções disponíveis. Recomendamos pelo menos 24 horas de antecedência para alterações."
+      question: t('faq.questions.cancelReschedule.question'),
+      answer: t('faq.questions.cancelReschedule.answer')
     },
     {
-      question: "Há serviços extras disponíveis?",
-      answer: "Sim, oferecemos serviços extras especializados além dos quatro pilares principais. Estes incluem workshops corporativos, avaliações de saúde ocupacional, programas de bem-estar personalizados e outros serviços complementares. Pode consultar e solicitar serviços extras através da plataforma."
+      question: t('faq.questions.extraServices.question'),
+      answer: t('faq.questions.extraServices.answer')
     },
     {
-      question: "Como posso começar a usar a plataforma?",
-      answer: "É simples: registe-se na plataforma, escolha o seu plano (individual ou empresarial), complete o seu perfil e comece a agendar sessões. Novos utilizadores podem experimentar a plataforma e, se não estiverem satisfeitos, podem cancelar dentro do período de garantia."
+      question: t('faq.questions.getStarted.question'),
+      answer: t('faq.questions.getStarted.answer')
     }
   ];
 

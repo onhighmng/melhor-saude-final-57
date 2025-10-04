@@ -48,14 +48,14 @@
     "lastMonth": "Last Month"
   },
   "hero": {
-    "mainTitle": "Better Health",
+    "mainTitle": "Melhor Saúde",
     "subtitle": "We care for your mental health and well-being with qualified professionals and a complete platform.",
     "startNow": "Get Started",
     "learnMore": "Learn More"
   },
   "about": {
     "title": "About Us",
-    "description": "Better Health is Mozambique's leading corporate wellness platform, created to transform how companies care for their people. We were born from the need for complete, accessible, and effective solutions that promote stronger, more humane, and productive organizational environments. We combine technology, professional trust, and a people-centered approach to connect companies, employees, and health and wellness specialists. We operate with ethical rigor, valuing confidentiality and professional secrecy in all consultations, and offer humanized, strategic, and digital care that redefines the wellness experience in the corporate environment."
+    "description": "Melhor Saúde is Mozambique's leading corporate wellness platform, created to transform how companies care for their people. We were born from the need for complete, accessible, and effective solutions that promote stronger, more humane, and productive organizational environments. We combine technology, professional trust, and a people-centered approach to connect companies, employees, and health and wellness specialists. We operate with ethical rigor, valuing confidentiality and professional secrecy in all consultations, and offer humanized, strategic, and digital care that redefines the wellness experience in the corporate environment."
   },
   "mission": {
     "title": "Our Mission",
@@ -71,7 +71,7 @@
   },
   "pillars": {
     "sectionTitle": "The 4 Pillars",
-    "subtitle": "of Better Health Wellness",
+    "subtitle": "of Melhor Saúde Wellness",
     "psychological": {
       "title": "Psychological Health",
       "description": "Taking care of mental health is essential to maintaining emotional balance, productivity, and quality of life in the workplace.",
@@ -204,8 +204,8 @@
     "title": "Frequently Asked Questions",
     "questions": {
       "whatIs": {
-        "question": "What is Better Health?",
-        "intro": "Better Health is Mozambique's leading digital corporate wellness platform offering four essential pillars:",
+        "question": "What is Melhor Saúde?",
+        "intro": "Melhor Saúde is Mozambique's leading digital corporate wellness platform offering four essential pillars:",
         "mental": "Mental health: Individual sessions with certified psychologists, 24/7 support, and specialized group therapy.",
         "physical": "Physical wellness: Access to doctors and nutritionists, personalized meal plans, and exercise programs.",
         "financial": "Financial assistance: Consultancy with certified specialists, budget creation, and investment planning.",
