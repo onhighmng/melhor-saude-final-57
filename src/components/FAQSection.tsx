@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/accordion";
 
 const FAQSection = () => {
+  const { t } = useTranslation();
+  
   const faqData = [
     {
       question: "O que é a Melhor Saúde?",
