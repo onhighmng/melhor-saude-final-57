@@ -204,64 +204,209 @@
     "title": "Frequently Asked Questions",
     "questions": {
       "whatIs": {
-        "question": "What is Melhor Saúde?",
-        "intro": "Melhor Saúde is Mozambique's leading digital corporate wellness platform offering four essential pillars:",
-        "mental": "Mental health: Individual sessions with certified psychologists, 24/7 support, and specialized group therapy.",
-        "physical": "Physical wellness: Access to doctors and nutritionists, personalized meal plans, and exercise programs.",
-        "financial": "Financial assistance: Consultancy with certified specialists, budget creation, and investment planning.",
-        "legal": "Legal Assistance: Consultancy with lawyers specialized in family, civil, and labor law."
+        "question": "What is Melhor Saúde and what are its pillars?",
+        "answer": "Melhor Saúde is a corporate wellness platform focused on four essential pillars: Psychological Health, Financial Health, Physical Health, and Legal & Social Health. Each pillar provides access to specialized professionals and resources to support employees in an integrated way."
       },
       "howToBook": {
         "question": "How does session booking work?",
-        "answer": "Booking is simple: choose one of the four pillars (Mental health, Physical wellness, Financial assistance, or Legal Assistance), and the system automatically assigns an available provider specialized in the area. You can book online or in-person sessions through our platform."
+        "answer": "Booking is done through the digital platform, where you can choose the specialist, session type (individual, couples, or group), modality (in-person or online), and the time that best suits your schedule."
       },
-      "sessionsQuota": {
-        "question": "How many sessions am I entitled to?",
-        "answer": "The number of sessions varies according to your plan. Companies receive monthly quotas based on the number of employees, while individual users have monthly, quarterly, or annual plans. You can check your available session balance in your personal account."
+      "quota": {
+        "question": "What is the session quota and how does it work?",
+        "answer": "The session quota is the number of consultations available within the plan contracted by your company. You can track your balance through the platform and, if necessary, request additional sessions."
       },
-      "individualPlans": {
-        "question": "How much do individual plans cost?",
-        "intro": "We offer three individual plan options:",
-        "monthly": "Monthly: MZN 7,599 per month",
-        "quarterly": "Quarterly: MZN 6,649 per month (MZN 19,947 every 3 months) - Most popular",
-        "annual": "Annual: MZN 6,019 per month (MZN 72,228 per year) - Best value",
-        "access": "All plans include full access to the four wellness pillars."
+      "individualPlan": {
+        "question": "Can I join the individual plan without a company?",
+        "answer": "Yes. We offer individual plans for those who wish to access our services independently, with special conditions and continuous support from our specialists."
       },
-      "businessPlans": {
-        "question": "Are there plans for businesses?",
-        "intro": "Yes, we offer customized business solutions:",
-        "small": "Small Teams: Starting at MZN 6,019 per user/month with volume discounts.",
-        "large": "Large Companies: Customized pricing with HR integration, centralized management, and dedicated support.",
-        "contact": "Contact us for a customized proposal for your company."
+      "businessPlan": {
+        "question": "How does the business plan work?",
+        "answer": "The business plan allows organizations to offer comprehensive wellness to their employees. It includes unlimited access to professionals from all areas, corporate dashboard, wellness reports, and dedicated administrative support."
       },
       "selfHelp": {
-        "question": "Can I access self-help content?",
-        "answer": "Yes! Our platform includes a Self-Help section with educational articles organized by categories such as stress management, nutrition, physical exercise, and mental well-being. We also offer psychological tests for self-assessment."
+        "question": "Can I access self-help content without booking sessions?",
+        "answer": "Yes! The platform offers a library of educational resources, psychological tests, articles, videos, and materials on finance, mental health, nutrition, and law, accessible at any time."
       },
-      "providers": {
-        "question": "What types of providers are available?",
-        "answer": "We have a network of certified providers in each pillar: clinical psychologists, family doctors, nutritionists, physiotherapists, certified financial consultants, lawyers specialized in family, civil, and labor law. All providers are rigorously selected and certified."
+      "providerTypes": {
+        "question": "What type of professionals are available?",
+        "answer": "We have clinical psychologists, specialized lawyers, certified financial consultants, nutritionists, general practice doctors, and physical education professionals — all accredited and with proven experience."
       },
       "confidentiality": {
-        "question": "Are consultations confidential?",
-        "answer": "Absolutely. We respect the privacy and dignity of each user with the highest degree of professional secrecy. All sessions are confidential and data is protected according to best security practices. No information is shared with employers or third parties without express consent."
+        "question": "Are my consultations confidential?",
+        "answer": "Yes. All sessions follow strict confidentiality and professional secrecy standards. Companies do not have access to session content — only aggregated and anonymous data for wellness monitoring purposes."
       },
       "sessionTypes": {
-        "question": "Can I have in-person sessions or are they only online?",
-        "answer": "We offer both options. You can choose between online sessions (via video call) or in-person sessions, depending on provider availability and your location. Online sessions provide greater flexibility, while in-person sessions offer direct contact."
+        "question": "Are sessions online or in-person?",
+        "answer": "We offer both modalities. You can choose between video consultations (more practical and flexible) or in-person, according to your preference and professional availability."
       },
       "cancelReschedule": {
-        "question": "How can I cancel or change a scheduled session?",
-        "answer": "You can manage your bookings through your personal account on the platform. To cancel or reschedule a session, access your booking history and select the available options. We recommend at least 24 hours' notice for changes."
+        "question": "How can I cancel or reschedule a session?",
+        "answer": "You can cancel or reschedule directly through the platform, with a minimum of 24 hours notice to avoid quota deduction."
       },
       "extraServices": {
-        "question": "Are there extra services available?",
-        "answer": "Yes, we offer specialized extra services beyond the four main pillars. These include corporate workshops, occupational health assessments, personalized wellness programs, and other complementary services. You can consult and request extra services through the platform."
+        "question": "Are there additional services available?",
+        "answer": "Yes. In addition to consultations, we offer personalized corporate wellness programs, workshops, lectures, health screenings, and workplace healthy habit promotion initiatives."
       },
       "getStarted": {
         "question": "How can I start using the platform?",
-        "answer": "It's simple: register on the platform, choose your plan (individual or business), complete your profile, and start booking sessions. New users can try the platform and, if not satisfied, can cancel within the guarantee period."
+        "answer": "If your company is already a partner, you will receive an email invitation. Otherwise, you can create an individual account or contact us to implement Melhor Saúde in your organization."
       }
+    }
+  },
+  "carousel": {
+    "title": "Our Pillars in Action",
+    "subtitle": "Discover how we transform corporate wellness through our four fundamental pillars",
+    "autoScroll": "Auto carousel",
+    "slides": "slides",
+    "learnMore": "Learn More",
+    "pillars": {
+      "physical": {
+        "title": "Physical Wellness",
+        "subtitle": "Health and Vitality",
+        "description": "We promote vitality through preventive medicine, balanced nutrition, and exercise programs adapted to the corporate environment."
+      },
+      "mental": {
+        "title": "Mental Health",
+        "subtitle": "Emotional Balance",
+        "description": "Taking care of mental health is essential to maintain emotional balance, productivity, and quality of life in the workplace."
+      },
+      "legal": {
+        "title": "Legal Assistance",
+        "subtitle": "Legal Security",
+        "description": "Legal security is an essential part of well-being, enabling informed decisions and complete legal protection for employees and their families."
+      },
+      "financial": {
+        "title": "Financial Assistance",
+        "subtitle": "Economic Stability",
+        "description": "Reducing financial stress through comprehensive financial literacy and practical support in personal and family economic management."
+      },
+      "golf": {
+        "title": "Executive Golf Experience",
+        "subtitle": "Special Event",
+        "description": "Join us at the prestigious executive golf tournament. A unique networking and wellness opportunity for business leaders."
+      }
+    }
+  },
+  "infoCards": {
+    "header": {
+      "title": "The 4 Pillars",
+      "subtitle": "of Melhor Saúde Wellness"
+    },
+    "psychological": {
+      "title": "Psychological Health",
+      "description": "Taking care of mental health is essential to maintain emotional balance, productivity, and quality of life in the workplace.",
+      "features": [
+        "Individual sessions with certified psychologists",
+        "Support in emotional crisis situations",
+        "Counseling on work stress and burnout",
+        "Mindfulness and self-care programs",
+        "24/7 psychological support",
+        "Specialized group therapy"
+      ]
+    },
+    "financial": {
+      "title": "Financial Health",
+      "description": "Reducing financial stress through comprehensive financial literacy and practical support in personal and family economic management.",
+      "features": [
+        "Sessions with certified financial consultants",
+        "Support in preparing personalized budgets",
+        "Educational programs on money management",
+        "Guidance to reorganize finances",
+        "Savings and investment planning",
+        "Debt renegotiation"
+      ]
+    },
+    "physical": {
+      "title": "Physical Health",
+      "description": "Promoting vitality and wellness through preventive medicine, balanced nutrition, and exercise programs adapted to the corporate environment.",
+      "features": [
+        "Access to qualified doctors and nutritionists",
+        "Personalized meal plans",
+        "Exercise programs and active breaks",
+        "Occupational health assessments",
+        "Physiotherapy and rehabilitation",
+        "Regular health screenings"
+      ]
+    },
+    "legal": {
+      "title": "Legal & Social Health",
+      "description": "Legal security is an essential part of well-being, enabling informed decisions and complete legal protection for employees and their families.",
+      "features": [
+        "Consultancy with specialized lawyers",
+        "Clarification on contracts and rights",
+        "Preventive monitoring to avoid litigation",
+        "Family and civil law",
+        "Labor law",
+        "Legal representation when necessary"
+      ]
+    }
+  },
+  "cloudsSection": {
+    "mainTitle": "The 4 Pillars of Corporate Wellness",
+    "mainSubtitle": "Our holistic approach to corporate wellness is based on four fundamental pillars.",
+    "results": {
+      "title": "Proven Results",
+      "satisfaction": "Satisfaction",
+      "absenteeism": "Less absenteeism",
+      "support": "Support"
+    },
+    "cta": {
+      "implement": "Implement the 4 Pillars",
+      "learnMore": "Learn more"
+    },
+    "pillars": {
+      "psychological": {
+        "title": "Psychological Health",
+        "description": "Psychology consultations, stress management, and emotional wellness programs.",
+        "features": [
+          "24/7 psychological support",
+          "Burnout prevention",
+          "Group therapy"
+        ]
+      },
+      "financial": {
+        "title": "Financial Health",
+        "description": "Financial planning and education to reduce economic stress.",
+        "features": [
+          "Financial consultancy",
+          "Financial education",
+          "Debt renegotiation"
+        ]
+      },
+      "physical": {
+        "title": "Physical Health",
+        "description": "Exercise and nutrition programs for sustainable performance.",
+        "features": [
+          "Workplace exercise",
+          "Nutrition consultations",
+          "Health screenings"
+        ]
+      },
+      "legal": {
+        "title": "Legal & Social Health",
+        "description": "Complete legal consultancy for personal and family matters.",
+        "features": [
+          "Family and civil law",
+          "Labor law",
+          "Legal representation"
+        ]
+      }
+    }
+  },
+  "controlSection": {
+    "title": "About Us",
+    "description": "Melhor Saúde is the leading corporate wellness platform in Mozambique, created to transform how companies care for their people. We were born from the need for complete, accessible, and effective solutions that promote stronger, more human, and productive organizational environments. We combine technology, professional trust, and a people-centered approach to connect companies, employees, and health and wellness specialists. We operate with ethical rigor, valuing confidentiality and professional secrecy in all services, and offer humanized, strategic, and digital care that redefines the wellness experience in the corporate environment.",
+    "mission": {
+      "title": "Our Mission",
+      "content": "We promote the comprehensive well-being of employees through secure, personalized digital solutions based on the four pillars of health: psychological, legal, financial, and physical. Our goal is to help companies create healthy, positive, and sustainable work environments where everyone can thrive with balance and autonomy."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "content": "We want to be the leading national reference in corporate wellness solutions. We work to build a new organizational culture in Mozambique — more conscious, human, and committed to the complete and continuous care of employees in all essential areas of their lives."
+    },
+    "values": {
+      "title": "Our Values",
+      "content": "We act with ethics, transparency, and human focus. We value confidentiality, responsible use of technology, and active listening. We believe in the real impact of psychological, legal, financial, and physical care — with measurable, accessible solutions centered on each person's needs."
     }
   }
 }

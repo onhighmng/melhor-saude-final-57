@@ -3,8 +3,10 @@ import React from 'react';
 import { useInfoCardsScroll } from '@/hooks/useInfoCardsScroll';
 import { pillars } from './info-cards/InfoCardsData';
 import PillarStep from './info-cards/PillarStep';
+import { useTranslation } from 'react-i18next';
 
 const InfoCardsSection = () => {
+  const { t } = useTranslation('common');
   const { currentStep, scrollProgress, sectionRef } = useInfoCardsScroll();
 
   const handleImplementPillars = () => {
@@ -126,9 +128,9 @@ const InfoCardsSection = () => {
             {/* Header Section */}
             <div className="flex flex-col justify-start items-center w-full max-w-2xl mx-auto text-center mb-6 sm:mb-12 lg:mb-16 pt-8">
               <h2 className="text-h1 text-navy-blue">
-                <div className="block text-center w-full">Os 4 Pilares</div>
+                <div className="block text-center w-full">{t('infoCards.header.title')}</div>
                 <div className="block text-center w-full text-white">
-                  <span className="relative">do Bem-Estar da Melhor Saúde</span>
+                  <span className="relative">{t('infoCards.header.subtitle')}</span>
                 </div>
               </h2>
             </div>

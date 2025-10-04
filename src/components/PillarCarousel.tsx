@@ -1,54 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import { useTranslation } from 'react-i18next';
 
 const PillarCarousel = () => {
+  const { t } = useTranslation('common');
   const [sectionRef, isSectionVisible] = useScrollAnimation(0.1);
-  const [currentSlide, setCurrentSlide] = useState(1); // Start at 1 instead of 0
+  const [currentSlide, setCurrentSlide] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const slides = [
     {
       id: 1,
-      title: 'Bem-estar Físico',
-      subtitle: 'Saúde e Vitalidade',
-      description: 'Promovemos vitalidade através de medicina preventiva, nutrição balanceada e programas de exercício físico adaptados ao ambiente empresarial.',
+      title: t('carousel.pillars.physical.title'),
+      subtitle: t('carousel.pillars.physical.subtitle'),
+      description: t('carousel.pillars.physical.description'),
       image: '/lovable-uploads/8e8fac57-f901-4bea-b185-7628c8f592be.png',
       gradient: 'from-royal-blue/20 to-sky-blue/20',
       pillar: 'physical'
     },
     {
       id: 2,
-      title: 'Saúde Mental',
-      subtitle: 'Equilíbrio Emocional',
-      description: 'Cuidar da saúde mental é essencial para manter o equilíbrio emocional, a produtividade e a qualidade de vida no ambiente de trabalho.',
+      title: t('carousel.pillars.mental.title'),
+      subtitle: t('carousel.pillars.mental.subtitle'),
+      description: t('carousel.pillars.mental.description'),
       image: '/lovable-uploads/f62b9e26-c3c4-4ed4-9b3c-a80c0c8bc8d7.png',
       gradient: 'from-mint-green/20 to-accent-sage/20',
       pillar: 'mental'
     },
     {
       id: 3,
-      title: 'Assistência Jurídica',
-      subtitle: 'Segurança Legal',
-      description: 'Segurança jurídica é parte essencial do bem-estar, permitindo decisões informadas e proteção legal completa para colaboradores e suas famílias.',
+      title: t('carousel.pillars.legal.title'),
+      subtitle: t('carousel.pillars.legal.subtitle'),
+      description: t('carousel.pillars.legal.description'),
       image: '/lovable-uploads/5b1cc430-06fc-4273-b31c-d45cd43ab6d9.png',
       gradient: 'from-sky-blue/20 to-vibrant-blue/20',
       pillar: 'legal'
     },
     {
       id: 4,
-      title: 'Assistência Financeira',
-      subtitle: 'Estabilidade Económica',
-      description: 'Reduzir o stress financeiro através de literacia financeira abrangente e apoio prático na gestão económica pessoal e familiar.',
+      title: t('carousel.pillars.financial.title'),
+      subtitle: t('carousel.pillars.financial.subtitle'),
+      description: t('carousel.pillars.financial.description'),
       image: '/lovable-uploads/e69291be-9261-4671-9624-7d6293b9a0cf.png',
       gradient: 'from-mint-green/20 to-royal-blue/20',
       pillar: 'financial'
     },
     {
       id: 5,
-      title: 'Executive Golf Experience',
-      subtitle: 'Evento Especial',
-      description: 'Junte-se a nós no prestigiado torneio de golfe executivo. Uma oportunidade única de networking e bem-estar para líderes empresariais.',
+      title: t('carousel.pillars.golf.title'),
+      subtitle: t('carousel.pillars.golf.subtitle'),
+      description: t('carousel.pillars.golf.description'),
       image: '/lovable-uploads/64839ced-48a0-4bc0-96d3-55b3c2d871a9.png',
       gradient: 'from-vibrant-blue/20 to-bright-royal/20',
       isSpecial: true,
@@ -119,10 +121,10 @@ const PillarCarousel = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-4xl font-bold text-navy-blue mb-4">
-            Nossos Pilares em Ação
+            {t('carousel.title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Descubra como transformamos o bem-estar corporativo através dos nossos quatro pilares fundamentais
+            {t('carousel.subtitle')}
           </p>
         </div>
 
@@ -166,7 +168,7 @@ const PillarCarousel = () => {
                           onClick={handleSpecialClick}
                           className="inline-flex items-center gap-2 bg-vibrant-blue hover:bg-bright-royal text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
                         >
-                          Saiba Mais
+                          {t('carousel.learnMore')}
                           <ExternalLink className="w-5 h-5" />
                         </button>
                       )}
@@ -208,12 +210,12 @@ const PillarCarousel = () => {
           </div>
         </div>
 
-        {/* Auto-scroll indicator */}
-        <div className="text-center mt-8">
-          <p className="text-gray-500 text-sm">
-            Carrossel automático • {slides.length} slides
-          </p>
-        </div>
+          {/* Auto-scroll indicator */}
+          <div className="text-center mt-8">
+            <p className="text-gray-500 text-sm">
+              {t('carousel.autoScroll')} • {slides.length} {t('carousel.slides')}
+            </p>
+          </div>
       </div>
     </section>
   );

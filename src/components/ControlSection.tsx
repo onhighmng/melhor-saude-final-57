@@ -1,7 +1,9 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useControlSectionScroll } from '@/hooks/useControlSectionScroll';
+import { useTranslation } from 'react-i18next';
 const ControlSection = () => {
+  const { t } = useTranslation('common');
   const {
     currentStep,
     sectionRef
@@ -18,7 +20,7 @@ const ControlSection = () => {
           {/* Section Heading - Always visible */}
           <div className="text-center mb-12 mt-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-deep-navy to-bright-royal bg-clip-text text-transparent">
-              Sobre Nós
+              {t('controlSection.title')}
             </h2>
           </div>
           
@@ -28,17 +30,7 @@ const ControlSection = () => {
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-vibrant-blue via-emerald-green to-bright-royal"></div>
             
             <div className="max-w-4xl mx-auto text-navy-blue">
-              <p className="text-base lg:text-lg leading-relaxed">
-                A Melhor Saúde é a plataforma líder em bem-estar corporativo em Moçambique, criada 
-                para transformar a forma como as empresas cuidam das suas pessoas. Nascemos da 
-                necessidade de <strong>soluções completas, acessíveis e eficazes</strong>, que promovam ambientes 
-                organizacionais mais fortes, humanos e produtivos. Unimos tecnologia, confiança 
-                profissional e uma abordagem centrada nas pessoas para conectar empresas, 
-                colaboradores e especialistas em saúde e bem-estar. Atuamos com rigor ético, 
-                valorizando a <strong>confidencialidade e o sigilo profissional</strong> em todos os atendimentos, e 
-                oferecemos um cuidado humanizado, estratégico e digital que redefine a experiência de{" "}
-                <strong>bem-estar no meio corporativo</strong>.
-              </p>
+              <p className="text-base lg:text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: t('controlSection.description') }} />
             </div>
           </div>
           
@@ -57,11 +49,11 @@ const ControlSection = () => {
                 <CardContent className="p-6 lg:p-8 h-full flex flex-col relative z-10">
                   <div className="text-center mb-6">
                     <h3 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-deep-navy to-bright-royal bg-clip-text text-transparent mb-4 group-hover:from-bright-royal group-hover:to-vibrant-blue transition-all duration-500">
-                      Nossa Missão
+                      {t('controlSection.mission.title')}
                     </h3>
                   </div>
                   <p className="text-sm lg:text-base text-navy-blue leading-relaxed flex-1 group-hover:text-deep-navy transition-colors duration-300 text-center">
-                    Promovemos o bem-estar integral dos colaboradores através de soluções digitais seguras, personalizadas e sustentadas nos quatro pilares da saúde: psicológica, jurídica, financeira e física. Nosso objetivo é ajudar as empresas a criar ambientes de trabalho saudáveis, positivos e sustentáveis, onde todos possam prosperar com equilíbrio e autonomia.
+                    {t('controlSection.mission.content')}
                   </p>
                 </CardContent>
               </Card>
@@ -77,11 +69,11 @@ const ControlSection = () => {
                 <CardContent className="p-6 lg:p-8 h-full flex flex-col relative z-10">
                   <div className="text-center mb-6">
                     <h3 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-deep-navy to-vibrant-blue bg-clip-text text-transparent mb-4 group-hover:from-vibrant-blue group-hover:to-sky-blue transition-all duration-500">
-                      Nossa Visão
+                      {t('controlSection.vision.title')}
                     </h3>
                   </div>
                   <p className="text-sm lg:text-base text-navy-blue leading-relaxed flex-1 group-hover:text-deep-navy transition-colors duration-300 text-center">
-                    Queremos ser a principal referência nacional em soluções de bem-estar corporativo. Trabalhamos para construir uma nova cultura organizacional em Moçambique — mais consciente, humana e comprometida com o cuidado completo e contínuo dos colaboradores em todas as áreas essenciais da sua vida.
+                    {t('controlSection.vision.content')}
                   </p>
                 </CardContent>
               </Card>
@@ -97,11 +89,11 @@ const ControlSection = () => {
                 <CardContent className="p-6 lg:p-8 h-full flex flex-col relative z-10">
                   <div className="text-center mb-6">
                     <h3 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-deep-navy to-emerald-green bg-clip-text text-transparent mb-4 group-hover:from-emerald-green group-hover:to-bright-royal transition-all duration-500">
-                      Nossos Valores
+                      {t('controlSection.values.title')}
                     </h3>
                   </div>
                   <p className="text-sm lg:text-base text-navy-blue leading-relaxed flex-1 group-hover:text-deep-navy transition-colors duration-300 text-center">
-                    Agimos com ética, transparência e foco humano. Valorizamos a confidencialidade, o uso responsável da tecnologia e a escuta ativa. Acreditamos no impacto real dos cuidados psicológicos, jurídicos, financeiros e físicos — com soluções mensuráveis, acessíveis e centradas nas necessidades de cada pessoa.
+                    {t('controlSection.values.content')}
                   </p>
                 </CardContent>
               </Card>
