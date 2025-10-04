@@ -1,21 +1,22 @@
 import { MenuItem, MobileMenuItem } from './types';
+import i18n from '@/i18n/config';
 
 export const createAdminMenuItems = (
   handleNavigation: (path: string) => void
 ): MenuItem[] => [
   {
-    title: 'Dashboard',
+    title: i18n.t('navigation:admin.dashboard'),
     key: 'dashboard',
     hasDropdown: false,
     onClick: () => handleNavigation('/admin')
   },
   {
-    title: 'Gestão',
+    title: i18n.t('navigation:admin.management'),
     key: 'gestao',
     hasDropdown: true,
     items: [
       { 
-        title: 'Prestadores', 
+        title: i18n.t('navigation:admin.providers'),
         onClick: () => {
           handleNavigation('/admin');
           setTimeout(() => {
@@ -25,7 +26,7 @@ export const createAdminMenuItems = (
         }
       },
       { 
-        title: 'Utilizadores', 
+        title: i18n.t('navigation:admin.users'), 
         onClick: () => {
           handleNavigation('/admin');
           setTimeout(() => {
@@ -35,7 +36,7 @@ export const createAdminMenuItems = (
         }
       },
       { 
-        title: 'Solicitações', 
+        title: i18n.t('navigation:admin.requests'),
         onClick: () => {
           handleNavigation('/admin');
           setTimeout(() => {
@@ -47,12 +48,12 @@ export const createAdminMenuItems = (
     ]
   },
   {
-    title: 'Relatórios',
+    title: i18n.t('navigation:admin.reports'),
     key: 'relatorios',
     hasDropdown: true,
     items: [
       { 
-        title: 'Email Alerts', 
+        title: i18n.t('navigation:admin.emailAlerts'),
         onClick: () => {
           handleNavigation('/admin');
           setTimeout(() => {
@@ -62,7 +63,7 @@ export const createAdminMenuItems = (
         }
       },
       { 
-        title: 'Feedback', 
+        title: i18n.t('navigation:admin.feedback'), 
         onClick: () => {
           handleNavigation('/admin');
           setTimeout(() => {
@@ -72,7 +73,7 @@ export const createAdminMenuItems = (
         }
       },
       { 
-        title: 'Contas Inativas', 
+        title: i18n.t('navigation:admin.inactiveAccounts'),
         onClick: () => {
           handleNavigation('/admin');
           setTimeout(() => {
@@ -93,24 +94,24 @@ export const createMenuItems = (
   handleAuthRedirect: (section: string) => void
 ): MenuItem[] => [
   {
-    title: 'Sobre Nós',
+    title: i18n.t('navigation:main.aboutUs'),
     key: 'sobre',
     hasDropdown: false,
     onClick: handleSobreNosClick
   },
   {
-    title: '4 Pilares',
+    title: i18n.t('navigation:main.pillars'),
     key: 'pilares',
     hasDropdown: true,
     items: [
-      { title: 'Saúde mental', onClick: () => handlePillarClick(0) },
-      { title: 'Bem estar físico', onClick: () => handlePillarClick(1) },
-      { title: 'Assistência financeira', onClick: () => handlePillarClick(2) },
-      { title: 'Assistência Jurídica', onClick: () => handlePillarClick(3) }
+      { title: i18n.t('navigation:pillars.mentalHealth'), onClick: () => handlePillarClick(0) },
+      { title: i18n.t('navigation:pillars.physicalWellness'), onClick: () => handlePillarClick(1) },
+      { title: i18n.t('navigation:pillars.financialAssistance'), onClick: () => handlePillarClick(2) },
+      { title: i18n.t('navigation:pillars.legalAssistance'), onClick: () => handlePillarClick(3) }
     ]
   },
   {
-    title: 'Agendamento',
+    title: i18n.t('navigation:main.booking'),
     key: 'agendamento',
     hasDropdown: false,
     requiresAuth: true,
@@ -123,7 +124,7 @@ export const createMenuItems = (
     }
   },
   {
-    title: 'Minha Saúde',
+    title: i18n.t('navigation:main.myHealth'),
     key: 'minha-saude',
     hasDropdown: false,
     requiresAuth: true,
@@ -142,13 +143,13 @@ export const createHRMenuItems = (
   handleNavigation: (path: string) => void
 ): MenuItem[] => [
   {
-    title: 'Dashboard RH',
+    title: i18n.t('navigation:company.dashboard'),
     key: 'dashboard-rh',
     hasDropdown: false,
     onClick: () => handleNavigation('/company/dashboard')
   },
   {
-    title: 'Relatórios',
+    title: i18n.t('navigation:company.reports'),
     key: 'relatorios-rh',
     hasDropdown: false,
     onClick: () => handleNavigation('/company/dashboard')
@@ -157,13 +158,13 @@ export const createHRMenuItems = (
 
 export const createHRMobileMenuItems = (): MobileMenuItem[] => [
   {
-    title: 'Dashboard RH',
+    title: i18n.t('navigation:company.dashboard'),
     key: 'dashboard-rh',
     hasDropdown: false,
     path: '/company/dashboard'
   },
   {
-    title: 'Relatórios',
+    title: i18n.t('navigation:company.reports'),
     key: 'relatorios-rh',
     hasDropdown: false,
     path: '/company/dashboard'
@@ -172,13 +173,13 @@ export const createHRMobileMenuItems = (): MobileMenuItem[] => [
 
 export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
   {
-    title: 'Dashboard',
+    title: i18n.t('navigation:admin.dashboard'),
     key: 'dashboard',
     hasDropdown: false,
     path: '/admin'
   },
   {
-    title: 'Prestadores',
+    title: i18n.t('navigation:admin.providers'),
     key: 'prestadores',
     hasDropdown: false,
     path: '/admin',
@@ -190,7 +191,7 @@ export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
     }
   },
   {
-    title: 'Utilizadores',
+    title: i18n.t('navigation:admin.users'),
     key: 'utilizadores',
     hasDropdown: false,
     path: '/admin',
@@ -202,7 +203,7 @@ export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
     }
   },
   {
-    title: 'Solicitações',
+    title: i18n.t('navigation:admin.requests'),
     key: 'solicitacoes',
     hasDropdown: false,
     path: '/admin',
@@ -214,7 +215,7 @@ export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
     }
   },
   {
-    title: 'Email Alerts',
+    title: i18n.t('navigation:admin.emailAlerts'),
     key: 'notifications',
     hasDropdown: false,
     path: '/admin',
@@ -226,7 +227,7 @@ export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
     }
   },
   {
-    title: 'Feedback',
+    title: i18n.t('navigation:admin.feedback'),
     key: 'feedback',
     hasDropdown: false,
     path: '/admin',
@@ -246,24 +247,24 @@ export const createMobileMenuItems = (
   handlePillarClick?: (pillarIndex: number) => void
 ): MobileMenuItem[] => [
   {
-    title: 'Sobre Nós',
+    title: i18n.t('navigation:main.aboutUs'),
     key: 'sobre',
     hasDropdown: false,
     onClick: handleSobreNosClick
   },
   {
-    title: '4 Pilares',
+    title: i18n.t('navigation:main.pillars'),
     key: 'pilares',
     hasDropdown: true,
     items: [
-      { title: 'Saúde mental', onClick: () => handlePillarClick?.(0) },
-      { title: 'Bem estar físico', onClick: () => handlePillarClick?.(1) },
-      { title: 'Assistência financeira', onClick: () => handlePillarClick?.(2) },
-      { title: 'Assistência Jurídica', onClick: () => handlePillarClick?.(3) }
+      { title: i18n.t('navigation:pillars.mentalHealth'), onClick: () => handlePillarClick?.(0) },
+      { title: i18n.t('navigation:pillars.physicalWellness'), onClick: () => handlePillarClick?.(1) },
+      { title: i18n.t('navigation:pillars.financialAssistance'), onClick: () => handlePillarClick?.(2) },
+      { title: i18n.t('navigation:pillars.legalAssistance'), onClick: () => handlePillarClick?.(3) }
     ]
   },
   {
-    title: 'Agendamento',
+    title: i18n.t('navigation:main.booking'),
     key: 'agendamento',
     hasDropdown: false,
     requiresAuth: true,
@@ -271,7 +272,7 @@ export const createMobileMenuItems = (
     onClick: !isAuthenticated ? () => handleAuthRedirect('agendamento') : undefined
   },
   {
-    title: 'Minha Saúde',
+    title: i18n.t('navigation:main.myHealth'),
     key: 'minha-saude',
     hasDropdown: false,
     requiresAuth: true,

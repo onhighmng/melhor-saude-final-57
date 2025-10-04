@@ -7,22 +7,24 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings } from '@/hooks/useBookings';
+import { useTranslation } from 'react-i18next';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const { sessionBalance } = useSessionBalance();
   const { upcomingBookings, allBookings, formatPillarName } = useBookings();
+  const { t } = useTranslation('user');
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      'confirmed': { label: 'Confirmada', variant: 'secondary' },
-      'completed': { label: 'Concluída', variant: 'default' },
-      'cancelled': { label: 'Cancelada', variant: 'destructive' },
-      'pending': { label: 'Pendente', variant: 'outline' },
+      'confirmed': { label: t('sessions.statusConfirmed'), variant: 'secondary' },
+      'completed': { label: t('sessions.statusCompleted'), variant: 'default' },
+      'cancelled': { label: t('sessions.statusCancelled'), variant: 'destructive' },
+      'pending': { label: t('sessions.statusPending'), variant: 'outline' },
     };
     return statusMap[status] || { label: status, variant: 'outline' };
   };
@@ -54,10 +56,10 @@ const UserDashboard = () => {
         {/* Welcome Header */}
         <div className="space-y-1">
           <h1 className="text-3xl font-normal tracking-tight">
-            Olá, {profile?.name || 'ana.silva'}! 👋
+            {t('dashboard.welcome', { name: profile?.name || 'ana.silva' })}
           </h1>
           <p className="text-muted-foreground text-base">
-            Bem-vinda de volta ao seu espaço de saúde e bem-estar.
+            {t('dashboard.welcomeBack')}
           </p>
         </div>
 
@@ -71,17 +73,17 @@ const UserDashboard = () => {
               
               <div className="space-y-1">
                 <div className="text-8xl font-bold text-[#4A90E2]">{remainingSessions}</div>
-                <div className="text-2xl font-serif">Sessões Restantes</div>
+                <div className="text-2xl font-serif">{t('dashboard.sessionsRemaining')}</div>
               </div>
 
               <div className="w-full max-w-3xl space-y-2 px-8">
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>{usedSessions} usadas</span>
-                  <span>{totalSessions} totais</span>
+                  <span>{t('dashboard.sessionsUsed', { count: usedSessions })}</span>
+                  <span>{t('dashboard.sessionsTotal', { count: totalSessions })}</span>
                 </div>
                 <Progress value={(usedSessions / totalSessions) * 100} className="h-2.5 bg-gray-200" />
                 <p className="text-sm text-muted-foreground pt-1">
-                  {usagePercent}% do plano disponível
+                  {t('dashboard.planAvailable', { percent: usagePercent })}
                 </p>
               </div>
 
@@ -91,7 +93,7 @@ const UserDashboard = () => {
                 onClick={() => navigate('/user/book')}
               >
                 <Calendar className="mr-2 h-5 w-5" />
-                Agendar uma Sessão
+                {t('dashboard.ctaBookSession')}
               </Button>
             </CardContent>
           </Card>
@@ -104,8 +106,8 @@ const UserDashboard = () => {
               <Users className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-normal">Seus Prestadores por Pilar</h2>
-              <p className="text-muted-foreground text-base">Profissionais dedicados ao seu bem-estar</p>
+              <h2 className="text-2xl font-normal">{t('dashboard.providersTitle')}</h2>
+              <p className="text-muted-foreground text-base">{t('dashboard.providersSubtitle')}</p>
             </div>
           </div>
         </div>
@@ -118,7 +120,7 @@ const UserDashboard = () => {
                 <div className="w-12 h-12 rounded-2xl bg-[#4A90E2] flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
-                Próximas Sessões
+                {t('sessions.upcomingTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pt-0">
@@ -146,10 +148,10 @@ const UserDashboard = () => {
                           </div>
                           <div className="flex gap-2">
                             {canJoinNow && booking.status === 'confirmed' && (
-                              <Badge className="bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full px-3">Começar em breve</Badge>
+                              <Badge className="bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full px-3">{t('sessions.startingSoonBadge')}</Badge>
                             )}
                             {isTodaySession && !canJoinNow && booking.status === 'confirmed' && (
-                              <Badge className="bg-[#4A90E2] hover:bg-[#3A7BC8] text-white rounded-full px-3">Hoje</Badge>
+                              <Badge className="bg-[#4A90E2] hover:bg-[#3A7BC8] text-white rounded-full px-3">{t('sessions.todayBadge')}</Badge>
                             )}
                             <Badge 
                               variant={statusBadge.variant}
@@ -176,18 +178,18 @@ const UserDashboard = () => {
                               onClick={() => window.open('https://meet.google.com/demo-session-link', '_blank')}
                             >
                               <Video className="w-4 h-4 mr-2" />
-                              Entrar na Sessão
+                              {t('sessions.ctaJoinSession')}
                             </Button>
                           )}
                           {!canJoinNow && booking.status === 'confirmed' && (
                             <Button size="sm" variant="outline" className="flex-1 text-[#DC2626] border-[#DC2626] hover:bg-[#FEE2E2] rounded-lg">
                               <X className="w-4 h-4 mr-2" />
-                              Cancelar Sessão
+                              {t('sessions.ctaCancelSession')}
                             </Button>
                           )}
                           {!canJoinNow && booking.status === 'confirmed' && (
                             <Button size="sm" variant="outline" className="flex-1 rounded-lg">
-                              Ver Detalhes
+                              {t('sessions.ctaViewDetails')}
                             </Button>
                           )}
                         </div>
@@ -197,9 +199,9 @@ const UserDashboard = () => {
                 })
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground mb-4">Não tem sessões agendadas</p>
+                  <p className="text-sm text-muted-foreground mb-4">{t('sessions.noUpcoming')}</p>
                   <Button onClick={() => navigate('/user/book')} variant="outline">
-                    Marcar Primeira Sessão
+                    {t('sessions.emptyState')}
                   </Button>
                 </div>
               )}
@@ -209,8 +211,8 @@ const UserDashboard = () => {
           {/* Histórico Rápido */}
           <Card className="border shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-xl font-normal">Histórico Rápido</CardTitle>
-              <p className="text-sm text-muted-foreground">{completedSessions.length} sessões concluídas</p>
+              <CardTitle className="text-xl font-normal">{t('sessions.historyTitle')}</CardTitle>
+              <p className="text-sm text-muted-foreground">{t('sessions.completedCount', { count: completedSessions.length })}</p>
             </CardHeader>
             <CardContent className="space-y-0 pt-0">
               {recentCompleted.length > 0 ? (
@@ -243,9 +245,9 @@ const UserDashboard = () => {
                 </>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground mb-4">Ainda não realizou sessões</p>
+                  <p className="text-sm text-muted-foreground mb-4">{t('sessions.noHistory')}</p>
                   <Button onClick={() => navigate('/user/book')} variant="outline" size="sm">
-                    Agendar Primeira Sessão
+                    {t('sessions.emptyState')}
                   </Button>
                 </div>
               )}
@@ -261,16 +263,16 @@ const UserDashboard = () => {
                 <HelpCircle className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-normal mb-2">Ajuda & Recursos</h2>
+                <h2 className="text-2xl font-normal mb-2">{t('dashboard.helpTitle')}</h2>
                 <p className="text-muted-foreground mb-4 text-base">
-                  Acesse conteúdos exclusivos para o seu bem-estar
+                  {t('dashboard.helpSubtitle')}
                 </p>
                 <Button 
                   variant="outline" 
                   className="bg-white hover:bg-white/90 border-gray-200"
                   onClick={() => navigate('/user/resources')}
                 >
-                  Explorar Recursos de Bem-Estar
+                  {t('dashboard.ctaExploreResources')}
                 </Button>
               </div>
             </div>
