@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Menu, User, LogOut } from 'lucide-react';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface NavigationActionsProps {
   onLoginClick: () => void;
@@ -21,6 +22,9 @@ const NavigationActions = ({
 }: NavigationActionsProps) => {
   return (
     <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
+      {/* Language Switcher */}
+      <LanguageSwitcher />
+      
       {/* Desktop Actions */}
       <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
         {isAuthenticated && user ? (

@@ -1,0 +1,112 @@
+{
+  "dashboard": {
+    "inviteButton": {
+      "active": "Invite New Employee",
+      "limitTooltip": "Limit reached – Deactivate accounts or contact support"
+    },
+    "seatUsage": {
+      "manage": "Manage Employees",
+      "reviewAllocation": "Review Seat Allocation"
+    },
+    "quickActions": {
+      "viewReport": "View Monthly Report",
+      "exportData": "Export Data",
+      "configureNotifications": "Configure Notifications"
+    }
+  },
+  "employees": {
+    "addButton": "Add Employee",
+    "filters": {
+      "viewActive": "View Active Only",
+      "viewInactive": "View Inactive",
+      "all": "All"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "deactivate": "Deactivate Account",
+      "activate": "Activate Account"
+    },
+    "roles": {
+      "hr": "HR",
+      "employee": "Employee"
+    }
+  },
+  "invite": {
+    "modal": {
+      "title": "Invite Employee",
+      "generatePassword": "Generate Secure Password",
+      "submit": "Invite",
+      "cancel": "Cancel"
+    }
+  },
+  "employeeDetail": {
+    "quotaAdjust": {
+      "edit": "Edit Sessions",
+      "save": "Save Changes"
+    },
+    "providers": {
+      "reassign": "Reassign Provider"
+    },
+    "actions": {
+      "exportHistory": "Export History",
+      "revokeAccess": "Revoke Access"
+    },
+    "emptyHistory": "This employee hasn't completed any sessions yet"
+  },
+  "deactivate": {
+    "action": "Deactivate Account",
+    "confirm": "Confirm Deactivation",
+    "warning": "Are you sure you want to deactivate this account?"
+  },
+  "activate": {
+    "action": "Activate Account"
+  },
+  "inviteCodes": {
+    "actions": {
+      "copyActive": "Copy Active Codes",
+      "generate": "Generate New Codes",
+      "export": "Export List",
+      "copyLink": "Copy Invite Link",
+      "qrCode": "QR Code – coming soon"
+    },
+    "banner": "Share codes with employees to sign in",
+    "status": {
+      "active": "Active",
+      "used": "Used",
+      "revoked": "Revoked"
+    }
+  },
+  "reports": {
+    "actions": {
+      "downloadCSV": "Download CSV",
+      "exportPDF": "Export PDF",
+      "scheduleEmail": "Schedule"
+    },
+    "adoption": {
+      "excellent": "80% adoption – Excellent",
+      "good": "60% adoption – Good",
+      "needsImprovement": "40% adoption – Needs improvement"
+    }
+  },
+  "settings": {
+    "save": "Save Changes",
+    "quotaPolicies": "Update Session Policies",
+    "rolloverTooltip": "Allows unused sessions to roll over to next cycle",
+    "customFields": {
+      "add": "Add Field",
+      "remove": "Remove"
+    },
+    "notifications": {
+      "threshold": "Receive alert at X% usage"
+    },
+    "contacts": {
+      "add": "Add Support HR"
+    },
+    "unsavedChanges": "⚠️ Unsaved changes"
+  },
+  "revokeAccess": {
+    "title": "Revoke Access",
+    "warning": "Revoke access – this action is permanent",
+    "confirm": "Are you sure? This action cannot be undone."
+  }
+}

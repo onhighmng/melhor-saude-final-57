@@ -1,0 +1,104 @@
+{
+  "dashboard": {
+    "welcome": "Welcome back",
+    "nextSession": "Next Session",
+    "noUpcoming": "You have no scheduled sessions",
+    "noHistory": "You haven't completed any sessions yet",
+    "quotaSummary": "Session Summary",
+    "ctaBookSession": "Book a Session",
+    "ctaUseQuota": "Use Your Sessions",
+    "ctaViewDetails": "View Details",
+    "ctaJoinSession": "Join Session",
+    "ctaFirstSession": "Book First Session"
+  },
+  "booking": {
+    "choosePillar": "Choose Support Area",
+    "pillarCTA": "I Want Support in",
+    "chooseAI": "Try Intelligent Assistant",
+    "chooseHuman": "Talk to a Specialist",
+    "selectProvider": "Continue with",
+    "reserveTime": "Reserve this Time",
+    "confirmSession": "Confirm Session",
+    "addToCalendar": "Add to Calendar",
+    "postBookingPrompt": "Start Pre-Diagnosis with AI",
+    "backToDashboard": "Back to Dashboard",
+    "sendResponses": "Send Responses",
+    "viewRecommendations": "View Recommendations"
+  },
+  "sessions": {
+    "title": "My Sessions",
+    "subtitle": "History and upcoming scheduled sessions",
+    "ctaUseSession": "Use Available Session",
+    "ctaBookToSave": "Book to Not Lose Sessions",
+    "ctaCancelSession": "Cancel Session",
+    "ctaReschedule": "Reschedule",
+    "ctaJoinSession": "Join Session",
+    "ctaViewSession": "View Session",
+    "ctaGiveFeedback": "Give Feedback",
+    "ctaRescheduleNoShow": "Reschedule Missed Session",
+    "ctaBookAgain": "Book Again",
+    "emptyState": "Book First Session"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Important alerts and reminders",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "ctaQuotaWarning": "Book Session Before Period Ends",
+    "ctaViewDetails": "View Details",
+    "ctaSendFeedback": "Send Feedback",
+    "ctaJoinSession": "Join Session",
+    "emptyState": "No notifications at the moment"
+  },
+  "resources": {
+    "title": "Wellness Resources",
+    "subtitle": "Materials and content to support your wellbeing",
+    "ctaExplore": "Explore Wellness Resources",
+    "ctaRead": "Read",
+    "ctaWatch": "Watch",
+    "ctaDownload": "Download",
+    "emptyState": "No resources available at the moment"
+  },
+  "feedback": {
+    "title": "Rate Session",
+    "subtitle": "Your feedback helps us improve",
+    "ctaSubmit": "Submit Feedback",
+    "ctaSkip": "Skip for Now",
+    "ctaViewSessions": "View Other Sessions",
+    "placeholder": "Tell us about your experience...",
+    "successMessage": "Thank you for your feedback!"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your preferences",
+    "ctaSave": "Save Changes",
+    "notificationLabel": "Receive Email Reminders"
+  },
+  "onboarding": {
+    "welcome": "Welcome to the Platform",
+    "ctaCreateAccount": "Create My Account",
+    "ctaFirstSession": "Start with First Session",
+    "ctaUnderstood": "Understood — Let's Book",
+    "quotaExplanation": "You have access to support sessions in various areas"
+  },
+  "crossFlow": {
+    "idleUserTitle": "We miss you!",
+    "idleUserMessage": "Don't forget to take care of yourself",
+    "idleUserCTA": "Start Taking Care Again",
+    "lowQuotaTitle": "Last Sessions Available",
+    "lowQuotaMessage": "Use your sessions before they expire",
+    "lowQuotaCTA": "Use Last Session",
+    "reminderTitle": "Session in 5 minutes",
+    "reminderMessage": "Your session is about to start",
+    "reminderCTAJoin": "Join Now",
+    "reminderCTASnooze": "Snooze 5 Min"
+  },
+  "support": {
+    "title": "Help Center",
+    "subtitle": "We're here to help",
+    "ctaContactHR": "Contact HR",
+    "ctaContactSupport": "Talk to Support",
+    "noResultCTA": "Talk to Support",
+    "articleFooter": "Still have questions? Contact Us"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "buttons": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Fechar",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "download": "Download",
+    "upload": "Carregar",
+    "copy": "Copiar",
+    "view": "Ver",
+    "viewDetails": "Ver Detalhes"
+  },
+  "status": {
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "pending": "Pendente",
+    "completed": "Concluído",
+    "cancelled": "Cancelado",
+    "scheduled": "Agendado",
+    "inProgress": "Em Progresso"
+  },
+  "forms": {
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefone",
+    "password": "Senha",
+    "confirmPassword": "Confirmar Senha",
+    "required": "Campo obrigatório",
+    "invalidEmail": "Email inválido",
+    "passwordMismatch": "As senhas não correspondem"
+  },
+  "time": {
+    "today": "Hoje",
+    "yesterday": "Ontem",
+    "tomorrow": "Amanhã",
+    "thisWeek": "Esta Semana",
+    "lastWeek": "Semana Passada",
+    "thisMonth": "Este Mês",
+    "lastMonth": "Mês Passado"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "main": {
+    "aboutUs": "Sobre Nós",
+    "pillars": "4 Pilares",
+    "booking": "Agendamento",
+    "myHealth": "Minha Saúde",
+    "dashboard": "Dashboard"
+  },
+  "pillars": {
+    "mentalHealth": "Saúde mental",
+    "physicalWellness": "Bem estar físico",
+    "financialAssistance": "Assistência financeira",
+    "legalAssistance": "Assistência Jurídica"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "management": "Gestão",
+    "providers": "Prestadores",
+    "users": "Utilizadores",
+    "requests": "Solicitações",
+    "reports": "Relatórios",
+    "emailAlerts": "Email Alerts",
+    "feedback": "Feedback",
+    "inactiveAccounts": "Contas Inativas"
+  },
+  "company": {
+    "dashboard": "Dashboard RH",
+    "reports": "Relatórios"
+  },
+  "user": {
+    "login": "Entrar",
+    "logout": "Sair",
+    "register": "Registar",
+    "profile": "Perfil",
+    "settings": "Definições",
+    "notifications": "Notificações"
+  }
+}

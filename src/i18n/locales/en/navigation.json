@@ -1,0 +1,38 @@
+{
+  "main": {
+    "aboutUs": "About Us",
+    "pillars": "4 Pillars",
+    "booking": "Booking",
+    "myHealth": "My Health",
+    "dashboard": "Dashboard"
+  },
+  "pillars": {
+    "mentalHealth": "Mental Health",
+    "physicalWellness": "Physical Wellness",
+    "financialAssistance": "Financial Assistance",
+    "legalAssistance": "Legal Assistance"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "management": "Management",
+    "providers": "Providers",
+    "users": "Users",
+    "requests": "Requests",
+    "reports": "Reports",
+    "emailAlerts": "Email Alerts",
+    "feedback": "Feedback",
+    "inactiveAccounts": "Inactive Accounts"
+  },
+  "company": {
+    "dashboard": "HR Dashboard",
+    "reports": "Reports"
+  },
+  "user": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "profile": "Profile",
+    "settings": "Settings",
+    "notifications": "Notifications"
+  }
+}

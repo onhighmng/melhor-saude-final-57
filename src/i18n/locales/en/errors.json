@@ -1,0 +1,20 @@
+{
+  "auth": {
+    "invalidEmail": "Invalid email",
+    "userNotFound": "User not found",
+    "wrongPassword": "Incorrect password",
+    "tooManyRequests": "Too many attempts. Please try again later"
+  },
+  "network": {
+    "connectionError": "Connection error. Check your internet",
+    "timeout": "Request timeout. Please try again"
+  },
+  "permission": {
+    "denied": "Permission denied for this action",
+    "notFound": "Resource not found"
+  },
+  "generic": {
+    "unknown": "An error occurred",
+    "tryAgain": "Please try again later"
+  }
+}
