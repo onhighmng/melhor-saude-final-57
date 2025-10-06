@@ -20,7 +20,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
 }) => {
   const pillarImages = [
     "/lovable-uploads/therapy-session.png", // Saúde Psicológica
-    "/lovable-uploads/922a13c5-6f7f-427b-8497-e5ca6c19e48e.png", // Saúde Financeira
+    "/lovable-uploads/financial-planning.png", // Saúde Financeira
     "/lovable-uploads/fad5a7e1-4fd0-4f9b-8151-d9c8b54fc079.png", // Saúde Física
     "/lovable-uploads/business-meeting.png"  // Saúde Jurídica e Social
   ];
