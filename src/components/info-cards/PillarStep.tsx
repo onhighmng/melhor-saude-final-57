@@ -32,6 +32,13 @@ const PillarStep: React.FC<PillarStepProps> = ({
     "Segurança jurídica é parte essencial do bem-estar, permitindo decisões informadas e proteção legal completa para colaboradores e suas famílias."
   ];
 
+  const pillarSpecialists = [
+    "Psicólogos, psiquiatras, terapeutas, coaches de vida, conselheiros matrimoniais, terapeutas cognitivo-comportamentais, terapeutas ocupacionais, especialistas em mindfulness, psicanalistas, terapeutas familiares.",
+    "Consultores financeiros, coaches certificados, contabilistas, gestores de investimento, planejadores financeiros pessoais, consultores de crédito, especialistas em finanças pessoais, peritos tributários, educadores financeiros.",
+    "Personal trainers, nutricionistas, médicos de clínica geral, fisioterapeutas, enfermeiros, quiropráticos, instrutores de yoga, massoterapeutas, educadores físicos, especialistas em medicina esportiva.",
+    "Advogados, paralegais especializados em direito laboral e familiar, mediadores jurídicos, consultores de compliance, defensores públicos, notários, especialistas em direito civil, consultores em contratos, juristas empresariais."
+  ];
+
   const pillarFeatures = [
     [
       "Sessões individuais com psicólogos certificados", 
@@ -92,6 +99,16 @@ const PillarStep: React.FC<PillarStepProps> = ({
           <p className="text-sm sm:text-base lg:text-lg text-navy-blue leading-relaxed max-w-2xl mx-auto font-medium px-2">
             {pillarDescriptions[index]}
           </p>
+          
+          {/* Specialists Section */}
+          <div className="mt-4 max-w-3xl mx-auto">
+            <p className="text-xs sm:text-sm text-royal-blue/80 font-semibold mb-2">
+              Profissionais Disponíveis 24 horas por dia, 7 dias por semana:
+            </p>
+            <p className="text-xs sm:text-sm text-navy-blue/70 leading-relaxed px-4">
+              {pillarSpecialists[index]}
+            </p>
+          </div>
         </div>
 
         {/* Main Content Layout - Two Column Grid */}

@@ -5,12 +5,13 @@ export const pillars = [
   {
     title: "Saúde mental",
     description: "Cuidar da saúde mental é essencial para manter o equilíbrio emocional, a produtividade e a qualidade de vida no ambiente de trabalho.",
+    specialists: "Psicólogos, psiquiatras, terapeutas, coaches de vida, conselheiros matrimoniais, terapeutas cognitivo-comportamentais, terapeutas ocupacionais, especialistas em mindfulness, psicanalistas, terapeutas familiares.",
     features: [
       "Sessões individuais com psicólogos certificados", 
       "Atendimento em situações de crise emocional", 
       "Aconselhamento sobre stress laboral e burnout",
       "Programas de mindfulness e autocuidado",
-      "Apoio psicológico 24/7",
+      "Apoio psicológico 24 horas por dia, 7 dias por semana",
       "Terapia de grupo especializada"
     ],
     icon: <Brain className="hidden sm:block w-8 h-8 text-mint-green" />
@@ -18,6 +19,7 @@ export const pillars = [
   {
     title: "Bem estar físico",
     description: "Promover vitalidade e bem-estar através de medicina preventiva, nutrição balanceada e programas de exercício físico adaptados ao ambiente empresarial.",
+    specialists: "Personal trainers, nutricionistas, médicos de clínica geral, fisioterapeutas, enfermeiros, quiropráticos, instrutores de yoga, massoterapeutas, educadores físicos, especialistas em medicina esportiva.",
     features: [
       "Acesso a médicos e nutricionistas qualificados", 
       "Planos alimentares personalizados", 
@@ -31,6 +33,7 @@ export const pillars = [
   {
     title: "Assistência financeira",
     description: "Reduzir o stress financeiro através de literacia financeira abrangente e apoio prático na gestão económica pessoal e familiar.",
+    specialists: "Consultores financeiros, coaches certificados, contabilistas, gestores de investimento, planejadores financeiros pessoais, consultores de crédito, especialistas em finanças pessoais, peritos tributários, educadores financeiros.",
     features: [
       "Sessões com consultores financeiros certificados", 
       "Apoio na elaboração de orçamentos personalizados", 
@@ -44,6 +47,7 @@ export const pillars = [
   {
     title: "Assistência Jurídica",
     description: "Segurança jurídica é parte essencial do bem-estar, permitindo decisões informadas e proteção legal completa para colaboradores e suas famílias.",
+    specialists: "Advogados, paralegais especializados em direito laboral e familiar, mediadores jurídicos, consultores de compliance, defensores públicos, notários, especialistas em direito civil, consultores em contratos, juristas empresariais.",
     features: [
       "Consultoria com advogados especializados", 
       "Esclarecimento sobre contratos e direitos", 
