@@ -22,7 +22,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
     "/lovable-uploads/8e2df1aa-a1c7-4f91-b724-fc348e3347ee.png", // Saúde Psicológica
     "/lovable-uploads/922a13c5-6f7f-427b-8497-e5ca6c19e48e.png", // Saúde Financeira
     "/lovable-uploads/fad5a7e1-4fd0-4f9b-8151-d9c8b54fc079.png", // Saúde Física
-    "/lovable-uploads/f48e9a64-fcb0-4691-baa9-c6007ac1a750.png"  // Saúde Jurídica e Social
+    "/lovable-uploads/business-meeting.png"  // Saúde Jurídica e Social
   ];
 
   const pillarDescriptions = [
