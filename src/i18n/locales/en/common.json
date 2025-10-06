@@ -204,52 +204,75 @@
     "title": "Frequently Asked Questions",
     "questions": {
       "whatIs": {
-        "question": "What is Melhor Saúde and what are its pillars?",
-        "answer": "Melhor Saúde is a corporate wellness platform focused on four essential pillars: Psychological Health, Financial Health, Physical Health, and Legal & Social Health. Each pillar provides access to specialized professionals and resources to support employees in an integrated way."
+        "question": "What is Melhor Saúde?",
+        "intro": "Melhor Saúde is an integrated corporate wellness platform offering specialized support 24 hours a day, 7 days a week across four fundamental pillars:",
+        "mental": "Psychological Wellbeing - Psychologists, psychiatrists, therapists, life coaches, marriage counselors, cognitive-behavioral therapists, occupational therapists, mindfulness specialists, psychoanalysts, and family therapists.",
+        "physical": "Physical Wellbeing - Personal trainers, nutritionists, general practitioners, physiotherapists, nurses, chiropractors, yoga instructors, massage therapists, physical educators, and sports medicine specialists.",
+        "financial": "Financial Assistance - Financial consultants, certified coaches, accountants, investment managers, personal financial planners, credit counselors, personal finance specialists, tax experts, and financial educators.",
+        "legal": "Legal Assistance - Lawyers, paralegals specialized in labor and family law, legal mediators, compliance consultants, public defenders, notaries, civil law specialists, contract consultants, and corporate legal experts."
       },
       "howToBook": {
-        "question": "How does session booking work?",
-        "answer": "Booking is done through the digital platform, where you can choose the specialist, session type (individual, couples, or group), modality (in-person or online), and the time that best suits your schedule."
+        "question": "How can I book a session with a specialist?",
+        "answer": "After logging in, access your dashboard and click 'Book Session'. Select your desired pillar (Psychological Wellbeing, Physical Wellbeing, Financial Assistance, or Legal Assistance), choose a professional from the specialist directory, and select an available time slot in the calendar. You'll receive immediate confirmation and reminders before your session."
       },
-      "quota": {
-        "question": "What is the session quota and how does it work?",
-        "answer": "The session quota is the number of consultations available within the plan contracted by your company. You can track your balance through the platform and, if necessary, request additional sessions."
+      "sessionsQuota": {
+        "question": "How does the session quota system work?",
+        "answer": "Your session quota is determined by your subscription plan. Company employees receive sessions allocated by their organization, while individual users have access according to their chosen plan (Monthly, Quarterly, or Annual). You can view your available session balance in your dashboard and use sessions across any of the four pillars."
       },
-      "individualPlan": {
-        "question": "Can I join the individual plan without a company?",
-        "answer": "Yes. We offer individual plans for those who wish to access our services independently, with special conditions and continuous support from our specialists."
+      "availability": {
+        "question": "When can I access specialists?",
+        "answer": "All our specialists are available 24 hours a day, 7 days a week. You can book sessions at any time that's convenient for you, including weekends and holidays. The platform is always accessible for bookings and self-help resources."
       },
-      "businessPlan": {
-        "question": "How does the business plan work?",
-        "answer": "The business plan allows organizations to offer comprehensive wellness to their employees. It includes unlimited access to professionals from all areas, corporate dashboard, wellness reports, and dedicated administrative support."
+      "individualPlans": {
+        "question": "What individual plans are available?",
+        "intro": "We offer three individual plans with full access to all four pillars:",
+        "monthly": "Monthly Plan - Monthly subscription with automatic renewal and total flexibility",
+        "quarterly": "Quarterly Plan - 3-month commitment with discount compared to monthly plan",
+        "annual": "Annual Plan - Best value with greatest annual savings and priority access",
+        "access": "All plans include unlimited sessions (subject to plan quota), access to self-help resources, validated psychological tests, and support through the help center."
+      },
+      "businessPlans": {
+        "question": "How do business plans work?",
+        "intro": "Business plans are fully customizable according to organization size and needs:",
+        "small": "Small Teams (up to 50 employees) - Simplified session management and basic usage reports",
+        "large": "Large Enterprises (50+ employees) - Complete management dashboard, detailed reports, flexible session allocation, and dedicated support",
+        "contact": "Companies can invite employees, manage session allocation, view aggregated statistics (always respecting individual confidentiality), and customize benefits by department."
       },
       "selfHelp": {
-        "question": "Can I access self-help content without booking sessions?",
-        "answer": "Yes! The platform offers a library of educational resources, psychological tests, articles, videos, and materials on finance, mental health, nutrition, and law, accessible at any time."
+        "question": "What self-help resources are available?",
+        "answer": "The platform offers a complete library accessible 24 hours a day, 7 days a week, including: specialized articles on mental and physical wellbeing, educational videos on financial management, practical guides on legal rights, scientifically validated psychological tests, self-assessment tools, and practical exercises. All content is created and reviewed by certified professionals."
       },
-      "providerTypes": {
-        "question": "What type of professionals are available?",
-        "answer": "We have clinical psychologists, specialized lawyers, certified financial consultants, nutritionists, general practice doctors, and physical education professionals — all accredited and with proven experience."
+      "providers": {
+        "question": "How are professionals selected?",
+        "answer": "All professionals undergo a rigorous credential validation process, including verification of professional certifications, proven experience, and ongoing training. We maintain a diverse team of specialists in each pillar to ensure you find the ideal professional for your needs."
       },
       "confidentiality": {
-        "question": "Are my consultations confidential?",
-        "answer": "Yes. All sessions follow strict confidentiality and professional secrecy standards. Companies do not have access to session content — only aggregated and anonymous data for wellness monitoring purposes."
+        "question": "How is confidentiality guaranteed?",
+        "answer": "Confidentiality is absolute. All sessions are private and protected by professional secrecy. Companies only have access to aggregated and anonymous usage data - they never have access to information about individual sessions, consulted professionals, or consultation content. We strictly comply with GDPR and all data protection regulations."
       },
       "sessionTypes": {
-        "question": "Are sessions online or in-person?",
-        "answer": "We offer both modalities. You can choose between video consultations (more practical and flexible) or in-person, according to your preference and professional availability."
+        "question": "How do sessions work?",
+        "answer": "Sessions are conducted via secure video call through the platform, with typical duration of 50 minutes. You can opt for one-time sessions or ongoing support with the same professional. Before your first session, you'll receive guidance on how to prepare and what to expect from the consultation."
       },
       "cancelReschedule": {
-        "question": "How can I cancel or reschedule a session?",
-        "answer": "You can cancel or reschedule directly through the platform, with a minimum of 24 hours notice to avoid quota deduction."
+        "question": "What is the cancellation and rescheduling policy?",
+        "answer": "You can cancel or reschedule sessions directly on the platform. To avoid quota deduction, we recommend cancellation at least 24 hours in advance. Rescheduling can be done at any time, subject to professional availability. In case of emergency or unforeseen circumstances, contact support."
       },
-      "extraServices": {
-        "question": "Are there additional services available?",
-        "answer": "Yes. In addition to consultations, we offer personalized corporate wellness programs, workshops, lectures, health screenings, and workplace healthy habit promotion initiatives."
+      "companyManagement": {
+        "question": "How do companies manage employee benefits?",
+        "answer": "Companies have access to a management dashboard where they can: invite employees through unique codes, allocate session quotas per employee or department, view aggregated usage reports, manage plan renewals, and track wellness impact on the organization (always with anonymous data)."
+      },
+      "technicalRequirements": {
+        "question": "What technical requirements are needed?",
+        "answer": "You only need a device with internet access (computer, tablet, or smartphone), a working camera and microphone, and an updated browser. The platform is optimized to work on any device and doesn't require additional software installation."
+      },
+      "firstSession": {
+        "question": "What to expect from the first session?",
+        "answer": "In the first session, the professional will get to know you, understand your needs and goals, and create a personalized plan. It's okay to be nervous - our specialists are trained to create a welcoming and trusting environment. You can prepare by thinking about topics you'd like to address."
       },
       "getStarted": {
-        "question": "How can I start using the platform?",
-        "answer": "If your company is already a partner, you will receive an email invitation. Otherwise, you can create an individual account or contact us to implement Melhor Saúde in your organization."
+        "question": "How do I get started with the platform?",
+        "answer": "Step 1: Register on the platform (using company code or choosing an individual plan). Step 2: Complete your profile with basic information. Step 3: Explore self-help resources or immediately book your first session. Step 4: Select the pillar, choose a specialist, and reserve a time slot. It's simple and quick!"
       }
     }
   },

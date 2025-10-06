@@ -204,52 +204,75 @@
     "title": "Perguntas Frequentes",
     "questions": {
       "whatIs": {
-        "question": "O que é a Melhor Saúde e quais são os seus pilares?",
-        "answer": "A Melhor Saúde é uma plataforma de bem-estar corporativo focada em quatro pilares essenciais: Saúde Psicológica, Saúde Financeira, Saúde Física e Saúde Jurídica e Social. Cada pilar oferece acesso a profissionais especializados e recursos para apoiar os colaboradores de forma integrada."
+        "question": "O que é a Melhor Saúde?",
+        "intro": "A Melhor Saúde é uma plataforma integrada de bem-estar corporativo que oferece apoio especializado 24 horas por dia, 7 dias por semana em quatro pilares fundamentais:",
+        "mental": "Bem-estar Psicológico - Psicólogos, psiquiatras, terapeutas, coaches de vida, conselheiros matrimoniais, terapeutas cognitivo-comportamentais, terapeutas ocupacionais, especialistas em mindfulness, psicanalistas e terapeutas familiares.",
+        "physical": "Bem-estar Físico - Personal trainers, nutricionistas, médicos de clínica geral, fisioterapeutas, enfermeiros, quiropráticos, instrutores de yoga, massoterapeutas, educadores físicos e especialistas em medicina esportiva.",
+        "financial": "Assistência Financeira - Consultores financeiros, coaches certificados, contabilistas, gestores de investimento, planejadores financeiros pessoais, consultores de crédito, especialistas em finanças pessoais, peritos tributários e educadores financeiros.",
+        "legal": "Assistência Jurídica - Advogados, paralegais especializados em direito laboral e familiar, mediadores jurídicos, consultores de compliance, defensores públicos, notários, especialistas em direito civil, consultores em contratos e juristas empresariais."
       },
       "howToBook": {
-        "question": "Como funciona o agendamento de sessões?",
-        "answer": "O agendamento é feito através da plataforma digital, onde pode escolher o especialista, o tipo de sessão (individual, casal ou grupo), a modalidade (presencial ou online) e o horário que melhor se adequa à sua agenda."
+        "question": "Como posso marcar uma sessão com um especialista?",
+        "answer": "Após fazer login, aceda ao painel de controlo e clique em 'Marcar Sessão'. Selecione o pilar desejado (Bem-estar Psicológico, Bem-estar Físico, Assistência Financeira ou Assistência Jurídica), escolha um profissional do diretório de especialistas e selecione um horário disponível no calendário. Receberá uma confirmação imediata e lembretes antes da sessão."
       },
-      "quota": {
-        "question": "O que é a quota de sessões e como funciona?",
-        "answer": "A quota de sessões é o número de consultas disponíveis dentro do plano contratado pela sua empresa. Pode acompanhar o seu saldo através da plataforma e, caso necessário, solicitar sessões adicionais."
+      "sessionsQuota": {
+        "question": "Como funciona o sistema de quotas de sessões?",
+        "answer": "A sua quota de sessões é determinada pelo seu plano de subscrição. Colaboradores de empresas recebem sessões atribuídas pela sua organização, enquanto utilizadores individuais têm acesso conforme o plano escolhido (Mensal, Trimestral ou Anual). Pode visualizar o seu saldo de sessões disponíveis no painel de controlo e utilizar as sessões em qualquer um dos quatro pilares."
       },
-      "individualPlan": {
-        "question": "Posso aderir ao plano individual sem empresa?",
-        "answer": "Sim. Oferecemos planos individuais para quem deseja aceder aos nossos serviços de forma independente, com condições especiais e apoio contínuo dos nossos especialistas."
+      "availability": {
+        "question": "Quando posso aceder aos especialistas?",
+        "answer": "Todos os nossos especialistas estão disponíveis 24 horas por dia, 7 dias por semana. Pode marcar sessões a qualquer momento que seja conveniente para si, incluindo fins de semana e feriados. A plataforma está sempre acessível para marcações e recursos de autoajuda."
       },
-      "businessPlan": {
-        "question": "Como funciona o plano empresarial?",
-        "answer": "O plano empresarial permite às organizações oferecer bem-estar integral aos seus colaboradores. Inclui acesso ilimitado a profissionais de todas as áreas, dashboard corporativo, relatórios de bem-estar e suporte administrativo dedicado."
+      "individualPlans": {
+        "question": "Que planos individuais estão disponíveis?",
+        "intro": "Oferecemos três planos individuais com acesso completo aos quatro pilares:",
+        "monthly": "Plano Mensal - Subscrição mensal com renovação automática e flexibilidade total",
+        "quarterly": "Plano Trimestral - Compromisso de 3 meses com desconto em relação ao plano mensal",
+        "annual": "Plano Anual - Melhor valor com maior economia anual e acesso prioritário",
+        "access": "Todos os planos incluem sessões ilimitadas (conforme quota do plano), acesso a recursos de autoajuda, testes psicológicos validados e suporte através do centro de ajuda."
+      },
+      "businessPlans": {
+        "question": "Como funcionam os planos empresariais?",
+        "intro": "Os planos empresariais são totalmente personalizáveis conforme o tamanho e necessidades da organização:",
+        "small": "Equipas Pequenas (até 50 colaboradores) - Gestão simplificada de sessões e relatórios básicos de utilização",
+        "large": "Empresas Grandes (50+ colaboradores) - Painel de gestão completo, relatórios detalhados, atribuição flexível de sessões e suporte dedicado",
+        "contact": "As empresas podem convidar colaboradores, gerir alocação de sessões, visualizar estatísticas agregadas (sempre respeitando a confidencialidade individual) e personalizar benefícios por departamento."
       },
       "selfHelp": {
-        "question": "Posso aceder a conteúdos de autoajuda sem marcar sessões?",
-        "answer": "Sim! A plataforma oferece uma biblioteca de recursos educativos, testes psicológicos, artigos, vídeos e materiais sobre finanças, saúde mental, nutrição e direito, acessíveis a qualquer momento."
+        "question": "Que recursos de autoajuda estão disponíveis?",
+        "answer": "A plataforma oferece uma biblioteca completa acessível 24 horas por dia, 7 dias por semana, incluindo: artigos especializados sobre bem-estar mental e físico, vídeos educativos sobre gestão financeira, guias práticos sobre direitos legais, testes psicológicos validados cientificamente, ferramentas de autoavaliação e exercícios práticos. Todo o conteúdo é criado e revisto por profissionais certificados."
       },
-      "providerTypes": {
-        "question": "Que tipo de profissionais estão disponíveis?",
-        "answer": "Temos psicólogos clínicos, advogados especializados, consultores financeiros certificados, nutricionistas, médicos de clínica geral e profissionais de educação física — todos credenciados e com experiência comprovada."
+      "providers": {
+        "question": "Como são selecionados os profissionais?",
+        "answer": "Todos os profissionais passam por um rigoroso processo de validação de credenciais, incluindo verificação de certificações profissionais, experiência comprovada e formação contínua. Mantemos uma equipa diversificada de especialistas em cada pilar para garantir que encontra o profissional ideal para as suas necessidades."
       },
       "confidentiality": {
-        "question": "As minhas consultas são confidenciais?",
-        "answer": "Sim. Todas as sessões seguem rigorosos padrões de confidencialidade e sigilo profissional. As empresas não têm acesso ao conteúdo das sessões — apenas dados agregados e anónimos para fins de acompanhamento de bem-estar."
+        "question": "Como é garantida a confidencialidade?",
+        "answer": "A confidencialidade é absoluta. Todas as sessões são privadas e protegidas por sigilo profissional. As empresas apenas têm acesso a dados agregados e anónimos de utilização - nunca têm acesso a informações sobre sessões individuais, profissionais consultados ou conteúdo das consultas. Cumprimos rigorosamente o RGPD e todas as regulamentações de proteção de dados."
       },
       "sessionTypes": {
-        "question": "As sessões são online ou presenciais?",
-        "answer": "Oferecemos ambas as modalidades. Pode escolher entre consultas por videochamada (mais práticas e flexíveis) ou presenciais, de acordo com a sua preferência e disponibilidade do profissional."
+        "question": "Como funcionam as sessões?",
+        "answer": "As sessões são realizadas por videochamada segura através da plataforma, com duração típica de 50 minutos. Pode optar por sessões pontuais ou acompanhamento contínuo com o mesmo profissional. Antes da primeira sessão, receberá orientações sobre como preparar-se e o que esperar da consulta."
       },
       "cancelReschedule": {
-        "question": "Como posso cancelar ou reagendar uma sessão?",
-        "answer": "Pode cancelar ou reagendar diretamente pela plataforma, com antecedência mínima de 24 horas para evitar a dedução da quota."
+        "question": "Qual é a política de cancelamento e remarcação?",
+        "answer": "Pode cancelar ou remarcar sessões diretamente na plataforma. Para evitar a dedução da quota, recomendamos cancelamento com pelo menos 24 horas de antecedência. Remarcações podem ser feitas a qualquer momento, sujeitas à disponibilidade do profissional. Em caso de emergência ou imprevistos, contacte o suporte."
       },
-      "extraServices": {
-        "question": "Existem serviços adicionais disponíveis?",
-        "answer": "Sim. Além das consultas, oferecemos programas de bem-estar corporativo personalizados, workshops, palestras, rastreios de saúde e iniciativas de promoção de hábitos saudáveis no local de trabalho."
+      "companyManagement": {
+        "question": "Como as empresas gerem os benefícios dos colaboradores?",
+        "answer": "As empresas têm acesso a um painel de gestão onde podem: convidar colaboradores através de códigos únicos, alocar quotas de sessões por colaborador ou departamento, visualizar relatórios de utilização agregados, gerir renovações de planos e acompanhar o impacto do bem-estar na organização (sempre com dados anónimos)."
+      },
+      "technicalRequirements": {
+        "question": "Que requisitos técnicos são necessários?",
+        "answer": "Apenas precisa de um dispositivo com acesso à internet (computador, tablet ou smartphone), uma câmara e microfone funcionais, e um navegador atualizado. A plataforma é otimizada para funcionar em qualquer dispositivo e não requer instalação de software adicional."
+      },
+      "firstSession": {
+        "question": "O que esperar da primeira sessão?",
+        "answer": "Na primeira sessão, o profissional irá conhecê-lo, compreender as suas necessidades e objetivos, e criar um plano personalizado. Não há problema em estar nervoso - os nossos especialistas são treinados para criar um ambiente acolhedor e de confiança. Pode preparar-se pensando nos tópicos que gostaria de abordar."
       },
       "getStarted": {
-        "question": "Como posso começar a usar a plataforma?",
-        "answer": "Se a sua empresa já é parceira, receberá um convite por e-mail. Caso contrário, pode criar uma conta individual ou contactar-nos para implementar a Melhor Saúde na sua organização."
+        "question": "Como começar a usar a plataforma?",
+        "answer": "Passo 1: Registe-se na plataforma (usando código da empresa ou escolhendo um plano individual). Passo 2: Complete o seu perfil com informações básicas. Passo 3: Explore os recursos de autoajuda ou marque imediatamente a sua primeira sessão. Passo 4: Selecione o pilar, escolha um especialista e reserve um horário. É simples e rápido!"
       }
     }
   },
