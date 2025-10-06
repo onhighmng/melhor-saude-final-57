@@ -38,7 +38,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
       "Atendimento em situações de crise emocional", 
       "Aconselhamento sobre stress laboral e burnout",
       "Programas de mindfulness e autocuidado",
-      "Apoio psicológico 24/7",
+      "Apoio psicológico 24 horas por dia, 7 dias por semana",
       "Terapia de grupo especializada"
     ],
     [
