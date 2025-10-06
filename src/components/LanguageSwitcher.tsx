@@ -21,7 +21,7 @@ export const LanguageSwitcher = () => {
     >
       <Globe className="h-4 w-4" />
       <span className="font-medium uppercase">
-        {i18n.language === 'pt' ? 'EN' : 'PT'}
+        {i18n.language === 'pt' ? 'PT' : 'EN'}
       </span>
     </Button>
   );
