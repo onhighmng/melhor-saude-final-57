@@ -51,7 +51,7 @@ const PillarCarousel = () => {
       title: t('carousel.pillars.golf.title'),
       subtitle: t('carousel.pillars.golf.subtitle'),
       description: t('carousel.pillars.golf.description'),
-      image: '/lovable-uploads/64839ced-48a0-4bc0-96d3-55b3c2d871a9.png',
+      image: '/lovable-uploads/golf-networking.png',
       gradient: 'from-vibrant-blue/20 to-bright-royal/20',
       isSpecial: true,
       link: 'https://executive-golf-experience.lovable.app/'
