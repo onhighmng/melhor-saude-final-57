@@ -5,6 +5,7 @@ import { Calendar, Clock, User, Building2, User as UserIcon, ExternalLink } from
 import { Session, getStatusLabel, getPillarLabel, getPayerSourceLabel } from "@/data/sessionMockData";
 import { SessionDeductionBadge } from "./SessionDeductionBadge";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface SessionHistoryCardProps {
   session: Session;
@@ -19,6 +20,7 @@ export function SessionHistoryCard({
   onReschedule,
   onCancel 
 }: SessionHistoryCardProps) {
+  const { t } = useTranslation('user');
   const [showMeetingLink, setShowMeetingLink] = useState(false);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ export function SessionHistoryCard({
               {getPillarLabel(session.pillar)}
             </CardTitle>
             <CardDescription>
-              Sessão com {session.prestadorName}
+              {t('sessions.sessionWith', 'Sessão com {{provider}}', { provider: session.prestadorName })}
             </CardDescription>
           </div>
           <div className="flex flex-col gap-2 items-end">
@@ -121,7 +123,7 @@ export function SessionHistoryCard({
               ) : (
                 <UserIcon className="h-4 w-4" />
               )}
-              <span>Quota {getPayerSourceLabel(session.payerSource)}</span>
+              <span>{t('sessions.quota.company', 'Quota {{type}}', { type: getPayerSourceLabel(session.payerSource) })}</span>
             </div>
           </div>
 
@@ -129,10 +131,15 @@ export function SessionHistoryCard({
           {session.wasDeducted && session.deductedAt && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-3">
               <div className="text-sm text-green-800">
-                <p className="font-medium">Sessão Deduzida</p>
+                <p className="font-medium">{t('sessions.deducted', 'Sessão Deduzida')}</p>
                 <p>
-                  Deduzida da quota {getPayerSourceLabel(session.payerSource).toLowerCase()} em{' '}
-                  {new Date(session.deductedAt).toLocaleString('pt-PT')}
+                  {t('sessions.deductedFrom', 
+                    'Deduzida da quota {{type}} em {{date}}', 
+                    { 
+                      type: getPayerSourceLabel(session.payerSource).toLowerCase(), 
+                      date: new Date(session.deductedAt).toLocaleString('pt-PT')
+                    }
+                  )}
                 </p>
               </div>
             </div>
@@ -142,11 +149,11 @@ export function SessionHistoryCard({
           {!session.wasDeducted && ['cancelled', 'no_show', 'rescheduled'].includes(session.status) && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <div className="text-sm text-blue-800">
-                <p className="font-medium">Sessão Não Deduzida</p>
+                <p className="font-medium">{t('sessions.notDeducted', 'Sessão Não Deduzida')}</p>
                 <p>
-                  {session.status === 'cancelled' && 'Cancelamentos não consomem sessões da sua quota.'}
-                  {session.status === 'no_show' && 'Faltas não consomem sessões da sua quota.'}
-                  {session.status === 'rescheduled' && 'Reagendamentos não consomem sessões da sua quota.'}
+                  {session.status === 'cancelled' && t('sessions.cancellationsNoCharge', 'Cancelamentos não consomem sessões da sua quota.')}
+                  {session.status === 'no_show' && t('sessions.absencesNoCharge', 'Faltas não consomem sessões da sua quota.')}
+                  {session.status === 'rescheduled' && t('sessions.reschedulesNoCharge', 'Reagendamentos não consomem sessões da sua quota.')}
                 </p>
               </div>
             </div>
@@ -157,7 +164,7 @@ export function SessionHistoryCard({
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-800">Link da Reunião Disponível</p>
+                  <p className="text-sm font-medium text-blue-800">{t('sessions.meetingLinkAvailable', 'Link da Reunião Disponível')}</p>
                   <p className="text-xs text-blue-600">{getMeetingPlatformDisplay(session.meetingPlatform)}</p>
                 </div>
                 <Button
@@ -166,7 +173,7 @@ export function SessionHistoryCard({
                   className="gap-2"
                 >
                   <ExternalLink className="h-4 w-4" />
-                  Entrar na Reunião
+                  {t('sessions.actions.join', 'Entrar na Reunião')}
                 </Button>
               </div>
             </div>
@@ -176,25 +183,25 @@ export function SessionHistoryCard({
           <div className="flex gap-2 pt-2">
             {onViewDetails && (
               <Button size="sm" variant="outline" onClick={() => onViewDetails(session.id)}>
-                Ver Detalhes
+                {t('sessions.actions.viewDetails')}
               </Button>
             )}
             
             {canReschedule && onReschedule && (
               <Button size="sm" variant="outline" onClick={() => onReschedule(session.id)}>
-                Reagendar
+                {t('sessions.actions.reschedule')}
               </Button>
             )}
             
             {canCancel && onCancel && (
               <Button size="sm" variant="destructive" onClick={() => onCancel(session.id)}>
-                Cancelar
+                {t('sessions.actions.cancel')}
               </Button>
             )}
             
             {session.status === 'completed' && (
               <Button size="sm" variant="secondary">
-                Avaliar Sessão
+                {t('sessions.rateSession', 'Avaliar Sessão')}
               </Button>
             )}
           </div>

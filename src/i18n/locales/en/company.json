@@ -1,5 +1,6 @@
 {
   "dashboard": {
+    "title": "HR Dashboard",
     "inviteButton": {
       "active": "Invite New Employee",
       "limitTooltip": "Limit reached – Deactivate accounts or contact support"
@@ -12,40 +13,87 @@
       "viewReport": "View Monthly Report",
       "exportData": "Export Data",
       "configureNotifications": "Configure Notifications"
-    }
+    },
+    "upcomingEvents": "Upcoming Events",
+    "activeEmployees": "Active Employees",
+    "sessionsUsed": "Sessions Used",
+    "adoptionRate": "Adoption Rate",
+    "currentPlan": "Current Plan",
+    "ofAccounts": "of {{count}} accounts available",
+    "sinceLastMonth": "+{{percent}}% since last month",
+    "employeesWithSession": "Employees with at least 1 session",
+    "accountsIncluded": "{{count}} accounts included"
   },
   "employees": {
+    "title": "Employees",
+    "subtitle": "Employee management",
     "addButton": "Add Employee",
+    "searchPlaceholder": "Search by name, email or department...",
+    "inviteEmployee": "Invite Employee",
+    "noEmployeesFound": "No employees found",
+    "noEmployeesWithFilters": "No employees found with applied filters.",
+    "exportData": "Export Data",
     "filters": {
       "viewActive": "View Active Only",
       "viewInactive": "View Inactive",
       "all": "All"
     },
+    "table": {
+      "employee": "Employee",
+      "department": "Department",
+      "sessions": "Sessions",
+      "status": "Status",
+      "actions": "Actions",
+      "companySessions": "Company:",
+      "personalSessions": "Personal:",
+      "used": "used",
+      "available": "available",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "quotaUsed": "Quota Used",
+      "joinDate": "Join Date"
+    },
     "actions": {
       "viewDetails": "View Details",
       "deactivate": "Deactivate Account",
-      "activate": "Activate Account"
+      "activate": "Activate Account",
+      "adjustQuota": "Adjust Quota"
     },
     "roles": {
       "hr": "HR",
       "employee": "Employee"
-    }
+    },
+    "quotaTooltip": "{{used}} of {{total}} sessions used"
   },
   "invite": {
+    "title": "Invite Employee",
     "modal": {
       "title": "Invite Employee",
       "generatePassword": "Generate Secure Password",
       "submit": "Invite",
       "cancel": "Cancel"
-    }
+    },
+    "emailLabel": "Email",
+    "emailPlaceholder": "employee@company.com",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Employee name",
+    "departmentLabel": "Department",
+    "departmentPlaceholder": "Select department",
+    "sendInvite": "Send Invite",
+    "cancel": "Cancel",
+    "success": "Invitation sent successfully",
+    "error": "Error sending invitation"
   },
   "employeeDetail": {
+    "title": "Employee Details",
+    "personalInfo": "Personal Information",
+    "sessions": "Sessions",
+    "activity": "Activity",
+    "providers": "Assigned Providers",
     "quotaAdjust": {
       "edit": "Edit Sessions",
       "save": "Save Changes"
-    },
-    "providers": {
-      "reassign": "Reassign Provider"
     },
     "actions": {
       "exportHistory": "Export History",
@@ -55,13 +103,21 @@
   },
   "deactivate": {
     "action": "Deactivate Account",
-    "confirm": "Confirm Deactivation",
-    "warning": "Are you sure you want to deactivate this account?"
+    "confirm": "Deactivate Employee?",
+    "warning": "This action will suspend the employee's account.",
+    "button": "Deactivate"
   },
   "activate": {
     "action": "Activate Account"
   },
   "inviteCodes": {
+    "title": "Invite Codes",
+    "subtitle": "Generate and manage employee invite codes",
+    "generate": "Generate Codes",
+    "copy": "Copy Codes",
+    "available": "Available Codes",
+    "used": "Used Codes",
+    "expired": "Expired Codes",
     "actions": {
       "copyActive": "Copy Active Codes",
       "generate": "Generate New Codes",
@@ -77,6 +133,10 @@
     }
   },
   "reports": {
+    "title": "Reports",
+    "subtitle": "Analytics and insights",
+    "downloadReport": "Download Report",
+    "viewAnalytics": "View Analytics",
     "actions": {
       "downloadCSV": "Download CSV",
       "exportPDF": "Export PDF",
@@ -89,7 +149,10 @@
     }
   },
   "settings": {
+    "title": "Settings",
+    "subtitle": "Company settings",
     "save": "Save Changes",
+    "cancel": "Cancel",
     "quotaPolicies": "Update Session Policies",
     "rolloverTooltip": "Allows unused sessions to roll over to next cycle",
     "customFields": {
@@ -106,7 +169,8 @@
   },
   "revokeAccess": {
     "title": "Revoke Access",
-    "warning": "Revoke access – this action is permanent",
-    "confirm": "Are you sure? This action cannot be undone."
+    "warning": "PERMANENT ACTION - Cannot be undone",
+    "confirm": "Are you sure you want to revoke access?",
+    "button": "Revoke Access"
   }
 }

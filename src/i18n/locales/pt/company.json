@@ -1,5 +1,6 @@
 {
   "dashboard": {
+    "title": "Dashboard RH",
     "inviteButton": {
       "active": "Convidar Novo Colaborador",
       "limitTooltip": "Limite atingido – Desative contas ou contacte suporte"
@@ -12,40 +13,87 @@
       "viewReport": "Ver Relatório Mensal",
       "exportData": "Exportar Dados",
       "configureNotifications": "Configurar Notificações"
-    }
+    },
+    "upcomingEvents": "Próximos Eventos",
+    "activeEmployees": "Colaboradores Ativos",
+    "sessionsUsed": "Sessões Utilizadas",
+    "adoptionRate": "Taxa de Adesão",
+    "currentPlan": "Plano Atual",
+    "ofAccounts": "de {{count}} contas disponíveis",
+    "sinceLastMonth": "+{{percent}}% desde o mês passado",
+    "employeesWithSession": "Colaboradores com pelo menos 1 sessão",
+    "accountsIncluded": "{{count}} contas incluídas"
   },
   "employees": {
+    "title": "Colaboradores",
+    "subtitle": "Gestão de colaboradores",
     "addButton": "Adicionar Colaborador",
+    "searchPlaceholder": "Pesquisar por nome, email ou departamento...",
+    "inviteEmployee": "Convidar Colaborador",
+    "noEmployeesFound": "Nenhum colaborador encontrado",
+    "noEmployeesWithFilters": "Nenhum colaborador encontrado com os filtros aplicados.",
+    "exportData": "Exportar Dados",
     "filters": {
       "viewActive": "Ver Apenas Ativos",
       "viewInactive": "Ver Inativos",
       "all": "Todos"
     },
+    "table": {
+      "employee": "Colaborador",
+      "department": "Departamento",
+      "sessions": "Sessões",
+      "status": "Estado",
+      "actions": "Ações",
+      "companySessions": "Empresa:",
+      "personalSessions": "Pessoal:",
+      "used": "usadas",
+      "available": "disponíveis",
+      "name": "Nome",
+      "email": "Email",
+      "role": "Função",
+      "quotaUsed": "Quota Utilizada",
+      "joinDate": "Data de Adesão"
+    },
     "actions": {
       "viewDetails": "Ver Detalhes",
       "deactivate": "Desativar Conta",
-      "activate": "Ativar Conta"
+      "activate": "Ativar Conta",
+      "adjustQuota": "Ajustar Quota"
     },
     "roles": {
       "hr": "RH",
       "employee": "Colaborador"
-    }
+    },
+    "quotaTooltip": "{{used}} de {{total}} sessões utilizadas"
   },
   "invite": {
+    "title": "Convidar Colaborador",
     "modal": {
       "title": "Convidar Colaborador",
       "generatePassword": "Gerar Senha Segura",
       "submit": "Convidar",
       "cancel": "Cancelar"
-    }
+    },
+    "emailLabel": "Email",
+    "emailPlaceholder": "colaborador@empresa.com",
+    "nameLabel": "Nome Completo",
+    "namePlaceholder": "Nome do colaborador",
+    "departmentLabel": "Departamento",
+    "departmentPlaceholder": "Selecionar departamento",
+    "sendInvite": "Enviar Convite",
+    "cancel": "Cancelar",
+    "success": "Convite enviado com sucesso",
+    "error": "Erro ao enviar convite"
   },
   "employeeDetail": {
+    "title": "Detalhes do Colaborador",
+    "personalInfo": "Informação Pessoal",
+    "sessions": "Sessões",
+    "activity": "Atividade",
+    "providers": "Prestadores Atribuídos",
     "quotaAdjust": {
       "edit": "Editar Sessões",
       "save": "Guardar Alterações"
-    },
-    "providers": {
-      "reassign": "Reatribuir Prestador"
     },
     "actions": {
       "exportHistory": "Exportar Histórico",
@@ -55,13 +103,21 @@
   },
   "deactivate": {
     "action": "Desativar Conta",
-    "confirm": "Confirmar Desativação",
-    "warning": "Tem a certeza que deseja desativar esta conta?"
+    "confirm": "Desativar Colaborador?",
+    "warning": "Esta ação irá suspender a conta do colaborador.",
+    "button": "Desativar"
   },
   "activate": {
     "action": "Ativar Conta"
   },
   "inviteCodes": {
+    "title": "Códigos de Convite",
+    "subtitle": "Gerar e gerir códigos de convite de colaboradores",
+    "generate": "Gerar Códigos",
+    "copy": "Copiar Códigos",
+    "available": "Códigos Disponíveis",
+    "used": "Códigos Usados",
+    "expired": "Códigos Expirados",
     "actions": {
       "copyActive": "Copiar Códigos Ativos",
       "generate": "Gerar Novos Códigos",
@@ -77,6 +133,10 @@
     }
   },
   "reports": {
+    "title": "Relatórios",
+    "subtitle": "Análises e insights",
+    "downloadReport": "Descarregar Relatório",
+    "viewAnalytics": "Ver Análises",
     "actions": {
       "downloadCSV": "Download CSV",
       "exportPDF": "Exportar PDF",
@@ -89,7 +149,10 @@
     }
   },
   "settings": {
+    "title": "Definições",
+    "subtitle": "Definições da empresa",
     "save": "Guardar Alterações",
+    "cancel": "Cancelar",
     "quotaPolicies": "Atualizar Políticas de Sessões",
     "rolloverTooltip": "Permite que sessões não usadas passem para o próximo ciclo",
     "customFields": {
@@ -106,7 +169,8 @@
   },
   "revokeAccess": {
     "title": "Revogar Acesso",
-    "warning": "Revogar acesso – esta ação é permanente",
-    "confirm": "Tem a certeza? Esta ação não pode ser revertida."
+    "warning": "AÇÃO PERMANENTE - Não pode ser desfeita",
+    "confirm": "Tem a certeza que pretende revogar o acesso?",
+    "button": "Revogar Acesso"
   }
 }

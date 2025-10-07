@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Search, MoreHorizontal, UserPlus, Users, Filter } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { mockCompanies, CompanyUser, deactivateUser, activateUser } from "@/data/companyMockData";
 import { SeatUsageCard } from "@/components/company/SeatUsageCard";
@@ -17,6 +18,7 @@ import { companyUIcopy } from "@/data/companyUIcopy";
 import { companyToasts } from "@/data/companyToastMessages";
 
 export default function CompanyEmployees() {
+  const { t } = useTranslation('company');
   const [company, setCompany] = useState(mockCompanies[0]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
@@ -84,9 +86,9 @@ export default function CompanyEmployees() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Colaboradores</h1>
+            <h1 className="text-3xl font-bold text-foreground">{t('employees.title')}</h1>
             <p className="text-muted-foreground">
-              Gestão de contas e colaboradores da empresa
+              {t('employees.subtitle')}
             </p>
           </div>
           
@@ -99,9 +101,9 @@ export default function CompanyEmployees() {
         {/* Filters and Search */}
         <Card>
           <CardHeader>
-            <CardTitle>Lista de Colaboradores</CardTitle>
+            <CardTitle>{t('employees.table.employee', 'Lista de Colaboradores')}</CardTitle>
             <CardDescription>
-              {filteredUsers.length} de {company.users.length} colaboradores
+              {filteredUsers.length} de {company.users.length} {t('employees.title', 'colaboradores').toLowerCase()}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -110,7 +112,7 @@ export default function CompanyEmployees() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
-                    placeholder="Pesquisar por nome ou email..."
+                    placeholder={t('employees.searchPlaceholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
@@ -145,12 +147,12 @@ export default function CompanyEmployees() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Função</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Quota Utilizada</TableHead>
-                    <TableHead>Data de Adesão</TableHead>
+                    <TableHead>{t('employees.table.name')}</TableHead>
+                    <TableHead>{t('employees.table.email')}</TableHead>
+                    <TableHead>{t('employees.table.role')}</TableHead>
+                    <TableHead>{t('employees.table.status')}</TableHead>
+                    <TableHead>{t('employees.table.quotaUsed')}</TableHead>
+                    <TableHead>{t('employees.table.joinDate')}</TableHead>
                     <TableHead className="w-12"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -166,7 +168,7 @@ export default function CompanyEmployees() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={user.isActive ? 'default' : 'secondary'}>
-                          {user.isActive ? 'Ativo' : 'Inativo'}
+                          {user.isActive ? t('common:active', 'Ativo') : t('common:inactive', 'Inativo')}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -220,7 +222,7 @@ export default function CompanyEmployees() {
               
               {filteredUsers.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  Nenhum colaborador encontrado
+                  {t('employees.noEmployeesFound')}
                 </div>
               )}
             </div>
