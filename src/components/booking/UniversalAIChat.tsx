@@ -46,10 +46,10 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
   useEffect(() => {
     if (!sessionId) return;
 
-    // Welcome message
+    // Welcome message in Portuguese
     const welcomeMessage = initialPillar 
-      ? 'Hello! I\'m here to help you with your situation. Please tell me what brings you here today.'
-      : 'Hello! I\'m here to help you find the right specialist for your needs. Could you tell me a bit about what brings you here today?';
+      ? 'Olá! Estou aqui para ajudá-lo com a sua situação. Por favor, conte-me o que o traz aqui hoje.'
+      : 'Olá! Estou aqui para o ajudar. Pode partilhar comigo o que o traz aqui hoje?';
     
     addMessage({ role: 'assistant', content: welcomeMessage }, false);
   }, [sessionId, initialPillar, addMessage]);
@@ -90,10 +90,13 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <div>
-            <h2 className="text-xl font-semibold">Talk to Specialist</h2>
+            <h2 className="text-xl font-semibold">Fale com Especialista</h2>
             {pillar && (
               <p className="text-sm text-muted-foreground capitalize">
-                {pillar.replace('_', ' ')} Specialist
+                {pillar === 'legal' && 'Especialista Jurídico'}
+                {pillar === 'psychological' && 'Especialista em Saúde Mental'}
+                {pillar === 'physical' && 'Especialista em Bem-Estar Físico'}
+                {pillar === 'financial' && 'Consultor Financeiro'}
               </p>
             )}
           </div>
@@ -127,7 +130,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
                 <div className="bg-muted rounded-lg p-3">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">Typing...</span>
+                    <span className="text-sm">A escrever...</span>
                   </div>
                 </div>
               </div>
@@ -150,12 +153,12 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
+              placeholder="Escreva a sua mensagem..."
               className="resize-none"
               rows={2}
-              disabled={isLoading}
+              disabled={isLoading || showPhoneCard}
             />
-            <Button onClick={handleSend} disabled={isLoading || !input.trim()}>
+            <Button onClick={handleSend} disabled={isLoading || !input.trim() || showPhoneCard}>
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </div>

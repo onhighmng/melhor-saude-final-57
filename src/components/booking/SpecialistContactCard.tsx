@@ -37,24 +37,35 @@ export const SpecialistContactCard = ({ pillar, context, sessionId }: Specialist
   return (
     <Card className="p-6 border-primary/20 bg-primary/5">
       <div className="space-y-4">
-        <div className="flex items-start gap-3">
-          <Phone className="h-5 w-5 text-primary mt-1" />
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <Phone className="h-6 w-6 text-primary" />
+          </div>
           <div className="flex-1">
-            <h3 className="font-semibold mb-2">Phone Consultation Recommended</h3>
+            <h3 className="font-semibold text-lg mb-2">Consulta Telefónica Detalhada</h3>
             <p className="text-sm text-muted-foreground mb-4">{context}</p>
-            <div className="space-y-3">
-              <div className="bg-background rounded-lg p-3 border">
-                <p className="text-xs text-muted-foreground mb-1">Contact Number</p>
-                <p className="text-lg font-semibold">{phoneNumber}</p>
-              </div>
-              <Button onClick={handleCallClick} className="w-full" size="lg">
-                <Phone className="mr-2 h-4 w-4" />
-                Call Now
-              </Button>
-              <p className="text-xs text-center text-muted-foreground">
-                Available 24 hours a day, 7 days a week
+            
+            <div className="bg-background rounded-lg p-4 border-2 border-primary/20 mb-4">
+              <p className="text-xs font-medium text-muted-foreground mb-2">
+                Contacto Direto dos Especialistas
               </p>
+              <div className="flex items-center justify-between">
+                <p className="text-2xl font-bold text-primary">{phoneNumber}</p>
+                <Button onClick={handleCallClick} size="lg" className="gap-2">
+                  <Phone className="h-5 w-5" />
+                  Ligar Agora
+                </Button>
+              </div>
             </div>
+            
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+              <span className="font-medium">Disponível 24 horas por dia, 7 dias por semana</span>
+            </div>
+            
+            <p className="text-xs text-muted-foreground mt-3 italic">
+              Os nossos especialistas irão avaliar a sua situação e, se necessário, agendar uma sessão de vídeo personalizada.
+            </p>
           </div>
         </div>
       </div>
