@@ -49,14 +49,14 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
           });
 
           toast({
-            title: 'Feedback Received',
-            description: 'A specialist will contact you shortly to provide additional support.',
+            title: 'Feedback Recebido',
+            description: 'Um especialista irá contactá-lo em breve para fornecer apoio adicional.',
           });
         }
       } else {
         toast({
-          title: 'Thank You',
-          description: 'We appreciate your feedback!',
+          title: 'Obrigado!',
+          description: 'Agradecemos o seu feedback!',
         });
       }
 
@@ -64,8 +64,8 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
     } catch (error) {
       console.error('Error submitting feedback:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to submit feedback. Please try again.',
+        title: 'Erro',
+        description: 'Não foi possível submeter o feedback. Por favor, tente novamente.',
         variant: 'destructive'
       });
     } finally {
@@ -77,7 +77,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>How was your experience?</DialogTitle>
+          <DialogTitle>Como foi a sua experiência?</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -89,7 +89,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
               onClick={() => setSelectedRating('satisfied')}
             >
               <SmilePlus className="h-12 w-12" />
-              <span className="text-lg">Satisfied</span>
+              <span className="text-lg">Satisfeito</span>
             </Button>
 
             <Button
@@ -99,19 +99,19 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
               onClick={() => setSelectedRating('unsatisfied')}
             >
               <Frown className="h-12 w-12" />
-              <span className="text-lg">Unsatisfied</span>
+              <span className="text-lg">Insatisfeito</span>
             </Button>
           </div>
 
           {selectedRating === 'unsatisfied' && (
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                Please tell us what went wrong (optional)
+                O que podemos melhorar? (Opcional)
               </label>
               <Textarea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder="Your feedback helps us improve..."
+                placeholder="Conte-nos o que correu mal..."
                 rows={3}
               />
             </div>
@@ -122,7 +122,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
             disabled={!selectedRating || isSubmitting}
             className="w-full"
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
+            {isSubmitting ? 'A submeter...' : 'Submeter Feedback'}
           </Button>
         </div>
       </DialogContent>
