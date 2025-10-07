@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings } from '@/hooks/useBookings';
 import { useTranslation } from 'react-i18next';
+import { ProgressBar } from '@/components/progress/ProgressBar';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -98,6 +99,9 @@ const UserDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Progress Bar */}
+        <ProgressBar />
 
         {/* Seus Prestadores por Pilar */}
         <div className="space-y-6">

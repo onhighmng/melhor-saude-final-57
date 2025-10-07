@@ -44,6 +44,59 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          booking_date: string
+          created_at: string | null
+          id: string
+          meeting_link: string | null
+          meeting_platform: string | null
+          notes: string | null
+          pillar_specialties: string[] | null
+          prestador_id: string | null
+          session_type: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          created_at?: string | null
+          id?: string
+          meeting_link?: string | null
+          meeting_platform?: string | null
+          notes?: string | null
+          pillar_specialties?: string[] | null
+          prestador_id?: string | null
+          session_type?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          created_at?: string | null
+          id?: string
+          meeting_link?: string | null
+          meeting_platform?: string | null
+          notes?: string | null
+          pillar_specialties?: string[] | null
+          prestador_id?: string | null
+          session_type?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       change_requests: {
         Row: {
           created_at: string | null
@@ -90,6 +143,85 @@ export type Database = {
             columns: ["prestador_id"]
             isOneToOne: false
             referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          role: string
+          session_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          role: string
+          session_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          role?: string
+          session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_sessions: {
+        Row: {
+          ai_resolution: boolean | null
+          created_at: string | null
+          ended_at: string | null
+          id: string
+          phone_escalation_reason: string | null
+          pillar: string | null
+          satisfaction_rating: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          ai_resolution?: boolean | null
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          phone_escalation_reason?: string | null
+          pillar?: string | null
+          satisfaction_rating?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          ai_resolution?: boolean | null
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          phone_escalation_reason?: string | null
+          pillar?: string | null
+          satisfaction_rating?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -166,6 +298,33 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          category: string | null
+          comment: string | null
+          created_at: string | null
+          id: string
+          rating: number | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       prestadores: {
         Row: {
           biography: string | null
@@ -176,6 +335,8 @@ export type Database = {
           languages: string[] | null
           name: string
           photo_url: string | null
+          pillar_specialties: string[] | null
+          session_duration: number | null
           specialties: string[] | null
           updated_at: string | null
           user_id: string | null
@@ -190,6 +351,8 @@ export type Database = {
           languages?: string[] | null
           name: string
           photo_url?: string | null
+          pillar_specialties?: string[] | null
+          session_duration?: number | null
           specialties?: string[] | null
           updated_at?: string | null
           user_id?: string | null
@@ -204,6 +367,8 @@ export type Database = {
           languages?: string[] | null
           name?: string
           photo_url?: string | null
+          pillar_specialties?: string[] | null
+          session_duration?: number | null
           specialties?: string[] | null
           updated_at?: string | null
           user_id?: string | null
@@ -311,6 +476,109 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      specialist_call_logs: {
+        Row: {
+          booking_id: string | null
+          call_notes: string | null
+          call_status: string | null
+          chat_session_id: string | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          session_booked: boolean | null
+          specialist_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          booking_id?: string | null
+          call_notes?: string | null
+          call_status?: string | null
+          chat_session_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          session_booked?: boolean | null
+          specialist_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          booking_id?: string | null
+          call_notes?: string | null
+          call_status?: string | null
+          chat_session_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          session_booked?: boolean | null
+          specialist_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specialist_call_logs_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specialist_call_logs_chat_session_id_fkey"
+            columns: ["chat_session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specialist_call_logs_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specialist_call_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_progress: {
+        Row: {
+          action_date: string | null
+          action_type: string
+          id: string
+          metadata: Json | null
+          pillar: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_date?: string | null
+          action_type: string
+          id?: string
+          metadata?: Json | null
+          pillar?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_date?: string | null
+          action_type?: string
+          id?: string
+          metadata?: Json | null
+          pillar?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
