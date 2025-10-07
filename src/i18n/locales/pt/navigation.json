@@ -12,6 +12,9 @@
     "financialAssistance": "Assistência financeira",
     "legalAssistance": "Assistência Jurídica"
   },
+  "actions": {
+    "talkToSpecialist": "Falar com Especialista"
+  },
   "admin": {
     "dashboard": "Dashboard",
     "management": "Gestão",

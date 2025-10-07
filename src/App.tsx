@@ -51,6 +51,7 @@ const UserNotifications = lazy(() => import("./pages/UserNotifications"));
 const UserResources = lazy(() => import("./pages/UserResources"));
 const UserFeedback = lazy(() => import("./pages/UserFeedback"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
+const UserBooking = lazy(() => import("./pages/UserBooking"));
 const Terms = lazy(() => import("./pages/Terms"));
 const PrestadorSessionGuide = lazy(() => import("./pages/PrestadorSessionGuide"));
 const Support = lazy(() => import("./pages/Support"));
@@ -110,7 +111,8 @@ const AppWithTracking = () => {
           <Route path="/user/resources" element={<UserLayout><UserResources /></UserLayout>} />
           <Route path="/user/feedback/:sessionId" element={<UserLayout><UserFeedback /></UserLayout>} />
           <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
-          <Route path="/user/book" element={<UserLayout><BookingFlow /></UserLayout>} />
+          <Route path="/user/book" element={<UserLayout><UserBooking /></UserLayout>} />
+          <Route path="/user/book-old" element={<UserLayout><BookingFlow /></UserLayout>} />
           <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />
           
           {/* Public help center */}

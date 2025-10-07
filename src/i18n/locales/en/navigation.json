@@ -12,6 +12,9 @@
     "financialAssistance": "Financial Assistance",
     "legalAssistance": "Legal Assistance"
   },
+  "actions": {
+    "talkToSpecialist": "Talk to Specialist"
+  },
   "admin": {
     "dashboard": "Dashboard",
     "management": "Management",

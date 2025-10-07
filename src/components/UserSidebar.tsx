@@ -1,7 +1,8 @@
 import { useState } from "react"
-import { LayoutDashboard, CalendarPlus, CalendarCheck, BookOpen, Settings, HelpCircle, FileText, LogOut, Bell } from "lucide-react"
+import { LayoutDashboard, MessageSquare, CalendarCheck, BookOpen, Settings, HelpCircle, FileText, LogOut, Bell } from "lucide-react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
+import { useTranslation } from "react-i18next"
 
 import {
   Sidebar,
@@ -22,15 +23,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { SupportContact } from "@/components/ui/support-contact"
 import { NotificationBadge } from "@/components/notifications/NotificationBadge"
 
-const mainItems = [
-  { title: "Dashboard", url: "/user/dashboard", icon: LayoutDashboard },
-  { title: "Marcar sessão", url: "/user/book", icon: CalendarPlus },
-  { title: "Minhas sessões", url: "/user/sessions", icon: CalendarCheck },
-  { title: "Notificações", url: "/user/notifications", icon: Bell, badge: 3 }, // Mock unread count
-  { title: "Recursos", url: "/user/resources", icon: BookOpen },
-  { title: "Ajuda", url: "/user/help", icon: HelpCircle },
-  { title: "Definições", url: "/user/settings", icon: Settings },
-]
 
 const footerItems = [
   { title: "Suporte", url: "/user/help", icon: HelpCircle },
@@ -42,8 +34,19 @@ export function UserSidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const { t } = useTranslation('navigation')
   const currentPath = location.pathname
   const isCollapsed = state === "collapsed"
+
+  const mainItems = [
+    { title: "Dashboard", url: "/user/dashboard", icon: LayoutDashboard },
+    { title: t('actions.talkToSpecialist'), url: "/user/book", icon: MessageSquare },
+    { title: "Minhas sessões", url: "/user/sessions", icon: CalendarCheck },
+    { title: "Notificações", url: "/user/notifications", icon: Bell, badge: 3 },
+    { title: "Recursos", url: "/user/resources", icon: BookOpen },
+    { title: "Ajuda", url: "/user/help", icon: HelpCircle },
+    { title: "Definições", url: "/user/settings", icon: Settings },
+  ]
 
   const isActive = (path: string) => currentPath === path
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
