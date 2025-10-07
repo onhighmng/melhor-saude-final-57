@@ -170,5 +170,98 @@
     "ctaContactSupport": "Falar com Suporte",
     "noResultCTA": "Falar com Suporte",
     "articleFooter": "Ainda com dúvidas? Fale Connosco"
+  },
+  "settings": {
+    "title": "As minhas Definições",
+    "subtitle": "Atualize os seus dados e preferências de conta",
+    "tabs": {
+      "profile": "Perfil",
+      "notifications": "Notificações",
+      "security": "Segurança",
+      "consents": "Consentimentos",
+      "providers": "Prestador Fixo"
+    },
+    "profile": {
+      "title": "Informações do Perfil",
+      "subtitle": "Atualize as suas informações pessoais aqui.",
+      "fullName": "Nome completo",
+      "phone": "Número de telemóvel",
+      "language": "Idioma preferido",
+      "timezone": "Fuso horário",
+      "saveChanges": "Guardar alterações"
+    },
+    "notifications": {
+      "title": "Preferências de Notificação",
+      "subtitle": "Pode gerir aqui como quer ser notificado.",
+      "emailConfirmation": "Email de confirmação de sessão",
+      "emailConfirmationDesc": "Receber email quando uma sessão for confirmada",
+      "pushNotification": "Notificação push",
+      "pushNotificationDesc": "Receber notificações push no dispositivo",
+      "reminder24h": "Lembrete 24h antes da sessão",
+      "reminder24hDesc": "Receber lembrete no dia anterior à sessão",
+      "feedbackReminder": "Lembrete de feedback após sessão",
+      "feedbackReminderDesc": "Receber lembrete para avaliar a sessão",
+      "savePreferences": "Guardar preferências"
+    },
+    "security": {
+      "title": "Segurança & Acesso",
+      "subtitle": "Gerir as definições de segurança da sua conta.",
+      "password": "Palavra-passe",
+      "passwordLastChanged": "Última alteração em 15 de Janeiro, 2024",
+      "changePassword": "Alterar Palavra-Passe",
+      "changePasswordTitle": "Alterar Palavra-Passe",
+      "changePasswordDesc": "Introduza a sua palavra-passe atual e escolha uma nova palavra-passe.",
+      "currentPassword": "Palavra-passe atual",
+      "newPassword": "Nova palavra-passe",
+      "confirmPassword": "Confirmar nova palavra-passe",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "twoFactor": "Autenticação de Dois Fatores (2FA)",
+      "twoFactorDesc": "Adicione uma camada extra de segurança",
+      "enable2FA": "Ativar 2FA",
+      "enable2FATitle": "Ativar Autenticação de Dois Fatores",
+      "enable2FADesc": "Escaneie este código QR com a sua aplicação de autenticação",
+      "enable2FANote": "Após escanear, introduza o código de 6 dígitos da sua aplicação para confirmar a ativação.",
+      "verificationCode": "Código de verificação"
+    },
+    "consents": {
+      "title": "Privacidade & Consentimentos",
+      "subtitle": "Gerir as suas preferências de privacidade e consentimentos.",
+      "dataProcessing": "Processamento de dados para serviços de bem-estar",
+      "dataProcessingDesc": "Permitir processamento de dados de saúde para fornecer serviços personalizados",
+      "wellnessCommunications": "Comunicações sobre bem-estar",
+      "wellnessCommunicationsDesc": "Receber dicas de saúde e bem-estar",
+      "anonymousReports": "Relatórios anónimos para a empresa",
+      "anonymousReportsDesc": "Permitir partilha de dados de uso anonimizados com a sua empresa",
+      "saveConsents": "Guardar consentimentos"
+    },
+    "providers": {
+      "title": "Os Meus Prestadores Fixos",
+      "subtitle": "Ver e gerir os seus prestadores atribuídos por pilar",
+      "mentalHealth": "Saúde Mental",
+      "physicalWellness": "Bem-Estar Físico",
+      "financialAssistance": "Assistência Financeira",
+      "legalAssistance": "Assistência Jurídica",
+      "noProvider": "Sem prestador atribuído",
+      "requestChange": "Solicitar Mudança",
+      "statusPending": "Pendente",
+      "statusApproved": "Aprovado",
+      "statusRejected": "Recusado"
+    },
+    "toasts": {
+      "profileUpdated": "Perfil atualizado",
+      "profileUpdatedDesc": "As suas informações foram guardadas com sucesso.",
+      "notificationsUpdated": "Notificações atualizadas",
+      "notificationsUpdatedDesc": "As suas preferências foram guardadas.",
+      "consentsUpdated": "Consentimentos atualizados",
+      "consentsUpdatedDesc": "As suas preferências de privacidade foram guardadas.",
+      "passwordError": "Erro",
+      "passwordMismatch": "As palavras-passe não coincidem.",
+      "passwordTooShort": "A palavra-passe deve ter pelo menos 8 caracteres.",
+      "passwordChanged": "Palavra-passe alterada",
+      "passwordChangedDesc": "A sua palavra-passe foi atualizada com sucesso.",
+      "twoFactorEnabled": "2FA Ativado",
+      "twoFactorEnabledDesc": "Autenticação de dois fatores foi ativada na sua conta."
+    }
   }
 }
