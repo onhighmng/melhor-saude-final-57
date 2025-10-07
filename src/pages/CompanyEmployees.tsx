@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatDate } from "@/utils/dateFormatting";
 import { mockCompanies, CompanyUser, deactivateUser, activateUser } from "@/data/companyMockData";
 import { SeatUsageCard } from "@/components/company/SeatUsageCard";
 import { InviteEmployeeButton } from "@/components/company/InviteEmployeeButton";
@@ -76,9 +77,8 @@ export default function CompanyEmployees() {
     companyToasts.employeeActivated();
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('pt-PT');
-  };
+  // Import formatDate from utils
+  // (no longer needed - using translation utility)
 
   return (
     <div className="container mx-auto p-6">
@@ -124,19 +124,19 @@ export default function CompanyEmployees() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">
                     <Filter className="h-4 w-4 mr-2" />
-                    {filterStatus === 'all' ? companyUIcopy.employees.filters.all : 
-                     filterStatus === 'active' ? companyUIcopy.employees.filters.viewActive : companyUIcopy.employees.filters.viewInactive}
+                     {filterStatus === 'all' ? t('employees.filters.all') : 
+                     filterStatus === 'active' ? t('employees.filters.viewActive') : t('employees.filters.viewInactive')}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem onClick={() => setFilterStatus('all')}>
-                    {companyUIcopy.employees.filters.all}
+                    {t('employees.filters.all')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterStatus('active')}>
-                    {companyUIcopy.employees.filters.viewActive}
+                    {t('employees.filters.viewActive')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterStatus('inactive')}>
-                    {companyUIcopy.employees.filters.viewInactive}
+                    {t('employees.filters.viewInactive')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -163,12 +163,12 @@ export default function CompanyEmployees() {
                       <TableCell className="text-muted-foreground">{user.email}</TableCell>
                       <TableCell>
                         <Badge variant={user.role === 'hr' ? 'default' : 'secondary'}>
-                          {user.role === 'hr' ? companyUIcopy.employees.roles.hr : companyUIcopy.employees.roles.employee}
+                          {user.role === 'hr' ? t('employees.roles.hr') : t('employees.roles.employee')}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge variant={user.isActive ? 'default' : 'secondary'}>
-                          {user.isActive ? t('common:active', 'Ativo') : t('common:inactive', 'Inativo')}
+                          {user.isActive ? t('employeeDetail.status.active') : t('employeeDetail.status.inactive')}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -177,7 +177,7 @@ export default function CompanyEmployees() {
                             <span>{user.usedQuota} / {user.companyQuota}</span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            {companyUIcopy.employees.quotaTooltip(user.usedQuota, user.companyQuota)}
+                            {t('employees.quotaTooltip', { used: user.usedQuota, total: user.companyQuota })}
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>
@@ -194,7 +194,7 @@ export default function CompanyEmployees() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
                               <Link to={`/company/employees/${user.id}`}>
-                                {companyUIcopy.employees.actions.viewDetails}
+                                {t('employees.actions.viewDetails')}
                               </Link>
                             </DropdownMenuItem>
                             {user.isActive ? (
@@ -202,14 +202,14 @@ export default function CompanyEmployees() {
                                 onClick={() => handleDeactivateUser(user.id, user.name)}
                                 className="text-red-600"
                               >
-                                {companyUIcopy.employees.actions.deactivate}
+                                {t('employees.actions.deactivate')}
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem 
                                 onClick={() => handleActivateUser(user.id)}
                                 disabled={company.isAtSeatLimit}
                               >
-                                {companyUIcopy.employees.actions.activate}
+                                {t('employees.actions.activate')}
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>

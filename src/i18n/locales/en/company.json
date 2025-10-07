@@ -1,7 +1,7 @@
 {
   "dashboard": {
-    "title": "HR Dashboard",
-    "subtitle": "Human Resources Dashboard",
+    "title": "Company Dashboard",
+    "subtitle": "Overview of wellbeing program usage",
     "inviteButton": {
       "active": "Invite New Employee",
       "limitTooltip": "Limit reached – Deactivate accounts or contact support"
@@ -9,6 +9,25 @@
     "seatUsage": {
       "manage": "Manage Employees",
       "reviewAllocation": "Review Seat Allocation"
+    },
+    "export": {
+      "metric": "Metric",
+      "value": "Value",
+      "company": "Company",
+      "activeEmployees": "Active Employees",
+      "totalSeats": "Total Seats",
+      "plan": "Plan",
+      "exportDate": "Export Date"
+    },
+    "metrics": {
+      "activeEmployees": "Active Employees",
+      "ofAccounts": "of {{count}} accounts",
+      "sessionsUsed": "Sessions Used",
+      "sinceLastMonth": "+{{percent}}% since last month",
+      "adoptionRate": "Adoption Rate",
+      "employeesWithSession": "of employees with at least 1 session",
+      "currentPlan": "Current Plan",
+      "accountsIncluded": "{{count}} accounts included"
     },
     "quickActions": {
       "title": "Quick Actions",
@@ -18,177 +37,230 @@
     },
     "upcomingEvents": {
       "title": "Upcoming Events",
-      "mentalWellness": "Mental Wellness Workshop - Jan 25",
-      "mindfulness": "Mindfulness Session - Jan 30",
-      "financial": "Financial Health Talk - Feb 5"
-    },
-    "metrics": {
-      "activeEmployees": "Active Employees",
-      "sessionsUsed": "Sessions Used",
-      "adoptionRate": "Adoption Rate",
-      "currentPlan": "Current Plan",
-      "ofAccounts": "of {{count}} accounts available",
-      "sinceLastMonth": "+{{percent}}% since last month",
-      "employeesWithSession": "Employees with at least 1 session",
-      "accountsIncluded": "{{count}} accounts included"
-    },
-    "export": {
-      "metric": "Metric",
-      "value": "Value",
-      "company": "Company",
-      "activeEmployees": "Active Employees",
-      "totalSeats": "Total Accounts",
-      "plan": "Plan",
-      "exportDate": "Export Date"
+      "mentalWellness": "Mental Health Workshop - Jan 15",
+      "mindfulness": "Mindfulness Session - Jan 18",
+      "financial": "Financial Consultation - Jan 22"
     }
   },
   "employees": {
     "title": "Employees",
-    "subtitle": "Employee management",
-    "addButton": "Add Employee",
-    "searchPlaceholder": "Search by name, email or department...",
-    "inviteEmployee": "Invite Employee",
+    "subtitle": "Manage employee accounts and quotas",
+    "searchPlaceholder": "Search by name or email...",
     "noEmployeesFound": "No employees found",
-    "noEmployeesWithFilters": "No employees found with applied filters.",
-    "exportData": "Export Data",
-    "filters": {
-      "viewActive": "View Active Only",
-      "viewInactive": "View Inactive",
-      "all": "All"
-    },
     "table": {
-      "employee": "Employee",
-      "department": "Department",
-      "sessions": "Sessions",
-      "status": "Status",
-      "actions": "Actions",
-      "companySessions": "Company:",
-      "personalSessions": "Personal:",
-      "used": "used",
-      "available": "available",
+      "employee": "Employee List",
       "name": "Name",
       "email": "Email",
       "role": "Role",
+      "status": "Status",
       "quotaUsed": "Quota Used",
       "joinDate": "Join Date"
-    },
-    "actions": {
-      "viewDetails": "View Details",
-      "deactivate": "Deactivate Account",
-      "activate": "Activate Account",
-      "adjustQuota": "Adjust Quota"
     },
     "roles": {
       "hr": "HR",
       "employee": "Employee"
     },
+    "filters": {
+      "all": "All",
+      "viewActive": "View Active",
+      "viewInactive": "View Inactive"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
+    },
     "quotaTooltip": "{{used}} of {{total}} sessions used"
   },
-  "invite": {
-    "title": "Invite Employee",
-    "modal": {
-      "title": "Invite Employee",
-      "generatePassword": "Generate Secure Password",
-      "submit": "Invite",
-      "cancel": "Cancel"
-    },
-    "emailLabel": "Email",
-    "emailPlaceholder": "employee@company.com",
-    "nameLabel": "Full Name",
-    "namePlaceholder": "Employee name",
-    "departmentLabel": "Department",
-    "departmentPlaceholder": "Select department",
-    "sendInvite": "Send Invite",
-    "cancel": "Cancel",
-    "success": "Invitation sent successfully",
-    "error": "Error sending invitation"
-  },
   "employeeDetail": {
-    "title": "Employee Details",
-    "personalInfo": "Personal Information",
-    "sessions": "Sessions",
-    "activity": "Activity",
-    "providers": "Assigned Providers",
-    "quotaAdjust": {
-      "edit": "Edit Sessions",
-      "save": "Save Changes"
+    "backButton": "Back",
+    "subtitle": "Employee details and history",
+    "profile": {
+      "title": "Employee Profile",
+      "joinDate": "Join date:",
+      "sessionsUsed": "Sessions used:"
+    },
+    "quotas": {
+      "title": "Session Quotas",
+      "adjust": "Adjust",
+      "dialogTitle": "Adjust Quotas",
+      "dialogDescription": "Set company and personal session quotas for {{name}}.",
+      "companySessions": "Company Sessions",
+      "personalSessions": "Personal Sessions",
+      "saveChanges": "Save Changes",
+      "totalUsage": "Total Usage",
+      "usedOf": "{{used}} of {{total}} used"
     },
     "actions": {
+      "title": "Actions",
       "exportHistory": "Export History",
-      "revokeAccess": "Revoke Access"
+      "revokeAccess": "Revoke Access",
+      "revokeConfirm": "Are you sure you want to revoke access for {{name}}? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirmRevoke": "Confirm Revocation"
     },
-    "emptyHistory": "This employee hasn't completed any sessions yet"
+    "history": {
+      "title": "Session History",
+      "session": "Wellness Session",
+      "at": "at",
+      "company": "Company",
+      "personal": "Personal"
+    },
+    "status": {
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "noShow": "No-show",
+      "scheduled": "Scheduled",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "toasts": {
+      "quotasAdjusted": "Quotas adjusted",
+      "quotasUpdated": "Quotas updated for {{name}}",
+      "accessRevoked": "Access revoked",
+      "accessRevokedFor": "Access revoked for {{name}}",
+      "historyExported": "History exported",
+      "sessionsExported": "{{count}} sessions exported successfully."
+    }
   },
-  "deactivate": {
-    "action": "Deactivate Account",
-    "confirm": "Deactivate Employee?",
-    "warning": "This action will suspend the employee's account.",
-    "button": "Deactivate"
-  },
-  "activate": {
-    "action": "Activate Account"
-  },
-  "inviteCodes": {
+  "invites": {
     "title": "Invite Codes",
-    "subtitle": "Generate and manage employee invite codes",
-    "generate": "Generate Codes",
-    "copy": "Copy Codes",
-    "available": "Available Codes",
-    "used": "Used Codes",
-    "expired": "Expired Codes",
+    "subtitle": "Manage employee invitations",
+    "stats": {
+      "purchased": "Seats Purchased",
+      "used": "Seats Used",
+      "available": "Seats Available",
+      "active": "Active Codes"
+    },
+    "quickActions": {
+      "title": "Quick Actions"
+    },
     "actions": {
       "copyActive": "Copy Active Codes",
-      "generate": "Generate New Codes",
+      "generate": "Generate missing codes",
       "export": "Export List",
       "copyLink": "Copy Invite Link",
-      "qrCode": "QR Code – coming soon"
+      "qrCode": "QR Code"
     },
-    "banner": "Share codes with employees to sign in",
+    "banner": "Invite codes allow employees to register on the platform automatically with company access.",
+    "search": "Search by code or user...",
+    "filter": {
+      "placeholder": "Filter by status",
+      "all": "All statuses",
+      "active": "Active",
+      "used": "Used",
+      "revoked": "Revoked"
+    },
+    "table": {
+      "code": "Code",
+      "status": "Status",
+      "usedBy": "Used by",
+      "usedAt": "Used at",
+      "actions": "Actions"
+    },
     "status": {
       "active": "Active",
       "used": "Used",
       "revoked": "Revoked"
-    }
+    },
+    "empty": {
+      "noCodes": "No invite codes. Click 'Generate missing codes' to create invites.",
+      "noResults": "No codes found with current filters."
+    },
+    "generating": "Generating..."
   },
   "reports": {
-    "title": "Reports",
-    "subtitle": "Analytics and insights",
-    "downloadReport": "Download Report",
-    "viewAnalytics": "View Analytics",
-    "actions": {
-      "downloadCSV": "Download CSV",
-      "exportPDF": "Export PDF",
-      "scheduleEmail": "Schedule"
+    "title": "Reports & Analytics",
+    "subtitle": "Detailed analysis of wellbeing program usage and impact",
+    "period": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
     },
-    "adoption": {
-      "excellent": "80% adoption – Excellent",
-      "good": "60% adoption – Good",
-      "needsImprovement": "40% adoption – Needs improvement"
+    "dateRange": {
+      "from": "Start date",
+      "to": "End date"
+    },
+    "charts": {
+      "pillarUsage": "Usage by Pillar",
+      "engagement": "Engagement Overview",
+      "monthlyTrends": "Monthly Trends"
+    },
+    "metrics": {
+      "activeEmployees": "Active Employees",
+      "adoptionRate": "Adoption Rate",
+      "avgSessions": "Avg Sessions"
+    },
+    "available": "Available Reports",
+    "actions": {
+      "downloadCSV": "CSV",
+      "exportPDF": "PDF",
+      "scheduleEmail": "Schedule"
     }
   },
   "settings": {
-    "title": "Settings",
-    "subtitle": "Company settings",
+    "title": "Company Settings",
+    "subtitle": "Manage policies, custom fields, and support contacts",
     "save": "Save Changes",
-    "cancel": "Cancel",
-    "quotaPolicies": "Update Session Policies",
-    "rolloverTooltip": "Allows unused sessions to roll over to next cycle",
+    "companyInfo": {
+      "title": "Company Information",
+      "name": "Company Name",
+      "website": "Website",
+      "contactEmail": "Contact Email",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "quotaPolicies": {
+      "title": "Quota Policies",
+      "defaultCompany": "Company Sessions (default)",
+      "defaultPersonal": "Personal Sessions (default)",
+      "renewalPeriod": "Renewal Period",
+      "rollover": "Allow session rollover"
+    },
+    "rolloverTooltip": "Unused sessions carry over to next period",
+    "renewalOptions": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
     "customFields": {
-      "add": "Add Field",
-      "remove": "Remove"
+      "title": "Custom Fields",
+      "add": "Add",
+      "addNew": "Add New Field",
+      "fieldName": "Field Name",
+      "type": "Type",
+      "required": "Required",
+      "unknown": "Unknown",
+      "types": {
+        "text": "Text",
+        "select": "Dropdown",
+        "number": "Number"
+      }
     },
     "notifications": {
-      "threshold": "Receive alert at X% usage"
+      "title": "Notification Preferences",
+      "threshold": "Alert Threshold (% remaining quota)",
+      "emailAlerts": "Email alerts",
+      "emailAlertsDesc": "Receive low quota alerts and other notifications",
+      "weeklyReports": "Weekly reports",
+      "weeklyReportsDesc": "Weekly usage summary",
+      "monthlyReports": "Monthly reports",
+      "monthlyReportsDesc": "Complete monthly report for HR",
+      "reminderEmails": "Reminder emails",
+      "reminderEmailsDesc": "Remind employees of scheduled sessions"
     },
-    "contacts": {
-      "add": "Add Support HR"
-    },
-    "unsavedChanges": "⚠️ Unsaved changes"
-  },
-  "revokeAccess": {
-    "title": "Revoke Access",
-    "warning": "PERMANENT ACTION - Cannot be undone",
-    "confirm": "Are you sure you want to revoke access?",
-    "button": "Revoke Access"
+    "support": {
+      "title": "Support Contacts",
+      "add": "Add Contact",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "placeholder": {
+        "name": "Contact name...",
+        "email": "email@company.com",
+        "role": "Role..."
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
 {
   "dashboard": {
     "title": "Dashboard RH",
-    "subtitle": "Dashboard de Recursos Humanos",
+    "subtitle": "Visão geral da utilização do programa de wellbeing",
     "inviteButton": {
       "active": "Convidar Novo Colaborador",
       "limitTooltip": "Limite atingido – Desative contas ou contacte suporte"
@@ -10,6 +10,25 @@
       "manage": "Gerir Colaboradores",
       "reviewAllocation": "Rever Alocação de Vagas"
     },
+    "export": {
+      "metric": "Métrica",
+      "value": "Valor",
+      "company": "Empresa",
+      "activeEmployees": "Colaboradores Ativos",
+      "totalSeats": "Total de Lugares",
+      "plan": "Plano",
+      "exportDate": "Data de Exportação"
+    },
+    "metrics": {
+      "activeEmployees": "Colaboradores Ativos",
+      "ofAccounts": "de {{count}} contas",
+      "sessionsUsed": "Sessões Utilizadas",
+      "sinceLastMonth": "+{{percent}}% desde o mês passado",
+      "adoptionRate": "Taxa de Adesão",
+      "employeesWithSession": "dos colaboradores com pelo menos 1 sessão",
+      "currentPlan": "Plano Atual",
+      "accountsIncluded": "{{count}} contas incluídas"
+    },
     "quickActions": {
       "title": "Ações Rápidas",
       "viewReport": "Ver Relatório Mensal",
@@ -17,178 +36,231 @@
       "configureNotifications": "Configurar Notificações"
     },
     "upcomingEvents": {
-      "title": "Próximos Eventos",
-      "mentalWellness": "Workshop de Bem-estar Mental - 25 Jan",
-      "mindfulness": "Sessão de Mindfulness - 30 Jan",
-      "financial": "Palestra Saúde Financeira - 5 Fev"
-    },
-    "metrics": {
-      "activeEmployees": "Colaboradores Ativos",
-      "sessionsUsed": "Sessões Utilizadas",
-      "adoptionRate": "Taxa de Adesão",
-      "currentPlan": "Plano Atual",
-      "ofAccounts": "de {{count}} contas disponíveis",
-      "sinceLastMonth": "+{{percent}}% desde o mês passado",
-      "employeesWithSession": "Colaboradores com pelo menos 1 sessão",
-      "accountsIncluded": "{{count}} contas incluídas"
-    },
-    "export": {
-      "metric": "Métrica",
-      "value": "Valor",
-      "company": "Empresa",
-      "activeEmployees": "Colaboradores Ativos",
-      "totalSeats": "Total de Contas",
-      "plan": "Plano",
-      "exportDate": "Data Exportação"
+      "title": "Eventos Próximos",
+      "mentalWellness": "Workshop de Saúde Mental - 15 Jan",
+      "mindfulness": "Sessão de Mindfulness - 18 Jan",
+      "financial": "Consultoria Financeira - 22 Jan"
     }
   },
   "employees": {
     "title": "Colaboradores",
-    "subtitle": "Gestão de colaboradores",
-    "addButton": "Adicionar Colaborador",
-    "searchPlaceholder": "Pesquisar por nome, email ou departamento...",
-    "inviteEmployee": "Convidar Colaborador",
+    "subtitle": "Gerir contas e quotas de colaboradores",
+    "searchPlaceholder": "Buscar por nome ou email...",
     "noEmployeesFound": "Nenhum colaborador encontrado",
-    "noEmployeesWithFilters": "Nenhum colaborador encontrado com os filtros aplicados.",
-    "exportData": "Exportar Dados",
-    "filters": {
-      "viewActive": "Ver Apenas Ativos",
-      "viewInactive": "Ver Inativos",
-      "all": "Todos"
-    },
     "table": {
-      "employee": "Colaborador",
-      "department": "Departamento",
-      "sessions": "Sessões",
-      "status": "Estado",
-      "actions": "Ações",
-      "companySessions": "Empresa:",
-      "personalSessions": "Pessoal:",
-      "used": "usadas",
-      "available": "disponíveis",
+      "employee": "Lista de Colaboradores",
       "name": "Nome",
       "email": "Email",
       "role": "Função",
+      "status": "Estado",
       "quotaUsed": "Quota Utilizada",
-      "joinDate": "Data de Adesão"
-    },
-    "actions": {
-      "viewDetails": "Ver Detalhes",
-      "deactivate": "Desativar Conta",
-      "activate": "Ativar Conta",
-      "adjustQuota": "Ajustar Quota"
+      "joinDate": "Data de Entrada"
     },
     "roles": {
       "hr": "RH",
       "employee": "Colaborador"
     },
+    "filters": {
+      "all": "Todos",
+      "viewActive": "Ver Ativos",
+      "viewInactive": "Ver Inativos"
+    },
+    "actions": {
+      "viewDetails": "Ver Detalhes",
+      "deactivate": "Desativar",
+      "activate": "Ativar"
+    },
     "quotaTooltip": "{{used}} de {{total}} sessões utilizadas"
   },
-  "invite": {
-    "title": "Convidar Colaborador",
-    "modal": {
-      "title": "Convidar Colaborador",
-      "generatePassword": "Gerar Senha Segura",
-      "submit": "Convidar",
-      "cancel": "Cancelar"
-    },
-    "emailLabel": "Email",
-    "emailPlaceholder": "colaborador@empresa.com",
-    "nameLabel": "Nome Completo",
-    "namePlaceholder": "Nome do colaborador",
-    "departmentLabel": "Departamento",
-    "departmentPlaceholder": "Selecionar departamento",
-    "sendInvite": "Enviar Convite",
-    "cancel": "Cancelar",
-    "success": "Convite enviado com sucesso",
-    "error": "Erro ao enviar convite"
-  },
   "employeeDetail": {
-    "title": "Detalhes do Colaborador",
-    "personalInfo": "Informação Pessoal",
-    "sessions": "Sessões",
-    "activity": "Atividade",
-    "providers": "Prestadores Atribuídos",
-    "quotaAdjust": {
-      "edit": "Editar Sessões",
-      "save": "Guardar Alterações"
+    "backButton": "Voltar",
+    "subtitle": "Detalhes e histórico do colaborador",
+    "profile": {
+      "title": "Perfil do Colaborador",
+      "joinDate": "Data de entrada:",
+      "sessionsUsed": "Sessões utilizadas:"
+    },
+    "quotas": {
+      "title": "Quotas de Sessões",
+      "adjust": "Ajustar",
+      "dialogTitle": "Ajustar Quotas",
+      "dialogDescription": "Defina as quotas de sessões empresa e pessoais para {{name}}.",
+      "companySessions": "Sessões Empresa",
+      "personalSessions": "Sessões Pessoais",
+      "saveChanges": "Guardar Alterações",
+      "totalUsage": "Utilização Total",
+      "usedOf": "{{used}} de {{total}} utilizadas"
     },
     "actions": {
+      "title": "Ações",
       "exportHistory": "Exportar Histórico",
-      "revokeAccess": "Revogar Acesso"
+      "revokeAccess": "Revogar Acesso",
+      "revokeConfirm": "Tem a certeza que pretende revogar o acesso de {{name}}? Esta ação não pode ser revertida.",
+      "cancel": "Cancelar",
+      "confirmRevoke": "Confirmar Revogação"
     },
-    "emptyHistory": "Este colaborador ainda não realizou sessões"
+    "history": {
+      "title": "Histórico de Sessões",
+      "session": "Sessão de Bem-Estar",
+      "at": "às",
+      "company": "Empresa",
+      "personal": "Pessoal"
+    },
+    "status": {
+      "completed": "Concluída",
+      "cancelled": "Cancelada",
+      "noShow": "Falta",
+      "scheduled": "Agendada",
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "toasts": {
+      "quotasAdjusted": "Quotas ajustadas",
+      "quotasUpdated": "Quotas atualizadas para {{name}}",
+      "accessRevoked": "Acesso revogado",
+      "accessRevokedFor": "Acesso revogado para {{name}}",
+      "historyExported": "Histórico exportado",
+      "sessionsExported": "{{count}} sessões exportadas com sucesso."
+    }
   },
-  "deactivate": {
-    "action": "Desativar Conta",
-    "confirm": "Desativar Colaborador?",
-    "warning": "Esta ação irá suspender a conta do colaborador.",
-    "button": "Desativar"
-  },
-  "activate": {
-    "action": "Ativar Conta"
-  },
-  "inviteCodes": {
+  "invites": {
     "title": "Códigos de Convite",
-    "subtitle": "Gerar e gerir códigos de convite de colaboradores",
-    "generate": "Gerar Códigos",
-    "copy": "Copiar Códigos",
-    "available": "Códigos Disponíveis",
-    "used": "Códigos Usados",
-    "expired": "Códigos Expirados",
+    "subtitle": "Gerir convites para colaboradores da empresa",
+    "stats": {
+      "purchased": "Lugares Comprados",
+      "used": "Lugares Utilizados",
+      "available": "Lugares Disponíveis",
+      "active": "Códigos Ativos"
+    },
+    "quickActions": {
+      "title": "Ações Rápidas"
+    },
     "actions": {
       "copyActive": "Copiar Códigos Ativos",
-      "generate": "Gerar Novos Códigos",
+      "generate": "Gerar códigos em falta",
       "export": "Exportar Lista",
       "copyLink": "Copiar Link de Convite",
-      "qrCode": "QR Code – em breve"
+      "qrCode": "QR Code"
     },
-    "banner": "Partilhe os códigos com os colaboradores para iniciar sessão",
+    "banner": "Códigos de convite permitem aos colaboradores registarem-se automaticamente na plataforma com acesso à empresa.",
+    "search": "Buscar por código ou utilizador...",
+    "filter": {
+      "placeholder": "Filtrar por estado",
+      "all": "Todos os estados",
+      "active": "Ativo",
+      "used": "Utilizado",
+      "revoked": "Revogado"
+    },
+    "table": {
+      "code": "Código",
+      "status": "Estado",
+      "usedBy": "Utilizado por",
+      "usedAt": "Data de Utilização",
+      "actions": "Ações"
+    },
     "status": {
       "active": "Ativo",
       "used": "Utilizado",
       "revoked": "Revogado"
-    }
+    },
+    "empty": {
+      "noCodes": "Sem códigos de convite. Clique em 'Gerar códigos em falta' para criar convites.",
+      "noResults": "Nenhum código encontrado com os filtros atuais."
+    },
+    "generating": "A gerar..."
   },
   "reports": {
-    "title": "Relatórios",
-    "subtitle": "Análises e insights",
-    "downloadReport": "Descarregar Relatório",
-    "viewAnalytics": "Ver Análises",
-    "actions": {
-      "downloadCSV": "Download CSV",
-      "exportPDF": "Exportar PDF",
-      "scheduleEmail": "Agendar"
+    "title": "Relatórios & Analytics",
+    "subtitle": "Análise detalhada da utilização e impacto do programa de wellbeing",
+    "period": {
+      "weekly": "Semanal",
+      "monthly": "Mensal",
+      "quarterly": "Trimestral",
+      "yearly": "Anual"
     },
-    "adoption": {
-      "excellent": "80% de adesão – Excelente",
-      "good": "60% de adesão – Bom",
-      "needsImprovement": "40% de adesão – Precisa melhorar"
+    "dateRange": {
+      "from": "Data início",
+      "to": "Data fim"
+    },
+    "charts": {
+      "pillarUsage": "Utilização por Pilar",
+      "engagement": "Visão Geral de Engagement",
+      "monthlyTrends": "Tendências Mensais"
+    },
+    "metrics": {
+      "activeEmployees": "Colaboradores Ativos",
+      "adoptionRate": "Taxa de Adesão",
+      "avgSessions": "Média Sessões"
+    },
+    "available": "Relatórios Disponíveis",
+    "actions": {
+      "downloadCSV": "CSV",
+      "exportPDF": "PDF",
+      "scheduleEmail": "Agendar"
     }
   },
   "settings": {
-    "title": "Definições",
-    "subtitle": "Definições da empresa",
+    "title": "Configurações da Empresa",
+    "subtitle": "Gerir políticas, campos personalizados e contactos de suporte",
     "save": "Guardar Alterações",
-    "cancel": "Cancelar",
-    "quotaPolicies": "Atualizar Políticas de Sessões",
-    "rolloverTooltip": "Permite que sessões não usadas passem para o próximo ciclo",
+    "companyInfo": {
+      "title": "Informações da Empresa",
+      "name": "Nome da Empresa",
+      "website": "Website",
+      "contactEmail": "Email de Contacto",
+      "phone": "Telefone",
+      "address": "Morada"
+    },
+    "quotaPolicies": {
+      "title": "Políticas de Quota",
+      "defaultCompany": "Sessões Empresa (padrão)",
+      "defaultPersonal": "Sessões Pessoais (padrão)",
+      "renewalPeriod": "Período de Renovação",
+      "rollover": "Permitir rollover de sessões"
+    },
+    "rolloverTooltip": "Sessões não utilizadas passam para o próximo período",
+    "renewalOptions": {
+      "monthly": "Mensal",
+      "quarterly": "Trimestral",
+      "yearly": "Anual"
+    },
     "customFields": {
-      "add": "Adicionar Campo",
-      "remove": "Remover"
+      "title": "Campos Personalizados",
+      "add": "Adicionar",
+      "addNew": "Adicionar Novo Campo",
+      "fieldName": "Nome do Campo",
+      "type": "Tipo",
+      "required": "Obrigatório",
+      "unknown": "Desconhecido",
+      "types": {
+        "text": "Texto",
+        "select": "Dropdown",
+        "number": "Número"
+      }
     },
     "notifications": {
-      "threshold": "Receber alerta a partir de X% de uso"
+      "title": "Preferências de Notificação",
+      "threshold": "Limite de Alerta (% quota restante)",
+      "emailAlerts": "Alertas por email",
+      "emailAlertsDesc": "Receber alertas de quota baixa e outras notificações",
+      "weeklyReports": "Relatórios semanais",
+      "weeklyReportsDesc": "Resumo semanal de utilização",
+      "monthlyReports": "Relatórios mensais",
+      "monthlyReportsDesc": "Relatório completo mensal para RH",
+      "reminderEmails": "Emails de lembrete",
+      "reminderEmailsDesc": "Lembrar colaboradores de sessões agendadas"
     },
-    "contacts": {
-      "add": "Adicionar RH de Suporte"
-    },
-    "unsavedChanges": "⚠️ Alterações por guardar"
-  },
-  "revokeAccess": {
-    "title": "Revogar Acesso",
-    "warning": "AÇÃO PERMANENTE - Não pode ser desfeita",
-    "confirm": "Tem a certeza que pretende revogar o acesso?",
-    "button": "Revogar Acesso"
+    "support": {
+      "title": "Contactos de Suporte",
+      "add": "Adicionar Contacto",
+      "name": "Nome",
+      "email": "Email",
+      "role": "Função",
+      "placeholder": {
+        "name": "Nome do contacto...",
+        "email": "email@empresa.com",
+        "role": "Função..."
+      }
+    }
   }
 }
