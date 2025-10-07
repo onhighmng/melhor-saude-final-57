@@ -23,6 +23,8 @@
   },
   "booking": {
     "choosePillar": "Choose Support Area",
+    "pillarSubtitle": "Select the area where you need help",
+    "back": "← Back",
     "pillarCTA": "I Want Support in",
     "chooseAI": "Try Intelligent Assistant",
     "chooseHuman": "Talk to a Specialist",
@@ -33,7 +35,52 @@
     "postBookingPrompt": "Start Pre-Diagnosis with AI",
     "backToDashboard": "Back to Dashboard",
     "sendResponses": "Send Responses",
-    "viewRecommendations": "View Recommendations"
+    "viewRecommendations": "View Recommendations",
+    "specialistChoice": {
+      "title": "How Would You Like to Get Help?",
+      "subtitle": "Select how you prefer to get legal assistance",
+      "aiTitle": "Legal AI Assistant",
+      "aiDescription": "Get immediate answers through our intelligent assistant specialized in legal matters",
+      "aiButton": "Try Intelligent Assistant",
+      "humanTitle": "Human Specialist",
+      "humanDescription": "Schedule a personalized consultation with one of our legal specialists",
+      "humanButton": "Talk to a Specialist"
+    },
+    "dateTime": {
+      "title": "Schedule with {{name}} - {{specialty}}",
+      "selectDateTime": "Select Date and Time",
+      "confirmSession": "Confirm Session",
+      "selectDateAndTime": "Please select date and time"
+    },
+    "confirmation": {
+      "title": "Confirm Booking",
+      "provider": "Provider:",
+      "specialty": "Specialty:",
+      "date": "Date:",
+      "time": "Time:",
+      "back": "Back",
+      "confirm": "Confirm Session"
+    },
+    "preDiagnostic": {
+      "successTitle": "Session Booked Successfully!",
+      "successMessage": "Your legal consultation is confirmed for {{date}} at {{time}}",
+      "helpTitle": "Help the specialist prepare your consultation",
+      "helpDescription": "Do a pre-diagnosis with our AI. This will help the human specialist better understand your case and prepare a more effective consultation when the session time comes.",
+      "benefit1": "Quickly identify relevant legal areas",
+      "benefit2": "Organize your questions and concerns",
+      "benefit3": "Receive preliminary guidance instantly",
+      "skipButton": "Skip for Now",
+      "startButton": "Do Pre-Diagnosis"
+    },
+    "toasts": {
+      "providerAssigned": "Provider Assigned",
+      "providerAssignedDesc": "Assigned: {{name}} - {{specialty}}",
+      "error": "Error",
+      "noProviders": "No providers available for this pillar at the moment.",
+      "selectDateTime": "Please select date and time",
+      "sessionBooked": "Session Booked!",
+      "sessionBookedDesc": "Your session with {{name}} is scheduled for {{date}} at {{time}}"
+    }
   },
   "sessions": {
     "title": "My Sessions",

@@ -23,6 +23,8 @@
   },
   "booking": {
     "choosePillar": "Escolha a Área de Apoio",
+    "pillarSubtitle": "Selecione a área onde precisa de ajuda",
+    "back": "← Voltar",
     "pillarCTA": "Quero Apoio em",
     "chooseAI": "Experimentar Assistente Inteligente",
     "chooseHuman": "Falar com um Especialista",
@@ -33,7 +35,52 @@
     "postBookingPrompt": "Começar Pré-Diagnóstico com AI",
     "backToDashboard": "Voltar ao Painel",
     "sendResponses": "Enviar Respostas",
-    "viewRecommendations": "Ver Recomendações"
+    "viewRecommendations": "Ver Recomendações",
+    "specialistChoice": {
+      "title": "Como Prefere Obter Ajuda?",
+      "subtitle": "Selecione como prefere obter ajuda jurídica",
+      "aiTitle": "Assistente Jurídico AI",
+      "aiDescription": "Obtenha respostas imediatas através do nosso assistente inteligente especializado em questões jurídicas",
+      "aiButton": "Experimentar Assistente Inteligente",
+      "humanTitle": "Especialista Humano",
+      "humanDescription": "Agende uma consulta personalizada com um dos nossos especialistas jurídicos",
+      "humanButton": "Falar com um Especialista"
+    },
+    "dateTime": {
+      "title": "Agendar com {{name}} - {{specialty}}",
+      "selectDateTime": "Selecionar Data e Horário",
+      "confirmSession": "Confirmar Sessão",
+      "selectDateAndTime": "Por favor selecione data e hora"
+    },
+    "confirmation": {
+      "title": "Confirmar Agendamento",
+      "provider": "Prestador:",
+      "specialty": "Especialidade:",
+      "date": "Data:",
+      "time": "Hora:",
+      "back": "Voltar",
+      "confirm": "Confirmar Sessão"
+    },
+    "preDiagnostic": {
+      "successTitle": "Sessão Agendada com Sucesso!",
+      "successMessage": "Sua consulta jurídica está confirmada para {{date}} às {{time}}",
+      "helpTitle": "Ajude o especialista a preparar sua consulta",
+      "helpDescription": "Faça um pré-diagnóstico com nossa IA. Isso ajudará o especialista humano a entender melhor seu caso e preparar uma consulta mais eficaz quando chegar o momento da sessão.",
+      "benefit1": "Identifique rapidamente as áreas jurídicas relevantes",
+      "benefit2": "Organize suas questões e preocupações",
+      "benefit3": "Receba orientações preliminares instantaneamente",
+      "skipButton": "Pular por Agora",
+      "startButton": "Fazer Pré-Diagnóstico"
+    },
+    "toasts": {
+      "providerAssigned": "Prestador Atribuído",
+      "providerAssignedDesc": "Foi atribuído: {{name}} - {{specialty}}",
+      "error": "Erro",
+      "noProviders": "Nenhum prestador disponível para este pilar no momento.",
+      "selectDateTime": "Por favor selecione data e hora",
+      "sessionBooked": "Sessão Agendada!",
+      "sessionBookedDesc": "Sua sessão com {{name}} foi agendada para {{date}} às {{time}}"
+    }
   },
   "sessions": {
     "title": "Minhas Sessões",
