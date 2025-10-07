@@ -108,9 +108,11 @@ export type Database = {
           created_at: string | null
           ended_at: string | null
           id: string
+          phone_contact_made: boolean | null
           phone_escalation_reason: string | null
           pillar: string | null
           satisfaction_rating: string | null
+          session_booked_by_specialist: string | null
           status: string | null
           user_id: string | null
         }
@@ -119,9 +121,11 @@ export type Database = {
           created_at?: string | null
           ended_at?: string | null
           id?: string
+          phone_contact_made?: boolean | null
           phone_escalation_reason?: string | null
           pillar?: string | null
           satisfaction_rating?: string | null
+          session_booked_by_specialist?: string | null
           status?: string | null
           user_id?: string | null
         }
@@ -130,9 +134,11 @@ export type Database = {
           created_at?: string | null
           ended_at?: string | null
           id?: string
+          phone_contact_made?: boolean | null
           phone_escalation_reason?: string | null
           pillar?: string | null
           satisfaction_rating?: string | null
+          session_booked_by_specialist?: string | null
           status?: string | null
           user_id?: string | null
         }
@@ -437,7 +443,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      specialist_analytics: {
+        Row: {
+          ai_resolved: number | null
+          date: string | null
+          phone_escalated: number | null
+          pillar: string | null
+          satisfied_users: number | null
+          sessions_booked: number | null
+          total_chats: number | null
+          unsatisfied_users: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
