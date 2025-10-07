@@ -1,8 +1,63 @@
 {
   "dashboard": {
     "title": "Provider Dashboard",
+    "welcome": "Welcome, {{name}}",
+    "subtitle": "Manage your sessions and track your progress",
     "sessionMarkedComplete": "Session marked as completed",
-    "absenceRecorded": "Absence recorded for session"
+    "absenceRecorded": "Absence recorded for session",
+    "online": "Online",
+    "offline": "Offline",
+    "offlineBanner": "You are offline. Update when you return to the internet.",
+    "today": "Today",
+    "next7Days": "Next 7 days",
+    "noSessionsToday": "No sessions today",
+    "noSessionsNext7Days": "No sessions in the next 7 days",
+    "enjoyFreeTime": "Enjoy your free time or check future sessions.",
+    "calendar": "Calendar",
+    "notes": "Notes",
+    "settings": "Settings",
+    "viewFullCalendar": "View Full Calendar",
+    "viewNotes": "View Notes",
+    "viewProfile": "View Profile",
+    "viewPerformanceMetrics": "View Performance Metrics"
+  },
+  "metrics": {
+    "weekMetrics": "Week Metrics",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "absences": "Absences",
+    "users": "Users",
+    "monthOverview": "Month Overview",
+    "totalSessions": "Total Sessions",
+    "avgSatisfaction": "Average Satisfaction",
+    "avgTime": "Average Time"
+  },
+  "sessions": {
+    "title": "Sessions",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "online": "Online",
+    "inPerson": "In Person",
+    "complete": "Complete",
+    "markAbsence": "Absence",
+    "details": "Details"
+  },
+  "status": {
+    "scheduled": "Scheduled",
+    "confirmed": "Confirmed",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "absence": "Absence"
+  },
+  "pillars": {
+    "saude_mental": "Mental Health",
+    "bem_estar_fisico": "Physical Wellness",
+    "assistencia_financeira": "Financial Assistance",
+    "assistencia_juridica": "Legal Assistance"
+  },
+  "quickAccess": {
+    "title": "Quick Access"
   },
   "profile": {
     "addSpecialty": "Add specialty",

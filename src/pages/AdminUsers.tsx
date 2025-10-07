@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { mockUsers, AdminUser as User } from '@/data/adminMockData';
 
 const AdminUsers = () => {
+  const { t } = useTranslation('admin');
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,8 +55,8 @@ const AdminUsers = () => {
       }, 1000);
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao carregar utilizadores",
+        title: t('common.error'),
+        description: t('common.error'),
         variant: "destructive"
       });
       setIsLoading(false);
@@ -95,13 +97,13 @@ const AdminUsers = () => {
       ));
       
       toast({
-        title: newStatus === 'active' ? "Utilizador ativado" : "Utilizador suspenso",
-        description: "Status atualizado com sucesso"
+        title: newStatus === 'active' ? t('users.userActivated') : t('users.userSuspended'),
+        description: t('users.statusUpdatedSuccess')
       });
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao atualizar status do utilizador",
+        title: t('common.error'),
+        description: t('users.statusUpdateError'),
         variant: "destructive"
       });
     }
@@ -109,14 +111,15 @@ const AdminUsers = () => {
 
   const handleCreateUser = () => {
     toast({
-      title: "Criar Novo Utilizador",
-      description: "Funcionalidade em desenvolvimento. Em breve poderá criar utilizadores diretamente."
+      title: t('users.createUser'),
+      description: t('users.createUserComingSoon')
     });
   };
 
   const handleExportUsers = () => {
+    const headers = t('users.exportHeaders', { returnObjects: true }) as string[];
     const csv = [
-      ['Nome', 'Email', 'Empresa', 'Departamento', 'Sessões Empresa', 'Sessões Pessoais', 'Status', 'Data Criação'].join(','),
+      headers.join(','),
       ...filteredUsers.map(user => 
         [user.name, user.email, user.company, user.department || '', user.companySessions, user.personalSessions, user.status, user.createdAt].join(',')
       )
@@ -133,8 +136,8 @@ const AdminUsers = () => {
     window.URL.revokeObjectURL(url);
     
     toast({
-      title: "Exportação completa",
-      description: `${filteredUsers.length} utilizadores exportados com sucesso.`
+      title: t('users.exportComplete'),
+      description: t('users.exportedSuccess', { count: filteredUsers.length })
     });
   };
 
@@ -148,9 +151,9 @@ const AdminUsers = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Ativo</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">{t('common.active')}</Badge>;
       case 'inactive':
-        return <Badge variant="destructive">Inativo</Badge>;
+        return <Badge variant="destructive">{t('common.inactive')}</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -169,7 +172,7 @@ const AdminUsers = () => {
         return `${pillarNames[pillar as keyof typeof pillarNames]}: ${name}`;
       });
     
-    return providerList.length > 0 ? providerList.join(', ') : 'Nenhum';
+    return providerList.length > 0 ? providerList.join(', ') : t('users.table.none');
   };
 
   if (isLoading) {
@@ -194,15 +197,15 @@ const AdminUsers = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Utilizadores</h1>
-            <p className="text-sm text-muted-foreground">Gestão centralizada de utilizadores</p>
+            <h1 className="text-2xl font-bold text-foreground">{t('users.title')}</h1>
+            <p className="text-sm text-muted-foreground">{t('users.subtitle')}</p>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Pesquisar por nome ou email..."
+                placeholder={t('users.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 w-80"
@@ -211,21 +214,21 @@ const AdminUsers = () => {
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="Estado" />
+                <SelectValue placeholder={t('common.status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Status</SelectItem>
-                <SelectItem value="active">Ativo</SelectItem>
-                <SelectItem value="inactive">Inativo</SelectItem>
+                <SelectItem value="all">{t('common.status')}</SelectItem>
+                <SelectItem value="active">{t('common.active')}</SelectItem>
+                <SelectItem value="inactive">{t('common.inactive')}</SelectItem>
               </SelectContent>
             </Select>
             
             <Select value={companyFilter} onValueChange={setCompanyFilter}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Empresa" />
+                <SelectValue placeholder={t('common.company')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Empresa</SelectItem>
+                <SelectItem value="all">{t('common.company')}</SelectItem>
                 {companies.map(company => (
                   <SelectItem key={company} value={company}>{company}</SelectItem>
                 ))}
@@ -234,12 +237,12 @@ const AdminUsers = () => {
             
             <Button variant="outline" onClick={handleExportUsers}>
               <Search className="h-4 w-4 mr-2" />
-              Exportar
+              {t('common.export')}
             </Button>
             
             <Button onClick={handleCreateUser}>
               <Plus className="h-4 w-4 mr-2" />
-              Criar Utilizador
+              {t('users.createUser')}
             </Button>
           </div>
         </div>
@@ -252,14 +255,14 @@ const AdminUsers = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                Total de Utilizadores
+                {t('users.metrics.totalUsers')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{totalUsers}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 <ArrowUpRight className="h-3 w-3 inline text-green-600" />
-                <span className="text-green-600">+5</span> este mês
+                <span className="text-green-600">+5</span> {t('users.metrics.thisMonth')}
               </p>
             </CardContent>
           </Card>
@@ -268,13 +271,13 @@ const AdminUsers = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <UserCheck className="h-4 w-4" />
-                Utilizadores Ativos
+                {t('users.metrics.activeUsers')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{activeUsers}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {Math.round((activeUsers / totalUsers) * 100)}% do total
+                {Math.round((activeUsers / totalUsers) * 100)}% {t('users.metrics.ofTotal')}
               </p>
             </CardContent>
           </Card>
@@ -283,14 +286,14 @@ const AdminUsers = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                Sessões (MTD)
+                {t('users.metrics.sessionsMTD')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{totalSessionsMTD}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 <ArrowUpRight className="h-3 w-3 inline text-green-600" />
-                <span className="text-green-600">+18%</span> vs mês anterior
+                <span className="text-green-600">+18%</span> {t('users.metrics.vsPreviousMonth')}
               </p>
             </CardContent>
           </Card>
@@ -299,14 +302,14 @@ const AdminUsers = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4" />
-                Pedidos de Troca Pendentes
+                {t('users.metrics.pendingRequests')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{pendingChangeRequests}</div>
               <p className="text-xs text-muted-foreground mt-1 flex items-center">
                 <AlertCircle className="h-3 w-3 mr-1 text-amber-600" />
-                Requer atenção
+                {t('users.metrics.requiresAttention')}
               </p>
             </CardContent>
           </Card>
@@ -315,19 +318,19 @@ const AdminUsers = () => {
         {/* Users Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-foreground">Lista de Utilizadores</CardTitle>
+            <CardTitle className="text-foreground">{t('users.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Utilizador</TableHead>
-                  <TableHead>Empresa</TableHead>
-                  <TableHead>Departamento</TableHead>
-                  <TableHead>Sessões Disponíveis</TableHead>
-                  <TableHead>Prestadores Fixos</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Ações</TableHead>
+                  <TableHead>{t('users.table.user')}</TableHead>
+                  <TableHead>{t('users.table.company')}</TableHead>
+                  <TableHead>{t('users.table.department')}</TableHead>
+                  <TableHead>{t('users.table.availableSessions')}</TableHead>
+                  <TableHead>{t('users.table.fixedProviders')}</TableHead>
+                  <TableHead>{t('users.table.status')}</TableHead>
+                  <TableHead>{t('users.table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -335,8 +338,8 @@ const AdminUsers = () => {
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       {searchQuery || statusFilter !== 'all' || companyFilter !== 'all' 
-                        ? 'Nenhum utilizador encontrado com os filtros aplicados.' 
-                        : 'Nenhum utilizador encontrado.'}
+                        ? t('users.noUsersWithFilters') 
+                        : t('users.noUsersFound')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -363,20 +366,20 @@ const AdminUsers = () => {
                          <p className="text-sm text-muted-foreground">{user.department || '—'}</p>
                        </TableCell>
                        <TableCell>
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">Empresa:</span>
-                            <Badge variant="outline" className="text-xs">
-                              {user.companySessions - user.usedCompanySessions}/{user.companySessions}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">Pessoal:</span>
-                            <Badge variant="outline" className="text-xs">
-                              {user.personalSessions - user.usedPersonalSessions}/{user.personalSessions}
-                            </Badge>
-                          </div>
-                        </div>
+                         <div className="space-y-1">
+                           <div className="flex items-center gap-2">
+                             <span className="text-xs text-muted-foreground">{t('users.table.companyLabel')}</span>
+                             <Badge variant="outline" className="text-xs">
+                               {user.companySessions - user.usedCompanySessions}/{user.companySessions}
+                             </Badge>
+                           </div>
+                           <div className="flex items-center gap-2">
+                             <span className="text-xs text-muted-foreground">{t('users.table.personalLabel')}</span>
+                             <Badge variant="outline" className="text-xs">
+                               {user.personalSessions - user.usedPersonalSessions}/{user.personalSessions}
+                             </Badge>
+                           </div>
+                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="max-w-48 truncate text-sm text-muted-foreground">

@@ -8,7 +8,13 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "save": "Guardar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "search": "Pesquisar",
+    "export": "Exportar",
+    "filter": "Filtrar",
+    "actions": "Ações",
+    "status": "Status",
+    "company": "Empresa"
   },
   "userDetail": {
     "editProfile": "Editar Perfil",
@@ -22,9 +28,113 @@
     "statusUpdateError": "Erro ao atualizar status do prestador"
   },
   "users": {
-    "createUser": "Criar Novo Utilizador",
+    "title": "Utilizadores",
+    "subtitle": "Gestão centralizada de utilizadores",
+    "createUser": "Criar Utilizador",
     "createUserComingSoon": "Funcionalidade em desenvolvimento. Em breve poderá criar utilizadores diretamente.",
     "statusUpdateError": "Erro ao atualizar status do utilizador",
-    "exportHeaders": ["Nome", "Email", "Empresa", "Departamento", "Sessões Empresa", "Sessões Pessoais", "Status", "Data Criação"]
+    "userActivated": "Utilizador ativado",
+    "userSuspended": "Utilizador suspenso",
+    "statusUpdatedSuccess": "Status atualizado com sucesso",
+    "exportComplete": "Exportação completa",
+    "exportedSuccess": "{{count}} utilizadores exportados com sucesso",
+    "searchPlaceholder": "Pesquisar por nome ou email...",
+    "noUsersFound": "Nenhum utilizador encontrado",
+    "noUsersWithFilters": "Nenhum utilizador encontrado com os filtros aplicados.",
+    "exportHeaders": ["Nome", "Email", "Empresa", "Departamento", "Sessões Empresa", "Sessões Pessoais", "Status", "Data Criação"],
+    "metrics": {
+      "totalUsers": "Total de Utilizadores",
+      "activeUsers": "Utilizadores Ativos",
+      "sessionsMTD": "Sessões (MTD)",
+      "pendingRequests": "Pedidos de Troca Pendentes",
+      "thisMonth": "este mês",
+      "ofTotal": "do total",
+      "vsPreviousMonth": "vs mês anterior",
+      "requiresAttention": "Requer atenção"
+    },
+    "table": {
+      "user": "Utilizador",
+      "company": "Empresa",
+      "department": "Departamento",
+      "availableSessions": "Sessões Disponíveis",
+      "fixedProviders": "Prestadores Fixos",
+      "status": "Estado",
+      "actions": "Ações",
+      "companyLabel": "Empresa:",
+      "personalLabel": "Pessoal:",
+      "none": "Nenhum"
+    }
+  },
+  "providers": {
+    "title": "Prestadores",
+    "subtitle": "Gestão de prestadores de serviços",
+    "addProvider": "Adicionar Prestador",
+    "searchPlaceholder": "Pesquisar por nome ou email...",
+    "pillars": "Pilares",
+    "states": "Estados",
+    "licenses": "Licenças",
+    "providerActivated": "Prestador ativado",
+    "providerDeactivated": "Prestador desativado",
+    "statusUpdatedSuccess": "Status atualizado com sucesso",
+    "exportComplete": "Exportação completa",
+    "exportedSuccess": "{{count}} prestadores exportados com sucesso",
+    "noProvidersFound": "Nenhum prestador encontrado.",
+    "noProvidersWithFilters": "Nenhum prestador encontrado com os filtros aplicados.",
+    "exportHeaders": ["Nome", "Email", "Pilares", "Disponibilidade", "Licença", "Capacidade/Semana", "Slot Padrão"],
+    "metrics": {
+      "totalProviders": "Total de Prestadores",
+      "activeProviders": "Prestadores Ativos",
+      "pendingLicenses": "Licenças Pendentes",
+      "avgWeeklyCapacity": "Capacidade Média/Semana",
+      "thisMonth": "este mês",
+      "ofTotal": "do total",
+      "requiresVerification": "Requer verificação",
+      "sessionsPerProvider": "sessões por prestador"
+    },
+    "table": {
+      "provider": "Prestador",
+      "servedPillars": "Pilares Atendidos",
+      "availability": "Disponibilidade",
+      "license": "Licença",
+      "capacity": "Capacidade",
+      "defaultSlot": "Slot Padrão",
+      "actions": "Ações",
+      "expiresOn": "Expira em",
+      "expiredOn": "Expirou em"
+    },
+    "status": {
+      "valid": "Válida",
+      "expired": "Expirada",
+      "pending": "Pendente"
+    },
+    "pillarNames": {
+      "SM": "SM",
+      "BF": "BF",
+      "AF": "AF",
+      "AJ": "AJ"
+    }
+  },
+  "companies": {
+    "title": "Empresas",
+    "subtitle": "Gestão de empresas e códigos de convite",
+    "searchPlaceholder": "Buscar empresa...",
+    "metrics": {
+      "totalCompanies": "Total de Empresas",
+      "activeCompanies": "Empresas Ativas",
+      "seatsPurchased": "Lugares Comprados",
+      "seatsUsed": "Lugares Utilizados"
+    },
+    "table": {
+      "company": "Empresa",
+      "plan": "Plano",
+      "seatsPurchased": "Lugares Comprados",
+      "seatsUsed": "Lugares Utilizados",
+      "seatsAvailable": "Lugares Disponíveis",
+      "status": "Estado",
+      "actions": "Ações",
+      "active": "Ativa",
+      "inactive": "Inativa",
+      "manageInvites": "Gerir Convites"
+    }
   }
 }

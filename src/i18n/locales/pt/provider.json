@@ -1,8 +1,63 @@
 {
   "dashboard": {
     "title": "Painel do Prestador",
+    "welcome": "Bem-vindo, {{name}}",
+    "subtitle": "Gerencie as suas sessões e acompanhe o seu progresso",
     "sessionMarkedComplete": "Sessão marcada como concluída",
-    "absenceRecorded": "Falta registada para a sessão"
+    "absenceRecorded": "Falta registada para a sessão",
+    "online": "Online",
+    "offline": "Offline",
+    "offlineBanner": "Está offline. Atualize quando voltar à internet.",
+    "today": "Hoje",
+    "next7Days": "Próximos 7 dias",
+    "noSessionsToday": "Sem sessões hoje",
+    "noSessionsNext7Days": "Sem sessões nos próximos 7 dias",
+    "enjoyFreeTime": "Desfrute do seu tempo livre ou verifique sessões futuras.",
+    "calendar": "Calendário",
+    "notes": "Notas",
+    "settings": "Definições",
+    "viewFullCalendar": "Ver Calendário Completo",
+    "viewNotes": "Ver Notas",
+    "viewProfile": "Ver Perfil",
+    "viewPerformanceMetrics": "Ver Métricas de Desempenho"
+  },
+  "metrics": {
+    "weekMetrics": "Métricas da Semana",
+    "completed": "Concluídas",
+    "cancelled": "Canceladas",
+    "absences": "Faltas",
+    "users": "Utilizadores",
+    "monthOverview": "Visão Geral do Mês",
+    "totalSessions": "Total de Sessões",
+    "avgSatisfaction": "Satisfação Média",
+    "avgTime": "Tempo Médio"
+  },
+  "sessions": {
+    "title": "Sessões",
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "online": "Online",
+    "inPerson": "Presencial",
+    "complete": "Concluir",
+    "markAbsence": "Falta",
+    "details": "Detalhes"
+  },
+  "status": {
+    "scheduled": "Agendada",
+    "confirmed": "Confirmada",
+    "inProgress": "Em Curso",
+    "completed": "Concluída",
+    "cancelled": "Cancelada",
+    "absence": "Falta"
+  },
+  "pillars": {
+    "saude_mental": "Saúde Mental",
+    "bem_estar_fisico": "Bem-Estar Físico",
+    "assistencia_financeira": "Assistência Financeira",
+    "assistencia_juridica": "Assistência Jurídica"
+  },
+  "quickAccess": {
+    "title": "Acesso Rápido"
   },
   "profile": {
     "addSpecialty": "Adicionar especialidade",

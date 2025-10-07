@@ -8,7 +8,13 @@
     "edit": "Edit",
     "delete": "Delete",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "search": "Search",
+    "export": "Export",
+    "filter": "Filter",
+    "actions": "Actions",
+    "status": "Status",
+    "company": "Company"
   },
   "userDetail": {
     "editProfile": "Edit Profile",
@@ -22,9 +28,113 @@
     "statusUpdateError": "Error updating provider status"
   },
   "users": {
-    "createUser": "Create New User",
+    "title": "Users",
+    "subtitle": "Centralized user management",
+    "createUser": "Create User",
     "createUserComingSoon": "Functionality in development. You will be able to create users directly soon.",
     "statusUpdateError": "Error updating user status",
-    "exportHeaders": ["Name", "Email", "Company", "Department", "Company Sessions", "Personal Sessions", "Status", "Creation Date"]
+    "userActivated": "User activated",
+    "userSuspended": "User suspended",
+    "statusUpdatedSuccess": "Status updated successfully",
+    "exportComplete": "Export complete",
+    "exportedSuccess": "{{count}} users exported successfully",
+    "searchPlaceholder": "Search by name or email...",
+    "noUsersFound": "No users found",
+    "noUsersWithFilters": "No users found with applied filters.",
+    "exportHeaders": ["Name", "Email", "Company", "Department", "Company Sessions", "Personal Sessions", "Status", "Creation Date"],
+    "metrics": {
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "sessionsMTD": "Sessions (MTD)",
+      "pendingRequests": "Pending Change Requests",
+      "thisMonth": "this month",
+      "ofTotal": "of total",
+      "vsPreviousMonth": "vs previous month",
+      "requiresAttention": "Requires attention"
+    },
+    "table": {
+      "user": "User",
+      "company": "Company",
+      "department": "Department",
+      "availableSessions": "Available Sessions",
+      "fixedProviders": "Fixed Providers",
+      "status": "Status",
+      "actions": "Actions",
+      "companyLabel": "Company:",
+      "personalLabel": "Personal:",
+      "none": "None"
+    }
+  },
+  "providers": {
+    "title": "Providers",
+    "subtitle": "Service provider management",
+    "addProvider": "Add Provider",
+    "searchPlaceholder": "Search by name or email...",
+    "pillars": "Pillars",
+    "states": "States",
+    "licenses": "Licenses",
+    "providerActivated": "Provider activated",
+    "providerDeactivated": "Provider deactivated",
+    "statusUpdatedSuccess": "Status updated successfully",
+    "exportComplete": "Export complete",
+    "exportedSuccess": "{{count}} providers exported successfully",
+    "noProvidersFound": "No providers found.",
+    "noProvidersWithFilters": "No providers found with applied filters.",
+    "exportHeaders": ["Name", "Email", "Pillars", "Availability", "License", "Capacity/Week", "Default Slot"],
+    "metrics": {
+      "totalProviders": "Total Providers",
+      "activeProviders": "Active Providers",
+      "pendingLicenses": "Pending Licenses",
+      "avgWeeklyCapacity": "Average Capacity/Week",
+      "thisMonth": "this month",
+      "ofTotal": "of total",
+      "requiresVerification": "Requires verification",
+      "sessionsPerProvider": "sessions per provider"
+    },
+    "table": {
+      "provider": "Provider",
+      "servedPillars": "Served Pillars",
+      "availability": "Availability",
+      "license": "License",
+      "capacity": "Capacity",
+      "defaultSlot": "Default Slot",
+      "actions": "Actions",
+      "expiresOn": "Expires on",
+      "expiredOn": "Expired on"
+    },
+    "status": {
+      "valid": "Valid",
+      "expired": "Expired",
+      "pending": "Pending"
+    },
+    "pillarNames": {
+      "SM": "SM",
+      "BF": "BF",
+      "AF": "AF",
+      "AJ": "AJ"
+    }
+  },
+  "companies": {
+    "title": "Companies",
+    "subtitle": "Company and invite code management",
+    "searchPlaceholder": "Search company...",
+    "metrics": {
+      "totalCompanies": "Total Companies",
+      "activeCompanies": "Active Companies",
+      "seatsPurchased": "Seats Purchased",
+      "seatsUsed": "Seats Used"
+    },
+    "table": {
+      "company": "Company",
+      "plan": "Plan",
+      "seatsPurchased": "Seats Purchased",
+      "seatsUsed": "Seats Used",
+      "seatsAvailable": "Available Seats",
+      "status": "Status",
+      "actions": "Actions",
+      "active": "Active",
+      "inactive": "Inactive",
+      "manageInvites": "Manage Invites"
+    }
   }
 }
