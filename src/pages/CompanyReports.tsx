@@ -7,8 +7,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { companyUIcopy } from "@/data/companyUIcopy";
 import { companyToasts } from "@/data/companyToastMessages";
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '@/utils/dateFormatting';
 import { 
   Download,
   Calendar as CalendarIcon,
@@ -76,6 +77,7 @@ const availableReports: Report[] = [
 ];
 
 const CompanyReports = () => {
+  const { t } = useTranslation('company');
   const [selectedPeriod, setSelectedPeriod] = useState<string>("monthly");
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
@@ -135,10 +137,10 @@ const CompanyReports = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Relatórios & Analytics
+              {t('reports.title')}
             </h1>
             <p className="text-muted-foreground">
-              Análise detalhada da utilização e impacto do programa de wellbeing
+              {t('reports.subtitle')}
             </p>
           </div>
           
@@ -148,10 +150,10 @@ const CompanyReports = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-white border border-border z-50">
-                <SelectItem value="weekly">Semanal</SelectItem>
-                <SelectItem value="monthly">Mensal</SelectItem>
-                <SelectItem value="quarterly">Trimestral</SelectItem>
-                <SelectItem value="yearly">Anual</SelectItem>
+                <SelectItem value="weekly">{t('reports.period.weekly')}</SelectItem>
+                <SelectItem value="monthly">{t('reports.period.monthly')}</SelectItem>
+                <SelectItem value="quarterly">{t('reports.period.quarterly')}</SelectItem>
+                <SelectItem value="yearly">{t('reports.period.yearly')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -166,7 +168,7 @@ const CompanyReports = () => {
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateFrom ? format(dateFrom, "dd/MM/yyyy") : "Data início"}
+                    {dateFrom ? format(dateFrom, "dd/MM/yyyy") : t('reports.dateRange.from')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -190,7 +192,7 @@ const CompanyReports = () => {
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateTo ? format(dateTo, "dd/MM/yyyy") : "Data fim"}
+                    {dateTo ? format(dateTo, "dd/MM/yyyy") : t('reports.dateRange.to')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -212,7 +214,7 @@ const CompanyReports = () => {
           {/* Pillar Usage Chart */}
           <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">Utilização por Pilar</CardTitle>
+              <CardTitle className="text-lg font-semibold">{t('reports.charts.pillarUsage')}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -237,22 +239,22 @@ const CompanyReports = () => {
           {/* Employee Engagement Overview */}
           <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">Visão Geral de Engagement</CardTitle>
+              <CardTitle className="text-lg font-semibold">{t('reports.charts.engagement')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="p-4 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">147</div>
-                    <div className="text-sm text-muted-foreground">Colaboradores Ativos</div>
+                    <div className="text-sm text-muted-foreground">{t('reports.metrics.activeEmployees')}</div>
                   </div>
                   <div className="p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">78%</div>
-                    <div className="text-sm text-muted-foreground">Taxa de Adesão</div>
+                    <div className="text-sm text-muted-foreground">{t('reports.metrics.adoptionRate')}</div>
                   </div>
                   <div className="p-4 bg-purple-50 rounded-lg">
                     <div className="text-2xl font-bold text-purple-600">6.8</div>
-                    <div className="text-sm text-muted-foreground">Média Sessões</div>
+                    <div className="text-sm text-muted-foreground">{t('reports.metrics.avgSessions')}</div>
                   </div>
                 </div>
               </div>
@@ -263,7 +265,7 @@ const CompanyReports = () => {
         {/* Monthly Trends */}
         <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Tendências Mensais</CardTitle>
+            <CardTitle className="text-lg font-semibold">{t('reports.charts.monthlyTrends')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -302,7 +304,7 @@ const CompanyReports = () => {
         {/* Available Reports */}
         <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Relatórios Disponíveis</CardTitle>
+            <CardTitle className="text-lg font-semibold">{t('reports.available')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
@@ -323,7 +325,7 @@ const CompanyReports = () => {
                     
                     <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
                       <span>Frequência: {report.frequency}</span>
-                      <span>Último: {new Date(report.lastGenerated).toLocaleDateString('pt-PT')}</span>
+                      <span>Último: {formatDate(report.lastGenerated)}</span>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -334,7 +336,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Download className="h-3 w-3 mr-1" />
-                        {companyUIcopy.reports.actions.downloadCSV}
+                        {t('reports.actions.downloadCSV')}
                       </Button>
                       
                       <Button 
@@ -344,7 +346,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Download className="h-3 w-3 mr-1" />
-                        {companyUIcopy.reports.actions.exportPDF}
+                        {t('reports.actions.exportPDF')}
                       </Button>
                       
                       <Button 
@@ -354,7 +356,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Mail className="h-3 w-3 mr-1" />
-                        {companyUIcopy.reports.actions.scheduleEmail}
+                        {t('reports.actions.scheduleEmail')}
                       </Button>
                     </div>
                   </CardContent>

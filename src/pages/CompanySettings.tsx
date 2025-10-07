@@ -8,9 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { companyUIcopy } from "@/data/companyUIcopy";
 import { companyToasts } from "@/data/companyToastMessages";
 import { UnsavedChangesBanner } from "@/components/company/UnsavedChangesBanner";
+import { useTranslation } from 'react-i18next';
 import { 
   Settings,
   Users,
@@ -120,6 +120,7 @@ const defaultSettings: CompanySettings = {
 };
 
 const CompanySettings = () => {
+  const { t } = useTranslation('company');
   const [settings, setSettings] = useState<CompanySettings>(defaultSettings);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [newCustomField, setNewCustomField] = useState({
@@ -225,16 +226,16 @@ const CompanySettings = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Configurações da Empresa
+              {t('settings.title')}
             </h1>
             <p className="text-muted-foreground">
-              Gerir políticas, campos personalizados e contactos de suporte
+              {t('settings.subtitle')}
             </p>
           </div>
           
           <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
             <Save className="h-4 w-4 mr-2" />
-            {companyUIcopy.settings.save}
+            {t('settings.save')}
           </Button>
         </div>
 
@@ -243,13 +244,13 @@ const CompanySettings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
-              Informações da Empresa
+              {t('settings.companyInfo.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="companyName">Nome da Empresa</Label>
+                <Label htmlFor="companyName">{t('settings.companyInfo.name')}</Label>
                 <Input
                   id="companyName"
                   value={settings.companyInfo.name}
@@ -257,7 +258,7 @@ const CompanySettings = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website">{t('settings.companyInfo.website')}</Label>
                 <Input
                   id="website"
                   value={settings.companyInfo.website}
@@ -265,7 +266,7 @@ const CompanySettings = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="contactEmail">Email de Contacto</Label>
+                <Label htmlFor="contactEmail">{t('settings.companyInfo.contactEmail')}</Label>
                 <Input
                   id="contactEmail"
                   type="email"
@@ -274,7 +275,7 @@ const CompanySettings = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="contactPhone">Telefone</Label>
+                <Label htmlFor="contactPhone">{t('settings.companyInfo.phone')}</Label>
                 <Input
                   id="contactPhone"
                   value={settings.companyInfo.contactPhone}
@@ -283,7 +284,7 @@ const CompanySettings = () => {
               </div>
             </div>
             <div>
-              <Label htmlFor="address">Morada</Label>
+              <Label htmlFor="address">{t('settings.companyInfo.address')}</Label>
               <Textarea
                 id="address"
                 value={settings.companyInfo.address}
@@ -299,13 +300,13 @@ const CompanySettings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
-              Políticas de Quota
+              {t('settings.quotaPolicies.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="defaultCompanySessions">Sessões Empresa (padrão)</Label>
+                <Label htmlFor="defaultCompanySessions">{t('settings.quotaPolicies.defaultCompany')}</Label>
                 <Input
                   id="defaultCompanySessions"
                   type="number"
@@ -315,7 +316,7 @@ const CompanySettings = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="defaultPersonalSessions">Sessões Pessoais (padrão)</Label>
+                <Label htmlFor="defaultPersonalSessions">{t('settings.quotaPolicies.defaultPersonal')}</Label>
                 <Input
                   id="defaultPersonalSessions"
                   type="number"
@@ -325,7 +326,7 @@ const CompanySettings = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="renewalPeriod">Período de Renovação</Label>
+                <Label htmlFor="renewalPeriod">{t('settings.quotaPolicies.renewalPeriod')}</Label>
                 <Select
                   value={settings.quotaPolicies.renewalPeriod}
                   onValueChange={(value: any) => updateSettings('quotaPolicies', { renewalPeriod: value })}
@@ -334,9 +335,9 @@ const CompanySettings = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-border z-50">
-                    <SelectItem value="monthly">Mensal</SelectItem>
-                    <SelectItem value="quarterly">Trimestral</SelectItem>
-                    <SelectItem value="yearly">Anual</SelectItem>
+                    <SelectItem value="monthly">{t('settings.renewalOptions.monthly')}</SelectItem>
+                    <SelectItem value="quarterly">{t('settings.renewalOptions.quarterly')}</SelectItem>
+                    <SelectItem value="yearly">{t('settings.renewalOptions.yearly')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -344,9 +345,9 @@ const CompanySettings = () => {
             
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-sm font-medium">Permitir rollover de sessões</Label>
+                <Label className="text-sm font-medium">{t('settings.quotaPolicies.rollover')}</Label>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {companyUIcopy.settings.rolloverTooltip}
+                  {t('settings.rolloverTooltip')}
                 </p>
               </div>
               <Switch
@@ -362,7 +363,7 @@ const CompanySettings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              Campos Personalizados
+              {t('settings.customFields.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -378,7 +379,7 @@ const CompanySettings = () => {
                       </Badge>
                       {field.required && (
                         <Badge variant="secondary" className="text-xs">
-                          Obrigatório
+                          {t('settings.customFields.required')}
                         </Badge>
                       )}
                     </div>
@@ -397,19 +398,19 @@ const CompanySettings = () => {
 
             {/* Add New Custom Field */}
             <div className="border-t border-border pt-6">
-              <h4 className="font-medium mb-4">Adicionar Novo Campo</h4>
+              <h4 className="font-medium mb-4">{t('settings.customFields.addNew')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                  <Label htmlFor="fieldName">Nome do Campo</Label>
+                  <Label htmlFor="fieldName">{t('settings.customFields.fieldName')}</Label>
                   <Input
                     id="fieldName"
                     value={newCustomField.name}
                     onChange={(e) => setNewCustomField({ ...newCustomField, name: e.target.value })}
-                    placeholder="Nome do campo..."
+                    placeholder={t('settings.support.placeholder.name')}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="fieldType">Tipo</Label>
+                  <Label htmlFor="fieldType">{t('settings.customFields.type')}</Label>
                   <Select
                     value={newCustomField.type}
                     onValueChange={(value: any) => setNewCustomField({ ...newCustomField, type: value })}
@@ -418,9 +419,9 @@ const CompanySettings = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white border border-border z-50">
-                      <SelectItem value="text">Texto</SelectItem>
-                      <SelectItem value="select">Dropdown</SelectItem>
-                      <SelectItem value="number">Número</SelectItem>
+                      <SelectItem value="text">{t('settings.customFields.types.text')}</SelectItem>
+                      <SelectItem value="select">{t('settings.customFields.types.select')}</SelectItem>
+                      <SelectItem value="number">{t('settings.customFields.types.number')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -430,13 +431,13 @@ const CompanySettings = () => {
                       checked={newCustomField.required}
                       onCheckedChange={(checked) => setNewCustomField({ ...newCustomField, required: checked })}
                     />
-                    <Label className="text-sm">Obrigatório</Label>
+                    <Label className="text-sm">{t('settings.customFields.required')}</Label>
                   </div>
                 </div>
                 <div className="flex items-end">
                   <Button onClick={addCustomField} className="w-full">
                     <Plus className="h-4 w-4 mr-2" />
-                    {companyUIcopy.settings.customFields.add}
+                    {t('settings.customFields.add')}
                   </Button>
                 </div>
               </div>
@@ -527,7 +528,7 @@ const CompanySettings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              Contactos de Suporte
+              {t('settings.support.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -558,40 +559,40 @@ const CompanySettings = () => {
 
             {/* Add New Contact */}
             <div className="border-t border-border pt-6">
-              <h4 className="font-medium mb-4">Adicionar Contacto de Suporte</h4>
+              <h4 className="font-medium mb-4">{t('settings.support.add')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <Label htmlFor="contactName">Nome</Label>
+                  <Label htmlFor="contactName">{t('settings.support.name')}</Label>
                   <Input
                     id="contactName"
                     value={newContact.name}
                     onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
-                    placeholder="Nome completo..."
+                    placeholder={t('settings.support.placeholder.name')}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="contactEmailInput">Email</Label>
+                  <Label htmlFor="contactEmailInput">{t('settings.support.email')}</Label>
                   <Input
                     id="contactEmailInput"
                     type="email"
                     value={newContact.email}
                     onChange={(e) => setNewContact({ ...newContact, email: e.target.value })}
-                    placeholder="email@empresa.com"
+                    placeholder={t('settings.support.placeholder.email')}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="contactRole">Função</Label>
+                  <Label htmlFor="contactRole">{t('settings.support.role')}</Label>
                   <Input
                     id="contactRole"
                     value={newContact.role}
                     onChange={(e) => setNewContact({ ...newContact, role: e.target.value })}
-                    placeholder="HR Manager, etc..."
+                    placeholder={t('settings.support.placeholder.role')}
                   />
                 </div>
               </div>
               <Button onClick={addSupportContact} className="w-full md:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
-                {companyUIcopy.settings.contacts.add}
+                {t('settings.support.add')}
               </Button>
             </div>
           </CardContent>
