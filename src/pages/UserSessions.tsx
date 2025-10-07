@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/sessionMockData";
 import { mockBookings, getMockBookings } from "@/data/mockData";
 import { QuotaDisplayCard } from "@/components/sessions/QuotaDisplayCard";
@@ -11,6 +12,7 @@ import { SessionHistoryCard } from "@/components/sessions/SessionHistoryCard";
 import { userUIcopy } from "@/data/userUIcopy";
 
 export default function UserSessions() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [userBalance] = useState(mockUserBalance);
   
@@ -62,7 +64,7 @@ export default function UserSessions() {
 
         {/* Sessions List */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Histórico de Sessões</h2>
+          <h2 className="text-xl font-semibold">{t('user:sessions.historyTitle', 'Histórico de Sessões')}</h2>
           
           {sessions.map((session) => (
             <SessionHistoryCard
@@ -80,9 +82,9 @@ export default function UserSessions() {
             <CardContent className="pt-6">
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">
-                  Ainda não tem sessões agendadas
+                  {t('user:sessions.noSessionsYet', 'Ainda não tem sessões agendadas')}
                 </p>
-                <Button onClick={() => navigate('/user/book')}>Marcar Primeira Sessão</Button>
+                <Button onClick={() => navigate('/user/book')}>{t('user:sessions.bookFirst', 'Marcar Primeira Sessão')}</Button>
               </div>
             </CardContent>
           </Card>

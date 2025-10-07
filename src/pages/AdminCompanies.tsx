@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,7 @@ import { Search, Users, Building2, TrendingUp } from 'lucide-react';
 import { mockCompanies } from '@/data/inviteCodesMockData';
 
 export default function AdminCompanies() {
+  const { t } = useTranslation('admin');
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredCompanies = mockCompanies.filter(company =>
@@ -23,10 +25,10 @@ export default function AdminCompanies() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Empresas</h1>
-        <p className="text-muted-foreground">Gestão de empresas e códigos de convite</p>
-      </div>
+        <div>
+          <h1 className="text-3xl font-bold">{t('companies.title')}</h1>
+          <p className="text-muted-foreground">{t('companies.subtitle')}</p>
+        </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -34,7 +36,7 @@ export default function AdminCompanies() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Building2 className="h-4 w-4" />
-              Total de Empresas
+              {t('companies.metrics.totalCompanies')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -46,7 +48,7 @@ export default function AdminCompanies() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Empresas Ativas
+              {t('companies.metrics.activeCompanies')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -58,7 +60,7 @@ export default function AdminCompanies() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Lugares Comprados
+              {t('companies.metrics.seatsPurchased')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -70,7 +72,7 @@ export default function AdminCompanies() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Lugares Utilizados
+              {t('companies.metrics.seatsUsed')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -84,7 +86,7 @@ export default function AdminCompanies() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar empresa..."
+            placeholder={t('companies.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -98,13 +100,13 @@ export default function AdminCompanies() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Empresa</TableHead>
-                <TableHead>Plano</TableHead>
-                <TableHead>Lugares Comprados</TableHead>
-                <TableHead>Lugares Utilizados</TableHead>
-                <TableHead>Lugares Disponíveis</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Ações</TableHead>
+                <TableHead>{t('companies.table.company')}</TableHead>
+                <TableHead>{t('companies.table.plan')}</TableHead>
+                <TableHead>{t('companies.table.seatsPurchased')}</TableHead>
+                <TableHead>{t('companies.table.seatsUsed')}</TableHead>
+                <TableHead>{t('companies.table.seatsAvailable')}</TableHead>
+                <TableHead>{t('companies.table.status')}</TableHead>
+                <TableHead>{t('companies.table.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -137,13 +139,13 @@ export default function AdminCompanies() {
                     </TableCell>
                     <TableCell>
                       <Badge variant={company.isActive ? 'secondary' : 'destructive'}>
-                        {company.isActive ? 'Ativa' : 'Inativa'}
+                        {company.isActive ? t('companies.table.active') : t('companies.table.inactive')}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Link to={`/admin/companies/${company.id}`}>
                         <Button variant="outline" size="sm">
-                          Gerir Convites
+                          {t('companies.table.manageInvites')}
                         </Button>
                       </Link>
                     </TableCell>
