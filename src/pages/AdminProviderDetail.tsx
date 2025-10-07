@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,7 @@ import {
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { getProviderById, generateMockProviderDetail } from '@/data/adminMockData';
+import { formatDate } from '@/utils/dateFormatting';
 
 interface ProviderDetail {
   id: string;
@@ -60,7 +62,7 @@ interface ProviderDetail {
     institution: string;
     year: string;
   }>;
-  experience: number; // years
+  experience: number;
   rating: number;
   totalSessions: number;
   completedSessions: number;
@@ -90,54 +92,11 @@ interface ProviderDetail {
 const AdminProviderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation('admin');
   const [provider, setProvider] = useState<ProviderDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('profile');
   const { toast } = useToast();
-
-  // Mock data - replace with actual API calls
-  const mockProvider: ProviderDetail = {
-    id: '1',
-    name: 'Dra. Maria Santos',
-    email: 'maria.santos@clinic.pt',
-    phone: '+351 912 345 678',
-    avatar: '',
-    bio: 'Psicóloga clínica com mais de 10 anos de experiência em terapia cognitivo-comportamental e tratamento de ansiedade e depressão.',
-    pillars: ['mental-health', 'physical-wellness'],
-    availability: 'active',
-    licenseStatus: 'valid',
-    licenseNumber: 'OP12345',
-    licenseExpiry: '2025-12-31',
-    capacity: 20,
-    defaultSlot: 50,
-    languages: ['PT', 'EN', 'ES'],
-    location: 'Lisboa, Portugal',
-    website: 'https://drmariasantos.pt',
-    specialties: ['Ansiedade', 'Depressão', 'Terapia de Casal', 'Mindfulness'],
-    education: [
-      { degree: 'Mestrado em Psicologia Clínica', institution: 'Universidade de Lisboa', year: '2012' },
-      { degree: 'Licenciatura em Psicologia', institution: 'Universidade do Porto', year: '2010' }
-    ],
-    experience: 12,
-    rating: 4.8,
-    totalSessions: 1250,
-    completedSessions: 1180,
-    upcomingBookings: [
-      { id: '1', date: '2024-03-20', time: '10:00', patient: 'João S.', pillar: 'mental-health', status: 'confirmed' },
-      { id: '2', date: '2024-03-20', time: '14:30', patient: 'Maria O.', pillar: 'physical-wellness', status: 'scheduled' },
-      { id: '3', date: '2024-03-21', time: '09:00', patient: 'Carlos R.', pillar: 'mental-health', status: 'confirmed' }
-    ],
-    sessionHistory: [
-      { id: '1', date: '2024-03-15', patient: 'Ana P.', pillar: 'mental-health', duration: 50, status: 'completed' },
-      { id: '2', date: '2024-03-14', patient: 'Pedro M.', pillar: 'physical-wellness', duration: 45, status: 'completed' },
-      { id: '3', date: '2024-03-13', patient: 'Sofia L.', pillar: 'mental-health', duration: 50, status: 'no-show' }
-    ],
-    monthlyStats: [
-      { month: 'Jan', sessions: 85, revenue: 4250 },
-      { month: 'Fev', sessions: 92, revenue: 4600 },
-      { month: 'Mar', sessions: 78, revenue: 3900 }
-    ]
-  };
 
   useEffect(() => {
     loadProvider();
@@ -146,7 +105,6 @@ const AdminProviderDetail = () => {
   const loadProvider = async () => {
     setIsLoading(true);
     try {
-      // Fetch provider from centralized mock data
       setTimeout(() => {
         const baseProvider = getProviderById(id || '1');
         
@@ -159,8 +117,8 @@ const AdminProviderDetail = () => {
       }, 800);
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao carregar dados do prestador",
+        title: t('common.error'),
+        description: t('providerDetail.loadError'),
         variant: "destructive"
       });
       setIsLoading(false);
@@ -171,17 +129,16 @@ const AdminProviderDetail = () => {
     if (!provider) return;
     
     try {
-      // Replace with actual API call
       setProvider(prev => prev ? { ...prev, availability: newStatus } : null);
       
       toast({
-        title: newStatus === 'active' ? "Prestador ativado" : "Prestador desativado",
-        description: "Status atualizado com sucesso"
+        title: newStatus === 'active' ? t('providerDetail.providerActivated') : t('providerDetail.providerDeactivated'),
+        description: t('providerDetail.statusUpdated')
       });
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao atualizar status do prestador",
+        title: t('common.error'),
+        description: t('providerDetail.statusUpdateError'),
         variant: "destructive"
       });
     }
@@ -189,36 +146,26 @@ const AdminProviderDetail = () => {
 
   const handleEdit = () => {
     toast({
-      title: "Editar Prestador",
-      description: "Funcionalidade de edição será implementada em breve."
+      title: t('providerDetail.editProvider'),
+      description: t('providerDetail.editProviderComingSoon')
     });
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Ativo</Badge>;
-      case 'inactive':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-600">Inativo</Badge>;
-      case 'valid':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Válida</Badge>;
-      case 'expired':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800">Expirada</Badge>;
-      case 'pending':
-        return <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50">Pendente</Badge>;
-      case 'confirmed':
-        return <Badge variant="default" className="bg-blue-100 text-blue-800">Confirmada</Badge>;
-      case 'scheduled':
-        return <Badge variant="outline" className="text-blue-600 border-blue-300 bg-blue-50">Agendada</Badge>;
-      case 'completed':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Concluída</Badge>;
-      case 'cancelled':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-600">Cancelada</Badge>;
-      case 'no-show':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800">Falta</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
+    const statusKey = status as keyof typeof t;
+    return <Badge variant={
+      status === 'active' || status === 'valid' || status === 'confirmed' || status === 'completed' ? 'default' :
+      status === 'inactive' || status === 'cancelled' ? 'secondary' :
+      status === 'expired' || status === 'no-show' ? 'destructive' : 'outline'
+    } className={
+      status === 'active' || status === 'valid' || status === 'confirmed' || status === 'completed' ? 'bg-green-100 text-green-800' :
+      status === 'inactive' || status === 'cancelled' ? 'bg-gray-100 text-gray-600' :
+      status === 'expired' || status === 'no-show' ? 'bg-red-100 text-red-800' :
+      status === 'pending' ? 'text-amber-600 border-amber-300 bg-amber-50' :
+      status === 'scheduled' ? 'text-blue-600 border-blue-300 bg-blue-50' : ''
+    }>
+      {t(`common.status.${status}`)}
+    </Badge>;
   };
 
   const getPillarIcon = (pillar: string) => {
@@ -237,18 +184,13 @@ const AdminProviderDetail = () => {
   };
 
   const getPillarName = (pillar: string) => {
-    switch (pillar) {
-      case 'mental-health':
-        return 'Saúde Mental';
-      case 'physical-wellness':
-        return 'Bem-Estar Físico';
-      case 'financial-assistance':
-        return 'Assistência Financeira';
-      case 'legal-assistance':
-        return 'Assistência Jurídica';
-      default:
-        return pillar;
-    }
+    const pillarMap: { [key: string]: string } = {
+      'mental-health': 'mentalHealth',
+      'physical-wellness': 'physicalWellness',
+      'financial-assistance': 'financialAssistance',
+      'legal-assistance': 'legalAssistance'
+    };
+    return t(`common.pillars.${pillarMap[pillar] || pillar}`);
   };
 
   if (isLoading) {
@@ -275,13 +217,13 @@ const AdminProviderDetail = () => {
             className="mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar aos Prestadores
+            {t('providerDetail.backToProviders')}
           </Button>
           <Card>
             <CardContent className="p-12 text-center">
               <XCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-2xl font-semibold text-foreground mb-2">Prestador não encontrado</h2>
-              <p className="text-muted-foreground">O prestador solicitado não existe ou foi removido.</p>
+              <h2 className="text-2xl font-semibold text-foreground mb-2">{t('providerDetail.providerNotFound')}</h2>
+              <p className="text-muted-foreground">{t('providerDetail.providerNotFoundDesc')}</p>
             </CardContent>
           </Card>
         </div>
@@ -302,18 +244,18 @@ const AdminProviderDetail = () => {
               onClick={() => navigate('/admin/prestadores')}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar aos Prestadores
+              {t('providerDetail.backToProviders')}
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-foreground">{provider.name}</h1>
-              <p className="text-sm text-muted-foreground">Detalhes do prestador</p>
+              <p className="text-sm text-muted-foreground">{t('providerDetail.providerDetails')}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={handleEdit}>
               <Edit className="w-4 h-4 mr-2" />
-              Editar
+              {t('providerDetail.edit')}
             </Button>
             <Button
               variant={provider.availability === 'active' ? "destructive" : "default"}
@@ -322,12 +264,12 @@ const AdminProviderDetail = () => {
               {provider.availability === 'active' ? (
                 <>
                   <PowerOff className="w-4 h-4 mr-2" />
-                  Desativar
+                  {t('providerDetail.deactivate')}
                 </>
               ) : (
                 <>
                   <Power className="w-4 h-4 mr-2" />
-                  Ativar
+                  {t('providerDetail.activate')}
                 </>
               )}
             </Button>
@@ -360,7 +302,7 @@ const AdminProviderDetail = () => {
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     <span className="font-medium">{provider.rating}</span>
                   </div>
-                  <Badge variant="outline">{provider.experience} anos de experiência</Badge>
+                  <Badge variant="outline">{provider.experience} {t('providerDetail.yearsExperience')}</Badge>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -380,7 +322,7 @@ const AdminProviderDetail = () => {
                     <div className="flex items-center gap-2">
                       <Globe className="h-4 w-4 text-muted-foreground" />
                       <a href={provider.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                        Website
+                        {t('providerDetail.website')}
                       </a>
                     </div>
                   )}
@@ -393,11 +335,11 @@ const AdminProviderDetail = () => {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="profile">Perfil</TabsTrigger>
-            <TabsTrigger value="sessions">Sessões</TabsTrigger>
-            <TabsTrigger value="schedule">Agendamentos</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
-            <TabsTrigger value="stats">Estatísticas</TabsTrigger>
+            <TabsTrigger value="profile">{t('providerDetail.tabs.profile')}</TabsTrigger>
+            <TabsTrigger value="sessions">{t('providerDetail.tabs.sessions')}</TabsTrigger>
+            <TabsTrigger value="schedule">{t('providerDetail.tabs.schedule')}</TabsTrigger>
+            <TabsTrigger value="history">{t('providerDetail.tabs.history')}</TabsTrigger>
+            <TabsTrigger value="stats">{t('providerDetail.tabs.stats')}</TabsTrigger>
           </TabsList>
 
           {/* Profile Tab */}
@@ -407,22 +349,22 @@ const AdminProviderDetail = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="w-5 h-5" />
-                    Informações Pessoais
+                    {t('providerDetail.profile.personalInfo')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label>Email</Label>
+                    <Label>{t('providerDetail.profile.email')}</Label>
                     <p className="text-sm text-muted-foreground">{provider.email}</p>
                   </div>
                   {provider.phone && (
                     <div>
-                      <Label>Telefone</Label>
+                      <Label>{t('providerDetail.profile.phone')}</Label>
                       <p className="text-sm text-muted-foreground">{provider.phone}</p>
                     </div>
                   )}
                   <div>
-                    <Label>Idiomas</Label>
+                    <Label>{t('providerDetail.profile.languages')}</Label>
                     <div className="flex gap-1 mt-1">
                       {provider.languages.map(lang => (
                         <Badge key={lang} variant="outline" className="text-xs">
@@ -432,7 +374,7 @@ const AdminProviderDetail = () => {
                     </div>
                   </div>
                   <div>
-                    <Label>Biografia</Label>
+                    <Label>{t('providerDetail.profile.biography')}</Label>
                     <p className="text-sm text-muted-foreground mt-1">{provider.bio}</p>
                   </div>
                 </CardContent>
@@ -442,24 +384,24 @@ const AdminProviderDetail = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Award className="w-5 h-5" />
-                    Qualificações
+                    {t('providerDetail.profile.qualifications')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label>Número de Licença</Label>
+                    <Label>{t('providerDetail.profile.licenseNumber')}</Label>
                     <p className="text-sm text-muted-foreground">{provider.licenseNumber}</p>
                   </div>
                   {provider.licenseExpiry && (
                     <div>
-                      <Label>Validade da Licença</Label>
+                      <Label>{t('providerDetail.profile.licenseExpiry')}</Label>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(provider.licenseExpiry).toLocaleDateString('pt-PT')}
+                        {formatDate(provider.licenseExpiry)}
                       </p>
                     </div>
                   )}
                   <div>
-                    <Label>Especialidades</Label>
+                    <Label>{t('providerDetail.profile.specialties')}</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {provider.specialties.map(specialty => (
                         <Badge key={specialty} variant="outline" className="text-xs">
@@ -477,7 +419,7 @@ const AdminProviderDetail = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5" />
-                  Formação Académica
+                  {t('providerDetail.profile.education')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -496,7 +438,7 @@ const AdminProviderDetail = () => {
             {/* Pillars */}
             <Card>
               <CardHeader>
-                <CardTitle>Pilares Atendidos</CardTitle>
+                <CardTitle>{t('providers.table.servedPillars')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -516,7 +458,7 @@ const AdminProviderDetail = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">Total de Sessões</CardTitle>
+                  <CardTitle className="text-sm">{t('providerDetail.stats.totalSessions')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{provider.totalSessions}</div>
@@ -525,7 +467,7 @@ const AdminProviderDetail = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">Sessões Concluídas</CardTitle>
+                  <CardTitle className="text-sm">{t('providerDetail.stats.completedSessions')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-green-600">{provider.completedSessions}</div>
@@ -534,7 +476,7 @@ const AdminProviderDetail = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">Taxa de Conclusão</CardTitle>
+                  <CardTitle className="text-sm">{t('providerDetail.stats.completionRate')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{completionRate.toFixed(1)}%</div>
@@ -545,16 +487,16 @@ const AdminProviderDetail = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Configurações de Sessão</CardTitle>
+                <CardTitle>{t('providerDetail.sessions.sessionHistory')}</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label>Capacidade Semanal</Label>
-                  <p className="text-sm text-muted-foreground">{provider.capacity} sessões por semana</p>
+                  <Label>{t('providers.table.capacity')}</Label>
+                  <p className="text-sm text-muted-foreground">{provider.capacity} {t('providerDetail.sessions.sessionHistory')}</p>
                 </div>
                 <div>
-                  <Label>Duração Padrão</Label>
-                  <p className="text-sm text-muted-foreground">{provider.defaultSlot} minutos</p>
+                  <Label>{t('providers.table.defaultSlot')}</Label>
+                  <p className="text-sm text-muted-foreground">{provider.defaultSlot} {t('providerDetail.sessions.minutes')}</p>
                 </div>
               </CardContent>
             </Card>
@@ -566,24 +508,24 @@ const AdminProviderDetail = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="w-5 h-5" />
-                  Próximos Agendamentos
+                  {t('providerDetail.sessions.upcomingBookings')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Hora</TableHead>
-                      <TableHead>Paciente</TableHead>
-                      <TableHead>Pilar</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>{t('providerDetail.sessions.date')}</TableHead>
+                      <TableHead>{t('providerDetail.sessions.time')}</TableHead>
+                      <TableHead>{t('providerDetail.sessions.patient')}</TableHead>
+                      <TableHead>{t('providerDetail.sessions.pillar')}</TableHead>
+                      <TableHead>{t('providerDetail.sessions.status')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {provider.upcomingBookings.map((booking) => (
                       <TableRow key={booking.id}>
-                        <TableCell>{new Date(booking.date).toLocaleDateString('pt-PT')}</TableCell>
+                        <TableCell>{formatDate(booking.date)}</TableCell>
                         <TableCell>{booking.time}</TableCell>
                         <TableCell>{booking.patient}</TableCell>
                         <TableCell>
@@ -605,23 +547,23 @@ const AdminProviderDetail = () => {
           <TabsContent value="history" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Histórico de Sessões</CardTitle>
+                <CardTitle>{t('providerDetail.sessions.sessionHistory')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Paciente</TableHead>
-                      <TableHead>Pilar</TableHead>
-                      <TableHead>Duração</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>{t('providerDetail.sessions.date')}</TableHead>
+                      <TableHead>{t('providerDetail.sessions.patient')}</TableHead>
+                      <TableHead>{t('providerDetail.sessions.pillar')}</TableHead>
+                      <TableHead>{t('providerDetail.sessions.duration')}</TableHead>
+                      <TableHead>{t('providerDetail.sessions.status')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {provider.sessionHistory.map((session) => (
                       <TableRow key={session.id}>
-                        <TableCell>{new Date(session.date).toLocaleDateString('pt-PT')}</TableCell>
+                        <TableCell>{formatDate(session.date)}</TableCell>
                         <TableCell>{session.patient}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -643,7 +585,7 @@ const AdminProviderDetail = () => {
           <TabsContent value="stats" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Estatísticas Mensais</CardTitle>
+                <CardTitle>{t('providerDetail.stats.monthlyPerformance')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -652,7 +594,7 @@ const AdminProviderDetail = () => {
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="sessions" fill="#3b82f6" name="Sessões" />
+                    <Bar dataKey="sessions" fill="#3b82f6" name={t('providerDetail.stats.sessions')} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>

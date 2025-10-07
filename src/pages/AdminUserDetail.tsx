@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { 
@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { getUserById, generateMockUserDetail } from '@/data/adminMockData';
+import { formatDate } from '@/utils/dateFormatting';
 
 interface UserDetail {
   id: string;
@@ -78,6 +79,7 @@ interface UserDetail {
 const AdminUserDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation('admin');
   const [user, setUser] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('profile');
@@ -90,7 +92,6 @@ const AdminUserDetail = () => {
   const loadUser = async () => {
     setIsLoading(true);
     try {
-      // Fetch user from centralized mock data
       setTimeout(() => {
         const baseUser = getUserById(id || '1');
         
@@ -103,8 +104,8 @@ const AdminUserDetail = () => {
       }, 800);
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao carregar dados do utilizador",
+        title: t('common.error'),
+        description: t('userDetail.loadError'),
         variant: "destructive"
       });
       setIsLoading(false);
@@ -115,17 +116,16 @@ const AdminUserDetail = () => {
     if (!user) return;
     
     try {
-      // Replace with actual API call
       setUser(prev => prev ? { ...prev, status: newStatus } : null);
       
       toast({
-        title: newStatus === 'active' ? "Utilizador ativado" : "Utilizador suspenso",
-        description: "Status atualizado com sucesso"
+        title: newStatus === 'active' ? t('userDetail.userActivated') : t('userDetail.userSuspended'),
+        description: t('userDetail.statusUpdated')
       });
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao atualizar status do utilizador",
+        title: t('common.error'),
+        description: t('userDetail.statusUpdateError'),
         variant: "destructive"
       });
     }
@@ -135,7 +135,6 @@ const AdminUserDetail = () => {
     if (!user) return;
     
     try {
-      // Replace with actual API call
       setUser(prev => {
         if (!prev) return null;
         return {
@@ -149,13 +148,13 @@ const AdminUserDetail = () => {
       });
       
       toast({
-        title: action === 'approve' ? "Pedido aprovado" : "Pedido rejeitado",
-        description: "Ação processada com sucesso"
+        title: action === 'approve' ? t('userDetail.requests.approved') : t('userDetail.requests.rejected'),
+        description: t('userDetail.requests.actionProcessed')
       });
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao processar pedido",
+        title: t('common.error'),
+        description: t('userDetail.requests.errorProcessing'),
         variant: "destructive"
       });
     }
@@ -163,34 +162,22 @@ const AdminUserDetail = () => {
 
   const handleEditProfile = () => {
     toast({
-      title: "Editar Perfil",
-      description: "Funcionalidade de edição será implementada em breve."
+      title: t('userDetail.editProfile'),
+      description: t('userDetail.editProfileComingSoon')
     });
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Ativo</Badge>;
-      case 'inactive':
-        return <Badge variant="destructive">Inativo</Badge>;
-      case 'pending':
-        return <Badge variant="outline" className="text-amber-600 border-amber-300">Pendente</Badge>;
-      case 'approved':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Aprovado</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive">Rejeitado</Badge>;
-      case 'completed':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Concluída</Badge>;
-      case 'scheduled':
-        return <Badge variant="secondary">Agendada</Badge>;
-      case 'cancelled':
-        return <Badge variant="outline">Cancelada</Badge>;
-      case 'no-show':
-        return <Badge variant="destructive">Falta</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
+    return <Badge variant={
+      status === 'active' || status === 'approved' || status === 'completed' ? 'default' :
+      status === 'inactive' || status === 'cancelled' ? 'secondary' :
+      status === 'rejected' ? 'destructive' : 'outline'
+    } className={
+      status === 'active' || status === 'approved' || status === 'completed' ? 'bg-green-100 text-green-800' :
+      status === 'pending' ? 'text-amber-600 border-amber-300' : ''
+    }>
+      {t(`common.status.${status}`)}
+    </Badge>;
   };
 
   const pillarIcons = {
@@ -223,11 +210,11 @@ const AdminUserDetail = () => {
         <div className="container mx-auto">
           <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
+            {t('userDetail.back')}
           </Button>
           <Card>
             <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground">Utilizador não encontrado</p>
+              <p className="text-muted-foreground">{t('userDetail.userNotFound')}</p>
             </CardContent>
           </Card>
         </div>
@@ -237,13 +224,12 @@ const AdminUserDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
+              {t('userDetail.back')}
             </Button>
             
             <div className="flex items-center gap-3">
@@ -267,7 +253,7 @@ const AdminUserDetail = () => {
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={handleEditProfile}>
               <Edit className="h-4 w-4 mr-2" />
-              Editar Perfil
+              {t('userDetail.editProfile')}
             </Button>
             <Button
               variant={user.status === 'active' ? 'destructive' : 'default'}
@@ -276,12 +262,12 @@ const AdminUserDetail = () => {
               {user.status === 'active' ? (
                 <>
                   <PowerOff className="h-4 w-4 mr-2" />
-                  Suspender
+                  {t('userDetail.suspend')}
                 </>
               ) : (
                 <>
                   <Power className="h-4 w-4 mr-2" />
-                  Ativar
+                  {t('userDetail.activate')}
                 </>
               )}
             </Button>
@@ -292,11 +278,11 @@ const AdminUserDetail = () => {
       <div className="container mx-auto p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="profile">Perfil</TabsTrigger>
-            <TabsTrigger value="sessions">Sessões</TabsTrigger>
-            <TabsTrigger value="providers">Prestadores</TabsTrigger>
-            <TabsTrigger value="requests">Pedidos de Troca</TabsTrigger>
-            <TabsTrigger value="history">Histórico</TabsTrigger>
+            <TabsTrigger value="profile">{t('userDetail.tabs.profile')}</TabsTrigger>
+            <TabsTrigger value="sessions">{t('userDetail.tabs.sessions')}</TabsTrigger>
+            <TabsTrigger value="providers">{t('userDetail.tabs.providers')}</TabsTrigger>
+            <TabsTrigger value="requests">{t('userDetail.tabs.requests')}</TabsTrigger>
+            <TabsTrigger value="history">{t('userDetail.tabs.history')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
@@ -305,31 +291,31 @@ const AdminUserDetail = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    Dados Básicos
+                    {t('userDetail.profile.basicData')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label>Nome Completo</Label>
+                    <Label>{t('userDetail.profile.fullName')}</Label>
                     <Input value={user.name} readOnly className="mt-1" />
                   </div>
                   <div>
-                    <Label>Email</Label>
+                    <Label>{t('userDetail.profile.email')}</Label>
                     <Input value={user.email} readOnly className="mt-1" />
                   </div>
                   <div>
-                    <Label>Empresa</Label>
+                    <Label>{t('userDetail.profile.company')}</Label>
                     <Input value={user.company} readOnly className="mt-1" />
                   </div>
                   {user.department && (
                     <div>
-                      <Label>Departamento</Label>
+                      <Label>{t('userDetail.profile.department')}</Label>
                       <Input value={user.department} readOnly className="mt-1" />
                     </div>
                   )}
                   <div>
-                    <Label>Data de Criação</Label>
-                    <Input value={new Date(user.createdAt).toLocaleDateString('pt-PT')} readOnly className="mt-1" />
+                    <Label>{t('userDetail.profile.createdAt')}</Label>
+                    <Input value={formatDate(user.createdAt)} readOnly className="mt-1" />
                   </div>
                 </CardContent>
               </Card>
@@ -338,13 +324,13 @@ const AdminUserDetail = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Settings className="h-5 w-5" />
-                    Ações Administrativas
+                    {t('userDetail.profile.administrativeActions')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Ajustar Sessões da Empresa</Label>
+                      <Label>{t('userDetail.profile.adjustCompanySessions')}</Label>
                       <div className="flex gap-2 mt-1">
                         <Input 
                           type="number" 
@@ -357,7 +343,7 @@ const AdminUserDetail = () => {
                       </div>
                     </div>
                     <div>
-                      <Label>Ajustar Sessões Pessoais</Label>
+                      <Label>{t('userDetail.profile.adjustPersonalSessions')}</Label>
                       <div className="flex gap-2 mt-1">
                         <Input 
                           type="number" 
@@ -373,7 +359,7 @@ const AdminUserDetail = () => {
                   <div>
                     <Button variant="outline" className="w-full">
                       <User className="h-4 w-4 mr-2" />
-                      Impersonar Utilizador (Debug)
+                      {t('userDetail.profile.impersonateUser')}
                     </Button>
                   </div>
                 </CardContent>
@@ -388,21 +374,21 @@ const AdminUserDetail = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Building2 className="h-5 w-5" />
-                      Sessões da Empresa
+                      {t('userDetail.sessions.companySessions')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">Utilizadas</span>
+                        <span className="text-sm">{t('userDetail.sessions.used')}</span>
                         <span className="font-medium">{user.usedCompanySessions}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">Disponíveis</span>
+                        <span className="text-sm">{t('userDetail.sessions.available')}</span>
                         <span className="font-medium">{user.companySessions - user.usedCompanySessions}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">Total</span>
+                        <span className="text-sm">{t('userDetail.sessions.total')}</span>
                         <span className="font-medium">{user.companySessions}</span>
                       </div>
                       <Progress 
@@ -417,21 +403,21 @@ const AdminUserDetail = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <User className="h-5 w-5" />
-                      Sessões Pessoais
+                      {t('userDetail.sessions.personalSessions')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">Utilizadas</span>
+                        <span className="text-sm">{t('userDetail.sessions.used')}</span>
                         <span className="font-medium">{user.usedPersonalSessions}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">Disponíveis</span>
+                        <span className="text-sm">{t('userDetail.sessions.available')}</span>
                         <span className="font-medium">{user.personalSessions - user.usedPersonalSessions}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">Total</span>
+                        <span className="text-sm">{t('userDetail.sessions.total')}</span>
                         <span className="font-medium">{user.personalSessions}</span>
                       </div>
                       <Progress 
@@ -445,7 +431,7 @@ const AdminUserDetail = () => {
 
               <Card className="lg:col-span-2">
                 <CardHeader>
-                  <CardTitle>Timeline de Uso</CardTitle>
+                  <CardTitle>{t('userDetail.sessions.usageTimeline')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
@@ -460,8 +446,8 @@ const AdminUserDetail = () => {
                           borderRadius: '8px'
                         }}
                       />
-                      <Bar dataKey="company" fill="hsl(var(--primary))" name="Empresa" />
-                      <Bar dataKey="personal" fill="hsl(var(--secondary))" name="Pessoal" />
+                      <Bar dataKey="company" fill="hsl(var(--primary))" name={t('userDetail.sessions.companyLabel')} />
+                      <Bar dataKey="personal" fill="hsl(var(--secondary))" name={t('userDetail.sessions.personalLabel')} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -493,19 +479,19 @@ const AdminUserDetail = () => {
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <Label className="text-sm text-muted-foreground">Prestador Atual</Label>
-                          <p className="font-medium">{provider?.name || 'Não definido'}</p>
+                          <Label className="text-sm text-muted-foreground">{t('userDetail.requests.currentProvider')}</Label>
+                          <p className="font-medium">{provider?.name || t('userDetail.providers.noneAssigned')}</p>
                         </div>
                         {hasChangeRequest && (
                           <div className="flex items-center gap-2">
                             <Badge variant="outline" className="text-amber-600 border-amber-300">
                               <Clock className="h-3 w-3 mr-1" />
-                              Pedido de Troca Pendente
+                              {t('userDetail.providers.changeRequestPending')}
                             </Badge>
                           </div>
                         )}
                         <Button variant="outline" size="sm" className="w-full">
-                          Alterar Prestador
+                          {t('userDetail.providers.assignProvider')}
                         </Button>
                       </div>
                     </CardContent>
@@ -518,12 +504,12 @@ const AdminUserDetail = () => {
           <TabsContent value="requests" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Pedidos de Troca de Prestador</CardTitle>
+                <CardTitle>{t('userDetail.requests.changeRequests')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {user.changeRequests.length === 0 ? (
                   <p className="text-muted-foreground text-center py-8">
-                    Nenhum pedido de troca encontrado
+                    {t('userDetail.requests.noRequests')}
                   </p>
                 ) : (
                   <div className="space-y-4">
@@ -536,16 +522,16 @@ const AdminUserDetail = () => {
                               {getStatusBadge(request.status)}
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              De: <span className="font-medium">{request.currentProvider}</span>
+                              {t('userDetail.requests.currentProvider')}: <span className="font-medium">{request.currentProvider}</span>
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              Para: <span className="font-medium">{request.requestedProvider}</span>
+                              {t('userDetail.requests.requestedProvider')}: <span className="font-medium">{request.requestedProvider}</span>
                             </p>
                             <p className="text-sm">
-                              <strong>Motivo:</strong> {request.reason}
+                              <strong>{t('userDetail.requests.reason')}:</strong> {request.reason}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              Criado em {new Date(request.createdAt).toLocaleDateString('pt-PT')}
+                              {t('userDetail.requests.createdAt')} {formatDate(request.createdAt)}
                             </p>
                           </div>
                           
@@ -556,7 +542,7 @@ const AdminUserDetail = () => {
                                 onClick={() => handleChangeRequestAction(request.id, 'approve')}
                               >
                                 <CheckCircle2 className="h-4 w-4 mr-1" />
-                                Aprovar
+                                {t('userDetail.requests.approve')}
                               </Button>
                               <Button 
                                 size="sm" 
@@ -564,7 +550,7 @@ const AdminUserDetail = () => {
                                 onClick={() => handleChangeRequestAction(request.id, 'reject')}
                               >
                                 <XCircle className="h-4 w-4 mr-1" />
-                                Rejeitar
+                                {t('userDetail.requests.reject')}
                               </Button>
                             </div>
                           )}
@@ -580,37 +566,37 @@ const AdminUserDetail = () => {
           <TabsContent value="history" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Histórico de Sessões</CardTitle>
+                <CardTitle>{t('userDetail.history.sessionHistory')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Pilar</TableHead>
-                      <TableHead>Prestador</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Estado</TableHead>
+                      <TableHead>{t('userDetail.history.date')}</TableHead>
+                      <TableHead>{t('userDetail.history.pillar')}</TableHead>
+                      <TableHead>{t('userDetail.history.provider')}</TableHead>
+                      <TableHead>{t('userDetail.history.type')}</TableHead>
+                      <TableHead>{t('userDetail.history.status')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {user.sessionHistory.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                          Este utilizador ainda não tem sessões
+                          {t('userDetail.history.noHistory')}
                         </TableCell>
                       </TableRow>
                     ) : (
                       user.sessionHistory.map((session) => (
                         <TableRow key={session.id}>
                           <TableCell>
-                            {new Date(session.date).toLocaleDateString('pt-PT')}
+                            {formatDate(session.date)}
                           </TableCell>
                           <TableCell>{session.pillar}</TableCell>
                           <TableCell>{session.provider}</TableCell>
                           <TableCell>
                             <Badge variant={session.type === 'company' ? 'default' : 'secondary'}>
-                              {session.type === 'company' ? 'Empresa' : 'Pessoal'}
+                              {session.type === 'company' ? t('userDetail.history.company') : t('userDetail.history.personal')}
                             </Badge>
                           </TableCell>
                           <TableCell>{getStatusBadge(session.status)}</TableCell>

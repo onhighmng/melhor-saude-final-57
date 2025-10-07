@@ -14,18 +14,286 @@
     "filter": "Filter",
     "actions": "Actions",
     "status": "Status",
-    "company": "Company"
+    "company": "Company",
+    "viewDetails": "View Details",
+    "exportData": "Export Data",
+    "noResults": "No results",
+    "showing": "Showing",
+    "of": "of",
+    "items": "items",
+    "pillars": {
+      "mentalHealth": "Mental Health",
+      "physicalWellness": "Physical Wellness",
+      "financialAssistance": "Financial Assistance",
+      "legalAssistance": "Legal Assistance"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "valid": "Valid",
+      "expired": "Expired",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "noShow": "No-show",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    }
   },
   "userDetail": {
     "editProfile": "Edit Profile",
     "editProfileComingSoon": "Edit functionality will be implemented soon.",
     "errorProcessing": "Error processing request",
-    "statusUpdateError": "Error updating user status"
+    "statusUpdateError": "Error updating user status",
+    "back": "Back",
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "userActivated": "User activated",
+    "userSuspended": "User suspended",
+    "statusUpdated": "Status updated successfully",
+    "userNotFound": "User not found",
+    "loadError": "Error loading user data",
+    "tabs": {
+      "profile": "Profile",
+      "sessions": "Sessions",
+      "providers": "Providers",
+      "requests": "Change Requests",
+      "history": "History"
+    },
+    "profile": {
+      "basicData": "Basic Data",
+      "fullName": "Full Name",
+      "email": "Email",
+      "company": "Company",
+      "department": "Department",
+      "createdAt": "Creation Date",
+      "administrativeActions": "Administrative Actions",
+      "adjustCompanySessions": "Adjust Company Sessions",
+      "adjustPersonalSessions": "Adjust Personal Sessions",
+      "impersonateUser": "Impersonate User (Debug)"
+    },
+    "sessions": {
+      "companySessions": "Company Sessions",
+      "personalSessions": "Personal Sessions",
+      "used": "Used",
+      "available": "Available",
+      "total": "Total",
+      "usageTimeline": "Usage Timeline",
+      "month": "Month",
+      "companyLabel": "Company",
+      "personalLabel": "Personal"
+    },
+    "providers": {
+      "fixedProviders": "Fixed Providers by Pillar",
+      "noneAssigned": "No fixed provider",
+      "assignProvider": "Assign Provider",
+      "changeRequestPending": "Change request pending"
+    },
+    "requests": {
+      "changeRequests": "Provider Change Requests",
+      "pillar": "Pillar",
+      "currentProvider": "Current Provider",
+      "requestedProvider": "Requested Provider",
+      "reason": "Reason",
+      "status": "Status",
+      "createdAt": "Created at",
+      "approve": "Approve",
+      "reject": "Reject",
+      "approved": "Request approved",
+      "rejected": "Request rejected",
+      "actionProcessed": "Action processed successfully",
+      "noRequests": "No change requests",
+      "errorProcessing": "Error processing request"
+    },
+    "history": {
+      "sessionHistory": "Session History",
+      "date": "Date",
+      "pillar": "Pillar",
+      "provider": "Provider",
+      "status": "Status",
+      "type": "Type",
+      "company": "Company",
+      "personal": "Personal",
+      "noHistory": "No session history"
+    }
   },
   "providerDetail": {
     "editProvider": "Edit Provider",
     "editProviderComingSoon": "Edit functionality will be implemented soon.",
-    "statusUpdateError": "Error updating provider status"
+    "statusUpdateError": "Error updating provider status",
+    "backToProviders": "Back to Providers",
+    "providerDetails": "Provider details",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "providerActivated": "Provider activated",
+    "providerDeactivated": "Provider deactivated",
+    "statusUpdated": "Status updated successfully",
+    "providerNotFound": "Provider not found",
+    "providerNotFoundDesc": "The requested provider does not exist or has been removed.",
+    "loadError": "Error loading provider data",
+    "yearsExperience": "years of experience",
+    "website": "Website",
+    "tabs": {
+      "profile": "Profile",
+      "sessions": "Sessions",
+      "schedule": "Schedule",
+      "history": "History",
+      "stats": "Statistics"
+    },
+    "profile": {
+      "personalInfo": "Personal Information",
+      "email": "Email",
+      "phone": "Phone",
+      "languages": "Languages",
+      "biography": "Biography",
+      "qualifications": "Qualifications",
+      "licenseNumber": "License Number",
+      "licenseExpiry": "License Expiry",
+      "specialties": "Specialties",
+      "education": "Education",
+      "degree": "Degree",
+      "institution": "Institution",
+      "year": "Year"
+    },
+    "sessions": {
+      "upcomingBookings": "Upcoming Bookings",
+      "sessionHistory": "Session History",
+      "date": "Date",
+      "time": "Time",
+      "patient": "Patient",
+      "pillar": "Pillar",
+      "duration": "Duration",
+      "status": "Status",
+      "noUpcoming": "No upcoming bookings",
+      "noHistory": "No session history",
+      "minutes": "minutes"
+    },
+    "schedule": {
+      "schedule": "Schedule",
+      "availability": "Availability",
+      "noSchedule": "No schedule configured"
+    },
+    "stats": {
+      "statistics": "Statistics",
+      "monthlyPerformance": "Monthly Performance",
+      "completionRate": "Completion Rate",
+      "totalSessions": "Total Sessions",
+      "completedSessions": "Completed Sessions",
+      "rating": "Rating",
+      "month": "Month",
+      "sessions": "Sessions",
+      "revenue": "Revenue"
+    }
+  },
+  "matching": {
+    "title": "Distribution Rules (Matching)",
+    "subtitle": "Configure how providers are assigned by pillar, weight, and capacity",
+    "simulateDistribution": "Simulate Distribution",
+    "saveChanges": "Save Changes",
+    "rulesSaved": "Rules saved",
+    "rulesSavedDesc": "Matching rules have been successfully updated",
+    "saveError": "Error saving rules",
+    "loadError": "Error loading matching rules",
+    "pillars": {
+      "mentalHealth": "Mental Health",
+      "physicalWellness": "Physical Wellness",
+      "financialAssistance": "Financial Assistance",
+      "legalAssistance": "Legal Assistance"
+    },
+    "summary": {
+      "providers": "providers",
+      "total": "Total",
+      "weight": "Weight",
+      "active": "Active"
+    },
+    "queue": {
+      "queuesByPillar": "Queues by Pillar",
+      "addProvider": "Add Provider",
+      "removeProvider": "Remove",
+      "providerAdded": "Provider added",
+      "providerAddedDesc": "{{name}} has been added to {{pillar}} queue",
+      "providerRemoved": "Provider removed",
+      "providerRemovedDesc": "{{name}} has been removed from queue",
+      "weight": "Weight",
+      "capacity": "Capacity",
+      "status": "Status",
+      "actions": "Actions",
+      "provider": "Provider",
+      "dailyUsage": "Today",
+      "weeklyUsage": "This week",
+      "maxPerDay": "Max/day",
+      "maxPerWeek": "Max/week",
+      "noProviders": "No providers assigned to this pillar yet.",
+      "noProvidersDesc": "Click \"Add Provider\" to get started.",
+      "allAssigned": "All providers are already assigned",
+      "addToQueue": "Add to {{pillar}}"
+    },
+    "simulation": {
+      "started": "Simulation started",
+      "startedDesc": "Distributing 100 sessions across providers according to configured weights...",
+      "distribution": "Simulated Distribution",
+      "distributionDesc": "Based on configured weights, 100 sessions would be distributed as follows:",
+      "expectedSessions": "expected sessions"
+    },
+    "settings": {
+      "globalSettings": "Global Settings",
+      "fairnessWindow": "Fairness Window",
+      "fairnessWindowDesc": "Number of days to consider for fair distribution",
+      "days": "days",
+      "stickinessEnabled": "Stickiness Enabled",
+      "stickinessDesc": "Keep users with the same provider when possible",
+      "summaryStats": "Summary Statistics",
+      "activeProviders": "Active Providers",
+      "avgUtilization": "Average Utilization"
+    }
+  },
+  "changeRequests": {
+    "title": "Provider Change Requests",
+    "subtitle": "Manage user requests for service provider changes",
+    "manageRequests": "Manage Requests",
+    "kpis": {
+      "pendingRequests": "Pending Requests",
+      "awaitingDecision": "Awaiting decision",
+      "slaViolations": "SLA Violations",
+      "violatedThisWeek": "violated this week",
+      "capacityWarnings": "Capacity Warnings",
+      "saturatedProviders": "Saturated providers",
+      "utilizationRate": "Utilization Rate",
+      "avgUtilization": "Average utilization"
+    },
+    "table": {
+      "changeRequests": "Change Requests",
+      "user": "User",
+      "pillar": "Pillar",
+      "currentProvider": "Current Provider",
+      "preferences": "Preferences",
+      "reason": "Reason",
+      "sla": "SLA",
+      "actions": "Actions",
+      "approve": "Approve",
+      "reject": "Reject",
+      "requestInfo": "Request Info",
+      "day": "day",
+      "days": "days",
+      "atMaxCapacity": "At max capacity"
+    },
+    "dialogs": {
+      "rejectRequest": "Reject Request",
+      "rejectRequestDesc": "Provide a reason for rejecting {{name}}'s request.",
+      "provideReason": "Rejection reason...",
+      "confirmRejection": "Confirm Rejection",
+      "requestMoreInfo": "Request More Information",
+      "requestMoreInfoDesc": "Send a message to {{name}} requesting more details.",
+      "whatInfoNeeded": "What additional information do you need...",
+      "sendRequest": "Send Request"
+    },
+    "empty": {
+      "noPending": "No pending requests",
+      "allProcessed": "All change requests have been processed."
+    }
   },
   "users": {
     "title": "Users",
@@ -108,10 +376,10 @@
       "pending": "Pending"
     },
     "pillarNames": {
-      "SM": "SM",
-      "BF": "BF",
-      "AF": "AF",
-      "AJ": "AJ"
+      "SM": "MH",
+      "BF": "PW",
+      "AF": "FA",
+      "AJ": "LA"
     }
   },
   "companies": {
