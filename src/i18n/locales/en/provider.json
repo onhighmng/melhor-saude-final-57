@@ -1,0 +1,11 @@
+{
+  "dashboard": {
+    "title": "Provider Dashboard",
+    "sessionMarkedComplete": "Session marked as completed",
+    "absenceRecorded": "Absence recorded for session"
+  },
+  "profile": {
+    "addSpecialty": "Add specialty",
+    "addLanguage": "Add language"
+  }
+}

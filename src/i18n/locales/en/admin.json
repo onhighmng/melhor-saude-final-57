@@ -1,0 +1,30 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "userDetail": {
+    "editProfile": "Edit Profile",
+    "editProfileComingSoon": "Edit functionality will be implemented soon.",
+    "errorProcessing": "Error processing request",
+    "statusUpdateError": "Error updating user status"
+  },
+  "providerDetail": {
+    "editProvider": "Edit Provider",
+    "editProviderComingSoon": "Edit functionality will be implemented soon.",
+    "statusUpdateError": "Error updating provider status"
+  },
+  "users": {
+    "createUser": "Create New User",
+    "createUserComingSoon": "Functionality in development. You will be able to create users directly soon.",
+    "statusUpdateError": "Error updating user status",
+    "exportHeaders": ["Name", "Email", "Company", "Department", "Company Sessions", "Personal Sessions", "Status", "Creation Date"]
+  }
+}

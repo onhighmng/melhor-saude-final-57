@@ -1,0 +1,11 @@
+{
+  "dashboard": {
+    "title": "Painel do Prestador",
+    "sessionMarkedComplete": "Sessão marcada como concluída",
+    "absenceRecorded": "Falta registada para a sessão"
+  },
+  "profile": {
+    "addSpecialty": "Adicionar especialidade",
+    "addLanguage": "Adicionar idioma"
+  }
+}

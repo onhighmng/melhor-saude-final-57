@@ -9,6 +9,9 @@ import userPt from './locales/pt/user.json';
 import companyPt from './locales/pt/company.json';
 import errorsPt from './locales/pt/errors.json';
 import toastsPt from './locales/pt/toasts.json';
+import specialistPt from './locales/pt/specialist.json';
+import adminPt from './locales/pt/admin.json';
+import providerPt from './locales/pt/provider.json';
 
 // Import English translations
 import commonEn from './locales/en/common.json';
@@ -17,6 +20,9 @@ import userEn from './locales/en/user.json';
 import companyEn from './locales/en/company.json';
 import errorsEn from './locales/en/errors.json';
 import toastsEn from './locales/en/toasts.json';
+import specialistEn from './locales/en/specialist.json';
+import adminEn from './locales/en/admin.json';
+import providerEn from './locales/en/provider.json';
 
 const resources = {
   pt: {
@@ -26,6 +32,9 @@ const resources = {
     company: companyPt,
     errors: errorsPt,
     toasts: toastsPt,
+    specialist: specialistPt,
+    admin: adminPt,
+    provider: providerPt,
   },
   en: {
     common: commonEn,
@@ -34,6 +43,9 @@ const resources = {
     company: companyEn,
     errors: errorsEn,
     toasts: toastsEn,
+    specialist: specialistEn,
+    admin: adminEn,
+    provider: providerEn,
   },
 };
 

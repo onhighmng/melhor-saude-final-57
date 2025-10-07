@@ -1,0 +1,64 @@
+{
+  "dashboard": {
+    "title": "Specialist Dashboard",
+    "subtitle": "Manage escalated conversations and track performance metrics",
+    "loading": "Loading dashboard..."
+  },
+  "analytics": {
+    "totalChats": "Total Conversations",
+    "aiResolvedRate": "AI Resolution Rate",
+    "phoneEscalationRate": "Escalation Rate",
+    "satisfactionRate": "Satisfaction Rate",
+    "last30Days": "Last 30 days",
+    "resolvedWithoutEscalation": "Conversations resolved without escalation",
+    "escalatedToPhone": "Conversations escalated to phone",
+    "satisfiedUsers": "Satisfied users"
+  },
+  "pillarBreakdown": {
+    "title": "Distribution by Pillar",
+    "legal": "Legal",
+    "psychological": "Psychological",
+    "physical": "Physical",
+    "financial": "Financial"
+  },
+  "tabs": {
+    "all": "All",
+    "legal": "Legal",
+    "psychological": "Psychological",
+    "physical": "Physical",
+    "financial": "Financial"
+  },
+  "emptyState": {
+    "title": "No escalated conversations",
+    "description": "There are no escalated conversations in this category at the moment."
+  },
+  "callLog": {
+    "title": "Log Call",
+    "duration": "Duration (minutes)",
+    "outcome": "Outcome",
+    "outcomeResolved": "Resolved",
+    "outcomeSessionBooked": "Session Booked",
+    "outcomeEscalated": "Escalated Further",
+    "notes": "Notes",
+    "notesPlaceholder": "Call details and follow-up actions...",
+    "submit": "Save Call Log",
+    "cancel": "Cancel",
+    "success": "Call logged successfully",
+    "error": "Error logging call"
+  },
+  "chatTranscript": {
+    "title": "Chat Transcript",
+    "user": "User",
+    "bot": "Bot"
+  },
+  "escalatedChat": {
+    "escalatedAt": "Escalated at",
+    "reason": "Reason",
+    "viewTranscript": "View Transcript",
+    "logCall": "Log Call",
+    "callLogged": "Call logged",
+    "duration": "Duration",
+    "outcome": "Outcome",
+    "minutes": "min"
+  }
+}

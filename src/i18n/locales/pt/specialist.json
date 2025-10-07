@@ -1,0 +1,64 @@
+{
+  "dashboard": {
+    "title": "Painel de Especialista",
+    "subtitle": "Gerir conversas escaladas e acompanhar métricas de desempenho",
+    "loading": "A carregar dashboard..."
+  },
+  "analytics": {
+    "totalChats": "Total de Conversas",
+    "aiResolvedRate": "Taxa de Resolução IA",
+    "phoneEscalationRate": "Taxa de Escalação",
+    "satisfactionRate": "Taxa de Satisfação",
+    "last30Days": "Últimos 30 dias",
+    "resolvedWithoutEscalation": "Conversas resolvidas sem escalação",
+    "escalatedToPhone": "Conversas escaladas para telefone",
+    "satisfiedUsers": "Utilizadores satisfeitos"
+  },
+  "pillarBreakdown": {
+    "title": "Distribuição por Pilar",
+    "legal": "Jurídico",
+    "psychological": "Psicológico",
+    "physical": "Físico",
+    "financial": "Financeiro"
+  },
+  "tabs": {
+    "all": "Todos",
+    "legal": "Jurídico",
+    "psychological": "Psicológico",
+    "physical": "Físico",
+    "financial": "Financeiro"
+  },
+  "emptyState": {
+    "title": "Nenhuma conversa escalada",
+    "description": "Não há conversas escaladas nesta categoria no momento."
+  },
+  "callLog": {
+    "title": "Registar Chamada",
+    "duration": "Duração (minutos)",
+    "outcome": "Resultado",
+    "outcomeResolved": "Resolvido",
+    "outcomeSessionBooked": "Sessão Agendada",
+    "outcomeEscalated": "Escalado Novamente",
+    "notes": "Notas",
+    "notesPlaceholder": "Detalhes da chamada e ações de seguimento...",
+    "submit": "Guardar Registo",
+    "cancel": "Cancelar",
+    "success": "Chamada registada com sucesso",
+    "error": "Erro ao registar chamada"
+  },
+  "chatTranscript": {
+    "title": "Transcrição do Chat",
+    "user": "Utilizador",
+    "bot": "Bot"
+  },
+  "escalatedChat": {
+    "escalatedAt": "Escalado em",
+    "reason": "Motivo",
+    "viewTranscript": "Ver Transcrição",
+    "logCall": "Registar Chamada",
+    "callLogged": "Chamada registada",
+    "duration": "Duração",
+    "outcome": "Resultado",
+    "minutes": "min"
+  }
+}

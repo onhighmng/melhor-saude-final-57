@@ -1,0 +1,30 @@
+{
+  "common": {
+    "loading": "A carregar...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "userDetail": {
+    "editProfile": "Editar Perfil",
+    "editProfileComingSoon": "Funcionalidade de edição será implementada em breve.",
+    "errorProcessing": "Erro ao processar pedido",
+    "statusUpdateError": "Erro ao atualizar status do utilizador"
+  },
+  "providerDetail": {
+    "editProvider": "Editar Prestador",
+    "editProviderComingSoon": "Funcionalidade de edição será implementada em breve.",
+    "statusUpdateError": "Erro ao atualizar status do prestador"
+  },
+  "users": {
+    "createUser": "Criar Novo Utilizador",
+    "createUserComingSoon": "Funcionalidade em desenvolvimento. Em breve poderá criar utilizadores diretamente.",
+    "statusUpdateError": "Erro ao atualizar status do utilizador",
+    "exportHeaders": ["Nome", "Email", "Empresa", "Departamento", "Sessões Empresa", "Sessões Pessoais", "Status", "Data Criação"]
+  }
+}
