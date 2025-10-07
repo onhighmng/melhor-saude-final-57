@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Eye, EyeOff, User, Mail, Key, Lock, ArrowLeft, CheckCircle, AlertCircle, Copy, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getInviteCodeByCode, mockInviteCodes } from '@/data/inviteCodesMockData';
+import { generateUUID } from '@/utils/uuid';
 
 type FormStep = 'invite-code' | 'user-details';
 
@@ -117,10 +118,11 @@ export default function RegisterEmployee() {
       // Mark the code as used in mock data
       const codeIndex = mockInviteCodes.findIndex(code => code.code === inviteCode);
       if (codeIndex !== -1) {
+        const newUserId = generateUUID();
         mockInviteCodes[codeIndex] = {
           ...mockInviteCodes[codeIndex],
           status: 'used',
-          issuedToUserId: 'new-user-id',
+          issuedToUserId: newUserId,
           issuedToUserName: email.split('@')[0],
           issuedToUserEmail: email,
           issuedAt: new Date().toISOString(),

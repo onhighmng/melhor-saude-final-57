@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser } from '@/data/mockData';
+import { generateUUID } from '@/utils/uuid';
 
 interface UserProfile {
   id: string;
@@ -86,12 +87,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsLoading(true);
       
+      const newUserId = generateUUID();
       const newUser = {
         ...mockUserWithUserId,
         email,
         name,
-        id: 'new-user-' + Date.now(),
-        user_id: 'new-user-' + Date.now()
+        id: newUserId,
+        user_id: newUserId
       };
       
       setUser({ id: newUser.id, email: newUser.email });

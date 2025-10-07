@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { isValidUUID } from '@/utils/uuid';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -21,7 +22,24 @@ export const useChatSession = (userId: string | undefined) => {
   const { toast } = useToast();
 
   const createSession = useCallback(async () => {
-    if (!userId) return null;
+    if (!userId) {
+      toast({
+        title: 'Error',
+        description: 'User ID is required to start a chat session',
+        variant: 'destructive'
+      });
+      return null;
+    }
+
+    if (!isValidUUID(userId)) {
+      console.error('Invalid user ID format:', userId);
+      toast({
+        title: 'Error',
+        description: 'Invalid user session. Please try logging in again.',
+        variant: 'destructive'
+      });
+      return null;
+    }
 
     const { data, error } = await supabase
       .from('chat_sessions')

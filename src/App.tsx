@@ -167,10 +167,10 @@ const AppWithTracking = () => {
 };
 
 const App = () => (
-  <ErrorBoundary>
-    <TooltipProvider>
-      <BrowserRouter>
-        <AuthProvider>
+  <TooltipProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <ErrorBoundary>
           <SkipLink />
           <Toaster />
           <Sonner />
@@ -179,10 +179,10 @@ const App = () => (
           <PWAInstallPrompt />
           <DemoControlPanel />
           <PerformanceMonitor />
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </ErrorBoundary>
+        </ErrorBoundary>
+      </AuthProvider>
+    </BrowserRouter>
+  </TooltipProvider>
 );
 
 export default App;
