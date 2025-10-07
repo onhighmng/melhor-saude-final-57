@@ -1,7 +1,7 @@
 // Mock data for all entities to replace network calls
 
 export const mockUser = {
-  id: 'mock-user-id',
+  id: '550e8400-e29b-41d4-a716-446655440000',
   name: 'Ana Silva',
   email: 'ana.silva@empresa.co.mz',
   role: 'user' as const,
@@ -12,7 +12,7 @@ export const mockUser = {
 };
 
 export const mockAdminUser = {
-  id: 'mock-admin-id',
+  id: '550e8400-e29b-41d4-a716-446655440001',
   name: 'Carlos Administrador',
   email: 'admin@melhorsaude.co.mz',
   role: 'admin' as const,
@@ -23,7 +23,7 @@ export const mockAdminUser = {
 };
 
 export const mockHRUser = {
-  id: 'mock-hr-id',
+  id: '550e8400-e29b-41d4-a716-446655440002',
   name: 'Maria RH',
   email: 'rh@empresa.co.mz',
   role: 'hr' as const,
@@ -34,7 +34,7 @@ export const mockHRUser = {
 };
 
 export const mockPrestadorUser = {
-  id: 'mock-prestador-id',
+  id: '550e8400-e29b-41d4-a716-446655440003',
   name: 'Dr. João Prestador',
   email: 'joao@prestador.co.mz',
   role: 'prestador' as const,
