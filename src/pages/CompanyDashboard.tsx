@@ -6,13 +6,14 @@ import { mockCompanies } from "@/data/companyMockData";
 import { SeatUsageCard } from "@/components/company/SeatUsageCard";
 import { InviteEmployeeButton } from "@/components/company/InviteEmployeeButton";
 import { InviteEmployeeModal } from "@/components/company/InviteEmployeeModal";
-import { companyUIcopy } from "@/data/companyUIcopy";
 import { companyToasts } from "@/data/companyToastMessages";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function CompanyDashboard() {
   const navigate = useNavigate();
+  const { t } = useTranslation('company');
   const [company] = useState(mockCompanies[0]);
   const [showInviteModal, setShowInviteModal] = useState(false);
 
@@ -34,12 +35,12 @@ export default function CompanyDashboard() {
     };
     
     const csv = [
-      ['Métrica', 'Valor'].join(','),
-      ['Empresa', data.company].join(','),
-      ['Colaboradores Ativos', data.activeEmployees].join(','),
-      ['Total de Contas', data.totalSeats].join(','),
-      ['Plano', data.plan].join(','),
-      ['Data Exportação', data.exportDate].join(',')
+      [t('dashboard.export.metric'), t('dashboard.export.value')].join(','),
+      [t('dashboard.export.company'), data.company].join(','),
+      [t('dashboard.export.activeEmployees'), data.activeEmployees].join(','),
+      [t('dashboard.export.totalSeats'), data.totalSeats].join(','),
+      [t('dashboard.export.plan'), data.plan].join(','),
+      [t('dashboard.export.exportDate'), data.exportDate].join(',')
     ].join('\n');
     
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -66,7 +67,7 @@ export default function CompanyDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">{company.name}</h1>
-            <p className="text-muted-foreground">Dashboard de Recursos Humanos</p>
+            <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
           </div>
           
           <InviteEmployeeButton company={company} onInvite={handleInviteEmployee} />
@@ -80,13 +81,13 @@ export default function CompanyDashboard() {
           {/* Active Employees */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Colaboradores Ativos</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.metrics.activeEmployees')}</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{company.seatUsed}</div>
               <p className="text-xs text-muted-foreground">
-                de {company.seatLimit} contas disponíveis
+                {t('dashboard.metrics.ofAccounts', { count: company.seatLimit })}
               </p>
             </CardContent>
           </Card>
@@ -94,13 +95,13 @@ export default function CompanyDashboard() {
           {/* Total Sessions Used */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Sessões Utilizadas</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.metrics.sessionsUsed')}</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">234</div>
               <p className="text-xs text-muted-foreground">
-                +12% desde o mês passado
+                {t('dashboard.metrics.sinceLastMonth', { percent: 12 })}
               </p>
             </CardContent>
           </Card>
@@ -108,13 +109,13 @@ export default function CompanyDashboard() {
           {/* Adoption Rate */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Taxa de Adesão</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.metrics.adoptionRate')}</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">78%</div>
               <p className="text-xs text-muted-foreground">
-                Colaboradores com pelo menos 1 sessão
+                {t('dashboard.metrics.employeesWithSession')}
               </p>
             </CardContent>
           </Card>
@@ -122,13 +123,13 @@ export default function CompanyDashboard() {
           {/* Plan Type */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Plano Atual</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.metrics.currentPlan')}</CardTitle>
               <Building2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold capitalize">{company.planType}</div>
               <p className="text-xs text-muted-foreground">
-                {company.seatLimit} contas incluídas
+                {t('dashboard.metrics.accountsIncluded', { count: company.seatLimit })}
               </p>
             </CardContent>
           </Card>
@@ -138,35 +139,35 @@ export default function CompanyDashboard() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Ações Rápidas</CardTitle>
+              <CardTitle>{t('dashboard.quickActions.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button variant="outline" className="w-full justify-start" onClick={handleViewMonthlyReport}>
-                {companyUIcopy.dashboard.quickActions.viewReport}
+                {t('dashboard.quickActions.viewReport')}
               </Button>
               <Button variant="outline" className="w-full justify-start" onClick={handleExportData}>
-                {companyUIcopy.dashboard.quickActions.exportData}
+                {t('dashboard.quickActions.exportData')}
               </Button>
               <Button variant="outline" className="w-full justify-start" onClick={handleConfigureNotifications}>
-                {companyUIcopy.dashboard.quickActions.configureNotifications}
+                {t('dashboard.quickActions.configureNotifications')}
               </Button>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Próximos Eventos</CardTitle>
+              <CardTitle>{t('dashboard.upcomingEvents.title')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">
-                  Workshop de Bem-estar Mental - 25 Jan
+                  {t('dashboard.upcomingEvents.mentalWellness')}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Sessão de Mindfulness - 30 Jan
+                  {t('dashboard.upcomingEvents.mindfulness')}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Palestra Saúde Financeira - 5 Fev
+                  {t('dashboard.upcomingEvents.financial')}
                 </div>
               </div>
             </CardContent>

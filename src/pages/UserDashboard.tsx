@@ -247,7 +247,7 @@ const UserDashboard = () => {
                       className="w-full text-[#4A90E2] p-0 h-auto mt-2 hover:no-underline"
                       onClick={() => navigate('/user/sessions')}
                     >
-                      +{completedSessions.length - 2} mais
+                      {t('sessions.viewMore', { count: completedSessions.length - 2 })}
                     </Button>
                   )}
                 </>

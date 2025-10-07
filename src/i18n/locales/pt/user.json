@@ -59,7 +59,8 @@
     "startingSoonBadge": "Começar em breve",
     "todayBadge": "Hoje",
     "noUpcoming": "Não tem sessões agendadas",
-    "noHistory": "Ainda não realizou sessões"
+    "noHistory": "Ainda não realizou sessões",
+    "viewMore": "+{{count}} mais"
   },
   "notifications": {
     "title": "Notificações",

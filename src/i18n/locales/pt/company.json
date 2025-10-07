@@ -1,6 +1,7 @@
 {
   "dashboard": {
     "title": "Dashboard RH",
+    "subtitle": "Dashboard de Recursos Humanos",
     "inviteButton": {
       "active": "Convidar Novo Colaborador",
       "limitTooltip": "Limite atingido – Desative contas ou contacte suporte"
@@ -10,19 +11,36 @@
       "reviewAllocation": "Rever Alocação de Vagas"
     },
     "quickActions": {
+      "title": "Ações Rápidas",
       "viewReport": "Ver Relatório Mensal",
       "exportData": "Exportar Dados",
       "configureNotifications": "Configurar Notificações"
     },
-    "upcomingEvents": "Próximos Eventos",
-    "activeEmployees": "Colaboradores Ativos",
-    "sessionsUsed": "Sessões Utilizadas",
-    "adoptionRate": "Taxa de Adesão",
-    "currentPlan": "Plano Atual",
-    "ofAccounts": "de {{count}} contas disponíveis",
-    "sinceLastMonth": "+{{percent}}% desde o mês passado",
-    "employeesWithSession": "Colaboradores com pelo menos 1 sessão",
-    "accountsIncluded": "{{count}} contas incluídas"
+    "upcomingEvents": {
+      "title": "Próximos Eventos",
+      "mentalWellness": "Workshop de Bem-estar Mental - 25 Jan",
+      "mindfulness": "Sessão de Mindfulness - 30 Jan",
+      "financial": "Palestra Saúde Financeira - 5 Fev"
+    },
+    "metrics": {
+      "activeEmployees": "Colaboradores Ativos",
+      "sessionsUsed": "Sessões Utilizadas",
+      "adoptionRate": "Taxa de Adesão",
+      "currentPlan": "Plano Atual",
+      "ofAccounts": "de {{count}} contas disponíveis",
+      "sinceLastMonth": "+{{percent}}% desde o mês passado",
+      "employeesWithSession": "Colaboradores com pelo menos 1 sessão",
+      "accountsIncluded": "{{count}} contas incluídas"
+    },
+    "export": {
+      "metric": "Métrica",
+      "value": "Valor",
+      "company": "Empresa",
+      "activeEmployees": "Colaboradores Ativos",
+      "totalSeats": "Total de Contas",
+      "plan": "Plano",
+      "exportDate": "Data Exportação"
+    }
   },
   "employees": {
     "title": "Colaboradores",

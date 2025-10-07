@@ -1,6 +1,7 @@
 {
   "dashboard": {
     "title": "HR Dashboard",
+    "subtitle": "Human Resources Dashboard",
     "inviteButton": {
       "active": "Invite New Employee",
       "limitTooltip": "Limit reached – Deactivate accounts or contact support"
@@ -10,19 +11,36 @@
       "reviewAllocation": "Review Seat Allocation"
     },
     "quickActions": {
+      "title": "Quick Actions",
       "viewReport": "View Monthly Report",
       "exportData": "Export Data",
       "configureNotifications": "Configure Notifications"
     },
-    "upcomingEvents": "Upcoming Events",
-    "activeEmployees": "Active Employees",
-    "sessionsUsed": "Sessions Used",
-    "adoptionRate": "Adoption Rate",
-    "currentPlan": "Current Plan",
-    "ofAccounts": "of {{count}} accounts available",
-    "sinceLastMonth": "+{{percent}}% since last month",
-    "employeesWithSession": "Employees with at least 1 session",
-    "accountsIncluded": "{{count}} accounts included"
+    "upcomingEvents": {
+      "title": "Upcoming Events",
+      "mentalWellness": "Mental Wellness Workshop - Jan 25",
+      "mindfulness": "Mindfulness Session - Jan 30",
+      "financial": "Financial Health Talk - Feb 5"
+    },
+    "metrics": {
+      "activeEmployees": "Active Employees",
+      "sessionsUsed": "Sessions Used",
+      "adoptionRate": "Adoption Rate",
+      "currentPlan": "Current Plan",
+      "ofAccounts": "of {{count}} accounts available",
+      "sinceLastMonth": "+{{percent}}% since last month",
+      "employeesWithSession": "Employees with at least 1 session",
+      "accountsIncluded": "{{count}} accounts included"
+    },
+    "export": {
+      "metric": "Metric",
+      "value": "Value",
+      "company": "Company",
+      "activeEmployees": "Active Employees",
+      "totalSeats": "Total Accounts",
+      "plan": "Plan",
+      "exportDate": "Export Date"
+    }
   },
   "employees": {
     "title": "Employees",

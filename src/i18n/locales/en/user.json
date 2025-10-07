@@ -59,7 +59,8 @@
     "startingSoonBadge": "Starting Soon",
     "todayBadge": "Today",
     "noUpcoming": "No scheduled sessions",
-    "noHistory": "No sessions completed yet"
+    "noHistory": "No sessions completed yet",
+    "viewMore": "+{{count}} more"
   },
   "notifications": {
     "title": "Notifications",
