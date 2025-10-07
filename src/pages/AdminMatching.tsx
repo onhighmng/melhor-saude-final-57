@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,6 +62,7 @@ interface MatchingRules {
 
 const AdminMatching = () => {
   const { toast } = useToast();
+  const { t } = useTranslation('admin');
   const [matchingRules, setMatchingRules] = useState<MatchingRules>({
     fairnessWindow: 5,
     stickinessEnabled: true,
@@ -76,7 +78,6 @@ const AdminMatching = () => {
   const [showSimulation, setShowSimulation] = useState(false);
   const [availableProviders, setAvailableProviders] = useState<ProviderInQueue[]>([]);
 
-  // Mock data - replace with actual API calls
   const mockProviders: ProviderInQueue[] = [
     {
       id: '1',
@@ -126,25 +127,25 @@ const AdminMatching = () => {
 
   const pillarConfig = {
     'mental-health': {
-      name: 'Saúde Mental',
+      name: t('matching.pillars.mentalHealth'),
       icon: Brain,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50 dark:bg-blue-950'
     },
     'physical-wellness': {
-      name: 'Bem-Estar Físico',
+      name: t('matching.pillars.physicalWellness'),
       icon: Heart,
       color: 'text-red-600',
       bgColor: 'bg-red-50 dark:bg-red-950'
     },
     'financial-assistance': {
-      name: 'Assistência Financeira',
+      name: t('matching.pillars.financialAssistance'),
       icon: DollarSign,
       color: 'text-green-600',
       bgColor: 'bg-green-50 dark:bg-green-950'
     },
     'legal-assistance': {
-      name: 'Assistência Jurídica',
+      name: t('matching.pillars.legalAssistance'),
       icon: Scale,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50 dark:bg-purple-950'
@@ -158,9 +159,7 @@ const AdminMatching = () => {
   const loadMatchingRules = async () => {
     setIsLoading(true);
     try {
-      // Replace with actual API call
       setTimeout(() => {
-        // Organize mock providers by pillar
         const organizedPillars = { ...matchingRules.pillars };
         
         mockProviders.forEach(provider => {
@@ -185,8 +184,8 @@ const AdminMatching = () => {
       }, 1000);
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao carregar regras de matching",
+        title: t('common.error'),
+        description: t('matching.loadError'),
         variant: "destructive"
       });
       setIsLoading(false);
@@ -222,8 +221,11 @@ const AdminMatching = () => {
     setAvailableProviders(prev => prev.filter(p => p.id !== provider.id));
     
     toast({
-      title: "Prestador adicionado",
-      description: `${provider.name} foi adicionado à fila de ${pillarConfig[pillar as keyof typeof pillarConfig].name}`
+      title: t('matching.queue.providerAdded'),
+      description: t('matching.queue.providerAddedDesc', { 
+        name: provider.name, 
+        pillar: pillarConfig[pillar as keyof typeof pillarConfig].name 
+      })
     });
   };
 
@@ -241,22 +243,21 @@ const AdminMatching = () => {
     setAvailableProviders(prev => [...prev, provider]);
     
     toast({
-      title: "Prestador removido",
-      description: `${provider.name} foi removido da fila`
+      title: t('matching.queue.providerRemoved'),
+      description: t('matching.queue.providerRemovedDesc', { name: provider.name })
     });
   };
 
   const saveMatchingRules = async () => {
     try {
-      // Replace with actual API call
       toast({
-        title: "Regras guardadas",
-        description: "As regras de matching foram atualizadas com sucesso"
+        title: t('matching.rulesSaved'),
+        description: t('matching.rulesSavedDesc')
       });
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao guardar regras",
+        title: t('common.error'),
+        description: t('matching.saveError'),
         variant: "destructive"
       });
     }
@@ -265,20 +266,17 @@ const AdminMatching = () => {
   const simulateDistribution = () => {
     setShowSimulation(true);
     toast({
-      title: "Simulação iniciada",
-      description: "A distribuir 100 sessões pelos prestadores de acordo com os pesos configurados..."
+      title: t('matching.simulation.started'),
+      description: t('matching.simulation.startedDesc')
     });
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Ativo</Badge>;
-      case 'inactive':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-600">Inativo</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
+    return <Badge variant={status === 'active' ? 'default' : 'secondary'} className={
+      status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+    }>
+      {t(`common.status.${status}`)}
+    </Badge>;
   };
 
   const getCapacityStatus = (provider: ProviderInQueue) => {
@@ -294,12 +292,11 @@ const AdminMatching = () => {
     }
   };
 
-  // Calculate summary metrics
   const totalActiveProviders = Object.values(matchingRules.pillars).reduce(
     (sum, pillar) => sum + pillar.providers.filter(p => p.status === 'active').length, 0
   );
-  const avgUtilization = 75; // Mock value
-  const pendingChangeRequests = 3; // Mock value
+  const avgUtilization = 75;
+  const pendingChangeRequests = 3;
 
   if (isLoading) {
     return (
@@ -319,22 +316,21 @@ const AdminMatching = () => {
 
   return (
       <div className="min-h-screen bg-background">
-        {/* Header */}
         <header className="bg-card border-b px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Regras de Distribuição (Matching)</h1>
-              <p className="text-sm text-muted-foreground">Configure como os prestadores são atribuídos por pilar, peso e capacidade</p>
+              <h1 className="text-2xl font-bold text-foreground">{t('matching.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('matching.subtitle')}</p>
             </div>
             
             <div className="flex items-center gap-3">
               <Button variant="outline" onClick={simulateDistribution}>
                 <BarChart3 className="h-4 w-4 mr-2" />
-                Simular Distribuição
+                {t('matching.simulateDistribution')}
               </Button>
               <Button onClick={saveMatchingRules}>
                 <Save className="h-4 w-4 mr-2" />
-                Guardar Alterações
+                {t('matching.saveChanges')}
               </Button>
             </div>
           </div>
@@ -358,10 +354,10 @@ const AdminMatching = () => {
                   </CardHeader>
                   <CardContent>
                     <div className={`text-2xl font-bold ${config.color}`}>
-                      {activeCount} prestadores
+                      {activeCount} {t('matching.summary.providers')}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Total: {pillarData.providers.length} | Peso: {pillarData.totalWeight.toFixed(1)}
+                      {t('matching.summary.total')}: {pillarData.providers.length} | {t('matching.summary.weight')}: {pillarData.totalWeight.toFixed(1)}
                     </p>
                   </CardContent>
                 </Card>
@@ -370,11 +366,10 @@ const AdminMatching = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
             <div className="lg:col-span-2">
               <Card className="border-0 shadow-sm">
                 <CardHeader>
-                  <CardTitle>Filas por Pilar</CardTitle>
+                  <CardTitle>{t('matching.queue.queuesByPillar')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Tabs value={selectedPillar} onValueChange={setSelectedPillar}>
@@ -396,7 +391,7 @@ const AdminMatching = () => {
                           <div className="flex items-center gap-2">
                             <h3 className="text-lg font-semibold">{config.name}</h3>
                             <Badge variant="outline">
-                              {matchingRules.pillars[pillarKey].providers.length} prestadores
+                              {matchingRules.pillars[pillarKey].providers.length} {t('matching.summary.providers')}
                             </Badge>
                           </div>
                           
@@ -404,17 +399,17 @@ const AdminMatching = () => {
                             <DialogTrigger asChild>
                               <Button size="sm">
                                 <Plus className="h-4 w-4 mr-2" />
-                                Adicionar Prestador
+                                {t('matching.queue.addProvider')}
                               </Button>
                             </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
-                                <DialogTitle>Adicionar Prestador a {config.name}</DialogTitle>
+                                <DialogTitle>{t('matching.queue.addToQueue', { pillar: config.name })}</DialogTitle>
                               </DialogHeader>
                               <div className="space-y-4">
                                 {availableProviders.length === 0 ? (
                                   <p className="text-muted-foreground text-center py-4">
-                                    Todos os prestadores já estão atribuídos
+                                    {t('matching.queue.allAssigned')}
                                   </p>
                                 ) : (
                                   availableProviders.map(provider => (
@@ -428,7 +423,7 @@ const AdminMatching = () => {
                                         </Avatar>
                                         <div>
                                           <p className="font-medium">{provider.name}</p>
-                                          <p className="text-sm text-muted-foreground">Peso: {provider.weight}</p>
+                                          <p className="text-sm text-muted-foreground">{t('matching.queue.weight')}: {provider.weight}</p>
                                         </div>
                                       </div>
                                       <Button 
@@ -448,18 +443,18 @@ const AdminMatching = () => {
                         {matchingRules.pillars[pillarKey].providers.length === 0 ? (
                           <div className="text-center py-12 text-muted-foreground">
                             <UserPlus className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                            <p>Ainda não há prestadores atribuídos a este pilar.</p>
-                            <p className="text-sm mt-1">Clique em "Adicionar Prestador" para começar.</p>
+                            <p>{t('matching.queue.noProviders')}</p>
+                            <p className="text-sm mt-1">{t('matching.queue.noProvidersDesc')}</p>
                           </div>
                         ) : (
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead>Prestador</TableHead>
-                                <TableHead>Peso</TableHead>
-                                <TableHead>Capacidade</TableHead>
-                                <TableHead>Estado</TableHead>
-                                <TableHead>Ações</TableHead>
+                                <TableHead>{t('matching.queue.provider')}</TableHead>
+                                <TableHead>{t('matching.queue.weight')}</TableHead>
+                                <TableHead>{t('matching.queue.capacity')}</TableHead>
+                                <TableHead>{t('matching.queue.status')}</TableHead>
+                                <TableHead>{t('matching.queue.actions')}</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -502,16 +497,16 @@ const AdminMatching = () => {
                                       <div className="space-y-1">
                                         <div className={`text-sm p-2 rounded ${capacity.bg}`}>
                                           <p className={`font-medium ${capacity.color}`}>
-                                            Hoje: {provider.currentUsage.today}/{provider.maxPerDay}
+                                            {t('matching.queue.dailyUsage')}: {provider.currentUsage.today}/{provider.maxPerDay}
                                           </p>
                                           <p className={`font-medium ${capacity.color}`}>
-                                            Semana: {provider.currentUsage.thisWeek}/{provider.maxPerWeek}
+                                            {t('matching.queue.weeklyUsage')}: {provider.currentUsage.thisWeek}/{provider.maxPerWeek}
                                           </p>
                                         </div>
                                         {capacity.status === 'exceeded' && (
                                           <Badge variant="destructive" className="text-xs">
                                             <AlertTriangle className="h-3 w-3 mr-1" />
-                                            Capacidade excedida
+                                            {t('changeRequests.table.atMaxCapacity')}
                                           </Badge>
                                         )}
                                       </div>
@@ -546,19 +541,17 @@ const AdminMatching = () => {
               </Card>
             </div>
 
-            {/* Settings Sidebar */}
             <div className="space-y-6">
-              {/* Fairness Window */}
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Settings className="h-5 w-5" />
-                    Janela de Justiça
+                    {t('matching.settings.fairnessWindow')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="fairness-window">Últimas atribuições consideradas</Label>
+                    <Label htmlFor="fairness-window">{t('matching.settings.fairnessWindowDesc')}</Label>
                     <div className="flex items-center gap-2 mt-1">
                       <Input
                         id="fairness-window"
@@ -572,14 +565,14 @@ const AdminMatching = () => {
                         }))}
                         className="w-20"
                       />
+                      <span className="text-sm text-muted-foreground">{t('matching.settings.days')}</span>
                       <Tooltip>
                         <TooltipTrigger>
                           <Info className="h-4 w-4 text-muted-foreground" />
                         </TooltipTrigger>
                         <TooltipContent>
                           <p className="max-w-xs">
-                            Evita que o mesmo prestador receba múltiplas sessões consecutivas. 
-                            Considera as últimas N atribuições para equilibrar a distribuição.
+                            {t('matching.settings.fairnessWindowDesc')}
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -588,7 +581,6 @@ const AdminMatching = () => {
                 </CardContent>
               </Card>
 
-              {/* Stickiness */}
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <CardTitle>Stickiness</CardTitle>
@@ -596,10 +588,9 @@ const AdminMatching = () => {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="space-y-2">
-                      <Label>Manter mesmo prestador</Label>
+                      <Label>{t('matching.settings.stickinessEnabled')}</Label>
                       <p className="text-sm text-muted-foreground">
-                        Mantém o mesmo prestador após a 1ª sessão do utilizador, 
-                        exceto se for feita troca aprovada.
+                        {t('matching.settings.stickinessDesc')}
                       </p>
                     </div>
                     <Switch
@@ -613,26 +604,25 @@ const AdminMatching = () => {
                 </CardContent>
               </Card>
 
-              {/* Summary Stats */}
               <Card className="border-0 shadow-sm">
                 <CardHeader>
-                  <CardTitle>Resumo Geral</CardTitle>
+                  <CardTitle>{t('matching.settings.summaryStats')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Prestadores ativos</span>
+                      <span className="text-sm text-muted-foreground">{t('matching.settings.activeProviders')}</span>
                       <Badge variant="secondary">{totalActiveProviders}</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Taxa média de utilização</span>
+                      <span className="text-sm text-muted-foreground">{t('matching.settings.avgUtilization')}</span>
                       <div className="flex items-center gap-2">
                         <Progress value={avgUtilization} className="w-16 h-2" />
                         <span className="text-sm font-medium">{avgUtilization}%</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Pedidos de troca pendentes</span>
+                      <span className="text-sm text-muted-foreground">{t('changeRequests.kpis.pendingRequests')}</span>
                       <Badge variant={pendingChangeRequests > 0 ? "destructive" : "secondary"}>
                         {pendingChangeRequests}
                       </Badge>
@@ -644,15 +634,14 @@ const AdminMatching = () => {
           </div>
         </div>
 
-        {/* Simulation Dialog */}
         <Dialog open={showSimulation} onOpenChange={setShowSimulation}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Simulação de Distribuição</DialogTitle>
+              <DialogTitle>{t('matching.simulation.distribution')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Baseado nas regras atuais e pesos configurados, esta seria a distribuição prevista:
+                {t('matching.simulation.distributionDesc')}
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {Object.entries(pillarConfig).map(([key, config]) => {
