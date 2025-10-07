@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Copy, Download, Plus, Search, Share, QrCode } from 'lucide-react';
-import { companyUIcopy } from '@/data/companyUIcopy';
+import { useTranslation } from 'react-i18next';
+import { formatDateTime } from '@/utils/dateFormatting';
 import { companyToasts } from '@/data/companyToastMessages';
 import { 
   InviteCode, 
@@ -18,6 +19,7 @@ import {
 } from '@/data/inviteCodesMockData';
 
 export default function CompanyInvites() {
+  const { t } = useTranslation('company');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
@@ -97,40 +99,34 @@ export default function CompanyInvites() {
   const getStatusBadge = (status: InviteCode['status']) => {
     switch (status) {
       case 'active':
-        return <Badge variant="secondary">{companyUIcopy.inviteCodes.status.active}</Badge>;
+        return <Badge variant="secondary">{t('invites.status.active')}</Badge>;
       case 'used':
-        return <Badge variant="default">{companyUIcopy.inviteCodes.status.used}</Badge>;
+        return <Badge variant="default">{t('invites.status.used')}</Badge>;
       case 'revoked':
-        return <Badge variant="destructive">{companyUIcopy.inviteCodes.status.revoked}</Badge>;
+        return <Badge variant="destructive">{t('invites.status.revoked')}</Badge>;
       default:
-        return <Badge variant="outline">Desconhecido</Badge>;
+        return <Badge variant="outline">{t('settings.customFields.unknown')}</Badge>;
     }
   };
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '—';
-    return new Date(dateString).toLocaleDateString('pt-PT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatDateTime(dateString);
   };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Códigos de Convite</h1>
-        <p className="text-muted-foreground">Gerir convites para colaboradores da empresa</p>
+        <h1 className="text-3xl font-bold">{t('invites.title')}</h1>
+        <p className="text-muted-foreground">{t('invites.subtitle')}</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Lugares Comprados</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('invites.stats.purchased')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{seatsStats?.purchased || 0}</div>
@@ -139,7 +135,7 @@ export default function CompanyInvites() {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Lugares Utilizados</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('invites.stats.used')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{seatsStats?.used || 0}</div>
@@ -148,7 +144,7 @@ export default function CompanyInvites() {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Lugares Disponíveis</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('invites.stats.available')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{seatsStats?.available || 0}</div>
@@ -157,7 +153,7 @@ export default function CompanyInvites() {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Códigos Ativos</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('invites.stats.active')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">{activeCodes.length}</div>
@@ -168,7 +164,7 @@ export default function CompanyInvites() {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Ações Rápidas</CardTitle>
+          <CardTitle>{t('invites.quickActions.title')}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           <Button
@@ -177,7 +173,7 @@ export default function CompanyInvites() {
             variant="outline"
           >
             <Copy className="h-4 w-4 mr-2" />
-            {companyUIcopy.inviteCodes.actions.copyActive} ({activeCodes.length})
+            {t('invites.actions.copyActive')} ({activeCodes.length})
           </Button>
           
           <Button
@@ -186,7 +182,7 @@ export default function CompanyInvites() {
             variant="outline"
           >
             <Plus className="h-4 w-4 mr-2" />
-            {loading ? 'A gerar...' : companyUIcopy.inviteCodes.actions.generate}
+            {loading ? t('invites.generating') : t('invites.actions.generate')}
           </Button>
           
           <Button variant="outline" onClick={() => {
@@ -213,7 +209,7 @@ export default function CompanyInvites() {
             companyToasts.dataExported();
           }}>
             <Download className="h-4 w-4 mr-2" />
-            {companyUIcopy.inviteCodes.actions.export}
+            {t('invites.actions.export')}
           </Button>
         </CardContent>
       </Card>
@@ -221,7 +217,7 @@ export default function CompanyInvites() {
       {/* Helper Text */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-blue-800 text-sm">
-          <strong>{companyUIcopy.inviteCodes.banner}</strong>
+          <strong>{t('invites.banner')}</strong>
         </p>
       </div>
 
@@ -230,7 +226,7 @@ export default function CompanyInvites() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por código ou utilizador..."
+            placeholder={t('invites.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 w-full sm:w-[300px]"
@@ -239,13 +235,13 @@ export default function CompanyInvites() {
         
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtrar por estado" />
+            <SelectValue placeholder={t('invites.filter.placeholder')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os estados</SelectItem>
-            <SelectItem value="active">Ativo</SelectItem>
-            <SelectItem value="used">Utilizado</SelectItem>
-            <SelectItem value="revoked">Revogado</SelectItem>
+            <SelectItem value="all">{t('invites.filter.all')}</SelectItem>
+            <SelectItem value="active">{t('invites.filter.active')}</SelectItem>
+            <SelectItem value="used">{t('invites.filter.used')}</SelectItem>
+            <SelectItem value="revoked">{t('invites.filter.revoked')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -257,8 +253,8 @@ export default function CompanyInvites() {
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">
                 {inviteCodes.length === 0 
-                  ? "Sem códigos de convite. Clique em 'Gerar códigos em falta' para criar convites."
-                  : "Nenhum código encontrado com os filtros atuais."
+                  ? t('invites.empty.noCodes')
+                  : t('invites.empty.noResults')
                 }
               </p>
             </div>
@@ -266,11 +262,11 @@ export default function CompanyInvites() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Código</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Utilizado por</TableHead>
-                  <TableHead>Data de Utilização</TableHead>
-                  <TableHead>Ações</TableHead>
+                  <TableHead>{t('invites.table.code')}</TableHead>
+                  <TableHead>{t('invites.table.status')}</TableHead>
+                  <TableHead>{t('invites.table.usedBy')}</TableHead>
+                  <TableHead>{t('invites.table.usedAt')}</TableHead>
+                  <TableHead>{t('invites.table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -312,16 +308,16 @@ export default function CompanyInvites() {
                             variant="ghost"
                             onClick={() => handleCopyInviteLink(code.code)}
                             className="h-8 w-8 p-0"
-                            title={companyUIcopy.inviteCodes.actions.copyLink}
+                            title={t('invites.actions.copyLink')}
                           >
                             <Share className="h-3 w-3" />
                           </Button>
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => companyToasts.actionFailed("gerar QR Code – funcionalidade em breve")}
+                            onClick={() => companyToasts.actionFailed(t('invites.actions.qrCode'))}
                             className="h-8 w-8 p-0"
-                            title={companyUIcopy.inviteCodes.actions.qrCode}
+                            title={t('invites.actions.qrCode')}
                           >
                             <QrCode className="h-3 w-3" />
                           </Button>

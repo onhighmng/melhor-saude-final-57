@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import { formatDate, formatDateTime, formatTime } from "@/utils/dateFormatting";
 import { 
   ArrowLeft,
   Calendar,
@@ -96,36 +98,36 @@ const getStatusIcon = (status: string) => {
   }
 };
 
-const getStatusText = (status: string) => {
-  switch (status) {
-    case "completed": return "Concluída";
-    case "cancelled": return "Cancelada";
-    case "no_show": return "Falta";
-    case "scheduled": return "Agendada";
-    default: return status;
-  }
-};
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "completed": return "bg-green-100 text-green-800 border-green-200";
-    case "cancelled": return "bg-red-100 text-red-800 border-red-200";
-    case "no_show": return "bg-orange-100 text-orange-800 border-orange-200";
-    case "scheduled": return "bg-blue-100 text-blue-800 border-blue-200";
-    default: return "bg-gray-100 text-gray-800 border-gray-200";
-  }
-};
-
 const CompanyEmployeeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation('company');
   const [employee] = useState<EmployeeDetail>(mockEmployee);
   const [newCompanySessions, setNewCompanySessions] = useState(employee.companySessions);
   const [newPersonalSessions, setNewPersonalSessions] = useState(employee.personalSessions);
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "completed": return t('employeeDetail.status.completed');
+      case "cancelled": return t('employeeDetail.status.cancelled');
+      case "no_show": return t('employeeDetail.status.noShow');
+      case "scheduled": return t('employeeDetail.status.scheduled');
+      default: return status;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed": return "bg-green-100 text-green-800 border-green-200";
+      case "cancelled": return "bg-red-100 text-red-800 border-red-200";
+      case "no_show": return "bg-orange-100 text-orange-800 border-orange-200";
+      case "scheduled": return "bg-blue-100 text-blue-800 border-blue-200";
+      default: return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
   const handleAdjustQuotas = () => {
-    // In a real app, this would update the backend
     console.log("Adjusting quotas:", { 
       employeeId: id,
       companySessions: newCompanySessions,
@@ -133,18 +135,17 @@ const CompanyEmployeeDetail = () => {
     });
     
     toast({
-      title: "Quotas ajustadas",
-      description: `Quotas atualizadas para ${employee.name}`,
+      title: t('employeeDetail.toasts.quotasAdjusted'),
+      description: t('employeeDetail.toasts.quotasUpdated', { name: employee.name }),
     });
   };
 
   const handleRevokeAccess = () => {
-    // In a real app, this would revoke access
     console.log("Revoking access for employee:", id);
     
     toast({
-      title: "Acesso revogado",
-      description: `Acesso revogado para ${employee.name}`,
+      title: t('employeeDetail.toasts.accessRevoked'),
+      description: t('employeeDetail.toasts.accessRevokedFor', { name: employee.name }),
       variant: "destructive"
     });
   };
@@ -152,10 +153,8 @@ const CompanyEmployeeDetail = () => {
   const handleExportHistory = () => {
     const csvData = employee.sessionHistory.map(session => ({
       Data: session.date,
-      Estado: session.status === 'completed' ? 'Concluída' : 
-              session.status === 'cancelled' ? 'Cancelada' : 
-              session.status === 'no_show' ? 'Falta' : 'Agendada',
-      Tipo: session.type === 'company' ? 'Empresa' : 'Pessoal'
+      Estado: getStatusText(session.status),
+      Tipo: session.type === 'company' ? t('employeeDetail.history.company') : t('employeeDetail.history.personal')
     }));
 
     const csvContent = [
@@ -173,8 +172,8 @@ const CompanyEmployeeDetail = () => {
     URL.revokeObjectURL(link.href);
     
     toast({
-      title: "Histórico exportado",
-      description: `${csvData.length} sessões exportadas com sucesso.`,
+      title: t('employeeDetail.toasts.historyExported'),
+      description: t('employeeDetail.toasts.sessionsExported', { count: csvData.length }),
     });
   };
 
@@ -192,14 +191,14 @@ const CompanyEmployeeDetail = () => {
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => navigate('/company/employees')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
+            {t('employeeDetail.backButton')}
           </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               {employee.name}
             </h1>
             <p className="text-muted-foreground">
-              Detalhes e histórico do colaborador
+              {t('employeeDetail.subtitle')}
             </p>
           </div>
         </div>
@@ -209,7 +208,7 @@ const CompanyEmployeeDetail = () => {
           {/* Profile Info */}
           <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">Perfil do Colaborador</CardTitle>
+              <CardTitle className="text-lg font-semibold">{t('employeeDetail.profile.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-col items-center text-center">
@@ -225,17 +224,17 @@ const CompanyEmployeeDetail = () => {
                   variant={employee.status === 'active' ? 'default' : 'secondary'}
                   className="mt-2"
                 >
-                  {employee.status === 'active' ? 'Ativo' : 'Inativo'}
+                  {employee.status === 'active' ? t('employeeDetail.status.active') : t('employeeDetail.status.inactive')}
                 </Badge>
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium">Data de entrada:</span>
-                  <span className="text-sm">{new Date(employee.joinDate).toLocaleDateString('pt-PT')}</span>
+                  <span className="text-sm font-medium">{t('employeeDetail.profile.joinDate')}</span>
+                  <span className="text-sm">{formatDate(employee.joinDate)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium">Sessões utilizadas:</span>
+                  <span className="text-sm font-medium">{t('employeeDetail.profile.sessionsUsed')}</span>
                   <span className="text-sm font-medium">{employee.usedSessions} / {employee.totalSessions}</span>
                 </div>
               </div>
@@ -245,24 +244,24 @@ const CompanyEmployeeDetail = () => {
           {/* Session Quotas */}
           <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg font-semibold">Quotas de Sessões</CardTitle>
+              <CardTitle className="text-lg font-semibold">{t('employeeDetail.quotas.title')}</CardTitle>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button size="sm" variant="outline">
                     <Edit3 className="h-4 w-4 mr-2" />
-                    Ajustar
+                    {t('employeeDetail.quotas.adjust')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Ajustar Quotas</DialogTitle>
+                    <DialogTitle>{t('employeeDetail.quotas.dialogTitle')}</DialogTitle>
                     <DialogDescription>
-                      Defina as quotas de sessões empresa e pessoais para {employee.name}.
+                      {t('employeeDetail.quotas.dialogDescription', { name: employee.name })}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="companySessions">Sessões Empresa</Label>
+                      <Label htmlFor="companySessions">{t('employeeDetail.quotas.companySessions')}</Label>
                       <Input
                         id="companySessions"
                         type="number"
@@ -272,7 +271,7 @@ const CompanyEmployeeDetail = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="personalSessions">Sessões Pessoais</Label>
+                      <Label htmlFor="personalSessions">{t('employeeDetail.quotas.personalSessions')}</Label>
                       <Input
                         id="personalSessions"
                         type="number"
@@ -284,7 +283,7 @@ const CompanyEmployeeDetail = () => {
                   </div>
                   <DialogFooter>
                     <Button onClick={handleAdjustQuotas} className="bg-blue-600 hover:bg-blue-700 text-white">
-                      Guardar Alterações
+                      {t('employeeDetail.quotas.saveChanges')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -294,19 +293,19 @@ const CompanyEmployeeDetail = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 bg-blue-50 rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">{employee.companySessions}</div>
-                  <div className="text-sm text-muted-foreground">Sessões Empresa</div>
+                  <div className="text-sm text-muted-foreground">{t('employeeDetail.quotas.companySessions')}</div>
                 </div>
                 <div className="p-4 bg-purple-50 rounded-lg">
                   <div className="text-2xl font-bold text-purple-600">{employee.personalSessions}</div>
-                  <div className="text-sm text-muted-foreground">Sessões Pessoais</div>
+                  <div className="text-sm text-muted-foreground">{t('employeeDetail.quotas.personalSessions')}</div>
                 </div>
               </div>
               
               <div className="pt-4 border-t border-border">
-                <div className="text-sm font-medium mb-2">Utilização Total</div>
+                <div className="text-sm font-medium mb-2">{t('employeeDetail.quotas.totalUsage')}</div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
-                    {employee.usedSessions} de {employee.totalSessions} utilizadas
+                    {t('employeeDetail.quotas.usedOf', { used: employee.usedSessions, total: employee.totalSessions })}
                   </span>
                   <span className="text-sm font-medium">
                     {Math.round((employee.usedSessions / employee.totalSessions) * 100)}%
@@ -323,33 +322,33 @@ const CompanyEmployeeDetail = () => {
         {/* Actions */}
         <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">Ações</CardTitle>
+            <CardTitle className="text-lg font-semibold">{t('employeeDetail.actions.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex gap-4">
               <Button onClick={handleExportHistory} variant="outline">
                 <Download className="h-4 w-4 mr-2" />
-                Exportar Histórico
+                {t('employeeDetail.actions.exportHistory')}
               </Button>
               
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="destructive">
                     <UserX className="h-4 w-4 mr-2" />
-                    Revogar Acesso
+                    {t('employeeDetail.actions.revokeAccess')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Revogar Acesso</DialogTitle>
+                    <DialogTitle>{t('employeeDetail.actions.revokeAccess')}</DialogTitle>
                     <DialogDescription>
-                      Tem a certeza que pretende revogar o acesso de {employee.name}? Esta ação não pode ser revertida.
+                      {t('employeeDetail.actions.revokeConfirm', { name: employee.name })}
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
-                    <Button variant="outline">Cancelar</Button>
+                    <Button variant="outline">{t('employeeDetail.actions.cancel')}</Button>
                     <Button variant="destructive" onClick={handleRevokeAccess}>
-                      Confirmar Revogação
+                      {t('employeeDetail.actions.confirmRevoke')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -363,7 +362,7 @@ const CompanyEmployeeDetail = () => {
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Histórico de Sessões
+              {t('employeeDetail.history.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -377,14 +376,14 @@ const CompanyEmployeeDetail = () => {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="font-medium text-sm">Sessão de Bem-Estar</div>
+                      <div className="font-medium text-sm">{t('employeeDetail.history.session')}</div>
                       <div className="text-xs text-muted-foreground">
-                        {new Date(session.date).toLocaleDateString('pt-PT')} às {new Date(session.date).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                        {formatDate(session.date)} {t('employeeDetail.history.at')} {formatTime(session.date)}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Badge variant={session.type === 'company' ? 'default' : 'secondary'} className="text-xs">
-                        {session.type === 'company' ? 'Empresa' : 'Pessoal'}
+                        {session.type === 'company' ? t('employeeDetail.history.company') : t('employeeDetail.history.personal')}
                       </Badge>
                       <Badge variant="outline" className={`text-xs ${getStatusColor(session.status)}`}>
                         {getStatusText(session.status)}
