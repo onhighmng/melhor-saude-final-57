@@ -14,36 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_invitations: {
-        Row: {
-          created_at: string | null
-          created_by: string | null
-          email: string
-          expires_at: string
-          id: string
-          name: string | null
-          used_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          created_by?: string | null
-          email: string
-          expires_at: string
-          id?: string
-          name?: string | null
-          used_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          created_by?: string | null
-          email?: string
-          expires_at?: string
-          id?: string
-          name?: string | null
-          used_at?: string | null
-        }
-        Relationships: []
-      }
       bookings: {
         Row: {
           booking_date: string
@@ -90,56 +60,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "bookings_prestador_id_fkey"
-            columns: ["prestador_id"]
-            isOneToOne: false
-            referencedRelation: "prestadores"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      change_requests: {
-        Row: {
-          created_at: string | null
-          current_value: string | null
-          field: string
-          field_label: string
-          id: string
-          prestador_id: string | null
-          reason: string | null
-          requested_value: string
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          current_value?: string | null
-          field: string
-          field_label: string
-          id?: string
-          prestador_id?: string | null
-          reason?: string | null
-          requested_value: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          current_value?: string | null
-          field?: string
-          field_label?: string
-          id?: string
-          prestador_id?: string | null
-          reason?: string | null
-          requested_value?: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "change_requests_prestador_id_fkey"
             columns: ["prestador_id"]
             isOneToOne: false
             referencedRelation: "prestadores"
@@ -268,36 +188,6 @@ export type Database = {
         }
         Relationships: []
       }
-      extra_services: {
-        Row: {
-          category: string
-          created_at: string | null
-          description: string | null
-          id: string
-          is_active: boolean | null
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          category: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          category?: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       feedback: {
         Row: {
           category: string | null
@@ -411,41 +301,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
-      }
-      service_requests: {
-        Row: {
-          created_at: string | null
-          id: string
-          service_id: string | null
-          status: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          service_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          service_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_requests_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "extra_services"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       sessions: {
         Row: {
