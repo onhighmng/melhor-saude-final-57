@@ -17,6 +17,7 @@ const UserDashboard = () => {
   const { upcomingBookings, allBookings, formatPillarName } = useBookings();
   const { t } = useTranslation('user');
   const { t: tNav } = useTranslation('navigation');
+  const { t: tUser } = useTranslation('user');
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
@@ -93,7 +94,7 @@ const UserDashboard = () => {
                 <Button 
                   size="lg" 
                   className="flex-1 px-6 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white"
-                  onClick={() => navigate('/user/book-session')}
+                  onClick={() => navigate('/user/book')}
                 >
                   <MessageSquare className="mr-2 h-5 w-5" />
                   {tNav('actions.talkToSpecialist')}
@@ -207,8 +208,8 @@ const UserDashboard = () => {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-sm text-muted-foreground mb-4">{t('sessions.noUpcoming')}</p>
-                  <Button onClick={() => navigate('/user/book')} variant="outline">
-                    {tNav('dashboard.ctaBookSession')}
+                  <Button onClick={() => navigate('/user/book-session')} variant="outline">
+                    {tUser('dashboard.ctaBookSession')}
                   </Button>
                 </div>
               )}
@@ -253,8 +254,8 @@ const UserDashboard = () => {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-sm text-muted-foreground mb-4">{t('sessions.noHistory')}</p>
-                  <Button onClick={() => navigate('/user/book')} variant="outline" size="sm">
-                    {tNav('dashboard.ctaBookSession')}
+                  <Button onClick={() => navigate('/user/book-session')} variant="outline" size="sm">
+                    {tUser('dashboard.ctaBookSession')}
                   </Button>
                 </div>
               )}
