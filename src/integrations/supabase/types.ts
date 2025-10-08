@@ -17,47 +17,69 @@ export type Database = {
       bookings: {
         Row: {
           booking_date: string
+          booking_source: string | null
+          chat_session_id: string | null
           created_at: string | null
           id: string
           meeting_link: string | null
           meeting_platform: string | null
           notes: string | null
           pillar_specialties: string[] | null
+          prediagnostic_completed: boolean | null
+          prediagnostic_summary: Json | null
           prestador_id: string | null
           session_type: string | null
           status: string | null
+          topic: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           booking_date: string
+          booking_source?: string | null
+          chat_session_id?: string | null
           created_at?: string | null
           id?: string
           meeting_link?: string | null
           meeting_platform?: string | null
           notes?: string | null
           pillar_specialties?: string[] | null
+          prediagnostic_completed?: boolean | null
+          prediagnostic_summary?: Json | null
           prestador_id?: string | null
           session_type?: string | null
           status?: string | null
+          topic?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           booking_date?: string
+          booking_source?: string | null
+          chat_session_id?: string | null
           created_at?: string | null
           id?: string
           meeting_link?: string | null
           meeting_platform?: string | null
           notes?: string | null
           pillar_specialties?: string[] | null
+          prediagnostic_completed?: boolean | null
+          prediagnostic_summary?: Json | null
           prestador_id?: string | null
           session_type?: string | null
           status?: string | null
+          topic?: string | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_chat_session_id_fkey"
+            columns: ["chat_session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_prestador_id_fkey"
             columns: ["prestador_id"]

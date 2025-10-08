@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 interface PrestadorProfileData {
   id: string;
@@ -66,6 +67,7 @@ const availableLanguages = [
 ];
 
 export default function PrestadorProfile() {
+  const { t } = useTranslation('provider');
   const [profile, setProfile] = useState<PrestadorProfileData>(mockProfileData);
   const [isEditing, setIsEditing] = useState(false);
   const [newSpecialty, setNewSpecialty] = useState('');
@@ -308,7 +310,7 @@ export default function PrestadorProfile() {
                   <div className="flex gap-2">
                     <Select value={newSpecialty} onValueChange={setNewSpecialty}>
                       <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="Adicionar especialidade" />
+                        <SelectValue placeholder={t('provider.profile.addSpecialty', { ns: 'provider' })} />
                       </SelectTrigger>
                       <SelectContent>
                         {availableSpecialties
@@ -361,7 +363,7 @@ export default function PrestadorProfile() {
                   <div className="flex gap-2">
                     <Select value={newLanguage} onValueChange={setNewLanguage}>
                       <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="Adicionar idioma" />
+                        <SelectValue placeholder={t('provider.profile.addLanguage', { ns: 'provider' })} />
                       </SelectTrigger>
                       <SelectContent>
                         {availableLanguages
@@ -437,12 +439,12 @@ export default function PrestadorProfile() {
                     className="w-full gap-2"
                   >
                     <Upload className="h-4 w-4" />
-                    {profile.documentsUploaded ? 'Atualizar Documentos' : 'Enviar Documentos'}
+                    {profile.documentsUploaded ? t('provider.profile.updateDocuments', { ns: 'provider' }) : t('provider.profile.uploadDocuments', { ns: 'provider' })}
                   </Button>
                   
                   {profile.documentsUploaded && (
                     <p className="text-xs text-gray-500 mt-2 text-center">
-                      Documentos enviados com sucesso
+                      {t('provider.profile.documentsUploaded', { ns: 'provider' })}
                     </p>
                   )}
                 </div>

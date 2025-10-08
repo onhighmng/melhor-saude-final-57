@@ -44,7 +44,8 @@
     "submit": "Guardar Registo",
     "cancel": "Cancelar",
     "success": "Chamada registada com sucesso",
-    "error": "Erro ao registar chamada"
+    "error": "Erro ao registar chamada",
+    "saving": "A guardar..."
   },
   "chatTranscript": {
     "title": "Transcrição do Chat",

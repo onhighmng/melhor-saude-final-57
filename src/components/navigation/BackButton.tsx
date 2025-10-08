@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface BackButtonProps {
   className?: string;
@@ -9,6 +10,7 @@ interface BackButtonProps {
 
 const BackButton = ({ className = '' }: BackButtonProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('user');
 
   const handleBack = () => {
     console.log('🔙 Navigating back to Minha Saúde');
@@ -21,7 +23,7 @@ const BackButton = ({ className = '' }: BackButtonProps) => {
       className={`inline-flex items-center text-royal-blue hover:text-navy-blue transition-colors duration-200 ${className}`}
     >
       <ArrowLeft className="w-4 h-4 mr-2" />
-      Voltar para Minha Saúde
+      {t('booking.backToMyHealth')}
     </button>
   );
 };

@@ -14,7 +14,8 @@
     "providersSubtitle": "Professionals dedicated to your wellbeing",
     "helpTitle": "Help & Resources",
     "helpSubtitle": "Access exclusive content for your wellbeing",
-    "ctaBookSession": "Book a Session",
+    "ctaBookSession": "Book Session",
+    "ctaTalkSpecialist": "Talk to Specialist",
     "ctaExploreResources": "Explore Wellness Resources",
     "ctaUseQuota": "Use Your Sessions",
     "ctaViewDetails": "View Details",
@@ -36,6 +37,63 @@
     "backToDashboard": "Back to Dashboard",
     "sendResponses": "Send Responses",
     "viewRecommendations": "View Recommendations",
+    "banner": {
+      "title": "Need a 1-on-1 session?",
+      "subtitle": "If the matter is complex or you're not making progress, book a session with one of our specialists.",
+      "action": "Book Session"
+    },
+    "directFlow": {
+      "pillarTitle": "Which of the four pillars would you like to access?",
+      "pillarSubtitle": "Choose the area where you need specialized support",
+      "pillars": {
+        "psicologica": {
+          "title": "Mental Health",
+          "description": "Psychological support and mental wellbeing"
+        },
+        "fisica": {
+          "title": "Physical Wellness",
+          "description": "Physical health and lifestyle"
+        },
+        "financeira": {
+          "title": "Financial Assistance",
+          "description": "Financial consulting and planning"
+        },
+        "juridica": {
+          "title": "Legal Assistance",
+          "description": "Specialized legal consulting"
+        }
+      },
+      "selectTopic": "Select a Topic",
+      "topicSubtitle": "Choose the topic that best describes your situation",
+      "chatTitle": "Tell us more about your situation",
+      "chatSubtitle": "Your answers will help the specialist prepare better.",
+      "chatWelcome": "Hello! I'll help you with {{topic}}. Please tell me more about your situation.",
+      "chatAcknowledge": "Thank you for sharing. You can continue providing more details or book a session when you're ready.",
+      "chatPlaceholder": "Write the details of your situation here...",
+      "conversation": "Conversation",
+      "specialistDirectory": {
+        "title": "Specialists in {{pillar}}",
+        "subtitle": "Choose the ideal professional for your needs",
+        "backToPillars": "Back to pillar selection",
+        "schedule": "Schedule",
+        "experience": "{{years}} of experience",
+        "noSpecialists": "No specialists found for this area.",
+        "chooseAnother": "Choose Another Pillar"
+      },
+      "universalChat": {
+        "title": "Talk to Specialist",
+        "specialists": {
+          "legal": "Legal Specialist",
+          "psychological": "Mental Health Specialist",
+          "physical": "Physical Wellness Specialist",
+          "financial": "Financial Consultant"
+        },
+        "typing": "Typing...",
+        "placeholder": "Write your message...",
+        "welcomeWithPillar": "Hello! I'm here to help you with your situation. Please tell me what brings you here today.",
+        "welcomeGeneral": "Hello! I'm here to help. Can you share with me what brings you here today?"
+      }
+    },
     "specialistChoice": {
       "title": "How Would You Like to Get Help?",
       "subtitle": "Select how you prefer to get legal assistance",
@@ -170,5 +228,43 @@
     "ctaContactSupport": "Talk to Support",
     "noResultCTA": "Talk to Support",
     "articleFooter": "Still have questions? Contact Us"
+  },
+  "topics": {
+    "psychological": {
+      "anxiety": { "name": "Anxiety", "description": "Anxiety management" },
+      "depression": { "name": "Depression", "description": "Support for depression" },
+      "stress": { "name": "Stress", "description": "Stress management" },
+      "burnout": { "name": "Burnout", "description": "Recovery from burnout" },
+      "relationships": { "name": "Relationships", "description": "Relationship issues" },
+      "selfEsteem": { "name": "Self-Esteem", "description": "Building confidence" },
+      "other": { "name": "Other", "description": "Other issues" }
+    },
+    "financial": {
+      "budgeting": { "name": "Budgeting", "description": "Budget management" },
+      "debt": { "name": "Debt", "description": "Debt management" },
+      "savings": { "name": "Savings", "description": "Savings strategies" },
+      "investments": { "name": "Investments", "description": "Investment advice" },
+      "retirement": { "name": "Retirement", "description": "Retirement planning" },
+      "taxes": { "name": "Taxes", "description": "Tax planning" },
+      "other": { "name": "Other", "description": "Other issues" }
+    },
+    "physical": {
+      "fitness": { "name": "Fitness", "description": "Exercise programs" },
+      "nutrition": { "name": "Nutrition", "description": "Nutrition planning" },
+      "sleep": { "name": "Sleep", "description": "Sleep quality" },
+      "pain": { "name": "Pain", "description": "Pain management" },
+      "chronicConditions": { "name": "Chronic Conditions", "description": "Health management" },
+      "preventiveCare": { "name": "Preventive Care", "description": "Prevention" },
+      "other": { "name": "Other", "description": "Other issues" }
+    },
+    "legal": {
+      "employment": { "name": "Employment", "description": "Labor issues" },
+      "contracts": { "name": "Contracts", "description": "Contract analysis" },
+      "family": { "name": "Family", "description": "Family law" },
+      "housing": { "name": "Housing", "description": "Rental issues" },
+      "consumerRights": { "name": "Consumer Rights", "description": "Consumer protection" },
+      "immigration": { "name": "Immigration", "description": "Immigration issues" },
+      "other": { "name": "Other", "description": "Other issues" }
+    }
   }
 }

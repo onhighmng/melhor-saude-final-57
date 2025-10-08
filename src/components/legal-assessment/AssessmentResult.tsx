@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { legalTopics, legalSymptoms } from '@/types/legalAssessment';
 import { MessageCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AssessmentResultProps {
   selectedTopics: string[];
@@ -19,6 +20,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
   onStartChat,
   onBack
 }) => {
+  const { t } = useTranslation();
   const topics = legalTopics.filter(t => selectedTopics.includes(t.id));
   const symptoms = legalSymptoms.filter(s => selectedSymptoms.includes(s.id));
 
@@ -31,7 +33,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
             onClick={onBack}
             className="mb-6"
           >
-            ← Voltar
+            ← {t('buttons.back')}
           </Button>
 
           <div className="text-center mb-8">

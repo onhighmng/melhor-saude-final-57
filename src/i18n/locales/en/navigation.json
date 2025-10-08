@@ -56,6 +56,10 @@
     "dashboard": "Dashboard",
     "sessions": "Sessions",
     "availability": "Availability",
-    "profile": "Profile"
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "common": {
+    "logout": "Logout"
   }
 }

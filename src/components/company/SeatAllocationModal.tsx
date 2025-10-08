@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Company } from "@/data/companyMockData";
 import { Users, AlertCircle } from "lucide-react";
 import { companyToasts } from "@/data/companyToastMessages";
+import { useTranslation } from 'react-i18next';
 
 interface SeatAllocationModalProps {
   open: boolean;
@@ -27,11 +28,12 @@ export function SeatAllocationModal({
   company,
   onUpdate 
 }: SeatAllocationModalProps) {
+  const { t } = useTranslation();
   const [newLimit, setNewLimit] = useState(company.seatLimit);
 
   const handleSubmit = () => {
     if (newLimit < company.seatUsed) {
-      companyToasts.actionFailed("atualizar limite – há mais contas ativas que o novo limite");
+      companyToasts.actionFailed(t('company.errors.seatLimitTooLow', { ns: 'company' }));
       return;
     }
     onUpdate(newLimit);
@@ -90,7 +92,7 @@ export function SeatAllocationModal({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
+            {t('buttons.cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={newLimit < company.seatUsed}>
             Atualizar Limite

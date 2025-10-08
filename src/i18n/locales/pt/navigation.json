@@ -56,6 +56,10 @@
     "dashboard": "Dashboard",
     "sessions": "Sessões",
     "availability": "Disponibilidade",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "logout": "Sair"
+  },
+  "common": {
+    "logout": "Sair"
   }
 }

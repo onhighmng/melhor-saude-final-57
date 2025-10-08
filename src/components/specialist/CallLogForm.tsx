@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SpecialistCallLog } from '@/types/specialist';
 import { Phone, CheckCircle, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CallLogFormProps {
   sessionId: string;
@@ -16,6 +17,7 @@ interface CallLogFormProps {
 }
 
 export const CallLogForm: React.FC<CallLogFormProps> = ({ sessionId, userId, onSubmit, onCancel }) => {
+  const { t } = useTranslation('specialist');
   const [formData, setFormData] = useState({
     call_duration: '',
     outcome: '',
@@ -111,10 +113,10 @@ export const CallLogForm: React.FC<CallLogFormProps> = ({ sessionId, userId, onS
 
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>
-              Cancelar
+              {t('callLog.cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting || !formData.outcome}>
-              {isSubmitting ? 'A guardar...' : 'Guardar Registo'}
+              {isSubmitting ? t('callLog.saving') : t('callLog.submit')}
             </Button>
           </div>
         </form>
