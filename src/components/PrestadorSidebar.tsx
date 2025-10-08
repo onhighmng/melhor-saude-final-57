@@ -1,6 +1,7 @@
 import { Activity, CalendarRange, Clock, IdCard, HelpCircle, FileText, LogOut } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 import {
   Sidebar,
   SidebarContent,
@@ -18,19 +19,21 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SupportContact } from "@/components/ui/support-contact";
 
-const navigationItems = [
-  { title: "Dashboard", url: "/prestador/dashboard", icon: Activity },
-  { title: "Sessões", url: "/prestador/sessoes", icon: CalendarRange },
-  { title: "Disponibilidade", url: "/prestador/availability", icon: Clock },
-  { title: "Perfil", url: "/prestador/profile", icon: IdCard },
-];
-
-const footerItems = [
-  { title: "Suporte", url: "/prestador/sessoes/guia", icon: HelpCircle },
-  { title: "Termos", url: "/terms", icon: FileText },
-];
-
 export function PrestadorSidebar() {
+  const { t } = useTranslation('navigation');
+  
+  const navigationItems = [
+    { title: t('provider.dashboard'), url: "/prestador/dashboard", icon: Activity },
+    { title: t('provider.sessions'), url: "/prestador/sessoes", icon: CalendarRange },
+    { title: t('provider.availability'), url: "/prestador/availability", icon: Clock },
+    { title: t('provider.profile'), url: "/prestador/profile", icon: IdCard },
+  ];
+
+  const footerItems = [
+    { title: t('admin.support'), url: "/prestador/sessoes/guia", icon: HelpCircle },
+    { title: t('company.terms'), url: "/terms", icon: FileText },
+  ];
+
   const { state } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();

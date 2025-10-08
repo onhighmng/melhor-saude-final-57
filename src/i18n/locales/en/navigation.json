@@ -46,6 +46,16 @@
     "greeting": "Hello, {{name}}",
     "profile": "Profile",
     "settings": "Settings",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "dashboard": "Dashboard",
+    "sessions": "My sessions",
+    "resources": "Resources",
+    "help": "Help"
+  },
+  "provider": {
+    "dashboard": "Dashboard",
+    "sessions": "Sessions",
+    "availability": "Availability",
+    "profile": "Profile"
   }
 }

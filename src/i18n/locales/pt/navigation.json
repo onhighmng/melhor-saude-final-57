@@ -46,6 +46,16 @@
     "greeting": "Olá, {{name}}",
     "profile": "Perfil",
     "settings": "Definições",
-    "notifications": "Notificações"
+    "notifications": "Notificações",
+    "dashboard": "Dashboard",
+    "sessions": "Minhas sessões",
+    "resources": "Recursos",
+    "help": "Ajuda"
+  },
+  "provider": {
+    "dashboard": "Dashboard",
+    "sessions": "Sessões",
+    "availability": "Disponibilidade",
+    "profile": "Perfil"
   }
 }

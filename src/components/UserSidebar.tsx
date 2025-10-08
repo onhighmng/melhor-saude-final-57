@@ -39,13 +39,13 @@ export function UserSidebar() {
   const isCollapsed = state === "collapsed"
 
   const mainItems = [
-    { title: "Dashboard", url: "/user/dashboard", icon: LayoutDashboard },
+    { title: t('user.dashboard'), url: "/user/dashboard", icon: LayoutDashboard },
     { title: t('actions.talkToSpecialist'), url: "/user/book", icon: MessageSquare },
-    { title: "Minhas sessões", url: "/user/sessions", icon: CalendarCheck },
-    { title: "Notificações", url: "/user/notifications", icon: Bell, badge: 3 },
-    { title: "Recursos", url: "/user/resources", icon: BookOpen },
-    { title: "Ajuda", url: "/user/help", icon: HelpCircle },
-    { title: "Definições", url: "/user/settings", icon: Settings },
+    { title: t('user.sessions'), url: "/user/sessions", icon: CalendarCheck },
+    { title: t('user.notifications'), url: "/user/notifications", icon: Bell, badge: 3 },
+    { title: t('user.resources'), url: "/user/resources", icon: BookOpen },
+    { title: t('user.help'), url: "/user/help", icon: HelpCircle },
+    { title: t('company.settings'), url: "/user/settings", icon: Settings },
   ]
 
   const isActive = (path: string) => currentPath === path
