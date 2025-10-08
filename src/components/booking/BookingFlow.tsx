@@ -8,6 +8,9 @@ import { BookingCalendar } from '@/components/ui/booking-calendar';
 import { useToast } from '@/hooks/use-toast';
 import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
 import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
+import TopicSelection from '@/components/legal-assessment/TopicSelection';
+import SymptomSelection from '@/components/legal-assessment/SymptomSelection';
+import AssessmentResult from '@/components/legal-assessment/AssessmentResult';
 import { useTranslation } from 'react-i18next';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
@@ -27,11 +30,14 @@ const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation('user');
-  const [currentStep, setCurrentStep] = useState<'pillar' | 'specialist-choice' | 'assessment' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
+  const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [additionalNotes, setAdditionalNotes] = useState('');
 
   const timeSlots = [
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
@@ -41,9 +47,9 @@ const BookingFlow = () => {
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
     
-    // For juridica pillar, show specialist choice first
+    // For juridica pillar, start with topic selection
     if (pillar === 'juridica') {
-      setCurrentStep('specialist-choice');
+      setCurrentStep('topic-selection');
       return;
     }
     
@@ -76,6 +82,26 @@ const BookingFlow = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleTopicToggle = (topicId: string) => {
+    setSelectedTopics(prev =>
+      prev.includes(topicId)
+        ? prev.filter(id => id !== topicId)
+        : [...prev, topicId]
+    );
+  };
+
+  const handleSymptomToggle = (symptomId: string) => {
+    setSelectedSymptoms(prev =>
+      prev.includes(symptomId)
+        ? prev.filter(id => id !== symptomId)
+        : [...prev, symptomId]
+    );
+  };
+
+  const handleNotesChange = (notes: string) => {
+    setAdditionalNotes(notes);
   };
 
   const handleChooseAI = () => {
@@ -139,6 +165,40 @@ const BookingFlow = () => {
     switch (currentStep) {
       case 'pillar':
         return <PillarSelection onPillarSelect={handlePillarSelect} />;
+      
+      case 'topic-selection':
+        return (
+          <TopicSelection
+            selectedTopics={selectedTopics}
+            onTopicToggle={handleTopicToggle}
+            onNext={() => setCurrentStep('symptom-selection')}
+            onBack={() => setCurrentStep('pillar')}
+          />
+        );
+      
+      case 'symptom-selection':
+        return (
+          <SymptomSelection
+            selectedTopics={selectedTopics}
+            selectedSymptoms={selectedSymptoms}
+            onSymptomToggle={handleSymptomToggle}
+            additionalNotes={additionalNotes}
+            onNotesChange={handleNotesChange}
+            onNext={() => setCurrentStep('assessment-result')}
+            onBack={() => setCurrentStep('topic-selection')}
+          />
+        );
+      
+      case 'assessment-result':
+        return (
+          <AssessmentResult
+            selectedTopics={selectedTopics}
+            selectedSymptoms={selectedSymptoms}
+            additionalNotes={additionalNotes}
+            onStartChat={handleChooseAI}
+            onBack={() => setCurrentStep('symptom-selection')}
+          />
+        );
       
       case 'specialist-choice':
         return (
