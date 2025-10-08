@@ -13,8 +13,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const loginSchema = z.object({
-  email: z.string().email('Por favor, insira um email válido'),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  email: z.string().email(),
+  password: z.string().min(6),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -60,7 +60,7 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
       
       if (result.error) {
         toast({
-          title: "Erro no login",
+          title: t('common:auth.messages.loginError'),
           description: result.error,
           variant: "destructive",
         });
@@ -68,8 +68,8 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
       }
       
       toast({
-        title: "Login realizado com sucesso!",
-        description: "Redirecionando...",
+        title: t('common:auth.messages.loginSuccess'),
+        description: t('common:auth.messages.redirecting'),
       });
       
       form.reset();
@@ -79,8 +79,8 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
       
     } catch (error) {
       toast({
-        title: "Erro no login",
-        description: "Email ou palavra-passe incorretos",
+        title: t('common:auth.messages.loginError'),
+        description: t('common:auth.messages.incorrectCredentials'),
         variant: "destructive",
       });
     }
