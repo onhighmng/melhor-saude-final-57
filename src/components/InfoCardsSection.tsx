@@ -25,55 +25,55 @@ const InfoCardsSection = () => {
 
   const pillarFeatures = [
     {
-      title: "Saúde Psicológica",
-      description: "Cuidar da saúde mental é essencial para manter o equilíbrio emocional, a produtividade e a qualidade de vida no ambiente de trabalho.",
+      title: t('infoCards.psychological.title'),
+      description: t('infoCards.psychological.description'),
       image: "/lovable-uploads/8e2df1aa-a1c7-4f91-b724-fc348e3347ee.png",
       features: [
-        "Sessões individuais com psicólogos certificados", 
-        "Atendimento em situações de crise emocional", 
-        "Aconselhamento sobre stress laboral e burnout",
-        "Programas de mindfulness e autocuidado",
-        "Apoio psicológico 24/7",
-        "Terapia de grupo especializada"
+        t('infoCards.psychological.features.0'),
+        t('infoCards.psychological.features.1'),
+        t('infoCards.psychological.features.2'),
+        t('infoCards.psychological.features.3'),
+        t('infoCards.psychological.features.4'),
+        t('infoCards.psychological.features.5')
       ]
     },
     {
-      title: "Saúde Financeira",
-      description: "Reduzir o stress financeiro através de literacia financeira abrangente e apoio prático na gestão económica pessoal e familiar.",
+      title: t('infoCards.financial.title'),
+      description: t('infoCards.financial.description'),
       image: "/lovable-uploads/922a13c5-6f7f-427b-8497-e5ca6c19e48e.png",
       features: [
-        "Sessões com consultores financeiros certificados", 
-        "Apoio na elaboração de orçamentos personalizados", 
-        "Programas educativos sobre gestão de dinheiro",
-        "Orientação para reorganizar finanças",
-        "Planeamento de poupanças e investimentos",
-        "Renegociação de dívidas"
+        t('infoCards.financial.features.0'),
+        t('infoCards.financial.features.1'),
+        t('infoCards.financial.features.2'),
+        t('infoCards.financial.features.3'),
+        t('infoCards.financial.features.4'),
+        t('infoCards.financial.features.5')
       ]
     },
     {
-      title: "Saúde Física",
-      description: "Promover vitalidade e bem-estar através de medicina preventiva, nutrição balanceada e programas de exercício físico adaptados ao ambiente empresarial.",
+      title: t('infoCards.physical.title'),
+      description: t('infoCards.physical.description'),
       image: "/lovable-uploads/fad5a7e1-4fd0-4f9b-8151-d9c8b54fc079.png",
       features: [
-        "Acesso a médicos e nutricionistas qualificados", 
-        "Planos alimentares personalizados", 
-        "Programas de exercício e pausas ativas",
-        "Avaliações de saúde ocupacional",
-        "Fisioterapia e reabilitação",
-        "Rastreios de saúde regulares"
+        t('infoCards.physical.features.0'),
+        t('infoCards.physical.features.1'),
+        t('infoCards.physical.features.2'),
+        t('infoCards.physical.features.3'),
+        t('infoCards.physical.features.4'),
+        t('infoCards.physical.features.5')
       ]
     },
     {
-      title: "Saúde Jurídica e Social", 
-      description: "Segurança jurídica é parte essencial do bem-estar, permitindo decisões informadas e proteção legal completa para colaboradores e suas famílias.",
+      title: t('infoCards.legal.title'),
+      description: t('infoCards.legal.description'),
       image: "/lovable-uploads/f48e9a64-fcb0-4691-baa9-c6007ac1a750.png",
       features: [
-        "Consultoria com advogados especializados", 
-        "Esclarecimento sobre contratos e direitos", 
-        "Acompanhamento preventivo para evitar litígios",
-        "Direito da família e civil",
-        "Direito do trabalho",
-        "Representação legal quando necessário"
+        t('infoCards.legal.features.0'),
+        t('infoCards.legal.features.1'),
+        t('infoCards.legal.features.2'),
+        t('infoCards.legal.features.3'),
+        t('infoCards.legal.features.4'),
+        t('infoCards.legal.features.5')
       ]
     }
   ];
