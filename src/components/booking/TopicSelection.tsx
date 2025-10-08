@@ -3,10 +3,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { getTopicsForPillar, Topic } from '@/data/topicsData';
+import { BookingPillar } from './BookingFlow';
+import { getTopicPillarId } from '@/utils/pillarMapping';
 import * as LucideIcons from 'lucide-react';
 
 interface TopicSelectionProps {
-  pillar: string;
+  pillar: BookingPillar;
   selectedTopic: string | null;
   onTopicSelect: (topicId: string) => void;
   onBack: () => void;
@@ -21,7 +23,10 @@ export const TopicSelection = ({
   onNext 
 }: TopicSelectionProps) => {
   const { t } = useTranslation(['user', 'common']);
-  const topics = getTopicsForPillar(pillar);
+  
+  // Convert BookingPillar to topic pillar ID for data lookup
+  const topicPillarId = getTopicPillarId(pillar);
+  const topics = getTopicsForPillar(topicPillarId);
 
   const getIcon = (iconName: string) => {
     const Icon = (LucideIcons as any)[iconName];
@@ -64,10 +69,10 @@ export const TopicSelection = ({
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg mb-1">
-                    {t(`user:topics.${pillar}.${topic.id}.name`)}
+                    {t(`user:topics.${topicPillarId}.${topic.id}.name`)}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {t(`user:topics.${pillar}.${topic.id}.description`)}
+                    {t(`user:topics.${topicPillarId}.${topic.id}.description`)}
                   </p>
                 </div>
               </div>

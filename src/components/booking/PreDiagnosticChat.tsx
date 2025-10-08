@@ -9,6 +9,8 @@ import { BookingBanner } from './BookingBanner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { BookingPillar } from './BookingFlow';
+import { getTopicPillarId } from '@/utils/pillarMapping';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -16,7 +18,7 @@ interface Message {
 }
 
 interface PreDiagnosticChatProps {
-  pillar: string;
+  pillar: BookingPillar;
   topic: string;
   onBack: () => void;
   onComplete: (sessionId: string) => void;
@@ -51,12 +53,15 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
       console.log('[PreDiagnosticChat] Initializing chat with user:', user);
       console.log('[PreDiagnosticChat] Pillar:', pillar, 'Topic:', topic);
       
+      // Convert BookingPillar to topic pillar ID for database and translations
+      const topicPillarId = getTopicPillarId(pillar);
+      
       // Create chat session - handle guest users by allowing null user_id
       const { data: session, error: sessionError } = await supabase
         .from('chat_sessions')
         .insert({
           user_id: user?.id || null,
-          pillar,
+          pillar: topicPillarId, // Store the topic pillar ID in database
           status: 'active',
           ai_resolution: false,
         })
@@ -72,7 +77,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
       setSessionId(session.id);
 
       // Add welcome message
-      const topicKey = `user:topics.${pillar}.${topic}.name`;
+      const topicKey = `user:topics.${topicPillarId}.${topic}.name`;
       const topicName = t(topicKey);
       console.log('[PreDiagnosticChat] Topic key:', topicKey, 'Translation:', topicName);
       

@@ -71,6 +71,20 @@
       "chatAcknowledge": "Thank you for sharing. You can continue providing more details or book a session when you're ready.",
       "chatPlaceholder": "Write the details of your situation here...",
       "conversation": "Conversation",
+      "providerAssigned": "Specialist Assigned",
+      "providerAssignedSubtitle": "We've found the best specialist for you",
+      "matchFound": "Match Found!",
+      "matchFoundDesc": "Based on your area of need, we've assigned a qualified specialist.",
+      "providerExpertise": "Specialist in {{pillar}} with proven experience.",
+      "selectDateTime": "Select Date & Time",
+      "confirmTitle": "Confirm Your Session",
+      "confirmSubtitle": "Please review your session details before confirming",
+      "sessionDetails": "Session Details",
+      "date": "Date",
+      "time": "Time",
+      "focusArea": "Focus Area",
+      "confirmBooking": "Confirm Booking",
+      "confirming": "Confirming...",
       "specialistDirectory": {
         "title": "Specialists in {{pillar}}",
         "subtitle": "Choose the ideal professional for your needs",
@@ -105,7 +119,8 @@
       "humanButton": "Talk to a Specialist"
     },
     "dateTime": {
-      "title": "Schedule with {{name}} - {{specialty}}",
+      "title": "Choose a Date and Time",
+      "subtitle": "Select the day and time for your {{pillar}} session",
       "selectDateTime": "Select Date and Time",
       "confirmSession": "Confirm Session",
       "selectDateAndTime": "Please select date and time"

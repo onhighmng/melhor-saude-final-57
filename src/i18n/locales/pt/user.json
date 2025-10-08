@@ -71,6 +71,20 @@
       "chatAcknowledge": "Obrigado por partilhar. Pode continuar a dar mais detalhes ou marcar uma sessão quando estiver pronto.",
       "chatPlaceholder": "Escreva aqui os detalhes da sua situação...",
       "conversation": "Conversa",
+      "providerAssigned": "Especialista Atribuído",
+      "providerAssignedSubtitle": "Encontrámos o melhor especialista para si",
+      "matchFound": "Correspondência Encontrada!",
+      "matchFoundDesc": "Com base na sua área de necessidade, atribuímos um especialista qualificado.",
+      "providerExpertise": "Especialista em {{pillar}} com experiência comprovada.",
+      "selectDateTime": "Selecionar Data e Hora",
+      "confirmTitle": "Confirmar a Sua Sessão",
+      "confirmSubtitle": "Por favor, reveja os detalhes da sua sessão antes de confirmar",
+      "sessionDetails": "Detalhes da Sessão",
+      "date": "Data",
+      "time": "Hora",
+      "focusArea": "Área de Foco",
+      "confirmBooking": "Confirmar Marcação",
+      "confirming": "A confirmar...",
       "specialistDirectory": {
         "title": "Especialistas em {{pillar}}",
         "subtitle": "Escolha o profissional ideal para as suas necessidades",
@@ -105,7 +119,8 @@
       "humanButton": "Falar com um Especialista"
     },
     "dateTime": {
-      "title": "Agendar com {{name}} - {{specialty}}",
+      "title": "Escolha uma Data e Horário",
+      "subtitle": "Selecione o dia e horário para a sua sessão de {{pillar}}",
       "selectDateTime": "Selecionar Data e Horário",
       "confirmSession": "Confirmar Sessão",
       "selectDateAndTime": "Por favor selecione data e hora"
