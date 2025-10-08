@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const loginSchema = z.object({
   email: z.string().email('Por favor, insira um email válido'),
@@ -26,6 +27,7 @@ interface LoginDialogProps {
 const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   // Safely get auth context with error handling
   let authContext;
@@ -98,7 +100,7 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Entrar na sua conta</DialogTitle>
+          <DialogTitle>{t('auth.enterYourAccount')}</DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
@@ -108,11 +110,11 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('auth.labels.email')}</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="Email"
+                      placeholder={t('auth.placeholders.emailSimple')}
                       {...field}
                     />
                   </FormControl>
@@ -126,11 +128,11 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Senha</FormLabel>
+                  <FormLabel>{t('auth.labels.password')}</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Palavra-passe"
+                      placeholder={t('auth.placeholders.passwordSimple')}
                       {...field}
                     />
                   </FormControl>
@@ -146,14 +148,14 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
                 onClick={handleClose}
                 className="flex-1"
               >
-                Cancelar
+                {t('buttons.cancel')}
               </Button>
               <Button 
                 type="submit" 
                 className="flex-1"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Entrando...' : 'Entrar'}
+                {form.formState.isSubmitting ? t('auth.buttons.loggingIn') : t('auth.buttons.login')}
               </Button>
             </div>
           </form>
@@ -165,7 +167,7 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
               <div className="w-full border-t border-slate-grey/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">OU</span>
+              <span className="px-4 bg-white text-gray-500">{t('auth.divider')}</span>
             </div>
           </div>
 
@@ -175,8 +177,8 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
             className="w-full mt-4 border-slate-grey/20 hover:bg-slate-grey/10"
             onClick={() => {
               toast({
-                title: "Google OAuth",
-                description: "Funcionalidade em desenvolvimento",
+                title: t('auth.oauth.title'),
+                description: t('auth.oauth.inDevelopment'),
               });
             }}
           >
@@ -186,17 +188,17 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            Entrar com Google
+            {t('auth.buttons.loginWithGoogle')}
           </Button>
         </div>
         
         <div className="text-center text-sm text-muted-foreground">
-          Não tem uma conta?{' '}
+          {t('auth.links.noAccount')}{' '}
           <button 
             className="text-primary hover:underline"
             onClick={handleRegisterRedirect}
           >
-            Criar conta
+            {t('auth.links.createAccount')}
           </button>
         </div>
       </DialogContent>
