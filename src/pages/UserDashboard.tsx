@@ -1,7 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare } from 'lucide-react';
-import { useState } from 'react';
-import { UniversalAIChat } from '@/components/booking/UniversalAIChat';
+import { Calendar, Users, HelpCircle, Video, X, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +17,6 @@ const UserDashboard = () => {
   const { upcomingBookings, allBookings, formatPillarName } = useBookings();
   const { t } = useTranslation('user');
   const { t: tNav } = useTranslation('navigation');
-  const [showChat, setShowChat] = useState(false);
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
@@ -100,15 +97,6 @@ const UserDashboard = () => {
                 >
                   <Calendar className="mr-2 h-5 w-5" />
                   {t('dashboard.ctaBookSession')}
-                </Button>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="px-6 py-6 text-base rounded-xl border-2 border-[#4A90E2] text-[#4A90E2] hover:bg-[#EFF6FF]"
-                  onClick={() => setShowChat(true)}
-                >
-                  <MessageSquare className="mr-2 h-5 w-5" />
-                  {t('dashboard.ctaTalkSpecialist')}
                 </Button>
               </div>
             </CardContent>
@@ -298,8 +286,6 @@ const UserDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {showChat && <UniversalAIChat onClose={() => setShowChat(false)} />}
     </div>
   );
 };
