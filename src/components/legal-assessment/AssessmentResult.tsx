@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { legalTopics, legalSymptoms } from '@/types/legalAssessment';
 import { ChevronLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AssessmentResultProps {
   selectedTopics: string[];
@@ -19,6 +20,8 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
   onStartChat,
   onBack
 }) => {
+  const { t } = useTranslation(['common', 'user']);
+  
   const selectedTopicObjects = legalTopics.filter(topic =>
     selectedTopics.includes(topic.id)
   );
@@ -37,29 +40,29 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
             className="mb-6 gap-2"
           >
             <ChevronLeft className="h-4 w-4" />
-            Voltar
+            {t('common:actions.back')}
           </Button>
 
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-foreground mb-3">
-              Resumo da sua situação
+              {t('user:legal.assessment.title')}
             </h1>
             <p className="text-muted-foreground text-lg">
-              Baseado nas suas respostas, aqui está um resumo do seu caso
+              {t('user:legal.assessment.subtitle')}
             </p>
           </div>
 
           <div className="space-y-6 mb-8">
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle className="text-xl">Áreas Jurídicas Selecionadas</CardTitle>
+                <CardTitle className="text-xl">{t('user:legal.assessment.selectedTopics')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {selectedTopicObjects.map(topic => (
                     <div key={topic.id} className="flex items-center gap-3 p-4 bg-primary/5 rounded-lg border border-primary/20">
                       <span className="text-3xl">{topic.icon}</span>
-                      <span className="font-medium text-foreground">{topic.title}</span>
+                      <span className="font-medium text-foreground">{t(`user:legal.topics.${topic.id}.title`)}</span>
                     </div>
                   ))}
                 </div>
@@ -68,14 +71,14 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
 
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle className="text-xl">Sintomas Identificados</CardTitle>
+                <CardTitle className="text-xl">{t('user:legal.assessment.identifiedSymptoms')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
                   {selectedSymptomObjects.map(symptom => (
                     <li key={symptom.id} className="flex items-start gap-3 py-1">
                       <span className="text-primary mt-1 font-bold">•</span>
-                      <span className="text-sm text-foreground">{symptom.text}</span>
+                      <span className="text-sm text-foreground">{t(`user:legal.symptoms.${symptom.id}.text`)}</span>
                     </li>
                   ))}
                 </ul>
@@ -85,7 +88,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
             {additionalNotes && (
               <Card className="shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-xl">Informações Adicionais</CardTitle>
+                  <CardTitle className="text-xl">{t('user:legal.assessment.additionalInfo')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
@@ -98,7 +101,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
 
           <div className="flex justify-center">
             <Button onClick={onStartChat} size="lg" className="min-w-[280px] text-base">
-              Conversar com Assistente Jurídico
+              {t('user:legal.assessment.startChat')}
             </Button>
           </div>
         </div>

@@ -52,7 +52,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
               {pillar.icon}
             </div>
             <h2 className="font-bold text-lg sm:text-xl lg:text-2xl text-navy-blue leading-tight text-center">
-              {pillar.title}
+              {t(pillar.title)}
             </h2>
           </div>
           <p className="text-sm sm:text-base lg:text-lg text-navy-blue leading-relaxed max-w-2xl mx-auto font-medium px-2">
@@ -77,7 +77,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
               <div className="relative overflow-hidden rounded-xl shadow-lg">
                 <img 
                   src={pillarImages[index]}
-                  alt={pillar.title}
+                  alt={t(pillar.title)}
                   className="w-full h-[150px] sm:h-[200px] lg:h-[250px] object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-blue/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

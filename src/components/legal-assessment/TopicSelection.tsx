@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { legalTopics } from '@/types/legalAssessment';
 import { ChevronLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface TopicSelectionProps {
   selectedTopics: string[];
@@ -17,6 +18,8 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
   onNext,
   onBack
 }) => {
+  const { t } = useTranslation(['common', 'user']);
+  
   return (
     <div className="min-h-screen bg-background">
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
@@ -27,15 +30,15 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
             className="mb-6 gap-2"
           >
             <ChevronLeft className="h-4 w-4" />
-            Voltar
+            {t('common:actions.back')}
           </Button>
 
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-foreground mb-3">
-              Qual área jurídica você precisa de ajuda?
+              {t('user:legal.topicSelection.title')}
             </h1>
             <p className="text-muted-foreground text-lg">
-              Selecione uma ou mais áreas relacionadas à sua situação
+              {t('user:legal.topicSelection.subtitle')}
             </p>
           </div>
 
@@ -53,8 +56,8 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 text-6xl leading-none">{topic.icon}</div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-lg mb-2 text-foreground">{topic.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{topic.description}</p>
+                    <h3 className="font-semibold text-lg mb-2 text-foreground">{t(`user:legal.topics.${topic.id}.title`)}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{t(`user:legal.topics.${topic.id}.description`)}</p>
                   </div>
                   {selectedTopics.includes(topic.id) && (
                     <div className="flex-shrink-0 text-primary text-2xl font-bold">✓</div>
@@ -71,7 +74,7 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
               size="lg"
               className="min-w-[200px] text-base"
             >
-              Continuar
+              {t('common:actions.continue')}
             </Button>
           </div>
         </div>
