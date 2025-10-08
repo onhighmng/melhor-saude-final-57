@@ -357,5 +357,65 @@
       "immigration": { "name": "Immigration", "description": "Immigration and visa issues" },
       "other": { "name": "Other", "description": "Other legal issues" }
     }
+  },
+  "legal": {
+    "topicSelection": {
+      "title": "Which legal area do you need help with?",
+      "subtitle": "Select one or more areas related to your situation"
+    },
+    "assessment": {
+      "title": "Summary of your situation",
+      "subtitle": "Based on your answers, here's a summary of your case",
+      "selectedTopics": "Selected Legal Areas",
+      "identifiedSymptoms": "Identified Symptoms",
+      "additionalInfo": "Additional Information",
+      "startChat": "Talk to Legal Assistant"
+    },
+    "topics": {
+      "family": {
+        "title": "Family Law",
+        "description": "Divorce, custody, alimony"
+      },
+      "labor": {
+        "title": "Labor Law",
+        "description": "Contracts, dismissals, labor rights"
+      },
+      "consumer": {
+        "title": "Consumer Law",
+        "description": "Purchases, warranties, complaints"
+      },
+      "housing": {
+        "title": "Housing Law",
+        "description": "Rental, property, neighborhood"
+      },
+      "debt": {
+        "title": "Debt and Credit",
+        "description": "Loans, negotiations, collection"
+      },
+      "criminal": {
+        "title": "Criminal Law",
+        "description": "Defense, criminal proceedings"
+      }
+    },
+    "symptoms": {
+      "divorce": {
+        "text": "Divorce or separation process"
+      },
+      "custody": {
+        "text": "Child custody issues"
+      },
+      "alimony": {
+        "text": "Alimony"
+      },
+      "unfairDismissal": {
+        "text": "Unfair dismissal"
+      },
+      "unpaidWages": {
+        "text": "Unpaid wages"
+      },
+      "workplaceHarassment": {
+        "text": "Workplace harassment"
+      }
+    }
   }
 }

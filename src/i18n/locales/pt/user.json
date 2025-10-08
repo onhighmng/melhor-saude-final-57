@@ -490,6 +490,65 @@
         "laborLawyer": "Advogado Trabalhista"
       }
     }
-  }
+  },
+  "legal": {
+    "topicSelection": {
+      "title": "Qual área jurídica você precisa de ajuda?",
+      "subtitle": "Selecione uma ou mais áreas relacionadas à sua situação"
+    },
+    "assessment": {
+      "title": "Resumo da sua situação",
+      "subtitle": "Baseado nas suas respostas, aqui está um resumo do seu caso",
+      "selectedTopics": "Áreas Jurídicas Selecionadas",
+      "identifiedSymptoms": "Sintomas Identificados",
+      "additionalInfo": "Informações Adicionais",
+      "startChat": "Conversar com Assistente Jurídico"
+    },
+    "topics": {
+      "family": {
+        "title": "Direito de Família",
+        "description": "Divórcio, guarda, pensão alimentícia"
+      },
+      "labor": {
+        "title": "Direito do Trabalho",
+        "description": "Contratos, demissões, direitos laborais"
+      },
+      "consumer": {
+        "title": "Direito do Consumidor",
+        "description": "Compras, garantias, reclamações"
+      },
+      "housing": {
+        "title": "Direito Habitacional",
+        "description": "Arrendamento, propriedade, vizinhança"
+      },
+      "debt": {
+        "title": "Dívidas e Crédito",
+        "description": "Empréstimos, negociações, cobrança"
+      },
+      "criminal": {
+        "title": "Direito Criminal",
+        "description": "Defesa, processos criminais"
+      }
+    },
+    "symptoms": {
+      "divorce": {
+        "text": "Processo de divórcio ou separação"
+      },
+      "custody": {
+        "text": "Questões de guarda de filhos"
+      },
+      "alimony": {
+        "text": "Pensão alimentícia"
+      },
+      "unfairDismissal": {
+        "text": "Demissão injusta"
+      },
+      "unpaidWages": {
+        "text": "Salários não pagos"
+      },
+      "workplaceHarassment": {
+        "text": "Assédio no trabalho"
+      }
+    }
   }
 }
