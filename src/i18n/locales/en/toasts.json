@@ -1,46 +1,44 @@
 {
-  "success": {
+  "user": {
     "sessionBooked": "Session booked successfully",
     "sessionCancelled": "Session cancelled",
     "sessionRescheduled": "Session rescheduled successfully",
     "feedbackSubmitted": "Feedback submitted. Thank you!",
     "settingsSaved": "Settings saved",
     "calendarAdded": "Session added to calendar",
-    "preDiagnosisComplete": "Pre-diagnosis completed",
-    "employeeInvited": "Employee invited successfully – Credentials copied",
-    "employeeDeactivated": "Employee deactivated – 1 seat freed",
-    "employeeActivated": "Employee activated successfully",
-    "quotaUpdated": "Sessions updated successfully",
-    "codesCopied": "{{count}} code(s) copied to clipboard",
-    "codesGenerated": "{{count}} new code(s) generated",
-    "linkCopied": "Invite link copied to clipboard",
-    "dataExported": "Data exported successfully",
-    "reportScheduled": "Report scheduled for email delivery",
-    "policiesUpdated": "Session policies updated",
-    "accessRevoked": "Access revoked successfully"
-  },
-  "error": {
-    "sessionBookingFailed": "Error booking session. Please try again.",
-    "sessionCancelFailed": "Error cancelling session",
-    "feedbackFailed": "Error submitting feedback",
-    "settingsFailed": "Error saving settings",
-    "loadFailed": "Error loading data",
+    "preDiagnosisComplete": "Pre-diagnosis complete",
+    "sessionBookingFailed": "Failed to book session. Please try again.",
+    "sessionCancelFailed": "Failed to cancel session",
+    "feedbackFailed": "Failed to submit feedback",
+    "settingsFailed": "Failed to save settings",
+    "loadFailed": "Failed to load data",
     "noQuotaAvailable": "No sessions available",
-    "actionFailed": "Error {{action}}. Please try again.",
-    "networkError": "Connection error. Check your internet."
-  },
-  "warning": {
     "lowQuota": "Few sessions remaining",
-    "quotaExpiring": "Your sessions expire soon",
+    "quotaExpiring": "Your sessions are expiring soon",
     "sessionStartingSoon": "Session starts in 5 minutes",
     "unsavedChanges": "You have unsaved changes",
-    "limitReached": "Seat limit reached. Deactivate accounts or contact support.",
-    "employeeActivationBlocked": "Cannot activate – No seats available"
-  },
-  "info": {
     "sessionReminder": "Reminder: Session today at {{time}}",
     "quotaReset": "Your sessions have been renewed",
     "newResourceAvailable": "New resources available",
     "feedbackRequest": "How about rating your last session?"
+  },
+  "company": {
+    "employeeInvited": "Employee invited successfully – Credentials copied",
+    "employeeDeactivated": "Employee deactivated – 1 seat freed",
+    "employeeActivated": "Employee activated successfully",
+    "employeeActivationBlocked": "Cannot activate – No seats available",
+    "quotaUpdated": "Sessions updated successfully",
+    "codesCopied_one": "{{count}} code copied to clipboard",
+    "codesCopied_other": "{{count}} codes copied to clipboard",
+    "codesGenerated_one": "{{count}} new code generated",
+    "codesGenerated_other": "{{count}} new codes generated",
+    "linkCopied": "Invite link copied to clipboard",
+    "dataExported": "Data exported successfully",
+    "reportScheduled": "Report scheduled for email delivery",
+    "settingsSaved": "Changes saved successfully",
+    "policiesUpdated": "Session policies updated",
+    "accessRevoked": "Access revoked successfully",
+    "actionFailed": "Failed to {{action}}. Please try again.",
+    "limitReached": "Seat limit reached. Deactivate accounts or contact support."
   }
 }
