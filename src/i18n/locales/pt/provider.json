@@ -62,5 +62,45 @@
   "profile": {
     "addSpecialty": "Adicionar especialidade",
     "addLanguage": "Adicionar idioma"
+  },
+  "allSessions": {
+    "title": "Todas as Sessões",
+    "subtitle": "Veja e filtre todas as sessões que já realizou ou estão agendadas",
+    "exportCsv": "Exportar CSV",
+    "totalSessions": "Total de Sessões",
+    "completed": "Concluídas",
+    "cancelled": "Canceladas",
+    "noShows": "Faltas",
+    "filters": "Filtros",
+    "startDate": "Data Inicial",
+    "endDate": "Data Final",
+    "status": "Estado",
+    "pillar": "Pilar",
+    "clearFilters": "Limpar Filtros",
+    "allStatuses": "Todos os estados",
+    "allPillars": "Todos os pilares",
+    "sessionsList": "Lista de Sessões",
+    "dateAndTime": "Data e Hora",
+    "user": "Utilizador",
+    "location": "Local",
+    "meetingLink": "Link da Reunião",
+    "actions": "Ações",
+    "addLink": "Adicionar Link",
+    "details": "Detalhes",
+    "noSessionsFound": "Sem sessões encontradas",
+    "noSessionsDescription": "Não existem sessões para os filtros aplicados.",
+    "linkAdded": "Link adicionado",
+    "linkAddedDescription": "O link da reunião foi adicionado com sucesso.",
+    "exportComplete": "Exportação concluída",
+    "exportCompleteDescription": "{{count}} sessões exportadas com sucesso.",
+    "addMeetingLink": "Adicionar Link de Reunião",
+    "meetingPlatform": "Plataforma",
+    "meetingUrl": "URL da Reunião",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "location": {
+    "online": "Online",
+    "inPerson": "Presencial"
   }
 }

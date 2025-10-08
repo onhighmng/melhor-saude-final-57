@@ -62,5 +62,45 @@
   "profile": {
     "addSpecialty": "Add specialty",
     "addLanguage": "Add language"
+  },
+  "allSessions": {
+    "title": "All Sessions",
+    "subtitle": "View and filter all sessions you have conducted or have scheduled",
+    "exportCsv": "Export CSV",
+    "totalSessions": "Total Sessions",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "noShows": "No-Shows",
+    "filters": "Filters",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "status": "Status",
+    "pillar": "Pillar",
+    "clearFilters": "Clear Filters",
+    "allStatuses": "All statuses",
+    "allPillars": "All pillars",
+    "sessionsList": "Sessions List",
+    "dateAndTime": "Date and Time",
+    "user": "User",
+    "location": "Location",
+    "meetingLink": "Meeting Link",
+    "actions": "Actions",
+    "addLink": "Add Link",
+    "details": "Details",
+    "noSessionsFound": "No sessions found",
+    "noSessionsDescription": "There are no sessions for the applied filters.",
+    "linkAdded": "Link added",
+    "linkAddedDescription": "The meeting link was successfully added.",
+    "exportComplete": "Export complete",
+    "exportCompleteDescription": "{{count}} sessions exported successfully.",
+    "addMeetingLink": "Add Meeting Link",
+    "meetingPlatform": "Platform",
+    "meetingUrl": "Meeting URL",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "location": {
+    "online": "Online",
+    "inPerson": "In Person"
   }
 }
