@@ -77,6 +77,20 @@ const AppWithTracking = () => {
     (window as any).__routerNavigate = navigate;
   }, [navigate]);
   
+  // Language change listener to force component re-renders
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      // Force React to re-render all components
+      window.dispatchEvent(new Event('storage'));
+    };
+    
+    window.addEventListener('languageChanged', handleLanguageChange);
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange);
+    };
+  }, []);
+  
   return (
     <>
       

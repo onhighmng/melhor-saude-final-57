@@ -1,4 +1,9 @@
 {
+  "changeLanguage": "Change language from {{currentLang}} to {{targetLang}}",
+  "languageChanged": {
+    "toPT": "Language changed to Portuguese",
+    "toEN": "Language changed to English"
+  },
   "actions": {
     "save": "Save",
     "cancel": "Cancel",

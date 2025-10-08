@@ -1,4 +1,9 @@
 {
+  "changeLanguage": "Mudar idioma de {{currentLang}} para {{targetLang}}",
+  "languageChanged": {
+    "toPT": "Idioma alterado para Português",
+    "toEN": "Idioma alterado para Inglês"
+  },
   "actions": {
     "save": "Guardar",
     "cancel": "Cancelar",

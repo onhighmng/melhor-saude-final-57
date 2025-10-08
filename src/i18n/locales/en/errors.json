@@ -11,5 +11,6 @@
   "notFound": "Resource not found",
   "unknown": "An error occurred",
   "chatInitFailed": "Could not start chat session",
-  "messageSendFailed": "Could not send message"
+  "messageSendFailed": "Could not send message",
+  "languageChangeFailed": "Failed to change language. Please try again."
 }
