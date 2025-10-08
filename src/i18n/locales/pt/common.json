@@ -465,5 +465,78 @@
         "description": "Monitorize os seus resultados e ajuste o plano conforme necessário com apoio contínuo."
       }
     }
+  },
+  "support": {
+    "title": "Centro de Ajuda",
+    "subtitle": "Como podemos ajudar?",
+    "virtualAssistant": "Assistente Virtual",
+    "humanSupport": "Falar com um Humano"
+  },
+  "demo": {
+    "title": "Demo da Plataforma",
+    "subtitle": "Interface de demonstração para apresentação. Explore todas as funcionalidades alternando entre diferentes tipos de utilizador.",
+    "switchUsers": "Alternar Utilizadores",
+    "quickNavigation": "Navegação Rápida",
+    "activeSession": "Sessão Ativa",
+    "connectedAs": "Conectado como",
+    "switchingUser": "Mudando utilizador...",
+    "home": "Início",
+    "logout": "Sair",
+    "currentUser": "Utilizador Atual",
+    "enterAs": "Entrar como",
+    "mainPages": "Páginas Principais",
+    "homePage": "Página Inicial",
+    "helpCenter": "Centro de Ajuda",
+    "support": "Suporte",
+    "terms": "Termos",
+    "footer": "Interface de demonstração com dados mockados • Pronta para apresentação",
+    "pagesOf": "Páginas do",
+    "roles": {
+      "regularUser": "Utilizador Regular",
+      "regularUserDesc": "Acesso a marcação de sessões, histórico e dashboard pessoal",
+      "serviceProvider": "Prestador de Serviços",
+      "serviceProviderDesc": "Gestão de perfil, sessões e disponibilidade",
+      "humanResources": "Recursos Humanos",
+      "humanResourcesDesc": "Gestão de empresa, colaboradores e relatórios",
+      "administrator": "Administrador",
+      "administratorDesc": "Controlo total da plataforma e gestão de todos os utilizadores"
+    }
+  },
+  "helpCenter": {
+    "title": "Olá, em que podemos ajudar? 👋",
+    "subtitle": "Encontre artigos, guias e recursos para o seu bem-estar",
+    "searchPlaceholder": "Pesquise artigos, guias ou testes...",
+    "all": "Todos",
+    "articles": "artigos",
+    "popularArticles": "Artigos Populares",
+    "viewAll": "Ver todos",
+    "backToCategories": "← Voltar às categorias",
+    "views": "visualizações",
+    "categories": {
+      "mental": "Saúde Mental",
+      "mentalDesc": "Artigos de autoajuda, testes de stress, guias de relaxamento e técnicas de bem-estar mental.",
+      "physical": "Bem-Estar Físico",
+      "physicalDesc": "Exercícios práticos, dicas de nutrição, ergonomia e manutenção da saúde física.",
+      "financial": "Assistência Financeira",
+      "financialDesc": "Dicas de orçamento, planeamento financeiro, gestão de dívidas e poupança.",
+      "legal": "Assistência Jurídica",
+      "legalDesc": "Perguntas frequentes, orientações básicas sobre direitos e procedimentos legais."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Bem-vindo de volta",
+      "subtitle": "Entre na sua conta para continuar",
+      "email": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "password": "Palavra-passe",
+      "passwordPlaceholder": "••••••••",
+      "forgotPassword": "Esqueceu a palavra-passe?",
+      "loginButton": "Entrar",
+      "noAccount": "Não tem uma conta?",
+      "register": "Registar agora",
+      "tagline": "Melhor Saúde",
+      "description": "Cuidamos da sua saúde mental e bem-estar com profissionais qualificados."
+    }
   }
 }

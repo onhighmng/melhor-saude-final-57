@@ -465,5 +465,78 @@
         "description": "Monitor your results and adjust the plan as needed with ongoing support."
       }
     }
+  },
+  "support": {
+    "title": "Help Center",
+    "subtitle": "How can we help you?",
+    "virtualAssistant": "Virtual Assistant",
+    "humanSupport": "Talk to a Human"
+  },
+  "demo": {
+    "title": "Platform Demo",
+    "subtitle": "Demo interface for presentation. Explore all features by switching between different user types.",
+    "switchUsers": "Switch Users",
+    "quickNavigation": "Quick Navigation",
+    "activeSession": "Active Session",
+    "connectedAs": "Connected as",
+    "switchingUser": "Switching user...",
+    "home": "Home",
+    "logout": "Logout",
+    "currentUser": "Current User",
+    "enterAs": "Enter as",
+    "mainPages": "Main Pages",
+    "homePage": "Home Page",
+    "helpCenter": "Help Center",
+    "support": "Support",
+    "terms": "Terms",
+    "footer": "Demo interface with mocked data • Ready for presentation",
+    "pagesOf": "Pages of",
+    "roles": {
+      "regularUser": "Regular User",
+      "regularUserDesc": "Access to session booking, history and personal dashboard",
+      "serviceProvider": "Service Provider",
+      "serviceProviderDesc": "Profile management, sessions and availability",
+      "humanResources": "Human Resources",
+      "humanResourcesDesc": "Company management, employees and reports",
+      "administrator": "Administrator",
+      "administratorDesc": "Full platform control and management of all users"
+    }
+  },
+  "helpCenter": {
+    "title": "Hello, how can we help? 👋",
+    "subtitle": "Find articles, guides and resources for your well-being",
+    "searchPlaceholder": "Search articles, guides or tests...",
+    "all": "All",
+    "articles": "articles",
+    "popularArticles": "Popular Articles",
+    "viewAll": "View all",
+    "backToCategories": "← Back to categories",
+    "views": "views",
+    "categories": {
+      "mental": "Mental Health",
+      "mentalDesc": "Self-help articles, stress tests, relaxation guides and mental well-being techniques.",
+      "physical": "Physical Wellness",
+      "physicalDesc": "Practical exercises, nutrition tips, ergonomics and physical health maintenance.",
+      "financial": "Financial Assistance",
+      "financialDesc": "Budget tips, financial planning, debt management and savings.",
+      "legal": "Legal Assistance",
+      "legalDesc": "FAQs, basic guidance on rights and legal procedures."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your account to continue",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "forgotPassword": "Forgot password?",
+      "loginButton": "Sign in",
+      "noAccount": "Don't have an account?",
+      "register": "Register now",
+      "tagline": "Better Health",
+      "description": "We care for your mental health and well-being with qualified professionals."
+    }
   }
 }
