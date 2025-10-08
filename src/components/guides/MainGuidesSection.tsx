@@ -115,9 +115,10 @@ const MainGuidesSection: React.FC = () => {
                     ? 'scale-100 opacity-100 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.3)]' 
                     : 'scale-75 opacity-60 shadow-lg'
                 } ${isInView ? 'ring-2 ring-primary/20' : ''}`}
+                key="final-platform-video"
               >
-                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Final%20Melhor%20Saude%20Platform%20Video.mp4" type="video/mp4" />
-                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Final%20Melhor%20Saude%20Platform%20Video.webm" type="video/webm" />
+                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Final%20Melhor%20Saude%20Platform%20Video.mp4?v=2" type="video/mp4" />
+                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Final%20Melhor%20Saude%20Platform%20Video.webm?v=2" type="video/webm" />
                 {t('guides.browserNotSupported')}
               </video>
             </div>
