@@ -129,10 +129,10 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <div>
-            <h2 className="text-xl font-semibold">{t('user:booking.directFlow.universalChat.title')}</h2>
+            <h2 className="text-xl font-semibold">{t('user:universalChat.intro.title')}</h2>
             {pillar && (
               <p className="text-sm text-muted-foreground capitalize">
-                {t(`user:booking.directFlow.universalChat.specialists.${pillar}`)}
+                {t(`user:universalChat.specialists.${pillar}`)}
               </p>
             )}
           </div>
@@ -180,7 +180,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
                 <div className="bg-muted rounded-lg p-3">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">{t('user:booking.directFlow.universalChat.typing')}</span>
+                    <span className="text-sm">{t('user:universalChat.typing')}</span>
                   </div>
                 </div>
               </div>
@@ -203,7 +203,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={t('user:booking.directFlow.universalChat.placeholder')}
+              placeholder={t('user:universalChat.placeholder')}
               className="resize-none"
               rows={2}
               disabled={isLoading || showPhoneCard}

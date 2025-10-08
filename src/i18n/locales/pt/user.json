@@ -164,6 +164,16 @@
       "title": "Fale com um Especialista",
       "description": "Estamos aqui para o ajudar a encontrar o apoio certo — psicológico, físico, financeiro ou jurídico. Escreva a sua mensagem ou escolha uma das opções abaixo para começar."
     },
+    "specialists": {
+      "juridica": "Especialista Jurídico",
+      "psicologica": "Especialista em Saúde Mental",
+      "fisica": "Especialista em Bem-Estar Físico",
+      "financeira": "Consultor Financeiro",
+      "legal": "Especialista Jurídico",
+      "psychological": "Especialista em Saúde Mental",
+      "physical": "Especialista em Bem-Estar Físico",
+      "financial": "Consultor Financeiro"
+    },
     "prompts": {
       "feeling": "Pode partilhar, em poucas palavras, o que está a sentir ou a precisar neste momento?",
       "identify": "Quer que eu o ajude a identificar o tipo de apoio mais adequado?",
@@ -176,7 +186,9 @@
     },
     "fallback": {
       "message": "Se não tiver a certeza por onde começar, posso fazer algumas perguntas rápidas para o ajudar."
-    }
+    },
+    "typing": "A escrever...",
+    "placeholder": "Escreva a sua mensagem..."
   },
   "milestones": {
     "sessions": "sessões",

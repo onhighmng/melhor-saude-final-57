@@ -148,6 +148,16 @@
       "title": "Talk to a Specialist",
       "description": "We're here to help you find the right support — psychological, physical, financial, or legal. Type your message or choose one of the options below to get started."
     },
+    "specialists": {
+      "juridica": "Legal Specialist",
+      "psicologica": "Mental Health Specialist",
+      "fisica": "Physical Wellness Specialist",
+      "financeira": "Financial Consultant",
+      "legal": "Legal Specialist",
+      "psychological": "Mental Health Specialist",
+      "physical": "Physical Wellness Specialist",
+      "financial": "Financial Consultant"
+    },
     "prompts": {
       "feeling": "Can you share, in a few words, what you're feeling or need right now?",
       "identify": "Would you like me to help you identify the most appropriate type of support?",
@@ -160,7 +170,9 @@
     },
     "fallback": {
       "message": "If you're not sure where to start, I can ask you a few quick questions to help."
-    }
+    },
+    "typing": "Typing...",
+    "placeholder": "Write your message..."
   },
   "milestones": {
     "sessions": "sessions",
