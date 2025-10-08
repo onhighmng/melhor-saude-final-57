@@ -92,14 +92,25 @@ const UserDashboard = () => {
                 </p>
               </div>
 
-              <Button 
-                size="lg" 
-                className="px-10 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white mt-2"
-                onClick={() => setShowChat(true)}
-              >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                {tNav('actions.talkToSpecialist')}
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                <Button 
+                  size="lg" 
+                  className="flex-1 px-6 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white"
+                  onClick={() => navigate('/user/book-session')}
+                >
+                  <Calendar className="mr-2 h-5 w-5" />
+                  {t('dashboard.ctaBookSession')}
+                </Button>
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  className="px-6 py-6 text-base rounded-xl border-2 border-[#4A90E2] text-[#4A90E2] hover:bg-[#EFF6FF]"
+                  onClick={() => setShowChat(true)}
+                >
+                  <MessageSquare className="mr-2 h-5 w-5" />
+                  {t('dashboard.ctaTalkSpecialist')}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
