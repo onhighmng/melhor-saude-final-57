@@ -82,7 +82,7 @@ export const ChatExitFeedbackButtons = ({
     <Dialog open={true}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('universalChat.exitFeedback.title')}</DialogTitle>
+          <DialogTitle>{t('universalChat.exit.title')}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
@@ -92,7 +92,7 @@ export const ChatExitFeedbackButtons = ({
             className="w-full h-auto py-6 text-lg"
             variant="default"
           >
-            😊 {t('universalChat.exitFeedback.satisfied')}
+            😊 {t('universalChat.exit.satisfied')}
           </Button>
           
           <Button
@@ -101,7 +101,7 @@ export const ChatExitFeedbackButtons = ({
             className="w-full h-auto py-6 text-lg"
             variant="outline"
           >
-            😐 {t('universalChat.exitFeedback.unsatisfied')}
+            😐 {t('universalChat.exit.unsatisfied')}
           </Button>
         </div>
       </DialogContent>
