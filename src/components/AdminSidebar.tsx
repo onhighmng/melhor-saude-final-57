@@ -318,14 +318,14 @@ const AdminSidebar = () => {
       <SidebarFooter className={`p-6 border-t ${isCollapsed ? 'flex justify-center' : ''}`}>
         <SidebarMenu className={isCollapsed ? 'items-center' : ''}>
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: "Sair" }}>
+            <SidebarMenuItemWithTooltip item={{ title: t('common.logout') }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
                 size="sm"
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                {!isCollapsed && <span className="text-base">Sair</span>}
+                {!isCollapsed && <span className="text-base">{t('common.logout')}</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
