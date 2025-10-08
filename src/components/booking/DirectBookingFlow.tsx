@@ -92,6 +92,10 @@ export const DirectBookingFlow = () => {
   };
 
   const handleStartLegalChat = () => {
+    // Set a default topic for legal chat (using the first selected legal topic)
+    if (selectedLegalTopics.length > 0 && !selectedTopic) {
+      setSelectedTopic('legal-assessment'); // Use a generic topic identifier for legal
+    }
     setCurrentStep('chat');
   };
 
@@ -251,10 +255,10 @@ export const DirectBookingFlow = () => {
         />
       )}
 
-      {currentStep === 'chat' && selectedPillar && selectedTopic && (
+      {currentStep === 'chat' && selectedPillar && (
         <PreDiagnosticChat
           pillar={selectedPillar}
-          topic={selectedTopic}
+          topic={selectedTopic || 'legal-assessment'}
           onBack={handleBack}
           onComplete={handleChatComplete}
         />
