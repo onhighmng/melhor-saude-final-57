@@ -560,6 +560,10 @@
         "description": "Full access to 4 wellness pillars with specialists available 24/7, unlimited sessions, wellness reports and dedicated support."
       }
     },
+    "support": {
+      "sendMessage": "Send message",
+      "messageField": "Message field"
+    },
     "selector": {
       "individual": {
         "title": "Individual",

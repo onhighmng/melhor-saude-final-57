@@ -560,6 +560,10 @@
         "description": "Acesso completo aos 4 pilares de bem-estar com especialistas disponíveis 24 horas por dia, 7 dias por semana, sessões ilimitadas, relatórios de bem-estar e suporte dedicado."
       }
     },
+    "support": {
+      "sendMessage": "Enviar mensagem",
+      "messageField": "Campo de mensagem"
+    },
     "selector": {
       "individual": {
         "title": "Individual",
