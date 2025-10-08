@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { legalSymptoms } from '@/types/legalAssessment';
 import { ChevronLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SymptomSelectionProps {
   selectedTopics: string[];
@@ -25,6 +26,8 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
   onNext,
   onBack
 }) => {
+  const { t } = useTranslation(['common', 'user']);
+  
   const relevantSymptoms = legalSymptoms.filter(symptom => 
     selectedTopics.includes(symptom.topicId)
   );
@@ -44,7 +47,7 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
               className="gap-2"
             >
               <ChevronLeft className="h-4 w-4" />
-              Voltar
+              {t('common:actions.back')}
             </Button>
             
             <div className="flex items-center gap-3">
@@ -81,10 +84,10 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
 
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-3">
-              Descreva sua situação
+              {t('user:legal.symptomSelection.title')}
             </h1>
             <p className="text-muted-foreground text-lg">
-              Selecione os pontos que melhor descrevem o seu caso
+              {t('user:legal.symptomSelection.subtitle')}
             </p>
           </div>
 
@@ -100,7 +103,7 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
                 onClick={() => onSymptomToggle(symptom.id)}
               >
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm font-medium text-foreground flex-1">{symptom.text}</p>
+                  <p className="text-sm font-medium text-foreground flex-1">{t(`user:legal.symptoms.${symptom.id}.text`)}</p>
                   {selectedSymptoms.includes(symptom.id) && (
                     <div className="text-primary text-2xl font-bold flex-shrink-0">✓</div>
                   )}
@@ -111,10 +114,10 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
 
           <div className="mb-8">
             <label className="block text-sm font-medium mb-2 text-foreground">
-              Informações adicionais (opcional)
+              {t('user:legal.symptomSelection.additionalInfo')}
             </label>
             <Textarea
-              placeholder="Adicione qualquer detalhe que possa ser relevante para o seu caso..."
+              placeholder={t('user:legal.symptomSelection.placeholder')}
               value={additionalNotes}
               onChange={(e) => onNotesChange(e.target.value)}
               rows={4}
@@ -129,7 +132,7 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
               size="lg"
               className="min-w-[200px] text-base"
             >
-              Ver Resultado
+              {t('user:legal.symptomSelection.viewResult')}
             </Button>
           </div>
         </div>
