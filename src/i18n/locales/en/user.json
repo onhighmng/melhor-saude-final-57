@@ -246,41 +246,41 @@
     "articleFooter": "Still have questions? Contact Us"
   },
   "topics": {
-    "psychological": {
-      "anxiety": { "name": "Anxiety", "description": "Anxiety management" },
-      "depression": { "name": "Depression", "description": "Support for depression" },
-      "stress": { "name": "Stress", "description": "Stress management" },
-      "burnout": { "name": "Burnout", "description": "Recovery from burnout" },
-      "relationships": { "name": "Relationships", "description": "Relationship issues" },
-      "selfEsteem": { "name": "Self-Esteem", "description": "Building confidence" },
-      "other": { "name": "Other", "description": "Other issues" }
+    "saude_mental": {
+      "anxiety": { "name": "Anxiety", "description": "Anxiety and worry management" },
+      "depression": { "name": "Depression", "description": "Support for depressive symptoms" },
+      "stress": { "name": "Stress", "description": "Stress management techniques" },
+      "burnout": { "name": "Burnout", "description": "Recovery from professional burnout" },
+      "relationships": { "name": "Relationships", "description": "Relationship and communication issues" },
+      "selfEsteem": { "name": "Self-Esteem", "description": "Building self-confidence" },
+      "other": { "name": "Other", "description": "Other psychological issues" }
     },
-    "financial": {
-      "budgeting": { "name": "Budgeting", "description": "Budget management" },
-      "debt": { "name": "Debt", "description": "Debt management" },
-      "savings": { "name": "Savings", "description": "Savings strategies" },
-      "investments": { "name": "Investments", "description": "Investment advice" },
+    "assistencia_financeira": {
+      "budgeting": { "name": "Budgeting", "description": "Personal budget management" },
+      "debt": { "name": "Debt", "description": "Debt management strategies" },
+      "savings": { "name": "Savings", "description": "Savings and investment plans" },
+      "investments": { "name": "Investments", "description": "Investment consulting" },
       "retirement": { "name": "Retirement", "description": "Retirement planning" },
-      "taxes": { "name": "Taxes", "description": "Tax planning" },
-      "other": { "name": "Other", "description": "Other issues" }
+      "taxes": { "name": "Taxes", "description": "Tax planning and optimization" },
+      "other": { "name": "Other", "description": "Other financial issues" }
     },
-    "physical": {
-      "fitness": { "name": "Fitness", "description": "Exercise programs" },
-      "nutrition": { "name": "Nutrition", "description": "Nutrition planning" },
-      "sleep": { "name": "Sleep", "description": "Sleep quality" },
-      "pain": { "name": "Pain", "description": "Pain management" },
-      "chronicConditions": { "name": "Chronic Conditions", "description": "Health management" },
-      "preventiveCare": { "name": "Preventive Care", "description": "Prevention" },
-      "other": { "name": "Other", "description": "Other issues" }
+    "bem_estar_fisico": {
+      "fitness": { "name": "Fitness", "description": "Physical exercise programs" },
+      "nutrition": { "name": "Nutrition", "description": "Personalized nutrition planning" },
+      "sleep": { "name": "Sleep", "description": "Sleep quality improvement" },
+      "pain": { "name": "Pain", "description": "Chronic or acute pain management" },
+      "chronicConditions": { "name": "Chronic Conditions", "description": "Chronic health condition management" },
+      "preventiveCare": { "name": "Preventive Care", "description": "Prevention and preventive health" },
+      "other": { "name": "Other", "description": "Other physical health issues" }
     },
-    "legal": {
-      "employment": { "name": "Employment", "description": "Labor issues" },
-      "contracts": { "name": "Contracts", "description": "Contract analysis" },
-      "family": { "name": "Family", "description": "Family law" },
-      "housing": { "name": "Housing", "description": "Rental issues" },
-      "consumerRights": { "name": "Consumer Rights", "description": "Consumer protection" },
-      "immigration": { "name": "Immigration", "description": "Immigration issues" },
-      "other": { "name": "Other", "description": "Other issues" }
+    "assistencia_juridica": {
+      "employment": { "name": "Employment", "description": "Employment and labor law issues" },
+      "contracts": { "name": "Contracts", "description": "Contract analysis and review" },
+      "family": { "name": "Family", "description": "Family law and family relations" },
+      "housing": { "name": "Housing", "description": "Rental and housing issues" },
+      "consumerRights": { "name": "Consumer Rights", "description": "Consumer protection and rights" },
+      "immigration": { "name": "Immigration", "description": "Immigration and visa issues" },
+      "other": { "name": "Other", "description": "Other legal issues" }
     }
   }
 }

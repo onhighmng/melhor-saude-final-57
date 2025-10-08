@@ -246,41 +246,41 @@
     "articleFooter": "Ainda com dúvidas? Fale Connosco"
   },
   "topics": {
-    "psychological": {
-      "anxiety": { "name": "Ansiedade", "description": "Gestão de ansiedade" },
+    "saude_mental": {
+      "anxiety": { "name": "Ansiedade", "description": "Gestão de ansiedade e preocupações" },
       "depression": { "name": "Depressão", "description": "Apoio para sintomas depressivos" },
-      "stress": { "name": "Stress", "description": "Gestão de stress" },
-      "burnout": { "name": "Burnout", "description": "Recuperação de esgotamento" },
-      "relationships": { "name": "Relacionamentos", "description": "Questões relacionais" },
+      "stress": { "name": "Stress", "description": "Técnicas de gestão de stress" },
+      "burnout": { "name": "Burnout", "description": "Recuperação de esgotamento profissional" },
+      "relationships": { "name": "Relacionamentos", "description": "Questões relacionais e comunicação" },
       "selfEsteem": { "name": "Autoestima", "description": "Desenvolvimento da autoconfiança" },
-      "other": { "name": "Outro", "description": "Outras questões" }
+      "other": { "name": "Outro", "description": "Outras questões psicológicas" }
     },
-    "financial": {
-      "budgeting": { "name": "Orçamentação", "description": "Gestão de orçamento" },
-      "debt": { "name": "Dívidas", "description": "Gestão de dívidas" },
-      "savings": { "name": "Poupanças", "description": "Estratégias de poupança" },
+    "assistencia_financeira": {
+      "budgeting": { "name": "Orçamentação", "description": "Gestão de orçamento pessoal" },
+      "debt": { "name": "Dívidas", "description": "Estratégias de gestão de dívidas" },
+      "savings": { "name": "Poupanças", "description": "Planos de poupança e investimento" },
       "investments": { "name": "Investimentos", "description": "Consultoria de investimento" },
       "retirement": { "name": "Reforma", "description": "Planeamento de reforma" },
-      "taxes": { "name": "Impostos", "description": "Planeamento fiscal" },
-      "other": { "name": "Outro", "description": "Outras questões" }
+      "taxes": { "name": "Impostos", "description": "Planeamento e otimização fiscal" },
+      "other": { "name": "Outro", "description": "Outras questões financeiras" }
     },
-    "physical": {
-      "fitness": { "name": "Fitness", "description": "Programas de exercício" },
-      "nutrition": { "name": "Nutrição", "description": "Planeamento nutricional" },
-      "sleep": { "name": "Sono", "description": "Qualidade do sono" },
-      "pain": { "name": "Dor", "description": "Gestão de dor" },
-      "chronicConditions": { "name": "Condições Crónicas", "description": "Gestão de saúde" },
-      "preventiveCare": { "name": "Cuidados Preventivos", "description": "Prevenção" },
-      "other": { "name": "Outro", "description": "Outras questões" }
+    "bem_estar_fisico": {
+      "fitness": { "name": "Fitness", "description": "Programas de exercício físico" },
+      "nutrition": { "name": "Nutrição", "description": "Planeamento nutricional personalizado" },
+      "sleep": { "name": "Sono", "description": "Melhoria da qualidade do sono" },
+      "pain": { "name": "Dor", "description": "Gestão de dor crónica ou aguda" },
+      "chronicConditions": { "name": "Condições Crónicas", "description": "Gestão de condições crónicas de saúde" },
+      "preventiveCare": { "name": "Cuidados Preventivos", "description": "Prevenção e saúde preventiva" },
+      "other": { "name": "Outro", "description": "Outras questões de saúde física" }
     },
-    "legal": {
-      "employment": { "name": "Trabalho", "description": "Questões laborais" },
-      "contracts": { "name": "Contratos", "description": "Análise de contratos" },
-      "family": { "name": "Família", "description": "Direito da família" },
-      "housing": { "name": "Habitação", "description": "Arrendamento" },
-      "consumerRights": { "name": "Direitos do Consumidor", "description": "Proteção do consumidor" },
-      "immigration": { "name": "Imigração", "description": "Questões de imigração" },
-      "other": { "name": "Outro", "description": "Outras questões" }
+    "assistencia_juridica": {
+      "employment": { "name": "Trabalho", "description": "Questões laborais e direito do trabalho" },
+      "contracts": { "name": "Contratos", "description": "Análise e revisão de contratos" },
+      "family": { "name": "Família", "description": "Direito da família e relações familiares" },
+      "housing": { "name": "Habitação", "description": "Arrendamento e questões habitacionais" },
+      "consumerRights": { "name": "Direitos do Consumidor", "description": "Proteção e direitos do consumidor" },
+      "immigration": { "name": "Imigração", "description": "Questões de imigração e vistos" },
+      "other": { "name": "Outro", "description": "Outras questões jurídicas" }
     }
   }
 }
