@@ -242,22 +242,41 @@
   "notifications": {
     "title": "Notifications",
     "subtitle": "Important alerts and reminders",
+    "tabs": {
+      "unread": "Unread ({{count}})",
+      "all": "All ({{count}})"
+    },
     "markRead": "Mark as read",
     "markUnread": "Mark as unread",
+    "markedAsRead": "Notification marked as read",
+    "newBadge": "New",
     "ctaQuotaWarning": "Book Session Before Period Ends",
     "ctaViewDetails": "View Details",
     "ctaSendFeedback": "Send Feedback",
     "ctaJoinSession": "Join Session",
-    "emptyState": "No notifications at the moment"
-  },
-  "resources": {
-    "title": "Wellness Resources",
-    "subtitle": "Materials and content to support your wellbeing",
-    "ctaExplore": "Explore Wellness Resources",
-    "ctaRead": "Read",
-    "ctaWatch": "Watch",
-    "ctaDownload": "Download",
-    "emptyState": "No resources available at the moment"
+    "emptyState": "No notifications at the moment",
+    "mockNotifications": {
+      "sessionToday": {
+        "title": "Session Today",
+        "message": "Your session with {{provider}} starts at {{time}}"
+      },
+      "rateSession": {
+        "title": "Rate Your Session",
+        "message": "How was your session with {{provider}}?"
+      },
+      "quotaExpiring": {
+        "title": "Sessions Expiring",
+        "message": "You have {{count}} sessions expiring at the end of the month"
+      },
+      "sessionConfirmed": {
+        "title": "Session Confirmed",
+        "message": "Your session is scheduled for {{date}} at {{time}}"
+      },
+      "newResources": {
+        "title": "New Resources Available",
+        "message": "Explore new articles on mental wellness"
+      }
+    }
   },
   "feedback": {
     "title": "Rate Session",

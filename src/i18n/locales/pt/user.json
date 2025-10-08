@@ -258,13 +258,41 @@
   "notifications": {
     "title": "Notificações",
     "subtitle": "Avisos e lembretes importantes",
+    "tabs": {
+      "unread": "Não Lidas ({{count}})",
+      "all": "Todas ({{count}})"
+    },
     "markRead": "Marcar como lida",
     "markUnread": "Marcar como não lida",
+    "markedAsRead": "Notificação marcada como lida",
+    "newBadge": "Nova",
     "ctaQuotaWarning": "Agendar Sessão Antes que Termine o Período",
     "ctaViewDetails": "Ver Detalhes",
     "ctaSendFeedback": "Enviar Avaliação",
     "ctaJoinSession": "Entrar na Sessão",
-    "emptyState": "Sem notificações no momento"
+    "emptyState": "Sem notificações no momento",
+    "mockNotifications": {
+      "sessionToday": {
+        "title": "Sessão Hoje",
+        "message": "A sua sessão com {{provider}} começa às {{time}}"
+      },
+      "rateSess": {
+        "title": "Avalie a Sua Sessão",
+        "message": "Como foi a sua sessão com {{provider}}?"
+      },
+      "quotaExpiring": {
+        "title": "Sessões a Expirar",
+        "message": "Tem {{count}} sessões que expiram no final do mês"
+      },
+      "sessionConfirmed": {
+        "title": "Sessão Confirmada",
+        "message": "A sua sessão foi agendada para {{date}} às {{time}}"
+      },
+      "newResources": {
+        "title": "Novos Recursos Disponíveis",
+        "message": "Explore os novos artigos sobre bem-estar mental"
+      }
+    }
   },
   "resources": {
     "title": "Recursos de Bem-Estar",
