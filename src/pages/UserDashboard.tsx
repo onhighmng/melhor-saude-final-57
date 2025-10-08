@@ -93,7 +93,7 @@ const UserDashboard = () => {
                 <Button 
                   size="lg" 
                   className="flex-1 px-6 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white"
-                  onClick={() => navigate('/user/book-session')}
+                  onClick={() => navigate('/user/book')}
                 >
                   <Calendar className="mr-2 h-5 w-5" />
                   {t('dashboard.ctaBookSession')}
@@ -207,7 +207,7 @@ const UserDashboard = () => {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-sm text-muted-foreground mb-4">{t('sessions.noUpcoming')}</p>
-                  <Button onClick={() => navigate('/user/book')} variant="outline">
+                  <Button onClick={() => navigate('/user/book-session')} variant="outline">
                     {t('sessions.emptyState')}
                   </Button>
                 </div>
@@ -253,7 +253,7 @@ const UserDashboard = () => {
               ) : (
                 <div className="text-center py-8">
                   <p className="text-sm text-muted-foreground mb-4">{t('sessions.noHistory')}</p>
-                  <Button onClick={() => navigate('/user/book')} variant="outline" size="sm">
+                  <Button onClick={() => navigate('/user/book-session')} variant="outline" size="sm">
                     {t('sessions.emptyState')}
                   </Button>
                 </div>

@@ -40,7 +40,7 @@ export function UserSidebar() {
 
   const mainItems = [
     { title: t('user.dashboard'), url: "/user/dashboard", icon: LayoutDashboard },
-    { title: t('actions.talkToSpecialist'), url: "/user/book", icon: MessageSquare },
+    { title: t('actions.talkToSpecialist'), url: "/user/book-session", icon: MessageSquare },
     { title: t('user.sessions'), url: "/user/sessions", icon: CalendarCheck },
     { title: t('user.notifications'), url: "/user/notifications", icon: Bell, badge: 3 },
     { title: t('user.resources'), url: "/user/resources", icon: BookOpen },
