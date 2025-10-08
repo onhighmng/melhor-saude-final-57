@@ -9,10 +9,9 @@ import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/se
 import { mockBookings, getMockBookings } from "@/data/mockData";
 import { QuotaDisplayCard } from "@/components/sessions/QuotaDisplayCard";
 import { SessionHistoryCard } from "@/components/sessions/SessionHistoryCard";
-import { userUIcopy } from "@/data/userUIcopy";
 
 export default function UserSessions() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user');
   const navigate = useNavigate();
   const [userBalance] = useState(mockUserBalance);
   
@@ -55,8 +54,8 @@ export default function UserSessions() {
     <div className="container mx-auto p-6">
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">{userUIcopy.sessions.title}</h1>
-          <p className="text-muted-foreground">{userUIcopy.sessions.subtitle}</p>
+          <h1 className="text-3xl font-bold text-foreground">{t('sessions.title')}</h1>
+          <p className="text-muted-foreground">{t('sessions.subtitle')}</p>
         </div>
 
         {/* Quota Display */}
@@ -64,7 +63,7 @@ export default function UserSessions() {
 
         {/* Sessions List */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">{t('user:sessions.historyTitle', 'Histórico de Sessões')}</h2>
+          <h2 className="text-xl font-semibold">{t('sessions.historyTitle')}</h2>
           
           {sessions.map((session) => (
             <SessionHistoryCard
@@ -82,9 +81,9 @@ export default function UserSessions() {
             <CardContent className="pt-6">
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">
-                  {t('user:sessions.noSessionsYet', 'Ainda não tem sessões agendadas')}
+                  {t('sessions.noSessionsYet')}
                 </p>
-                <Button onClick={() => navigate('/user/book')}>{t('user:sessions.bookFirst', 'Marcar Primeira Sessão')}</Button>
+                <Button onClick={() => navigate('/user/book')}>{t('sessions.bookFirst')}</Button>
               </div>
             </CardContent>
           </Card>
