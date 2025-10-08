@@ -14,8 +14,7 @@
     "providersSubtitle": "Professionals dedicated to your wellbeing",
     "helpTitle": "Help & Resources",
     "helpSubtitle": "Access exclusive content for your wellbeing",
-    "ctaBookSession": "Book Session",
-    "ctaTalkSpecialist": "Talk to Specialist",
+    "ctaBookSession": "Book a Session",
     "ctaExploreResources": "Explore Wellness Resources",
     "ctaUseQuota": "Use Your Sessions",
     "ctaViewDetails": "View Details",
@@ -37,21 +36,6 @@
     "backToDashboard": "Back to Dashboard",
     "sendResponses": "Send Responses",
     "viewRecommendations": "View Recommendations",
-    "banner": {
-      "title": "Need a 1-on-1 session?",
-      "subtitle": "If the matter is complex or you're not making progress, book a session with one of our specialists.",
-      "action": "Book Session"
-    },
-    "directFlow": {
-      "selectTopic": "Select a Topic",
-      "topicSubtitle": "Choose the topic that best describes your situation",
-      "chatTitle": "Tell us more about your situation",
-      "chatSubtitle": "Your answers will help the specialist prepare better.",
-      "chatWelcome": "Hello! I'll help you with {{topic}}. Please tell me more about your situation.",
-      "chatAcknowledge": "Thank you for sharing. You can continue providing more details or book a session when you're ready.",
-      "chatPlaceholder": "Write the details of your situation here...",
-      "conversation": "Conversation"
-    },
     "specialistChoice": {
       "title": "How Would You Like to Get Help?",
       "subtitle": "Select how you prefer to get legal assistance",
@@ -186,43 +170,5 @@
     "ctaContactSupport": "Talk to Support",
     "noResultCTA": "Talk to Support",
     "articleFooter": "Still have questions? Contact Us"
-  },
-  "topics": {
-    "psychological": {
-      "anxiety": "Anxiety", "anxietyDesc": "Anxiety management",
-      "depression": "Depression", "depressionDesc": "Support for depression",
-      "stress": "Stress", "stressDesc": "Stress management",
-      "burnout": "Burnout", "burnoutDesc": "Recovery from burnout",
-      "relationships": "Relationships", "relationshipsDesc": "Relationship issues",
-      "selfEsteem": "Self-Esteem", "selfEsteemDesc": "Building confidence",
-      "other": "Other", "otherDesc": "Other issues"
-    },
-    "financial": {
-      "budgeting": "Budgeting", "budgetingDesc": "Budget management",
-      "debt": "Debt", "debtDesc": "Debt management",
-      "savings": "Savings", "savingsDesc": "Savings strategies",
-      "investments": "Investments", "investmentsDesc": "Investment advice",
-      "retirement": "Retirement", "retirementDesc": "Retirement planning",
-      "taxes": "Taxes", "taxesDesc": "Tax planning",
-      "other": "Other", "otherDesc": "Other issues"
-    },
-    "physical": {
-      "fitness": "Fitness", "fitnessDesc": "Exercise programs",
-      "nutrition": "Nutrition", "nutritionDesc": "Nutrition planning",
-      "sleep": "Sleep", "sleepDesc": "Sleep quality",
-      "pain": "Pain", "painDesc": "Pain management",
-      "chronicConditions": "Chronic Conditions", "chronicConditionsDesc": "Health management",
-      "preventiveCare": "Preventive Care", "preventiveCareDesc": "Prevention",
-      "other": "Other", "otherDesc": "Other issues"
-    },
-    "legal": {
-      "employment": "Employment", "employmentDesc": "Labor issues",
-      "contracts": "Contracts", "contractsDesc": "Contract analysis",
-      "family": "Family", "familyDesc": "Family law",
-      "housing": "Housing", "housingDesc": "Rental issues",
-      "consumerRights": "Consumer Rights", "consumerRightsDesc": "Consumer protection",
-      "immigration": "Immigration", "immigrationDesc": "Immigration issues",
-      "other": "Other", "otherDesc": "Other issues"
-    }
   }
 }

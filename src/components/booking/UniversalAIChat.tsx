@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -8,7 +7,6 @@ import { useChatSession } from '@/hooks/useChatSession';
 import { useAuth } from '@/contexts/AuthContext';
 import { SpecialistContactCard } from './SpecialistContactCard';
 import { ChatExitFeedback } from './ChatExitFeedback';
-import { BookingBanner } from './BookingBanner';
 
 interface UniversalAIChatProps {
   onClose: () => void;
@@ -17,12 +15,10 @@ interface UniversalAIChatProps {
 
 export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [input, setInput] = useState('');
   const [showPhoneCard, setShowPhoneCard] = useState(false);
   const [phoneContext, setPhoneContext] = useState('');
   const [showExitFeedback, setShowExitFeedback] = useState(false);
-  const [showBookingBanner, setShowBookingBanner] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -44,13 +40,6 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    // Show banner after 3+ exchanges
-    if (messages.length >= 6) {
-      setShowBookingBanner(true);
     }
   }, [messages]);
 
@@ -92,11 +81,6 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
 
   const handleFeedbackComplete = () => {
     setShowExitFeedback(false);
-    onClose();
-  };
-
-  const handleBookSession = () => {
-    navigate('/user/book-session');
     onClose();
   };
 
@@ -179,10 +163,6 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
             </Button>
           </div>
         </div>
-
-        {showBookingBanner && (
-          <BookingBanner onBookSession={handleBookSession} />
-        )}
       </div>
 
       {showExitFeedback && (

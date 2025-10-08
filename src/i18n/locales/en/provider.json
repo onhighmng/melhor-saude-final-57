@@ -208,11 +208,5 @@
     "bestPracticesSubtitle": "Essential guidelines for quality service delivery",
     "commonIssues": "Common Situations and Solutions",
     "commonIssuesSubtitle": "How to handle frequent challenges"
-  },
-  "preDiagnostic": {
-    "title": "Pre-Diagnostic Information",
-    "topic": "Topic",
-    "transcript": "Conversation Transcript",
-    "noData": "No pre-diagnostic information available"
   }
 }
