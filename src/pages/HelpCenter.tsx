@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Heart, Dumbbell, DollarSign, Scale, Star, FileText, Eye, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,14 +9,15 @@ import SelfHelpHeader from '@/components/self-help/SelfHelpHeader';
 import ContentGrid from '@/components/self-help/ContentGrid';
 
 const HelpCenter: React.FC = () => {
+  const { t } = useTranslation('common');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const helpCategories = [
     {
       id: 'psicologica',
-      title: 'Saúde Mental',
-      description: 'Artigos de autoajuda, testes de stress, guias de relaxamento e técnicas de bem-estar mental.',
+      title: t('helpCenter.categories.mental'),
+      description: t('helpCenter.categories.mentalDesc'),
       icon: Heart,
       color: 'bg-red-50 text-red-600 border-red-200',
       iconBg: 'bg-red-100',
@@ -23,8 +25,8 @@ const HelpCenter: React.FC = () => {
     },
     {
       id: 'fisica',
-      title: 'Bem-Estar Físico',
-      description: 'Exercícios práticos, dicas de nutrição, ergonomia e manutenção da saúde física.',
+      title: t('helpCenter.categories.physical'),
+      description: t('helpCenter.categories.physicalDesc'),
       icon: Dumbbell,
       color: 'bg-green-50 text-green-600 border-green-200',
       iconBg: 'bg-green-100',
@@ -32,8 +34,8 @@ const HelpCenter: React.FC = () => {
     },
     {
       id: 'financeira',
-      title: 'Assistência Financeira',
-      description: 'Dicas de orçamento, planeamento financeiro, gestão de dívidas e poupança.',
+      title: t('helpCenter.categories.financial'),
+      description: t('helpCenter.categories.financialDesc'),
       icon: DollarSign,
       color: 'bg-blue-50 text-blue-600 border-blue-200',
       iconBg: 'bg-blue-100',
@@ -41,8 +43,8 @@ const HelpCenter: React.FC = () => {
     },
     {
       id: 'juridica',
-      title: 'Assistência Jurídica',
-      description: 'Perguntas frequentes, orientações básicas sobre direitos e procedimentos legais.',
+      title: t('helpCenter.categories.legal'),
+      description: t('helpCenter.categories.legalDesc'),
       icon: Scale,
       color: 'bg-purple-50 text-purple-600 border-purple-200',
       iconBg: 'bg-purple-100',
@@ -51,11 +53,11 @@ const HelpCenter: React.FC = () => {
   ];
 
   const quickFilters = [
-    { id: null, name: 'Todos', count: 69 },
-    { id: 'psicologica', name: 'Saúde Mental', count: 24 },
-    { id: 'fisica', name: 'Bem-Estar Físico', count: 18 },
-    { id: 'financeira', name: 'Assistência Financeira', count: 15 },
-    { id: 'juridica', name: 'Assistência Jurídica', count: 12 }
+    { id: null, name: t('helpCenter.all'), count: 69 },
+    { id: 'psicologica', name: t('helpCenter.categories.mental'), count: 24 },
+    { id: 'fisica', name: t('helpCenter.categories.physical'), count: 18 },
+    { id: 'financeira', name: t('helpCenter.categories.financial'), count: 15 },
+    { id: 'juridica', name: t('helpCenter.categories.legal'), count: 12 }
   ];
 
   const handleCategorySelect = (categoryId: string | null) => {
@@ -76,10 +78,10 @@ const HelpCenter: React.FC = () => {
           <div className="text-center space-y-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-3">
-                Olá, em que podemos ajudar? 👋
+                {t('helpCenter.title')}
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Encontre artigos, guias e recursos para o seu bem-estar
+                {t('helpCenter.subtitle')}
               </p>
             </div>
 
@@ -88,7 +90,7 @@ const HelpCenter: React.FC = () => {
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
-                  placeholder="Pesquise artigos, guias ou testes..."
+                  placeholder={t('helpCenter.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-12 pr-4 py-4 text-lg border border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500 shadow-sm bg-white"
@@ -148,7 +150,7 @@ const HelpCenter: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1 text-xs text-gray-500">
                           <Eye className="w-3 h-3" />
-                          <span>{category.articleCount} artigos</span>
+                          <span>{category.articleCount} {t('helpCenter.articles')}</span>
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-200" />
                       </div>
@@ -161,9 +163,9 @@ const HelpCenter: React.FC = () => {
             {/* Popular Articles Preview */}
             <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-gray-900">Artigos Populares</h3>
+                <h3 className="text-2xl font-bold text-gray-900">{t('helpCenter.popularArticles')}</h3>
                 <Button variant="outline" className="rounded-full">
-                  Ver todos
+                  {t('helpCenter.viewAll')}
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </div>
@@ -203,7 +205,7 @@ const HelpCenter: React.FC = () => {
                 onClick={() => setSelectedCategory(null)}
                 className="mb-4"
               >
-                ← Voltar às categorias
+                {t('helpCenter.backToCategories')}
               </Button>
             </div>
             
