@@ -1,5 +1,9 @@
 {
   "loading": "Carregando...",
+  "login": "Entrar",
+  "logout": "Sair",
+  "register": "Registar",
+  "greeting": "Olá, {{name}}",
   "changeLanguage": "Mudar idioma de {{currentLang}} para {{targetLang}}",
   "languageChanged": {
     "toPT": "Idioma alterado para Português",

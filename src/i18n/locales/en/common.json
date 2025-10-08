@@ -1,5 +1,9 @@
 {
   "loading": "Loading...",
+  "login": "Login",
+  "logout": "Logout",
+  "register": "Register",
+  "greeting": "Hello, {{name}}",
   "changeLanguage": "Change language from {{currentLang}} to {{targetLang}}",
   "languageChanged": {
     "toPT": "Language changed to Portuguese",
