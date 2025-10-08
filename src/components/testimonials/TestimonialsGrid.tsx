@@ -1,5 +1,6 @@
 
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Testimonial {
   name: string;
@@ -15,6 +16,7 @@ interface TestimonialsGridProps {
 }
 
 const TestimonialsGrid: React.FC<TestimonialsGridProps> = ({ testimonials, onTestimonialClick }) => {
+  const { t } = useTranslation('common');
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const handleMouseEnter = (index: number) => {
@@ -46,7 +48,7 @@ const TestimonialsGrid: React.FC<TestimonialsGridProps> = ({ testimonials, onTes
             {/* Hover Tooltip */}
             <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="bg-soft-white rounded-full px-2 py-1 shadow-lg">
-                <span className="text-xs font-medium text-navy-blue">Ver {testimonial.name}</span>
+                <span className="text-xs font-medium text-navy-blue">{t('testimonials.view')} {testimonial.name}</span>
               </div>
             </div>
 
@@ -78,7 +80,7 @@ const TestimonialsGrid: React.FC<TestimonialsGridProps> = ({ testimonials, onTes
                 </div>
                 <div className="flex items-center gap-1 text-white/80 text-xs">
                   <span>{testimonial.name}</span>
-                  <span>/ Cliente Melhor Saúde</span>
+                  <span>/ {t('testimonials.client')}</span>
                 </div>
                 
                 {/* Play Button */}

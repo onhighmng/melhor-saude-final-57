@@ -442,7 +442,9 @@
   },
   "testimonials": {
     "title": "We've helped over 2,000 employees achieve their goals",
-    "subtitle": "Don't just take our word for it. Hear their inspiring stories.*"
+    "subtitle": "Don't just take our word for it. Hear their inspiring stories.*",
+    "view": "View",
+    "client": "Better Health Client"
   },
   "guides": {
     "playingWithSound": "Playing with sound",

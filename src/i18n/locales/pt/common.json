@@ -442,7 +442,9 @@
   },
   "testimonials": {
     "title": "Já ajudámos mais de 2.000 colaboradores a alcançar os seus objetivos",
-    "subtitle": "Não aceite apenas a nossa palavra. Ouça as suas histórias inspiradoras.*"
+    "subtitle": "Não aceite apenas a nossa palavra. Ouça as suas histórias inspiradoras.*",
+    "view": "Ver",
+    "client": "Cliente Melhor Saúde"
   },
   "guides": {
     "playingWithSound": "A reproduzir com som",
