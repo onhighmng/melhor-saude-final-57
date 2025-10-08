@@ -8,11 +8,14 @@ import { PreDiagnosticChat } from './PreDiagnosticChat';
 import { ProviderAssignmentStep } from './ProviderAssignmentStep';
 import CalendarStep from './CalendarStep';
 import { ConfirmationStep } from './ConfirmationStep';
+import TopicSelectionLegal from '@/components/legal-assessment/TopicSelection';
+import SymptomSelection from '@/components/legal-assessment/SymptomSelection';
+import AssessmentResult from '@/components/legal-assessment/AssessmentResult';
 import { BookingPillar } from './BookingFlow';
 import { getTopicPillarId } from '@/utils/pillarMapping';
 import { mockProviders } from '@/data/mockData';
 
-type BookingStep = 'pillar' | 'topic' | 'chat' | 'provider' | 'datetime' | 'confirmation';
+type BookingStep = 'pillar' | 'topic' | 'legal-topic-selection' | 'legal-symptom-selection' | 'legal-assessment-result' | 'chat' | 'provider' | 'datetime' | 'confirmation';
 
 interface Provider {
   id: string;
@@ -38,6 +41,11 @@ export const DirectBookingFlow = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [isConfirming, setIsConfirming] = useState(false);
+  
+  // Legal assessment state
+  const [selectedLegalTopics, setSelectedLegalTopics] = useState<string[]>([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [additionalNotes, setAdditionalNotes] = useState('');
 
   useEffect(() => {
     console.log('[DirectBookingFlow] Step:', currentStep, 'Pillar:', selectedPillar, 'Topic:', selectedTopic);
@@ -45,7 +53,13 @@ export const DirectBookingFlow = () => {
 
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
-    setCurrentStep('topic');
+    
+    // For juridica pillar, start with legal topic selection
+    if (pillar === 'juridica') {
+      setCurrentStep('legal-topic-selection');
+    } else {
+      setCurrentStep('topic');
+    }
   };
 
   const handleTopicSelect = (topic: string) => {
@@ -53,6 +67,31 @@ export const DirectBookingFlow = () => {
   };
 
   const handleTopicNext = () => {
+    setCurrentStep('chat');
+  };
+  
+  // Legal assessment handlers
+  const handleLegalTopicToggle = (topicId: string) => {
+    setSelectedLegalTopics(prev =>
+      prev.includes(topicId)
+        ? prev.filter(id => id !== topicId)
+        : [...prev, topicId]
+    );
+  };
+
+  const handleSymptomToggle = (symptomId: string) => {
+    setSelectedSymptoms(prev =>
+      prev.includes(symptomId)
+        ? prev.filter(id => id !== symptomId)
+        : [...prev, symptomId]
+    );
+  };
+
+  const handleNotesChange = (notes: string) => {
+    setAdditionalNotes(notes);
+  };
+
+  const handleStartLegalChat = () => {
     setCurrentStep('chat');
   };
 
@@ -133,9 +172,25 @@ export const DirectBookingFlow = () => {
         setCurrentStep('pillar');
         setSelectedPillar(null);
         break;
+      case 'legal-topic-selection':
+        setCurrentStep('pillar');
+        setSelectedPillar(null);
+        setSelectedLegalTopics([]);
+        break;
+      case 'legal-symptom-selection':
+        setCurrentStep('legal-topic-selection');
+        setSelectedSymptoms([]);
+        break;
+      case 'legal-assessment-result':
+        setCurrentStep('legal-symptom-selection');
+        break;
       case 'chat':
-        setCurrentStep('topic');
-        setSelectedTopic(null);
+        if (selectedPillar === 'juridica') {
+          setCurrentStep('legal-assessment-result');
+        } else {
+          setCurrentStep('topic');
+          setSelectedTopic(null);
+        }
         break;
       case 'provider':
         setCurrentStep('chat');
@@ -162,6 +217,37 @@ export const DirectBookingFlow = () => {
           onTopicSelect={handleTopicSelect}
           onBack={handleBack}
           onNext={handleTopicNext}
+        />
+      )}
+
+      {currentStep === 'legal-topic-selection' && (
+        <TopicSelectionLegal
+          selectedTopics={selectedLegalTopics}
+          onTopicToggle={handleLegalTopicToggle}
+          onNext={() => setCurrentStep('legal-symptom-selection')}
+          onBack={handleBack}
+        />
+      )}
+
+      {currentStep === 'legal-symptom-selection' && (
+        <SymptomSelection
+          selectedTopics={selectedLegalTopics}
+          selectedSymptoms={selectedSymptoms}
+          onSymptomToggle={handleSymptomToggle}
+          additionalNotes={additionalNotes}
+          onNotesChange={handleNotesChange}
+          onNext={() => setCurrentStep('legal-assessment-result')}
+          onBack={handleBack}
+        />
+      )}
+
+      {currentStep === 'legal-assessment-result' && (
+        <AssessmentResult
+          selectedTopics={selectedLegalTopics}
+          selectedSymptoms={selectedSymptoms}
+          additionalNotes={additionalNotes}
+          onStartChat={handleStartLegalChat}
+          onBack={handleBack}
         />
       )}
 
