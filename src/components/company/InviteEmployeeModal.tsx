@@ -87,7 +87,7 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
       resetForm();
       onClose();
     } catch (error) {
-      companyToasts.actionFailed(t('company.errors.inviteFailed', { ns: 'company' }));
+      companyToasts.actionFailed(t('company:errors.inviteFailed'));
     } finally {
       setIsSubmitting(false);
     }

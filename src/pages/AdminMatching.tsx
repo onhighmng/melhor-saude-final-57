@@ -62,7 +62,7 @@ interface MatchingRules {
 
 const AdminMatching = () => {
   const { toast } = useToast();
-  const { t } = useTranslation('admin');
+  const { t } = useTranslation(['admin', 'common']);
   const [matchingRules, setMatchingRules] = useState<MatchingRules>({
     fairnessWindow: 5,
     stickinessEnabled: true,
@@ -184,7 +184,7 @@ const AdminMatching = () => {
       }, 1000);
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('common:error'),
         description: t('matching.loadError'),
         variant: "destructive"
       });
@@ -256,7 +256,7 @@ const AdminMatching = () => {
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('common:error'),
         description: t('matching.saveError'),
         variant: "destructive"
       });
