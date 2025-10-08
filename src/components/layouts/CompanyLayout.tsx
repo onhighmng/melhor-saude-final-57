@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { CompanySidebar } from '@/components/CompanySidebar';
+import CompanySidebar from '@/components/CompanySidebar';
 
 interface CompanyLayoutProps {
   children: ReactNode;

@@ -49,8 +49,15 @@ interface MenuItem {
   badge?: string;
 }
 
+
 const AdminSidebar = () => {
   const { t } = useTranslation('navigation');
+  const { state } = useSidebar();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const currentPath = location.pathname;
+  const isCollapsed = state === "collapsed";
 
   // Standalone items
   const standaloneItems: MenuItem[] = [
@@ -91,22 +98,14 @@ const AdminSidebar = () => {
   // Settings - standalone section (NOT part of monitoring group)
   const settingsItems: MenuItem[] = [
     { title: t('company.settings'), url: "/admin/configuracoes", icon: Settings },
-];
+  ];
 
-// Mock badge data - in real app this would come from API/state
-const mockBadgeData = {
-  emailsFailed: 3,
-  pendingRequests: 7,
-  logAlerts: 2,
-};
-
-export function AdminSidebar() {
-  const { state } = useSidebar();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  const currentPath = location.pathname;
-  const isCollapsed = state === "collapsed";
+  // Mock badge data - in real app this would come from API/state
+  const mockBadgeData = {
+    emailsFailed: 3,
+    pendingRequests: 7,
+    logAlerts: 2,
+  };
 
   // State for collapsible groups
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
