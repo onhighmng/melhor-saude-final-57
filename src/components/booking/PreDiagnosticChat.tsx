@@ -23,7 +23,7 @@ interface PreDiagnosticChatProps {
 }
 
 export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiagnosticChatProps) => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation(['user', 'common']);
   const { user } = useAuth();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);

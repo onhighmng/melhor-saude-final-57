@@ -20,7 +20,7 @@ export const TopicSelection = ({
   onBack, 
   onNext 
 }: TopicSelectionProps) => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation(['user', 'common']);
   const topics = getTopicsForPillar(pillar);
 
   const getIcon = (iconName: string) => {
