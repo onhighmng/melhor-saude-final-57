@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,7 +16,6 @@ interface UniversalAIChatProps {
 }
 
 export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps) => {
-  const { t } = useTranslation(['user', 'common']);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [input, setInput] = useState('');
@@ -59,12 +57,13 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
   useEffect(() => {
     if (!sessionId) return;
 
+    // Welcome message in Portuguese
     const welcomeMessage = initialPillar 
-      ? t('user:booking.directFlow.universalChat.welcomeWithPillar')
-      : t('user:booking.directFlow.universalChat.welcomeGeneral');
+      ? 'Olá! Estou aqui para ajudá-lo com a sua situação. Por favor, conte-me o que o traz aqui hoje.'
+      : 'Olá! Estou aqui para o ajudar. Pode partilhar comigo o que o traz aqui hoje?';
     
     addMessage({ role: 'assistant', content: welcomeMessage }, false);
-  }, [sessionId, initialPillar, addMessage, t]);
+  }, [sessionId, initialPillar, addMessage]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -107,10 +106,13 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <div>
-            <h2 className="text-xl font-semibold">{t('user:booking.directFlow.universalChat.title')}</h2>
+            <h2 className="text-xl font-semibold">Fale com Especialista</h2>
             {pillar && (
               <p className="text-sm text-muted-foreground capitalize">
-                {t(`user:booking.directFlow.universalChat.specialists.${pillar}`)}
+                {pillar === 'legal' && 'Especialista Jurídico'}
+                {pillar === 'psychological' && 'Especialista em Saúde Mental'}
+                {pillar === 'physical' && 'Especialista em Bem-Estar Físico'}
+                {pillar === 'financial' && 'Consultor Financeiro'}
               </p>
             )}
           </div>
@@ -144,7 +146,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
                 <div className="bg-muted rounded-lg p-3">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">{t('user:booking.directFlow.universalChat.typing')}</span>
+                    <span className="text-sm">A escrever...</span>
                   </div>
                 </div>
               </div>
@@ -167,7 +169,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={t('user:booking.directFlow.universalChat.placeholder')}
+              placeholder="Escreva a sua mensagem..."
               className="resize-none"
               rows={2}
               disabled={isLoading || showPhoneCard}

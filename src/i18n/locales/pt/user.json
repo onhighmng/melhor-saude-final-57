@@ -43,26 +43,6 @@
       "action": "Marcar Sessão"
     },
     "directFlow": {
-      "pillarTitle": "Qual dos quatro pilares deseja acessar?",
-      "pillarSubtitle": "Escolha a área onde precisa de apoio especializado",
-      "pillars": {
-        "psicologica": {
-          "title": "Saúde mental",
-          "description": "Apoio psicológico e bem-estar mental"
-        },
-        "fisica": {
-          "title": "Bem estar físico",
-          "description": "Saúde física e estilo de vida"
-        },
-        "financeira": {
-          "title": "Assistência financeira",
-          "description": "Consultoria e planeamento financeiro"
-        },
-        "juridica": {
-          "title": "Assistência Jurídica",
-          "description": "Consultoria jurídica especializada"
-        }
-      },
       "selectTopic": "Selecione um Tópico",
       "topicSubtitle": "Escolha o tópico que melhor descreve a sua situação",
       "chatTitle": "Conte-nos mais sobre a sua situação",
@@ -70,29 +50,7 @@
       "chatWelcome": "Olá! Vou ajudá-lo com {{topic}}. Por favor, conte-me mais sobre a sua situação.",
       "chatAcknowledge": "Obrigado por partilhar. Pode continuar a dar mais detalhes ou marcar uma sessão quando estiver pronto.",
       "chatPlaceholder": "Escreva aqui os detalhes da sua situação...",
-      "conversation": "Conversa",
-      "specialistDirectory": {
-        "title": "Especialistas em {{pillar}}",
-        "subtitle": "Escolha o profissional ideal para as suas necessidades",
-        "backToPillars": "Voltar à seleção de pilares",
-        "schedule": "Agendar",
-        "experience": "{{years}} de experiência",
-        "noSpecialists": "Não foram encontrados especialistas para esta área.",
-        "chooseAnother": "Escolher Outro Pilar"
-      },
-      "universalChat": {
-        "title": "Fale com Especialista",
-        "specialists": {
-          "legal": "Especialista Jurídico",
-          "psychological": "Especialista em Saúde Mental",
-          "physical": "Especialista em Bem-Estar Físico",
-          "financial": "Consultor Financeiro"
-        },
-        "typing": "A escrever...",
-        "placeholder": "Escreva a sua mensagem...",
-        "welcomeWithPillar": "Olá! Estou aqui para ajudá-lo com a sua situação. Por favor, conte-me o que o traz aqui hoje.",
-        "welcomeGeneral": "Olá! Estou aqui para o ajudar. Pode partilhar comigo o que o traz aqui hoje?"
-      }
+      "conversation": "Conversa"
     },
     "specialistChoice": {
       "title": "Como Prefere Obter Ajuda?",
@@ -231,40 +189,40 @@
   },
   "topics": {
     "psychological": {
-      "anxiety": { "name": "Ansiedade", "description": "Gestão de ansiedade" },
-      "depression": { "name": "Depressão", "description": "Apoio para sintomas depressivos" },
-      "stress": { "name": "Stress", "description": "Gestão de stress" },
-      "burnout": { "name": "Burnout", "description": "Recuperação de esgotamento" },
-      "relationships": { "name": "Relacionamentos", "description": "Questões relacionais" },
-      "selfEsteem": { "name": "Autoestima", "description": "Desenvolvimento da autoconfiança" },
-      "other": { "name": "Outro", "description": "Outras questões" }
+      "anxiety": "Ansiedade", "anxietyDesc": "Gestão de ansiedade",
+      "depression": "Depressão", "depressionDesc": "Apoio para sintomas depressivos",
+      "stress": "Stress", "stressDesc": "Gestão de stress",
+      "burnout": "Burnout", "burnoutDesc": "Recuperação de esgotamento",
+      "relationships": "Relacionamentos", "relationshipsDesc": "Questões relacionais",
+      "selfEsteem": "Autoestima", "selfEsteemDesc": "Desenvolvimento da autoconfiança",
+      "other": "Outro", "otherDesc": "Outras questões"
     },
     "financial": {
-      "budgeting": { "name": "Orçamentação", "description": "Gestão de orçamento" },
-      "debt": { "name": "Dívidas", "description": "Gestão de dívidas" },
-      "savings": { "name": "Poupanças", "description": "Estratégias de poupança" },
-      "investments": { "name": "Investimentos", "description": "Consultoria de investimento" },
-      "retirement": { "name": "Reforma", "description": "Planeamento de reforma" },
-      "taxes": { "name": "Impostos", "description": "Planeamento fiscal" },
-      "other": { "name": "Outro", "description": "Outras questões" }
+      "budgeting": "Orçamentação", "budgetingDesc": "Gestão de orçamento",
+      "debt": "Dívidas", "debtDesc": "Gestão de dívidas",
+      "savings": "Poupanças", "savingsDesc": "Estratégias de poupança",
+      "investments": "Investimentos", "investmentsDesc": "Consultoria de investimento",
+      "retirement": "Reforma", "retirementDesc": "Planeamento de reforma",
+      "taxes": "Impostos", "taxesDesc": "Planeamento fiscal",
+      "other": "Outro", "otherDesc": "Outras questões"
     },
     "physical": {
-      "fitness": { "name": "Fitness", "description": "Programas de exercício" },
-      "nutrition": { "name": "Nutrição", "description": "Planeamento nutricional" },
-      "sleep": { "name": "Sono", "description": "Qualidade do sono" },
-      "pain": { "name": "Dor", "description": "Gestão de dor" },
-      "chronicConditions": { "name": "Condições Crónicas", "description": "Gestão de saúde" },
-      "preventiveCare": { "name": "Cuidados Preventivos", "description": "Prevenção" },
-      "other": { "name": "Outro", "description": "Outras questões" }
+      "fitness": "Fitness", "fitnessDesc": "Programas de exercício",
+      "nutrition": "Nutrição", "nutritionDesc": "Planeamento nutricional",
+      "sleep": "Sono", "sleepDesc": "Qualidade do sono",
+      "pain": "Dor", "painDesc": "Gestão de dor",
+      "chronicConditions": "Condições Crónicas", "chronicConditionsDesc": "Gestão de saúde",
+      "preventiveCare": "Cuidados Preventivos", "preventiveCareDesc": "Prevenção",
+      "other": "Outro", "otherDesc": "Outras questões"
     },
     "legal": {
-      "employment": { "name": "Trabalho", "description": "Questões laborais" },
-      "contracts": { "name": "Contratos", "description": "Análise de contratos" },
-      "family": { "name": "Família", "description": "Direito da família" },
-      "housing": { "name": "Habitação", "description": "Arrendamento" },
-      "consumerRights": { "name": "Direitos do Consumidor", "description": "Proteção do consumidor" },
-      "immigration": { "name": "Imigração", "description": "Questões de imigração" },
-      "other": { "name": "Outro", "description": "Outras questões" }
+      "employment": "Trabalho", "employmentDesc": "Questões laborais",
+      "contracts": "Contratos", "contractsDesc": "Análise de contratos",
+      "family": "Família", "familyDesc": "Direito da família",
+      "housing": "Habitação", "housingDesc": "Arrendamento",
+      "consumerRights": "Direitos do Consumidor", "consumerRightsDesc": "Proteção do consumidor",
+      "immigration": "Imigração", "immigrationDesc": "Questões de imigração",
+      "other": "Outro", "otherDesc": "Outras questões"
     }
   }
 }

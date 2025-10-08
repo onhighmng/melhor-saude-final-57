@@ -23,7 +23,7 @@ interface PreDiagnosticChatProps {
 }
 
 export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiagnosticChatProps) => {
-  const { t } = useTranslation(['user', 'common']);
+  const { t } = useTranslation('user');
   const { user } = useAuth();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -48,14 +48,11 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
 
   const initializeChat = async () => {
     try {
-      console.log('[PreDiagnosticChat] Initializing chat with user:', user);
-      console.log('[PreDiagnosticChat] Pillar:', pillar, 'Topic:', topic);
-      
-      // Create chat session - handle guest users by allowing null user_id
+      // Create chat session
       const { data: session, error: sessionError } = await supabase
         .from('chat_sessions')
         .insert({
-          user_id: user?.id || null,
+          user_id: user?.id,
           pillar,
           status: 'active',
           ai_resolution: false,
@@ -63,22 +60,13 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
         .select()
         .single();
 
-      if (sessionError) {
-        console.error('[PreDiagnosticChat] Session creation error:', sessionError);
-        throw sessionError;
-      }
-      
-      console.log('[PreDiagnosticChat] Session created:', session.id);
+      if (sessionError) throw sessionError;
       setSessionId(session.id);
 
       // Add welcome message
-      const topicKey = `user:topics.${pillar}.${topic}.name`;
-      const topicName = t(topicKey);
-      console.log('[PreDiagnosticChat] Topic key:', topicKey, 'Translation:', topicName);
-      
       const welcomeMessage = {
         role: 'assistant' as const,
-        content: t('user:booking.directFlow.chatWelcome', { topic: topicName }),
+        content: t('booking.directFlow.chatWelcome', { topic: t(`topics.${pillar}.${topic}`) }),
       };
       
       setMessages([welcomeMessage]);
@@ -90,21 +78,11 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
         content: welcomeMessage.content,
       });
     } catch (error) {
-      console.error('[PreDiagnosticChat] Error initializing chat:', error);
-      
-      // Show user-friendly error and allow them to continue
+      console.error('Error initializing chat:', error);
       toast({
-        title: t('errors:title'),
-        description: t('errors:chatInitFailed') || 'Could not start chat session. Please try again.',
+        title: t('errors.chatInitFailed'),
         variant: 'destructive',
       });
-      
-      // Still show UI for demo purposes
-      const fallbackMessage = {
-        role: 'assistant' as const,
-        content: t('user:booking.directFlow.chatWelcome', { topic }),
-      };
-      setMessages([fallbackMessage]);
     }
   };
 
@@ -130,7 +108,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
       // For now, we'll use a simple acknowledgment
       const aiResponse = {
         role: 'assistant' as const,
-        content: t('user:booking.directFlow.chatAcknowledge'),
+        content: t('booking.directFlow.chatAcknowledge'),
       };
 
       setMessages(prev => [...prev, aiResponse]);
@@ -144,7 +122,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
-        title: t('errors:messageSendFailed'),
+        title: t('errors.messageSendFailed'),
         variant: 'destructive',
       });
     } finally {
@@ -175,17 +153,17 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
           className="gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-          {t('common:actions.back')}
+          {t('common.actions.back')}
         </Button>
         <div>
-          <h2 className="text-2xl font-bold">{t('user:booking.directFlow.chatTitle')}</h2>
-          <p className="text-sm text-muted-foreground">{t('user:booking.directFlow.chatSubtitle')}</p>
+          <h2 className="text-2xl font-bold">{t('booking.directFlow.chatTitle')}</h2>
+          <p className="text-sm text-muted-foreground">{t('booking.directFlow.chatSubtitle')}</p>
         </div>
       </div>
 
       <Card className="flex-1 flex flex-col">
         <CardHeader className="border-b">
-          <CardTitle className="text-lg">{t('user:booking.directFlow.conversation')}</CardTitle>
+          <CardTitle className="text-lg">{t('booking.directFlow.conversation')}</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col p-0">
           <ScrollArea className="flex-1 p-6">
@@ -223,7 +201,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={t('user:booking.directFlow.chatPlaceholder')}
+                placeholder={t('booking.directFlow.chatPlaceholder')}
                 className="min-h-[60px] resize-none"
                 disabled={isLoading}
               />

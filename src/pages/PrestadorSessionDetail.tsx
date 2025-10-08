@@ -24,14 +24,10 @@ import {
   Save,
   Building2,
   User,
-  Timer,
-  MessageSquare
+  Timer
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { supabase } from '@/integrations/supabase/client';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useTranslation } from 'react-i18next';
 
 interface SessionDetailData {
   id: string;
@@ -46,8 +42,6 @@ interface SessionDetailData {
   deductionType: 'empresa' | 'pessoal';
   companyName?: string;
   notes?: string;
-  chat_session_id?: string;
-  topic?: string;
   attachments: Array<{
     id: string;
     name: string;
@@ -55,13 +49,6 @@ interface SessionDetailData {
     size: number;
     uploadedAt: string;
   }>;
-}
-
-interface ChatMessage {
-  id: string;
-  role: string;
-  content: string;
-  created_at: string;
 }
 
 const pillarLabels = {
@@ -97,7 +84,6 @@ const mockSessionData: SessionDetailData = {
 
 export default function PrestadorSessionDetail() {
   const { id } = useParams();
-  const { t } = useTranslation(['provider', 'user']);
   const [session] = useState<SessionDetailData>(mockSessionData);
   const [privateNotes, setPrivateNotes] = useState(session.notes || '');
   const [timeUntilSession, setTimeUntilSession] = useState<string>('');
@@ -106,7 +92,6 @@ export default function PrestadorSessionDetail() {
   const [showNoShowDialog, setShowNoShowDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [attachments, setAttachments] = useState(session.attachments);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -136,23 +121,6 @@ export default function PrestadorSessionDetail() {
 
     return () => clearInterval(interval);
   }, [session.date, session.time]);
-
-  useEffect(() => {
-    if (session.chat_session_id) {
-      const fetchChatMessages = async () => {
-        const { data, error } = await supabase
-          .from('chat_messages')
-          .select('*')
-          .eq('session_id', session.chat_session_id)
-          .order('created_at');
-        
-        if (!error && data) {
-          setChatMessages(data);
-        }
-      };
-      fetchChatMessages();
-    }
-  }, [session.chat_session_id]);
 
   const formatSessionDateTime = () => {
     const dateTime = new Date(`${session.date}T${session.time}`);
@@ -303,65 +271,6 @@ export default function PrestadorSessionDetail() {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Pre-Diagnostic Information */}
-            {session.chat_session_id && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    {t('provider:preDiagnostic.title')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {session.topic && (
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-1">
-                        {t('provider:preDiagnostic.topic')}
-                      </p>
-                      <p className="text-foreground">
-                        {t(`user:topics.${session.pillar}.${session.topic}`)}
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div>
-                    <h4 className="text-sm font-semibold mb-3">
-                      {t('provider:preDiagnostic.transcript')}
-                    </h4>
-                    <ScrollArea className="h-64 border rounded-lg p-3 bg-muted/30">
-                      {chatMessages.length > 0 ? (
-                        <div className="space-y-3">
-                          {chatMessages.map((msg) => (
-                            <div
-                              key={msg.id}
-                              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                            >
-                              <div
-                                className={`max-w-[85%] rounded-lg p-3 ${
-                                  msg.role === 'user'
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted'
-                                }`}
-                              >
-                                <p className="text-xs opacity-70 mb-1">
-                                  {msg.role === 'user' ? t('provider:preDiagnostic.user') : t('provider:preDiagnostic.assistant')}
-                                </p>
-                                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-muted-foreground text-center py-8">
-                          {t('provider:preDiagnostic.noData')}
-                        </p>
-                      )}
-                    </ScrollArea>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Private Notes */}
             <Card>

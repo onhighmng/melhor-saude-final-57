@@ -20,7 +20,7 @@ export const TopicSelection = ({
   onBack, 
   onNext 
 }: TopicSelectionProps) => {
-  const { t } = useTranslation(['user', 'common']);
+  const { t } = useTranslation('user');
   const topics = getTopicsForPillar(pillar);
 
   const getIcon = (iconName: string) => {
@@ -38,11 +38,11 @@ export const TopicSelection = ({
           className="gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-          {t('common:actions.back')}
+          {t('common.actions.back')}
         </Button>
         <div>
-          <h2 className="text-2xl font-bold">{t('user:booking.directFlow.selectTopic')}</h2>
-          <p className="text-sm text-muted-foreground">{t('user:booking.directFlow.topicSubtitle')}</p>
+          <h2 className="text-2xl font-bold">{t('booking.directFlow.selectTopic')}</h2>
+          <p className="text-sm text-muted-foreground">{t('booking.directFlow.topicSubtitle')}</p>
         </div>
       </div>
 
@@ -64,10 +64,10 @@ export const TopicSelection = ({
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg mb-1">
-                    {t(`user:topics.${pillar}.${topic.id}.name`)}
+                    {t(topic.nameKey)}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {t(`user:topics.${pillar}.${topic.id}.description`)}
+                    {t(topic.descriptionKey)}
                   </p>
                 </div>
               </div>
@@ -82,7 +82,7 @@ export const TopicSelection = ({
           disabled={!selectedTopic}
           size="lg"
         >
-          {t('common:actions.continue')}
+          {t('common.actions.continue')}
         </Button>
       </div>
     </div>

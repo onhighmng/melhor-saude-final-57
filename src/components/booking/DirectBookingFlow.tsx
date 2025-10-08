@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import PillarSelection from './PillarSelection';
 import { TopicSelection } from './TopicSelection';
 import { PreDiagnosticChat } from './PreDiagnosticChat';
@@ -10,15 +9,10 @@ type BookingStep = 'pillar' | 'topic' | 'chat';
 
 export const DirectBookingFlow = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation('user');
   const [currentStep, setCurrentStep] = useState<BookingStep>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
-
-  useEffect(() => {
-    console.log('[DirectBookingFlow] Step:', currentStep, 'Pillar:', selectedPillar, 'Topic:', selectedTopic);
-  }, [currentStep, selectedPillar, selectedTopic]);
 
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
