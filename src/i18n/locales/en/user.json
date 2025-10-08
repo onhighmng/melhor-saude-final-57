@@ -43,6 +43,26 @@
       "action": "Book Session"
     },
     "directFlow": {
+      "pillarTitle": "Which of the four pillars would you like to access?",
+      "pillarSubtitle": "Choose the area where you need specialized support",
+      "pillars": {
+        "psicologica": {
+          "title": "Mental Health",
+          "description": "Psychological support and mental wellbeing"
+        },
+        "fisica": {
+          "title": "Physical Wellness",
+          "description": "Physical health and lifestyle"
+        },
+        "financeira": {
+          "title": "Financial Assistance",
+          "description": "Financial consulting and planning"
+        },
+        "juridica": {
+          "title": "Legal Assistance",
+          "description": "Specialized legal consulting"
+        }
+      },
       "selectTopic": "Select a Topic",
       "topicSubtitle": "Choose the topic that best describes your situation",
       "chatTitle": "Tell us more about your situation",
@@ -50,7 +70,29 @@
       "chatWelcome": "Hello! I'll help you with {{topic}}. Please tell me more about your situation.",
       "chatAcknowledge": "Thank you for sharing. You can continue providing more details or book a session when you're ready.",
       "chatPlaceholder": "Write the details of your situation here...",
-      "conversation": "Conversation"
+      "conversation": "Conversation",
+      "specialistDirectory": {
+        "title": "Specialists in {{pillar}}",
+        "subtitle": "Choose the ideal professional for your needs",
+        "backToPillars": "Back to pillar selection",
+        "schedule": "Schedule",
+        "experience": "{{years}} of experience",
+        "noSpecialists": "No specialists found for this area.",
+        "chooseAnother": "Choose Another Pillar"
+      },
+      "universalChat": {
+        "title": "Talk to Specialist",
+        "specialists": {
+          "legal": "Legal Specialist",
+          "psychological": "Mental Health Specialist",
+          "physical": "Physical Wellness Specialist",
+          "financial": "Financial Consultant"
+        },
+        "typing": "Typing...",
+        "placeholder": "Write your message...",
+        "welcomeWithPillar": "Hello! I'm here to help you with your situation. Please tell me what brings you here today.",
+        "welcomeGeneral": "Hello! I'm here to help. Can you share with me what brings you here today?"
+      }
     },
     "specialistChoice": {
       "title": "How Would You Like to Get Help?",

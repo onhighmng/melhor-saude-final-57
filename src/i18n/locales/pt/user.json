@@ -43,6 +43,26 @@
       "action": "Marcar Sessão"
     },
     "directFlow": {
+      "pillarTitle": "Qual dos quatro pilares deseja acessar?",
+      "pillarSubtitle": "Escolha a área onde precisa de apoio especializado",
+      "pillars": {
+        "psicologica": {
+          "title": "Saúde mental",
+          "description": "Apoio psicológico e bem-estar mental"
+        },
+        "fisica": {
+          "title": "Bem estar físico",
+          "description": "Saúde física e estilo de vida"
+        },
+        "financeira": {
+          "title": "Assistência financeira",
+          "description": "Consultoria e planeamento financeiro"
+        },
+        "juridica": {
+          "title": "Assistência Jurídica",
+          "description": "Consultoria jurídica especializada"
+        }
+      },
       "selectTopic": "Selecione um Tópico",
       "topicSubtitle": "Escolha o tópico que melhor descreve a sua situação",
       "chatTitle": "Conte-nos mais sobre a sua situação",
@@ -50,7 +70,29 @@
       "chatWelcome": "Olá! Vou ajudá-lo com {{topic}}. Por favor, conte-me mais sobre a sua situação.",
       "chatAcknowledge": "Obrigado por partilhar. Pode continuar a dar mais detalhes ou marcar uma sessão quando estiver pronto.",
       "chatPlaceholder": "Escreva aqui os detalhes da sua situação...",
-      "conversation": "Conversa"
+      "conversation": "Conversa",
+      "specialistDirectory": {
+        "title": "Especialistas em {{pillar}}",
+        "subtitle": "Escolha o profissional ideal para as suas necessidades",
+        "backToPillars": "Voltar à seleção de pilares",
+        "schedule": "Agendar",
+        "experience": "{{years}} de experiência",
+        "noSpecialists": "Não foram encontrados especialistas para esta área.",
+        "chooseAnother": "Escolher Outro Pilar"
+      },
+      "universalChat": {
+        "title": "Fale com Especialista",
+        "specialists": {
+          "legal": "Especialista Jurídico",
+          "psychological": "Especialista em Saúde Mental",
+          "physical": "Especialista em Bem-Estar Físico",
+          "financial": "Consultor Financeiro"
+        },
+        "typing": "A escrever...",
+        "placeholder": "Escreva a sua mensagem...",
+        "welcomeWithPillar": "Olá! Estou aqui para ajudá-lo com a sua situação. Por favor, conte-me o que o traz aqui hoje.",
+        "welcomeGeneral": "Olá! Estou aqui para o ajudar. Pode partilhar comigo o que o traz aqui hoje?"
+      }
     },
     "specialistChoice": {
       "title": "Como Prefere Obter Ajuda?",

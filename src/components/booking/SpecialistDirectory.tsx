@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { mockProviders } from '@/data/mockData';
 import { BookingPillar } from './BookingFlow';
 import { ArrowLeft, Star } from 'lucide-react';
@@ -21,12 +22,7 @@ interface SpecialistDirectoryProps {
 }
 
 const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDirectoryProps) => {
-  const pillarTitles = {
-    psicologica: 'Saúde mental',
-    fisica: 'Bem estar físico',
-    financeira: 'Assistência financeira',
-    juridica: 'Assistência Jurídica'
-  };
+  const { t } = useTranslation(['user', 'common']);
 
   const pillarMapping = {
     'psicologica': 'saude_mental',
@@ -49,15 +45,15 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
             className="inline-flex items-center text-royal-blue hover:text-navy-blue transition-colors duration-200 mb-8"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar à seleção de pilares
+            {t('user:booking.directFlow.specialistDirectory.backToPillars')}
           </button>
 
           <div className="text-center mb-16">
             <h1 className="font-semibold text-4xl sm:text-5xl leading-tight mb-6 text-navy-blue animate-fade-in">
-              Especialistas em {pillarTitles[pillar]}
+              {t('user:booking.directFlow.specialistDirectory.title', { pillar: t(`user:booking.directFlow.pillars.${pillar}.title`) })}
             </h1>
             <p className="font-medium text-xl lg:text-2xl leading-tight text-royal-blue">
-              Escolha o profissional ideal para as suas necessidades
+              {t('user:booking.directFlow.specialistDirectory.subtitle')}
             </p>
           </div>
 
@@ -88,7 +84,7 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
                     </p>
                     
                     <p className="text-sm md:text-base leading-relaxed tracking-tight mb-4 text-slate-grey">
-                      {provider.experience} de experiência
+                      {t('user:booking.directFlow.specialistDirectory.experience', { years: provider.experience })}
                     </p>
                     
                     <div className="flex items-center mb-4">
@@ -97,7 +93,7 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
                     </div>
                     
                     <div className="text-white rounded-2xl px-6 py-3 text-base lg:text-lg font-semibold tracking-tight transition-all duration-300 bg-gradient-to-r from-accent-sage to-vibrant-blue hover:from-vibrant-blue hover:to-accent-sage hover:scale-105 hover:shadow-2xl relative overflow-hidden group/btn min-w-[140px]">
-                      <span className="relative z-10">Agendar</span>
+                      <span className="relative z-10">{t('user:booking.directFlow.specialistDirectory.schedule')}</span>
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
                     </div>
                   </div>
@@ -107,13 +103,13 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
           ) : (
             <div className="text-center py-16">
               <p className="text-xl text-slate-grey mb-4">
-                Não foram encontrados especialistas para esta área.
+                {t('user:booking.directFlow.specialistDirectory.noSpecialists')}
               </p>
               <button 
                 onClick={onBack}
                 className="bg-royal-blue text-soft-white rounded-[20px] px-8 py-4 text-lg leading-tight font-medium hover:bg-navy-blue transition-colors duration-200"
               >
-                Escolher Outro Pilar
+                {t('user:booking.directFlow.specialistDirectory.chooseAnother')}
               </button>
             </div>
           )}
