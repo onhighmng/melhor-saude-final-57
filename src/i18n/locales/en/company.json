@@ -1,4 +1,10 @@
 {
+  "errors": {
+    "inviteFailed": "Failed to invite employee",
+    "seatLimitTooLow": "Cannot update limit – there are more active accounts than the new limit",
+    "fieldNameRequired": "Field name is required",
+    "contactDetailsRequired": "Name and email are required"
+  },
   "dashboard": {
     "title": "Company Dashboard",
     "subtitle": "Overview of wellbeing program usage",

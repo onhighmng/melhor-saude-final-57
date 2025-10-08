@@ -56,3 +56,6 @@ verify_jwt = false
 
 [functions.universal-specialist-chat]
 verify_jwt = false
+
+[functions.prediagnostic-chat]
+verify_jwt = false

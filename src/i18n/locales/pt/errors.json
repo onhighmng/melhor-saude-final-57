@@ -1,4 +1,5 @@
 {
+  "title": "Erro",
   "auth": {
     "invalidEmail": "Email inválido",
     "userNotFound": "Utilizador não encontrado",
@@ -8,5 +9,8 @@
   "network": "Erro de conexão. Verifique a sua internet",
   "permissionDenied": "Sem permissão para esta ação",
   "notFound": "Recurso não encontrado",
-  "unknown": "Ocorreu um erro"
+  "unknown": "Ocorreu um erro",
+  "chatInitFailed": "Não foi possível iniciar a sessão de chat",
+  "messageSendFailed": "Não foi possível enviar a mensagem",
+  "languageChangeFailed": "Falha ao alterar o idioma. Por favor, tente novamente."
 }

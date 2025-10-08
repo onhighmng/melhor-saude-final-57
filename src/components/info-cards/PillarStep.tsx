@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface PillarStepProps {
@@ -18,6 +19,8 @@ const PillarStep: React.FC<PillarStepProps> = ({
   isVisible,
   index
 }) => {
+  const { t } = useTranslation('common');
+  
   const pillarImages = [
     "/lovable-uploads/therapy-session.png", // Saúde Psicológica
     "/lovable-uploads/financial-planning.png", // Saúde Financeira
@@ -25,54 +28,10 @@ const PillarStep: React.FC<PillarStepProps> = ({
     "/lovable-uploads/business-meeting.png"  // Saúde Jurídica e Social
   ];
 
-  const pillarDescriptions = [
-    "Cuidar da saúde mental é essencial para manter o equilíbrio emocional, a produtividade e a qualidade de vida no ambiente de trabalho.",
-    "Reduzir o stress financeiro através de literacia financeira abrangente e apoio prático na gestão económica pessoal e familiar.",
-    "Promover vitalidade e bem-estar através de medicina preventiva, nutrição balanceada e programas de exercício físico adaptados ao ambiente empresarial.",
-    "Segurança jurídica é parte essencial do bem-estar, permitindo decisões informadas e proteção legal completa para colaboradores e suas famílias."
-  ];
-
-  const pillarSpecialists = [
-    "Psicólogos, psiquiatras, terapeutas, coaches de vida, conselheiros matrimoniais, terapeutas cognitivo-comportamentais, terapeutas ocupacionais, especialistas em mindfulness, psicanalistas, terapeutas familiares.",
-    "Consultores financeiros, coaches certificados, contabilistas, gestores de investimento, planejadores financeiros pessoais, consultores de crédito, especialistas em finanças pessoais, peritos tributários, educadores financeiros.",
-    "Personal trainers, nutricionistas, médicos de clínica geral, fisioterapeutas, enfermeiros, quiropráticos, instrutores de yoga, massoterapeutas, educadores físicos, especialistas em medicina esportiva.",
-    "Advogados, paralegais especializados em direito laboral e familiar, mediadores jurídicos, consultores de compliance, defensores públicos, notários, especialistas em direito civil, consultores em contratos, juristas empresariais."
-  ];
-
-  const pillarFeatures = [
-    [
-      "Sessões individuais com psicólogos certificados", 
-      "Atendimento em situações de crise emocional", 
-      "Aconselhamento sobre stress laboral e burnout",
-      "Programas de mindfulness e autocuidado",
-      "Apoio psicológico 24 horas por dia, 7 dias por semana",
-      "Terapia de grupo especializada"
-    ],
-    [
-      "Sessões com consultores financeiros certificados", 
-      "Apoio na elaboração de orçamentos personalizados", 
-      "Programas educativos sobre gestão de dinheiro",
-      "Orientação para reorganizar finanças",
-      "Planeamento de poupanças e investimentos",
-      "Renegociação de dívidas"
-    ],
-    [
-      "Acesso a médicos e nutricionistas qualificados", 
-      "Planos alimentares personalizados", 
-      "Programas de exercício e pausas ativas",
-      "Avaliações de saúde ocupacional",
-      "Fisioterapia e reabilitação",
-      "Rastreios de saúde regulares"
-    ],
-    [
-      "Consultoria com advogados especializados", 
-      "Esclarecimento sobre contratos e direitos", 
-      "Acompanhamento preventivo para evitar litígios",
-      "Direito da família e civil",
-      "Direito do trabalho",
-      "Representação legal quando necessário"
-    ]
-  ];
+  const pillarKeys = ['psychological', 'financial', 'physical', 'legal'];
+  const pillarKey = pillarKeys[index];
+  
+  const specialistsList = t(`pillars.${pillarKey}.specialists.list`, { returnObjects: true }) as string[];
 
   return (
     <div 
@@ -97,16 +56,13 @@ const PillarStep: React.FC<PillarStepProps> = ({
             </h2>
           </div>
           <p className="text-sm sm:text-base lg:text-lg text-navy-blue leading-relaxed max-w-2xl mx-auto font-medium px-2">
-            {pillarDescriptions[index]}
+            {t(`pillars.${pillarKey}.description`)}
           </p>
           
-          {/* Specialists Section */}
+          {/* 24/7 Availability Message */}
           <div className="mt-4 max-w-3xl mx-auto">
-            <p className="text-xs sm:text-sm text-royal-blue/80 font-semibold mb-2">
-              Profissionais Disponíveis 24 horas por dia, 7 dias por semana:
-            </p>
-            <p className="text-xs sm:text-sm text-navy-blue/70 leading-relaxed px-4">
-              {pillarSpecialists[index]}
+            <p className="text-xs sm:text-sm text-royal-blue/80 font-semibold">
+              {t(`pillars.${pillarKey}.specialists.sectionTitle`)} {t(`pillars.${pillarKey}.specialists.availability`)}
             </p>
           </div>
         </div>
@@ -129,28 +85,28 @@ const PillarStep: React.FC<PillarStepProps> = ({
             </div>
           </div>
 
-          {/* Content Section - Only Serviços Incluídos */}
+          {/* Content Section - Profissionais Disponíveis */}
           <div className="order-1 lg:order-2">
             <Card className="overflow-hidden bg-white/95 backdrop-blur-lg border-0 shadow-lg rounded-xl hover:shadow-xl transition-shadow duration-500">
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                   <h3 className="font-bold text-base sm:text-lg text-navy-blue">
-                    Serviços Incluídos
+                    {t(`pillars.${pillarKey}.specialists.sectionTitle`)}
                   </h3>
                 </div>
                 
                 <div className="space-y-2">
-                  {pillarFeatures[index].map((feature, featureIndex) => (
+                  {specialistsList.map((specialist: string, specialistIndex: number) => (
                     <div 
-                      key={featureIndex} 
+                      key={specialistIndex} 
                       className="flex items-start gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-lg hover:bg-gradient-to-r hover:from-mint-green/5 hover:to-sky-blue/5 transition-all duration-300 group border border-transparent hover:border-royal-blue/10"
                       style={{
-                        animationDelay: `${featureIndex * 100}ms`
+                        animationDelay: `${specialistIndex * 100}ms`
                       }}
                     >
                       <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-royal-blue to-mint-green rounded-full mt-1 sm:mt-1.5 flex-shrink-0 group-hover:scale-125 transition-transform duration-300 shadow-sm"></div>
                       <span className="text-xs sm:text-xs lg:text-sm text-navy-blue leading-relaxed font-medium group-hover:text-royal-blue transition-colors duration-300">
-                        {feature}
+                        {specialist}
                       </span>
                     </div>
                   ))}

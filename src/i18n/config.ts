@@ -69,7 +69,23 @@ i18n
 
     react: {
       useSuspense: false,
+      bindI18n: 'languageChanged loaded', // Re-render on language change
+      bindI18nStore: 'added removed',
     },
+    
+    // Add language normalization
+    load: 'languageOnly', // Load 'pt' instead of 'pt-BR'
+    
+    // Development-only debugging
+    debug: import.meta.env.DEV,
   });
+
+// Normalize language on initialization
+const currentLang = i18n.language || 'pt';
+const normalizedLang = currentLang.toLowerCase().startsWith('pt') ? 'pt' : 'en';
+
+if (normalizedLang !== i18n.language) {
+  i18n.changeLanguage(normalizedLang);
+}
 
 export default i18n;

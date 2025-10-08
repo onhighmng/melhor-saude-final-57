@@ -14,7 +14,8 @@
     "providersSubtitle": "Profissionais dedicados ao seu bem-estar",
     "helpTitle": "Ajuda & Recursos",
     "helpSubtitle": "Acesse conteúdos exclusivos para o seu bem-estar",
-    "ctaBookSession": "Agendar uma Sessão",
+    "ctaBookSession": "Marcar Sessão",
+    "ctaTalkSpecialist": "Falar com Especialista",
     "ctaExploreResources": "Explorar Recursos de Bem-Estar",
     "ctaUseQuota": "Aproveitar as Sessões",
     "ctaViewDetails": "Ver Detalhes",
@@ -22,6 +23,55 @@
     "ctaFirstSession": "Marcar Primeira Sessão"
   },
   "booking": {
+    "form": {
+      "title": "Agendar Sessão",
+      "withProvider": "com {{providerName}}",
+      "backToSpecialists": "Voltar aos especialistas",
+      "selectDate": "Data",
+      "selectTime": "Horário",
+      "confirm": "Confirmar Agendamento",
+      "cancel": "Voltar"
+    },
+    "alerts": {
+      "fillAllFields": "Por favor, preencha todos os campos.",
+      "noSessionsAvailable": "Não tem sessões disponíveis. Por favor, adquira sessões adicionais antes de agendar.",
+      "redirectingPayment": "Redirecionando para pagamento..."
+    },
+    "sessionBalance": {
+      "title": "Sessões Disponíveis",
+      "depleted": "Sessões Esgotadas",
+      "depletedMessage": "Não tem sessões disponíveis no seu plano atual. Para agendar uma nova sessão, precisa de adquirir sessões adicionais.",
+      "acquireSessions": "Adquirir Sessões",
+      "employer": "Empresa",
+      "personal": "Plano Pessoal",
+      "sessions": "sessões"
+    },
+    "toasts": {
+      "profileUpdated": "Perfil atualizado",
+      "profileUpdatedDesc": "As suas informações foram guardadas com sucesso.",
+      "notificationsUpdated": "Notificações atualizadas",
+      "notificationsUpdatedDesc": "As suas preferências foram guardadas.",
+      "consentsUpdated": "Consentimentos atualizados",
+      "consentsUpdatedDesc": "As suas preferências de privacidade foram guardadas.",
+      "passwordMismatch": "As palavras-passe não coincidem.",
+      "passwordTooShort": "A palavra-passe deve ter pelo menos 8 caracteres.",
+      "passwordChanged": "Palavra-passe alterada",
+      "passwordChangedDesc": "A sua palavra-passe foi atualizada com sucesso.",
+      "twoFactorEnabled": "2FA Ativado",
+      "twoFactorEnabledDesc": "Autenticação de dois fatores foi ativada na sua conta.",
+      "changeRequestSent": "Pedido enviado",
+      "changeRequestSentDesc": "O seu pedido de troca será analisado pela equipa."
+    },
+    "format": {
+      "individualOnline": "Sessão Individual Online",
+      "description": "Todas as sessões são individuais e realizadas através de videochamada (Google Meet, Zoom ou Teams).",
+      "platforms": {
+        "meet": "Google Meet",
+        "zoom": "Zoom",
+        "teams": "Microsoft Teams"
+      },
+      "automaticLink": "Link automático: Receberá o link da videochamada automaticamente 5 minutos antes da sessão"
+    },
     "choosePillar": "Escolha a Área de Apoio",
     "pillarSubtitle": "Selecione a área onde precisa de ajuda",
     "back": "← Voltar",
@@ -36,6 +86,78 @@
     "backToDashboard": "Voltar ao Painel",
     "sendResponses": "Enviar Respostas",
     "viewRecommendations": "Ver Recomendações",
+    "banner": {
+      "title": "Precisa de uma sessão 1-a-1?",
+      "subtitle": "Se o assunto é complexo ou não está a progredir, marque uma sessão com um dos nossos especialistas.",
+      "action": "Marcar Sessão"
+    },
+    "directFlow": {
+      "pillarTitle": "Qual dos quatro pilares deseja acessar?",
+      "pillarSubtitle": "Escolha a área onde precisa de apoio especializado",
+      "pillars": {
+        "psicologica": {
+          "title": "Saúde mental",
+          "description": "Apoio psicológico e bem-estar mental"
+        },
+        "fisica": {
+          "title": "Bem estar físico",
+          "description": "Saúde física e estilo de vida"
+        },
+        "financeira": {
+          "title": "Assistência financeira",
+          "description": "Consultoria e planeamento financeiro"
+        },
+        "juridica": {
+          "title": "Assistência Jurídica",
+          "description": "Consultoria jurídica especializada"
+        }
+      },
+      "selectTopic": "Selecione um Tópico",
+      "topicSubtitle": "Escolha o tópico que melhor descreve a sua situação",
+      "chatTitle": "Conte-nos mais sobre a sua situação",
+      "chatSubtitle": "As suas respostas ajudarão o especialista a preparar-se melhor.",
+      "chatEmptyState": "Comece por descrever a sua situação. O assistente está pronto para ajudá-lo.",
+      "chatWelcome": "Olá! Vou ajudá-lo com {{topic}}. Por favor, conte-me mais sobre a sua situação.",
+      "chatAcknowledge": "Obrigado por partilhar. Pode continuar a dar mais detalhes ou marcar uma sessão quando estiver pronto.",
+      "chatPlaceholder": "Escreva aqui os detalhes da sua situação...",
+      "conversation": "Conversa",
+      "providerAssigned": "Especialista Atribuído",
+      "providerAssignedSubtitle": "Encontrámos o melhor especialista para si",
+      "matchFound": "Correspondência Encontrada!",
+      "matchFoundDesc": "Com base na sua área de necessidade, atribuímos um especialista qualificado.",
+      "providerExpertise": "Especialista em {{pillar}} com experiência comprovada.",
+      "selectDateTime": "Selecionar Data e Hora",
+      "confirmTitle": "Confirmar a Sua Sessão",
+      "confirmSubtitle": "Por favor, reveja os detalhes da sua sessão antes de confirmar",
+      "sessionDetails": "Detalhes da Sessão",
+      "date": "Data",
+      "time": "Hora",
+      "focusArea": "Área de Foco",
+      "confirmBooking": "Confirmar Marcação",
+      "confirming": "A confirmar...",
+      "specialistDirectory": {
+        "title": "Especialistas em {{pillar}}",
+        "subtitle": "Escolha o profissional ideal para as suas necessidades",
+        "backToPillars": "Voltar à seleção de pilares",
+        "schedule": "Agendar",
+        "experience": "{{years}} de experiência",
+        "noSpecialists": "Não foram encontrados especialistas para esta área.",
+        "chooseAnother": "Escolher Outro Pilar"
+      },
+      "universalChat": {
+        "title": "Fale com Especialista",
+        "specialists": {
+          "legal": "Especialista Jurídico",
+          "psychological": "Especialista em Saúde Mental",
+          "physical": "Especialista em Bem-Estar Físico",
+          "financial": "Consultor Financeiro"
+        },
+        "typing": "A escrever...",
+        "placeholder": "Escreva a sua mensagem...",
+        "welcomeWithPillar": "Olá! Estou aqui para ajudá-lo com a sua situação. Por favor, conte-me o que o traz aqui hoje.",
+        "welcomeGeneral": "Olá! Estou aqui para o ajudar. Pode partilhar comigo o que o traz aqui hoje?"
+      }
+    },
     "specialistChoice": {
       "title": "Como Prefere Obter Ajuda?",
       "subtitle": "Selecione como prefere obter ajuda jurídica",
@@ -47,7 +169,8 @@
       "humanButton": "Falar com um Especialista"
     },
     "dateTime": {
-      "title": "Agendar com {{name}} - {{specialty}}",
+      "title": "Escolha uma Data e Horário",
+      "subtitle": "Selecione o dia e horário para a sua sessão de {{pillar}}",
       "selectDateTime": "Selecionar Data e Horário",
       "confirmSession": "Confirmar Sessão",
       "selectDateAndTime": "Por favor selecione data e hora"
@@ -89,6 +212,30 @@
     "statusCompleted": "Concluída",
     "statusCancelled": "Cancelada",
     "statusPending": "Pendente",
+    "statusScheduled": "Agendada",
+    "statusRescheduled": "Reagendada",
+    "statusNoShow": "Falta",
+    "historyTitle": "Histórico de Sessões",
+    "noSessionsYet": "Ainda não tem sessões agendadas",
+    "bookFirst": "Marcar Primeira Sessão",
+    "sessionWith": "Sessão com {{provider}}",
+    "quota": {
+      "company": "Quota {{type}}"
+    },
+    "deducted": "Sessão Deduzida",
+    "deductedFrom": "Deduzida da quota {{type}} em {{date}}",
+    "notDeducted": "Sessão Não Deduzida",
+    "cancellationsNoCharge": "Cancelamentos não consomem sessões da sua quota.",
+    "absencesNoCharge": "Faltas não consomem sessões da sua quota.",
+    "reschedulesNoCharge": "Reagendamentos não consomem sessões da sua quota.",
+    "meetingLinkAvailable": "Link da Reunião Disponível",
+    "rateSession": "Avaliar Sessão",
+    "actions": {
+      "viewDetails": "Ver Detalhes",
+      "reschedule": "Reagendar",
+      "cancel": "Cancelar",
+      "join": "Entrar na Reunião"
+    },
     "ctaUseSession": "Usar Sessão Disponível",
     "ctaBookToSave": "Agendar para Não Perder Sessões",
     "ctaCancelSession": "Cancelar Sessão",
@@ -101,7 +248,6 @@
     "ctaBookAgain": "Marcar Novamente",
     "emptyState": "Agendar Primeira Sessão",
     "upcomingTitle": "Próximas Sessões",
-    "historyTitle": "Histórico Rápido",
     "completedCount": "{{count}} sessões concluídas",
     "startingSoonBadge": "Começar em breve",
     "todayBadge": "Hoje",
@@ -112,13 +258,41 @@
   "notifications": {
     "title": "Notificações",
     "subtitle": "Avisos e lembretes importantes",
+    "tabs": {
+      "unread": "Não Lidas ({{count}})",
+      "all": "Todas ({{count}})"
+    },
     "markRead": "Marcar como lida",
     "markUnread": "Marcar como não lida",
+    "markedAsRead": "Notificação marcada como lida",
+    "newBadge": "Nova",
     "ctaQuotaWarning": "Agendar Sessão Antes que Termine o Período",
     "ctaViewDetails": "Ver Detalhes",
     "ctaSendFeedback": "Enviar Avaliação",
     "ctaJoinSession": "Entrar na Sessão",
-    "emptyState": "Sem notificações no momento"
+    "emptyState": "Sem notificações no momento",
+    "mockNotifications": {
+      "sessionToday": {
+        "title": "Sessão Hoje",
+        "message": "A sua sessão com {{provider}} começa às {{time}}"
+      },
+      "rateSess": {
+        "title": "Avalie a Sua Sessão",
+        "message": "Como foi a sua sessão com {{provider}}?"
+      },
+      "quotaExpiring": {
+        "title": "Sessões a Expirar",
+        "message": "Tem {{count}} sessões que expiram no final do mês"
+      },
+      "sessionConfirmed": {
+        "title": "Sessão Confirmada",
+        "message": "A sua sessão foi agendada para {{date}} às {{time}}"
+      },
+      "newResources": {
+        "title": "Novos Recursos Disponíveis",
+        "message": "Explore os novos artigos sobre bem-estar mental"
+      }
+    }
   },
   "resources": {
     "title": "Recursos de Bem-Estar",
@@ -170,5 +344,152 @@
     "ctaContactSupport": "Falar com Suporte",
     "noResultCTA": "Falar com Suporte",
     "articleFooter": "Ainda com dúvidas? Fale Connosco"
+  },
+  "topics": {
+    "saude_mental": {
+      "anxiety": { "name": "Ansiedade", "description": "Gestão de ansiedade e preocupações" },
+      "depression": { "name": "Depressão", "description": "Apoio para sintomas depressivos" },
+      "stress": { "name": "Stress", "description": "Técnicas de gestão de stress" },
+      "burnout": { "name": "Burnout", "description": "Recuperação de esgotamento profissional" },
+      "relationships": { "name": "Relacionamentos", "description": "Questões relacionais e comunicação" },
+      "selfEsteem": { "name": "Autoestima", "description": "Desenvolvimento da autoconfiança" },
+      "other": { "name": "Outro", "description": "Outras questões psicológicas" }
+    },
+    "assistencia_financeira": {
+      "budgeting": { "name": "Orçamentação", "description": "Gestão de orçamento pessoal" },
+      "debt": { "name": "Dívidas", "description": "Estratégias de gestão de dívidas" },
+      "savings": { "name": "Poupanças", "description": "Planos de poupança e investimento" },
+      "investments": { "name": "Investimentos", "description": "Consultoria de investimento" },
+      "retirement": { "name": "Reforma", "description": "Planeamento de reforma" },
+      "taxes": { "name": "Impostos", "description": "Planeamento e otimização fiscal" },
+      "other": { "name": "Outro", "description": "Outras questões financeiras" }
+    },
+    "bem_estar_fisico": {
+      "fitness": { "name": "Fitness", "description": "Programas de exercício físico" },
+      "nutrition": { "name": "Nutrição", "description": "Planeamento nutricional personalizado" },
+      "sleep": { "name": "Sono", "description": "Melhoria da qualidade do sono" },
+      "pain": { "name": "Dor", "description": "Gestão de dor crónica ou aguda" },
+      "chronicConditions": { "name": "Condições Crónicas", "description": "Gestão de condições crónicas de saúde" },
+      "preventiveCare": { "name": "Cuidados Preventivos", "description": "Prevenção e saúde preventiva" },
+      "other": { "name": "Outro", "description": "Outras questões de saúde física" }
+    },
+    "assistencia_juridica": {
+      "employment": { "name": "Trabalho", "description": "Questões laborais e direito do trabalho" },
+      "contracts": { "name": "Contratos", "description": "Análise e revisão de contratos" },
+      "family": { "name": "Família", "description": "Direito da família e relações familiares" },
+      "housing": { "name": "Habitação", "description": "Arrendamento e questões habitacionais" },
+      "consumerRights": { "name": "Direitos do Consumidor", "description": "Proteção e direitos do consumidor" },
+      "immigration": { "name": "Imigração", "description": "Questões de imigração e vistos" },
+      "other": { "name": "Outro", "description": "Outras questões jurídicas" }
+  },
+  "settings": {
+    "title": "As minhas Definições",
+    "subtitle": "Atualize os seus dados e preferências de conta",
+    "tabs": {
+      "profile": "Perfil",
+      "notifications": "Notificações",
+      "security": "Segurança",
+      "consents": "Consentimentos",
+      "providers": "Prestador Fixo"
+    },
+    "profile": {
+      "title": "Informações do Perfil",
+      "description": "Atualize as suas informações pessoais aqui.",
+      "fullName": "Nome completo",
+      "phone": "Número de telemóvel",
+      "preferredLanguage": "Idioma preferido",
+      "timezone": "Fuso horário",
+      "saveChanges": "Guardar alterações",
+      "languages": {
+        "pt": "Português",
+        "en": "English",
+        "es": "Español"
+      },
+      "timezones": {
+        "lisbon": "Europa/Lisboa",
+        "london": "Europa/Londres",
+        "newYork": "América/Nova York"
+      }
+    },
+    "notifications": {
+      "title": "Preferências de Notificação",
+      "description": "Pode gerir aqui como quer ser notificado.",
+      "emailConfirmation": "Email de confirmação de sessão",
+      "emailConfirmationDesc": "Receber email quando uma sessão for confirmada",
+      "pushNotification": "Notificação push",
+      "pushNotificationDesc": "Receber notificações push no dispositivo",
+      "reminder24h": "Lembrete 24h antes da sessão",
+      "reminder24hDesc": "Receber lembrete no dia anterior à sessão",
+      "feedbackReminder": "Lembrete de feedback após sessão",
+      "feedbackReminderDesc": "Receber lembrete para avaliar a sessão",
+      "savePreferences": "Guardar preferências"
+    },
+    "security": {
+      "title": "Segurança & Acesso",
+      "description": "Gerir as definições de segurança da sua conta.",
+      "password": "Palavra-passe",
+      "passwordLastChanged": "Última alteração em 15 de Janeiro, 2024",
+      "changePassword": "Alterar Palavra-Passe",
+      "changePasswordTitle": "Alterar Palavra-Passe",
+      "changePasswordDesc": "Introduza a sua palavra-passe atual e escolha uma nova palavra-passe.",
+      "currentPassword": "Palavra-passe atual",
+      "newPassword": "Nova palavra-passe",
+      "confirmPassword": "Confirmar nova palavra-passe",
+      "twoFactor": "Autenticação de dois fatores (2FA)",
+      "twoFactorStatus": "Estado: Desativado",
+      "enable2FA": "Ativar 2FA",
+      "enable2FATitle": "Ativar Autenticação de Dois Fatores",
+      "enable2FADesc": "Adicione uma camada extra de segurança à sua conta.",
+      "scanQR": "Digitalize este código QR com a sua aplicação de autenticação:",
+      "qrPlaceholder": "[QR Code simulado]",
+      "verificationCode": "Código de verificação",
+      "codePlaceholder": "000000"
+    },
+    "consents": {
+      "title": "Consentimentos",
+      "description": "Gerir os seus consentimentos para tratamento de dados.",
+      "dataProcessing": "Consentimento para tratamento de dados pessoais",
+      "dataProcessingDesc": "Obrigatório para o funcionamento da plataforma.",
+      "wellnessCommunications": "Consentimento para comunicações de bem-estar",
+      "wellnessCommunicationsDesc": "Receber dicas e conteúdos sobre saúde e bem-estar.",
+      "anonymousReports": "Uso de dados anónimos em relatórios agregados",
+      "anonymousReportsDesc": "Ajudar a melhorar os serviços através de análises agregadas.",
+      "saveConsents": "Guardar consentimentos"
+    },
+    "providers": {
+      "title": "Prestador Fixo por Pilar",
+      "description": "Os seus prestadores atribuídos em cada área de especialidade.",
+      "pendingRequest": "Tem um pedido de troca pendente para {{pillar}}.",
+      "noProvider": "Nenhum prestador atribuído",
+      "requestChange": "Pedir troca",
+      "requestChangeTitle": "Pedir Troca de Prestador",
+      "requestChangeDesc": "Indique o motivo para a troca de prestador em {{pillar}}.",
+      "reason": "Motivo da troca",
+      "reasonPlaceholder": "Descreva o motivo para solicitar a troca do prestador...",
+      "preferences": "Preferências (opcional)",
+      "prefGender": "Preferência de género",
+      "prefLanguage": "Preferência de língua",
+      "prefSchedule": "Preferência de horário",
+      "prefExperience": "Preferência de experiência específica",
+      "sendRequest": "Enviar Pedido",
+      "status": {
+        "pending": "Pendente",
+        "approved": "Aprovado",
+        "rejected": "Recusado",
+        "none": "Sem prestador"
+      },
+      "pillars": {
+        "mentalHealth": "Saúde Mental",
+        "physical": "Bem-Estar Físico",
+        "financial": "Assistência Financeira",
+        "legal": "Assistência Jurídica"
+      },
+      "specialties": {
+        "clinicalPsychologist": "Psicóloga Clínica",
+        "physiotherapist": "Fisioterapeuta",
+        "laborLawyer": "Advogado Trabalhista"
+      }
+    }
+  }
   }
 }

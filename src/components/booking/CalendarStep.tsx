@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -35,13 +36,14 @@ export default function CalendarStep({
   onNext, 
   pillarName 
 }: CalendarStepProps) {
+  const { t } = useTranslation(['user', 'common']);
   const timeSlots = generateTimeSlots();
 
   return (
     <div className="flex flex-col h-full">
       <div className="mb-8">
-        <h2 className="text-h2 text-foreground mb-2">Escolha uma Data e Horário</h2>
-        <p className="text-body text-muted-foreground">Selecione o dia e horário para a sua sessão de {pillarName}</p>
+        <h2 className="text-h2 text-foreground mb-2">{t('user:booking.dateTime.title')}</h2>
+        <p className="text-body text-muted-foreground">{t('user:booking.dateTime.subtitle', { pillar: pillarName })}</p>
       </div>
 
       <div className="flex-1">
@@ -62,7 +64,7 @@ export default function CalendarStep({
             size="lg"
             className="px-8"
           >
-            Continuar
+            {t('common:actions.continue')}
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </div>

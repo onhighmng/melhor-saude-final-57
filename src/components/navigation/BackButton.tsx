@@ -10,7 +10,7 @@ interface BackButtonProps {
 
 const BackButton = ({ className = '' }: BackButtonProps) => {
   const navigate = useNavigate();
-  const { t } = useTranslation('user');
+  const { t } = useTranslation(['user', 'common']);
 
   const handleBack = () => {
     console.log('🔙 Navigating back to Minha Saúde');
@@ -23,7 +23,7 @@ const BackButton = ({ className = '' }: BackButtonProps) => {
       className={`inline-flex items-center text-royal-blue hover:text-navy-blue transition-colors duration-200 ${className}`}
     >
       <ArrowLeft className="w-4 h-4 mr-2" />
-      {t('booking.backToMyHealth')}
+      {t('user:booking.backToMyHealth')}
     </button>
   );
 };

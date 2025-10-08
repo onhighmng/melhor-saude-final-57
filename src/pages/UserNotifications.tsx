@@ -1,65 +1,66 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NotificationList } from "@/components/notifications/NotificationList";
 import { Notification } from "@/components/notifications/NotificationCard";
-import { userUIcopy } from "@/data/userUIcopy";
 import { Bell } from "lucide-react";
 import { toast } from "sonner";
-import { userToastMessages } from "@/data/userToastMessages";
-
-// Mock notifications data
-const mockNotifications: Notification[] = [
-  {
-    id: 'notif-1',
-    type: 'session_reminder',
-    title: 'Sessão Hoje',
-    message: 'A sua sessão com Dr. João Silva começa às 14:00',
-    read: false,
-    createdAt: new Date().toISOString(),
-    actionUrl: '/user/sessions',
-    sessionId: 'sess-1',
-  },
-  {
-    id: 'notif-2',
-    type: 'feedback_request',
-    title: 'Avalie a Sua Sessão',
-    message: 'Como foi a sua sessão com Dra. Maria Santos?',
-    read: false,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    sessionId: 'sess-2',
-  },
-  {
-    id: 'notif-3',
-    type: 'quota_warning',
-    title: 'Sessões a Expirar',
-    message: 'Tem 2 sessões que expiram no final do mês',
-    read: true,
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-  },
-  {
-    id: 'notif-4',
-    type: 'booking_confirmation',
-    title: 'Sessão Confirmada',
-    message: 'A sua sessão foi agendada para 25 de Março às 10:00',
-    read: true,
-    createdAt: new Date(Date.now() - 259200000).toISOString(),
-    sessionId: 'sess-3',
-  },
-  {
-    id: 'notif-5',
-    type: 'info',
-    title: 'Novos Recursos Disponíveis',
-    message: 'Explore os novos artigos sobre bem-estar mental',
-    read: true,
-    createdAt: new Date(Date.now() - 345600000).toISOString(),
-    actionUrl: '/user/resources',
-  },
-];
 
 export default function UserNotifications() {
   const navigate = useNavigate();
+  const { t } = useTranslation('user');
+  
+  // Mock notifications data - using translation keys for display
+  const mockNotifications: Notification[] = [
+    {
+      id: 'notif-1',
+      type: 'session_reminder',
+      title: t('notifications.mockNotifications.sessionToday.title'),
+      message: t('notifications.mockNotifications.sessionToday.message', { provider: 'Dr. João Silva', time: '14:00' }),
+      read: false,
+      createdAt: new Date().toISOString(),
+      actionUrl: '/user/sessions',
+      sessionId: 'sess-1',
+    },
+    {
+      id: 'notif-2',
+      type: 'feedback_request',
+      title: t('notifications.mockNotifications.rateSession.title'),
+      message: t('notifications.mockNotifications.rateSession.message', { provider: 'Dra. Maria Santos' }),
+      read: false,
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      sessionId: 'sess-2',
+    },
+    {
+      id: 'notif-3',
+      type: 'quota_warning',
+      title: t('notifications.mockNotifications.quotaExpiring.title'),
+      message: t('notifications.mockNotifications.quotaExpiring.message', { count: 2 }),
+      read: true,
+      createdAt: new Date(Date.now() - 172800000).toISOString(),
+    },
+    {
+      id: 'notif-4',
+      type: 'booking_confirmation',
+      title: t('notifications.mockNotifications.sessionConfirmed.title'),
+      message: t('notifications.mockNotifications.sessionConfirmed.message', { date: '25 de Março', time: '10:00' }),
+      read: true,
+      createdAt: new Date(Date.now() - 259200000).toISOString(),
+      sessionId: 'sess-3',
+    },
+    {
+      id: 'notif-5',
+      type: 'info',
+      title: t('notifications.mockNotifications.newResources.title'),
+      message: t('notifications.mockNotifications.newResources.message'),
+      read: true,
+      createdAt: new Date(Date.now() - 345600000).toISOString(),
+      actionUrl: '/user/resources',
+    },
+  ];
+  
   const [notifications, setNotifications] = useState(mockNotifications);
   
   const unreadNotifications = notifications.filter(n => !n.read);
@@ -69,7 +70,7 @@ export default function UserNotifications() {
     setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, read: true } : n)
     );
-    toast.success("Notificação marcada como lida");
+    toast.success(t('notifications.markedAsRead'));
   };
   
   const handleAction = (notification: Notification) => {
@@ -103,8 +104,8 @@ export default function UserNotifications() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={userUIcopy.notifications.title}
-        subtitle={userUIcopy.notifications.subtitle}
+        title={t('notifications.title')}
+        subtitle={t('notifications.subtitle')}
         icon={Bell}
       />
       
@@ -112,10 +113,10 @@ export default function UserNotifications() {
         <Tabs defaultValue="unread" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="unread">
-              Não Lidas ({unreadNotifications.length})
+              {t('notifications.tabs.unread', { count: unreadNotifications.length })}
             </TabsTrigger>
             <TabsTrigger value="all">
-              Todas ({notifications.length})
+              {t('notifications.tabs.all', { count: notifications.length })}
             </TabsTrigger>
           </TabsList>
           

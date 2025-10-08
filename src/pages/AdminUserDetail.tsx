@@ -79,7 +79,7 @@ interface UserDetail {
 const AdminUserDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation('admin');
+  const { t } = useTranslation(['admin', 'common']);
   const [user, setUser] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('profile');
@@ -104,7 +104,7 @@ const AdminUserDetail = () => {
       }, 800);
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('common:error'),
         description: t('userDetail.loadError'),
         variant: "destructive"
       });
@@ -124,7 +124,7 @@ const AdminUserDetail = () => {
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('common:error'),
         description: t('userDetail.statusUpdateError'),
         variant: "destructive"
       });
@@ -153,7 +153,7 @@ const AdminUserDetail = () => {
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
+        title: t('common:error'),
         description: t('userDetail.requests.errorProcessing'),
         variant: "destructive"
       });

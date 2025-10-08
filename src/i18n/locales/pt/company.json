@@ -1,4 +1,10 @@
 {
+  "errors": {
+    "inviteFailed": "Erro ao convidar colaborador",
+    "seatLimitTooLow": "Não é possível atualizar limite – há mais contas ativas que o novo limite",
+    "fieldNameRequired": "Nome do campo é obrigatório",
+    "contactDetailsRequired": "Nome e email são obrigatórios"
+  },
   "dashboard": {
     "title": "Dashboard RH",
     "subtitle": "Visão geral da utilização do programa de wellbeing",

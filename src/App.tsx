@@ -52,6 +52,7 @@ const UserResources = lazy(() => import("./pages/UserResources"));
 const UserFeedback = lazy(() => import("./pages/UserFeedback"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const UserBooking = lazy(() => import("./pages/UserBooking"));
+const DirectBookingFlow = lazy(() => import("./components/booking/DirectBookingFlow").then(m => ({ default: m.DirectBookingFlow })));
 const Terms = lazy(() => import("./pages/Terms"));
 const PrestadorSessionGuide = lazy(() => import("./pages/PrestadorSessionGuide"));
 const Support = lazy(() => import("./pages/Support"));
@@ -76,6 +77,20 @@ const AppWithTracking = () => {
     (window as any).__routerNavigate = navigate;
   }, [navigate]);
   
+  // Language change listener to force component re-renders
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      // Force React to re-render all components
+      window.dispatchEvent(new Event('storage'));
+    };
+    
+    window.addEventListener('languageChanged', handleLanguageChange);
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange);
+    };
+  }, []);
+  
   return (
     <>
       
@@ -83,7 +98,10 @@ const AppWithTracking = () => {
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
           <div className="text-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="text-sm text-muted-foreground">Carregando...</p>
+            <p className="text-sm text-muted-foreground">{(() => {
+              const lang = localStorage.getItem('i18nextLng')?.toLowerCase();
+              return lang?.startsWith('en') ? 'Loading...' : 'Carregando...';
+            })()}</p>
           </div>
         </div>
       }>
@@ -112,6 +130,7 @@ const AppWithTracking = () => {
           <Route path="/user/feedback/:sessionId" element={<UserLayout><UserFeedback /></UserLayout>} />
           <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
           <Route path="/user/book" element={<UserLayout><UserBooking /></UserLayout>} />
+          <Route path="/user/book-session" element={<UserLayout><DirectBookingFlow /></UserLayout>} />
           <Route path="/user/book-old" element={<UserLayout><BookingFlow /></UserLayout>} />
           <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />
           
