@@ -5,16 +5,8 @@
     "wrongPassword": "Senha incorreta",
     "tooManyRequests": "Demasiadas tentativas. Tente novamente mais tarde"
   },
-  "network": {
-    "connectionError": "Erro de conexão. Verifique a sua internet",
-    "timeout": "Tempo de espera excedido. Tente novamente"
-  },
-  "permission": {
-    "denied": "Sem permissão para esta ação",
-    "notFound": "Recurso não encontrado"
-  },
-  "generic": {
-    "unknown": "Ocorreu um erro",
-    "tryAgain": "Tente novamente mais tarde"
-  }
+  "network": "Erro de conexão. Verifique a sua internet",
+  "permissionDenied": "Sem permissão para esta ação",
+  "notFound": "Recurso não encontrado",
+  "unknown": "Ocorreu um erro"
 }

@@ -1,22 +1,30 @@
-// Mensagens de erro centralizadas
+import i18n from '@/i18n/config';
+
+/**
+ * Get localized error message based on error code or message
+ * @param error - Error object with code or message
+ * @returns Localized error message
+ */
 export const getErrorMessage = (error: any): string => {
   if (error?.message) {
     return error.message;
   }
   
   if (error?.code) {
-    const errorMessages: Record<string, string> = {
-      'auth/invalid-email': 'Email inválido',
-      'auth/user-not-found': 'Utilizador não encontrado',
-      'auth/wrong-password': 'Senha incorreta',
-      'auth/too-many-requests': 'Demasiadas tentativas. Tente novamente mais tarde',
-      'network-error': 'Erro de conexão. Verifique a sua internet',
-      'permission-denied': 'Sem permissão para esta ação',
-      'not-found': 'Recurso não encontrado',
+    // Map error codes to translation keys
+    const errorKeyMap: Record<string, string> = {
+      'auth/invalid-email': 'errors.auth.invalidEmail',
+      'auth/user-not-found': 'errors.auth.userNotFound',
+      'auth/wrong-password': 'errors.auth.wrongPassword',
+      'auth/too-many-requests': 'errors.auth.tooManyRequests',
+      'network-error': 'errors.network',
+      'permission-denied': 'errors.permissionDenied',
+      'not-found': 'errors.notFound',
     };
     
-    return errorMessages[error.code] || 'Ocorreu um erro';
+    const translationKey = errorKeyMap[error.code];
+    return translationKey ? i18n.t(translationKey) : i18n.t('errors.unknown');
   }
   
-  return "Ocorreu um erro";
+  return i18n.t('errors.unknown');
 };
