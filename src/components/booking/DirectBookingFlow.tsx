@@ -122,11 +122,13 @@ export const DirectBookingFlow = () => {
           }),
         });
       } else {
+        // No providers available - go directly to calendar
         toast({
           title: t('errors:title'),
           description: t('user:booking.toasts.noProviders'),
           variant: 'destructive',
         });
+        setCurrentStep('datetime');
       }
     }
   };

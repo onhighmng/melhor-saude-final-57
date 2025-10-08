@@ -32,6 +32,8 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [initError, setInitError] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -48,9 +50,13 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
     }
   };
 
-  const initializeChat = async () => {
+  const initializeChat = async (retryCount = 0) => {
+    const maxRetries = 3;
+    setIsInitializing(true);
+    setInitError(false);
+    
     try {
-      console.log('[PreDiagnosticChat] Initializing chat with user:', user);
+      console.log('[PreDiagnosticChat] Initializing chat (attempt', retryCount + 1, ') with user:', user);
       console.log('[PreDiagnosticChat] Pillar:', pillar, 'Topic:', topic);
       
       // Convert BookingPillar to topic pillar ID for database and translations
@@ -75,25 +81,40 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
       
       console.log('[PreDiagnosticChat] Session created:', session.id);
       setSessionId(session.id);
-      
-      // Don't add welcome message - user sends first message
+      setIsInitializing(false);
       setMessages([]);
     } catch (error) {
       console.error('[PreDiagnosticChat] Error initializing chat:', error);
       
-      toast({
-        title: t('errors:title'),
-        description: t('errors:chatInitFailed') || 'Could not start chat session. Please try again.',
-        variant: 'destructive',
-      });
-      
-      // Allow user to start chat anyway
-      setMessages([]);
+      if (retryCount < maxRetries) {
+        // Retry with exponential backoff
+        const delay = Math.pow(2, retryCount) * 1000;
+        console.log('[PreDiagnosticChat] Retrying in', delay, 'ms');
+        setTimeout(() => initializeChat(retryCount + 1), delay);
+      } else {
+        // All retries failed
+        setIsInitializing(false);
+        setInitError(true);
+        toast({
+          title: t('errors:title'),
+          description: t('errors:chatInitFailed') || 'Could not start chat session. Please try again.',
+          variant: 'destructive',
+        });
+        setMessages([]);
+      }
     }
   };
 
   const handleSend = async () => {
-    if (!input.trim() || !sessionId) return;
+    if (!input.trim() || isLoading || isInitializing) return;
+    if (!sessionId) {
+      toast({
+        title: t('errors:title'),
+        description: 'Session not ready. Please wait...',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     const userMessage = input.trim();
     setInput('');
@@ -179,9 +200,9 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
   };
 
   const handleBookSession = () => {
-    if (sessionId) {
-      onComplete(sessionId);
-    }
+    // Allow booking even without sessionId - generate temp ID if needed
+    const bookingSessionId = sessionId || `temp-${Date.now()}`;
+    onComplete(bookingSessionId);
   };
 
   return (
@@ -209,7 +230,21 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
         <CardContent className="flex-1 flex flex-col p-0">
           <ScrollArea className="flex-1 p-6">
             <div className="space-y-4">
-              {messages.length === 0 && (
+              {isInitializing && (
+                <div className="text-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+                  <p className="text-sm text-muted-foreground">Initializing secure chat session...</p>
+                </div>
+              )}
+              {initError && (
+                <div className="text-center py-8">
+                  <p className="text-sm text-destructive mb-4">Failed to initialize chat session</p>
+                  <Button onClick={() => initializeChat(0)} size="sm" variant="outline">
+                    Retry
+                  </Button>
+                </div>
+              )}
+              {!isInitializing && !initError && messages.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
                   <p className="text-sm">{t('user:booking.directFlow.chatEmptyState')}</p>
                 </div>
@@ -249,15 +284,15 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
                 onKeyPress={handleKeyPress}
                 placeholder={t('user:booking.directFlow.chatPlaceholder')}
                 className="min-h-[60px] resize-none"
-                disabled={isLoading}
+                disabled={isLoading || isInitializing}
               />
               <Button
                 onClick={handleSend}
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || isLoading || isInitializing}
                 size="icon"
                 className="h-[60px] w-[60px]"
               >
-                <Send className="h-5 w-5" />
+                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
               </Button>
             </div>
           </div>
