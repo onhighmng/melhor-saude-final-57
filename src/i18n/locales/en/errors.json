@@ -1,4 +1,5 @@
 {
+  "title": "Error",
   "auth": {
     "invalidEmail": "Invalid email",
     "userNotFound": "User not found",
@@ -8,5 +9,7 @@
   "network": "Connection error. Check your internet",
   "permissionDenied": "Permission denied for this action",
   "notFound": "Resource not found",
-  "unknown": "An error occurred"
+  "unknown": "An error occurred",
+  "chatInitFailed": "Could not start chat session",
+  "messageSendFailed": "Could not send message"
 }

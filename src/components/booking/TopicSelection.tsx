@@ -64,10 +64,10 @@ export const TopicSelection = ({
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg mb-1">
-                    {t(topic.nameKey)}
+                    {t(`topics.${pillar}.${topic.id}.name`)}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {t(topic.descriptionKey)}
+                    {t(`topics.${pillar}.${topic.id}.description`)}
                   </p>
                 </div>
               </div>

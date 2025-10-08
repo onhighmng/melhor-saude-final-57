@@ -189,40 +189,40 @@
   },
   "topics": {
     "psychological": {
-      "anxiety": "Anxiety", "anxietyDesc": "Anxiety management",
-      "depression": "Depression", "depressionDesc": "Support for depression",
-      "stress": "Stress", "stressDesc": "Stress management",
-      "burnout": "Burnout", "burnoutDesc": "Recovery from burnout",
-      "relationships": "Relationships", "relationshipsDesc": "Relationship issues",
-      "selfEsteem": "Self-Esteem", "selfEsteemDesc": "Building confidence",
-      "other": "Other", "otherDesc": "Other issues"
+      "anxiety": { "name": "Anxiety", "description": "Anxiety management" },
+      "depression": { "name": "Depression", "description": "Support for depression" },
+      "stress": { "name": "Stress", "description": "Stress management" },
+      "burnout": { "name": "Burnout", "description": "Recovery from burnout" },
+      "relationships": { "name": "Relationships", "description": "Relationship issues" },
+      "selfEsteem": { "name": "Self-Esteem", "description": "Building confidence" },
+      "other": { "name": "Other", "description": "Other issues" }
     },
     "financial": {
-      "budgeting": "Budgeting", "budgetingDesc": "Budget management",
-      "debt": "Debt", "debtDesc": "Debt management",
-      "savings": "Savings", "savingsDesc": "Savings strategies",
-      "investments": "Investments", "investmentsDesc": "Investment advice",
-      "retirement": "Retirement", "retirementDesc": "Retirement planning",
-      "taxes": "Taxes", "taxesDesc": "Tax planning",
-      "other": "Other", "otherDesc": "Other issues"
+      "budgeting": { "name": "Budgeting", "description": "Budget management" },
+      "debt": { "name": "Debt", "description": "Debt management" },
+      "savings": { "name": "Savings", "description": "Savings strategies" },
+      "investments": { "name": "Investments", "description": "Investment advice" },
+      "retirement": { "name": "Retirement", "description": "Retirement planning" },
+      "taxes": { "name": "Taxes", "description": "Tax planning" },
+      "other": { "name": "Other", "description": "Other issues" }
     },
     "physical": {
-      "fitness": "Fitness", "fitnessDesc": "Exercise programs",
-      "nutrition": "Nutrition", "nutritionDesc": "Nutrition planning",
-      "sleep": "Sleep", "sleepDesc": "Sleep quality",
-      "pain": "Pain", "painDesc": "Pain management",
-      "chronicConditions": "Chronic Conditions", "chronicConditionsDesc": "Health management",
-      "preventiveCare": "Preventive Care", "preventiveCareDesc": "Prevention",
-      "other": "Other", "otherDesc": "Other issues"
+      "fitness": { "name": "Fitness", "description": "Exercise programs" },
+      "nutrition": { "name": "Nutrition", "description": "Nutrition planning" },
+      "sleep": { "name": "Sleep", "description": "Sleep quality" },
+      "pain": { "name": "Pain", "description": "Pain management" },
+      "chronicConditions": { "name": "Chronic Conditions", "description": "Health management" },
+      "preventiveCare": { "name": "Preventive Care", "description": "Prevention" },
+      "other": { "name": "Other", "description": "Other issues" }
     },
     "legal": {
-      "employment": "Employment", "employmentDesc": "Labor issues",
-      "contracts": "Contracts", "contractsDesc": "Contract analysis",
-      "family": "Family", "familyDesc": "Family law",
-      "housing": "Housing", "housingDesc": "Rental issues",
-      "consumerRights": "Consumer Rights", "consumerRightsDesc": "Consumer protection",
-      "immigration": "Immigration", "immigrationDesc": "Immigration issues",
-      "other": "Other", "otherDesc": "Other issues"
+      "employment": { "name": "Employment", "description": "Labor issues" },
+      "contracts": { "name": "Contracts", "description": "Contract analysis" },
+      "family": { "name": "Family", "description": "Family law" },
+      "housing": { "name": "Housing", "description": "Rental issues" },
+      "consumerRights": { "name": "Consumer Rights", "description": "Consumer protection" },
+      "immigration": { "name": "Immigration", "description": "Immigration issues" },
+      "other": { "name": "Other", "description": "Other issues" }
     }
   }
 }

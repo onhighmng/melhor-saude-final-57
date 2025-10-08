@@ -48,11 +48,14 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
 
   const initializeChat = async () => {
     try {
-      // Create chat session
+      console.log('[PreDiagnosticChat] Initializing chat with user:', user);
+      console.log('[PreDiagnosticChat] Pillar:', pillar, 'Topic:', topic);
+      
+      // Create chat session - handle guest users by allowing null user_id
       const { data: session, error: sessionError } = await supabase
         .from('chat_sessions')
         .insert({
-          user_id: user?.id,
+          user_id: user?.id || null,
           pillar,
           status: 'active',
           ai_resolution: false,
@@ -60,13 +63,22 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
         .select()
         .single();
 
-      if (sessionError) throw sessionError;
+      if (sessionError) {
+        console.error('[PreDiagnosticChat] Session creation error:', sessionError);
+        throw sessionError;
+      }
+      
+      console.log('[PreDiagnosticChat] Session created:', session.id);
       setSessionId(session.id);
 
       // Add welcome message
+      const topicKey = `topics.${pillar}.${topic}.name`;
+      const topicName = t(topicKey);
+      console.log('[PreDiagnosticChat] Topic key:', topicKey, 'Translation:', topicName);
+      
       const welcomeMessage = {
         role: 'assistant' as const,
-        content: t('booking.directFlow.chatWelcome', { topic: t(`topics.${pillar}.${topic}`) }),
+        content: t('booking.directFlow.chatWelcome', { topic: topicName }),
       };
       
       setMessages([welcomeMessage]);
@@ -78,11 +90,21 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
         content: welcomeMessage.content,
       });
     } catch (error) {
-      console.error('Error initializing chat:', error);
+      console.error('[PreDiagnosticChat] Error initializing chat:', error);
+      
+      // Show user-friendly error and allow them to continue
       toast({
-        title: t('errors.chatInitFailed'),
+        title: t('errors.title'),
+        description: t('errors.chatInitFailed') || 'Could not start chat session. Please try again.',
         variant: 'destructive',
       });
+      
+      // Still show UI for demo purposes
+      const fallbackMessage = {
+        role: 'assistant' as const,
+        content: t('booking.directFlow.chatWelcome', { topic }),
+      };
+      setMessages([fallbackMessage]);
     }
   };
 
