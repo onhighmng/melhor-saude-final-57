@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const MembershipCardsSection = () => {
+  const { t } = useTranslation('common');
   const [revealedCards, setRevealedCards] = useState<boolean[]>([false, false, false, false]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -39,48 +41,48 @@ const MembershipCardsSection = () => {
   const cardsData = [
     {
       id: 'spend',
-      category: 'Acompanhe o Progresso',
-      title: 'Monitorize os seus resultados e ajuste o plano conforme necessário com apoio contínuo',
+      category: t('membership.cards.progress.category'),
+      title: t('membership.cards.progress.title'),
       features: [
-        'Dashboards intuitivos que mostram métricas de bem-estar em tempo real para tomada de decisões informadas.',
-        'Relatórios personalizados que demonstram o impacto direto das iniciativas no desempenho empresarial.',
-        'Suporte contínuo para ajustar estratégias baseado em dados concretos e feedback dos colaboradores.'
+        t('membership.cards.progress.feature1'),
+        t('membership.cards.progress.feature2'),
+        t('membership.cards.progress.feature3')
       ],
       image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       alt: 'Dashboard de analytics mostrando gráficos de progresso e métricas de desempenho para monitorização contínua'
     },
     {
       id: 'invest',
-      category: 'Invista no Bem-Estar',
-      title: 'Transforme o ambiente de trabalho com soluções integradas de saúde corporativa',
+      category: t('membership.cards.invest.category'),
+      title: t('membership.cards.invest.title'),
       features: [
-        'Apoio psicológico profissional disponível 24/7 para todos os colaboradores.',
-        'Consultoria jurídica especializada para resolver questões pessoais e profissionais.',
-        'Programas de educação financeira para promover estabilidade e crescimento pessoal.'
+        t('membership.cards.invest.feature1'),
+        t('membership.cards.invest.feature2'),
+        t('membership.cards.invest.feature3')
       ],
       image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       alt: 'Equipe diversa em reunião profissional representando investimento em bem-estar corporativo'
     },
     {
       id: 'save',
-      category: 'Economize Recursos',
-      title: 'Otimize custos enquanto maximiza o impacto no bem-estar dos colaboradores',
+      category: t('membership.cards.save.category'),
+      title: t('membership.cards.save.title'),
       features: [
-        'Redução de absentismo e turnover através de cuidados preventivos.',
-        'Planos flexíveis adaptados ao orçamento e necessidades da sua empresa.',
-        'ROI mensurável com métricas claras de produtividade e satisfação.'
+        t('membership.cards.save.feature1'),
+        t('membership.cards.save.feature2'),
+        t('membership.cards.save.feature3')
       ],
       image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       alt: 'Gráficos financeiros mostrando economia de recursos e otimização de custos'
     },
     {
       id: 'technology',
-      category: 'Inovação Tecnológica com Foco Humano',
-      title: 'Desenvolvemos soluções digitais intuitivas, seguras e eficientes, sempre com o ser humano no centro',
+      category: t('membership.cards.technology.category'),
+      title: t('membership.cards.technology.title'),
       features: [
-        'A tecnologia é um meio — não um fim — para facilitar o acesso ao cuidado e oferecer uma experiência acolhedora.',
-        'Plataforma digital segura e intuitiva que conecta colaboradores aos cuidados de que precisam.',
-        'Todos os serviços estão interligados, mantendo confidencialidade e garantindo acompanhamento contínuo.'
+        t('membership.cards.technology.feature1'),
+        t('membership.cards.technology.feature2'),
+        t('membership.cards.technology.feature3')
       ],
       image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       alt: 'Profissional de saúde usando tablet digital para atendimento humanizado'
@@ -95,10 +97,10 @@ const MembershipCardsSection = () => {
         {/* Section Header */}
         <div className="text-center mb-6 sm:mb-8 lg:mb-12">
           <h2 className="text-h2 text-navy-blue mb-2 sm:mb-3 lg:mb-4">
-            Soluções Completas de Bem-Estar
+            {t('membership.sectionTitle')}
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-navy-blue/70 max-w-2xl mx-auto px-4">
-            Transforme a cultura da sua empresa com nossa plataforma integrada de saúde corporativa
+            {t('membership.sectionSubtitle')}
           </p>
         </div>
 

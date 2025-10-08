@@ -1,8 +1,43 @@
 {
+  "loading": "Carregando...",
   "changeLanguage": "Mudar idioma de {{currentLang}} para {{targetLang}}",
   "languageChanged": {
     "toPT": "Idioma alterado para Português",
     "toEN": "Idioma alterado para Inglês"
+  },
+  "membership": {
+    "sectionTitle": "Soluções Completas de Bem-Estar",
+    "sectionSubtitle": "Transforme a cultura da sua empresa com nossa plataforma integrada de saúde corporativa",
+    "cards": {
+      "progress": {
+        "category": "Acompanhe o Progresso",
+        "title": "Monitorize os seus resultados e ajuste o plano conforme necessário com apoio contínuo",
+        "feature1": "Dashboards intuitivos que mostram métricas de bem-estar em tempo real para tomada de decisões informadas.",
+        "feature2": "Relatórios personalizados que demonstram o impacto direto das iniciativas no desempenho empresarial.",
+        "feature3": "Suporte contínuo para ajustar estratégias baseado em dados concretos e feedback dos colaboradores."
+      },
+      "invest": {
+        "category": "Invista no Bem-Estar",
+        "title": "Transforme o ambiente de trabalho com soluções integradas de saúde corporativa",
+        "feature1": "Apoio psicológico profissional disponível 24/7 para todos os colaboradores.",
+        "feature2": "Consultoria jurídica especializada para resolver questões pessoais e profissionais.",
+        "feature3": "Programas de educação financeira para promover estabilidade e crescimento pessoal."
+      },
+      "save": {
+        "category": "Economize Recursos",
+        "title": "Otimize custos enquanto maximiza o impacto no bem-estar dos colaboradores",
+        "feature1": "Redução de absentismo e turnover através de cuidados preventivos.",
+        "feature2": "Planos flexíveis adaptados ao orçamento e necessidades da sua empresa.",
+        "feature3": "ROI mensurável com métricas claras de produtividade e satisfação."
+      },
+      "technology": {
+        "category": "Inovação Tecnológica com Foco Humano",
+        "title": "Desenvolvemos soluções digitais intuitivas, seguras e eficientes, sempre com o ser humano no centro",
+        "feature1": "A tecnologia é um meio — não um fim — para facilitar o acesso ao cuidado e oferecer uma experiência acolhedora.",
+        "feature2": "Plataforma digital segura e intuitiva que conecta colaboradores aos cuidados de que precisam.",
+        "feature3": "Todos os serviços estão interligados, mantendo confidencialidade e garantindo acompanhamento contínuo."
+      }
+    }
   },
   "actions": {
     "save": "Guardar",

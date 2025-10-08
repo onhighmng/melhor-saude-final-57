@@ -1,8 +1,43 @@
 {
+  "loading": "Loading...",
   "changeLanguage": "Change language from {{currentLang}} to {{targetLang}}",
   "languageChanged": {
     "toPT": "Language changed to Portuguese",
     "toEN": "Language changed to English"
+  },
+  "membership": {
+    "sectionTitle": "Complete Wellness Solutions",
+    "sectionSubtitle": "Transform your company culture with our integrated corporate health platform",
+    "cards": {
+      "progress": {
+        "category": "Track Progress",
+        "title": "Monitor your results and adjust the plan as needed with continuous support",
+        "feature1": "Intuitive dashboards that show real-time wellness metrics for informed decision-making.",
+        "feature2": "Customized reports that demonstrate the direct impact of initiatives on business performance.",
+        "feature3": "Continuous support to adjust strategies based on concrete data and employee feedback."
+      },
+      "invest": {
+        "category": "Invest in Wellness",
+        "title": "Transform the work environment with integrated corporate health solutions",
+        "feature1": "Professional psychological support available 24/7 for all employees.",
+        "feature2": "Specialized legal consulting to resolve personal and professional issues.",
+        "feature3": "Financial education programs to promote stability and personal growth."
+      },
+      "save": {
+        "category": "Save Resources",
+        "title": "Optimize costs while maximizing the impact on employee wellbeing",
+        "feature1": "Reduction in absenteeism and turnover through preventive care.",
+        "feature2": "Flexible plans adapted to your company's budget and needs.",
+        "feature3": "Measurable ROI with clear productivity and satisfaction metrics."
+      },
+      "technology": {
+        "category": "Human-Centered Technological Innovation",
+        "title": "We develop intuitive, secure, and efficient digital solutions, always with the human being at the center",
+        "feature1": "Technology is a means — not an end — to facilitate access to care and offer a welcoming experience.",
+        "feature2": "Secure and intuitive digital platform that connects employees to the care they need.",
+        "feature3": "All services are interconnected, maintaining confidentiality and ensuring continuous follow-up."
+      }
+    }
   },
   "actions": {
     "save": "Save",

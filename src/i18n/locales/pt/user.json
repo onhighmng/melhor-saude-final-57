@@ -23,6 +23,39 @@
     "ctaFirstSession": "Marcar Primeira Sessão"
   },
   "booking": {
+    "form": {
+      "title": "Agendar Sessão",
+      "withProvider": "com {{providerName}}",
+      "backToSpecialists": "Voltar aos especialistas",
+      "selectDate": "Data",
+      "selectTime": "Horário",
+      "confirm": "Confirmar Agendamento",
+      "cancel": "Voltar"
+    },
+    "alerts": {
+      "fillAllFields": "Por favor, preencha todos os campos.",
+      "noSessionsAvailable": "Não tem sessões disponíveis. Por favor, adquira sessões adicionais antes de agendar.",
+      "redirectingPayment": "Redirecionando para pagamento..."
+    },
+    "sessionBalance": {
+      "title": "Sessões Disponíveis",
+      "depleted": "Sessões Esgotadas",
+      "depletedMessage": "Não tem sessões disponíveis no seu plano atual. Para agendar uma nova sessão, precisa de adquirir sessões adicionais.",
+      "acquireSessions": "Adquirir Sessões",
+      "employer": "Empresa",
+      "personal": "Plano Pessoal",
+      "sessions": "sessões"
+    },
+    "format": {
+      "individualOnline": "Sessão Individual Online",
+      "description": "Todas as sessões são individuais e realizadas através de videochamada (Google Meet, Zoom ou Teams).",
+      "platforms": {
+        "meet": "Google Meet",
+        "zoom": "Zoom",
+        "teams": "Microsoft Teams"
+      },
+      "automaticLink": "Link automático: Receberá o link da videochamada automaticamente 5 minutos antes da sessão"
+    },
     "choosePillar": "Escolha a Área de Apoio",
     "pillarSubtitle": "Selecione a área onde precisa de ajuda",
     "back": "← Voltar",

@@ -23,6 +23,39 @@
     "ctaFirstSession": "Book First Session"
   },
   "booking": {
+    "form": {
+      "title": "Book Session",
+      "withProvider": "with {{providerName}}",
+      "backToSpecialists": "Back to specialists",
+      "selectDate": "Date",
+      "selectTime": "Time",
+      "confirm": "Confirm Booking",
+      "cancel": "Back"
+    },
+    "alerts": {
+      "fillAllFields": "Please fill in all fields.",
+      "noSessionsAvailable": "You have no available sessions. Please acquire additional sessions before booking.",
+      "redirectingPayment": "Redirecting to payment..."
+    },
+    "sessionBalance": {
+      "title": "Available Sessions",
+      "depleted": "Sessions Depleted",
+      "depletedMessage": "You have no available sessions in your current plan. To book a new session, you need to acquire additional sessions.",
+      "acquireSessions": "Acquire Sessions",
+      "employer": "Employer",
+      "personal": "Personal Plan",
+      "sessions": "sessions"
+    },
+    "format": {
+      "individualOnline": "Individual Online Session",
+      "description": "All sessions are individual and conducted via video call (Google Meet, Zoom or Teams).",
+      "platforms": {
+        "meet": "Google Meet",
+        "zoom": "Zoom",
+        "teams": "Microsoft Teams"
+      },
+      "automaticLink": "Automatic link: You will receive the video call link automatically 5 minutes before the session"
+    },
     "choosePillar": "Choose Support Area",
     "pillarSubtitle": "Select the area where you need help",
     "back": "← Back",

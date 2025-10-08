@@ -98,7 +98,10 @@ const AppWithTracking = () => {
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
           <div className="text-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="text-sm text-muted-foreground">Carregando...</p>
+            <p className="text-sm text-muted-foreground">{(() => {
+              const lang = localStorage.getItem('i18nextLng')?.toLowerCase();
+              return lang?.startsWith('en') ? 'Loading...' : 'Carregando...';
+            })()}</p>
           </div>
         </div>
       }>

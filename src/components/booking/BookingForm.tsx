@@ -4,6 +4,7 @@ import { ArrowLeft, Calendar, Clock, MapPin, Video, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useSessionBalance } from "@/hooks/useSessionBalance";
 import { useTranslation } from 'react-i18next';
+import { useToast } from "@/hooks/use-toast";
 
 interface BookingFormProps {
   provider: Provider;
@@ -13,6 +14,7 @@ interface BookingFormProps {
 
 const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
   const { t } = useTranslation('user');
+  const { toast } = useToast();
   const [sessionFormat, setSessionFormat] = useState<'online'>('online');
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -22,13 +24,21 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
     e.preventDefault();
     
     if (!selectedDate || !selectedTime) {
-      alert('Por favor, preencha todos os campos.');
+      toast({
+        title: t('booking.toasts.error'),
+        description: t('booking.alerts.fillAllFields'),
+        variant: "destructive"
+      });
       return;
     }
 
     // Check if user has available sessions
     if (shouldShowPaymentButton) {
-      alert('Não tem sessões disponíveis. Por favor, adquira sessões adicionais antes de agendar.');
+      toast({
+        title: t('booking.sessionBalance.depleted'),
+        description: t('booking.alerts.noSessionsAvailable'),
+        variant: "destructive"
+      });
       return;
     }
 
@@ -59,15 +69,15 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
             className="inline-flex items-center text-royal-blue hover:text-navy-blue transition-colors duration-200 mb-8"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar aos especialistas
+            {t('booking.form.backToSpecialists')}
           </button>
 
           <div className="text-center mb-12">
             <h1 className="font-semibold text-4xl sm:text-5xl leading-tight mb-6 text-navy-blue animate-fade-in">
-              Agendar Sessão
+              {t('booking.form.title')}
             </h1>
             <p className="font-medium text-xl lg:text-2xl leading-tight text-royal-blue">
-              com {provider.name}
+              {t('booking.form.withProvider', { providerName: provider.name })}
             </p>
           </div>
 
@@ -94,21 +104,22 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
                 <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
                   <span className="text-amber-600 font-bold">!</span>
                 </div>
-                <h3 className="font-bold text-lg text-amber-800">Sessões Esgotadas</h3>
+                <h3 className="font-bold text-lg text-amber-800">{t('booking.sessionBalance.depleted')}</h3>
               </div>
               <p className="text-amber-700 mb-4">
-                Não tem sessões disponíveis no seu plano atual. Para agendar uma nova sessão, 
-                precisa de adquirir sessões adicionais.
+                {t('booking.sessionBalance.depletedMessage')}
               </p>
               <Button
                 type="button"
                 className="bg-amber-600 hover:bg-amber-700 text-white"
                 onClick={() => {
-                  // This would navigate to payment or contact
-                  alert('Redirecionando para pagamento...');
+                  toast({
+                    title: t('booking.alerts.redirectingPayment'),
+                    description: t('booking.sessionBalance.acquireSessions')
+                  });
                 }}
               >
-                Adquirir Sessões
+                {t('booking.sessionBalance.acquireSessions')}
               </Button>
             </div>
           )}
@@ -116,18 +127,18 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
           {/* Session Balance Info */}
           {!loading && sessionBalance && sessionBalance.hasActiveSessions && (
             <div className="bg-gradient-to-br from-mint-green/10 to-sky-blue/10 rounded-2xl p-6 border border-mint-green/20 mb-8">
-              <h3 className="font-bold text-lg text-navy-blue mb-3">Sessões Disponíveis</h3>
+              <h3 className="font-bold text-lg text-navy-blue mb-3">{t('booking.sessionBalance.title')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 {sessionBalance.employerRemaining > 0 && (
                   <div className="flex justify-between">
-                    <span className="font-medium text-navy-blue">Empresa:</span>
-                    <span className="text-royal-blue">{sessionBalance.employerRemaining} sessões</span>
+                    <span className="font-medium text-navy-blue">{t('booking.sessionBalance.employer')}:</span>
+                    <span className="text-royal-blue">{sessionBalance.employerRemaining} {t('booking.sessionBalance.sessions')}</span>
                   </div>
                 )}
                 {sessionBalance.personalRemaining > 0 && (
                   <div className="flex justify-between">
-                    <span className="font-medium text-navy-blue">Plano Pessoal:</span>
-                    <span className="text-royal-blue">{sessionBalance.personalRemaining} sessões</span>
+                    <span className="font-medium text-navy-blue">{t('booking.sessionBalance.personal')}:</span>
+                    <span className="text-royal-blue">{sessionBalance.personalRemaining} {t('booking.sessionBalance.sessions')}</span>
                   </div>
                 )}
               </div>
@@ -139,28 +150,28 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
             <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6">
               <div className="flex items-center gap-3 mb-3">
                 <Video className="h-6 w-6 text-blue-600" />
-                <h3 className="font-semibold text-lg text-blue-800">Sessão Individual Online</h3>
+                <h3 className="font-semibold text-lg text-blue-800">{t('booking.format.individualOnline')}</h3>
               </div>
               <p className="text-blue-700 mb-4">
-                Todas as sessões são <strong>individuais</strong> e realizadas através de videochamada (Google Meet, Zoom ou Teams).
+                {t('booking.format.description')}
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mb-3">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  <span>Google Meet</span>
+                  <span>{t('booking.format.platforms.meet')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                  <span>Zoom</span>
+                  <span>{t('booking.format.platforms.zoom')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                  <span>Microsoft Teams</span>
+                  <span>{t('booking.format.platforms.teams')}</span>
                 </div>
               </div>
               <div className="p-3 bg-blue-100 rounded-lg text-sm text-blue-800 flex items-start gap-2">
                 <Zap className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                <span><strong>Link automático:</strong> Receberá o link da videochamada automaticamente 5 minutos antes da sessão</span>
+                <span>{t('booking.format.automaticLink')}</span>
               </div>
             </div>
 
@@ -168,7 +179,7 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
             <div>
               <label className="block text-lg font-semibold text-navy-blue mb-4">
                 <Calendar className="w-5 h-5 inline mr-2" />
-                Data
+                {t('booking.form.selectDate')}
               </label>
               <input
                 type="date"
@@ -184,7 +195,7 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
             <div>
               <label className="block text-lg font-semibold text-navy-blue mb-4">
                 <Clock className="w-5 h-5 inline mr-2" />
-                Horário
+                {t('booking.form.selectTime')}
               </label>
               <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                 {availableTimes.map((time) => (
@@ -212,14 +223,14 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
                 onClick={onBack}
                 className="flex-1"
               >
-                Voltar
+                {t('booking.form.cancel')}
               </Button>
               
               <Button
                 type="submit"
                 className="flex-1 bg-gradient-to-r from-accent-sage to-vibrant-blue hover:from-vibrant-blue hover:to-accent-sage text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105"
               >
-                Confirmar Agendamento
+                {t('booking.form.confirm')}
               </Button>
             </div>
           </form>
