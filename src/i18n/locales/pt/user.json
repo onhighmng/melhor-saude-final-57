@@ -67,6 +67,7 @@
       "topicSubtitle": "Escolha o tópico que melhor descreve a sua situação",
       "chatTitle": "Conte-nos mais sobre a sua situação",
       "chatSubtitle": "As suas respostas ajudarão o especialista a preparar-se melhor.",
+      "chatEmptyState": "Comece por descrever a sua situação. O assistente está pronto para ajudá-lo.",
       "chatWelcome": "Olá! Vou ajudá-lo com {{topic}}. Por favor, conte-me mais sobre a sua situação.",
       "chatAcknowledge": "Obrigado por partilhar. Pode continuar a dar mais detalhes ou marcar uma sessão quando estiver pronto.",
       "chatPlaceholder": "Escreva aqui os detalhes da sua situação...",

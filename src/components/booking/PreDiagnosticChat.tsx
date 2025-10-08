@@ -61,7 +61,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
         .from('chat_sessions')
         .insert({
           user_id: user?.id || null,
-          pillar: topicPillarId, // Store the topic pillar ID in database
+          pillar: topicPillarId,
           status: 'active',
           ai_resolution: false,
         })
@@ -75,41 +75,20 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
       
       console.log('[PreDiagnosticChat] Session created:', session.id);
       setSessionId(session.id);
-
-      // Add welcome message
-      const topicKey = `user:topics.${topicPillarId}.${topic}.name`;
-      const topicName = t(topicKey);
-      console.log('[PreDiagnosticChat] Topic key:', topicKey, 'Translation:', topicName);
       
-      const welcomeMessage = {
-        role: 'assistant' as const,
-        content: t('user:booking.directFlow.chatWelcome', { topic: topicName }),
-      };
-      
-      setMessages([welcomeMessage]);
-
-      // Save welcome message to database
-      await supabase.from('chat_messages').insert({
-        session_id: session.id,
-        role: 'assistant',
-        content: welcomeMessage.content,
-      });
+      // Don't add welcome message - user sends first message
+      setMessages([]);
     } catch (error) {
       console.error('[PreDiagnosticChat] Error initializing chat:', error);
       
-      // Show user-friendly error and allow them to continue
       toast({
         title: t('errors:title'),
         description: t('errors:chatInitFailed') || 'Could not start chat session. Please try again.',
         variant: 'destructive',
       });
       
-      // Still show UI for demo purposes
-      const fallbackMessage = {
-        role: 'assistant' as const,
-        content: t('user:booking.directFlow.chatWelcome', { topic }),
-      };
-      setMessages([fallbackMessage]);
+      // Allow user to start chat anyway
+      setMessages([]);
     }
   };
 
@@ -120,38 +99,73 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
     setInput('');
     setIsLoading(true);
 
-    // Add user message to UI
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    // Add user message to UI immediately
+    const userMsg: Message = { role: 'user', content: userMessage };
+    setMessages(prev => [...prev, userMsg]);
 
     try {
-      // Save user message
+      // Save user message to database
       await supabase.from('chat_messages').insert({
         session_id: sessionId,
         role: 'user',
         content: userMessage,
       });
 
-      // In a real implementation, you would call an AI service here
-      // For now, we'll use a simple acknowledgment
-      const aiResponse = {
-        role: 'assistant' as const,
-        content: t('user:booking.directFlow.chatAcknowledge'),
+      // Get topic name for context
+      const topicPillarId = getTopicPillarId(pillar);
+      const topicKey = `user:topics.${topicPillarId}.${topic}.name`;
+      const topicName = t(topicKey);
+
+      // Call AI edge function with full conversation history
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke(
+        'prediagnostic-chat',
+        {
+          body: {
+            messages: [...messages, userMsg].map(m => ({
+              role: m.role,
+              content: m.content,
+            })),
+            pillar: topicPillarId,
+            topic: topicName,
+          },
+        }
+      );
+
+      if (aiError) {
+        console.error('[PreDiagnosticChat] AI call error:', aiError);
+        throw aiError;
+      }
+
+      if (!aiResponse?.message) {
+        throw new Error('No response from AI');
+      }
+
+      // Add AI response to UI
+      const assistantMsg: Message = {
+        role: 'assistant',
+        content: aiResponse.message,
       };
+      setMessages(prev => [...prev, assistantMsg]);
 
-      setMessages(prev => [...prev, aiResponse]);
-
-      // Save AI response
+      // Save AI response to database
       await supabase.from('chat_messages').insert({
         session_id: sessionId,
         role: 'assistant',
-        content: aiResponse.content,
+        content: aiResponse.message,
       });
+
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('[PreDiagnosticChat] Error sending message:', error);
+      
+      // Show user-friendly error
       toast({
-        title: t('errors:messageSendFailed'),
+        title: t('errors:title'),
+        description: t('errors:messageSendFailed') || 'Failed to send message. Please try again.',
         variant: 'destructive',
       });
+      
+      // Remove the user message from UI on error
+      setMessages(prev => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }
@@ -182,7 +196,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
           <ChevronLeft className="h-4 w-4" />
           {t('common:actions.back')}
         </Button>
-        <div>
+        <div className="flex-1">
           <h2 className="text-2xl font-bold">{t('user:booking.directFlow.chatTitle')}</h2>
           <p className="text-sm text-muted-foreground">{t('user:booking.directFlow.chatSubtitle')}</p>
         </div>
@@ -195,6 +209,11 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
         <CardContent className="flex-1 flex flex-col p-0">
           <ScrollArea className="flex-1 p-6">
             <div className="space-y-4">
+              {messages.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-sm">{t('user:booking.directFlow.chatEmptyState')}</p>
+                </div>
+              )}
               {messages.map((message, index) => (
                 <div
                   key={index}

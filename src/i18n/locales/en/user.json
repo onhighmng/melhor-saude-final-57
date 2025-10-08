@@ -67,6 +67,7 @@
       "topicSubtitle": "Choose the topic that best describes your situation",
       "chatTitle": "Tell us more about your situation",
       "chatSubtitle": "Your answers will help the specialist prepare better.",
+      "chatEmptyState": "Start by describing your situation. The assistant is ready to help you.",
       "chatWelcome": "Hello! I'll help you with {{topic}}. Please tell me more about your situation.",
       "chatAcknowledge": "Thank you for sharing. You can continue providing more details or book a session when you're ready.",
       "chatPlaceholder": "Write the details of your situation here...",
