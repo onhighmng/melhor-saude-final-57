@@ -33,7 +33,7 @@ export function SeatAllocationModal({
 
   const handleSubmit = () => {
     if (newLimit < company.seatUsed) {
-      companyToasts.actionFailed("atualizar limite – há mais contas ativas que o novo limite");
+      companyToasts.actionFailed(t('company.errors.seatLimitTooLow', { ns: 'company' }));
       return;
     }
     onUpdate(newLimit);

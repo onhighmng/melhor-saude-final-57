@@ -1,4 +1,11 @@
 {
+  "profile": {
+    "addSpecialty": "Add specialty",
+    "addLanguage": "Add language",
+    "uploadDocuments": "Upload Documents",
+    "updateDocuments": "Update Documents",
+    "documentsUploaded": "Documents uploaded successfully"
+  },
   "dashboard": {
     "title": "Provider Dashboard",
     "welcome": "Welcome, {{name}}",

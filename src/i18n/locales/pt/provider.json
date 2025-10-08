@@ -1,4 +1,11 @@
 {
+  "profile": {
+    "addSpecialty": "Adicionar especialidade",
+    "addLanguage": "Adicionar idioma",
+    "uploadDocuments": "Enviar Documentos",
+    "updateDocuments": "Atualizar Documentos",
+    "documentsUploaded": "Documentos enviados com sucesso"
+  },
   "dashboard": {
     "title": "Painel do Prestador",
     "welcome": "Bem-vindo, {{name}}",
