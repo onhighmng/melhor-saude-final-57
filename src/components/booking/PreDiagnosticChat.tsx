@@ -22,9 +22,15 @@ interface PreDiagnosticChatProps {
   topic: string;
   onBack: () => void;
   onComplete: (sessionId: string) => void;
+  // Legal assessment context (if applicable)
+  legalContext?: {
+    selectedTopics?: string[];
+    selectedSymptoms?: string[];
+    additionalNotes?: string;
+  };
 }
 
-export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiagnosticChatProps) => {
+export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalContext }: PreDiagnosticChatProps) => {
   const { t } = useTranslation(['user', 'common']);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -137,6 +143,37 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
       const topicKey = `user:topics.${topicPillarId}.${topic}.name`;
       const topicName = t(topicKey);
 
+      // Build context from user selections
+      let contextInfo = `Topic: ${topicName}`;
+      
+      if (legalContext) {
+        if (legalContext.selectedTopics && legalContext.selectedTopics.length > 0) {
+          const topicNames = legalContext.selectedTopics.map(topicId => {
+            const topicMap: Record<string, string> = {
+              family: t('user:legal.topics.family.title'),
+              labor: t('user:legal.topics.labor.title'),
+              consumer: t('user:legal.topics.consumer.title'),
+              housing: t('user:legal.topics.housing.title'),
+              debt: t('user:legal.topics.debt.title'),
+              criminal: t('user:legal.topics.criminal.title'),
+            };
+            return topicMap[topicId] || topicId;
+          }).join(', ');
+          contextInfo += `\nLegal Areas: ${topicNames}`;
+        }
+        
+        if (legalContext.selectedSymptoms && legalContext.selectedSymptoms.length > 0) {
+          const symptomNames = legalContext.selectedSymptoms.map(symptomId => 
+            t(`user:legal.symptoms.${symptomId}.text`)
+          ).join(', ');
+          contextInfo += `\nSpecific Issues: ${symptomNames}`;
+        }
+        
+        if (legalContext.additionalNotes) {
+          contextInfo += `\nAdditional Context: ${legalContext.additionalNotes}`;
+        }
+      }
+
       // Call AI edge function with full conversation history
       const { data: aiResponse, error: aiError } = await supabase.functions.invoke(
         'prediagnostic-chat',
@@ -148,6 +185,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete }: PreDiag
             })),
             pillar: topicPillarId,
             topic: topicName,
+            context: contextInfo,
           },
         }
       );

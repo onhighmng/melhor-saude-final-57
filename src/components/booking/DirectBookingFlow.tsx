@@ -263,6 +263,11 @@ export const DirectBookingFlow = () => {
           topic={selectedTopic || 'legal-assessment'}
           onBack={handleBack}
           onComplete={handleChatComplete}
+          legalContext={selectedPillar === 'juridica' ? {
+            selectedTopics: selectedLegalTopics,
+            selectedSymptoms: selectedSymptoms,
+            additionalNotes: additionalNotes,
+          } : undefined}
         />
       )}
 

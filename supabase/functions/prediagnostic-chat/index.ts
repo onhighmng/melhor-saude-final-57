@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, pillar, topic } = await req.json();
+    const { messages, pillar, topic, context } = await req.json();
     
     // Get Lovable AI key from environment
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -20,9 +20,11 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Build system prompt with topic context
+    // Build system prompt with topic context and user selections
+    const contextSection = context ? `\n\nUser's Context:\n${context}` : '';
+    
     const systemPrompt = `You are a compassionate and professional wellness assistant specializing in ${pillar}. 
-The user has selected "${topic}" as their area of concern.
+The user has selected "${topic}" as their area of concern.${contextSection}
 
 Your role is to:
 1. Listen empathetically to the user's situation
