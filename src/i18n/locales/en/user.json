@@ -145,8 +145,8 @@
   },
   "universalChat": {
     "intro": {
-      "title": "Talk to a Specialist",
-      "description": "We're here to help you find the right support — psychological, physical, financial, or legal. Type your message or choose one of the options below to get started."
+      "title": "How can I help?",
+      "description": "Tell me what you need and I'll guide you to the most suitable support"
     },
     "specialists": {
       "juridica": "Legal Specialist",
@@ -159,20 +159,25 @@
       "financial": "Financial Consultant"
     },
     "prompts": {
-      "feeling": "Can you share, in a few words, what you're feeling or need right now?",
-      "identify": "Would you like me to help you identify the most appropriate type of support?",
-      "preference": "Do you prefer to talk to someone now or start with quick guidance?"
+      "feeling": "I want to talk about how I'm feeling",
+      "identify": "I'm not sure what I need",
+      "preference": "I already know what I'm looking for"
     },
-    "exitFeedback": {
-      "title": "How was your experience?",
-      "satisfied": "I'm satisfied — my problem was resolved",
-      "unsatisfied": "It didn't help — I want to talk to someone"
+    "exit": {
+      "title": "Was this conversation helpful?",
+      "satisfied": "Yes, I got what I needed",
+      "unsatisfied": "No, I need more help",
+      "thankYou": "Thank you for your feedback!",
+      "escalated": "We'll connect you with a specialist who can better support you"
     },
     "fallback": {
-      "message": "If you're not sure where to start, I can ask you a few quick questions to help."
+      "title": "Are you still there?",
+      "description": "If you need to continue talking, I'm here. Or you can go ahead and book a session directly.",
+      "bookButton": "Book Session"
     },
     "typing": "Typing...",
-    "placeholder": "Write your message..."
+    "placeholder": "Type here...",
+    "send": "Send"
   },
   "milestones": {
     "sessions": "sessions",
