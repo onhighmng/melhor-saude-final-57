@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { userUIcopy } from "@/data/userUIcopy";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,11 +15,15 @@ import { ArrowLeft, Bell, Shield, FileText, Users, Edit, AlertTriangle, Settings
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const UserSettings = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation('user');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tErrors } = useTranslation('errors');
   const [activeTab, setActiveTab] = useState("profile");
   const [isChangeProviderOpen, setIsChangeProviderOpen] = useState(false);
   const [selectedPillar, setSelectedPillar] = useState("");
@@ -28,33 +31,33 @@ const UserSettings = () => {
   // Mock data for providers
   const fixedProviders = [
     {
-      pillar: "Saúde Mental",
+      pillar: t('settings.providers.pillars.mentalHealth'),
       provider: {
         name: "Dra. Ana Silva",
-        specialty: "Psicóloga Clínica",
+        specialty: t('settings.providers.specialties.clinicalPsychologist'),
         avatar: "/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png"
       },
       status: "approved"
     },
     {
-      pillar: "Bem-Estar Físico",
+      pillar: t('settings.providers.pillars.physical'),
       provider: {
         name: "Dr. Miguel Santos",
-        specialty: "Fisioterapeuta",
+        specialty: t('settings.providers.specialties.physiotherapist'),
         avatar: "/lovable-uploads/085a608e-3a3e-45e5-898b-2f9b4c0f7f67.png"
       },
       status: "pending"
     },
     {
-      pillar: "Assistência Financeira",
+      pillar: t('settings.providers.pillars.financial'),
       provider: null,
       status: "none"
     },
     {
-      pillar: "Assistência Jurídica",
+      pillar: t('settings.providers.pillars.legal'),
       provider: {
         name: "Dr. João Costa",
-        specialty: "Advogado Trabalhista",
+        specialty: t('settings.providers.specialties.laborLawyer'),
         avatar: "/lovable-uploads/0daa1ba3-5b7c-49db-950f-22ccfee40b86.png"
       },
       status: "rejected"
@@ -83,22 +86,22 @@ const UserSettings = () => {
 
   const handleSaveProfile = () => {
     toast({
-      title: "Perfil atualizado",
-      description: "As suas informações foram guardadas com sucesso."
+      title: t('booking.toasts.profileUpdated'),
+      description: t('booking.toasts.profileUpdatedDesc')
     });
   };
 
   const handleSaveNotifications = () => {
     toast({
-      title: "Notificações atualizadas",
-      description: "As suas preferências foram guardadas."
+      title: t('booking.toasts.notificationsUpdated'),
+      description: t('booking.toasts.notificationsUpdatedDesc')
     });
   };
 
   const handleSaveConsents = () => {
     toast({
-      title: "Consentimentos atualizados",
-      description: "As suas preferências de privacidade foram guardadas."
+      title: t('booking.toasts.consentsUpdated'),
+      description: t('booking.toasts.consentsUpdatedDesc')
     });
   };
 
@@ -118,8 +121,8 @@ const UserSettings = () => {
   const handleChangePassword = () => {
     if (passwordData.new !== passwordData.confirm) {
       toast({
-        title: "Erro",
-        description: "As palavras-passe não coincidem.",
+        title: tErrors('title'),
+        description: t('booking.toasts.passwordMismatch'),
         variant: "destructive"
       });
       return;
@@ -127,8 +130,8 @@ const UserSettings = () => {
     
     if (passwordData.new.length < 8) {
       toast({
-        title: "Erro",
-        description: "A palavra-passe deve ter pelo menos 8 caracteres.",
+        title: tErrors('title'),
+        description: t('booking.toasts.passwordTooShort'),
         variant: "destructive"
       });
       return;
@@ -137,16 +140,16 @@ const UserSettings = () => {
     setShowPasswordDialog(false);
     setPasswordData({ current: '', new: '', confirm: '' });
     toast({
-      title: "Palavra-passe alterada",
-      description: "A sua palavra-passe foi atualizada com sucesso."
+      title: t('booking.toasts.passwordChanged'),
+      description: t('booking.toasts.passwordChangedDesc')
     });
   };
 
   const handleEnable2FA = () => {
     setShow2FADialog(false);
     toast({
-      title: "2FA Ativado",
-      description: "Autenticação de dois fatores foi ativada na sua conta."
+      title: t('booking.toasts.twoFactorEnabled'),
+      description: t('booking.toasts.twoFactorEnabledDesc')
     });
   };
 
@@ -166,13 +169,13 @@ const UserSettings = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case "pending":
-        return "Pendente";
+        return t('settings.providers.status.pending');
       case "approved":
-        return "Aprovado";
+        return t('settings.providers.status.approved');
       case "rejected":
-        return "Recusado";
+        return t('settings.providers.status.rejected');
       default:
-        return "Sem prestador";
+        return t('settings.providers.status.none');
     }
   };
 
@@ -195,8 +198,8 @@ const UserSettings = () => {
                 <Settings className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">As minhas Definições</h1>
-                <p className="text-sm text-gray-500">Atualize os seus dados e preferências de conta</p>
+                <h1 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h1>
+                <p className="text-sm text-gray-500">{t('settings.subtitle')}</p>
               </div>
             </div>
           </div>
@@ -209,23 +212,23 @@ const UserSettings = () => {
           <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Perfil</span>
+              <span className="hidden sm:inline">{t('settings.tabs.profile')}</span>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="w-4 h-4" />
-              <span className="hidden sm:inline">Notificações</span>
+              <span className="hidden sm:inline">{t('settings.tabs.notifications')}</span>
             </TabsTrigger>
             <TabsTrigger value="security" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
-              <span className="hidden sm:inline">Segurança</span>
+              <span className="hidden sm:inline">{t('settings.tabs.security')}</span>
             </TabsTrigger>
             <TabsTrigger value="consents" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
-              <span className="hidden sm:inline">Consentimentos</span>
+              <span className="hidden sm:inline">{t('settings.tabs.consents')}</span>
             </TabsTrigger>
             <TabsTrigger value="providers" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Prestador Fixo</span>
+              <span className="hidden sm:inline">{t('settings.tabs.providers')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -233,9 +236,9 @@ const UserSettings = () => {
           <TabsContent value="profile" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Informações do Perfil</CardTitle>
+                <CardTitle>{t('settings.profile.title')}</CardTitle>
                 <CardDescription>
-                  Atualize as suas informações pessoais aqui.
+                  {t('settings.profile.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -254,7 +257,7 @@ const UserSettings = () => {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Nome completo</Label>
+                    <Label htmlFor="name">{t('settings.profile.fullName')}</Label>
                     <Input
                       id="name"
                       value={profileData.name}
@@ -262,7 +265,7 @@ const UserSettings = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Número de telemóvel</Label>
+                    <Label htmlFor="phone">{t('settings.profile.phone')}</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -271,35 +274,35 @@ const UserSettings = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="language">Idioma preferido</Label>
+                    <Label htmlFor="language">{t('settings.profile.preferredLanguage')}</Label>
                     <Select value={profileData.language} onValueChange={(value) => setProfileData({ ...profileData, language: value })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="pt">Português</SelectItem>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Español</SelectItem>
+                        <SelectItem value="pt">{t('settings.profile.languages.pt')}</SelectItem>
+                        <SelectItem value="en">{t('settings.profile.languages.en')}</SelectItem>
+                        <SelectItem value="es">{t('settings.profile.languages.es')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="timezone">Fuso horário</Label>
+                    <Label htmlFor="timezone">{t('settings.profile.timezone')}</Label>
                     <Select value={profileData.timezone} onValueChange={(value) => setProfileData({ ...profileData, timezone: value })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Europe/Lisbon">Europa/Lisboa</SelectItem>
-                        <SelectItem value="Europe/London">Europa/Londres</SelectItem>
-                        <SelectItem value="America/New_York">América/Nova York</SelectItem>
+                        <SelectItem value="Europe/Lisbon">{t('settings.profile.timezones.lisbon')}</SelectItem>
+                        <SelectItem value="Europe/London">{t('settings.profile.timezones.london')}</SelectItem>
+                        <SelectItem value="America/New_York">{t('settings.profile.timezones.newYork')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <Button onClick={handleSaveProfile} className="w-full md:w-auto">
-                  Guardar alterações
+                  {t('settings.profile.saveChanges')}
                 </Button>
               </CardContent>
             </Card>
