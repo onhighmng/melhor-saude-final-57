@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { LayoutDashboard, MessageSquare, CalendarCheck, BookOpen, Settings, HelpCircle, FileText, LogOut, Bell } from "lucide-react"
+import { LayoutDashboard, MessageSquare, CalendarCheck, BookOpen, Settings, HelpCircle, FileText, LogOut, Bell, Calendar } from "lucide-react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { useTranslation } from "react-i18next"
@@ -40,7 +40,7 @@ export function UserSidebar() {
 
   const mainItems = [
     { title: t('user.dashboard'), url: "/user/dashboard", icon: LayoutDashboard },
-    { title: t('actions.talkToSpecialist'), url: "/user/book-session", icon: MessageSquare },
+    { title: t('dashboard.ctaBookSession'), url: "/user/book", icon: Calendar },
     { title: t('user.sessions'), url: "/user/sessions", icon: CalendarCheck },
     { title: t('user.notifications'), url: "/user/notifications", icon: Bell, badge: 3 },
     { title: t('user.resources'), url: "/user/resources", icon: BookOpen },
