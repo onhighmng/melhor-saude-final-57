@@ -103,7 +103,19 @@
         "Programas de mindfulness e autocuidado",
         "Apoio psicológico 24 horas por dia, 7 dias por semana",
         "Terapia de grupo especializada"
-      ]
+      ],
+      "specialists": {
+        "sectionTitle": "Profissionais Disponíveis",
+        "availability": "24 horas por dia, 7 dias por semana",
+        "list": [
+          "Psicólogos Clínicos",
+          "Psiquiatras",
+          "Terapeutas Cognitivo-Comportamentais",
+          "Coaches de Vida",
+          "Conselheiros Matrimoniais",
+          "Especialistas em Mindfulness"
+        ]
+      }
     },
     "financial": {
       "title": "Saúde Financeira",
@@ -115,7 +127,19 @@
         "Orientação para reorganizar finanças",
         "Planeamento de poupanças e investimentos",
         "Renegociação de dívidas"
-      ]
+      ],
+      "specialists": {
+        "sectionTitle": "Profissionais Disponíveis",
+        "availability": "24 horas por dia, 7 dias por semana",
+        "list": [
+          "Consultores Financeiros Certificados",
+          "Planejadores Financeiros",
+          "Gestores de Investimento",
+          "Consultores de Crédito",
+          "Contabilistas",
+          "Educadores Financeiros"
+        ]
+      }
     },
     "physical": {
       "title": "Saúde Física",
@@ -127,7 +151,19 @@
         "Avaliações de saúde ocupacional",
         "Fisioterapia e reabilitação",
         "Rastreios de saúde regulares"
-      ]
+      ],
+      "specialists": {
+        "sectionTitle": "Profissionais Disponíveis",
+        "availability": "24 horas por dia, 7 dias por semana",
+        "list": [
+          "Nutricionistas",
+          "Médicos de Clínica Geral",
+          "Fisioterapeutas",
+          "Personal Trainers",
+          "Instrutores de Yoga",
+          "Educadores Físicos"
+        ]
+      }
     },
     "legal": {
       "title": "Saúde Jurídica e Social",
@@ -139,7 +175,19 @@
         "Direito da família e civil",
         "Direito do trabalho",
         "Representação legal quando necessário"
-      ]
+      ],
+      "specialists": {
+        "sectionTitle": "Profissionais Disponíveis",
+        "availability": "24 horas por dia, 7 dias por semana",
+        "list": [
+          "Advogados Especializados",
+          "Mediadores Jurídicos",
+          "Paralegais em Direito Laboral",
+          "Especialistas em Direito Civil",
+          "Consultores em Contratos",
+          "Notários"
+        ]
+      }
     }
   },
   "carousel": {

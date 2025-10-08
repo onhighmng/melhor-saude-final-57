@@ -103,7 +103,19 @@
         "Mindfulness and self-care programs",
         "Psychological support 24 hours a day, 7 days a week",
         "Specialized group therapy"
-      ]
+      ],
+      "specialists": {
+        "sectionTitle": "Available Professionals",
+        "availability": "24 hours a day, 7 days a week",
+        "list": [
+          "Clinical Psychologists",
+          "Psychiatrists",
+          "Cognitive-Behavioral Therapists",
+          "Life Coaches",
+          "Marriage Counselors",
+          "Mindfulness Specialists"
+        ]
+      }
     },
     "financial": {
       "title": "Financial Health",
@@ -115,7 +127,19 @@
         "Guidance to reorganize finances",
         "Savings and investment planning",
         "Debt renegotiation"
-      ]
+      ],
+      "specialists": {
+        "sectionTitle": "Available Professionals",
+        "availability": "24 hours a day, 7 days a week",
+        "list": [
+          "Certified Financial Consultants",
+          "Financial Planners",
+          "Investment Managers",
+          "Credit Counselors",
+          "Accountants",
+          "Financial Educators"
+        ]
+      }
     },
     "physical": {
       "title": "Physical Health",
@@ -127,7 +151,19 @@
         "Occupational health assessments",
         "Physiotherapy and rehabilitation",
         "Regular health screenings"
-      ]
+      ],
+      "specialists": {
+        "sectionTitle": "Available Professionals",
+        "availability": "24 hours a day, 7 days a week",
+        "list": [
+          "Nutritionists",
+          "General Practitioners",
+          "Physiotherapists",
+          "Personal Trainers",
+          "Yoga Instructors",
+          "Physical Educators"
+        ]
+      }
     },
     "legal": {
       "title": "Legal & Social Health",
@@ -139,7 +175,19 @@
         "Family and civil law",
         "Labor law",
         "Legal representation when necessary"
-      ]
+      ],
+      "specialists": {
+        "sectionTitle": "Available Professionals",
+        "availability": "24 hours a day, 7 days a week",
+        "list": [
+          "Specialized Lawyers",
+          "Legal Mediators",
+          "Labor Law Paralegals",
+          "Civil Law Specialists",
+          "Contract Consultants",
+          "Notaries"
+        ]
+      }
     }
   },
   "carousel": {
