@@ -3,6 +3,7 @@ import { Provider } from '@/types/provider';
 import { ArrowLeft, Calendar, Clock, MapPin, Video, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useSessionBalance } from "@/hooks/useSessionBalance";
+import { useTranslation } from 'react-i18next';
 
 interface BookingFormProps {
   provider: Provider;
@@ -11,6 +12,7 @@ interface BookingFormProps {
 }
 
 const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
+  const { t } = useTranslation('user');
   const [sessionFormat, setSessionFormat] = useState<'online'>('online');
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
