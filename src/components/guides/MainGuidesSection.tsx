@@ -116,8 +116,8 @@ const MainGuidesSection: React.FC = () => {
                     : 'scale-75 opacity-60 shadow-lg'
                 } ${isInView ? 'ring-2 ring-primary/20' : ''}`}
               >
-                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.webm" type="video/webm" />
-                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Loreno%20Melhor%20Saude.mp4" type="video/mp4" />
+                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Final%20Melhor%20Saude%20Platform%20Video.mp4" type="video/mp4" />
+                <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Final%20Melhor%20Saude%20Platform%20Video.webm" type="video/webm" />
                 {t('guides.browserNotSupported')}
               </video>
             </div>
