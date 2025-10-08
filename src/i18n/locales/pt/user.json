@@ -381,6 +381,7 @@
       "consumerRights": { "name": "Direitos do Consumidor", "description": "Proteção e direitos do consumidor" },
       "immigration": { "name": "Imigração", "description": "Questões de imigração e vistos" },
       "other": { "name": "Outro", "description": "Outras questões jurídicas" }
+    }
   },
   "settings": {
     "title": "As minhas Definições",
