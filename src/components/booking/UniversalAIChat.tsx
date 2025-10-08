@@ -8,7 +8,8 @@ import { Loader2, Send, Phone, X } from 'lucide-react';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useAuth } from '@/contexts/AuthContext';
 import { SpecialistContactCard } from './SpecialistContactCard';
-import { ChatExitFeedback } from './ChatExitFeedback';
+import { ChatExitFeedbackButtons } from './ChatExitFeedbackButtons';
+import { ChatIntroSection } from './ChatIntroSection';
 import { BookingBanner } from './BookingBanner';
 
 interface UniversalAIChatProps {
@@ -25,7 +26,10 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
   const [phoneContext, setPhoneContext] = useState('');
   const [showExitFeedback, setShowExitFeedback] = useState(false);
   const [showBookingBanner, setShowBookingBanner] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const [showFallbackMessage, setShowFallbackMessage] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inactivityTimerRef = useRef<NodeJS.Timeout>();
 
   const {
     sessionId,
@@ -56,18 +60,30 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
     }
   }, [messages]);
 
+  // Inactivity timer for fallback message
   useEffect(() => {
-    if (!sessionId) return;
+    if (messages.length === 0 && showIntro) {
+      // Start 20s timer for fallback message
+      inactivityTimerRef.current = setTimeout(() => {
+        setShowFallbackMessage(true);
+      }, 20000);
+    }
 
-    const welcomeMessage = initialPillar 
-      ? t('user:booking.directFlow.universalChat.welcomeWithPillar')
-      : t('user:booking.directFlow.universalChat.welcomeGeneral');
-    
-    addMessage({ role: 'assistant', content: welcomeMessage }, false);
-  }, [sessionId, initialPillar, addMessage, t]);
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, [messages.length, showIntro]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
+
+    // Hide intro once user sends first message
+    if (showIntro) {
+      setShowIntro(false);
+      setShowFallbackMessage(false);
+    }
 
     const message = input;
     setInput('');
@@ -78,6 +94,12 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
       setShowPhoneCard(true);
       setPhoneContext(response.phone_context || '');
     }
+  };
+
+  const handleSelectPrompt = (prompt: string) => {
+    setShowIntro(false);
+    setShowFallbackMessage(false);
+    setInput(prompt);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -122,6 +144,20 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
         {/* Messages */}
         <ScrollArea className="flex-1 p-4" ref={scrollRef}>
           <div className="space-y-4">
+            {/* Show intro section if no messages */}
+            {showIntro && messages.length === 0 && (
+              <ChatIntroSection onSelectPrompt={handleSelectPrompt} />
+            )}
+
+            {/* Show fallback message after 20s inactivity */}
+            {showFallbackMessage && messages.length === 0 && !showIntro && (
+              <div className="flex justify-start">
+                <div className="bg-muted rounded-lg p-3">
+                  <p className="text-sm">{t('user:universalChat.fallback.message')}</p>
+                </div>
+              </div>
+            )}
+
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -184,8 +220,9 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
       </div>
 
       {showExitFeedback && (
-        <ChatExitFeedback
+        <ChatExitFeedbackButtons
           sessionId={sessionId || ''}
+          pillar={pillar}
           onClose={handleFeedbackComplete}
         />
       )}

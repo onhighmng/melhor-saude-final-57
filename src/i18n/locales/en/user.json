@@ -141,6 +141,53 @@
         "welcomeWithPillar": "Hello! I'm here to help you with your situation. Please tell me what brings you here today.",
         "welcomeGeneral": "Hello! I'm here to help. Can you share with me what brings you here today?"
       }
+    }
+  },
+  "universalChat": {
+    "intro": {
+      "title": "Talk to a Specialist",
+      "description": "We're here to help you find the right support — psychological, physical, financial, or legal. Type your message or choose one of the options below to get started."
+    },
+    "prompts": {
+      "feeling": "Can you share, in a few words, what you're feeling or need right now?",
+      "identify": "Would you like me to help you identify the most appropriate type of support?",
+      "preference": "Do you prefer to talk to someone now or start with quick guidance?"
+    },
+    "exitFeedback": {
+      "title": "How was your experience?",
+      "satisfied": "I'm satisfied — my problem was resolved",
+      "unsatisfied": "It didn't help — I want to talk to someone"
+    },
+    "fallback": {
+      "message": "If you're not sure where to start, I can ask you a few quick questions to help."
+    }
+  },
+  "milestones": {
+    "sessions": "sessions",
+    "sessionMilestones": {
+      "title": "Session Milestones",
+      "firstSession": "First session completed",
+      "threeSessions": "Three sessions completed"
+    },
+    "feedbackMilestones": {
+      "title": "Evaluations & Progress",
+      "firstFeedback": "First evaluation given",
+      "improvement": "Improvement in evaluation"
+    }
+  },
+  "notifications": {
+    "chatEscalation": {
+      "title": "User needs assistance",
+      "message": "A user indicated that the AI chat did not resolve their issue"
+    }
+  },
+  "toasts": {
+    "feedbackSubmitted": "Thank you for your feedback",
+    "thankYouFeedback": "Your feedback helps us improve",
+    "specialistNotified": "A specialist will contact you soon"
+  },
+  "booking": {
+    "directFlow": {
     },
     "specialistChoice": {
       "title": "How Would You Like to Get Help?",

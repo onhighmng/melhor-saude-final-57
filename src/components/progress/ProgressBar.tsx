@@ -1,12 +1,17 @@
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { TrendingUp, MessageSquare, BookOpen, Calendar } from 'lucide-react';
+import { TrendingUp, MessageSquare, BookOpen, Calendar, Star } from 'lucide-react';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserMilestones } from '@/hooks/useUserMilestones';
+import { MilestoneBadge } from './MilestoneBadge';
+import { useTranslation } from 'react-i18next';
 
 export const ProgressBar = () => {
   const { user } = useAuth();
   const { metrics, isLoading } = useUserProgress(user?.id);
+  const { milestones: feedbackMilestones } = useUserMilestones(user?.id);
+  const { t } = useTranslation('user');
 
   if (isLoading) {
     return (
@@ -86,6 +91,27 @@ export const ProgressBar = () => {
             </div>
           </div>
         )}
+
+        {/* Feedback Milestones */}
+        <div className="pt-4 border-t">
+          <p className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <Star className="h-4 w-4 text-primary" />
+            {t('milestones.feedbackMilestones.title')}
+          </p>
+          
+          <div className="space-y-2">
+            <MilestoneBadge
+              label={t('milestones.feedbackMilestones.firstFeedback')}
+              completed={feedbackMilestones.firstFeedbackGiven}
+            />
+            <MilestoneBadge
+              label={t('milestones.feedbackMilestones.improvement')}
+              completed={feedbackMilestones.feedbackImprovement}
+            />
+          </div>
+          
+          <Progress value={feedbackMilestones.feedbackProgress} className="h-2 mt-3" />
+        </div>
       </div>
     </Card>
   );

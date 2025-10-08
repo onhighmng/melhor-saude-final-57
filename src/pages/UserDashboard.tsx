@@ -9,6 +9,7 @@ import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings } from '@/hooks/useBookings';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/progress/ProgressBar';
+import { SessionMilestones } from '@/components/progress/SessionMilestones';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -79,17 +80,6 @@ const UserDashboard = () => {
                 <div className="text-2xl font-serif">{t('dashboard.sessionsRemaining')}</div>
               </div>
 
-              <div className="w-full max-w-3xl space-y-2 px-8">
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>{t('dashboard.sessionsUsed', { count: usedSessions })}</span>
-                  <span>{t('dashboard.sessionsTotal', { count: totalSessions })}</span>
-                </div>
-                <Progress value={(usedSessions / totalSessions) * 100} className="h-2.5 bg-gray-200" />
-                <p className="text-sm text-muted-foreground pt-1">
-                  {t('dashboard.planAvailable', { percent: usagePercent })}
-                </p>
-              </div>
-
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
                 <Button 
                   size="lg" 
@@ -104,7 +94,10 @@ const UserDashboard = () => {
           </Card>
         </div>
 
-        {/* Progress Bar */}
+        {/* Session Milestones - Replaces session balance progress */}
+        <SessionMilestones />
+
+        {/* Progress Bar - Growth Journey with Feedback Milestones */}
         <ProgressBar />
 
         {/* Seus Prestadores por Pilar */}
