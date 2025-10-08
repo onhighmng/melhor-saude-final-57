@@ -17,18 +17,27 @@
   },
   "admin": {
     "dashboard": "Dashboard",
-    "management": "Management",
-    "providers": "Providers",
+    "userManagement": "User Management",
+    "companies": "Companies",
     "users": "Users",
-    "requests": "Requests",
-    "reports": "Reports",
-    "emailAlerts": "Email Alerts",
-    "feedback": "Feedback",
-    "inactiveAccounts": "Inactive Accounts"
+    "providers": "Providers",
+    "operations": "Operations",
+    "matching": "Matching",
+    "schedules": "Schedules",
+    "sessions": "Sessions",
+    "monitoring": "Monitoring",
+    "support": "Support",
+    "changeRequests": "Change Requests",
+    "logs": "Logs"
   },
   "company": {
-    "dashboard": "HR Dashboard",
-    "reports": "Reports"
+    "dashboard": "Dashboard",
+    "employees": "Employees",
+    "inviteCodes": "Invite Codes",
+    "reports": "Reports",
+    "settings": "Settings",
+    "helpCenter": "Help Center",
+    "terms": "Terms"
   },
   "user": {
     "login": "Login",

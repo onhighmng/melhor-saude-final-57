@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from 'react-i18next';
 import {
   Sidebar,
   SidebarContent,
@@ -48,45 +49,48 @@ interface MenuItem {
   badge?: string;
 }
 
-// Standalone items
-const standaloneItems: MenuItem[] = [
-  { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
-];
+const AdminSidebar = () => {
+  const { t } = useTranslation('navigation');
 
-// Grouped items
-const groupedItems = {
-  users: {
-    title: "Gestão de Utilizadores",
-    icon: UsersIcon,
-    items: [
-      { title: "Empresas", url: "/admin/companies", icon: Building2 },
-      { title: "Utilizadores", url: "/admin/usuarios", icon: Users },
-      { title: "Prestadores", url: "/admin/prestadores", icon: UserCog },
-    ] as MenuItem[]
-  },
-  operations: {
-    title: "Operações",
-    icon: Activity,
-    items: [
-      { title: "Matching", url: "/admin/matching", icon: GitPullRequest },
-      { title: "Agendamentos", url: "/admin/agendamentos", icon: Calendar },
-      { title: "Sessões", url: "/admin/sessoes", icon: ClipboardCheck },
-    ] as MenuItem[]
-  },
-  monitoring: {
-    title: "Monitorização",
-    icon: Shield,
-    items: [
-      { title: "Suporte", url: "/admin/support", icon: Mail, badge: "emailsFailed" },
-      { title: "Pedidos de troca", url: "/admin/providers/change-requests", icon: Shuffle, badge: "pendingRequests" },
-      { title: "Logs", url: "/admin/logs", icon: FileSearch, badge: "logAlerts" },
-    ] as MenuItem[]
-  }
-};
+  // Standalone items
+  const standaloneItems: MenuItem[] = [
+    { title: t('admin.dashboard'), url: "/admin/dashboard", icon: LayoutDashboard },
+  ];
 
-// Settings - standalone section (NOT part of monitoring group)
-const settingsItems: MenuItem[] = [
-  { title: "Configurações", url: "/admin/configuracoes", icon: Settings },
+  // Grouped items
+  const groupedItems = {
+    users: {
+      title: t('admin.userManagement'),
+      icon: UsersIcon,
+      items: [
+        { title: t('admin.companies'), url: "/admin/companies", icon: Building2 },
+        { title: t('admin.users'), url: "/admin/usuarios", icon: Users },
+        { title: t('admin.providers'), url: "/admin/prestadores", icon: UserCog },
+      ] as MenuItem[]
+    },
+    operations: {
+      title: t('admin.operations'),
+      icon: Activity,
+      items: [
+        { title: t('admin.matching'), url: "/admin/matching", icon: GitPullRequest },
+        { title: t('admin.schedules'), url: "/admin/agendamentos", icon: Calendar },
+        { title: t('admin.sessions'), url: "/admin/sessoes", icon: ClipboardCheck },
+      ] as MenuItem[]
+    },
+    monitoring: {
+      title: t('admin.monitoring'),
+      icon: Shield,
+      items: [
+        { title: t('admin.support'), url: "/admin/support", icon: Mail, badge: "emailsFailed" },
+        { title: t('admin.changeRequests'), url: "/admin/providers/change-requests", icon: Shuffle, badge: "pendingRequests" },
+        { title: t('admin.logs'), url: "/admin/logs", icon: FileSearch, badge: "logAlerts" },
+      ] as MenuItem[]
+    }
+  };
+
+  // Settings - standalone section (NOT part of monitoring group)
+  const settingsItems: MenuItem[] = [
+    { title: t('company.settings'), url: "/admin/configuracoes", icon: Settings },
 ];
 
 // Mock badge data - in real app this would come from API/state
@@ -330,4 +334,6 @@ export function AdminSidebar() {
       </SidebarFooter>
     </Sidebar>
   );
-}
+};
+
+export default AdminSidebar;

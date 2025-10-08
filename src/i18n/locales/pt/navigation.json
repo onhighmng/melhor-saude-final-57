@@ -17,18 +17,27 @@
   },
   "admin": {
     "dashboard": "Dashboard",
-    "management": "Gestão",
-    "providers": "Prestadores",
+    "userManagement": "Gestão de Utilizadores",
+    "companies": "Empresas",
     "users": "Utilizadores",
-    "requests": "Solicitações",
-    "reports": "Relatórios",
-    "emailAlerts": "Email Alerts",
-    "feedback": "Feedback",
-    "inactiveAccounts": "Contas Inativas"
+    "providers": "Prestadores",
+    "operations": "Operações",
+    "matching": "Matching",
+    "schedules": "Agendamentos",
+    "sessions": "Sessões",
+    "monitoring": "Monitorização",
+    "support": "Suporte",
+    "changeRequests": "Pedidos de troca",
+    "logs": "Logs"
   },
   "company": {
-    "dashboard": "Dashboard RH",
-    "reports": "Relatórios"
+    "dashboard": "Dashboard",
+    "employees": "Colaboradores",
+    "inviteCodes": "Códigos de Convite",
+    "reports": "Relatórios",
+    "settings": "Definições",
+    "helpCenter": "Centro de Ajuda",
+    "terms": "Termos"
   },
   "user": {
     "login": "Entrar",

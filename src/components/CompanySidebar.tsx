@@ -1,6 +1,7 @@
 import { LayoutDashboard, Users, BarChart3, Settings, HelpCircle, FileText, LogOut, Mail } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from 'react-i18next';
 import {
   Sidebar,
   SidebarContent,
@@ -19,27 +20,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { SupportContact } from "@/components/ui/support-contact";
 
-const navigationItems = [
-  { title: "Dashboard", url: "/company/dashboard", icon: LayoutDashboard },
-  { title: "Colaboradores", url: "/company/employees", icon: Users, badge: "seatUsage" },
-  { title: "Códigos de Convite", url: "/company/invites", icon: Mail, badge: "activeCodes" },
-  { title: "Relatórios", url: "/company/reports", icon: BarChart3 },
-  { title: "Definições", url: "/company/settings", icon: Settings },
-];
+const CompanySidebar = () => {
+  const { t } = useTranslation('navigation');
+  
+  const navigationItems = [
+    { title: t('company.dashboard'), url: "/company/dashboard", icon: LayoutDashboard },
+    { title: t('company.employees'), url: "/company/employees", icon: Users, badge: "seatUsage" },
+    { title: t('company.inviteCodes'), url: "/company/invites", icon: Mail, badge: "activeCodes" },
+    { title: t('company.reports'), url: "/company/reports", icon: BarChart3 },
+    { title: t('company.settings'), url: "/company/settings", icon: Settings },
+  ];
 
-const footerItems = [
-  { title: "Suporte", url: "/support", icon: HelpCircle },
-  { title: "Termos", url: "/terms", icon: FileText },
-];
+  const footerItems = [
+    { title: t('admin.support'), url: "/support", icon: HelpCircle },
+    { title: t('company.terms'), url: "/terms", icon: FileText },
+  ];
 
-// Mock seat usage data - in real app this would come from API/state
-const mockSeatData = {
-  used: 18,
-  limit: 25,
-  activeCodes: 3,
-};
-
-export function CompanySidebar() {
+  // Mock seat usage data - in real app this would come from API/state
+  const mockSeatData = {
+    used: 18,
+    limit: 25,
+    activeCodes: 3,
+  };
   const { state } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
@@ -195,4 +197,6 @@ export function CompanySidebar() {
       </SidebarFooter>
     </Sidebar>
   );
-}
+};
+
+export default CompanySidebar;
