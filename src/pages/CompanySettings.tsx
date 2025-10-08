@@ -145,7 +145,7 @@ const CompanySettings = () => {
 
   const addCustomField = () => {
     if (!newCustomField.name) {
-      companyToasts.actionFailed(t('company.errors.fieldNameRequired', { ns: 'company' }));
+      companyToasts.actionFailed("adicionar campo – nome é obrigatório");
       return;
     }
 
@@ -178,7 +178,7 @@ const CompanySettings = () => {
 
   const addSupportContact = () => {
     if (!newContact.name || !newContact.email) {
-      companyToasts.actionFailed(t('company.errors.contactDetailsRequired', { ns: 'company' }));
+      companyToasts.actionFailed("adicionar contacto – nome e email são obrigatórios");
       return;
     }
 

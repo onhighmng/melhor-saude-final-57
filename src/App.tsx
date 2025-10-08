@@ -52,7 +52,6 @@ const UserResources = lazy(() => import("./pages/UserResources"));
 const UserFeedback = lazy(() => import("./pages/UserFeedback"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const UserBooking = lazy(() => import("./pages/UserBooking"));
-const DirectBookingFlow = lazy(() => import("./components/booking/DirectBookingFlow").then(m => ({ default: m.DirectBookingFlow })));
 const Terms = lazy(() => import("./pages/Terms"));
 const PrestadorSessionGuide = lazy(() => import("./pages/PrestadorSessionGuide"));
 const Support = lazy(() => import("./pages/Support"));
@@ -113,7 +112,6 @@ const AppWithTracking = () => {
           <Route path="/user/feedback/:sessionId" element={<UserLayout><UserFeedback /></UserLayout>} />
           <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
           <Route path="/user/book" element={<UserLayout><UserBooking /></UserLayout>} />
-          <Route path="/user/book-session" element={<UserLayout><DirectBookingFlow /></UserLayout>} />
           <Route path="/user/book-old" element={<UserLayout><BookingFlow /></UserLayout>} />
           <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />
           

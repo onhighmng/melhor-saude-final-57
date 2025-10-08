@@ -10,7 +10,6 @@ import { Mail, User, Key, Eye, EyeOff, Building, Users } from 'lucide-react';
 import { Company } from "@/data/companyMockData";
 import { companyUIcopy } from "@/data/companyUIcopy";
 import { companyToasts } from "@/data/companyToastMessages";
-import { useTranslation } from 'react-i18next';
 
 interface InviteEmployeeModalProps {
   isOpen: boolean;
@@ -28,7 +27,6 @@ interface InviteFormData {
 }
 
 export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess }: InviteEmployeeModalProps) {
-  const { t } = useTranslation('company');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<InviteFormData>({
@@ -87,7 +85,7 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
       resetForm();
       onClose();
     } catch (error) {
-      companyToasts.actionFailed(t('company.errors.inviteFailed', { ns: 'company' }));
+      companyToasts.actionFailed("convidar colaborador");
     } finally {
       setIsSubmitting(false);
     }
