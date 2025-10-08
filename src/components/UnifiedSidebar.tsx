@@ -1,6 +1,5 @@
 import { NavLink, useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTranslation } from 'react-i18next';
 import {
   Sidebar,
   SidebarContent,
@@ -48,46 +47,46 @@ interface MenuItem {
   tooltip?: string;
 }
 
-const getMenuItemsByRole = (role: string, t: any): MenuItem[] => {
+const getMenuItemsByRole = (role: string): MenuItem[] => {
   switch (role) {
     case 'user':
       return [
-        { title: t('common:sidebar.dashboard'), url: "/user/dashboard", icon: LayoutDashboard },
-        { title: t('common:sidebar.bookSession'), url: "/user/book", icon: Calendar },
-        { title: t('common:sidebar.mySessions'), url: "/user/sessions", icon: ClipboardList },
-        { title: t('common:sidebar.help'), url: "/user/help", icon: HelpCircle },
-        { title: t('common:sidebar.settings'), url: "/user/settings", icon: Settings },
+        { title: "Dashboard", url: "/user/dashboard", icon: LayoutDashboard },
+        { title: "Marcar Sessão", url: "/user/book", icon: Calendar },
+        { title: "Minhas Sessões", url: "/user/sessions", icon: ClipboardList },
+        { title: "Ajuda", url: "/user/help", icon: HelpCircle },
+        { title: "Definições", url: "/user/settings", icon: Settings },
       ];
     
     case 'prestador':
       return [
-        { title: t('common:sidebar.dashboard'), url: "/prestador/dashboard", icon: LayoutDashboard },
-        { title: t('common:sidebar.sessions'), url: "/prestador/sessoes", icon: ClipboardList },
-        { title: t('common:sidebar.availability'), url: "/prestador/availability", icon: Clock },
-        { title: t('common:sidebar.profile'), url: "/prestador/profile", icon: User },
+        { title: "Dashboard", url: "/prestador/dashboard", icon: LayoutDashboard },
+        { title: "Sessões", url: "/prestador/sessoes", icon: ClipboardList },
+        { title: "Disponibilidade", url: "/prestador/availability", icon: Clock },
+        { title: "Perfil", url: "/prestador/profile", icon: User },
       ];
     
     case 'admin':
       return [
-        { title: t('common:sidebar.dashboard'), url: "/admin/dashboard", icon: LayoutDashboard },
-        { title: t('common:sidebar.companies'), url: "/admin/companies", icon: Building2 },
-        { title: t('common:sidebar.users'), url: "/admin/usuarios", icon: Users },
-        { title: t('common:sidebar.providers'), url: "/admin/prestadores", icon: UserCheck },
-        { title: t('common:sidebar.support'), url: "/admin/support", icon: HelpCircle },
-        { title: t('common:sidebar.matching'), url: "/admin/matching", icon: GitBranch },
-        { title: t('common:sidebar.schedules'), url: "/admin/agendamentos", icon: Calendar },
-        { title: t('common:sidebar.sessions'), url: "/admin/sessoes", icon: ClipboardList },
-        { title: t('common:sidebar.emails'), url: "/admin/emails", icon: Mail },
-        { title: t('common:sidebar.logs'), url: "/admin/logs", icon: FileText },
-        { title: t('common:sidebar.configurations'), url: "/admin/configuracoes", icon: Settings },
+        { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
+        { title: "Empresas", url: "/admin/companies", icon: Building2 },
+        { title: "Utilizadores", url: "/admin/usuarios", icon: Users },
+        { title: "Prestadores", url: "/admin/prestadores", icon: UserCheck },
+        { title: "Suporte", url: "/admin/support", icon: HelpCircle },
+        { title: "Matching", url: "/admin/matching", icon: GitBranch },
+        { title: "Agendamentos", url: "/admin/agendamentos", icon: Calendar },
+        { title: "Sessões", url: "/admin/sessoes", icon: ClipboardList },
+        { title: "Emails", url: "/admin/emails", icon: Mail },
+        { title: "Logs", url: "/admin/logs", icon: FileText },
+        { title: "Configurações", url: "/admin/configuracoes", icon: Settings },
       ];
     
     case 'hr':
       return [
-        { title: t('common:sidebar.dashboard'), url: "/company/dashboard", icon: LayoutDashboard },
-        { title: t('common:sidebar.employees'), url: "/company/employees", icon: Users },
-        { title: t('common:sidebar.reports'), url: "/company/reports", icon: BarChart3 },
-        { title: t('common:sidebar.settings'), url: "/company/settings", icon: Settings },
+        { title: "Dashboard", url: "/company/dashboard", icon: LayoutDashboard },
+        { title: "Colaboradores", url: "/company/employees", icon: Users },
+        { title: "Relatórios", url: "/company/reports", icon: BarChart3 },
+        { title: "Definições", url: "/company/settings", icon: Settings },
       ];
     
     default:
@@ -100,14 +99,13 @@ export function UnifiedSidebar() {
   const { profile, logout, isAuthenticated } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
   const currentPath = location.pathname;
 
   if (!isAuthenticated || !profile) {
     return null;
   }
 
-  const menuItems = getMenuItemsByRole(profile.role, t);
+  const menuItems = getMenuItemsByRole(profile.role);
   
   const isActive = (path: string) => currentPath === path;
   const getNavCls = (active: boolean) =>
@@ -122,11 +120,11 @@ export function UnifiedSidebar() {
 
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case 'user': return t('sidebar.roles.user');
-      case 'prestador': return t('sidebar.roles.provider');
-      case 'admin': return t('sidebar.roles.admin');
-      case 'hr': return t('sidebar.roles.hr');
-      default: return t('sidebar.roles.system');
+      case 'user': return 'Utilizador';
+      case 'prestador': return 'Prestador';
+      case 'admin': return 'Administrador';
+      case 'hr': return 'Recursos Humanos';
+      default: return 'Sistema';
     }
   };
 
@@ -138,9 +136,9 @@ export function UnifiedSidebar() {
       <SidebarHeader className="border-b border-border p-4">
         {open && (
           <div className="space-y-2">
-            <div className="font-semibold text-foreground">{t('sidebar.platformTitle')}</div>
+            <div className="font-semibold text-foreground">Plataforma</div>
             <div className="text-xs text-muted-foreground">
-              {profile.company || t('sidebar.globalSystem')}
+              {profile.company || 'Sistema Global'}
             </div>
             <Badge variant="secondary" className="text-xs">
               {getRoleLabel(profile.role)}
@@ -152,7 +150,7 @@ export function UnifiedSidebar() {
       <SidebarContent className="bg-background">
         <SidebarGroup className="px-2 py-4">
           <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-            {open && t('sidebar.mainMenu')}
+            {open && "Menu Principal"}
           </SidebarGroupLabel>
 
           <SidebarGroupContent>
@@ -194,10 +192,10 @@ export function UnifiedSidebar() {
                   <Link 
                     to="/support" 
                     className="flex items-center px-3 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
-                    title={!open ? t('sidebar.support') : undefined}
+                    title={!open ? "Suporte" : undefined}
                   >
                     <HelpCircle className={`h-4 w-4 ${open ? "mr-3" : ""}`} />
-                    {open && <span className="text-sm">{t('sidebar.support')}</span>}
+                    {open && <span className="text-sm">Suporte</span>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -207,10 +205,10 @@ export function UnifiedSidebar() {
                   <Link 
                     to="/terms" 
                     className="flex items-center px-3 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
-                    title={!open ? t('sidebar.terms') : undefined}
+                    title={!open ? "Termos" : undefined}
                   >
                     <Shield className={`h-4 w-4 ${open ? "mr-3" : ""}`} />
-                    {open && <span className="text-sm">{t('sidebar.terms')}</span>}
+                    {open && <span className="text-sm">Termos</span>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -221,10 +219,10 @@ export function UnifiedSidebar() {
                     variant="ghost" 
                     onClick={handleLogout}
                     className="w-full justify-start px-3 py-2 h-auto text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    title={!open ? t('logout') : undefined}
+                    title={!open ? "Sair" : undefined}
                   >
                     <LogOut className={`h-4 w-4 ${open ? "mr-3" : ""}`} />
-                    {open && <span className="text-sm">{t('logout')}</span>}
+                    {open && <span className="text-sm">Sair</span>}
                   </Button>
                 </SidebarMenuButton>
               </SidebarMenuItem>

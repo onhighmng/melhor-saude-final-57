@@ -8,7 +8,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useTranslation } from 'react-i18next';
 import { companyUIcopy } from "@/data/companyUIcopy";
 import { AlertTriangle } from "lucide-react";
 
@@ -25,8 +24,6 @@ export function RevokeAccessDialog({
   onConfirm,
   userName 
 }: RevokeAccessDialogProps) {
-  const { t } = useTranslation('company');
-  
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -48,8 +45,8 @@ export function RevokeAccessDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t('employees.actions.cancel')}</AlertDialogCancel>
-          <AlertDialogAction
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction 
             onClick={onConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >

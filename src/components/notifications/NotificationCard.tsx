@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Bell, Calendar, AlertCircle, Star, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
+import { userUIcopy } from "@/data/userUIcopy";
 
 export interface Notification {
   id: string;
@@ -38,20 +38,17 @@ const colorMap = {
   info: 'text-gray-500',
 };
 
+const ctaMap = {
+  quota_warning: userUIcopy.notifications.ctaQuotaWarning,
+  booking_confirmation: userUIcopy.notifications.ctaViewDetails,
+  feedback_request: userUIcopy.notifications.ctaSendFeedback,
+  session_reminder: userUIcopy.notifications.ctaJoinSession,
+  info: userUIcopy.notifications.ctaViewDetails,
+};
+
 export function NotificationCard({ notification, onMarkRead, onAction }: NotificationCardProps) {
-  const { t } = useTranslation('user');
-  
   const Icon = iconMap[notification.type];
   const colorClass = colorMap[notification.type];
-  
-  const ctaMap = {
-    quota_warning: t('notifications.ctaQuotaWarning'),
-    booking_confirmation: t('notifications.ctaViewDetails'),
-    feedback_request: t('notifications.ctaSendFeedback'),
-    session_reminder: t('notifications.ctaJoinSession'),
-    info: t('notifications.ctaViewDetails'),
-  };
-  
   const ctaText = ctaMap[notification.type];
   
   return (
@@ -74,7 +71,7 @@ export function NotificationCard({ notification, onMarkRead, onAction }: Notific
                 <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
               </div>
               {!notification.read && (
-                <Badge variant="default" className="shrink-0">{t('notifications.newBadge')}</Badge>
+                <Badge variant="default" className="shrink-0">Nova</Badge>
               )}
             </div>
             
@@ -95,7 +92,7 @@ export function NotificationCard({ notification, onMarkRead, onAction }: Notific
                     size="sm"
                     onClick={() => onMarkRead(notification.id)}
                   >
-                    {t('notifications.markRead')}
+                    {userUIcopy.notifications.markRead}
                   </Button>
                 )}
                 <Button

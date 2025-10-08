@@ -32,7 +32,7 @@ import { useToast } from "@/hooks/use-toast";
 import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
 
 const AdminProviders = () => {
-  const { t } = useTranslation(['admin', 'common', 'navigation']);
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
@@ -61,8 +61,8 @@ const AdminProviders = () => {
       }, 1000);
     } catch (error) {
       toast({
-        title: t('common:error'),
-        description: t('common:error'),
+        title: t('common.error'),
+        description: t('common.error'),
         variant: "destructive"
       });
       setIsLoading(false);
@@ -115,7 +115,7 @@ const AdminProviders = () => {
       });
     } catch (error) {
       toast({
-        title: t('common:error'),
+        title: t('common.error'),
         description: t('providerDetail.statusUpdateError'),
         variant: "destructive"
       });
@@ -158,9 +158,9 @@ const AdminProviders = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">{t('common:active')}</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">{t('common.active')}</Badge>;
       case 'inactive':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-600">{t('common:inactive')}</Badge>;
+        return <Badge variant="secondary" className="bg-gray-100 text-gray-600">{t('common.inactive')}</Badge>;
       case 'valid':
         return <Badge variant="default" className="bg-green-100 text-green-800">{t('providers.status.valid')}</Badge>;
       case 'expired':

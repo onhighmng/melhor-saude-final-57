@@ -8,7 +8,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 const UnifiedAuthCard = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +18,6 @@ const UnifiedAuthCard = () => {
   const { login, signup, resetPassword } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
 
   // Password visibility state
   const [showLoginPassword, setShowLoginPassword] = useState(false);
@@ -58,8 +56,8 @@ const UnifiedAuthCard = () => {
     // Basic validation
     if (!loginData.email || !loginData.password) {
       toast({
-        title: t('auth.messages.requiredFields'),
-        description: t('auth.messages.fillAllFields'),
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha todos os campos.",
         variant: "destructive"
       });
       return;
@@ -75,7 +73,7 @@ const UnifiedAuthCard = () => {
       if (result.error) {
         console.error('🚨 AUTH FORM: Login error:', result.error);
         toast({
-          title: t('auth.messages.loginError'),
+          title: "Erro no login",
           description: result.error,
           variant: "destructive"
         });
@@ -84,8 +82,8 @@ const UnifiedAuthCard = () => {
       
       console.log('✅ AUTH FORM: Login successful');
       toast({
-        title: t('auth.messages.loginSuccess'),
-        description: t('auth.messages.redirecting')
+        title: "Login realizado com sucesso!",
+        description: "A redireccionar para o seu painel..."
       });
       
       // Clear form on success
@@ -96,8 +94,8 @@ const UnifiedAuthCard = () => {
     } catch (error: any) {
       console.error('🚨 AUTH FORM: Login exception:', error);
       toast({
-        title: t('auth.messages.loginError'),
-        description: error.message || t('auth.messages.unexpectedError'),
+        title: "Erro no login",
+        description: error.message || "Ocorreu um erro inesperado. Tente novamente.",
         variant: "destructive"
       });
     } finally {
@@ -114,8 +112,8 @@ const UnifiedAuthCard = () => {
     // Basic validation
     if (!registerData.name || !registerData.email || !registerData.password || !registerData.confirmPassword) {
       toast({
-        title: t('auth.messages.requiredFields'),
-        description: t('auth.messages.fillAllFields'),
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha todos os campos.",
         variant: "destructive"
       });
       return;
@@ -123,8 +121,8 @@ const UnifiedAuthCard = () => {
     
     if (registerData.password !== registerData.confirmPassword) {
       toast({
-        title: t('auth.messages.registerError'),
-        description: t('auth.messages.passwordMismatch'),
+        title: "Erro no cadastro",
+        description: "As palavras-passe não coincidem.",
         variant: "destructive"
       });
       return;
@@ -132,8 +130,8 @@ const UnifiedAuthCard = () => {
 
     if (registerData.password.length < 6) {
       toast({
-        title: t('auth.messages.passwordTooShort'),
-        description: t('auth.messages.passwordMinLength'),
+        title: "Palavra-passe muito curta",
+        description: "A palavra-passe deve ter pelo menos 6 caracteres.",
         variant: "destructive"
       });
       return;
@@ -146,7 +144,7 @@ const UnifiedAuthCard = () => {
       
       if (result.error) {
         toast({
-          title: t('auth.messages.registerError'),
+          title: "Erro no cadastro",
           description: result.error,
           variant: "destructive"
         });
@@ -156,13 +154,13 @@ const UnifiedAuthCard = () => {
       // Check if this was an admin invitation
       if (isInvitation) {
         toast({
-          title: t('auth.messages.adminAccountCreated'),
-          description: t('auth.messages.adminWelcome', { name: registerData.name })
+          title: "Conta de Administrador criada!",
+          description: `Bem-vindo ao painel de administração, ${registerData.name}!`
         });
       } else {
         toast({
-          title: t('auth.messages.accountCreated'),
-          description: t('auth.messages.userWelcome', { name: registerData.name })
+          title: "Conta criada com sucesso!",
+          description: `Bem-vindo, ${registerData.name}! A redireccionar para o seu painel...`
         });
       }
       
@@ -173,8 +171,8 @@ const UnifiedAuthCard = () => {
       
     } catch (error: any) {
       toast({
-        title: t('auth.messages.registerError'),
-        description: error.message || t('auth.messages.tryAgainLater'),
+        title: "Erro no cadastro",
+        description: error.message || "Tente novamente mais tarde.",
         variant: "destructive"
       });
     } finally {
@@ -189,8 +187,8 @@ const UnifiedAuthCard = () => {
     
     if (!forgotPasswordEmail) {
       toast({
-        title: t('auth.messages.requiredField'),
-        description: t('auth.messages.enterYourEmail'),
+        title: "Campo obrigatório",
+        description: "Por favor, insira o seu email.",
         variant: "destructive"
       });
       return;
@@ -200,8 +198,8 @@ const UnifiedAuthCard = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(forgotPasswordEmail)) {
       toast({
-        title: t('auth.messages.invalidEmail'),
-        description: t('auth.messages.enterValidEmail'),
+        title: "Email inválido",
+        description: "Por favor, insira um email válido.",
         variant: "destructive"
       });
       return;
@@ -214,7 +212,7 @@ const UnifiedAuthCard = () => {
       
       if (result.error) {
         toast({
-          title: t('auth.messages.recoveryError'),
+          title: "Erro na recuperação",
           description: result.error,
           variant: "destructive"
         });
@@ -222,8 +220,8 @@ const UnifiedAuthCard = () => {
       }
       
       toast({
-        title: t('auth.messages.emailSentSuccess'),
-        description: t('auth.messages.emailSentInstructions'),
+        title: "Email enviado com sucesso!",
+        description: "Verifique a sua caixa de entrada e siga as instruções para redefinir a senha. O link é válido por 60 minutos.",
         duration: 7000
       });
       
@@ -233,8 +231,8 @@ const UnifiedAuthCard = () => {
     } catch (error: any) {
       console.error('Forgot password error:', error);
       toast({
-        title: t('auth.messages.recoveryError'),
-        description: error.message || t('auth.messages.tryAgainLater'),
+        title: "Erro na recuperação",
+        description: error.message || "Tente novamente mais tarde.",
         variant: "destructive"
       });
     } finally {
@@ -246,22 +244,22 @@ const UnifiedAuthCard = () => {
     <Card className="w-full max-w-md glass-effect shadow-custom-lg animate-scale-in">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-navy-blue">
-          {t('auth.platformAccess')}
+          Acesso à Plataforma
         </CardTitle>
       </CardHeader>
       
       <CardContent>
         <Tabs defaultValue={isInvitation ? "register" : "login"} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="login">{t('auth.tabs.login')}</TabsTrigger>
-            <TabsTrigger value="register">{t('auth.tabs.register')}</TabsTrigger>
+            <TabsTrigger value="login">Entrar</TabsTrigger>
+            <TabsTrigger value="register">Cadastrar-se</TabsTrigger>
           </TabsList>
           
           <TabsContent value="login">
             {forgotPasswordMode ? (
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div>
-                  <Label htmlFor="forgot-email">{t('auth.labels.email')}</Label>
+                  <Label htmlFor="forgot-email">Email</Label>
                   <Input
                     id="forgot-email"
                     type="email"
@@ -269,7 +267,7 @@ const UnifiedAuthCard = () => {
                     onChange={(e) => setForgotPasswordEmail(e.target.value)}
                     required
                     className="input-enhanced"
-                    placeholder={t('auth.placeholders.enterEmail')}
+                    placeholder="Digite seu email"
                   />
                 </div>
                 
@@ -281,9 +279,9 @@ const UnifiedAuthCard = () => {
                   {isLoading ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      {t('auth.buttons.sending')}
+                      Enviando...
                     </div>
-                  ) : t('auth.buttons.sendRecoveryEmail')}
+                  ) : 'Enviar Email de Recuperação'}
                 </Button>
                 
                 <button
@@ -291,13 +289,13 @@ const UnifiedAuthCard = () => {
                   onClick={() => setForgotPasswordMode(false)}
                   className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {t('auth.buttons.backToLogin')}
+                  Voltar ao login
                 </button>
               </form>
             ) : (
               <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <Label htmlFor="login-email">{t('auth.labels.email')}</Label>
+                <Label htmlFor="login-email">Email</Label>
                 <Input
                   id="login-email"
                   type="email"
@@ -305,12 +303,12 @@ const UnifiedAuthCard = () => {
                   onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                   required
                   className="input-enhanced"
-                  placeholder={t('auth.placeholders.email')}
+                  placeholder="Email"
                 />
               </div>
               
               <div>
-                <Label htmlFor="login-password">{t('auth.labels.password')}</Label>
+                <Label htmlFor="login-password">Senha</Label>
                 <div className="relative">
                   <Input
                     id="login-password"
@@ -319,7 +317,7 @@ const UnifiedAuthCard = () => {
                     onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                     required
                     className="input-enhanced pr-10"
-                    placeholder={t('auth.placeholders.password')}
+                    placeholder="Palavra-passe"
                   />
                   <button
                     type="button"
@@ -339,9 +337,9 @@ const UnifiedAuthCard = () => {
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    {t('auth.buttons.loggingIn')}
+                    Entrando...
                   </div>
-                ) : t('auth.buttons.login')}
+                ) : 'Entrar'}
               </Button>
 
               <div className="mt-4">
@@ -350,7 +348,7 @@ const UnifiedAuthCard = () => {
                     <div className="w-full border-t border-slate-grey/20"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white text-gray-500">{t('auth.divider')}</span>
+                    <span className="px-4 bg-white text-gray-500">OU</span>
                   </div>
                 </div>
 
@@ -360,8 +358,8 @@ const UnifiedAuthCard = () => {
                   className="w-full h-12 border-slate-grey/20 hover:bg-slate-grey/10 mt-4"
                   onClick={() => {
                     toast({
-                      title: t('auth.oauth.title'),
-                      description: t('auth.oauth.inDevelopment'),
+                      title: "Google OAuth",
+                      description: "Funcionalidade em desenvolvimento",
                     });
                   }}
                 >
@@ -371,7 +369,7 @@ const UnifiedAuthCard = () => {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                  {t('auth.buttons.loginWithGoogle')}
+                  Entrar com Google
                 </Button>
               </div>
               
@@ -380,7 +378,7 @@ const UnifiedAuthCard = () => {
                 onClick={() => setForgotPasswordMode(true)}
                 className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors mt-2"
               >
-                {t('auth.messages.forgotPassword')}
+                Esqueceu a senha?
               </button>
             </form>
             )}
@@ -392,17 +390,17 @@ const UnifiedAuthCard = () => {
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <span className="text-sm font-medium text-blue-800">
-                    🔐 {t('auth.adminInvite')}
+                    🔐 Convite para Administrador
                   </span>
                 </div>
                 <p className="text-xs text-blue-600 mt-1">
-                  {t('auth.adminInviteDesc')}
+                  Está a criar uma conta de administrador com acesso completo à plataforma.
                 </p>
               </div>
             )}
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
-                <Label htmlFor="register-name">{t('auth.labels.name')}</Label>
+                <Label htmlFor="register-name">Nome</Label>
                 <Input
                   id="register-name"
                   type="text"
@@ -410,12 +408,12 @@ const UnifiedAuthCard = () => {
                   onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
                   required
                   className="input-enhanced"
-                  placeholder={t('auth.placeholders.fullName')}
+                  placeholder="Nome completo"
                 />
               </div>
               
               <div>
-                <Label htmlFor="register-email">{t('auth.labels.email')}</Label>
+                <Label htmlFor="register-email">Email</Label>
                 <Input
                   id="register-email"
                   type="email"
@@ -423,12 +421,12 @@ const UnifiedAuthCard = () => {
                   onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                   required
                   className="input-enhanced"
-                  placeholder={t('auth.placeholders.email')}
+                  placeholder="Email"
                 />
               </div>
               
               <div>
-                <Label htmlFor="register-password">{t('auth.labels.password')}</Label>
+                <Label htmlFor="register-password">Senha</Label>
                 <div className="relative">
                   <Input
                     id="register-password"
@@ -437,7 +435,7 @@ const UnifiedAuthCard = () => {
                     onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                     required
                     className="input-enhanced pr-10"
-                    placeholder={t('auth.placeholders.password')}
+                    placeholder="Palavra-passe"
                   />
                   <button
                     type="button"
@@ -450,7 +448,7 @@ const UnifiedAuthCard = () => {
               </div>
               
               <div>
-                <Label htmlFor="register-confirm-password">{t('auth.labels.confirmPassword')}</Label>
+                <Label htmlFor="register-confirm-password">Confirmar Senha</Label>
                 <div className="relative">
                   <Input
                     id="register-confirm-password"
@@ -459,7 +457,7 @@ const UnifiedAuthCard = () => {
                     onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
                     required
                     className="input-enhanced pr-10"
-                    placeholder={t('auth.placeholders.confirmPassword')}
+                    placeholder="Confirmar palavra-passe"
                   />
                   <button
                     type="button"
@@ -479,9 +477,9 @@ const UnifiedAuthCard = () => {
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    {t('common.loading')}
+                    Criando conta...
                   </div>
-                ) : t('auth.tabs.register')}
+                ) : 'Cadastrar-se'}
               </Button>
 
               <div className="mt-4">
@@ -490,7 +488,7 @@ const UnifiedAuthCard = () => {
                     <div className="w-full border-t border-slate-grey/20"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white text-gray-500">{t('auth.divider')}</span>
+                    <span className="px-4 bg-white text-gray-500">OU</span>
                   </div>
                 </div>
 
@@ -500,8 +498,8 @@ const UnifiedAuthCard = () => {
                   className="w-full h-12 border-slate-grey/20 hover:bg-slate-grey/10 mt-4"
                   onClick={() => {
                     toast({
-                      title: t('auth.oauth.title'),
-                      description: t('auth.oauth.inDevelopment'),
+                      title: "Google OAuth",
+                      description: "Funcionalidade em desenvolvimento",
                     });
                   }}
                 >
@@ -511,7 +509,7 @@ const UnifiedAuthCard = () => {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                  {t('auth.buttons.loginWithGoogle')}
+                  Cadastrar com Google
                 </Button>
               </div>
             </form>

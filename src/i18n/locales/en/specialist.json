@@ -44,8 +44,7 @@
     "submit": "Save Call Log",
     "cancel": "Cancel",
     "success": "Call logged successfully",
-    "error": "Error logging call",
-    "saving": "Saving..."
+    "error": "Error logging call"
   },
   "chatTranscript": {
     "title": "Chat Transcript",

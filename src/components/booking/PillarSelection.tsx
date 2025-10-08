@@ -1,5 +1,5 @@
+
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import BackButton from '@/components/navigation/BackButton';
 import { BookingPillar } from './BookingFlow';
 import { Brain, Heart, DollarSign, Scale } from 'lucide-react';
@@ -9,28 +9,35 @@ interface PillarSelectionProps {
 }
 
 const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
-  const { t } = useTranslation(['user', 'common']);
   const pillars = [
     {
       id: 'psicologica' as BookingPillar,
+      title: 'Saúde mental',
+      description: 'Apoio psicológico e bem-estar mental',
       icon: Brain,
       bgColor: 'bg-gradient-to-br from-purple-500 to-purple-700',
       hoverColor: 'hover:from-purple-600 hover:to-purple-800'
     },
     {
       id: 'fisica' as BookingPillar,
+      title: 'Bem estar físico',
+      description: 'Saúde física e estilo de vida',
       icon: Heart,
       bgColor: 'bg-gradient-to-br from-green-500 to-green-700',
       hoverColor: 'hover:from-green-600 hover:to-green-800'
     },
     {
       id: 'financeira' as BookingPillar,
+      title: 'Assistência financeira',
+      description: 'Consultoria e planeamento financeiro',
       icon: DollarSign,
       bgColor: 'bg-gradient-to-br from-blue-500 to-blue-700',
       hoverColor: 'hover:from-blue-600 hover:to-blue-800'
     },
     {
       id: 'juridica' as BookingPillar,
+      title: 'Assistência Jurídica',
+      description: 'Consultoria jurídica especializada',
       icon: Scale,
       bgColor: 'bg-gradient-to-br from-amber-500 to-amber-700',
       hoverColor: 'hover:from-amber-600 hover:to-amber-800'
@@ -49,10 +56,10 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
           
           <div className="text-center mb-8">
             <h1 className="font-semibold text-2xl sm:text-3xl leading-tight mb-3 text-navy-blue animate-fade-in">
-              {t('user:booking.directFlow.pillarTitle')}
+              Qual dos quatro pilares deseja acessar?
             </h1>
             <p className="font-medium text-base text-royal-blue">
-              {t('user:booking.directFlow.pillarSubtitle')}
+              Escolha a área onde precisa de apoio especializado
             </p>
           </div>
 
@@ -70,10 +77,10 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
                     <IconComponent className="h-10 w-10 text-white drop-shadow-sm" />
                   </div>
                   <h3 className="font-bold text-xl leading-tight mb-3 text-white drop-shadow-sm group-hover:text-white/95 transition-colors">
-                    {t(`user:booking.directFlow.pillars.${pillar.id}.title`)}
+                    {pillar.title}
                   </h3>
                   <p className="text-base leading-relaxed text-white/90 drop-shadow-sm group-hover:text-white/80 transition-colors flex-1">
-                    {t(`user:booking.directFlow.pillars.${pillar.id}.description`)}
+                    {pillar.description}
                   </p>
                 </button>
               );

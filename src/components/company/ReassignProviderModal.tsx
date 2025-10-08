@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UserCog } from "lucide-react";
 import { companyToasts } from "@/data/companyToastMessages";
-import { useTranslation } from 'react-i18next';
 
 interface ReassignProviderModalProps {
   open: boolean;
@@ -29,7 +28,6 @@ export function ReassignProviderModal({
   availableProviders,
   onReassign 
 }: ReassignProviderModalProps) {
-  const { t } = useTranslation();
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
 
   const handleSubmit = () => {
@@ -76,7 +74,7 @@ export function ReassignProviderModal({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('buttons.cancel')}
+            Cancelar
           </Button>
           <Button onClick={handleSubmit} disabled={!selectedProviderId}>
             Reatribuir

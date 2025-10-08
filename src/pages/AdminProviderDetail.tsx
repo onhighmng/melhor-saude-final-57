@@ -92,7 +92,7 @@ interface ProviderDetail {
 const AdminProviderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation(['admin', 'common']);
+  const { t } = useTranslation('admin');
   const [provider, setProvider] = useState<ProviderDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('profile');
@@ -117,7 +117,7 @@ const AdminProviderDetail = () => {
       }, 800);
     } catch (error) {
       toast({
-        title: t('common:error'),
+        title: t('common.error'),
         description: t('providerDetail.loadError'),
         variant: "destructive"
       });
@@ -137,7 +137,7 @@ const AdminProviderDetail = () => {
       });
     } catch (error) {
       toast({
-        title: t('common:error'),
+        title: t('common.error'),
         description: t('providerDetail.statusUpdateError'),
         variant: "destructive"
       });

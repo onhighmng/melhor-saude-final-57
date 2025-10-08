@@ -23,7 +23,7 @@ interface MobileMenuProps {
 const MobileMenu = ({ isOpen, onClose, menuItems }: MobileMenuProps) => {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const navigate = useNavigate();
-  const { t } = useTranslation(['navigation', 'common']);
+  const { t } = useTranslation('navigation');
 
   if (!isOpen) return null;
 
@@ -134,13 +134,13 @@ const MobileMenu = ({ isOpen, onClose, menuItems }: MobileMenuProps) => {
               onClick={() => handleNavigation('/login')}
               className="block w-full bg-white border border-gray-200 rounded-3xl px-6 py-3 sm:px-8 sm:py-4 text-center text-base sm:text-lg font-medium transition-all duration-300 hover:bg-navy-blue hover:text-white hover:border-navy-blue"
             >
-              {t('common:login')}
+              {t('user.login')}
             </button>
             <button 
               onClick={() => handleNavigation('/register/company')}
               className="block w-full bg-bright-royal text-white rounded-3xl px-6 py-3 sm:px-8 sm:py-4 text-center text-base sm:text-lg font-medium transition-colors duration-300 hover:bg-navy-blue"
             >
-              {t('common:register')}
+              {t('user.register')}
             </button>
           </div>
         </div>

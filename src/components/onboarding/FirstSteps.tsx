@@ -1,40 +1,38 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen, Bell } from "lucide-react";
-import { useTranslation } from 'react-i18next';
+import { userUIcopy } from "@/data/userUIcopy";
 
 interface FirstStepsProps {
   onBookSession: () => void;
 }
 
-export function FirstSteps({ onBookSession }: FirstStepsProps) {
-  const { t } = useTranslation('common');
-  
-  const steps = [
-    {
-      icon: Calendar,
-      titleKey: 'onboarding.steps.bookFirstSession.title',
-      descriptionKey: 'onboarding.steps.bookFirstSession.description',
-    },
-    {
-      icon: BookOpen,
-      titleKey: 'onboarding.steps.exploreResources.title',
-      descriptionKey: 'onboarding.steps.exploreResources.description',
-    },
-    {
-      icon: Bell,
-      titleKey: 'onboarding.steps.enableNotifications.title',
-      descriptionKey: 'onboarding.steps.enableNotifications.description',
-    },
-  ];
+const steps = [
+  {
+    icon: Calendar,
+    title: "Agende a Sua Primeira Sessão",
+    description: "Escolha a área de apoio e o especialista que melhor se adapta às suas necessidades",
+  },
+  {
+    icon: BookOpen,
+    title: "Explore os Recursos",
+    description: "Aceda a artigos, vídeos e guias sobre bem-estar e desenvolvimento pessoal",
+  },
+  {
+    icon: Bell,
+    title: "Ative as Notificações",
+    description: "Receba lembretes das suas sessões e avisos importantes",
+  },
+];
 
+export function FirstSteps({ onBookSession }: FirstStepsProps) {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{t('onboarding.nextSteps')}</CardTitle>
+          <CardTitle className="text-2xl">Próximos Passos</CardTitle>
           <CardDescription>
-            {t('onboarding.allReady')}
+            Está tudo pronto! Aqui estão algumas sugestões para começar
           </CardDescription>
         </CardHeader>
         
@@ -50,8 +48,8 @@ export function FirstSteps({ onBookSession }: FirstStepsProps) {
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">{t(step.titleKey)}</h4>
-                    <p className="text-sm text-muted-foreground">{t(step.descriptionKey)}</p>
+                    <h4 className="font-semibold mb-1">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.description}</p>
                   </div>
                 </div>
               );
@@ -59,7 +57,7 @@ export function FirstSteps({ onBookSession }: FirstStepsProps) {
           </div>
           
           <Button onClick={onBookSession} size="lg" className="w-full">
-            {t('onboarding.steps.bookFirstSession.title')}
+            {userUIcopy.onboarding.ctaFirstSession}
           </Button>
         </CardContent>
       </Card>

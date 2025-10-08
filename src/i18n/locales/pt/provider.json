@@ -1,11 +1,4 @@
 {
-  "profile": {
-    "addSpecialty": "Adicionar especialidade",
-    "addLanguage": "Adicionar idioma",
-    "uploadDocuments": "Enviar Documentos",
-    "updateDocuments": "Atualizar Documentos",
-    "documentsUploaded": "Documentos enviados com sucesso"
-  },
   "dashboard": {
     "title": "Painel do Prestador",
     "welcome": "Bem-vindo, {{name}}",
@@ -208,11 +201,5 @@
     "bestPracticesSubtitle": "Diretrizes essenciais para prestação de serviços de qualidade",
     "commonIssues": "Situações Comuns e Soluções",
     "commonIssuesSubtitle": "Como lidar com desafios frequentes"
-  },
-  "preDiagnostic": {
-    "title": "Informação Pré-Diagnóstico",
-    "topic": "Tópico",
-    "transcript": "Transcrição da Conversa",
-    "noData": "Nenhuma informação pré-diagnóstico disponível"
   }
 }

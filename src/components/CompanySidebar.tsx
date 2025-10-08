@@ -182,14 +182,14 @@ const CompanySidebar = () => {
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: t('common.logout') }}>
+            <SidebarMenuItemWithTooltip item={{ title: "Sair" }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
                 size="sm"
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <LogOut className={`h-4 w-4 ${isCollapsed ? 'mx-auto' : 'mr-2'}`} />
-                {!isCollapsed && <span>{t('common.logout')}</span>}
+                {!isCollapsed && <span>Sair</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
