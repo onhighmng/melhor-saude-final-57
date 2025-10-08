@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { legalTopics } from '@/types/legalAssessment';
+import { ChevronLeft } from 'lucide-react';
 
 interface TopicSelectionProps {
   selectedTopics: string[];
@@ -17,22 +18,23 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
   onBack
 }) => {
   return (
-    <div className="min-h-screen bg-soft-white">
+    <div className="min-h-screen bg-background">
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-4xl mx-auto">
           <Button
             variant="ghost"
             onClick={onBack}
-            className="mb-6"
+            className="mb-6 gap-2"
           >
-            ← Voltar
+            <ChevronLeft className="h-4 w-4" />
+            Voltar
           </Button>
 
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-navy-blue mb-3">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl font-bold text-foreground mb-3">
               Qual área jurídica você precisa de ajuda?
             </h1>
-            <p className="text-royal-blue">
+            <p className="text-muted-foreground text-lg">
               Selecione uma ou mais áreas relacionadas à sua situação
             </p>
           </div>
@@ -41,21 +43,21 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
             {legalTopics.map((topic) => (
               <Card
                 key={topic.id}
-                className={`p-6 cursor-pointer transition-all duration-200 ${
+                className={`p-6 cursor-pointer transition-all duration-200 hover:shadow-lg ${
                   selectedTopics.includes(topic.id)
-                    ? 'border-primary border-2 bg-primary/5'
+                    ? 'border-primary border-2 bg-primary/5 shadow-md'
                     : 'border-border hover:border-primary/50'
                 }`}
                 onClick={() => onTopicToggle(topic.id)}
               >
                 <div className="flex items-start gap-4">
-                  <span className="text-4xl">{topic.icon}</span>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-2">{topic.title}</h3>
-                    <p className="text-sm text-muted-foreground">{topic.description}</p>
+                  <div className="flex-shrink-0 text-6xl leading-none">{topic.icon}</div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-lg mb-2 text-foreground">{topic.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{topic.description}</p>
                   </div>
                   {selectedTopics.includes(topic.id) && (
-                    <div className="text-primary text-xl">✓</div>
+                    <div className="flex-shrink-0 text-primary text-2xl font-bold">✓</div>
                   )}
                 </div>
               </Card>
@@ -67,7 +69,7 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
               onClick={onNext}
               disabled={selectedTopics.length === 0}
               size="lg"
-              className="min-w-[200px]"
+              className="min-w-[200px] text-base"
             >
               Continuar
             </Button>
