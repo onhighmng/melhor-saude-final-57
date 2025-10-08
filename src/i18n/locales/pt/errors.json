@@ -12,5 +12,6 @@
   "unknown": "Ocorreu um erro",
   "chatInitFailed": "Não foi possível iniciar a sessão de chat",
   "messageSendFailed": "Não foi possível enviar a mensagem",
-  "languageChangeFailed": "Falha ao alterar o idioma. Por favor, tente novamente."
+  "languageChangeFailed": "Falha ao alterar o idioma. Por favor, tente novamente.",
+  "feedbackFailed": "Erro ao submeter feedback"
 }
