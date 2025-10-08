@@ -538,5 +538,42 @@
       "tagline": "Better Health",
       "description": "We care for your mental health and well-being with qualified professionals."
     }
+  },
+  "pricing": {
+    "benefits": {
+      "allPlans": {
+        "title": "All plans include:",
+        "description": "Unlimited sessions with professionals available 24/7, full access to 4 pillars, secure scheduling and chat support."
+      },
+      "quarterlyAnnual": {
+        "title": "Quarterly and Annual plans include:",
+        "description": "Priority scheduling and preferential service."
+      },
+      "annualPlan": {
+        "title": "Annual plan includes:",
+        "description": "Dedicated support for businesses and families."
+      },
+      "enterprise": {
+        "title": "All enterprise plans include:",
+        "description": "Full access to 4 wellness pillars with specialists available 24/7, unlimited sessions, wellness reports and dedicated support."
+      }
+    },
+    "selector": {
+      "individual": {
+        "title": "Individual",
+        "subtitle": "For small businesses"
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "subtitle": "For medium and large businesses"
+      }
+    }
+  },
+  "guides": {
+    "final": {
+      "title": "Your Team of Wellness Specialists",
+      "subtitle": "Qualified professionals who develop personalized digital solutions for the comprehensive well-being of your employees.",
+      "knowAllButton": "Meet them all"
+    }
   }
 }

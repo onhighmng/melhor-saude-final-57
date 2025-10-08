@@ -538,5 +538,42 @@
       "tagline": "Melhor Saúde",
       "description": "Cuidamos da sua saúde mental e bem-estar com profissionais qualificados."
     }
+  },
+  "pricing": {
+    "benefits": {
+      "allPlans": {
+        "title": "Todos os planos incluem:",
+        "description": "Sessões ilimitadas com profissionais disponíveis 24 horas por dia, 7 dias por semana, acesso completo aos 4 pilares, agendamento seguro e suporte via chat."
+      },
+      "quarterlyAnnual": {
+        "title": "Planos Trimestral e Anual incluem:",
+        "description": "Prioridade no agendamento e atendimento preferencial."
+      },
+      "annualPlan": {
+        "title": "Plano Anual inclui:",
+        "description": "Suporte dedicado para empresas e famílias."
+      },
+      "enterprise": {
+        "title": "Todos os planos empresariais incluem:",
+        "description": "Acesso completo aos 4 pilares de bem-estar com especialistas disponíveis 24 horas por dia, 7 dias por semana, sessões ilimitadas, relatórios de bem-estar e suporte dedicado."
+      }
+    },
+    "selector": {
+      "individual": {
+        "title": "Individual",
+        "subtitle": "Para pequenas empresas"
+      },
+      "enterprise": {
+        "title": "Empresarial",
+        "subtitle": "Para médias e grandes empresas"
+      }
+    }
+  },
+  "guides": {
+    "final": {
+      "title": "A Sua Equipa de Especialistas em Bem-Estar",
+      "subtitle": "Profissionais qualificados que desenvolvem soluções digitais personalizadas para o bem-estar integral dos seus colaboradores.",
+      "knowAllButton": "Conheça todos"
+    }
   }
 }
