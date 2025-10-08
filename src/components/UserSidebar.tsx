@@ -35,12 +35,13 @@ export function UserSidebar() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const { t } = useTranslation('navigation')
+  const { t: tUser } = useTranslation('user')
   const currentPath = location.pathname
   const isCollapsed = state === "collapsed"
 
   const mainItems = [
     { title: t('user.dashboard'), url: "/user/dashboard", icon: LayoutDashboard },
-    { title: t('dashboard.ctaBookSession'), url: "/user/book", icon: Calendar },
+    { title: tUser('dashboard.ctaBookSession'), url: "/user/book", icon: Calendar },
     { title: t('user.sessions'), url: "/user/sessions", icon: CalendarCheck },
     { title: t('user.notifications'), url: "/user/notifications", icon: Bell, badge: 3 },
     { title: t('user.resources'), url: "/user/resources", icon: BookOpen },
