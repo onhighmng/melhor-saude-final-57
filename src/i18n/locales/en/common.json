@@ -577,5 +577,91 @@
       "subtitle": "Qualified professionals who develop personalized digital solutions for the comprehensive well-being of your employees.",
       "knowAllButton": "Meet them all"
     }
+  },
+  "auth": {
+    "loginTitle": "Login",
+    "signupTitle": "Sign Up",
+    "resetPasswordTitle": "Reset Password",
+    "platformAccessTitle": "Platform Access",
+    "enterYourAccount": "Login to your account",
+    "labels": {
+      "email": "Email",
+      "password": "Password",
+      "fullName": "Full Name",
+      "confirmPassword": "Confirm Password"
+    },
+    "placeholders": {
+      "email": "Enter your email",
+      "emailSimple": "Email",
+      "password": "Enter your password",
+      "passwordSimple": "Password",
+      "fullName": "Enter your name",
+      "fullNameSimple": "Full name",
+      "confirmPassword": "Confirm password",
+      "minCharacters": "Minimum 8 characters"
+    },
+    "buttons": {
+      "login": "Login",
+      "signup": "Sign Up",
+      "signupAlt": "Register",
+      "cancel": "Cancel",
+      "sendReset": "Send Reset Email",
+      "sendRecovery": "Send Recovery Email",
+      "loginWithGoogle": "Login with Google",
+      "signupWithGoogle": "Sign up with Google",
+      "processing": "Processing...",
+      "loggingIn": "Logging in...",
+      "creatingAccount": "Creating account...",
+      "sending": "Sending...",
+      "sendingAlt": "Sending..."
+    },
+    "links": {
+      "forgotPassword": "Forgot your password?",
+      "forgotPasswordAlt": "Forgot password?",
+      "backToLogin": "Back to login",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create account"
+    },
+    "divider": "OR",
+    "success": {
+      "accountCreated": "Account created! Check your email to confirm your account.",
+      "resetSent": "Reset email sent! Check your inbox.",
+      "recoverySent": "Email sent successfully!",
+      "recoveryDetails": "Check your inbox and follow the instructions to reset your password. The link is valid for 60 minutes.",
+      "loginSuccess": "Login successful!",
+      "redirecting": "Redirecting...",
+      "redirectingDashboard": "Redirecting to your dashboard...",
+      "adminWelcome": "Administrator Account Created!",
+      "adminWelcomeDetails": "Welcome to the admin panel, {{name}}!",
+      "userWelcome": "Account created successfully!",
+      "userWelcomeDetails": "Welcome, {{name}}! Redirecting to your dashboard..."
+    },
+    "errors": {
+      "loginError": "Login error",
+      "signupError": "Signup error",
+      "registrationError": "Registration error",
+      "recoveryError": "Recovery error",
+      "requiredFields": "Required fields",
+      "fillAllFields": "Please fill in all fields.",
+      "invalidEmail": "Please enter a valid email",
+      "invalidEmailSimple": "Invalid email",
+      "passwordMin": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordTooShort": "Password too short",
+      "passwordMinDetails": "Password must be at least 6 characters.",
+      "incorrectCredentials": "Incorrect email or password",
+      "tryAgain": "Please try again later.",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "emailRequired": "Required field",
+      "emailRequiredDetails": "Please enter your email."
+    },
+    "oauth": {
+      "title": "Google OAuth",
+      "inDevelopment": "Feature in development"
+    },
+    "invitation": {
+      "adminBadge": "🔐 Administrator Invitation",
+      "adminDetails": "You are creating an administrator account with full platform access."
+    }
   }
 }

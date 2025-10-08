@@ -13,9 +13,11 @@ import { SecurePasswordInput, usePasswordValidation } from '@/components/ui/secu
 import { getErrorMessage } from '@/utils/errorMessages';
 import { useState } from 'react';
 import { Mail, Lock, User, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const UnifiedAuthCard = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const { login, signup, resetPassword } = useAuth();
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'reset'>('login');
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
@@ -50,7 +52,7 @@ const UnifiedAuthCard = () => {
         if (result.error) {
           setError(getErrorMessage(result.error));
         } else {
-          setSuccess('Conta criada! Verifique o seu email para confirmar a conta.');
+          setSuccess(t('auth.success.accountCreated'));
           setFormData({ email: '', password: '', name: '' });
         }
       } else if (authMode === 'reset') {
@@ -58,7 +60,7 @@ const UnifiedAuthCard = () => {
         if (result.error) {
           setError(getErrorMessage(result.error));
         } else {
-          setSuccess('Email de redefinição enviado! Verifique a sua caixa de entrada.');
+          setSuccess(t('auth.success.resetSent'));
           setFormData({ email: '', password: '', name: '' });
         }
       }
@@ -90,9 +92,9 @@ const UnifiedAuthCard = () => {
       <Card className="w-full max-w-md mx-auto glass-effect border-accent-sage/20">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-navy-blue">
-            {authMode === 'login' && 'Iniciar Sessão'}
-            {authMode === 'signup' && 'Criar Conta'}
-            {authMode === 'reset' && 'Redefinir Palavra-passe'}
+            {authMode === 'login' && t('auth.loginTitle')}
+            {authMode === 'signup' && t('auth.signupTitle')}
+            {authMode === 'reset' && t('auth.resetPasswordTitle')}
           </CardTitle>
         </CardHeader>
 
@@ -104,14 +106,14 @@ const UnifiedAuthCard = () => {
                 onClick={() => switchMode('login')}
                 className="data-[state=active]:bg-accent-sage data-[state=active]:text-white"
               >
-                Entrar
+                {t('auth.buttons.login')}
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
                 onClick={() => switchMode('signup')}
                 className="data-[state=active]:bg-accent-sage data-[state=active]:text-white"
               >
-                Registar
+                {t('auth.buttons.signup')}
               </TabsTrigger>
             </TabsList>
 
@@ -134,14 +136,14 @@ const UnifiedAuthCard = () => {
                 <div className="space-y-2">
                   <Label htmlFor="email" className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />
-                    Email
+                    {t('auth.labels.email')}
                   </Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    placeholder="Digite o seu email"
+                    placeholder={t('auth.placeholders.email')}
                     required
                   />
                 </div>
@@ -149,12 +151,12 @@ const UnifiedAuthCard = () => {
                 <div className="space-y-2">
                   <Label htmlFor="password" className="flex items-center gap-2">
                     <Lock className="w-4 h-4" />
-                    Palavra-passe
+                    {t('auth.labels.password')}
                   </Label>
                   <SecurePasswordInput
                     value={formData.password}
                     onChange={(value) => setFormData({...formData, password: value})}
-                    placeholder="Digite sua palavra-passe"
+                    placeholder={t('auth.placeholders.password')}
                     required
                     showStrength={false}
                   />
@@ -168,10 +170,10 @@ const UnifiedAuthCard = () => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      A processar...
+                      {t('auth.buttons.processing')}
                     </>
                   ) : (
-                    'Iniciar Sessão'
+                    t('auth.loginTitle')
                   )}
                 </Button>
 
@@ -181,7 +183,7 @@ const UnifiedAuthCard = () => {
                       <div className="w-full border-t border-slate-grey/20"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-4 bg-white text-gray-500">OU</span>
+                      <span className="px-4 bg-white text-gray-500">{t('auth.divider')}</span>
                     </div>
                   </div>
 
@@ -191,8 +193,8 @@ const UnifiedAuthCard = () => {
                     className="w-full mt-4 border-slate-grey/20 hover:bg-slate-grey/10"
                     onClick={() => {
                       toast({
-                        title: "Google OAuth",
-                        description: "Funcionalidade em desenvolvimento",
+                        title: t('auth.oauth.title'),
+                        description: t('auth.oauth.inDevelopment'),
                       });
                     }}
                   >
@@ -202,7 +204,7 @@ const UnifiedAuthCard = () => {
                       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    Entrar com Google
+                    {t('auth.buttons.loginWithGoogle')}
                   </Button>
                 </div>
 
@@ -213,7 +215,7 @@ const UnifiedAuthCard = () => {
                     onClick={() => switchMode('reset')}
                     className="text-sm text-navy-blue/70 hover:text-navy-blue"
                   >
-                    Esqueceu a palavra-passe?
+                    {t('auth.links.forgotPassword')}
                   </Button>
                 </div>
               </form>
@@ -224,14 +226,14 @@ const UnifiedAuthCard = () => {
                 <div className="space-y-2">
                   <Label htmlFor="name" className="flex items-center gap-2">
                     <User className="w-4 h-4" />
-                    Nome Completo
+                    {t('auth.labels.fullName')}
                   </Label>
                   <Input
                     id="name"
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    placeholder="Digite o seu nome"
+                    placeholder={t('auth.placeholders.fullName')}
                     required
                   />
                 </div>
@@ -239,14 +241,14 @@ const UnifiedAuthCard = () => {
                 <div className="space-y-2">
                   <Label htmlFor="email" className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />
-                    Email
+                    {t('auth.labels.email')}
                   </Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    placeholder="Digite o seu email"
+                    placeholder={t('auth.placeholders.email')}
                     required
                   />
                 </div>
@@ -254,12 +256,12 @@ const UnifiedAuthCard = () => {
                 <div className="space-y-2">
                   <Label htmlFor="password" className="flex items-center gap-2">
                     <Lock className="w-4 h-4" />
-                    Palavra-passe
+                    {t('auth.labels.password')}
                   </Label>
                   <SecurePasswordInput
                     value={formData.password}
                     onChange={(value) => setFormData({...formData, password: value})}
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={t('auth.placeholders.minCharacters')}
                     required
                     showStrength={true}
                     onValidationChange={handlePasswordValidation}
@@ -274,10 +276,10 @@ const UnifiedAuthCard = () => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      A criar conta...
+                      {t('auth.buttons.creatingAccount')}
                     </>
                   ) : (
-                    'Criar Conta'
+                    t('auth.signupTitle')
                   )}
                 </Button>
 
@@ -287,7 +289,7 @@ const UnifiedAuthCard = () => {
                       <div className="w-full border-t border-slate-grey/20"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-4 bg-white text-gray-500">OU</span>
+                      <span className="px-4 bg-white text-gray-500">{t('auth.divider')}</span>
                     </div>
                   </div>
 
@@ -297,8 +299,8 @@ const UnifiedAuthCard = () => {
                     className="w-full mt-4 border-slate-grey/20 hover:bg-slate-grey/10"
                     onClick={() => {
                       toast({
-                        title: "Google OAuth",
-                        description: "Funcionalidade em desenvolvimento",
+                        title: t('auth.oauth.title'),
+                        description: t('auth.oauth.inDevelopment'),
                       });
                     }}
                   >
@@ -308,7 +310,7 @@ const UnifiedAuthCard = () => {
                       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    Cadastrar com Google
+                    {t('auth.buttons.signupWithGoogle')}
                   </Button>
                 </div>
               </form>
@@ -320,14 +322,14 @@ const UnifiedAuthCard = () => {
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  Email
+                  {t('auth.labels.email')}
                 </Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  placeholder="Digite o seu email"
+                  placeholder={t('auth.placeholders.email')}
                   required
                 />
               </div>
@@ -340,10 +342,10 @@ const UnifiedAuthCard = () => {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    A enviar...
+                    {t('auth.buttons.sending')}
                   </>
                 ) : (
-                  'Enviar Email de Redefinição'
+                  t('auth.buttons.sendReset')
                 )}
               </Button>
 
@@ -354,7 +356,7 @@ const UnifiedAuthCard = () => {
                   onClick={() => switchMode('login')}
                   className="text-sm text-navy-blue/70 hover:text-navy-blue"
                 >
-                  Voltar ao login
+                  {t('auth.links.backToLogin')}
                 </Button>
               </div>
             </form>

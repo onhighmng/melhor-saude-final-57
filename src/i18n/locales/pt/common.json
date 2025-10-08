@@ -577,5 +577,91 @@
       "subtitle": "Profissionais qualificados que desenvolvem soluções digitais personalizadas para o bem-estar integral dos seus colaboradores.",
       "knowAllButton": "Conheça todos"
     }
+  },
+  "auth": {
+    "loginTitle": "Iniciar Sessão",
+    "signupTitle": "Criar Conta",
+    "resetPasswordTitle": "Redefinir Palavra-passe",
+    "platformAccessTitle": "Acesso à Plataforma",
+    "enterYourAccount": "Entrar na sua conta",
+    "labels": {
+      "email": "Email",
+      "password": "Senha",
+      "fullName": "Nome Completo",
+      "confirmPassword": "Confirmar Senha"
+    },
+    "placeholders": {
+      "email": "Digite o seu email",
+      "emailSimple": "Email",
+      "password": "Digite sua palavra-passe",
+      "passwordSimple": "Palavra-passe",
+      "fullName": "Digite o seu nome",
+      "fullNameSimple": "Nome completo",
+      "confirmPassword": "Confirmar palavra-passe",
+      "minCharacters": "Mínimo 8 caracteres"
+    },
+    "buttons": {
+      "login": "Entrar",
+      "signup": "Registar",
+      "signupAlt": "Cadastrar-se",
+      "cancel": "Cancelar",
+      "sendReset": "Enviar Email de Redefinição",
+      "sendRecovery": "Enviar Email de Recuperação",
+      "loginWithGoogle": "Entrar com Google",
+      "signupWithGoogle": "Cadastrar com Google",
+      "processing": "A processar...",
+      "loggingIn": "Entrando...",
+      "creatingAccount": "A criar conta...",
+      "sending": "A enviar...",
+      "sendingAlt": "Enviando..."
+    },
+    "links": {
+      "forgotPassword": "Esqueceu a palavra-passe?",
+      "forgotPasswordAlt": "Esqueceu a senha?",
+      "backToLogin": "Voltar ao login",
+      "noAccount": "Não tem uma conta?",
+      "createAccount": "Criar conta"
+    },
+    "divider": "OU",
+    "success": {
+      "accountCreated": "Conta criada! Verifique o seu email para confirmar a conta.",
+      "resetSent": "Email de redefinição enviado! Verifique a sua caixa de entrada.",
+      "recoverySent": "Email enviado com sucesso!",
+      "recoveryDetails": "Verifique a sua caixa de entrada e siga as instruções para redefinir a senha. O link é válido por 60 minutos.",
+      "loginSuccess": "Login realizado com sucesso!",
+      "redirecting": "Redirecionando...",
+      "redirectingDashboard": "A redireccionar para o seu painel...",
+      "adminWelcome": "Conta de Administrador criada!",
+      "adminWelcomeDetails": "Bem-vindo ao painel de administração, {{name}}!",
+      "userWelcome": "Conta criada com sucesso!",
+      "userWelcomeDetails": "Bem-vindo, {{name}}! A redireccionar para o seu painel..."
+    },
+    "errors": {
+      "loginError": "Erro no login",
+      "signupError": "Erro no cadastro",
+      "registrationError": "Erro no cadastro",
+      "recoveryError": "Erro na recuperação",
+      "requiredFields": "Campos obrigatórios",
+      "fillAllFields": "Por favor, preencha todos os campos.",
+      "invalidEmail": "Por favor, insira um email válido",
+      "invalidEmailSimple": "Email inválido",
+      "passwordMin": "A senha deve ter pelo menos 6 caracteres",
+      "passwordMismatch": "As palavras-passe não coincidem.",
+      "passwordTooShort": "Palavra-passe muito curta",
+      "passwordMinDetails": "A palavra-passe deve ter pelo menos 6 caracteres.",
+      "incorrectCredentials": "Email ou palavra-passe incorretos",
+      "tryAgain": "Tente novamente mais tarde.",
+      "unexpectedError": "Ocorreu um erro inesperado. Tente novamente.",
+      "emailRequired": "Campo obrigatório",
+      "emailRequiredDetails": "Por favor, insira o seu email."
+    },
+    "oauth": {
+      "title": "Google OAuth",
+      "inDevelopment": "Funcionalidade em desenvolvimento"
+    },
+    "invitation": {
+      "adminBadge": "🔐 Convite para Administrador",
+      "adminDetails": "Está a criar uma conta de administrador com acesso completo à plataforma."
+    }
   }
 }
