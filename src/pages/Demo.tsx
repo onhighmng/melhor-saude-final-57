@@ -25,6 +25,7 @@ import {
 
 const Demo = () => {
   const { t } = useTranslation('common');
+  const { t: tNav } = useTranslation('navigation');
   const { profile, login, logout } = useAuth();
   const navigate = useNavigate();
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -38,8 +39,8 @@ const Demo = () => {
       role: 'user' as const,
       dashboardPath: '/user/sessions',
       quickLinks: [
-        { label: t('navigation.menu.sessions'), path: '/user/sessions', icon: Calendar },
-        { label: t('navigation.menu.settings'), path: '/user/settings', icon: Settings },
+        { label: tNav('user.sessions'), path: '/user/sessions', icon: Calendar },
+        { label: tNav('company.settings'), path: '/user/settings', icon: Settings },
         { label: t('demo.helpCenter'), path: '/help', icon: Users }
       ],
       features: ['Marcar Sessões', 'Ver Histórico', 'Dashboard Pessoal', 'Ajuda'],
@@ -53,10 +54,10 @@ const Demo = () => {
       role: 'prestador' as const,
       dashboardPath: '/prestador/dashboard',
       quickLinks: [
-        { label: 'Dashboard', path: '/prestador/dashboard', icon: BarChart3 },
-        { label: t('navigation.menu.sessions'), path: '/prestador/sessoes', icon: Calendar },
-        { label: 'Disponibilidade', path: '/prestador/availability', icon: Settings },
-        { label: 'Perfil', path: '/prestador/profile', icon: User }
+        { label: tNav('provider.dashboard'), path: '/prestador/dashboard', icon: BarChart3 },
+        { label: tNav('provider.sessions'), path: '/prestador/sessoes', icon: Calendar },
+        { label: tNav('provider.availability'), path: '/prestador/availability', icon: Settings },
+        { label: tNav('provider.profile'), path: '/prestador/profile', icon: User }
       ],
       features: ['Gestão de Sessões', 'Disponibilidade', 'Perfil', 'Vídeos'],
       color: 'bg-green-500'
@@ -69,11 +70,11 @@ const Demo = () => {
       role: 'hr' as const,
       dashboardPath: '/company/dashboard',
       quickLinks: [
-        { label: 'Dashboard', path: '/company/dashboard', icon: BarChart3 },
-        { label: 'Colaboradores', path: '/company/employees', icon: Users },
-        { label: 'Convites', path: '/company/invites', icon: ArrowRight },
-        { label: 'Relatórios', path: '/company/reports', icon: BarChart3 },
-        { label: t('navigation.menu.settings'), path: '/company/settings', icon: Settings }
+        { label: tNav('company.dashboard'), path: '/company/dashboard', icon: BarChart3 },
+        { label: tNav('company.employees'), path: '/company/employees', icon: Users },
+        { label: tNav('company.inviteCodes'), path: '/company/invites', icon: ArrowRight },
+        { label: tNav('company.reports'), path: '/company/reports', icon: BarChart3 },
+        { label: tNav('company.settings'), path: '/company/settings', icon: Settings }
       ],
       features: ['Gestão de Colaboradores', 'Relatórios', 'Convites', 'Configurações'],
       color: 'bg-purple-500'
@@ -86,11 +87,11 @@ const Demo = () => {
       role: 'admin' as const,
       dashboardPath: '/admin/users',
       quickLinks: [
-        { label: 'Utilizadores', path: '/admin/users', icon: Users },
-        { label: 'Prestadores', path: '/admin/providers', icon: UserCheck },
-        { label: t('navigation.menu.sessions'), path: '/admin/sessions', icon: Calendar },
+        { label: tNav('admin.users'), path: '/admin/users', icon: Users },
+        { label: tNav('admin.providers'), path: '/admin/providers', icon: UserCheck },
+        { label: tNav('admin.sessions'), path: '/admin/sessions', icon: Calendar },
         { label: t('demo.support'), path: '/admin/support', icon: Settings },
-        { label: t('navigation.menu.settings'), path: '/admin/settings', icon: Settings }
+        { label: tNav('admin.settings'), path: '/admin/settings', icon: Settings }
       ],
       features: ['Gestão Completa', 'Analytics', 'Suporte', 'Configurações'],
       color: 'bg-red-500'
@@ -289,7 +290,7 @@ const Demo = () => {
                         {/* Quick navigation for current user */}
                         {isCurrentUser && demoUser.quickLinks && (
                           <div className="space-y-2 pt-2 border-t">
-                            <h5 className="text-xs font-medium text-muted-foreground">Navegação Rápida:</h5>
+                            <h5 className="text-xs font-medium text-muted-foreground">{t('demo.quickNavigationLabel')}</h5>
                             <div className="grid grid-cols-2 gap-1">
                               {demoUser.quickLinks.map((link, index) => {
                                 const LinkIcon = link.icon;

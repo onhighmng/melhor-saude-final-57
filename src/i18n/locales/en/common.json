@@ -592,6 +592,7 @@
     "subtitle": "Demo interface for presentation. Explore all features by switching between different user types.",
     "switchUsers": "Switch Users",
     "quickNavigation": "Quick Navigation",
+    "quickNavigationLabel": "Quick Navigation:",
     "activeSession": "Active Session",
     "connectedAs": "Connected as",
     "switchingUser": "Switching user...",

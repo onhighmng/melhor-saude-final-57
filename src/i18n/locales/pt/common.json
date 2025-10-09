@@ -592,6 +592,7 @@
     "subtitle": "Interface de demonstração para apresentação. Explore todas as funcionalidades alternando entre diferentes tipos de utilizador.",
     "switchUsers": "Alternar Utilizadores",
     "quickNavigation": "Navegação Rápida",
+    "quickNavigationLabel": "Navegação Rápida:",
     "activeSession": "Sessão Ativa",
     "connectedAs": "Conectado como",
     "switchingUser": "Mudando utilizador...",

@@ -22,6 +22,7 @@ import { SupportContact } from "@/components/ui/support-contact";
 
 const CompanySidebar = () => {
   const { t } = useTranslation('navigation');
+  const { t: tCommon } = useTranslation('common');
   
   const navigationItems = [
     { title: t('company.dashboard'), url: "/company/dashboard", icon: LayoutDashboard },
@@ -160,36 +161,36 @@ const CompanySidebar = () => {
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: "Suporte" }}>
+            <SidebarMenuItemWithTooltip item={{ title: t('admin.support') }}>
               <SidebarMenuButton asChild size="sm">
                 <NavLink to="/support" className="text-muted-foreground hover:text-foreground">
                   <HelpCircle className={`h-4 w-4 ${isCollapsed ? 'mx-auto' : 'mr-2'}`} />
-                  {!isCollapsed && <span>Suporte</span>}
+                  {!isCollapsed && <span>{t('admin.support')}</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: "Termos" }}>
+            <SidebarMenuItemWithTooltip item={{ title: t('company.terms') }}>
               <SidebarMenuButton asChild size="sm">
                 <NavLink to="/terms" className="text-muted-foreground hover:text-foreground">
                   <FileText className={`h-4 w-4 ${isCollapsed ? 'mx-auto' : 'mr-2'}`} />
-                  {!isCollapsed && <span>Termos</span>}
+                  {!isCollapsed && <span>{t('company.terms')}</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: t('common.logout') }}>
+            <SidebarMenuItemWithTooltip item={{ title: tCommon('logout') }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
                 size="sm"
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <LogOut className={`h-4 w-4 ${isCollapsed ? 'mx-auto' : 'mr-2'}`} />
-                {!isCollapsed && <span>{t('common.logout')}</span>}
+                {!isCollapsed && <span>{tCommon('logout')}</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
