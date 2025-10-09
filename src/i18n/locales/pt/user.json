@@ -208,6 +208,17 @@
       "improvement": "Melhoria na avaliação"
     }
   },
+  "progress": {
+    "title": "Sua Jornada de Crescimento",
+    "actions": "ações",
+    "metrics": {
+      "sessions": "Sessões",
+      "chats": "Conversas",
+      "resources": "Recursos",
+      "activeDays": "Dias Ativos",
+      "activePillars": "Pilares Ativos"
+    }
+  },
   "notifications": {
     "chatEscalation": {
       "title": "Utilizador necessita de assistência",

@@ -153,7 +153,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
             {showFallbackMessage && messages.length === 0 && !showIntro && (
               <div className="flex justify-start">
                 <div className="bg-muted rounded-lg p-3">
-                  <p className="text-sm">{t('user:universalChat.fallback.message')}</p>
+                  <p className="text-sm">{t('user:universalChat.fallback.description')}</p>
                 </div>
               </div>
             )}

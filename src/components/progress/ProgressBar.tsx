@@ -33,10 +33,10 @@ export const ProgressBar = () => {
         <div className="flex items-center justify-between">
           <h3 className="font-semibold flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-primary" />
-            Your Growth Journey
+            {t('progress.title')}
           </h3>
           <span className="text-sm text-muted-foreground">
-            {totalActions} actions
+            {totalActions} {t('progress.actions')}
           </span>
         </div>
 
@@ -46,7 +46,7 @@ export const ProgressBar = () => {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-xs text-muted-foreground">Sessions</p>
+              <p className="text-xs text-muted-foreground">{t('progress.metrics.sessions')}</p>
               <p className="text-lg font-semibold">{metrics.totalSessions}</p>
             </div>
           </div>
@@ -54,7 +54,7 @@ export const ProgressBar = () => {
           <div className="flex items-center gap-2">
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-xs text-muted-foreground">Chats</p>
+              <p className="text-xs text-muted-foreground">{t('progress.metrics.chats')}</p>
               <p className="text-lg font-semibold">{metrics.chatInteractions}</p>
             </div>
           </div>
@@ -62,7 +62,7 @@ export const ProgressBar = () => {
           <div className="flex items-center gap-2">
             <BookOpen className="h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-xs text-muted-foreground">Resources</p>
+              <p className="text-xs text-muted-foreground">{t('progress.metrics.resources')}</p>
               <p className="text-lg font-semibold">{metrics.resourcesViewed}</p>
             </div>
           </div>
@@ -70,7 +70,7 @@ export const ProgressBar = () => {
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-xs text-muted-foreground">Active Days</p>
+              <p className="text-xs text-muted-foreground">{t('progress.metrics.activeDays')}</p>
               <p className="text-lg font-semibold">{metrics.activeDays}</p>
             </div>
           </div>
@@ -78,7 +78,7 @@ export const ProgressBar = () => {
 
         {metrics.pillars.length > 0 && (
           <div className="pt-2 border-t">
-            <p className="text-xs text-muted-foreground mb-2">Active Pillars</p>
+            <p className="text-xs text-muted-foreground mb-2">{t('progress.metrics.activePillars')}</p>
             <div className="flex flex-wrap gap-2">
               {metrics.pillars.map((pillar) => (
                 <span

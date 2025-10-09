@@ -198,6 +198,17 @@
       "message": "A user indicated that the AI chat did not resolve their issue"
     }
   },
+  "progress": {
+    "title": "Your Growth Journey",
+    "actions": "actions",
+    "metrics": {
+      "sessions": "Sessions",
+      "chats": "Chats",
+      "resources": "Resources",
+      "activeDays": "Active Days",
+      "activePillars": "Active Pillars"
+    }
+  },
   "toasts": {
     "feedbackSubmitted": "Thank you for your feedback",
     "thankYouFeedback": "Your feedback helps us improve",
