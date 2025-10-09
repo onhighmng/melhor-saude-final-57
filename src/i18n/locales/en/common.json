@@ -780,5 +780,56 @@
       "adminBadge": "🔐 Administrator Invitation",
       "adminDetails": "You are creating an administrator account with full platform access."
     }
+  },
+  "navigation": {
+    "support": "Support",
+    "terms": "Terms",
+    "logout": "Logout"
+  },
+  "pwa": {
+    "install": {
+      "title": "Install App",
+      "description": "Add Melhor Saúde to your device for quick access",
+      "button": "Install"
+    }
+  },
+  "auth": {
+    "registerCompany": {
+      "title": "Register Company",
+      "subtitle": "Create an account for your company",
+      "consentTitle": "Consent",
+      "consentSubtitle": "Please read and accept the terms to complete registration.",
+      "divider": "OR"
+    },
+    "registerEmployee": {
+      "divider": "OR",
+      "codeInstructions": "Enter the code provided by your company."
+    }
+  },
+  "support": {
+    "assistant": {
+      "label": "Assistant",
+      "welcome": "Hello! I'm the Melhor Saúde virtual assistant. How can I help today?",
+      "error": "Sorry, an error occurred. Please try again or contact our human support.",
+      "responses": {
+        "requestHuman": "I understand you want to speak with a human. I can route your request to our support team.",
+        "booking": "To book a session, you can access the 'Book Session' section in your dashboard. There you can choose the type of support and the time that best suits your needs.",
+        "login": "If you're having access issues, make sure you're using the correct email and password. You can use the 'Forgot password?' option if needed.",
+        "default": "Thank you for your question. I'm here to help with information about our platform. Can you be more specific about what you need?"
+      }
+    },
+    "form": {
+      "subjects": {
+        "booking": "Booking",
+        "access": "Access/Account",
+        "financial": "Financial",
+        "other": "Other"
+      },
+      "preferences": {
+        "email": "Email",
+        "phone": "Phone",
+        "any": "Any"
+      }
+    }
   }
 }

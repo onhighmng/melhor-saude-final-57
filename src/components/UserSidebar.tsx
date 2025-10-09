@@ -144,35 +144,35 @@ export function UserSidebar() {
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: "Suporte" }}>
+            <SidebarMenuItemWithTooltip item={{ title: t('common:navigation.support') }}>
               <SidebarMenuButton asChild>
                 <NavLink to="/support" className="text-muted-foreground hover:text-foreground">
                   <HelpCircle className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base">Suporte</span>}
+                  {!isCollapsed && <span className="text-base">{t('common:navigation.support')}</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: "Termos" }}>
+            <SidebarMenuItemWithTooltip item={{ title: t('common:navigation.terms') }}>
               <SidebarMenuButton asChild>
                 <NavLink to="/terms" className="text-muted-foreground hover:text-foreground">
                   <FileText className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base">Termos</span>}
+                  {!isCollapsed && <span className="text-base">{t('common:navigation.terms')}</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: "Sair" }}>
+            <SidebarMenuItemWithTooltip item={{ title: t('common:navigation.logout') }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                {!isCollapsed && <span className="text-base">Sair</span>}
+                {!isCollapsed && <span className="text-base">{t('common:navigation.logout')}</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>

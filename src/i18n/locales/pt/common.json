@@ -780,5 +780,56 @@
       "adminBadge": "🔐 Convite para Administrador",
       "adminDetails": "Está a criar uma conta de administrador com acesso completo à plataforma."
     }
+  },
+  "navigation": {
+    "support": "Suporte",
+    "terms": "Termos",
+    "logout": "Sair"
+  },
+  "pwa": {
+    "install": {
+      "title": "Instalar App",
+      "description": "Adicione o Melhor Saúde ao seu dispositivo para acesso rápido",
+      "button": "Instalar"
+    }
+  },
+  "auth": {
+    "registerCompany": {
+      "title": "Registar Empresa",
+      "subtitle": "Crie uma conta para a sua empresa",
+      "consentTitle": "Consentimento",
+      "consentSubtitle": "Por favor, leia e aceite os termos para finalizar o registo.",
+      "divider": "OU"
+    },
+    "registerEmployee": {
+      "divider": "OU",
+      "codeInstructions": "Digite o código fornecido pela sua empresa."
+    }
+  },
+  "support": {
+    "assistant": {
+      "label": "Assistente",
+      "welcome": "Olá! Sou o assistente virtual da Melhor Saúde. Como posso ajudar hoje?",
+      "error": "Desculpe, ocorreu um erro. Tente novamente ou contacte o nosso suporte humano.",
+      "responses": {
+        "requestHuman": "Compreendo que pretende falar com um humano. Posso encaminhar o seu pedido para a nossa equipa de suporte.",
+        "booking": "Para agendar uma sessão, pode aceder à secção 'Marcar Sessão' no seu painel. Lá pode escolher o tipo de apoio e o horário que melhor se adequa às suas necessidades.",
+        "login": "Se tem problemas de acesso, certifique-se de que está a usar o email correto e a palavra-passe. Pode usar a opção 'Esqueceu a palavra-passe?' se necessário.",
+        "default": "Obrigado pela sua questão. Estou aqui para ajudar com informações sobre a nossa plataforma. Pode ser mais específico sobre o que precisa?"
+      }
+    },
+    "form": {
+      "subjects": {
+        "booking": "Agendamento",
+        "access": "Acesso/Conta",
+        "financial": "Financeiro",
+        "other": "Outros"
+      },
+      "preferences": {
+        "email": "Email",
+        "phone": "Telefone",
+        "any": "Qualquer"
+      }
+    }
   }
 }

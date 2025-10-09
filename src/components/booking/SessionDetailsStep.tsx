@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { z } from 'zod';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SessionDetailsStepProps {
   selectedDate: Date;
@@ -40,6 +41,7 @@ export default function SessionDetailsStep({
   isBooking,
   pillarName
 }: SessionDetailsStepProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -124,7 +126,7 @@ export default function SessionDetailsStep({
             <div className="flex items-start gap-3">
               <Video className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-sm text-foreground">Videochamada</p>
+                <p className="text-sm text-foreground">{t('user:booking.sessionDetails.videoCall')}</p>
               </div>
             </div>
 
@@ -149,7 +151,7 @@ export default function SessionDetailsStep({
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Nome completo"
+              placeholder={t('user:booking.sessionDetails.namePlaceholder')}
               className={errors.name ? "border-destructive" : ""}
             />
             {errors.name && (
@@ -166,7 +168,7 @@ export default function SessionDetailsStep({
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="seu@email.com"
+              placeholder={t('user:booking.sessionDetails.emailPlaceholder')}
               className={errors.email ? "border-destructive" : ""}
             />
             {errors.email && (
@@ -182,7 +184,7 @@ export default function SessionDetailsStep({
               id="notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="Partilhe qualquer coisa que ajude a preparar o nosso encontro."
+              placeholder={t('user:booking.sessionDetails.detailsPlaceholder')}
               className="min-h-[120px] resize-none"
               maxLength={1000}
             />

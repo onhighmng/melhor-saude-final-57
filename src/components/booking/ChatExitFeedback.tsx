@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { SmilePlus, Frown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 interface ChatExitFeedbackProps {
   sessionId: string;
@@ -16,6 +17,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleSubmit = async () => {
     if (!selectedRating) return;
@@ -89,7 +91,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
               onClick={() => setSelectedRating('satisfied')}
             >
               <SmilePlus className="h-12 w-12" />
-              <span className="text-lg">Satisfeito</span>
+              <span className="text-lg">{t('user:universalChat.exit.satisfied')}</span>
             </Button>
 
             <Button
@@ -99,19 +101,19 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
               onClick={() => setSelectedRating('unsatisfied')}
             >
               <Frown className="h-12 w-12" />
-              <span className="text-lg">Insatisfeito</span>
+              <span className="text-lg">{t('user:universalChat.exit.unsatisfied')}</span>
             </Button>
           </div>
 
           {selectedRating === 'unsatisfied' && (
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                O que podemos melhorar? (Opcional)
+                {t('user:universalChat.exit.improvementLabel')}
               </label>
               <Textarea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder="Conte-nos o que correu mal..."
+                placeholder={t('user:universalChat.exit.improvementPlaceholder')}
                 rows={3}
               />
             </div>
