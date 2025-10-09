@@ -41,7 +41,7 @@ export default function SessionDetailsStep({
   isBooking,
   pillarName
 }: SessionDetailsStepProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -98,7 +98,7 @@ export default function SessionDetailsStep({
               {pillarName}
             </h2>
             <p className="text-small text-muted-foreground">
-              Sessão de apoio personalizado
+              {t('booking.sessionDetails.sessionType')}
             </p>
           </div>
 
@@ -126,14 +126,14 @@ export default function SessionDetailsStep({
             <div className="flex items-start gap-3">
               <Video className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-sm text-foreground">{t('user:booking.sessionDetails.videoCall')}</p>
+                <p className="text-sm text-foreground">{t('booking.sessionDetails.videoCall')}</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
               <Globe className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-sm text-foreground">Europa/Lisboa</p>
+                <p className="text-sm text-foreground">{t('booking.sessionDetails.timezone')}</p>
               </div>
             </div>
           </div>
@@ -145,13 +145,13 @@ export default function SessionDetailsStep({
         <div className="space-y-6">
           <div>
             <Label htmlFor="name" className="text-sm font-medium text-foreground mb-2 block">
-              Seu nome <span className="text-destructive">*</span>
+              {t('booking.sessionDetails.nameLabel')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder={t('user:booking.sessionDetails.namePlaceholder')}
+              placeholder={t('booking.sessionDetails.namePlaceholder')}
               className={errors.name ? "border-destructive" : ""}
             />
             {errors.name && (
@@ -161,14 +161,14 @@ export default function SessionDetailsStep({
 
           <div>
             <Label htmlFor="email" className="text-sm font-medium text-foreground mb-2 block">
-              Endereço de email <span className="text-destructive">*</span>
+              {t('booking.sessionDetails.emailLabel')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder={t('user:booking.sessionDetails.emailPlaceholder')}
+              placeholder={t('booking.sessionDetails.emailPlaceholder')}
               className={errors.email ? "border-destructive" : ""}
             />
             {errors.email && (
@@ -178,13 +178,13 @@ export default function SessionDetailsStep({
 
           <div>
             <Label htmlFor="notes" className="text-sm font-medium text-foreground mb-2 block">
-              Notas adicionais
+              {t('booking.sessionDetails.notesLabel')}
             </Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder={t('user:booking.sessionDetails.detailsPlaceholder')}
+              placeholder={t('booking.sessionDetails.detailsPlaceholder')}
               className="min-h-[120px] resize-none"
               maxLength={1000}
             />
@@ -192,13 +192,13 @@ export default function SessionDetailsStep({
 
           <div className="pt-4 border-t border-border">
             <p className="text-sm text-muted-foreground">
-              Ao continuar, concorda com os nossos{' '}
+              {t('booking.sessionDetails.termsAgreement')}{' '}
               <a href="/terms" className="text-primary hover:underline">
-                Termos
+                {t('booking.sessionDetails.terms')}
               </a>{' '}
-              e{' '}
+              {t('booking.sessionDetails.and')}{' '}
               <a href="/terms" className="text-primary hover:underline">
-                Política de Privacidade
+                {t('booking.sessionDetails.privacy')}
               </a>
               .
             </p>
@@ -211,7 +211,7 @@ export default function SessionDetailsStep({
               disabled={isBooking}
               className="px-8"
             >
-              Voltar
+              {t('booking.sessionDetails.backButton')}
             </Button>
             <Button
               onClick={handleSubmit}
@@ -221,10 +221,10 @@ export default function SessionDetailsStep({
               {isBooking ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
-                  Confirmando...
+                  {t('booking.sessionDetails.confirming')}
                 </>
               ) : (
-                'Confirmar'
+                t('booking.sessionDetails.confirmButton')
               )}
             </Button>
           </div>

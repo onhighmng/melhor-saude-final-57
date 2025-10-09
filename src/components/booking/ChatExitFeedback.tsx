@@ -17,7 +17,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t } = useTranslation('user');
 
   const handleSubmit = async () => {
     if (!selectedRating) return;
@@ -51,14 +51,14 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
           });
 
           toast({
-            title: 'Feedback Recebido',
-            description: 'Um especialista irá contactá-lo em breve para fornecer apoio adicional.',
+            title: t('universalChat.exit.feedbackReceived'),
+            description: t('universalChat.exit.specialistContact'),
           });
         }
       } else {
         toast({
-          title: 'Obrigado!',
-          description: 'Agradecemos o seu feedback!',
+          title: t('universalChat.exit.thankYou'),
+          description: t('universalChat.exit.feedbackThanks'),
         });
       }
 
@@ -66,8 +66,8 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
     } catch (error) {
       console.error('Error submitting feedback:', error);
       toast({
-        title: 'Erro',
-        description: 'Não foi possível submeter o feedback. Por favor, tente novamente.',
+        title: t('universalChat.exit.errorTitle'),
+        description: t('universalChat.exit.errorDescription'),
         variant: 'destructive'
       });
     } finally {
@@ -79,7 +79,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Como foi a sua experiência?</DialogTitle>
+          <DialogTitle>{t('universalChat.exit.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -91,7 +91,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
               onClick={() => setSelectedRating('satisfied')}
             >
               <SmilePlus className="h-12 w-12" />
-              <span className="text-lg">{t('user:universalChat.exit.satisfied')}</span>
+              <span className="text-lg">{t('universalChat.exit.satisfied')}</span>
             </Button>
 
             <Button
@@ -101,19 +101,19 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
               onClick={() => setSelectedRating('unsatisfied')}
             >
               <Frown className="h-12 w-12" />
-              <span className="text-lg">{t('user:universalChat.exit.unsatisfied')}</span>
+              <span className="text-lg">{t('universalChat.exit.unsatisfied')}</span>
             </Button>
           </div>
 
           {selectedRating === 'unsatisfied' && (
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                {t('user:universalChat.exit.improvementLabel')}
+                {t('universalChat.exit.improvementLabel')}
               </label>
               <Textarea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder={t('user:universalChat.exit.improvementPlaceholder')}
+                placeholder={t('universalChat.exit.improvementPlaceholder')}
                 rows={3}
               />
             </div>
@@ -124,7 +124,7 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
             disabled={!selectedRating || isSubmitting}
             className="w-full"
           >
-            {isSubmitting ? 'A submeter...' : 'Submeter Feedback'}
+            {isSubmitting ? t('universalChat.exit.submitting') : t('universalChat.exit.submitButton')}
           </Button>
         </div>
       </DialogContent>
