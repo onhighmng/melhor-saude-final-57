@@ -1,6 +1,6 @@
 import { ResourceCard } from "./ResourceCard";
 import { UserResource } from "@/data/userResourcesData";
-import { userUIcopy } from "@/data/userUIcopy";
+import { useTranslation } from 'react-i18next';
 
 interface ResourceGridProps {
   resources: UserResource[];
@@ -9,10 +9,12 @@ interface ResourceGridProps {
 }
 
 export function ResourceGrid({ resources, onView, onDownload }: ResourceGridProps) {
+  const { t } = useTranslation('user');
+  
   if (resources.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{userUIcopy.resources.emptyState}</p>
+        <p className="text-muted-foreground">{t('resources.emptyState')}</p>
       </div>
     );
   }

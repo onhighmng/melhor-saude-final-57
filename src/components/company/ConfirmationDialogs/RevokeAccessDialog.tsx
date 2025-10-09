@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from 'react-i18next';
-import { companyUIcopy } from "@/data/companyUIcopy";
 import { AlertTriangle } from "lucide-react";
 
 interface RevokeAccessDialogProps {
@@ -33,15 +32,15 @@ export function RevokeAccessDialog({
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="h-5 w-5" />
-            {companyUIcopy.revokeAccess.title}
+            {t('revokeAccess.title')}
           </AlertDialogTitle>
           <AlertDialogDescription>
             <strong className="text-destructive">
-              {companyUIcopy.revokeAccess.warning}
+              {t('revokeAccess.warning')}
             </strong>
             <br />
             <br />
-            {companyUIcopy.revokeAccess.confirm}
+            {t('revokeAccess.confirm')}
             <br />
             <br />
             <strong>Colaborador:</strong> {userName}

@@ -1,5 +1,5 @@
 import { NotificationCard, Notification } from "./NotificationCard";
-import { userUIcopy } from "@/data/userUIcopy";
+import { useTranslation } from 'react-i18next';
 
 interface NotificationListProps {
   notifications: Notification[];
@@ -8,10 +8,12 @@ interface NotificationListProps {
 }
 
 export function NotificationList({ notifications, onMarkRead, onAction }: NotificationListProps) {
+  const { t } = useTranslation('user');
+  
   if (notifications.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{userUIcopy.notifications.emptyState}</p>
+        <p className="text-muted-foreground">{t('notifications.emptyState')}</p>
       </div>
     );
   }

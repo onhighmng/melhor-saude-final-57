@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Brain, ArrowRight } from "lucide-react";
-import { userUIcopy } from "@/data/userUIcopy";
+import { useTranslation } from 'react-i18next';
 
 interface PostBookingPromptProps {
   providerName: string;
@@ -20,6 +20,8 @@ export function PostBookingPrompt({
   onStartPreDiagnosis,
   onSkip,
 }: PostBookingPromptProps) {
+  const { t } = useTranslation('user');
+  
   return (
     <div className="max-w-2xl mx-auto p-6">
       <Card className="border-primary/20">
@@ -48,7 +50,7 @@ export function PostBookingPrompt({
               size="lg"
               className="w-full"
             >
-              {userUIcopy.booking.postBookingPrompt}
+              {t('booking.postBookingPrompt')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             
@@ -58,7 +60,7 @@ export function PostBookingPrompt({
               size="lg"
               className="w-full"
             >
-              {userUIcopy.booking.backToDashboard}
+              {t('booking.backToDashboard')}
             </Button>
           </div>
         </CardContent>

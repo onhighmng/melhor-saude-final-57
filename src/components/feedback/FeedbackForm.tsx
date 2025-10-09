@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { StarRating } from "./StarRating";
 import { TagSelector } from "./TagSelector";
-import { userUIcopy } from "@/data/userUIcopy";
+import { useTranslation } from 'react-i18next';
 import { Session } from "@/data/sessionMockData";
 
 interface FeedbackFormProps {
@@ -20,6 +20,7 @@ export interface FeedbackData {
 }
 
 export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
+  const { t } = useTranslation('user');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -46,8 +47,8 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>{userUIcopy.feedback.title}</CardTitle>
-        <CardDescription>{userUIcopy.feedback.subtitle}</CardDescription>
+        <CardTitle>{t('feedback.title')}</CardTitle>
+        <CardDescription>{t('feedback.subtitle')}</CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-6">
@@ -74,7 +75,7 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
         <div className="space-y-2">
           <label className="text-sm font-medium">Comentário (opcional)</label>
           <Textarea
-            placeholder={userUIcopy.feedback.placeholder}
+            placeholder={t('feedback.placeholder')}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={4}
@@ -84,10 +85,10 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
         {/* Actions */}
         <div className="flex gap-3">
           <Button onClick={handleSubmit} className="flex-1" disabled={rating === 0}>
-            {userUIcopy.feedback.ctaSubmit}
+            {t('feedback.ctaSubmit')}
           </Button>
           <Button onClick={onSkip} variant="ghost">
-            {userUIcopy.feedback.ctaSkip}
+            {t('feedback.ctaSkip')}
           </Button>
         </div>
       </CardContent>

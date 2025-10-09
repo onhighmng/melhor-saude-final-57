@@ -4,11 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResourceGrid } from "@/components/resources/ResourceGrid";
 import { ResourceModal } from "@/components/resources/ResourceModal";
 import { mockResources, UserResource, pillarNames } from "@/data/userResourcesData";
-import { userUIcopy } from "@/data/userUIcopy";
+import { useTranslation } from 'react-i18next';
 import { BookOpen } from "lucide-react";
 import { toast } from "sonner";
 
 export default function UserResources() {
+  const { t } = useTranslation('user');
   const [resources] = useState(mockResources);
   const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,8 +32,8 @@ export default function UserResources() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={userUIcopy.resources.title}
-        subtitle={userUIcopy.resources.subtitle}
+        title={t('resources.title')}
+        subtitle={t('resources.subtitle')}
         icon={BookOpen}
       />
       

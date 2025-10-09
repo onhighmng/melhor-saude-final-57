@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, User, Key, Eye, EyeOff, Building, Users } from 'lucide-react';
 import { Company } from "@/data/companyMockData";
-import { companyUIcopy } from "@/data/companyUIcopy";
 import { companyToasts } from "@/data/companyToastMessages";
 import { useTranslation } from 'react-i18next';
 
@@ -104,7 +103,7 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            {companyUIcopy.invite.modal.title}
+            {t('invite.modal.title')}
           </DialogTitle>
           <DialogDescription>
             Adicione um novo colaborador à {company.name}. As credenciais de acesso serão enviadas por email.
@@ -243,10 +242,10 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
               disabled={isSubmitting || !formData.name || !formData.email || !formData.password}
               className="flex-1"
             >
-              {isSubmitting ? 'A enviar convite...' : companyUIcopy.invite.modal.submit}
+              {isSubmitting ? t('invite.modal.submitting') : t('invite.modal.submit')}
             </Button>
             <Button type="button" variant="outline" onClick={handleClose}>
-              {companyUIcopy.invite.modal.cancel}
+              {t('invite.modal.cancel')}
             </Button>
           </div>
         </form>

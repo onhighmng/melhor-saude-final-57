@@ -15,7 +15,6 @@ import { SeatUsageCard } from "@/components/company/SeatUsageCard";
 import { InviteEmployeeButton } from "@/components/company/InviteEmployeeButton";
 import { InviteEmployeeModal } from "@/components/company/InviteEmployeeModal";
 import { DeactivateUserDialog } from "@/components/company/ConfirmationDialogs/DeactivateUserDialog";
-import { companyUIcopy } from "@/data/companyUIcopy";
 import { companyToasts } from "@/data/companyToastMessages";
 
 export default function CompanyEmployees() {

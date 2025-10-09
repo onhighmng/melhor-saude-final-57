@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/page-header";
 import { FeedbackForm, FeedbackData } from "@/components/feedback/FeedbackForm";
-import { userUIcopy } from "@/data/userUIcopy";
+import { useTranslation } from 'react-i18next';
 import { userToastMessages } from "@/data/userToastMessages";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 
 export default function UserFeedback() {
+  const { t } = useTranslation('user');
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   
@@ -35,7 +36,7 @@ export default function UserFeedback() {
     return (
       <div className="space-y-6">
         <PageHeader
-          title={userUIcopy.feedback.title}
+          title={t('feedback.title')}
           icon={Star}
           showBackButton
           backUrl="/user/sessions"
@@ -46,7 +47,7 @@ export default function UserFeedback() {
             <CardContent className="py-12 text-center">
               <p className="text-muted-foreground mb-4">Sessão não encontrada</p>
               <Button onClick={() => navigate('/user/sessions')}>
-                {userUIcopy.feedback.ctaViewSessions}
+                {t('feedback.ctaViewSessions')}
               </Button>
             </CardContent>
           </Card>
@@ -58,8 +59,8 @@ export default function UserFeedback() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={userUIcopy.feedback.title}
-        subtitle={userUIcopy.feedback.subtitle}
+        title={t('feedback.title')}
+        subtitle={t('feedback.subtitle')}
         icon={Star}
         showBackButton
         backUrl="/user/sessions"

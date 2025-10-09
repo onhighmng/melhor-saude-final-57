@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from 'react-i18next';
-import { companyUIcopy } from "@/data/companyUIcopy";
 
 interface DeactivateUserDialogProps {
   open: boolean;
@@ -30,9 +29,9 @@ export function DeactivateUserDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{companyUIcopy.deactivate.confirm}</AlertDialogTitle>
+          <AlertDialogTitle>{t('deactivate.confirm')}</AlertDialogTitle>
           <AlertDialogDescription>
-            {companyUIcopy.deactivate.warning}
+            {t('deactivate.warning')}
             <br />
             <br />
             <strong>Colaborador:</strong> {userName}

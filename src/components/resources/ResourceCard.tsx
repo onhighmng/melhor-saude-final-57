@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Video, BookOpen, Download, Eye, Play } from "lucide-react";
 import { UserResource, pillarNames, resourceTypeNames } from "@/data/userResourcesData";
-import { userUIcopy } from "@/data/userUIcopy";
+import { useTranslation } from 'react-i18next';
 
 interface ResourceCardProps {
   resource: UserResource;
@@ -24,18 +24,19 @@ const colorMap = {
 };
 
 export function ResourceCard({ resource, onView, onDownload }: ResourceCardProps) {
+  const { t } = useTranslation('user');
   const Icon = iconMap[resource.type];
   const colorClass = colorMap[resource.type];
   
   const getCTA = () => {
     switch (resource.type) {
       case 'video':
-        return userUIcopy.resources.ctaWatch;
+        return t('resources.ctaWatch');
       case 'article':
-        return userUIcopy.resources.ctaRead;
+        return t('resources.ctaRead');
       case 'pdf':
       default:
-        return userUIcopy.resources.ctaRead;
+        return t('resources.ctaRead');
     }
   };
   
