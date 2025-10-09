@@ -214,5 +214,26 @@
     "topic": "Topic",
     "transcript": "Conversation Transcript",
     "noData": "No pre-diagnostic information available"
+  },
+  "availability": {
+    "saveChanges": "Save Changes",
+    "offlineWarning": "No internet connection. Changes will sync when you're back online.",
+    "addTimeSlot": "Add Time Slot",
+    "addException": "Add Exception"
+  },
+  "profile": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "editProfile": "Edit Profile"
+  },
+  "sessionDetail": {
+    "saveNotes": "Save Notes",
+    "cancel": "Cancel",
+    "confirmNoShow": "Confirm No-Show",
+    "cancelSession": "Cancel Session",
+    "cancelConfirmation": "Are you sure you want to cancel this session? This action cannot be undone."
+  },
+  "analytics": {
+    "vsPreviousPeriod": "vs. previous period"
   }
 }

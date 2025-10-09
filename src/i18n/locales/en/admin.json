@@ -188,6 +188,27 @@
       "revenue": "Revenue"
     }
   },
+  "logs": {
+    "searchPlaceholder": "Search user...",
+    "noLogsFound": "No logs found for this filter",
+    "adjustFilters": "Adjust filters to see different results."
+  },
+  "sessions": {
+    "searchPlaceholder": "Search user or provider...",
+    "noSessionsFound": "No sessions found in this filter",
+    "adjustFilters": "Adjust filters to see different results."
+  },
+  "support": {
+    "filterByStatus": "Filter by status",
+    "filterByPriority": "Filter by priority",
+    "sendReply": "Send Reply",
+    "sampleReply": "Hello João! You can change your password in account settings. I'll send you detailed instructions by email."
+  },
+  "settings": {
+    "unsavedChanges": "Unsaved changes",
+    "resetDefaults": "Reset Defaults",
+    "saveSettings": "Save Settings"
+  },
   "matching": {
     "title": "Distribution Rules (Matching)",
     "subtitle": "Configure how providers are assigned by pillar, weight, and capacity",
@@ -294,6 +315,19 @@
       "noPending": "No pending requests",
       "allProcessed": "All change requests have been processed."
     }
+  },
+  "companyInvites": {
+    "backToCompanies": "Back to companies",
+    "filterByStatus": "Filter by status",
+    "noInviteCodes": "No invite codes. Click 'Generate missing codes' to create invites.",
+    "noCodesFound": "No codes found with current filters."
+  },
+  "providerNew": {
+    "errorCreating": "Error creating provider. Please try again.",
+    "back": "Back",
+    "subtitle": "Create and configure service provider",
+    "creating": "Creating...",
+    "createProvider": "Create Provider"
   },
   "users": {
     "title": "Users",

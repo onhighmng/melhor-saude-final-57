@@ -803,8 +803,18 @@
     },
     "registerEmployee": {
       "divider": "OU",
-      "codeInstructions": "Digite o código fornecido pela sua empresa."
+      "codeInstructions": "Digite o código fornecido pela sua empresa.",
+      "back": "Voltar",
+      "creating": "A criar conta...",
+      "createAccount": "Criar Conta",
+      "previous": "Anterior",
+      "next": "Próximo",
+      "createCompany": "Criar Empresa",
+      "backToHome": "Voltar à página inicial"
     }
+  },
+  "helpCenter": {
+    "createBudget": "Como Criar um Orçamento Familiar"
   },
   "support": {
     "assistant": {

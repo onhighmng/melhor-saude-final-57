@@ -188,6 +188,27 @@
       "revenue": "Receita"
     }
   },
+  "logs": {
+    "searchPlaceholder": "Pesquisar utilizador...",
+    "noLogsFound": "Nenhum log encontrado para este filtro",
+    "adjustFilters": "Ajuste os filtros para ver resultados diferentes."
+  },
+  "sessions": {
+    "searchPlaceholder": "Pesquisar utilizador ou prestador...",
+    "noSessionsFound": "Nenhuma sessão encontrada neste filtro",
+    "adjustFilters": "Ajuste os filtros para ver resultados diferentes."
+  },
+  "support": {
+    "filterByStatus": "Filtrar por estado",
+    "filterByPriority": "Filtrar por prioridade",
+    "sendReply": "Enviar Resposta",
+    "sampleReply": "Olá João! Pode alterar a palavra-passe nas definições da conta. Vou enviar-lhe as instruções detalhadas por email."
+  },
+  "settings": {
+    "unsavedChanges": "Alterações não guardadas",
+    "resetDefaults": "Repor Padrões",
+    "saveSettings": "Guardar Configurações"
+  },
   "matching": {
     "title": "Regras de Distribuição (Matching)",
     "subtitle": "Configure como os prestadores são atribuídos por pilar, peso e capacidade",
@@ -294,6 +315,19 @@
       "noPending": "Nenhum pedido pendente",
       "allProcessed": "Todos os pedidos de troca foram processados."
     }
+  },
+  "companyInvites": {
+    "backToCompanies": "Voltar às empresas",
+    "filterByStatus": "Filtrar por estado",
+    "noInviteCodes": "Sem códigos de convite. Clique em 'Gerar códigos em falta' para criar convites.",
+    "noCodesFound": "Nenhum código encontrado com os filtros atuais."
+  },
+  "providerNew": {
+    "errorCreating": "Erro ao criar prestador. Tente novamente.",
+    "back": "Voltar",
+    "subtitle": "Criar e configurar prestador de serviços",
+    "creating": "A criar...",
+    "createProvider": "Criar Prestador"
   },
   "users": {
     "title": "Utilizadores",

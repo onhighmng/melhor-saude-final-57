@@ -268,5 +268,18 @@
         "role": "Role..."
       }
     }
+  },
+  "invite": {
+    "modalDescription": "Add a new employee to {{companyName}}. Access credentials will be sent by email.",
+    "sending": "Sending invite..."
+  },
+  "seatAllocation": {
+    "updateLimit": "Update Limit"
+  },
+  "seatUsage": {
+    "nearLimit": "Near limit"
+  },
+  "settings": {
+    "sendReminders": "Send reminders to employees"
   }
 }

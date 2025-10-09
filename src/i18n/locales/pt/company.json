@@ -268,5 +268,18 @@
         "role": "Função..."
       }
     }
+  },
+  "invite": {
+    "modalDescription": "Adicione um novo colaborador à {{companyName}}. As credenciais de acesso serão enviadas por email.",
+    "sending": "A enviar convite..."
+  },
+  "seatAllocation": {
+    "updateLimit": "Atualizar Limite"
+  },
+  "seatUsage": {
+    "nearLimit": "Próximo do limite"
+  },
+  "settings": {
+    "sendReminders": "Enviar lembretes aos colaboradores"
   }
 }

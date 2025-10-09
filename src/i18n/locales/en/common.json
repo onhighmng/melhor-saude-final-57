@@ -803,8 +803,18 @@
     },
     "registerEmployee": {
       "divider": "OR",
-      "codeInstructions": "Enter the code provided by your company."
+      "codeInstructions": "Enter the code provided by your company.",
+      "back": "Back",
+      "creating": "Creating account...",
+      "createAccount": "Create Account",
+      "previous": "Previous",
+      "next": "Next",
+      "createCompany": "Create Company",
+      "backToHome": "Back to home page"
     }
+  },
+  "helpCenter": {
+    "createBudget": "How to Create a Family Budget"
   },
   "support": {
     "assistant": {
