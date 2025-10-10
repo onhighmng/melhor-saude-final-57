@@ -1,9 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { legalTopics, legalSymptoms } from '@/types/legalAssessment';
-import { ChevronLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Card } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
 
 interface AssessmentResultProps {
   selectedTopics: string[];
@@ -13,6 +11,23 @@ interface AssessmentResultProps {
   onBack: () => void;
 }
 
+const topicLabels: Record<string, { emoji: string; title: string }> = {
+  'consumer': { emoji: '🛒', title: 'Direito do Consumidor' },
+  'labor': { emoji: '💼', title: 'Direito do Trabalho' },
+  'family': { emoji: '👨‍👩‍👧‍👦', title: 'Direito de Família' },
+  'real-estate': { emoji: '🏠', title: 'Direito Imobiliário' },
+  'criminal': { emoji: '⚖️', title: 'Direito Criminal' },
+  'civil': { emoji: '📜', title: 'Direito Civil' }
+};
+
+const symptomLabels: Record<string, string> = {
+  'contract-general': 'Problemas com contratos em geral',
+  'moral-damage': 'Dano moral ou material sofrido',
+  'judicial-debt': 'Dívidas ou cobrança judicial',
+  'defamation': 'Nome sujo ou negativado indevidamente',
+  'civil-liability': 'Questões de responsabilidade civil'
+};
+
 const AssessmentResult: React.FC<AssessmentResultProps> = ({
   selectedTopics,
   selectedSymptoms,
@@ -20,91 +35,86 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
   onStartChat,
   onBack
 }) => {
-  const { t } = useTranslation(['common', 'user']);
-  
-  const selectedTopicObjects = legalTopics.filter(topic =>
-    selectedTopics.includes(topic.id)
-  );
-
-  const selectedSymptomObjects = legalSymptoms.filter(symptom =>
-    selectedSymptoms.includes(symptom.id)
-  );
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-4xl mx-auto">
-          <Button
-            variant="ghost"
-            onClick={onBack}
-            className="mb-6 gap-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            {t('common:actions.back')}
-          </Button>
+    <div className="space-y-8 max-w-4xl mx-auto">
+      <Button 
+        variant="ghost" 
+        onClick={onBack}
+        className="flex items-center gap-2 text-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Voltar
+      </Button>
 
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-foreground mb-3">
-              {t('user:legal.assessment.title')}
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              {t('user:legal.assessment.subtitle')}
-            </p>
-          </div>
+      <div className="text-center">
+        <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">
+          Resumo da sua situação
+        </h1>
+        <p className="text-lg text-primary">
+          Com base nas informações fornecidas, nosso assistente jurídico está pronto para ajudar
+        </p>
+      </div>
 
-          <div className="space-y-6 mb-8">
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-xl">{t('user:legal.assessment.selectedTopics')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {selectedTopicObjects.map(topic => (
-                    <div key={topic.id} className="flex items-center gap-3 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                      <span className="text-3xl">{topic.icon}</span>
-                      <span className="font-medium text-foreground">{t(`user:legal.topics.${topic.id}.title`)}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-xl">{t('user:legal.assessment.identifiedSymptoms')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {selectedSymptomObjects.map(symptom => (
-                    <li key={symptom.id} className="flex items-start gap-3 py-1">
-                      <span className="text-primary mt-1 font-bold">•</span>
-                      <span className="text-sm text-foreground">{t(`user:legal.symptoms.${symptom.id}.text`)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-
-            {additionalNotes && (
-              <Card className="shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-xl">{t('user:legal.assessment.additionalInfo')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                    {additionalNotes}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          <div className="flex justify-center">
-            <Button onClick={onStartChat} size="lg" className="min-w-[280px] text-base">
-              {t('user:legal.assessment.startChat')}
-            </Button>
-          </div>
+      <Card className="p-8 border-2">
+        <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
+          Áreas Jurídicas Selecionadas
+        </h2>
+        <div className="flex flex-wrap gap-3">
+          {selectedTopics.map((topicId) => {
+            const topic = topicLabels[topicId];
+            if (!topic) return null;
+            
+            return (
+              <div
+                key={topicId}
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-foreground rounded-full"
+              >
+                <span className="text-xl">{topic.emoji}</span>
+                <span className="font-medium">{topic.title}</span>
+              </div>
+            );
+          })}
         </div>
+      </Card>
+
+      <Card className="p-8 border-2">
+        <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
+          Sintomas Identificados
+        </h2>
+        <ul className="space-y-3">
+          {selectedSymptoms.map((symptomId) => {
+            const symptomText = symptomLabels[symptomId];
+            if (!symptomText) return null;
+            
+            return (
+              <li key={symptomId} className="flex items-start gap-3">
+                <span className="text-primary mt-1 font-bold">•</span>
+                <span className="text-foreground">{symptomText}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </Card>
+
+      {additionalNotes && additionalNotes.trim() && (
+        <Card className="p-8 border-2">
+          <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
+            Informações Adicionais
+          </h2>
+          <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+            {additionalNotes}
+          </p>
+        </Card>
+      )}
+
+      <div className="flex justify-center pt-4">
+        <Button 
+          onClick={onStartChat}
+          size="lg"
+          className="min-w-[240px] bg-primary hover:bg-primary/90 text-white rounded-lg"
+        >
+          Iniciar Conversa
+        </Button>
       </div>
     </div>
   );
