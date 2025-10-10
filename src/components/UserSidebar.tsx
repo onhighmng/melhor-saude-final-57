@@ -33,6 +33,7 @@ export function UserSidebar() {
   const { user, logout } = useAuth()
   const { t } = useTranslation('navigation')
   const { t: tUser } = useTranslation('user')
+  const { t: tCommon } = useTranslation('common')
   const currentPath = location.pathname
   const isCollapsed = state === "collapsed"
 
@@ -96,7 +97,7 @@ export function UserSidebar() {
               <span className="text-sm font-medium truncate">
                 {user?.name || user?.email}
               </span>
-              <span className="text-xs text-muted-foreground">Utilizador</span>
+              <span className="text-xs text-muted-foreground">{tCommon('roles.user')}</span>
             </div>
           </div>
         )}

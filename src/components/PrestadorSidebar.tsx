@@ -92,7 +92,7 @@ export function PrestadorSidebar() {
               <span className="text-sm font-medium truncate">
                 {user?.name || user?.email}
               </span>
-              <span className="text-xs text-muted-foreground">Prestador</span>
+              <span className="text-xs text-muted-foreground">{tCommon('roles.provider')}</span>
             </div>
           </div>
         )}

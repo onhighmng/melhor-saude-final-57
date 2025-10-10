@@ -84,8 +84,11 @@ export const DirectBookingFlow = () => {
       setCurrentStep('provider');
       
       toast({
-        title: 'Especialista atribuído',
-        description: 'Nosso especialista está pronto para ajudá-lo',
+        title: t('booking.toasts.providerAssigned'),
+        description: t('booking.toasts.providerAssignedDesc', { 
+          name: assignedProvider.name, 
+          specialty: assignedProvider.specialty 
+        }),
       });
     }
   };
@@ -114,8 +117,12 @@ export const DirectBookingFlow = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast({
-      title: 'Sessão marcada com sucesso!',
-      description: `A sua sessão foi agendada para ${selectedDate?.toLocaleDateString('pt-PT')} às ${selectedTime} com nosso especialista.`,
+      title: t('booking.toasts.sessionBooked'),
+      description: t('booking.toasts.sessionBookedDesc', {
+        name: assignedProvider?.name,
+        date: selectedDate?.toLocaleDateString('pt-PT'),
+        time: selectedTime
+      }),
     });
     
     setIsConfirming(false);

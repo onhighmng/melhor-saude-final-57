@@ -1,4 +1,10 @@
 {
+  "roles": {
+    "user": "Utilizador",
+    "provider": "Prestador",
+    "hr": "RH",
+    "admin": "Administrador"
+  },
   "loading": "Carregando...",
   "login": "Entrar",
   "logout": "Sair",
