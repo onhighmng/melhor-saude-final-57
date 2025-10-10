@@ -51,10 +51,9 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('universal-specialist-chat', {
+      const { data, error } = await supabase.functions.invoke('mental-health-chat', {
         body: {
           messages: [...messages, userMessage],
-          pillar: 'mental-health',
           assessment
         }
       });

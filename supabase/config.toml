@@ -59,3 +59,12 @@ verify_jwt = false
 
 [functions.prediagnostic-chat]
 verify_jwt = false
+
+[functions.mental-health-chat]
+verify_jwt = false
+
+[functions.physical-wellness-chat]
+verify_jwt = false
+
+[functions.financial-assistance-chat]
+verify_jwt = false

@@ -51,10 +51,9 @@ const FinancialAssistanceChatInterface: React.FC<FinancialAssistanceChatInterfac
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('universal-specialist-chat', {
+      const { data, error } = await supabase.functions.invoke('financial-assistance-chat', {
         body: {
           messages: [...messages, userMessage],
-          pillar: 'financial-assistance',
           assessment
         }
       });

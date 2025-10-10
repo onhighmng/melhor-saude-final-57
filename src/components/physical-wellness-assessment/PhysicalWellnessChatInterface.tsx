@@ -51,10 +51,9 @@ const PhysicalWellnessChatInterface: React.FC<PhysicalWellnessChatInterfaceProps
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('universal-specialist-chat', {
+      const { data, error } = await supabase.functions.invoke('physical-wellness-chat', {
         body: {
           messages: [...messages, userMessage],
-          pillar: 'physical-wellness',
           assessment
         }
       });
