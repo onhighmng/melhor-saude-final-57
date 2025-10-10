@@ -153,12 +153,8 @@ export const DirectBookingFlow = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast({
-      title: t('user:booking.toasts.sessionBooked'),
-      description: t('user:booking.toasts.sessionBookedDesc', { 
-        name: assignedProvider?.name,
-        date: selectedDate?.toLocaleDateString(),
-        time: selectedTime
-      }),
+      title: 'Sessão marcada com sucesso!',
+      description: `A sua sessão foi agendada para ${selectedDate?.toLocaleDateString('pt-PT')} às ${selectedTime} com nosso especialista.`,
     });
     
     setIsConfirming(false);
