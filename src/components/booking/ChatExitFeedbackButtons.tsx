@@ -92,7 +92,7 @@ export const ChatExitFeedbackButtons = ({
             className="w-full h-auto py-6 text-lg"
             variant="default"
           >
-            😊 {t('universalChat.exit.satisfied')}
+            😊 Sim
           </Button>
           
           <Button
@@ -101,7 +101,7 @@ export const ChatExitFeedbackButtons = ({
             className="w-full h-auto py-6 text-lg"
             variant="outline"
           >
-            😐 {t('universalChat.exit.unsatisfied')}
+            😞 Não
           </Button>
         </div>
       </DialogContent>
