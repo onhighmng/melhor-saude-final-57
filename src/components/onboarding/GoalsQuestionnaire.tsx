@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,7 +16,6 @@ export interface UserGoals {
 }
 
 export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
-  const { t } = useTranslation('user');
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [mainGoal, setMainGoal] = useState('');
@@ -51,14 +49,14 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
   const handleNext = () => {
     if (step === 1 && !mainGoal.trim()) {
       toast({
-        title: t('onboarding.goals.errors.mainGoalRequired'),
+        title: "Por favor, descreva o seu objetivo principal",
         variant: 'destructive',
       });
       return;
     }
     if (step === 2 && wantToAchieve.length === 0) {
       toast({
-        title: t('onboarding.goals.errors.achieveRequired'),
+        title: "Adicione pelo menos uma coisa que quer alcançar",
         variant: 'destructive',
       });
       return;
@@ -87,10 +85,14 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
             <Target className="w-8 h-8 text-primary" />
           </div>
           <CardTitle className="text-3xl">
-            {t(`onboarding.goals.step${step}.title`)}
+            {step === 1 && "Qual é o seu objetivo principal?"}
+            {step === 2 && "O que quer alcançar?"}
+            {step === 3 && "O que quer evitar?"}
           </CardTitle>
           <CardDescription className="text-base">
-            {t(`onboarding.goals.step${step}.subtitle`)}
+            {step === 1 && "Queremos ajudá-lo a alcançar os seus objetivos de bem-estar"}
+            {step === 2 && "Liste as coisas específicas que quer conquistar"}
+            {step === 3 && "Identifique comportamentos ou situações que quer evitar"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -98,7 +100,7 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
           {step === 1 && (
             <div className="space-y-4">
               <Textarea
-                placeholder={t('onboarding.goals.step1.placeholder')}
+                placeholder="Ex: Melhorar a minha saúde mental, reduzir o stress, ter mais energia..."
                 value={mainGoal}
                 onChange={(e) => setMainGoal(e.target.value)}
                 className="min-h-[150px] text-base"
@@ -106,7 +108,7 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
               <div className="bg-muted/50 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">
                   <Sparkles className="w-4 h-4 inline mr-1" />
-                  {t('onboarding.goals.step1.hint')}
+                  Seja específico. Quanto mais detalhado for, melhor poderemos ajudá-lo.
                 </p>
               </div>
             </div>
@@ -117,7 +119,7 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Textarea
-                  placeholder={t('onboarding.goals.step2.placeholder')}
+                  placeholder="Ex: Dormir melhor, fazer exercício 3x por semana, aprender a meditar..."
                   value={achieveInput}
                   onChange={(e) => setAchieveInput(e.target.value)}
                   className="flex-1"
@@ -129,7 +131,7 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
                   }}
                 />
                 <Button onClick={handleAddAchieve} size="lg">
-                  {t('onboarding.goals.add')}
+                  Adicionar
                 </Button>
               </div>
 
@@ -161,7 +163,7 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
             <div className="space-y-4">
               <div className="flex gap-2">
                 <Textarea
-                  placeholder={t('onboarding.goals.step3.placeholder')}
+                  placeholder="Ex: Procrastinação, ansiedade antes de reuniões, comer tarde da noite..."
                   value={avoidInput}
                   onChange={(e) => setAvoidInput(e.target.value)}
                   className="flex-1"
@@ -173,7 +175,7 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
                   }}
                 />
                 <Button onClick={handleAddAvoid} size="lg">
-                  {t('onboarding.goals.add')}
+                  Adicionar
                 </Button>
               </div>
 
@@ -200,7 +202,7 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
 
               <div className="bg-muted/50 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">
-                  {t('onboarding.goals.step3.hint')}
+                  Opcional: Isto ajuda-nos a criar um plano mais personalizado
                 </p>
               </div>
             </div>
@@ -210,11 +212,11 @@ export const GoalsQuestionnaire = ({ onComplete }: GoalsQuestionnaireProps) => {
           <div className="flex gap-3 pt-4">
             {step > 1 && (
               <Button variant="outline" onClick={handleBack} className="flex-1">
-                {t('common:actions.back')}
+                Voltar
               </Button>
             )}
             <Button onClick={handleNext} className="flex-1" size="lg">
-              {step === 3 ? t('onboarding.goals.complete') : t('common:actions.next')}
+              {step === 3 ? "Começar Jornada" : "Próximo"}
             </Button>
           </div>
 
