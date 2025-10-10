@@ -1,6 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Star, CheckCircle2 } from 'lucide-react';
 import { BookingPillar } from './BookingFlow';
 
@@ -37,21 +36,14 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
             </div>
           </div>
 
-          <div className="flex items-start gap-6 bg-background rounded-lg p-6">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={assignedProvider.avatar_url} alt="Nosso especialista" />
-              <AvatarFallback>NE</AvatarFallback>
-            </Avatar>
-
-            <div className="flex-1">
-              <h4 className="text-xl font-semibold mb-1">Nosso especialista</h4>
-              <p className="text-primary font-medium mb-3">{assignedProvider.specialty}</p>
+          <div className="bg-background rounded-lg p-6">
+            <div className="space-y-4">
+              <h4 className="text-xl font-semibold">Nosso especialista</h4>
+              <p className="text-primary font-medium">{assignedProvider.specialty}</p>
               
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="font-medium">{assignedProvider.rating}</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <span className="font-medium text-sm">{assignedProvider.rating}</span>
               </div>
 
               <p className="text-sm text-muted-foreground">
