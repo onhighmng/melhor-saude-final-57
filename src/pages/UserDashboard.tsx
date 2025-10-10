@@ -11,8 +11,8 @@ import { useBookings } from '@/hooks/useBookings';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { SessionMilestones } from '@/components/progress/SessionMilestones';
-import { GoalsDisplay, UserGoals } from '@/components/goals/GoalsDisplay';
-import { GoalsEditor } from '@/components/goals/GoalsEditor';
+import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
+import { OnboardingComplete } from '@/components/onboarding/OnboardingComplete';
 import { useToast } from '@/hooks/use-toast';
 
 const UserDashboard = () => {
@@ -25,39 +25,22 @@ const UserDashboard = () => {
   const { t: tUser } = useTranslation('user');
   const { toast } = useToast();
   
-  const [userGoals, setUserGoals] = useState<UserGoals | null>(() => {
-    const stored = localStorage.getItem('userGoals');
+  const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(() => {
+    const stored = localStorage.getItem('onboardingData');
     return stored ? JSON.parse(stored) : null;
   });
-  const [isEditingGoals, setIsEditingGoals] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(!onboardingData);
+  const [showCompletionScreen, setShowCompletionScreen] = useState(false);
 
-  useEffect(() => {
-    // If no goals are set, show the editor by default
-    if (!userGoals) {
-      setIsEditingGoals(true);
-    }
-  }, [userGoals]);
-
-  const handleSaveGoals = (goals: UserGoals) => {
-    localStorage.setItem('userGoals', JSON.stringify(goals));
-    setUserGoals(goals);
-    setIsEditingGoals(false);
-    
-    toast({
-      title: "Objetivos guardados!",
-      description: "Os seus objetivos foram guardados. Vamos ajudá-lo a alcançá-los.",
-    });
+  const handleOnboardingComplete = (data: OnboardingData) => {
+    localStorage.setItem('onboardingData', JSON.stringify(data));
+    setOnboardingData(data);
+    setShowOnboarding(false);
+    setShowCompletionScreen(true);
   };
 
-  const handleEditGoals = () => {
-    setIsEditingGoals(true);
-  };
-
-  const handleCancelEdit = () => {
-    // Only allow cancel if goals exist
-    if (userGoals) {
-      setIsEditingGoals(false);
-    }
+  const handleCompletionContinue = () => {
+    setShowCompletionScreen(false);
   };
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
@@ -94,6 +77,16 @@ const UserDashboard = () => {
   const usedSessions = totalSessions - remainingSessions;
   const usagePercent = totalSessions > 0 ? Math.round((usedSessions / totalSessions) * 100) : 0;
 
+  // Show onboarding if user hasn't completed it
+  if (showOnboarding) {
+    return <SimplifiedOnboarding onComplete={handleOnboardingComplete} />;
+  }
+
+  // Show completion screen after onboarding
+  if (showCompletionScreen) {
+    return <OnboardingComplete onContinue={handleCompletionContinue} />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
@@ -105,21 +98,6 @@ const UserDashboard = () => {
           <p className="text-muted-foreground text-base">
             {t('dashboard.welcomeBack')}
           </p>
-        </div>
-
-        {/* Goals Section - Integrated */}
-        <div className="flex justify-center">
-          <div className="w-full max-w-4xl">
-            {isEditingGoals ? (
-              <GoalsEditor
-                initialGoals={userGoals}
-                onSave={handleSaveGoals}
-                onCancel={handleCancelEdit}
-              />
-            ) : (
-              <GoalsDisplay goals={userGoals} onEdit={handleEditGoals} />
-            )}
-          </div>
         </div>
 
         {/* Session Balance Card - Centered */}
