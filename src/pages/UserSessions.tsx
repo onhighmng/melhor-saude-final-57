@@ -9,11 +9,41 @@ import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/se
 import { mockBookings, getMockBookings } from "@/data/mockData";
 import { QuotaDisplayCard } from "@/components/sessions/QuotaDisplayCard";
 import { SessionHistoryCard } from "@/components/sessions/SessionHistoryCard";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 export default function UserSessions() {
   const { t } = useTranslation('user');
   const navigate = useNavigate();
   const [userBalance] = useState(mockUserBalance);
+  
+  // Mock user goals data
+  const [userGoals] = useState([
+    {
+      id: '1',
+      title: 'Melhorar saúde mental',
+      pillar: 'saude_mental',
+      targetSessions: 5,
+      completedSessions: 3,
+      progressPercentage: 60
+    },
+    {
+      id: '2',
+      title: 'Resolver questão jurídica',
+      pillar: 'assistencia_juridica',
+      targetSessions: 3,
+      completedSessions: 2,
+      progressPercentage: 67
+    },
+    {
+      id: '3',
+      title: 'Planeamento financeiro',
+      pillar: 'assistencia_financeira',
+      targetSessions: 4,
+      completedSessions: 1,
+      progressPercentage: 25
+    }
+  ]);
   
   // Convert mockBookings to Session format
   const [sessions] = useState<Session[]>(
@@ -38,6 +68,27 @@ export default function UserSessions() {
     }))
   );
 
+  // Helper function to render skull progress
+  const renderSkullProgress = (completed: number, total: number) => {
+    return (
+      <div className="flex gap-1 items-center">
+        {Array.from({ length: total }).map((_, index) => (
+          <div
+            key={index}
+            className={cn(
+              "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
+              index < completed 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-muted text-muted-foreground"
+            )}
+          >
+            💀
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const handleViewDetails = (sessionId: string) => {
     navigate(`/user/sessions`);
   };
@@ -57,6 +108,44 @@ export default function UserSessions() {
           <h1 className="text-3xl font-bold text-foreground">{t('sessions.title')}</h1>
           <p className="text-muted-foreground">{t('sessions.subtitle')}</p>
         </div>
+
+        {/* Goals Section */}
+        <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-2">
+              🎯 {t('sessions.goals.title')}
+            </CardTitle>
+            <CardDescription>
+              {t('sessions.goals.subtitle')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {userGoals.map((goal) => (
+              <div key={goal.id} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-foreground">{goal.title}</h3>
+                  <span className="text-sm text-muted-foreground">
+                    {goal.progressPercentage}% {t('sessions.goals.achieved')}
+                  </span>
+                </div>
+                
+                {/* Progress Bar */}
+                <Progress value={goal.progressPercentage} className="h-2" />
+                
+                {/* Skull Icons */}
+                <div className="flex items-center justify-between">
+                  {renderSkullProgress(goal.completedSessions, goal.targetSessions)}
+                  <span className="text-sm text-muted-foreground">
+                    {t('sessions.goals.progress', { 
+                      completed: goal.completedSessions, 
+                      target: goal.targetSessions 
+                    })}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
         {/* Quota Display */}
         <QuotaDisplayCard balance={userBalance} />

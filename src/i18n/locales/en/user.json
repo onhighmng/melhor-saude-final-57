@@ -254,9 +254,21 @@
       "skipButton": "Skip for Now",
       "startButton": "Do Pre-Diagnosis"
     },
+    "specialistChoice": {
+      "title": "How would you like to continue?",
+      "subtitle": "Choose the best option for your situation",
+      "aiTitle": "Continue with AI Assistant",
+      "aiDescription": "Quick answers and immediate availability for simpler queries",
+      "aiButton": "Continue with AI",
+      "humanTitle": "Speak with Human Specialist",
+      "humanDescription": "Personalized consultation with a dedicated professional",
+      "humanButton": "Book with Specialist"
+    },
     "toasts": {
       "providerAssigned": "Provider Assigned",
       "providerAssignedDesc": "Assigned: {{name}} - {{specialty}}",
+      "aiAssistantContinue": "Continuing with AI",
+      "aiAssistantDesc": "The AI assistant will help you find the best solution",
       "error": "Error",
       "noProviders": "No providers available for this pillar at the moment.",
       "selectDateTime": "Please select date and time",
@@ -267,6 +279,12 @@
   "sessions": {
     "title": "My Sessions",
     "subtitle": "History and upcoming scheduled sessions",
+    "goals": {
+      "title": "My Goals",
+      "subtitle": "Track your wellness goals progress",
+      "achieved": "achieved",
+      "progress": "{{completed}}/{{target}} sessions completed"
+    },
     "statusConfirmed": "Confirmed",
     "statusCompleted": "Completed",
     "statusCancelled": "Cancelled",

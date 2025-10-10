@@ -270,9 +270,21 @@
       "skipButton": "Pular por Agora",
       "startButton": "Fazer Pré-Diagnóstico"
     },
+    "specialistChoice": {
+      "title": "Como prefere continuar?",
+      "subtitle": "Escolha a melhor opção para a sua situação",
+      "aiTitle": "Continuar com Assistente AI",
+      "aiDescription": "Respostas rápidas e disponibilidade imediata para questões mais simples",
+      "aiButton": "Continuar com AI",
+      "humanTitle": "Falar com Especialista Humano",
+      "humanDescription": "Consulta personalizada com um profissional dedicado",
+      "humanButton": "Marcar com Especialista"
+    },
     "toasts": {
       "providerAssigned": "Prestador Atribuído",
       "providerAssignedDesc": "Foi atribuído: {{name}} - {{specialty}}",
+      "aiAssistantContinue": "Continuando com AI",
+      "aiAssistantDesc": "O assistente AI irá ajudá-lo a encontrar a melhor solução",
       "error": "Erro",
       "noProviders": "Nenhum prestador disponível para este pilar no momento.",
       "selectDateTime": "Por favor selecione data e hora",
@@ -283,6 +295,12 @@
   "sessions": {
     "title": "Minhas Sessões",
     "subtitle": "Histórico e próximas sessões agendadas",
+    "goals": {
+      "title": "Meus Objetivos",
+      "subtitle": "Acompanhe o progresso dos seus objetivos de bem-estar",
+      "achieved": "alcançado",
+      "progress": "{{completed}}/{{target}} sessões completadas"
+    },
     "statusConfirmed": "Confirmada",
     "statusCompleted": "Concluída",
     "statusCancelled": "Cancelada",
