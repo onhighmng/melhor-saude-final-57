@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,8 @@ import { useBookings } from '@/hooks/useBookings';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { SessionMilestones } from '@/components/progress/SessionMilestones';
+import { GoalsQuestionnaire, UserGoals } from '@/components/onboarding/GoalsQuestionnaire';
+import { useToast } from '@/hooks/use-toast';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -19,6 +22,21 @@ const UserDashboard = () => {
   const { t } = useTranslation('user');
   const { t: tNav } = useTranslation('navigation');
   const { t: tUser } = useTranslation('user');
+  const { toast } = useToast();
+  const [showGoalsQuestionnaire, setShowGoalsQuestionnaire] = useState(() => {
+    return !localStorage.getItem('hasCompletedGoals');
+  });
+
+  const handleGoalsComplete = (goals: UserGoals) => {
+    localStorage.setItem('hasCompletedGoals', 'true');
+    localStorage.setItem('userGoals', JSON.stringify(goals));
+    setShowGoalsQuestionnaire(false);
+    
+    toast({
+      title: "Objetivos guardados!",
+      description: "Os seus objetivos foram guardados. Vamos ajudá-lo a alcançá-los.",
+    });
+  };
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
@@ -55,8 +73,12 @@ const UserDashboard = () => {
   const usagePercent = totalSessions > 0 ? Math.round((usedSessions / totalSessions) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <>
+      {showGoalsQuestionnaire && (
+        <GoalsQuestionnaire onComplete={handleGoalsComplete} />
+      )}
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
         {/* Welcome Header */}
         <div className="space-y-1">
           <h1 className="text-3xl font-normal tracking-tight">
@@ -280,7 +302,8 @@ const UserDashboard = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
