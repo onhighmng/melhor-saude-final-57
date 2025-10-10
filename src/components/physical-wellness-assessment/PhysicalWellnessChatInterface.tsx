@@ -108,8 +108,8 @@ const PhysicalWellnessChatInterface: React.FC<PhysicalWellnessChatInterfaceProps
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
-                  <p>Olá! Estou aqui para ajudar com seu bem-estar físico.</p>
-                  <p className="text-sm mt-2">Como posso ajudá-lo hoje?</p>
+                  <p>Olá! Estou aqui para ajudar com suas questões de bem-estar físico.</p>
+                  <p className="text-sm mt-2">Envie uma mensagem para começar.</p>
                 </div>
               )}
               
