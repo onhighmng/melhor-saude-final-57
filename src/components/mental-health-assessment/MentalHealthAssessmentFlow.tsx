@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import TopicSelection from './TopicSelection';
-import SpecialistChoice from './SpecialistChoice';
 import SymptomSelection from './SymptomSelection';
 import AssessmentResult from './AssessmentResult';
-import MentalHealthChatInterface from './MentalHealthChatInterface';
 
-type Step = 'topics' | 'specialist-choice' | 'symptoms' | 'result' | 'chat';
+type Step = 'topics' | 'symptoms' | 'result';
 
 interface MentalHealthAssessment {
   selectedTopics: string[];
@@ -60,17 +58,8 @@ const MentalHealthAssessmentFlow: React.FC<MentalHealthAssessmentFlowProps> = ({
           <TopicSelection
             selectedTopics={assessment.selectedTopics}
             onTopicToggle={handleTopicToggle}
-            onNext={() => setStep('specialist-choice')}
+            onNext={() => setStep('symptoms')}
             onBack={onBack}
-          />
-        );
-      
-      case 'specialist-choice':
-        return (
-          <SpecialistChoice
-            onChooseAI={() => setStep('symptoms')}
-            onChooseHuman={onChooseHuman}
-            onBack={() => setStep('topics')}
           />
         );
       
@@ -83,7 +72,7 @@ const MentalHealthAssessmentFlow: React.FC<MentalHealthAssessmentFlowProps> = ({
             additionalNotes={assessment.additionalNotes || ''}
             onNotesChange={handleNotesChange}
             onNext={() => setStep('result')}
-            onBack={() => setStep('specialist-choice')}
+            onBack={() => setStep('topics')}
           />
         );
       
@@ -93,17 +82,8 @@ const MentalHealthAssessmentFlow: React.FC<MentalHealthAssessmentFlowProps> = ({
             selectedTopics={assessment.selectedTopics}
             selectedSymptoms={assessment.selectedSymptoms}
             additionalNotes={assessment.additionalNotes}
-            onStartChat={() => setStep('chat')}
+            onStartChat={onChooseHuman}
             onBack={() => setStep('symptoms')}
-          />
-        );
-      
-      case 'chat':
-        return (
-          <MentalHealthChatInterface
-            assessment={assessment}
-            onBack={() => setStep('result')}
-            onComplete={onComplete}
           />
         );
       
