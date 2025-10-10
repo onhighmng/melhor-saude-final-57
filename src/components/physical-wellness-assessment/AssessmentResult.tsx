@@ -54,7 +54,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
           Resumo da sua situação
         </h1>
         <p className="text-lg text-primary">
-          Com base nas informações fornecidas, nosso assistente está pronto para ajudar
+          Com base nas informações fornecidas, nosso assistente de bem-estar físico está pronto para ajudar
         </p>
       </div>
 

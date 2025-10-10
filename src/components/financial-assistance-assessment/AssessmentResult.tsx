@@ -14,21 +14,21 @@ interface AssessmentResultProps {
 const topicLabels: Record<string, { emoji: string; title: string }> = {
   'budgeting': { emoji: '💰', title: 'Orçamento Pessoal' },
   'debt': { emoji: '💳', title: 'Gestão de Dívidas' },
-  'investments': { emoji: '📈', title: 'Investimentos' },
-  'retirement': { emoji: '🏖️', title: 'Reforma' },
-  'taxes': { emoji: '🧾', title: 'Impostos' },
-  'emergency-fund': { emoji: '🛡️', title: 'Fundo de Emergência' }
+  'investments': { emoji: '💵', title: 'Poupança e Investimentos' },
+  'housing': { emoji: '🏠', title: 'Financiamento Imobiliário' },
+  'education': { emoji: '🎓', title: 'Planeamento de Educação' },
+  'credit': { emoji: '🔄', title: 'Crédito e Empréstimos' }
 };
 
 const symptomLabels: Record<string, string> = {
-  'debt-stress': 'Stress relacionado com dívidas',
-  'overspending': 'Dificuldade em controlar gastos',
-  'no-savings': 'Falta de poupança ou reserva financeira',
-  'unclear-finances': 'Falta de clareza sobre a situação financeira',
-  'low-income': 'Rendimento insuficiente',
-  'no-plan': 'Sem plano financeiro a longo prazo',
-  'credit-issues': 'Problemas com crédito ou histórico financeiro',
-  'investment-fear': 'Medo ou insegurança em investir'
+  'spending-control': 'Dificuldade em controlar gastos mensais',
+  'growing-debt': 'Endividamento crescente',
+  'no-savings': 'Falta de poupança ou reserva de emergência',
+  'credit-confusion': 'Não entendo minhas opções de crédito',
+  'financial-worry': 'Preocupação com o futuro financeiro',
+  'bad-credit': 'Problemas com negativação ou score baixo',
+  'investment-desire': 'Desejo de investir mas não sei por onde começar',
+  'impulsive-spending': 'Gastos impulsivos frequentes'
 };
 
 const AssessmentResult: React.FC<AssessmentResultProps> = ({
@@ -54,7 +54,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
           Resumo da sua situação
         </h1>
         <p className="text-lg text-primary">
-          Com base nas informações fornecidas, nosso assistente está pronto para ajudar
+          Com base nas informações fornecidas, nosso assistente financeiro está pronto para ajudar
         </p>
       </div>
 

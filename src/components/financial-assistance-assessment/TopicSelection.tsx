@@ -14,37 +14,37 @@ const financialAssistanceTopicsData = [
     id: 'budgeting',
     emoji: '💰',
     title: 'Orçamento Pessoal',
-    description: 'Gestão de despesas, poupança, controlo financeiro'
+    description: 'Controle de gastos, planejamento financeiro'
   },
   {
     id: 'debt',
     emoji: '💳',
     title: 'Gestão de Dívidas',
-    description: 'Créditos, empréstimos, renegociação de dívidas'
+    description: 'Negociação de dívidas, estratégias de pagamento'
   },
   {
     id: 'investments',
-    emoji: '📈',
-    title: 'Investimentos',
-    description: 'Como começar a investir, fundos, ações'
+    emoji: '💵',
+    title: 'Poupança e Investimentos',
+    description: 'Como poupar, opções de investimento'
   },
   {
-    id: 'retirement',
-    emoji: '🏖️',
-    title: 'Reforma',
-    description: 'Planeamento de reforma, pensões, poupança a longo prazo'
+    id: 'housing',
+    emoji: '🏠',
+    title: 'Financiamento Imobiliário',
+    description: 'Compra de casa, crédito habitação'
   },
   {
-    id: 'taxes',
-    emoji: '🧾',
-    title: 'Impostos',
-    description: 'IRS, declarações, otimização fiscal'
+    id: 'education',
+    emoji: '🎓',
+    title: 'Planeamento de Educação',
+    description: 'Financiamento de estudos, bolsas'
   },
   {
-    id: 'emergency-fund',
-    emoji: '🛡️',
-    title: 'Fundo de Emergência',
-    description: 'Criar reserva financeira, segurança financeira'
+    id: 'credit',
+    emoji: '🔄',
+    title: 'Crédito e Empréstimos',
+    description: 'Tipos de crédito, condições de empréstimo'
   }
 ];
 

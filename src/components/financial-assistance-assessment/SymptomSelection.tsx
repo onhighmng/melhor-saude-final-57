@@ -14,14 +14,14 @@ interface SymptomSelectionProps {
 }
 
 const financialAssistanceSymptoms = [
-  { id: 'debt-stress', text: 'Stress relacionado com dívidas' },
-  { id: 'overspending', text: 'Dificuldade em controlar gastos' },
-  { id: 'no-savings', text: 'Falta de poupança ou reserva financeira' },
-  { id: 'unclear-finances', text: 'Falta de clareza sobre a situação financeira' },
-  { id: 'low-income', text: 'Rendimento insuficiente' },
-  { id: 'no-plan', text: 'Sem plano financeiro a longo prazo' },
-  { id: 'credit-issues', text: 'Problemas com crédito ou histórico financeiro' },
-  { id: 'investment-fear', text: 'Medo ou insegurança em investir' }
+  { id: 'spending-control', text: 'Dificuldade em controlar gastos mensais' },
+  { id: 'growing-debt', text: 'Endividamento crescente' },
+  { id: 'no-savings', text: 'Falta de poupança ou reserva de emergência' },
+  { id: 'credit-confusion', text: 'Não entendo minhas opções de crédito' },
+  { id: 'financial-worry', text: 'Preocupação com o futuro financeiro' },
+  { id: 'bad-credit', text: 'Problemas com negativação ou score baixo' },
+  { id: 'investment-desire', text: 'Desejo de investir mas não sei por onde começar' },
+  { id: 'impulsive-spending', text: 'Gastos impulsivos frequentes' }
 ];
 
 const SymptomSelection: React.FC<SymptomSelectionProps> = ({
@@ -44,7 +44,7 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
           Descreva sua situação financeira
         </h1>
         <p className="text-lg text-primary">
-          Selecione os desafios que você está a enfrentar
+          Selecione os pontos que melhor descrevem sua situação atual
         </p>
       </div>
 
