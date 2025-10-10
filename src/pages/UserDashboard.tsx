@@ -10,7 +10,6 @@ import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings } from '@/hooks/useBookings';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/progress/ProgressBar';
-import { SessionMilestones } from '@/components/progress/SessionMilestones';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
 import { OnboardingComplete } from '@/components/onboarding/OnboardingComplete';
 import { useToast } from '@/hooks/use-toast';
@@ -127,8 +126,6 @@ const UserDashboard = () => {
           </Card>
         </div>
 
-        {/* Session Milestones - Replaces session balance progress */}
-        <SessionMilestones />
 
         {/* Progress Bar - Growth Journey with Feedback Milestones */}
         <ProgressBar />
