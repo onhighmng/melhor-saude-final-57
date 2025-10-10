@@ -12,32 +12,32 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
     {
       id: 'psicologica' as BookingPillar,
       icon: Brain,
-      title: 'Saúde Mental',
-      description: 'Apoio psicológico e emocional',
+      title: 'Saúde mental',
+      description: 'Apoio psicológico e bem-estar mental',
       bgColor: 'bg-gradient-to-br from-purple-500 to-purple-700',
       hoverColor: 'hover:from-purple-600 hover:to-purple-800'
     },
     {
       id: 'fisica' as BookingPillar,
       icon: Heart,
-      title: 'Saúde Física',
-      description: 'Cuidados com o corpo e bem-estar',
+      title: 'Bem estar físico',
+      description: 'Saúde física e estilo de vida',
       bgColor: 'bg-gradient-to-br from-green-500 to-green-700',
       hoverColor: 'hover:from-green-600 hover:to-green-800'
     },
     {
       id: 'financeira' as BookingPillar,
       icon: DollarSign,
-      title: 'Finanças',
-      description: 'Gestão financeira e planeamento',
+      title: 'Assistência financeira',
+      description: 'Consultoria e planeamento financeiro',
       bgColor: 'bg-gradient-to-br from-blue-500 to-blue-700',
       hoverColor: 'hover:from-blue-600 hover:to-blue-800'
     },
     {
       id: 'juridica' as BookingPillar,
       icon: Scale,
-      title: 'Jurídico',
-      description: 'Apoio e orientação legal',
+      title: 'Assistência Jurídica',
+      description: 'Consultoria jurídica especializada',
       bgColor: 'bg-gradient-to-br from-amber-500 to-amber-700',
       hoverColor: 'hover:from-amber-600 hover:to-amber-800'
     }
