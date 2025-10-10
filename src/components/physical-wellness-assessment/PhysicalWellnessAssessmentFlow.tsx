@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import TopicSelection from './TopicSelection';
 import SymptomSelection from './SymptomSelection';
 import AssessmentResult from './AssessmentResult';
+import PhysicalWellnessChatInterface from './PhysicalWellnessChatInterface';
 
-type Step = 'topics' | 'symptoms' | 'result';
+type Step = 'topics' | 'symptoms' | 'result' | 'chat';
 
 interface PhysicalWellnessAssessment {
   selectedTopics: string[];
@@ -82,8 +83,17 @@ const PhysicalWellnessAssessmentFlow: React.FC<PhysicalWellnessAssessmentFlowPro
             selectedTopics={assessment.selectedTopics}
             selectedSymptoms={assessment.selectedSymptoms}
             additionalNotes={assessment.additionalNotes}
-            onStartChat={onChooseHuman}
+            onStartChat={() => setStep('chat')}
             onBack={() => setStep('symptoms')}
+          />
+        );
+      
+      case 'chat':
+        return (
+          <PhysicalWellnessChatInterface
+            assessment={assessment}
+            onBack={() => setStep('result')}
+            onComplete={onChooseHuman}
           />
         );
       

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import TopicSelection from './TopicSelection';
 import SymptomSelection from './SymptomSelection';
 import AssessmentResult from './AssessmentResult';
+import LegalChatInterface from './LegalChatInterface';
 import { LegalAssessment } from '@/types/legalAssessment';
 
-type Step = 'topics' | 'symptoms' | 'result';
+type Step = 'topics' | 'symptoms' | 'result' | 'chat';
 
 interface LegalAssessmentFlowProps {
   onBack: () => void;
@@ -77,8 +78,17 @@ const LegalAssessmentFlow: React.FC<LegalAssessmentFlowProps> = ({
             selectedTopics={assessment.selectedTopics}
             selectedSymptoms={assessment.selectedSymptoms}
             additionalNotes={assessment.additionalNotes}
-            onStartChat={onChooseHuman}
+            onStartChat={() => setStep('chat')}
             onBack={() => setStep('symptoms')}
+          />
+        );
+      
+      case 'chat':
+        return (
+          <LegalChatInterface
+            assessment={assessment}
+            onBack={() => setStep('result')}
+            onComplete={onChooseHuman}
           />
         );
       

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import TopicSelection from './TopicSelection';
 import SymptomSelection from './SymptomSelection';
 import AssessmentResult from './AssessmentResult';
+import MentalHealthChatInterface from './MentalHealthChatInterface';
 
-type Step = 'topics' | 'symptoms' | 'result';
+type Step = 'topics' | 'symptoms' | 'result' | 'chat';
 
 interface MentalHealthAssessment {
   selectedTopics: string[];
@@ -82,8 +83,17 @@ const MentalHealthAssessmentFlow: React.FC<MentalHealthAssessmentFlowProps> = ({
             selectedTopics={assessment.selectedTopics}
             selectedSymptoms={assessment.selectedSymptoms}
             additionalNotes={assessment.additionalNotes}
-            onStartChat={onChooseHuman}
+            onStartChat={() => setStep('chat')}
             onBack={() => setStep('symptoms')}
+          />
+        );
+      
+      case 'chat':
+        return (
+          <MentalHealthChatInterface
+            assessment={assessment}
+            onBack={() => setStep('result')}
+            onComplete={onChooseHuman}
           />
         );
       
