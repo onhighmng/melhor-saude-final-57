@@ -189,14 +189,158 @@
     }
   },
   "logs": {
+    "title": "Logs & Auditoria",
+    "subtitle": "Painel de compliance e rastreamento de acessos PHI/GDPR",
+    "export": "Exportar",
     "searchPlaceholder": "Pesquisar utilizador...",
     "noLogsFound": "Nenhum log encontrado para este filtro",
-    "adjustFilters": "Ajuste os filtros para ver resultados diferentes."
+    "adjustFilters": "Ajuste os filtros para ver resultados diferentes.",
+    "metrics": {
+      "totalLogs": "Total de Logs",
+      "selectedPeriod": "No período selecionado",
+      "phiAccesses": "Acessos PHI",
+      "personalData": "Dados pessoais acedidos",
+      "exports": "Exportações",
+      "reportsExported": "Relatórios exportados",
+      "withJustification": "Com Justificação",
+      "logsJustified": "Logs justificados"
+    },
+    "filters": {
+      "title": "Filtros",
+      "tenant": "Tenant/Empresa",
+      "allCompanies": "Todas Empresas",
+      "actionType": "Tipo de Ação",
+      "allActions": "Todas Ações",
+      "view": "Visualização",
+      "export": "Exportação",
+      "modify": "Modificação",
+      "login": "Login",
+      "delete": "Eliminação",
+      "dateStart": "Data início",
+      "dateEnd": "Data fim"
+    },
+    "table": {
+      "title": "Registos de Auditoria",
+      "timestamp": "Data/Hora",
+      "user": "Utilizador",
+      "action": "Ação",
+      "resource": "Recurso",
+      "result": "Resultado",
+      "details": "Detalhes",
+      "viewDetails": "Ver Detalhes"
+    },
+    "dialog": {
+      "title": "Detalhes do Log de Auditoria",
+      "subtitle": "Informação completa sobre esta ação de auditoria",
+      "basicInfo": "Informação Básica",
+      "timestamp": "Data/Hora",
+      "user": "Utilizador",
+      "action": "Ação",
+      "result": "Resultado",
+      "contextInfo": "Informação de Contexto",
+      "resource": "Recurso",
+      "resourceDetails": "Detalhes do Recurso",
+      "tenant": "Tenant",
+      "justification": "Justificação",
+      "none": "Nenhuma",
+      "technicalDetails": "Detalhes Técnicos",
+      "ipAddress": "Endereço IP",
+      "userAgent": "User Agent",
+      "sessionDuration": "Duração da Sessão",
+      "close": "Fechar"
+    },
+    "toast": {
+      "exportComplete": "Exportação completa",
+      "exportSuccess": "{{count}} logs exportados em formato PHI-safe."
+    },
+    "results": {
+      "success": "Sucesso",
+      "error": "Erro",
+      "warning": "Aviso"
+    }
   },
   "sessions": {
+    "title": "Gestão de Sessões",
+    "subtitle": "Auditoria e gestão de todas as sessões da plataforma",
     "searchPlaceholder": "Pesquisar utilizador ou prestador...",
     "noSessionsFound": "Nenhuma sessão encontrada neste filtro",
-    "adjustFilters": "Ajuste os filtros para ver resultados diferentes."
+    "adjustFilters": "Ajuste os filtros para ver resultados diferentes.",
+    "metrics": {
+      "totalSessions": "Sessões Totais",
+      "thisMonth": "Este mês",
+      "correctlyDeducted": "Deduzidas Corretamente",
+      "policyApplied": "Política aplicada",
+      "refunded": "Reembolsadas",
+      "refundApplied": "Reembolso aplicado",
+      "anomalies": "Anomalias",
+      "noShowNoPolicy": "Falta sem política"
+    },
+    "filters": {
+      "title": "Filtros Avançados",
+      "status": "Estado",
+      "allStatuses": "Todos Estados",
+      "scheduled": "Agendada",
+      "completed": "Concluída",
+      "cancelled": "Cancelada",
+      "noShow": "Falta",
+      "pillar": "Pilar",
+      "allPillars": "Todos Pilares",
+      "company": "Empresa",
+      "allCompanies": "Todas Empresas"
+    },
+    "table": {
+      "title": "Sessões",
+      "user": "Utilizador",
+      "provider": "Prestador",
+      "pillar": "Pilar",
+      "status": "Estado",
+      "deduction": "Dedução",
+      "refund": "Reembolso",
+      "datetime": "Data/Hora",
+      "actions": "Ações",
+      "company": "Empresa",
+      "personal": "Pessoal",
+      "applied": "Aplicado",
+      "viewAudit": "Ver Auditoria"
+    },
+    "dialog": {
+      "title": "Auditoria de Sessão",
+      "subtitle": "Histórico completo de ações e políticas aplicadas",
+      "basicInfo": "Informação Básica",
+      "sessionId": "ID da Sessão",
+      "user": "Utilizador",
+      "provider": "Prestador",
+      "pillar": "Pilar",
+      "datetime": "Data/Hora",
+      "currentStatus": "Estado Atual",
+      "deductionType": "Tipo de Dedução",
+      "company": "Empresa",
+      "personal": "Pessoal",
+      "refundStatus": "Estado de Reembolso",
+      "applied": "Aplicado",
+      "notApplied": "Não Aplicado",
+      "appliedPolicies": "Políticas Aplicadas",
+      "auditTrail": "Trilha de Auditoria",
+      "bookedBy": "Marcado por",
+      "cancelledBy": "Cancelado por",
+      "actions": "Ações",
+      "by": "por",
+      "adminActions": "Ações Administrativas",
+      "correctDeduction": "Corrigir Dedução",
+      "applyRefund": "Aplicar Reembolso",
+      "markException": "Marcar Exceção",
+      "close": "Fechar"
+    },
+    "toast": {
+      "exportComplete": "Exportação concluída",
+      "exportSuccess": "Dados das sessões exportados com sucesso.",
+      "deductionCorrected": "Dedução corrigida",
+      "deductionChanged": "O tipo de dedução foi alterado com sucesso.",
+      "refundApplied": "Reembolso aplicado",
+      "refundSuccess": "O reembolso foi aplicado à sessão com sucesso.",
+      "exceptionMarked": "Exceção marcada",
+      "exceptionSuccess": "A sessão foi marcada como exceção para revisão."
+    }
   },
   "support": {
     "filterByStatus": "Filtrar por estado",
@@ -317,17 +461,127 @@
     }
   },
   "companyInvites": {
+    "title": "Gestão de códigos de convite",
     "backToCompanies": "Voltar às empresas",
+    "companyNotFound": "Empresa não encontrada",
+    "searchPlaceholder": "Buscar por código ou utilizador...",
     "filterByStatus": "Filtrar por estado",
     "noInviteCodes": "Sem códigos de convite. Clique em 'Gerar códigos em falta' para criar convites.",
-    "noCodesFound": "Nenhum código encontrado com os filtros atuais."
+    "noCodesFound": "Nenhum código encontrado com os filtros atuais.",
+    "metrics": {
+      "seatsPurchased": "Lugares Comprados",
+      "seatsUsed": "Lugares Utilizados",
+      "seatsAvailable": "Lugares Disponíveis",
+      "totalCodes": "Total de Códigos"
+    },
+    "filters": {
+      "allStatuses": "Todos os estados",
+      "active": "Ativo",
+      "used": "Utilizado",
+      "revoked": "Revogado"
+    },
+    "actions": {
+      "generating": "A gerar...",
+      "generateMissing": "Gerar códigos em falta",
+      "exportCsv": "Exportar CSV"
+    },
+    "table": {
+      "code": "Código",
+      "status": "Estado",
+      "usedBy": "Utilizado por",
+      "usedDate": "Data de Utilização",
+      "createdDate": "Data de Criação",
+      "actions": "Ações"
+    },
+    "status": {
+      "active": "Ativo",
+      "used": "Utilizado",
+      "revoked": "Revogado",
+      "unknown": "Desconhecido"
+    },
+    "toast": {
+      "codeCopied": "Código copiado",
+      "codeCopiedDesc": "Código de convite copiado para a área de transferência.",
+      "codesGenerated": "Códigos gerados",
+      "codesGeneratedDesc": "{{count}} novo{{plural}} código{{plural}} de convite gerado{{plural}}.",
+      "codeRevoked": "Código revogado",
+      "codeRevokedDesc": "O código de convite foi revogado com sucesso.",
+      "codeRegenerated": "Código regenerado",
+      "codeRegeneratedDesc": "Novo código de convite gerado com sucesso.",
+      "exportComplete": "Exportação concluída",
+      "exportSuccess": "Códigos de convite exportados com sucesso."
+    }
   },
   "providerNew": {
-    "errorCreating": "Erro ao criar prestador. Tente novamente.",
-    "back": "Voltar",
+    "title": "Novo Prestador",
     "subtitle": "Criar e configurar prestador de serviços",
+    "back": "Voltar",
     "creating": "A criar...",
-    "createProvider": "Criar Prestador"
+    "createProvider": "Criar Prestador",
+    "basicData": {
+      "title": "Dados Básicos",
+      "fullName": "Nome Completo",
+      "fullNamePlaceholder": "Dr./Dra. Nome Completo",
+      "email": "Email",
+      "emailPlaceholder": "prestador@exemplo.com",
+      "bio": "Bio Curta",
+      "bioPlaceholder": "Breve descrição profissional...",
+      "languages": "Línguas Faladas",
+      "selectLanguage": "Selecionar língua",
+      "photo": "Foto/Avatar",
+      "uploadPhoto": "Upload Foto"
+    },
+    "languages": {
+      "portuguese": "Português",
+      "english": "English",
+      "spanish": "Español",
+      "french": "Français",
+      "german": "Deutsch"
+    },
+    "credentials": {
+      "title": "Credenciais",
+      "licenseNumber": "Nº de Identificação da Licença",
+      "licenseNumberPlaceholder": "Ex: OP12345",
+      "licenseExpiry": "Validade da Licença",
+      "uploadLicense": "Upload de Licença (PDF/JPG)",
+      "clickToUpload": "Clique para fazer upload",
+      "statusPending": "Estado: Aguardando verificação"
+    },
+    "availability": {
+      "title": "Disponibilidade & Capacidade",
+      "defaultSlot": "Slot Padrão (minutos)",
+      "maxPerDay": "Máximo por Dia",
+      "maxPerWeek": "Máximo por Semana",
+      "initialStatus": "Estado Inicial",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "minutes30": "30 minutos",
+      "minutes45": "45 minutos",
+      "minutes50": "50 minutos",
+      "minutes60": "60 minutos"
+    },
+    "pillars": {
+      "title": "Pilares de Atendimento",
+      "selectAtLeastOne": "Selecione pelo menos um pilar de atendimento"
+    },
+    "restrictions": {
+      "title": "Restrições de Empresas",
+      "subtitle": "Selecione empresas que NÃO podem agendar com este prestador",
+      "noRestrictions": "Sem restrições - disponível para todas as empresas"
+    },
+    "validation": {
+      "title": "Erro de validação",
+      "nameEmailRequired": "Nome e email são obrigatórios",
+      "selectPillar": "Selecione pelo menos um pilar"
+    },
+    "success": {
+      "title": "Prestador criado com sucesso!",
+      "description": "{{name}} foi adicionado ao sistema. Estado: {{status}}"
+    },
+    "error": {
+      "title": "Erro",
+      "description": "Erro ao criar prestador. Tente novamente."
+    }
   },
   "users": {
     "title": "Utilizadores",

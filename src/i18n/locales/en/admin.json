@@ -189,14 +189,158 @@
     }
   },
   "logs": {
+    "title": "Logs & Audit",
+    "subtitle": "Compliance and PHI/GDPR access tracking dashboard",
+    "export": "Export",
     "searchPlaceholder": "Search user...",
     "noLogsFound": "No logs found for this filter",
-    "adjustFilters": "Adjust filters to see different results."
+    "adjustFilters": "Adjust filters to see different results.",
+    "metrics": {
+      "totalLogs": "Total Logs",
+      "selectedPeriod": "In selected period",
+      "phiAccesses": "PHI Accesses",
+      "personalData": "Personal data accessed",
+      "exports": "Exports",
+      "reportsExported": "Reports exported",
+      "withJustification": "With Justification",
+      "logsJustified": "Justified logs"
+    },
+    "filters": {
+      "title": "Filters",
+      "tenant": "Tenant/Company",
+      "allCompanies": "All Companies",
+      "actionType": "Action Type",
+      "allActions": "All Actions",
+      "view": "View",
+      "export": "Export",
+      "modify": "Modify",
+      "login": "Login",
+      "delete": "Delete",
+      "dateStart": "Start date",
+      "dateEnd": "End date"
+    },
+    "table": {
+      "title": "Audit Records",
+      "timestamp": "Date/Time",
+      "user": "User",
+      "action": "Action",
+      "resource": "Resource",
+      "result": "Result",
+      "details": "Details",
+      "viewDetails": "View Details"
+    },
+    "dialog": {
+      "title": "Audit Log Details",
+      "subtitle": "Complete information about this audit action",
+      "basicInfo": "Basic Information",
+      "timestamp": "Date/Time",
+      "user": "User",
+      "action": "Action",
+      "result": "Result",
+      "contextInfo": "Context Information",
+      "resource": "Resource",
+      "resourceDetails": "Resource Details",
+      "tenant": "Tenant",
+      "justification": "Justification",
+      "none": "None",
+      "technicalDetails": "Technical Details",
+      "ipAddress": "IP Address",
+      "userAgent": "User Agent",
+      "sessionDuration": "Session Duration",
+      "close": "Close"
+    },
+    "toast": {
+      "exportComplete": "Export complete",
+      "exportSuccess": "{{count}} logs exported in PHI-safe format."
+    },
+    "results": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning"
+    }
   },
   "sessions": {
+    "title": "Session Management",
+    "subtitle": "Audit and management of all platform sessions",
     "searchPlaceholder": "Search user or provider...",
     "noSessionsFound": "No sessions found in this filter",
-    "adjustFilters": "Adjust filters to see different results."
+    "adjustFilters": "Adjust filters to see different results.",
+    "metrics": {
+      "totalSessions": "Total Sessions",
+      "thisMonth": "This month",
+      "correctlyDeducted": "Correctly Deducted",
+      "policyApplied": "Policy applied",
+      "refunded": "Refunded",
+      "refundApplied": "Refund applied",
+      "anomalies": "Anomalies",
+      "noShowNoPolicy": "No-show without policy"
+    },
+    "filters": {
+      "title": "Advanced Filters",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "noShow": "No-show",
+      "pillar": "Pillar",
+      "allPillars": "All Pillars",
+      "company": "Company",
+      "allCompanies": "All Companies"
+    },
+    "table": {
+      "title": "Sessions",
+      "user": "User",
+      "provider": "Provider",
+      "pillar": "Pillar",
+      "status": "Status",
+      "deduction": "Deduction",
+      "refund": "Refund",
+      "datetime": "Date/Time",
+      "actions": "Actions",
+      "company": "Company",
+      "personal": "Personal",
+      "applied": "Applied",
+      "viewAudit": "View Audit"
+    },
+    "dialog": {
+      "title": "Session Audit",
+      "subtitle": "Complete history of actions and applied policies",
+      "basicInfo": "Basic Information",
+      "sessionId": "Session ID",
+      "user": "User",
+      "provider": "Provider",
+      "pillar": "Pillar",
+      "datetime": "Date/Time",
+      "currentStatus": "Current Status",
+      "deductionType": "Deduction Type",
+      "company": "Company",
+      "personal": "Personal",
+      "refundStatus": "Refund Status",
+      "applied": "Applied",
+      "notApplied": "Not Applied",
+      "appliedPolicies": "Applied Policies",
+      "auditTrail": "Audit Trail",
+      "bookedBy": "Booked by",
+      "cancelledBy": "Cancelled by",
+      "actions": "Actions",
+      "by": "by",
+      "adminActions": "Administrative Actions",
+      "correctDeduction": "Correct Deduction",
+      "applyRefund": "Apply Refund",
+      "markException": "Mark Exception",
+      "close": "Close"
+    },
+    "toast": {
+      "exportComplete": "Export complete",
+      "exportSuccess": "Session data exported successfully.",
+      "deductionCorrected": "Deduction corrected",
+      "deductionChanged": "The deduction type has been changed successfully.",
+      "refundApplied": "Refund applied",
+      "refundSuccess": "The refund has been applied to the session successfully.",
+      "exceptionMarked": "Exception marked",
+      "exceptionSuccess": "The session has been marked as an exception for review."
+    }
   },
   "support": {
     "filterByStatus": "Filter by status",
@@ -317,17 +461,127 @@
     }
   },
   "companyInvites": {
+    "title": "Invite code management",
     "backToCompanies": "Back to companies",
+    "companyNotFound": "Company not found",
+    "searchPlaceholder": "Search by code or user...",
     "filterByStatus": "Filter by status",
     "noInviteCodes": "No invite codes. Click 'Generate missing codes' to create invites.",
-    "noCodesFound": "No codes found with current filters."
+    "noCodesFound": "No codes found with current filters.",
+    "metrics": {
+      "seatsPurchased": "Seats Purchased",
+      "seatsUsed": "Seats Used",
+      "seatsAvailable": "Available Seats",
+      "totalCodes": "Total Codes"
+    },
+    "filters": {
+      "allStatuses": "All statuses",
+      "active": "Active",
+      "used": "Used",
+      "revoked": "Revoked"
+    },
+    "actions": {
+      "generating": "Generating...",
+      "generateMissing": "Generate missing codes",
+      "exportCsv": "Export CSV"
+    },
+    "table": {
+      "code": "Code",
+      "status": "Status",
+      "usedBy": "Used by",
+      "usedDate": "Usage Date",
+      "createdDate": "Creation Date",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "used": "Used",
+      "revoked": "Revoked",
+      "unknown": "Unknown"
+    },
+    "toast": {
+      "codeCopied": "Code copied",
+      "codeCopiedDesc": "Invite code copied to clipboard.",
+      "codesGenerated": "Codes generated",
+      "codesGeneratedDesc": "{{count}} new invite code{{plural}} generated.",
+      "codeRevoked": "Code revoked",
+      "codeRevokedDesc": "The invite code has been revoked successfully.",
+      "codeRegenerated": "Code regenerated",
+      "codeRegeneratedDesc": "New invite code generated successfully.",
+      "exportComplete": "Export complete",
+      "exportSuccess": "Invite codes exported successfully."
+    }
   },
   "providerNew": {
-    "errorCreating": "Error creating provider. Please try again.",
-    "back": "Back",
+    "title": "New Provider",
     "subtitle": "Create and configure service provider",
+    "back": "Back",
     "creating": "Creating...",
-    "createProvider": "Create Provider"
+    "createProvider": "Create Provider",
+    "basicData": {
+      "title": "Basic Data",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Dr. Full Name",
+      "email": "Email",
+      "emailPlaceholder": "provider@example.com",
+      "bio": "Short Bio",
+      "bioPlaceholder": "Brief professional description...",
+      "languages": "Languages Spoken",
+      "selectLanguage": "Select language",
+      "photo": "Photo/Avatar",
+      "uploadPhoto": "Upload Photo"
+    },
+    "languages": {
+      "portuguese": "Português",
+      "english": "English",
+      "spanish": "Español",
+      "french": "Français",
+      "german": "Deutsch"
+    },
+    "credentials": {
+      "title": "Credentials",
+      "licenseNumber": "License ID Number",
+      "licenseNumberPlaceholder": "Ex: OP12345",
+      "licenseExpiry": "License Expiry",
+      "uploadLicense": "License Upload (PDF/JPG)",
+      "clickToUpload": "Click to upload",
+      "statusPending": "Status: Awaiting verification"
+    },
+    "availability": {
+      "title": "Availability & Capacity",
+      "defaultSlot": "Default Slot (minutes)",
+      "maxPerDay": "Max Per Day",
+      "maxPerWeek": "Max Per Week",
+      "initialStatus": "Initial Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "minutes30": "30 minutes",
+      "minutes45": "45 minutes",
+      "minutes50": "50 minutes",
+      "minutes60": "60 minutes"
+    },
+    "pillars": {
+      "title": "Service Pillars",
+      "selectAtLeastOne": "Select at least one service pillar"
+    },
+    "restrictions": {
+      "title": "Company Restrictions",
+      "subtitle": "Select companies that CANNOT book with this provider",
+      "noRestrictions": "No restrictions - available for all companies"
+    },
+    "validation": {
+      "title": "Validation error",
+      "nameEmailRequired": "Name and email are required",
+      "selectPillar": "Select at least one pillar"
+    },
+    "success": {
+      "title": "Provider created successfully!",
+      "description": "{{name}} has been added to the system. Status: {{status}}"
+    },
+    "error": {
+      "title": "Error",
+      "description": "Error creating provider. Please try again."
+    }
   },
   "users": {
     "title": "Users",

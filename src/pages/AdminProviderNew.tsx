@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +61,8 @@ interface ProviderFormData {
 const AdminProviderNew = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation('admin');
+  const { t: tCommon } = useTranslation('common');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newLanguage, setNewLanguage] = useState('');
   
@@ -150,8 +153,8 @@ const AdminProviderNew = () => {
     // Validation
     if (!formData.name || !formData.email) {
       toast({
-        title: "Erro de validação",
-        description: "Nome e email são obrigatórios",
+        title: t('providerNew.validation.title'),
+        description: t('providerNew.validation.nameEmailRequired'),
         variant: "destructive"
       });
       return;
@@ -160,8 +163,8 @@ const AdminProviderNew = () => {
     const selectedPillars = Object.values(formData.pillars).some(Boolean);
     if (!selectedPillars) {
       toast({
-        title: "Erro de validação",
-        description: "Selecione pelo menos um pilar",
+        title: t('providerNew.validation.title'),
+        description: t('providerNew.validation.selectPillar'),
         variant: "destructive"
       });
       return;
@@ -173,16 +176,18 @@ const AdminProviderNew = () => {
       // Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
+      const statusText = formData.initialStatus === 'active' ? t('providerNew.availability.active') : t('providerNew.credentials.statusPending').replace('Estado: ', '');
+      
       toast({
-        title: "Prestador criado com sucesso!",
-        description: `${formData.name} foi adicionado ao sistema. Estado: ${formData.initialStatus === 'active' ? 'Ativo' : 'Aguardando verificação'}`,
+        title: t('providerNew.success.title'),
+        description: t('providerNew.success.description', { name: formData.name, status: statusText }),
       });
       
       navigate('/admin/prestadores');
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao criar prestador. Tente novamente.",
+        title: t('providerNew.error.title'),
+        description: t('providerNew.error.description'),
         variant: "destructive"
       });
     } finally {
@@ -193,25 +198,25 @@ const AdminProviderNew = () => {
   const pillarOptions = [
     {
       key: 'mentalHealth',
-      label: 'Saúde Mental',
+      label: tCommon('pillars.mentalHealth'),
       icon: Brain,
       color: 'text-blue-600'
     },
     {
       key: 'physicalWellness',
-      label: 'Bem-Estar Físico',
+      label: tCommon('pillars.physicalWellness'),
       icon: Heart,
       color: 'text-red-600'
     },
     {
       key: 'financialAssistance',
-      label: 'Assistência Financeira',
+      label: tCommon('pillars.financialAssistance'),
       icon: DollarSign,
       color: 'text-green-600'
     },
     {
       key: 'legalAssistance',
-      label: 'Assistência Jurídica',
+      label: tCommon('pillars.legalAssistance'),
       icon: Scale,
       color: 'text-purple-600'
     }
@@ -224,11 +229,11 @@ const AdminProviderNew = () => {
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
+            {t('providerNew.back')}
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Novo Prestador</h1>
-            <p className="text-sm text-muted-foreground">Criar e configurar prestador de serviços</p>
+            <h1 className="text-2xl font-bold text-foreground">{t('providerNew.title')}</h1>
+            <p className="text-sm text-muted-foreground">{t('providerNew.subtitle')}</p>
           </div>
         </div>
       </header>
@@ -240,32 +245,32 @@ const AdminProviderNew = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-blue-600" />
-                Dados Básicos
+                {t('providerNew.basicData.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Nome Completo *</Label>
+                    <Label htmlFor="name">{t('providerNew.basicData.fullName')} *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
-                      placeholder="Dr./Dra. Nome Completo"
+                      placeholder={t('providerNew.basicData.fullNamePlaceholder')}
                       required
                       className="mt-1"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email">{t('providerNew.basicData.email')} *</Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder="prestador@exemplo.com"
+                      placeholder={t('providerNew.basicData.emailPlaceholder')}
                       required
                       className="mt-1"
                     />
@@ -274,30 +279,30 @@ const AdminProviderNew = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="bio">Bio Curta</Label>
+                    <Label htmlFor="bio">{t('providerNew.basicData.bio')}</Label>
                     <Textarea
                       id="bio"
                       value={formData.bio}
                       onChange={(e) => handleInputChange('bio', e.target.value)}
-                      placeholder="Breve descrição profissional..."
+                      placeholder={t('providerNew.basicData.bioPlaceholder')}
                       rows={3}
                       className="mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label>Línguas Faladas</Label>
+                    <Label>{t('providerNew.basicData.languages')}</Label>
                     <div className="flex gap-2 mt-1">
                       <Select value={newLanguage} onValueChange={setNewLanguage}>
                         <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Selecionar língua" />
+                          <SelectValue placeholder={t('providerNew.basicData.selectLanguage')} />
                         </SelectTrigger>
                         <SelectContent className="bg-background border border-border shadow-lg z-50">
-                          <SelectItem value="PT">Português</SelectItem>
-                          <SelectItem value="EN">English</SelectItem>
-                          <SelectItem value="ES">Español</SelectItem>
-                          <SelectItem value="FR">Français</SelectItem>
-                          <SelectItem value="DE">Deutsch</SelectItem>
+                          <SelectItem value="PT">{t('providerNew.languages.portuguese')}</SelectItem>
+                          <SelectItem value="EN">{t('providerNew.languages.english')}</SelectItem>
+                          <SelectItem value="ES">{t('providerNew.languages.spanish')}</SelectItem>
+                          <SelectItem value="FR">{t('providerNew.languages.french')}</SelectItem>
+                          <SelectItem value="DE">{t('providerNew.languages.german')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <Button type="button" onClick={addLanguage} disabled={!newLanguage}>
@@ -318,7 +323,7 @@ const AdminProviderNew = () => {
                 </div>
 
                 <div>
-                  <Label>Foto/Avatar</Label>
+                  <Label>{t('providerNew.basicData.photo')}</Label>
                   <div className="flex items-center gap-4 mt-1">
                     <Avatar className="h-20 w-20">
                       <AvatarImage src={formData.avatar ? URL.createObjectURL(formData.avatar) : ''} />
@@ -338,7 +343,7 @@ const AdminProviderNew = () => {
                         <Button type="button" variant="outline" asChild>
                           <span>
                             <Upload className="h-4 w-4 mr-2" />
-                            Upload Foto
+                            {t('providerNew.basicData.uploadPhoto')}
                           </span>
                         </Button>
                       </Label>
@@ -354,25 +359,25 @@ const AdminProviderNew = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-green-600" />
-                Credenciais
+                {t('providerNew.credentials.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="licenseNumber">Nº de Identificação da Licença</Label>
+                    <Label htmlFor="licenseNumber">{t('providerNew.credentials.licenseNumber')}</Label>
                     <Input
                       id="licenseNumber"
                       value={formData.licenseNumber}
                       onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
-                      placeholder="Ex: OP12345"
+                      placeholder={t('providerNew.credentials.licenseNumberPlaceholder')}
                       className="mt-1"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="licenseExpiry">Validade da Licença</Label>
+                    <Label htmlFor="licenseExpiry">{t('providerNew.credentials.licenseExpiry')}</Label>
                     <Input
                       id="licenseExpiry"
                       type="date"
@@ -384,7 +389,7 @@ const AdminProviderNew = () => {
                 </div>
 
                 <div>
-                  <Label>Upload de Licença (PDF/JPG)</Label>
+                  <Label>{t('providerNew.credentials.uploadLicense')}</Label>
                   <div className="mt-1">
                     <Input
                       type="file"
@@ -397,13 +402,13 @@ const AdminProviderNew = () => {
                       <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-primary transition-colors">
                         <FileText className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                         <p className="text-sm text-muted-foreground">
-                          {formData.licenseFile ? formData.licenseFile.name : 'Clique para fazer upload'}
+                          {formData.licenseFile ? formData.licenseFile.name : t('providerNew.credentials.clickToUpload')}
                         </p>
                       </div>
                     </Label>
                   </div>
                   <Badge variant="outline" className="mt-2 text-amber-600 border-amber-300">
-                    Estado: Aguardando verificação
+                    {t('providerNew.credentials.statusPending')}
                   </Badge>
                 </div>
               </div>
@@ -415,28 +420,28 @@ const AdminProviderNew = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-purple-600" />
-                Disponibilidade & Capacidade
+                {t('providerNew.availability.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div>
-                  <Label htmlFor="defaultSlot">Slot Padrão (minutos)</Label>
+                  <Label htmlFor="defaultSlot">{t('providerNew.availability.defaultSlot')}</Label>
                   <Select value={formData.defaultSlot.toString()} onValueChange={(value) => handleInputChange('defaultSlot', parseInt(value))}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-background border border-border shadow-lg z-50">
-                      <SelectItem value="30">30 minutos</SelectItem>
-                      <SelectItem value="45">45 minutos</SelectItem>
-                      <SelectItem value="50">50 minutos</SelectItem>
-                      <SelectItem value="60">60 minutos</SelectItem>
+                      <SelectItem value="30">{t('providerNew.availability.minutes30')}</SelectItem>
+                      <SelectItem value="45">{t('providerNew.availability.minutes45')}</SelectItem>
+                      <SelectItem value="50">{t('providerNew.availability.minutes50')}</SelectItem>
+                      <SelectItem value="60">{t('providerNew.availability.minutes60')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label htmlFor="maxSessionsPerDay">Máximo por Dia</Label>
+                  <Label htmlFor="maxSessionsPerDay">{t('providerNew.availability.maxPerDay')}</Label>
                   <Input
                     id="maxSessionsPerDay"
                     type="number"
@@ -449,7 +454,7 @@ const AdminProviderNew = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="maxSessionsPerWeek">Máximo por Semana</Label>
+                  <Label htmlFor="maxSessionsPerWeek">{t('providerNew.availability.maxPerWeek')}</Label>
                   <Input
                     id="maxSessionsPerWeek"
                     type="number"
@@ -462,14 +467,14 @@ const AdminProviderNew = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="initialStatus">Estado Inicial</Label>
+                  <Label htmlFor="initialStatus">{t('providerNew.availability.initialStatus')}</Label>
                   <Select value={formData.initialStatus} onValueChange={(value: 'active' | 'inactive') => handleInputChange('initialStatus', value)}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-background border border-border shadow-lg z-50">
-                      <SelectItem value="active">Ativo</SelectItem>
-                      <SelectItem value="inactive">Inativo</SelectItem>
+                      <SelectItem value="active">{t('providerNew.availability.active')}</SelectItem>
+                      <SelectItem value="inactive">{t('providerNew.availability.inactive')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -482,7 +487,7 @@ const AdminProviderNew = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-blue-600" />
-                Pilares de Atendimento
+                {t('providerNew.pillars.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -509,10 +514,10 @@ const AdminProviderNew = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Building2 className="h-5 w-5 text-muted-foreground" />
-                  <Label className="text-base font-medium">Restrições de Empresas</Label>
+                  <Label className="text-base font-medium">{t('providerNew.restrictions.title')}</Label>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Selecione empresas específicas que este prestador pode atender (opcional)
+                  {t('providerNew.restrictions.subtitle')}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {availableCompanies.map((company) => (
@@ -530,7 +535,7 @@ const AdminProviderNew = () => {
                 </div>
                 {formData.restrictedCompanies.length === 0 && (
                   <p className="text-sm text-muted-foreground italic">
-                    Nenhuma restrição - pode atender todas as empresas
+                    {t('providerNew.restrictions.noRestrictions')}
                   </p>
                 )}
               </div>
@@ -540,10 +545,10 @@ const AdminProviderNew = () => {
           {/* Submit Button */}
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={() => navigate(-1)}>
-              Cancelar
+              {tCommon('cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting} className="min-w-32">
-              {isSubmitting ? 'A criar...' : 'Criar Prestador'}
+              {isSubmitting ? t('providerNew.creating') : t('providerNew.createProvider')}
             </Button>
           </div>
         </form>
