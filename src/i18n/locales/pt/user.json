@@ -32,6 +32,30 @@
       "confirm": "Confirmar Agendamento",
       "cancel": "Voltar"
     },
+    "confirmation": {
+      "confirmTitle": "Confirme a sua marcação",
+      "confirmSubtitle": "Reveja os detalhes da sua sessão",
+      "sessionDetailsTitle": "Detalhes da sessão",
+      "ourSpecialist": "Nosso especialista",
+      "dateLabel": "Data",
+      "timeLabel": "Hora",
+      "focusAreaLabel": "Área de foco",
+      "backButton": "Voltar",
+      "confirmingButton": "A confirmar...",
+      "confirmBookingButton": "Confirmar marcação"
+    },
+    "postBooking": {
+      "title": "Sessão Agendada com Sucesso!",
+      "maximizeTitle": "Maximize a sua sessão",
+      "description": "Responda a algumas perguntas antes da consulta para ajudar {{providerName}} a preparar-se melhor e tornar a sessão mais eficaz."
+    },
+    "specialist": {
+      "availability": "Os nossos especialistas irão avaliar a sua situação e, se necessário, agendar uma sessão de vídeo personalizada.",
+      "availableTitle": "Disponível 24 horas por dia, 7 dias por semana",
+      "callNow": "Ligar Agora",
+      "phoneConsultation": "Consulta Telefónica Detalhada",
+      "directContact": "Contacto Direto dos Especialistas"
+    },
     "alerts": {
       "fillAllFields": "Por favor, preencha todos os campos.",
       "noSessionsAvailable": "Não tem sessões disponíveis. Por favor, adquira sessões adicionais antes de agendar.",
