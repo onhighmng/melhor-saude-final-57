@@ -282,7 +282,7 @@
       "providerAssigned": "Prestador Atribuído",
       "providerAssignedDesc": "Foi atribuído: {{name}} - {{specialty}}",
       "escalatingToSpecialist": "A encaminhar para especialista",
-      "escalatingDesc": "Vamos conectá-lo com um dos nossos especialistas para melhor assistência",
+      "escalatingDesc": "Vamos conectá-lo com o nosso especialista",
       "error": "Erro",
       "noProviders": "Nenhum prestador disponível para este pilar no momento.",
       "selectDateTime": "Por favor selecione data e hora",

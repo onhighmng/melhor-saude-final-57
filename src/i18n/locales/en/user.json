@@ -266,7 +266,7 @@
       "providerAssigned": "Provider Assigned",
       "providerAssignedDesc": "Assigned: {{name}} - {{specialty}}",
       "escalatingToSpecialist": "Escalating to specialist",
-      "escalatingDesc": "We'll connect you with one of our specialists for better assistance",
+      "escalatingDesc": "We'll connect you with our specialist",
       "error": "Error",
       "noProviders": "No providers available for this pillar at the moment.",
       "selectDateTime": "Please select date and time",
