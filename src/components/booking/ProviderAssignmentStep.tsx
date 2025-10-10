@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,13 +20,11 @@ interface ProviderAssignmentStepProps {
 }
 
 export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: ProviderAssignmentStepProps) => {
-  const { t } = useTranslation(['user', 'common']);
-
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">{t('user:booking.directFlow.providerAssigned')}</h2>
-        <p className="text-sm text-muted-foreground">{t('user:booking.directFlow.providerAssignedSubtitle')}</p>
+        <h2 className="text-2xl font-bold mb-2">Especialista atribuído</h2>
+        <p className="text-sm text-muted-foreground">Encontrámos o especialista ideal para si</p>
       </div>
 
       <Card className="border-2 border-primary/20 bg-primary/5">
@@ -35,19 +32,19 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
           <div className="flex items-center gap-4 mb-4">
             <CheckCircle2 className="h-8 w-8 text-green-600 shrink-0" />
             <div>
-              <h3 className="font-semibold text-lg">{t('user:booking.directFlow.matchFound')}</h3>
-              <p className="text-sm text-muted-foreground">{t('user:booking.directFlow.matchFoundDesc')}</p>
+              <h3 className="font-semibold text-lg">Correspondência encontrada</h3>
+              <p className="text-sm text-muted-foreground">Conectamos você com nosso especialista</p>
             </div>
           </div>
 
           <div className="flex items-start gap-6 bg-background rounded-lg p-6">
             <Avatar className="h-20 w-20">
-              <AvatarImage src={assignedProvider.avatar_url} alt={assignedProvider.name} />
-              <AvatarFallback>{assignedProvider.name.charAt(0)}</AvatarFallback>
+              <AvatarImage src={assignedProvider.avatar_url} alt="Nosso especialista" />
+              <AvatarFallback>NE</AvatarFallback>
             </Avatar>
 
             <div className="flex-1">
-              <h4 className="text-xl font-semibold mb-1">{assignedProvider.name}</h4>
+              <h4 className="text-xl font-semibold mb-1">Nosso especialista</h4>
               <p className="text-primary font-medium mb-3">{assignedProvider.specialty}</p>
               
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
@@ -55,12 +52,10 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span className="font-medium">{assignedProvider.rating}</span>
                 </div>
-                <span>•</span>
-                <span>{assignedProvider.experience}</span>
               </div>
 
               <p className="text-sm text-muted-foreground">
-                {t('user:booking.directFlow.providerExpertise', { pillar: t(`user:booking.directFlow.pillars.${pillar}.title`) })}
+                Profissional qualificado pronto para ajudar com suas necessidades
               </p>
             </div>
           </div>
@@ -69,7 +64,7 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
 
       <div className="flex justify-end">
         <Button onClick={onNext} size="lg" className="px-8">
-          {t('user:booking.directFlow.selectDateTime')}
+          Selecionar data e hora
         </Button>
       </div>
     </div>
