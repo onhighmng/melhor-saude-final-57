@@ -29,7 +29,7 @@ export const ChatIntroSection = ({ onSelectPrompt }: ChatIntroSectionProps) => {
           Como podemos ajudar?
         </h2>
         <p className="text-muted-foreground max-w-md mx-auto">
-          Escolha uma opção para começar a conversa com nosso especialista
+          Partilhe comigo o que sente e veremos juntos como apoiá-lo ou apoiá-la.
         </p>
       </div>
 
