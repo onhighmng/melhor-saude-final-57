@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,8 @@ import { useBookings } from '@/hooks/useBookings';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { SessionMilestones } from '@/components/progress/SessionMilestones';
-import { GoalsQuestionnaire, UserGoals } from '@/components/onboarding/GoalsQuestionnaire';
+import { GoalsDisplay, UserGoals } from '@/components/goals/GoalsDisplay';
+import { GoalsEditor } from '@/components/goals/GoalsEditor';
 import { useToast } from '@/hooks/use-toast';
 
 const UserDashboard = () => {
@@ -23,19 +24,40 @@ const UserDashboard = () => {
   const { t: tNav } = useTranslation('navigation');
   const { t: tUser } = useTranslation('user');
   const { toast } = useToast();
-  const [showGoalsQuestionnaire, setShowGoalsQuestionnaire] = useState(() => {
-    return !localStorage.getItem('hasCompletedGoals');
+  
+  const [userGoals, setUserGoals] = useState<UserGoals | null>(() => {
+    const stored = localStorage.getItem('userGoals');
+    return stored ? JSON.parse(stored) : null;
   });
+  const [isEditingGoals, setIsEditingGoals] = useState(false);
 
-  const handleGoalsComplete = (goals: UserGoals) => {
-    localStorage.setItem('hasCompletedGoals', 'true');
+  useEffect(() => {
+    // If no goals are set, show the editor by default
+    if (!userGoals) {
+      setIsEditingGoals(true);
+    }
+  }, [userGoals]);
+
+  const handleSaveGoals = (goals: UserGoals) => {
     localStorage.setItem('userGoals', JSON.stringify(goals));
-    setShowGoalsQuestionnaire(false);
+    setUserGoals(goals);
+    setIsEditingGoals(false);
     
     toast({
       title: "Objetivos guardados!",
       description: "Os seus objetivos foram guardados. Vamos ajudá-lo a alcançá-los.",
     });
+  };
+
+  const handleEditGoals = () => {
+    setIsEditingGoals(true);
+  };
+
+  const handleCancelEdit = () => {
+    // Only allow cancel if goals exist
+    if (userGoals) {
+      setIsEditingGoals(false);
+    }
   };
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
@@ -73,12 +95,8 @@ const UserDashboard = () => {
   const usagePercent = totalSessions > 0 ? Math.round((usedSessions / totalSessions) * 100) : 0;
 
   return (
-    <>
-      {showGoalsQuestionnaire && (
-        <GoalsQuestionnaire onComplete={handleGoalsComplete} />
-      )}
-      <div className="min-h-screen bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
         {/* Welcome Header */}
         <div className="space-y-1">
           <h1 className="text-3xl font-normal tracking-tight">
@@ -87,6 +105,21 @@ const UserDashboard = () => {
           <p className="text-muted-foreground text-base">
             {t('dashboard.welcomeBack')}
           </p>
+        </div>
+
+        {/* Goals Section - Integrated */}
+        <div className="flex justify-center">
+          <div className="w-full max-w-4xl">
+            {isEditingGoals ? (
+              <GoalsEditor
+                initialGoals={userGoals}
+                onSave={handleSaveGoals}
+                onCancel={handleCancelEdit}
+              />
+            ) : (
+              <GoalsDisplay goals={userGoals} onEdit={handleEditGoals} />
+            )}
+          </div>
         </div>
 
         {/* Session Balance Card - Centered */}
@@ -302,8 +335,7 @@ const UserDashboard = () => {
           </CardContent>
         </Card>
       </div>
-      </div>
-    </>
+    </div>
   );
 };
 
