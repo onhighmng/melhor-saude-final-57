@@ -281,5 +281,19 @@
   },
   "settings": {
     "sendReminders": "Send reminders to employees"
+  },
+  "deactivate": {
+    "confirm": "Deactivate Employee",
+    "warning": "Are you sure you want to deactivate this employee?",
+    "employeeLabel": "Employee:",
+    "consequence": "Upon deactivation, the account will become inaccessible and will free up a seat.",
+    "action": "Deactivate"
+  },
+  "revokeAccess": {
+    "title": "Revoke Access",
+    "warning": "WARNING: This action is irreversible!",
+    "confirm": "Are you sure you want to revoke access?",
+    "employeeLabel": "Employee:",
+    "action": "Revoke Access"
   }
 }

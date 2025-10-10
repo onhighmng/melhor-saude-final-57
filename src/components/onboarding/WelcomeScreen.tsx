@@ -20,18 +20,17 @@ export function WelcomeScreen({ companyName, onContinue }: WelcomeScreenProps) {
           </div>
           <CardTitle className="text-3xl">{t('onboarding.welcome')}</CardTitle>
           <CardDescription className="text-base">
-            Bem-vindo à {companyName}
+            {t('onboarding.welcomeTo', { company: companyName })}
           </CardDescription>
         </CardHeader>
         
         <CardContent className="space-y-6">
           <p className="text-muted-foreground">
-            Estamos felizes por tê-lo connosco. Vamos configurar a sua conta
-            e conhecer os benefícios disponíveis para si.
+            {t('onboarding.welcomeMessage')}
           </p>
           
           <Button onClick={onContinue} size="lg" className="w-full">
-            Começar
+            {t('onboarding.startButton')}
           </Button>
         </CardContent>
       </Card>

@@ -279,7 +279,16 @@
     "bookFirst": "Book First Session",
     "sessionWith": "Session with {{provider}}",
     "quota": {
-      "company": "Quota {{type}}"
+      "title": "Your Session Quotas",
+      "info": "Quotas are only deducted when sessions are completed. Cancellations, no-shows and rescheduling do not consume sessions.",
+      "description": "Only completed sessions are deducted from your quota",
+      "company": "Company",
+      "personal": "Personal",
+      "usageLabel": "{{used}} / {{total}} used",
+      "available": "Available: {{count}}",
+      "used": "used",
+      "policyTitle": "Deduction Policy",
+      "policyDescription": "Cancellations, no-shows and rescheduling do not consume sessions from your quota. Only sessions effectively completed are deducted."
     },
     "deducted": "Session Deducted",
     "deductedFrom": "Deducted from {{type}} quota on {{date}}",
@@ -356,6 +365,9 @@
   "feedback": {
     "title": "Rate Session",
     "subtitle": "Your feedback helps us improve",
+    "ratingLabel": "Rating *",
+    "commentLabel": "Comment (optional)",
+    "ratingRequired": "Please select a rating",
     "ctaSubmit": "Submit Feedback",
     "ctaSkip": "Skip for Now",
     "ctaViewSessions": "View Other Sessions",
@@ -370,6 +382,9 @@
   },
   "onboarding": {
     "welcome": "Welcome to the Platform",
+    "welcomeTo": "Welcome to {{company}}",
+    "welcomeMessage": "We're happy to have you with us. Let's set up your account and discover the benefits available to you.",
+    "startButton": "Get Started",
     "ctaCreateAccount": "Create My Account",
     "ctaFirstSession": "Start with First Session",
     "ctaUnderstood": "Understood — Let's Book",
@@ -379,6 +394,8 @@
     "idleUserTitle": "We miss you!",
     "idleUserMessage": "Don't forget to take care of yourself",
     "idleUserCTA": "Start Taking Care Again",
+    "remindLater": "Remind Me Later",
+    "close": "Close",
     "lowQuotaTitle": "Last Sessions Available",
     "lowQuotaMessage": "Use your sessions before they expire",
     "lowQuotaCTA": "Use Last Session",

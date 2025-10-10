@@ -295,7 +295,16 @@
     "bookFirst": "Marcar Primeira Sessão",
     "sessionWith": "Sessão com {{provider}}",
     "quota": {
-      "company": "Quota {{type}}"
+      "title": "Suas Quotas de Sessões",
+      "info": "As quotas só são descontadas quando as sessões são concluídas. Cancelamentos, faltas e reagendamentos não consomem sessões.",
+      "description": "Apenas sessões concluídas são deduzidas da sua quota",
+      "company": "Empresa",
+      "personal": "Pessoal",
+      "usageLabel": "{{used}} / {{total}} usadas",
+      "available": "Disponíveis: {{count}}",
+      "used": "utilizado",
+      "policyTitle": "Política de Dedução",
+      "policyDescription": "Cancelamentos, faltas e reagendamentos não consomem sessões da sua quota. Apenas sessões efetivamente concluídas são deduzidas."
     },
     "deducted": "Sessão Deduzida",
     "deductedFrom": "Deduzida da quota {{type}} em {{date}}",
@@ -381,6 +390,9 @@
   "feedback": {
     "title": "Avaliar Sessão",
     "subtitle": "A sua opinião ajuda-nos a melhorar",
+    "ratingLabel": "Classificação *",
+    "commentLabel": "Comentário (opcional)",
+    "ratingRequired": "Por favor, selecione uma classificação",
     "ctaSubmit": "Enviar Avaliação",
     "ctaSkip": "Pular por Agora",
     "ctaViewSessions": "Ver Outras Sessões",
@@ -395,6 +407,9 @@
   },
   "onboarding": {
     "welcome": "Bem-vindo à Plataforma",
+    "welcomeTo": "Bem-vindo à {{company}}",
+    "welcomeMessage": "Estamos felizes por tê-lo connosco. Vamos configurar a sua conta e conhecer os benefícios disponíveis para si.",
+    "startButton": "Começar",
     "ctaCreateAccount": "Criar Minha Conta",
     "ctaFirstSession": "Começar com Primeira Sessão",
     "ctaUnderstood": "Entendi — Vamos Marcar",
@@ -404,6 +419,8 @@
     "idleUserTitle": "Sentimos a sua falta!",
     "idleUserMessage": "Não se esqueça de cuidar de si",
     "idleUserCTA": "Voltar a Cuidar de Si",
+    "remindLater": "Lembrar Mais Tarde",
+    "close": "Fechar",
     "lowQuotaTitle": "Últimas Sessões Disponíveis",
     "lowQuotaMessage": "Use as suas sessões antes que expirem",
     "lowQuotaCTA": "Usar Última Sessão",

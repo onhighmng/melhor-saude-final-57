@@ -35,7 +35,7 @@ export function LowQuotaAlert({ open, onClose, onBookSession, remainingSessions 
             {t('crossFlow.lowQuotaCTA')}
           </Button>
           <Button onClick={onClose} variant="ghost" className="w-full">
-            Fechar
+            {t('crossFlow.close')}
           </Button>
         </div>
       </DialogContent>

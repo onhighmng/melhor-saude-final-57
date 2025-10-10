@@ -32,7 +32,7 @@ export function IdleUserModal({ open, onClose, onBookSession }: IdleUserModalPro
             {t('crossFlow.idleUserCTA')}
           </Button>
           <Button onClick={onClose} variant="ghost" className="w-full">
-            Lembrar Mais Tarde
+            {t('crossFlow.remindLater')}
           </Button>
         </div>
       </DialogContent>

@@ -33,7 +33,7 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
   
   const handleSubmit = () => {
     if (rating === 0) {
-      alert("Por favor, selecione uma classificação");
+      alert(t('feedback.ratingRequired'));
       return;
     }
     
@@ -62,7 +62,7 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
         
         {/* Star Rating */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Classificação *</label>
+          <label className="text-sm font-medium">{t('feedback.ratingLabel')}</label>
           <div className="flex justify-center py-2">
             <StarRating rating={rating} onRatingChange={setRating} size="lg" />
           </div>
@@ -73,7 +73,7 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
         
         {/* Comment */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Comentário (opcional)</label>
+          <label className="text-sm font-medium">{t('feedback.commentLabel')}</label>
           <Textarea
             placeholder={t('feedback.placeholder')}
             value={comment}

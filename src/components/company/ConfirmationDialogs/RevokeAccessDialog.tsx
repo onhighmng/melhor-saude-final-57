@@ -43,7 +43,7 @@ export function RevokeAccessDialog({
             {t('revokeAccess.confirm')}
             <br />
             <br />
-            <strong>Colaborador:</strong> {userName}
+            <strong>{t('revokeAccess.employeeLabel')}</strong> {userName}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -52,7 +52,7 @@ export function RevokeAccessDialog({
             onClick={onConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Revogar Acesso
+            {t('revokeAccess.action')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

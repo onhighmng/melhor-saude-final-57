@@ -34,10 +34,10 @@ export function DeactivateUserDialog({
             {t('deactivate.warning')}
             <br />
             <br />
-            <strong>Colaborador:</strong> {userName}
+            <strong>{t('deactivate.employeeLabel')}</strong> {userName}
             <br />
             <br />
-            Ao desativar, a conta ficará inacessível e libertará uma vaga.
+            {t('deactivate.consequence')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -46,7 +46,7 @@ export function DeactivateUserDialog({
             onClick={onConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Desativar
+            {t('deactivate.action')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

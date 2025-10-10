@@ -281,5 +281,19 @@
   },
   "settings": {
     "sendReminders": "Enviar lembretes aos colaboradores"
+  },
+  "deactivate": {
+    "confirm": "Desativar Colaborador",
+    "warning": "Tem a certeza que pretende desativar este colaborador?",
+    "employeeLabel": "Colaborador:",
+    "consequence": "Ao desativar, a conta ficará inacessível e libertará uma vaga.",
+    "action": "Desativar"
+  },
+  "revokeAccess": {
+    "title": "Revogar Acesso",
+    "warning": "ATENÇÃO: Esta ação é irreversível!",
+    "confirm": "Tem a certeza que pretende revogar o acesso?",
+    "employeeLabel": "Colaborador:",
+    "action": "Revogar Acesso"
   }
 }
