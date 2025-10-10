@@ -86,8 +86,8 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
   };
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl shadow-2xl">
+    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <Card className="w-full max-w-2xl shadow-2xl my-8">
         <CardHeader className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
             {step === 1 && <Sparkles className="w-8 h-8 text-white" />}
@@ -124,7 +124,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
           )}
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 max-h-[60vh] overflow-y-auto">
           {/* Step 1: Como se sente */}
           {step === 1 && (
             <div className="space-y-4">
