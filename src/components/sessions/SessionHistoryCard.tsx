@@ -84,7 +84,7 @@ export function SessionHistoryCard({
               {getPillarLabel(session.pillar)}
             </CardTitle>
             <CardDescription>
-              {t('sessions.sessionWith', 'Sessão com {{provider}}', { provider: session.prestadorName })}
+              Sessão com nosso especialista
             </CardDescription>
           </div>
           <div className="flex flex-col gap-2 items-end">

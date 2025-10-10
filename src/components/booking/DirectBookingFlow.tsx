@@ -123,8 +123,8 @@ export const DirectBookingFlow = () => {
       setCurrentStep('provider');
       
       toast({
-        title: t('booking.toasts.escalatingToSpecialist'),
-        description: t('booking.toasts.escalatingDesc'),
+        title: 'A escalar para especialista',
+        description: 'Nosso especialista irá contactá-lo em breve',
       });
     }
   };

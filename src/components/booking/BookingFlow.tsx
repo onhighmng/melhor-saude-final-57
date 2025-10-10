@@ -72,8 +72,8 @@ const BookingFlow = () => {
       setCurrentStep('datetime');
       
       toast({
-        title: t('booking.toasts.providerAssigned'),
-        description: t('booking.toasts.providerAssignedDesc', { name: assignedProvider.name, specialty: assignedProvider.specialty }),
+        title: 'Especialista atribuído',
+        description: 'Nosso especialista está pronto para ajudá-lo',
       });
     } else {
       toast({
@@ -120,8 +120,8 @@ const BookingFlow = () => {
       setCurrentStep('datetime');
       
       toast({
-        title: t('booking.toasts.providerAssigned'),
-        description: t('booking.toasts.providerAssignedDesc', { name: assignedProvider.name, specialty: assignedProvider.specialty }),
+        title: 'Especialista atribuído',
+        description: 'Nosso especialista está pronto para ajudá-lo',
       });
     }
   };

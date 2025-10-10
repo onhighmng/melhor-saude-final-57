@@ -74,24 +74,17 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
 
           <div className="text-center mb-12">
             <h1 className="font-semibold text-4xl sm:text-5xl leading-tight mb-6 text-navy-blue animate-fade-in">
-              {t('booking.form.title')}
+              Marcar Sessão
             </h1>
             <p className="font-medium text-xl lg:text-2xl leading-tight text-royal-blue">
-              {t('booking.form.withProvider', { providerName: provider.name })}
+              Com nosso especialista
             </p>
           </div>
 
           <div className="bg-gradient-to-br from-soft-white via-accent-sage/8 to-vibrant-blue/5 rounded-2xl p-8 shadow-[0_24px_48px_rgba(0,0,0,0.04)] border border-accent-sage/25 mb-8">
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 rounded-full overflow-hidden">
-                <img 
-                  src={provider.photo} 
-                  alt={provider.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
               <div>
-                <h3 className="font-bold text-xl text-navy-blue">{provider.name}</h3>
+                <h3 className="font-bold text-xl text-navy-blue">Nosso especialista</h3>
                 <p className="text-royal-blue">{provider.specialization}</p>
               </div>
             </div>
