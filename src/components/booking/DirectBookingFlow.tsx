@@ -111,7 +111,7 @@ export const DirectBookingFlow = () => {
       const internalProvider: Provider = {
         id: 'internal-gp-001',
         name: 'Dr. João Silva',
-        specialty: t(`user:booking.provider.internalSpecialist.${selectedPillar}`),
+        specialty: t(`booking.provider.internalSpecialist.${selectedPillar}`),
         pillar: getTopicPillarId(selectedPillar),
         avatar_url: '/lovable-uploads/business-meeting.png',
         rating: 5.0,
@@ -123,8 +123,8 @@ export const DirectBookingFlow = () => {
       setCurrentStep('provider');
       
       toast({
-        title: t('user:booking.toasts.escalatingToSpecialist'),
-        description: t('user:booking.toasts.escalatingDesc'),
+        title: t('booking.toasts.escalatingToSpecialist'),
+        description: t('booking.toasts.escalatingDesc'),
       });
     }
   };
