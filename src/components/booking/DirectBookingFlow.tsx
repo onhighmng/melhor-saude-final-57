@@ -6,19 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 import PillarSelection from './PillarSelection';
-import { TopicSelection } from './TopicSelection';
-import { PreDiagnosticChat } from './PreDiagnosticChat';
 import { ProviderAssignmentStep } from './ProviderAssignmentStep';
 import CalendarStep from './CalendarStep';
 import { ConfirmationStep } from './ConfirmationStep';
-import TopicSelectionLegal from '@/components/legal-assessment/TopicSelection';
-import SymptomSelection from '@/components/legal-assessment/SymptomSelection';
-import AssessmentResult from '@/components/legal-assessment/AssessmentResult';
+import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/MentalHealthAssessmentFlow';
+import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-assessment/PhysicalWellnessAssessmentFlow';
+import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
+import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
 import { BookingPillar } from './BookingFlow';
-import { getTopicPillarId } from '@/utils/pillarMapping';
 import { mockProviders } from '@/data/mockData';
 
-type BookingStep = 'pillar' | 'topic' | 'legal-topic-selection' | 'legal-symptom-selection' | 'legal-assessment-result' | 'chat' | 'provider' | 'datetime' | 'confirmation';
+type BookingStep = 'pillar' | 'assessment' | 'provider' | 'datetime' | 'confirmation';
 
 interface Provider {
   id: string;
@@ -39,16 +37,10 @@ export const DirectBookingFlow = () => {
   const [currentStep, setCurrentStep] = useState<BookingStep>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const [assignedProvider, setAssignedProvider] = useState<Provider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [isConfirming, setIsConfirming] = useState(false);
-  
-  // Legal assessment state
-  const [selectedLegalTopics, setSelectedLegalTopics] = useState<string[]>([]);
-  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
-  const [additionalNotes, setAdditionalNotes] = useState('');
 
   useEffect(() => {
     console.log('[DirectBookingFlow] Step:', currentStep, 'Pillar:', selectedPillar, 'Topic:', selectedTopic);
@@ -56,75 +48,44 @@ export const DirectBookingFlow = () => {
 
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
+    setCurrentStep('assessment'); // ALL pillars go to assessment
+  };
+
+  const handleChooseHuman = () => {
+    if (!selectedPillar) return;
     
-    // For juridica pillar, start with legal topic selection
-    if (pillar === 'juridica') {
-      setCurrentStep('legal-topic-selection');
-    } else {
-      setCurrentStep('topic');
-    }
-  };
+    const pillarMapping = {
+      'psicologica': 'saude_mental',
+      'fisica': 'bem_estar_fisico',
+      'financeira': 'assistencia_financeira',
+      'juridica': 'assistencia_juridica'
+    };
 
-  const handleTopicSelect = (topic: string) => {
-    setSelectedTopic(topic);
-  };
-
-  const handleTopicNext = () => {
-    setCurrentStep('chat');
-  };
-  
-  // Legal assessment handlers
-  const handleLegalTopicToggle = (topicId: string) => {
-    setSelectedLegalTopics(prev =>
-      prev.includes(topicId)
-        ? prev.filter(id => id !== topicId)
-        : [...prev, topicId]
+    const mappedPillar = pillarMapping[selectedPillar];
+    const availableProviders = mockProviders.filter(provider => 
+      provider.pillar === mappedPillar
     );
-  };
 
-  const handleSymptomToggle = (symptomId: string) => {
-    setSelectedSymptoms(prev =>
-      prev.includes(symptomId)
-        ? prev.filter(id => id !== symptomId)
-        : [...prev, symptomId]
-    );
-  };
-
-  const handleNotesChange = (notes: string) => {
-    setAdditionalNotes(notes);
-  };
-
-  const handleStartLegalChat = () => {
-    // Set a default topic for legal chat (using the first selected legal topic)
-    if (selectedLegalTopics.length > 0 && !selectedTopic) {
-      setSelectedTopic('legal-assessment'); // Use a generic topic identifier for legal
-    }
-    setCurrentStep('chat');
-  };
-
-  const handleChatComplete = (sessionId: string) => {
-    setChatSessionId(sessionId);
-    
-    // Assistente tentou resolver mas não conseguiu
-    // Escala automaticamente para funcionário interno generalista
-    if (selectedPillar) {
-      const internalProvider: Provider = {
-        id: 'internal-gp-001',
-        name: 'Dr. João Silva',
-        specialty: t(`booking.provider.internalSpecialist.${selectedPillar}`),
-        pillar: getTopicPillarId(selectedPillar),
-        avatar_url: '/lovable-uploads/business-meeting.png',
-        rating: 5.0,
-        experience: '10+ anos de experiência',
-        availability: 'Disponível'
+    if (availableProviders.length > 0) {
+      const provider = availableProviders[0];
+      const assignedProvider = {
+        id: provider.id,
+        name: provider.name,
+        specialty: provider.specialty,
+        pillar: provider.pillar || mappedPillar,
+        avatar_url: provider.avatar_url,
+        rating: provider.rating || 5.0,
+        experience: provider.experience,
+        availability: provider.availability || 'Disponível'
       };
       
-      setAssignedProvider(internalProvider);
+      setAssignedProvider(assignedProvider);
+      setSelectedTopic('assessment');
       setCurrentStep('provider');
       
       toast({
-        title: 'A escalar para especialista',
-        description: 'Nosso especialista irá contactá-lo em breve',
+        title: 'Especialista atribuído',
+        description: 'Nosso especialista está pronto para ajudá-lo',
       });
     }
   };
@@ -167,32 +128,12 @@ export const DirectBookingFlow = () => {
 
   const handleBack = () => {
     switch (currentStep) {
-      case 'topic':
+      case 'assessment':
         setCurrentStep('pillar');
         setSelectedPillar(null);
-        break;
-      case 'legal-topic-selection':
-        setCurrentStep('pillar');
-        setSelectedPillar(null);
-        setSelectedLegalTopics([]);
-        break;
-      case 'legal-symptom-selection':
-        setCurrentStep('legal-topic-selection');
-        setSelectedSymptoms([]);
-        break;
-      case 'legal-assessment-result':
-        setCurrentStep('legal-symptom-selection');
-        break;
-      case 'chat':
-        if (selectedPillar === 'juridica') {
-          setCurrentStep('legal-assessment-result');
-        } else {
-          setCurrentStep('topic');
-          setSelectedTopic(null);
-        }
         break;
       case 'provider':
-        setCurrentStep('chat');
+        setCurrentStep('assessment');
         break;
       case 'datetime':
         setCurrentStep('provider');
@@ -209,61 +150,37 @@ export const DirectBookingFlow = () => {
         <PillarSelection onPillarSelect={handlePillarSelect} />
       )}
 
-      {currentStep === 'topic' && selectedPillar && (
-        <TopicSelection
-          pillar={selectedPillar}
-          selectedTopic={selectedTopic}
-          onTopicSelect={handleTopicSelect}
-          onBack={handleBack}
-          onNext={handleTopicNext}
+      {currentStep === 'assessment' && selectedPillar === 'psicologica' && (
+        <MentalHealthAssessmentFlow
+          onBack={() => setCurrentStep('pillar')}
+          onComplete={() => navigate('/user/dashboard')}
+          onChooseHuman={handleChooseHuman}
         />
       )}
 
-      {currentStep === 'legal-topic-selection' && (
-        <TopicSelectionLegal
-          selectedTopics={selectedLegalTopics}
-          onTopicToggle={handleLegalTopicToggle}
-          onNext={() => setCurrentStep('legal-symptom-selection')}
-          onBack={handleBack}
+      {currentStep === 'assessment' && selectedPillar === 'fisica' && (
+        <PhysicalWellnessAssessmentFlow
+          onBack={() => setCurrentStep('pillar')}
+          onComplete={() => navigate('/user/dashboard')}
+          onChooseHuman={handleChooseHuman}
         />
       )}
 
-      {currentStep === 'legal-symptom-selection' && (
-        <SymptomSelection
-          selectedTopics={selectedLegalTopics}
-          selectedSymptoms={selectedSymptoms}
-          onSymptomToggle={handleSymptomToggle}
-          additionalNotes={additionalNotes}
-          onNotesChange={handleNotesChange}
-          onNext={() => setCurrentStep('legal-assessment-result')}
-          onBack={handleBack}
+      {currentStep === 'assessment' && selectedPillar === 'financeira' && (
+        <FinancialAssistanceAssessmentFlow
+          onBack={() => setCurrentStep('pillar')}
+          onComplete={() => navigate('/user/dashboard')}
+          onChooseHuman={handleChooseHuman}
         />
       )}
 
-      {currentStep === 'legal-assessment-result' && (
-        <AssessmentResult
-          selectedTopics={selectedLegalTopics}
-          selectedSymptoms={selectedSymptoms}
-          additionalNotes={additionalNotes}
-          onStartChat={handleStartLegalChat}
-          onBack={handleBack}
+      {currentStep === 'assessment' && selectedPillar === 'juridica' && (
+        <LegalAssessmentFlow
+          onBack={() => setCurrentStep('pillar')}
+          onComplete={() => navigate('/user/dashboard')}
+          onChooseHuman={handleChooseHuman}
         />
       )}
-
-      {currentStep === 'chat' && selectedPillar && (
-        <PreDiagnosticChat
-          pillar={selectedPillar}
-          topic={selectedTopic || 'legal-assessment'}
-          onBack={handleBack}
-          onComplete={handleChatComplete}
-          legalContext={selectedPillar === 'juridica' ? {
-            selectedTopics: selectedLegalTopics,
-            selectedSymptoms: selectedSymptoms,
-            additionalNotes: additionalNotes,
-          } : undefined}
-        />
-      )}
-
 
       {currentStep === 'provider' && selectedPillar && assignedProvider && (
         <ProviderAssignmentStep
@@ -287,7 +204,7 @@ export const DirectBookingFlow = () => {
       {currentStep === 'confirmation' && selectedPillar && selectedTopic && assignedProvider && selectedDate && (
         <ConfirmationStep
           pillar={selectedPillar}
-          topic={selectedTopic}
+          topic={selectedTopic || 'assessment'}
           provider={assignedProvider}
           selectedDate={selectedDate}
           selectedTime={selectedTime}
