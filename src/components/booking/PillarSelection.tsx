@@ -49,10 +49,10 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
           
           <div className="text-center mb-8">
             <h1 className="font-semibold text-2xl sm:text-3xl leading-tight mb-3 text-navy-blue animate-fade-in">
-              {t('user:booking.directFlow.pillarTitle')}
+              {t('booking.directFlow.pillarTitle')}
             </h1>
             <p className="font-medium text-base text-royal-blue">
-              {t('user:booking.directFlow.pillarSubtitle')}
+              {t('booking.directFlow.pillarSubtitle')}
             </p>
           </div>
 
@@ -70,10 +70,10 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
                     <IconComponent className="h-10 w-10 text-white drop-shadow-sm" />
                   </div>
                   <h3 className="font-bold text-xl leading-tight mb-3 text-white drop-shadow-sm group-hover:text-white/95 transition-colors">
-                    {t(`user:booking.directFlow.pillars.${pillar.id}.title`)}
+                    {t(`booking.directFlow.pillars.${pillar.id}.title`)}
                   </h3>
                   <p className="text-base leading-relaxed text-white/90 drop-shadow-sm group-hover:text-white/80 transition-colors flex-1">
-                    {t(`user:booking.directFlow.pillars.${pillar.id}.description`)}
+                    {t(`booking.directFlow.pillars.${pillar.id}.description`)}
                   </p>
                 </button>
               );
