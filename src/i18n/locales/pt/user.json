@@ -270,21 +270,19 @@
       "skipButton": "Pular por Agora",
       "startButton": "Fazer Pré-Diagnóstico"
     },
-    "specialistChoice": {
-      "title": "Como prefere continuar?",
-      "subtitle": "Escolha a melhor opção para a sua situação",
-      "aiTitle": "Continuar com Assistente Digital",
-      "aiDescription": "Respostas rápidas e disponibilidade imediata para questões mais simples",
-      "aiButton": "Continuar com Assistente",
-      "humanTitle": "Falar com Especialista",
-      "humanDescription": "Consulta personalizada com um profissional dedicado",
-      "humanButton": "Marcar com Especialista"
+    "provider": {
+      "internalSpecialist": {
+        "psicologica": "Especialista em Saúde Mental",
+        "juridica": "Especialista em Questões Jurídicas",
+        "financeira": "Consultor Financeiro",
+        "fisica": "Especialista em Bem-Estar Físico"
+      }
     },
     "toasts": {
       "providerAssigned": "Prestador Atribuído",
       "providerAssignedDesc": "Foi atribuído: {{name}} - {{specialty}}",
-      "aiAssistantContinue": "Continuando com assistente",
-      "aiAssistantDesc": "O assistente digital irá ajudá-lo a encontrar a melhor solução",
+      "escalatingToSpecialist": "A encaminhar para especialista",
+      "escalatingDesc": "Vamos conectá-lo com um dos nossos especialistas para melhor assistência",
       "error": "Erro",
       "noProviders": "Nenhum prestador disponível para este pilar no momento.",
       "selectDateTime": "Por favor selecione data e hora",

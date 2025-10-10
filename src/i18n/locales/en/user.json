@@ -254,21 +254,19 @@
       "skipButton": "Skip for Now",
       "startButton": "Do Pre-Diagnosis"
     },
-    "specialistChoice": {
-      "title": "How would you like to continue?",
-      "subtitle": "Choose the best option for your situation",
-      "aiTitle": "Continue with Digital Assistant",
-      "aiDescription": "Quick answers and immediate availability for simpler queries",
-      "aiButton": "Continue with Assistant",
-      "humanTitle": "Speak with Specialist",
-      "humanDescription": "Personalized consultation with a dedicated professional",
-      "humanButton": "Book with Specialist"
+    "provider": {
+      "internalSpecialist": {
+        "psicologica": "Mental Health Specialist",
+        "juridica": "Legal Matters Specialist",
+        "financeira": "Financial Consultant",
+        "fisica": "Physical Wellness Specialist"
+      }
     },
     "toasts": {
       "providerAssigned": "Provider Assigned",
       "providerAssignedDesc": "Assigned: {{name}} - {{specialty}}",
-      "aiAssistantContinue": "Continuing with assistant",
-      "aiAssistantDesc": "The digital assistant will help you find the best solution",
+      "escalatingToSpecialist": "Escalating to specialist",
+      "escalatingDesc": "We'll connect you with one of our specialists for better assistance",
       "error": "Error",
       "noProviders": "No providers available for this pillar at the moment.",
       "selectDateTime": "Please select date and time",

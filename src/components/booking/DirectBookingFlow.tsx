@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Bot, User } from 'lucide-react';
+
 import PillarSelection from './PillarSelection';
 import { TopicSelection } from './TopicSelection';
 import { PreDiagnosticChat } from './PreDiagnosticChat';
@@ -18,7 +18,7 @@ import { BookingPillar } from './BookingFlow';
 import { getTopicPillarId } from '@/utils/pillarMapping';
 import { mockProviders } from '@/data/mockData';
 
-type BookingStep = 'pillar' | 'topic' | 'legal-topic-selection' | 'legal-symptom-selection' | 'legal-assessment-result' | 'chat' | 'specialist-choice' | 'provider' | 'datetime' | 'confirmation';
+type BookingStep = 'pillar' | 'topic' | 'legal-topic-selection' | 'legal-symptom-selection' | 'legal-assessment-result' | 'chat' | 'provider' | 'datetime' | 'confirmation';
 
 interface Provider {
   id: string;
@@ -104,68 +104,31 @@ export const DirectBookingFlow = () => {
 
   const handleChatComplete = (sessionId: string) => {
     setChatSessionId(sessionId);
-    // Go to specialist choice instead of directly to provider
-    setCurrentStep('specialist-choice');
-  };
-
-  const handleChooseAI = () => {
-    // Continue with AI - assign provider automatically
+    
+    // Assistente tentou resolver mas não conseguiu
+    // Escala automaticamente para funcionário interno generalista
     if (selectedPillar) {
-      const topicPillarId = getTopicPillarId(selectedPillar);
-      const availableProviders = mockProviders.filter(
-        (provider: Provider) => provider.pillar === topicPillarId
-      );
-
-      if (availableProviders.length > 0) {
-        const provider = availableProviders[0];
-        setAssignedProvider(provider);
-        setCurrentStep('provider');
-        
-        toast({
-          title: t('user:booking.toasts.aiAssistantContinue'),
-          description: t('user:booking.toasts.aiAssistantDesc'),
-        });
-      } else {
-        toast({
-          title: t('errors:title'),
-          description: t('user:booking.toasts.noProviders'),
-          variant: 'destructive',
-        });
-        setCurrentStep('datetime');
-      }
+      const internalProvider: Provider = {
+        id: 'internal-gp-001',
+        name: 'Dr. João Silva',
+        specialty: t(`user:booking.provider.internalSpecialist.${selectedPillar}`),
+        pillar: getTopicPillarId(selectedPillar),
+        avatar_url: '/lovable-uploads/business-meeting.png',
+        rating: 5.0,
+        experience: '10+ anos de experiência',
+        availability: 'Disponível'
+      };
+      
+      setAssignedProvider(internalProvider);
+      setCurrentStep('provider');
+      
+      toast({
+        title: t('user:booking.toasts.escalatingToSpecialist'),
+        description: t('user:booking.toasts.escalatingDesc'),
+      });
     }
   };
 
-  const handleChooseHuman = () => {
-    // Choose to talk with human - assign provider normally
-    if (selectedPillar) {
-      const topicPillarId = getTopicPillarId(selectedPillar);
-      const availableProviders = mockProviders.filter(
-        (provider: Provider) => provider.pillar === topicPillarId
-      );
-
-      if (availableProviders.length > 0) {
-        const provider = availableProviders[0];
-        setAssignedProvider(provider);
-        setCurrentStep('provider');
-        
-        toast({
-          title: t('user:booking.toasts.providerAssigned'),
-          description: t('user:booking.toasts.providerAssignedDesc', { 
-            name: provider.name, 
-            specialty: provider.specialty 
-          }),
-        });
-      } else {
-        toast({
-          title: t('errors:title'),
-          description: t('user:booking.toasts.noProviders'),
-          variant: 'destructive',
-        });
-        setCurrentStep('datetime');
-      }
-    }
-  };
 
   const handleProviderNext = () => {
     setCurrentStep('datetime');
@@ -232,11 +195,8 @@ export const DirectBookingFlow = () => {
           setSelectedTopic(null);
         }
         break;
-      case 'specialist-choice':
-        setCurrentStep('chat');
-        break;
       case 'provider':
-        setCurrentStep('specialist-choice');
+        setCurrentStep('chat');
         break;
       case 'datetime':
         setCurrentStep('provider');
@@ -308,74 +268,6 @@ export const DirectBookingFlow = () => {
         />
       )}
 
-      {currentStep === 'specialist-choice' && (
-        <div className="min-h-screen bg-background">
-          <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
-            <div className="w-full max-w-4xl mx-auto">
-              <Button
-                variant="ghost"
-                onClick={handleBack}
-                className="mb-6"
-              >
-                ← {t('common:actions.back')}
-              </Button>
-
-              <div className="text-center mb-12">
-                <h1 className="text-3xl font-bold text-foreground mb-3">
-                  {t('user:booking.specialistChoice.title')}
-                </h1>
-                <p className="text-muted-foreground">
-                  {t('user:booking.specialistChoice.subtitle')}
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* AI Option */}
-                <Card 
-                  className="p-8 cursor-pointer hover:shadow-lg transition-all border-2 hover:border-primary"
-                  onClick={handleChooseAI}
-                >
-                  <div className="flex flex-col items-center text-center space-y-4">
-                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Bot className="h-10 w-10 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-semibold">
-                      {t('user:booking.specialistChoice.aiTitle')}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {t('user:booking.specialistChoice.aiDescription')}
-                    </p>
-                    <Button className="w-full mt-4">
-                      {t('user:booking.specialistChoice.aiButton')}
-                    </Button>
-                  </div>
-                </Card>
-
-                {/* Human Option */}
-                <Card 
-                  className="p-8 cursor-pointer hover:shadow-lg transition-all border-2 hover:border-primary"
-                  onClick={handleChooseHuman}
-                >
-                  <div className="flex flex-col items-center text-center space-y-4">
-                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                      <User className="h-10 w-10 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-semibold">
-                      {t('user:booking.specialistChoice.humanTitle')}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {t('user:booking.specialistChoice.humanDescription')}
-                    </p>
-                    <Button className="w-full mt-4">
-                      {t('user:booking.specialistChoice.humanButton')}
-                    </Button>
-                  </div>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {currentStep === 'provider' && selectedPillar && assignedProvider && (
         <ProviderAssignmentStep
