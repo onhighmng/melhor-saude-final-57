@@ -273,18 +273,18 @@
     "specialistChoice": {
       "title": "Como prefere continuar?",
       "subtitle": "Escolha a melhor opção para a sua situação",
-      "aiTitle": "Continuar com Assistente AI",
+      "aiTitle": "Continuar com Assistente Digital",
       "aiDescription": "Respostas rápidas e disponibilidade imediata para questões mais simples",
-      "aiButton": "Continuar com AI",
-      "humanTitle": "Falar com Especialista Humano",
+      "aiButton": "Continuar com Assistente",
+      "humanTitle": "Falar com Especialista",
       "humanDescription": "Consulta personalizada com um profissional dedicado",
       "humanButton": "Marcar com Especialista"
     },
     "toasts": {
       "providerAssigned": "Prestador Atribuído",
       "providerAssignedDesc": "Foi atribuído: {{name}} - {{specialty}}",
-      "aiAssistantContinue": "Continuando com AI",
-      "aiAssistantDesc": "O assistente AI irá ajudá-lo a encontrar a melhor solução",
+      "aiAssistantContinue": "Continuando com assistente",
+      "aiAssistantDesc": "O assistente digital irá ajudá-lo a encontrar a melhor solução",
       "error": "Erro",
       "noProviders": "Nenhum prestador disponível para este pilar no momento.",
       "selectDateTime": "Por favor selecione data e hora",

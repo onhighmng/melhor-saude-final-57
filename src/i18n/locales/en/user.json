@@ -257,18 +257,18 @@
     "specialistChoice": {
       "title": "How would you like to continue?",
       "subtitle": "Choose the best option for your situation",
-      "aiTitle": "Continue with AI Assistant",
+      "aiTitle": "Continue with Digital Assistant",
       "aiDescription": "Quick answers and immediate availability for simpler queries",
-      "aiButton": "Continue with AI",
-      "humanTitle": "Speak with Human Specialist",
+      "aiButton": "Continue with Assistant",
+      "humanTitle": "Speak with Specialist",
       "humanDescription": "Personalized consultation with a dedicated professional",
       "humanButton": "Book with Specialist"
     },
     "toasts": {
       "providerAssigned": "Provider Assigned",
       "providerAssignedDesc": "Assigned: {{name}} - {{specialty}}",
-      "aiAssistantContinue": "Continuing with AI",
-      "aiAssistantDesc": "The AI assistant will help you find the best solution",
+      "aiAssistantContinue": "Continuing with assistant",
+      "aiAssistantDesc": "The digital assistant will help you find the best solution",
       "error": "Error",
       "noProviders": "No providers available for this pillar at the moment.",
       "selectDateTime": "Please select date and time",
