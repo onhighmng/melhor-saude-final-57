@@ -2,7 +2,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Bot, User } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface SpecialistChoiceProps {
   onChooseAI: () => void;
@@ -15,8 +14,6 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
   onChooseHuman,
   onBack
 }) => {
-  const { t } = useTranslation(['common', 'user']);
-  
   return (
     <div className="min-h-screen bg-background">
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
@@ -26,15 +23,15 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
             onClick={onBack}
             className="mb-6"
           >
-            ← {t('common:actions.back')}
+            ← Voltar
           </Button>
 
           <div className="text-center mb-12">
             <h1 className="text-3xl font-bold text-foreground mb-3">
-              {t('user:legal.specialistChoice.title')}
+              Como gostaria de receber orientação?
             </h1>
             <p className="text-muted-foreground">
-              {t('user:legal.specialistChoice.subtitle')}
+              Escolha entre conversar com nossa IA ou falar diretamente com nosso especialista
             </p>
           </div>
 
@@ -47,12 +44,12 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
                   <Bot className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">{t('user:legal.specialistChoice.aiTitle')}</h3>
+                <h3 className="text-xl font-semibold">Assistente Virtual</h3>
                 <p className="text-muted-foreground">
-                  {t('user:legal.specialistChoice.aiDescription')}
+                  Resposta imediata com nosso assistente jurídico inteligente
                 </p>
                 <Button className="w-full mt-4">
-                  {t('user:legal.specialistChoice.aiButton')}
+                  Conversar com IA
                 </Button>
               </div>
             </Card>
@@ -65,12 +62,12 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
                   <User className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">{t('user:legal.specialistChoice.humanTitle')}</h3>
+                <h3 className="text-xl font-semibold">Nosso Especialista</h3>
                 <p className="text-muted-foreground">
-                  {t('user:legal.specialistChoice.humanDescription')}
+                  Agende uma sessão individual com nosso especialista jurídico
                 </p>
                 <Button className="w-full mt-4">
-                  {t('user:legal.specialistChoice.humanButton')}
+                  Falar com Especialista
                 </Button>
               </div>
             </Card>
