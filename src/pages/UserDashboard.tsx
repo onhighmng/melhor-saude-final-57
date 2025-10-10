@@ -10,6 +10,7 @@ import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings } from '@/hooks/useBookings';
 import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/progress/ProgressBar';
+import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
 import { OnboardingComplete } from '@/components/onboarding/OnboardingComplete';
 import { useToast } from '@/hooks/use-toast';
@@ -30,16 +31,19 @@ const UserDashboard = () => {
   });
   const [showOnboarding, setShowOnboarding] = useState(!onboardingData);
   const [showCompletionScreen, setShowCompletionScreen] = useState(false);
+  const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
 
   const handleOnboardingComplete = (data: OnboardingData) => {
     localStorage.setItem('onboardingData', JSON.stringify(data));
     setOnboardingData(data);
     setShowOnboarding(false);
     setShowCompletionScreen(true);
+    setJustCompletedOnboarding(true);
   };
 
   const handleCompletionContinue = () => {
     setShowCompletionScreen(false);
+    // justCompletedOnboarding flag will trigger the celebration in JourneyProgressBar
   };
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
@@ -127,7 +131,10 @@ const UserDashboard = () => {
         </div>
 
 
-        {/* Progress Bar - Growth Journey with Feedback Milestones */}
+        {/* Journey Progress Bar with Milestones */}
+        <JourneyProgressBar onboardingCompleted={justCompletedOnboarding} />
+
+        {/* Original Progress Bar - Growth Journey with Feedback Milestones */}
         <ProgressBar />
 
         {/* Seus Prestadores por Pilar */}
