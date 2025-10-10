@@ -7,10 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
 import { useToast } from '@/hooks/use-toast';
 import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
+import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/MentalHealthAssessmentFlow';
+import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-assessment/PhysicalWellnessAssessmentFlow';
+import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
 import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
-import TopicSelection from '@/components/legal-assessment/TopicSelection';
-import SymptomSelection from '@/components/legal-assessment/SymptomSelection';
-import AssessmentResult from '@/components/legal-assessment/AssessmentResult';
 import { useTranslation } from 'react-i18next';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
@@ -46,42 +46,8 @@ const BookingFlow = () => {
 
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
-    
-    // For juridica pillar, start with topic selection
-    if (pillar === 'juridica') {
-      setCurrentStep('topic-selection');
-      return;
-    }
-    
-    // For other pillars, assign provider and go to datetime
-    const pillarMapping = {
-      'psicologica': 'saude_mental',
-      'fisica': 'bem_estar_fisico', 
-      'financeira': 'assistencia_financeira',
-      'juridica': 'assistencia_juridica'
-    };
-
-    const mappedPillar = pillarMapping[pillar];
-    const availableProviders = mockProviders.filter(provider => 
-      provider.pillar === mappedPillar
-    );
-
-    if (availableProviders.length > 0) {
-      const assignedProvider = availableProviders[0];
-      setSelectedProvider(assignedProvider);
-      setCurrentStep('datetime');
-      
-      toast({
-        title: 'Especialista atribuído',
-        description: 'Nosso especialista está pronto para ajudá-lo',
-      });
-    } else {
-      toast({
-        title: t('booking.toasts.error'),
-        description: t('booking.toasts.noProviders'),
-        variant: "destructive"
-      });
-    }
+    // ALL pillars now start with topic selection
+    setCurrentStep('topic-selection');
   };
 
   const handleTopicToggle = (topicId: string) => {
@@ -109,9 +75,16 @@ const BookingFlow = () => {
   };
 
   const handleChooseHuman = () => {
-    // Assign a juridica provider and go to datetime
+    const pillarMapping = {
+      'psicologica': 'saude_mental',
+      'fisica': 'bem_estar_fisico',
+      'financeira': 'assistencia_financeira',
+      'juridica': 'assistencia_juridica'
+    };
+
+    const mappedPillar = pillarMapping[selectedPillar!];
     const availableProviders = mockProviders.filter(provider => 
-      provider.pillar === 'assistencia_juridica'
+      provider.pillar === mappedPillar
     );
 
     if (availableProviders.length > 0) {
@@ -122,6 +95,12 @@ const BookingFlow = () => {
       toast({
         title: 'Especialista atribuído',
         description: 'Nosso especialista está pronto para ajudá-lo',
+      });
+    } else {
+      toast({
+        title: 'Erro',
+        description: 'Não há especialistas disponíveis no momento',
+        variant: "destructive"
       });
     }
   };
@@ -167,115 +146,41 @@ const BookingFlow = () => {
         return <PillarSelection onPillarSelect={handlePillarSelect} />;
       
       case 'topic-selection':
-        return (
-          <TopicSelection
-            selectedTopics={selectedTopics}
-            onTopicToggle={handleTopicToggle}
-            onNext={() => setCurrentStep('symptom-selection')}
-            onBack={() => setCurrentStep('pillar')}
-          />
-        );
-      
-      case 'symptom-selection':
-        return (
-          <SymptomSelection
-            selectedTopics={selectedTopics}
-            selectedSymptoms={selectedSymptoms}
-            onSymptomToggle={handleSymptomToggle}
-            additionalNotes={additionalNotes}
-            onNotesChange={handleNotesChange}
-            onNext={() => setCurrentStep('assessment-result')}
-            onBack={() => setCurrentStep('topic-selection')}
-          />
-        );
-      
-      case 'assessment-result':
-        return (
-          <AssessmentResult
-            selectedTopics={selectedTopics}
-            selectedSymptoms={selectedSymptoms}
-            additionalNotes={additionalNotes}
-            onStartChat={handleChooseAI}
-            onBack={() => setCurrentStep('symptom-selection')}
-          />
-        );
-      
-      case 'specialist-choice':
-        return (
-          <div className="min-h-screen bg-soft-white">
-            <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
-              <div className="w-full max-w-4xl mx-auto">
-                <Button
-                  variant="ghost"
-                  onClick={() => setCurrentStep('pillar')}
-                  className="mb-6"
-                >
-                  {t('booking.back')}
-                </Button>
-
-                <div className="text-center mb-12">
-                  <h1 className="text-3xl font-bold text-navy-blue mb-3">
-                    {t('booking.specialistChoice.title')}
-                  </h1>
-                  <p className="text-royal-blue">
-                    {t('booking.specialistChoice.subtitle')}
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <Card 
-                    className="p-8 cursor-pointer hover:shadow-lg transition-all border-2 hover:border-primary"
-                    onClick={handleChooseAI}
-                  >
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                        <svg className="h-10 w-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-xl font-semibold">{t('booking.specialistChoice.aiTitle')}</h3>
-                      <p className="text-muted-foreground">
-                        {t('booking.specialistChoice.aiDescription')}
-                      </p>
-                      <Button className="w-full mt-4">
-                        {t('booking.specialistChoice.aiButton')}
-                      </Button>
-                    </div>
-                  </Card>
-
-                  <Card 
-                    className="p-8 cursor-pointer hover:shadow-lg transition-all border-2 hover:border-primary"
-                    onClick={handleChooseHuman}
-                  >
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                        <svg className="h-10 w-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-xl font-semibold">{t('booking.specialistChoice.humanTitle')}</h3>
-                      <p className="text-muted-foreground">
-                        {t('booking.specialistChoice.humanDescription')}
-                      </p>
-                      <Button className="w-full mt-4">
-                        {t('booking.specialistChoice.humanButton')}
-                      </Button>
-                    </div>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      
-      case 'assessment':
-        return (
-          <LegalAssessmentFlow 
-            onBack={() => setCurrentStep('specialist-choice')}
-            onComplete={() => navigate('/user/dashboard')}
-            onChooseHuman={() => navigate('/user/dashboard')}
-          />
-        );
+        // Route to the correct assessment flow based on pillar
+        if (selectedPillar === 'juridica') {
+          return (
+            <LegalAssessmentFlow
+              onBack={() => setCurrentStep('pillar')}
+              onComplete={() => navigate('/user/dashboard')}
+              onChooseHuman={handleChooseHuman}
+            />
+          );
+        } else if (selectedPillar === 'psicologica') {
+          return (
+            <MentalHealthAssessmentFlow
+              onBack={() => setCurrentStep('pillar')}
+              onComplete={() => navigate('/user/dashboard')}
+              onChooseHuman={handleChooseHuman}
+            />
+          );
+        } else if (selectedPillar === 'fisica') {
+          return (
+            <PhysicalWellnessAssessmentFlow
+              onBack={() => setCurrentStep('pillar')}
+              onComplete={() => navigate('/user/dashboard')}
+              onChooseHuman={handleChooseHuman}
+            />
+          );
+        } else if (selectedPillar === 'financeira') {
+          return (
+            <FinancialAssistanceAssessmentFlow
+              onBack={() => setCurrentStep('pillar')}
+              onComplete={() => navigate('/user/dashboard')}
+              onChooseHuman={handleChooseHuman}
+            />
+          );
+        }
+        return null;
       
       case 'prediagnostic-cta':
         return (
