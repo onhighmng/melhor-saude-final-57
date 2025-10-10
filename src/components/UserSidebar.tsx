@@ -39,7 +39,7 @@ export function UserSidebar() {
   const mainItems = [
     { title: t('user.dashboard'), url: "/user/dashboard", icon: LayoutDashboard },
     { title: tUser('dashboard.ctaBookSession'), url: "/user/book-session", icon: Calendar },
-    { title: t('user.sessions'), url: "/user/sessions", icon: CalendarCheck },
+    { title: tUser('sessions.title'), url: "/user/sessions", icon: CalendarCheck },
     { title: t('user.notifications'), url: "/user/notifications", icon: Bell, badge: 3 },
     { title: t('user.resources'), url: "/user/resources", icon: BookOpen },
     { title: t('user.help'), url: "/user/help", icon: HelpCircle },
