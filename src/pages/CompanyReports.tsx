@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { companyToasts } from "@/data/companyToastMessages";
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '@/utils/dateFormatting';
+import i18n from '@/i18n/config';
 import { 
   Download,
   Calendar as CalendarIcon,
@@ -22,12 +23,7 @@ import {
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, LineChart, Line } from "recharts";
 
-const pillarUsageData = [
-  { name: "Saúde Mental", sessions: 142, noShows: 8, color: "#3B82F6" },
-  { name: "Bem-estar Físico", sessions: 89, noShows: 5, color: "#10B981" },
-  { name: "Assist. Financeira", sessions: 67, noShows: 2, color: "#F59E0B" },
-  { name: "Assist. Jurídica", sessions: 23, noShows: 1, color: "#8B5CF6" }
-];
+// Pillar data moved inside component to use translations
 
 // Department tracking removed for employee privacy
 
@@ -78,6 +74,15 @@ const availableReports: Report[] = [
 
 const CompanyReports = () => {
   const { t } = useTranslation('company');
+  
+  // Define pillar data with i18n
+  const pillarUsageData = [
+    { name: t('common:pillarNames.mentalHealth', { ns: 'common' }), sessions: 142, noShows: 8, color: "#3B82F6" },
+    { name: t('common:pillarNames.physicalWellness', { ns: 'common' }), sessions: 89, noShows: 5, color: "#10B981" },
+    { name: t('common:pillarNames.financialAssistance', { ns: 'common' }), sessions: 67, noShows: 2, color: "#F59E0B" },
+    { name: t('common:pillarNames.legalAssistance', { ns: 'common' }), sessions: 23, noShows: 1, color: "#8B5CF6" }
+  ];
+  
   const [selectedPeriod, setSelectedPeriod] = useState<string>("monthly");
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();

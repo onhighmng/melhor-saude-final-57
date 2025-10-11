@@ -61,12 +61,7 @@ const defaultSettings: PlatformSettings = {
   }
 };
 
-const pillarNames = {
-  mentalHealth: "Saúde Mental",
-  physicalWellness: "Bem-estar Físico", 
-  financialAssistance: "Assistência Financeira",
-  legalAssistance: "Assistência Jurídica"
-} as const;
+// Pillar names moved to common.json translations
 
 const pillarColors = {
   mentalHealth: "from-blue-500 to-blue-600",
