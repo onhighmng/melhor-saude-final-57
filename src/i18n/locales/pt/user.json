@@ -223,6 +223,100 @@
       "ourSpecialist": "Nosso especialista",
       "specialistMessage": "Profissional qualificado pronto para ajudar com suas necessidades",
       "selectDateTime": "Selecionar data e hora"
+    },
+    "sessionDetails": {
+      "sessionType": "Sessão Individual Online",
+      "videoCall": "Chamada de vídeo",
+      "timezone": "Hora de Lisboa (GMT)",
+      "nameLabel": "Nome",
+      "namePlaceholder": "Seu nome completo",
+      "emailLabel": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "notesLabel": "Mais alguma coisa que queira partilhar?",
+      "detailsPlaceholder": "Conte-nos mais sobre o que gostaria de trabalhar...",
+      "termsAgreement": "Ao agendar, concorda com os nossos",
+      "terms": "Termos de Serviço",
+      "and": "e",
+      "privacy": "Política de Privacidade",
+      "backButton": "Voltar",
+      "confirmButton": "Agendar Sessão",
+      "confirming": "A agendar..."
+    },
+    "mentalHealth": {
+      "topicSelection": {
+        "title": "Como podemos ajudar com sua saúde mental?",
+        "subtitle": "Selecione uma ou mais áreas que você gostaria de trabalhar"
+      },
+      "symptomSelection": {
+        "title": "Como você tem se sentido?",
+        "subtitle": "Selecione os sintomas que você tem experimentado",
+        "additionalNotesLabel": "Informações adicionais (opcional)",
+        "additionalNotesPlaceholder": "Compartilhe mais sobre como você tem se sentido..."
+      },
+      "result": {
+        "title": "Resumo da sua situação",
+        "subtitle": "Com base nas informações fornecidas, nosso assistente de saúde mental está pronto para ajudar",
+        "areasTitle": "Áreas Selecionadas",
+        "symptomsTitle": "Sintomas Identificados",
+        "additionalInfoTitle": "Informações Adicionais"
+      }
+    },
+    "physicalWellness": {
+      "topicSelection": {
+        "title": "Como podemos melhorar o seu bem-estar físico?",
+        "subtitle": "Selecione uma ou mais áreas que você gostaria de trabalhar"
+      },
+      "symptomSelection": {
+        "title": "Descreva sua situação física",
+        "subtitle": "Selecione os pontos que melhor descrevem o seu estado atual",
+        "additionalNotesLabel": "Informações adicionais (opcional)",
+        "additionalNotesPlaceholder": "Adicione qualquer detalhe relevante sobre seu bem-estar físico..."
+      },
+      "result": {
+        "title": "Resumo da sua situação",
+        "subtitle": "Com base nas informações fornecidas, nosso assistente de bem-estar físico está pronto para ajudar",
+        "areasTitle": "Áreas Selecionadas",
+        "symptomsTitle": "Sintomas Identificados",
+        "additionalInfoTitle": "Informações Adicionais"
+      }
+    },
+    "financialAssistance": {
+      "topicSelection": {
+        "title": "Como podemos ajudar com suas finanças?",
+        "subtitle": "Selecione uma ou mais áreas que você gostaria de melhorar"
+      },
+      "symptomSelection": {
+        "title": "Descreva sua situação financeira",
+        "subtitle": "Selecione os pontos que melhor descrevem sua situação atual",
+        "additionalNotesLabel": "Informações adicionais (opcional)",
+        "additionalNotesPlaceholder": "Adicione qualquer detalhe relevante sobre sua situação financeira..."
+      },
+      "result": {
+        "title": "Resumo da sua situação",
+        "subtitle": "Com base nas informações fornecidas, nosso assistente financeiro está pronto para ajudar",
+        "areasTitle": "Áreas Selecionadas",
+        "challengesTitle": "Desafios Identificados",
+        "additionalInfoTitle": "Informações Adicionais"
+      }
+    },
+    "legalAssistance": {
+      "topicSelection": {
+        "title": "Qual área jurídica você precisa de ajuda?",
+        "subtitle": "Selecione uma ou mais áreas relacionadas à sua situação"
+      },
+      "symptomSelection": {
+        "title": "Descreva sua situação",
+        "subtitle": "Selecione os pontos que melhor descrevem o seu caso",
+        "additionalNotesLabel": "Informações adicionais (opcional)",
+        "additionalNotesPlaceholder": "Adicione qualquer detalhe que possa ser relevante para o seu caso..."
+      },
+      "result": {
+        "title": "Resumo da sua situação",
+        "subtitle": "Com base nas informações fornecidas, nosso assistente jurídico está pronto para ajudar",
+        "areasTitle": "Áreas Jurídicas Selecionadas",
+        "symptomsTitle": "Sintomas Identificados",
+        "additionalInfoTitle": "Informações Adicionais"
+      }
     }
   },
   "assessment": {

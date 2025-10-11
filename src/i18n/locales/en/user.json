@@ -197,6 +197,100 @@
       "ourSpecialist": "Our specialist",
       "specialistMessage": "Qualified professional ready to help with your needs",
       "selectDateTime": "Select date and time"
+    },
+    "sessionDetails": {
+      "sessionType": "Individual Online Session",
+      "videoCall": "Video call",
+      "timezone": "Lisbon Time (GMT)",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your full name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "notesLabel": "Anything else you'd like to share?",
+      "detailsPlaceholder": "Tell us more about what you'd like to work on...",
+      "termsAgreement": "By booking, you agree to our",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy",
+      "backButton": "Back",
+      "confirmButton": "Book Session",
+      "confirming": "Booking..."
+    },
+    "mentalHealth": {
+      "topicSelection": {
+        "title": "How can we help with your mental health?",
+        "subtitle": "Select one or more areas you would like to work on"
+      },
+      "symptomSelection": {
+        "title": "How have you been feeling?",
+        "subtitle": "Select the symptoms you have been experiencing",
+        "additionalNotesLabel": "Additional information (optional)",
+        "additionalNotesPlaceholder": "Share more about how you've been feeling..."
+      },
+      "result": {
+        "title": "Summary of your situation",
+        "subtitle": "Based on the information provided, our mental health assistant is ready to help",
+        "areasTitle": "Selected Areas",
+        "symptomsTitle": "Identified Symptoms",
+        "additionalInfoTitle": "Additional Information"
+      }
+    },
+    "physicalWellness": {
+      "topicSelection": {
+        "title": "How can we improve your physical wellness?",
+        "subtitle": "Select one or more areas you would like to work on"
+      },
+      "symptomSelection": {
+        "title": "Describe your physical situation",
+        "subtitle": "Select the points that best describe your current state",
+        "additionalNotesLabel": "Additional information (optional)",
+        "additionalNotesPlaceholder": "Add any relevant details about your physical wellness..."
+      },
+      "result": {
+        "title": "Summary of your situation",
+        "subtitle": "Based on the information provided, our physical wellness assistant is ready to help",
+        "areasTitle": "Selected Areas",
+        "symptomsTitle": "Identified Symptoms",
+        "additionalInfoTitle": "Additional Information"
+      }
+    },
+    "financialAssistance": {
+      "topicSelection": {
+        "title": "How can we help with your finances?",
+        "subtitle": "Select one or more areas you would like to improve"
+      },
+      "symptomSelection": {
+        "title": "Describe your financial situation",
+        "subtitle": "Select the points that best describe your current situation",
+        "additionalNotesLabel": "Additional information (optional)",
+        "additionalNotesPlaceholder": "Add any relevant details about your financial situation..."
+      },
+      "result": {
+        "title": "Summary of your situation",
+        "subtitle": "Based on the information provided, our financial assistant is ready to help",
+        "areasTitle": "Selected Areas",
+        "challengesTitle": "Identified Challenges",
+        "additionalInfoTitle": "Additional Information"
+      }
+    },
+    "legalAssistance": {
+      "topicSelection": {
+        "title": "Which legal area do you need help with?",
+        "subtitle": "Select one or more areas related to your situation"
+      },
+      "symptomSelection": {
+        "title": "Describe your situation",
+        "subtitle": "Select the points that best describe your case",
+        "additionalNotesLabel": "Additional information (optional)",
+        "additionalNotesPlaceholder": "Add any details that may be relevant to your case..."
+      },
+      "result": {
+        "title": "Summary of your situation",
+        "subtitle": "Based on the information provided, our legal assistant is ready to help",
+        "areasTitle": "Selected Legal Areas",
+        "symptomsTitle": "Identified Symptoms",
+        "additionalInfoTitle": "Additional Information"
+      }
     }
   },
   "assessment": {
