@@ -89,26 +89,26 @@ const LegalChatInterface: React.FC<LegalChatInterfaceProps> = ({
         <div className="w-full max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <Button variant="ghost" onClick={onBack}>
-              {t('user:assessment.chat.backButton')}
+              {t('user:assessment.chat.backButton') || 'Voltar'}
             </Button>
             <Button variant="outline" onClick={onComplete}>
-              {t('user:assessment.chat.finishButton')}
+              {t('user:assessment.chat.finishButton') || 'Concluir'}
             </Button>
           </div>
 
           <Card className="flex-1 flex flex-col overflow-hidden">
             <div className="p-6 border-b bg-primary/5">
-              <h2 className="font-semibold text-lg">{t('user:assessment.chat.legalAssistant')}</h2>
+              <h2 className="font-semibold text-lg">{t('user:assessment.chat.legalAssistant') || 'Assistente Jurídico'}</h2>
               <p className="text-sm text-muted-foreground">
-                {t('user:assessment.chat.legalDescription')}
+                {t('user:assessment.chat.legalDescription') || 'Estou aqui para ajudá-lo com questões jurídicas'}
               </p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
-                  <p>{t('user:assessment.chat.legalGreeting')}</p>
-                  <p className="text-sm mt-2">{t('user:assessment.chat.startPrompt')}</p>
+                  <p>{t('user:assessment.chat.legalGreeting') || 'Olá! Como posso ajudá-lo com questões jurídicas hoje?'}</p>
+                  <p className="text-sm mt-2">{t('user:assessment.chat.startPrompt') || 'Digite sua mensagem para começar'}</p>
                 </div>
               )}
               
@@ -150,7 +150,7 @@ const LegalChatInterface: React.FC<LegalChatInterfaceProps> = ({
                   onClick={onChooseHuman}
                 >
                   <User className="h-4 w-4" />
-                  {t('user:assessment.chat.speakWithSpecialistButton')}
+                  {t('user:assessment.chat.speakWithSpecialistButton') || 'Falar com Especialista'}
                 </Button>
               )}
               <div className="flex gap-2">
@@ -158,7 +158,7 @@ const LegalChatInterface: React.FC<LegalChatInterfaceProps> = ({
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={t('user:assessment.chat.inputPlaceholder')}
+                  placeholder={t('user:assessment.chat.inputPlaceholder') || 'Digite sua mensagem...'}
                   className="resize-none"
                   rows={2}
                   disabled={isLoading}

@@ -88,17 +88,36 @@ if (normalizedLang !== i18n.language) {
   i18n.changeLanguage(normalizedLang);
 }
 
-// Aggressively force reload translations to prevent cache issues
+// Version-based cache busting - increment when translations change
+const TRANSLATION_VERSION = '2.0.1';
+
 if (typeof window !== 'undefined') {
-  // Clear localStorage i18n cache
-  const i18nKeys = Object.keys(localStorage).filter(key => key.startsWith('i18next'));
-  i18nKeys.forEach(key => localStorage.removeItem(key));
+  const sessionKey = 'i18n_loaded_v' + TRANSLATION_VERSION;
   
-  // Clear resource store
+  // Check if we've already loaded this version in this session
+  if (!sessionStorage.getItem(sessionKey)) {
+    console.log('[i18n] New translation version detected, clearing all caches...');
+    
+    // Nuclear option: clear everything
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Mark this version as being loaded
+    sessionStorage.setItem(sessionKey, 'true');
+    
+    // Force page reload to get fresh resources (only once)
+    if (!window.location.search.includes('i18n_reloaded')) {
+      window.location.search = '?i18n_reloaded=true';
+      throw new Error('Reloading for i18n cache clear'); // Prevent further execution
+    }
+  }
+  
+  // Clear resource store for regular reloads
   i18n.services.resourceStore.data = {};
   
-  console.log('[i18n] Clearing cache and reloading resources...');
+  console.log('[i18n] Reloading resources...');
   console.log('[i18n] Current language:', i18n.language);
+  console.log('[i18n] Translation version:', TRANSLATION_VERSION);
   
   // Reload all resources with retry logic
   const reloadWithRetry = async (attempt = 1) => {
@@ -110,15 +129,22 @@ if (typeof window !== 'undefined') {
       
       console.log('[i18n] Resources reloaded successfully');
       
-      // Verify booking keys loaded
-      const testKey = i18n.t('user:booking.providerAssignment.title');
-      console.log('[i18n] Test key value:', testKey);
+      // Verify critical keys loaded
+      const criticalKeys = [
+        'user:booking.providerAssignment.title',
+        'user:assessment.chat.backButton',
+        'navigation:user.help'
+      ];
       
-      if (testKey === 'booking.providerAssignment.title') {
-        console.warn('[i18n] Keys still not loading, forcing language toggle...');
-        const currentLang = i18n.language;
-        await i18n.changeLanguage(currentLang === 'pt' ? 'en' : 'pt');
-        await i18n.changeLanguage(currentLang);
+      const missingKeys = criticalKeys.filter(key => {
+        const value = i18n.t(key);
+        return value === key || value.includes('.');
+      });
+      
+      if (missingKeys.length > 0) {
+        console.error('[i18n] CRITICAL: Keys still missing after reload:', missingKeys);
+      } else {
+        console.log('[i18n] All critical keys verified');
       }
       
       // Force re-render
