@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 interface TopicSelectionProps {
   selectedTopics: string[];
@@ -54,14 +55,16 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
   onNext,
   onBack
 }) => {
+  const { t } = useTranslation('user');
+  
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <div className="text-center">
         <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">
-          Como podemos melhorar o seu bem-estar físico?
+          {t('booking.physicalWellness.topicSelection.title')}
         </h1>
         <p className="text-lg text-muted-foreground">
-          Selecione uma ou mais áreas que você gostaria de trabalhar
+          {t('booking.physicalWellness.topicSelection.subtitle')}
         </p>
       </div>
 
@@ -100,7 +103,7 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
           size="lg"
           className="min-w-[200px] bg-primary hover:bg-primary/90 text-white rounded-lg"
         >
-          Continuar
+          {t('booking.continueButton')}
         </Button>
       </div>
     </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AssessmentResultProps {
   selectedTopics: string[];
@@ -38,6 +39,8 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
   onStartChat,
   onBack
 }) => {
+  const { t } = useTranslation('user');
+  
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <Button 
@@ -46,21 +49,21 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
         className="flex items-center gap-2 text-foreground hover:text-foreground"
       >
         <ArrowLeft className="w-4 h-4" />
-        Voltar
+        {t('booking.back')}
       </Button>
 
       <div className="text-center">
         <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">
-          Resumo da sua situação
+          {t('booking.financialAssistance.result.title')}
         </h1>
         <p className="text-lg text-primary">
-          Com base nas informações fornecidas, nosso assistente financeiro está pronto para ajudar
+          {t('booking.financialAssistance.result.subtitle')}
         </p>
       </div>
 
       <Card className="p-8 border-2">
         <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
-          Áreas Selecionadas
+          {t('booking.financialAssistance.result.areasTitle')}
         </h2>
         <div className="flex flex-wrap gap-3">
           {selectedTopics.map((topicId) => {
@@ -82,7 +85,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
 
       <Card className="p-8 border-2">
         <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
-          Desafios Identificados
+          {t('booking.financialAssistance.result.challengesTitle')}
         </h2>
         <ul className="space-y-3">
           {selectedSymptoms.map((symptomId) => {
@@ -102,7 +105,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
       {additionalNotes && additionalNotes.trim() && (
         <Card className="p-8 border-2">
           <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
-            Informações Adicionais
+            {t('booking.financialAssistance.result.additionalInfoTitle')}
           </h2>
           <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
             {additionalNotes}
@@ -116,7 +119,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
           size="lg"
           className="min-w-[240px] bg-primary hover:bg-primary/90 text-white rounded-lg"
         >
-          Iniciar Conversa
+          {t('booking.startChatButton')}
         </Button>
       </div>
     </div>
