@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Target, CheckCircle2, XCircle, Sparkles, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 export interface UserGoals {
   mainGoal: string;
@@ -19,6 +20,7 @@ interface GoalsEditorProps {
 
 export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps) => {
   const { toast } = useToast();
+  const { t } = useTranslation('user');
   const [step, setStep] = useState(1);
   const [mainGoal, setMainGoal] = useState(initialGoals?.mainGoal || '');
   const [achieveInput, setAchieveInput] = useState('');
@@ -51,14 +53,14 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
   const handleNext = () => {
     if (step === 1 && !mainGoal.trim()) {
       toast({
-        title: "Por favor, descreva o seu objetivo principal",
+        title: t('goals.editor.validations.mainGoalRequired'),
         variant: 'destructive',
       });
       return;
     }
     if (step === 2 && wantToAchieve.length === 0) {
       toast({
-        title: "Adicione pelo menos uma coisa que quer alcançar",
+        title: t('goals.editor.validations.achieveRequired'),
         variant: 'destructive',
       });
       return;
@@ -89,7 +91,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={handleBack} className="gap-2">
             <ArrowLeft className="w-4 h-4" />
-            {step === 1 ? 'Cancelar' : 'Voltar'}
+            {step === 1 ? t('goals.editor.actions.cancel') : t('goals.editor.actions.back')}
           </Button>
           <div className="flex-1" />
           <div className="flex gap-2">
@@ -109,14 +111,14 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
             <Target className="w-8 h-8 text-primary" />
           </div>
           <CardTitle className="text-2xl">
-            {step === 1 && "Qual é o seu objetivo principal?"}
-            {step === 2 && "O que quer alcançar?"}
-            {step === 3 && "O que quer evitar?"}
+            {step === 1 && t('goals.editor.step1.title')}
+            {step === 2 && t('goals.editor.step2.title')}
+            {step === 3 && t('goals.editor.step3.title')}
           </CardTitle>
           <CardDescription className="text-base">
-            {step === 1 && "Queremos ajudá-lo a alcançar os seus objetivos de bem-estar"}
-            {step === 2 && "Liste as coisas específicas que quer conquistar"}
-            {step === 3 && "Identifique comportamentos ou situações que quer evitar"}
+            {step === 1 && t('goals.editor.step1.description')}
+            {step === 2 && t('goals.editor.step2.description')}
+            {step === 3 && t('goals.editor.step3.description')}
           </CardDescription>
         </div>
       </CardHeader>
@@ -126,7 +128,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
         {step === 1 && (
           <div className="space-y-4">
             <Textarea
-              placeholder="Ex: Melhorar a minha saúde mental, reduzir o stress, ter mais energia..."
+              placeholder={t('goals.editor.step1.placeholder')}
               value={mainGoal}
               onChange={(e) => setMainGoal(e.target.value)}
               className="min-h-[120px] text-base"
@@ -134,7 +136,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground">
                 <Sparkles className="w-4 h-4 inline mr-1" />
-                Seja específico. Quanto mais detalhado for, melhor poderemos ajudá-lo.
+                {t('goals.editor.step1.hint')}
               </p>
             </div>
           </div>
@@ -145,7 +147,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
           <div className="space-y-4">
             <div className="flex gap-2">
               <Textarea
-                placeholder="Ex: Dormir melhor, fazer exercício 3x por semana, aprender a meditar..."
+                placeholder={t('goals.editor.step2.placeholder')}
                 value={achieveInput}
                 onChange={(e) => setAchieveInput(e.target.value)}
                 className="flex-1"
@@ -158,7 +160,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
                 }}
               />
               <Button onClick={handleAddAchieve} size="lg">
-                Adicionar
+                {t('goals.editor.actions.add')}
               </Button>
             </div>
 
@@ -190,7 +192,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
           <div className="space-y-4">
             <div className="flex gap-2">
               <Textarea
-                placeholder="Ex: Procrastinação, ansiedade antes de reuniões, comer tarde da noite..."
+                placeholder={t('goals.editor.step3.placeholder')}
                 value={avoidInput}
                 onChange={(e) => setAvoidInput(e.target.value)}
                 className="flex-1"
@@ -203,7 +205,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
                 }}
               />
               <Button onClick={handleAddAvoid} size="lg">
-                Adicionar
+                {t('goals.editor.actions.add')}
               </Button>
             </div>
 
@@ -230,7 +232,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
 
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                Opcional: Isto ajuda-nos a criar um plano mais personalizado
+                {t('goals.editor.step3.hint')}
               </p>
             </div>
           </div>
@@ -239,7 +241,7 @@ export const GoalsEditor = ({ initialGoals, onSave, onCancel }: GoalsEditorProps
         {/* Navigation */}
         <div className="flex gap-3 pt-4">
           <Button onClick={handleNext} className="flex-1" size="lg">
-            {step === 3 ? "Guardar Objetivos" : "Próximo"}
+            {step === 3 ? t('goals.editor.actions.save') : t('goals.editor.actions.next')}
           </Button>
         </div>
       </CardContent>

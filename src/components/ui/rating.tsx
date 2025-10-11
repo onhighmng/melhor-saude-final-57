@@ -3,6 +3,8 @@ import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '@/utils/dateFormatting';
 
 interface RatingProps {
   sessionId: string;
@@ -32,6 +34,7 @@ export const Rating = ({
   const [comment, setComment] = useState(existingComment || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation('user');
 
   const handleStarClick = (rating: number) => {
     if (disabled) return;
@@ -41,8 +44,8 @@ export const Rating = ({
   const handleSubmit = async () => {
     if (selectedRating === 0) {
       toast({
-        title: "Avaliação obrigatória",
-        description: "Por favor, selecione uma avaliação de 1 a 5 estrelas.",
+        title: t('rating.required'),
+        description: t('rating.requiredDescription'),
         variant: "destructive",
       });
       return;
@@ -52,15 +55,15 @@ export const Rating = ({
     try {
       await onRatingSubmit?.(selectedRating, comment);
       toast({
-        title: "Avaliação enviada",
-        description: "Obrigado pelo seu feedback!",
+        title: t('rating.submitted'),
+        description: t('rating.submittedDescription'),
       });
       // Close the rating component after successful submission
       onClose?.();
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Não foi possível enviar a avaliação. Tente novamente.",
+        title: t('rating.error'),
+        description: t('rating.errorDescription'),
         variant: "destructive",
       });
     } finally {
@@ -72,10 +75,10 @@ export const Rating = ({
     <div className="space-y-4 p-4 border rounded-lg bg-white/50 backdrop-blur-sm">
       <div>
         <h4 className="font-medium text-navy-blue mb-2">
-          Avalie a sessão com {prestadorName}
+          {t('rating.rateSession')} {prestadorName}
         </h4>
         <p className="text-sm text-navy-blue/70">
-          Data: {new Date(sessionDate).toLocaleDateString('pt-PT')}
+          {t('rating.date')} {formatDate(sessionDate)}
         </p>
       </div>
 
@@ -95,14 +98,14 @@ export const Rating = ({
         ))}
         {selectedRating > 0 && (
           <span className="ml-2 text-sm font-medium text-navy-blue">
-            {selectedRating} estrela{selectedRating !== 1 ? 's' : ''}
+            {selectedRating} {selectedRating !== 1 ? t('rating.stars') : t('rating.star')}
           </span>
         )}
       </div>
 
       <div>
         <Textarea
-          placeholder="Deixe um comentário sobre a sessão (opcional)"
+          placeholder={t('rating.commentPlaceholder')}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           disabled={disabled}
@@ -117,7 +120,7 @@ export const Rating = ({
             disabled={isSubmitting || selectedRating === 0}
             className="bg-emerald-green hover:bg-emerald-green/90"
           >
-            {isSubmitting ? 'Enviando...' : 'Enviar Avaliação'}
+            {isSubmitting ? t('rating.submitting') : t('rating.submitRating')}
           </Button>
           {existingRating && (
             <Button
@@ -127,7 +130,7 @@ export const Rating = ({
                 setComment(existingComment || '');
               }}
             >
-              Cancelar
+              {t('rating.cancel')}
             </Button>
           )}
         </div>

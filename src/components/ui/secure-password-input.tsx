@@ -9,6 +9,7 @@ import { validatePasswordStrength } from '@/utils/passwordValidation';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { Eye, EyeOff, CheckCircle, AlertCircle, Lock } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PasswordStrengthValidatorProps {
   password: string;
@@ -21,6 +22,7 @@ export const PasswordStrengthValidator: React.FC<PasswordStrengthValidatorProps>
   onValidationChange,
   showStrength = true
 }) => {
+  const { t } = useTranslation('common');
   const [validation, setValidation] = useState<{ valid: boolean; issues: string[] }>({
     valid: false,
     issues: []
@@ -45,7 +47,7 @@ export const PasswordStrengthValidator: React.FC<PasswordStrengthValidatorProps>
         <span className={`text-sm font-medium ${
           validation.valid ? 'text-green-600' : 'text-red-600'
         }`}>
-          {validation.valid ? 'Palavra-passe forte' : 'Palavra-passe fraca'}
+          {validation.valid ? t('password.strong') : t('password.weak')}
         </span>
       </div>
       
@@ -76,12 +78,13 @@ interface SecurePasswordInputProps {
 export const SecurePasswordInput: React.FC<SecurePasswordInputProps> = ({
   value,
   onChange,
-  placeholder = "Digite sua palavra-passe",
+  placeholder,
   required = false,
   showStrength = true,
   onValidationChange,
   className = ""
 }) => {
+  const { t } = useTranslation('common');
   const [showPassword, setShowPassword] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(false);
 
@@ -97,7 +100,7 @@ export const SecurePasswordInput: React.FC<SecurePasswordInputProps> = ({
           type={showPassword ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={placeholder || t('password.placeholder')}
           required={required}
           className={`pr-10 ${className}`}
         />
@@ -130,6 +133,7 @@ export const SecurePasswordInput: React.FC<SecurePasswordInputProps> = ({
 // Hook for password validation in forms
 export const usePasswordValidation = () => {
   const { toast } = useToast();
+  const { t } = useTranslation('common');
 
   const validateAndShowErrors = async (password: string): Promise<boolean> => {
     try {
@@ -137,7 +141,7 @@ export const usePasswordValidation = () => {
       
       if (!result.valid) {
         toast({
-          title: "Palavra-passe fraca",
+          title: t('password.weakToast'),
           description: result.issues.join('. '),
           variant: "destructive"
         });
@@ -147,7 +151,7 @@ export const usePasswordValidation = () => {
       return true;
     } catch (error) {
       toast({
-        title: "Erro de validação",
+        title: t('password.validationError'),
         description: getErrorMessage(error),
         variant: "destructive"
       });
