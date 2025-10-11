@@ -88,75 +88,30 @@ if (normalizedLang !== i18n.language) {
   i18n.changeLanguage(normalizedLang);
 }
 
-// Version-based cache busting - increment when translations change
-const TRANSLATION_VERSION = '2.0.2';
-
+// Simple initialization without aggressive cache busting
 if (typeof window !== 'undefined') {
-  const sessionKey = 'i18n_loaded_v' + TRANSLATION_VERSION;
-  const hasReloaded = window.location.search.includes('i18n_reloaded');
+  console.log('[i18n] Initializing with language:', i18n.language);
   
-  // Check if we've already loaded this version in this session
-  if (!sessionStorage.getItem(sessionKey) && !hasReloaded) {
-    console.log('[i18n] New translation version detected, clearing all caches...');
+  // Verify critical keys are loaded
+  const criticalKeys = [
+    'booking.providerAssignment.title',
+    'assessment.chat.backButton',
+    'navigation.help'
+  ];
+  
+  // Check keys after a brief delay to ensure resources are loaded
+  setTimeout(() => {
+    const missingKeys = criticalKeys.filter(key => {
+      const value = i18n.t(key);
+      return value === key || value.includes('.');
+    });
     
-    // Nuclear option: clear everything
-    localStorage.clear();
-    sessionStorage.clear();
-    
-    // Mark this version as being loaded
-    sessionStorage.setItem(sessionKey, 'true');
-    
-    // Force page reload to get fresh resources (only once)
-    window.location.search = '?i18n_reloaded=true';
-  } else {
-    // Clear resource store for regular reloads
-    i18n.services.resourceStore.data = {};
-    
-    console.log('[i18n] Reloading resources...');
-    console.log('[i18n] Current language:', i18n.language);
-    console.log('[i18n] Translation version:', TRANSLATION_VERSION);
-    
-    // Reload all resources with retry logic
-    const reloadWithRetry = async (attempt = 1) => {
-      try {
-        await i18n.reloadResources(
-          ['pt', 'en'], 
-          ['user', 'common', 'navigation', 'company', 'admin', 'provider', 'specialist', 'errors', 'toasts']
-        );
-        
-        console.log('[i18n] Resources reloaded successfully');
-        
-        // Verify critical keys loaded
-        const criticalKeys = [
-          'user:booking.providerAssignment.title',
-          'user:assessment.chat.backButton',
-          'navigation:user.help'
-        ];
-        
-        const missingKeys = criticalKeys.filter(key => {
-          const value = i18n.t(key);
-          return value === key || value.includes('.');
-        });
-        
-        if (missingKeys.length > 0) {
-          console.error('[i18n] CRITICAL: Keys still missing after reload:', missingKeys);
-        } else {
-          console.log('[i18n] All critical keys verified');
-        }
-        
-        // Force re-render
-        i18n.changeLanguage(i18n.language);
-        
-      } catch (error) {
-        console.error(`[i18n] Reload attempt ${attempt} failed:`, error);
-        if (attempt < 3) {
-          setTimeout(() => reloadWithRetry(attempt + 1), 1000);
-        }
-      }
-    };
-    
-    reloadWithRetry();
-  }
+    if (missingKeys.length > 0) {
+      console.warn('[i18n] Some keys may not be loaded:', missingKeys);
+    } else {
+      console.log('[i18n] All critical keys verified');
+    }
+  }, 100);
 }
 
 export default i18n;

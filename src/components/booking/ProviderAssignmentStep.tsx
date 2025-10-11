@@ -26,10 +26,10 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold mb-2">
-          {t('booking.providerAssignment.title') || 'Especialista Atribuído'}
+          {t('booking.providerAssignment.title')}
         </h2>
         <p className="text-sm text-muted-foreground">
-          {t('booking.providerAssignment.subtitle') || 'Encontrámos o especialista ideal para si'}
+          {t('booking.providerAssignment.subtitle')}
         </p>
       </div>
 
@@ -39,10 +39,10 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
             <CheckCircle2 className="h-8 w-8 text-green-600 shrink-0" />
             <div>
               <h3 className="font-semibold text-lg">
-                {t('booking.providerAssignment.matchFound') || 'Correspondência encontrada'}
+                {t('booking.providerAssignment.matchFound')}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {t('booking.providerAssignment.matchDescription') || 'Conectamos você com nosso especialista'}
+                {t('booking.providerAssignment.matchDescription')}
               </p>
             </div>
           </div>
@@ -50,12 +50,12 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
           <div className="bg-background rounded-lg p-6">
             <div className="space-y-4">
               <h4 className="text-xl font-semibold">
-                {t('booking.providerAssignment.ourSpecialist') || 'Nosso especialista'}
+                {t('booking.providerAssignment.ourSpecialist')}
               </h4>
               <p className="text-primary font-medium">{assignedProvider.specialty}</p>
 
               <p className="text-sm text-muted-foreground">
-                {t('booking.providerAssignment.specialistMessage') || 'Profissional qualificado pronto para ajudar com suas necessidades'}
+                {t('booking.providerAssignment.specialistMessage')}
               </p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
 
       <div className="flex justify-end">
         <Button onClick={onNext} size="lg" className="px-8">
-          {t('booking.providerAssignment.selectDateTime') || 'Selecionar data e hora'}
+          {t('booking.providerAssignment.selectDateTime')}
         </Button>
       </div>
     </div>

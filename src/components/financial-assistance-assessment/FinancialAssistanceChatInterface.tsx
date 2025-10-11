@@ -73,7 +73,7 @@ const FinancialAssistanceChatInterface: React.FC<FinancialAssistanceChatInterfac
       console.error('Error sending message:', error);
       toast({
         title: t('errors:title'),
-        description: t('errors:messageSendFailed') || 'Não foi possível enviar a mensagem. Tente novamente.',
+        description: t('errors:messageSendFailed'),
         variant: 'destructive'
       });
     } finally {
@@ -94,26 +94,26 @@ const FinancialAssistanceChatInterface: React.FC<FinancialAssistanceChatInterfac
         <div className="w-full max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <Button variant="ghost" onClick={onBack}>
-              {t('user:assessment.chat.backButton') || 'Voltar'}
+              {t('user:assessment.chat.backButton')}
             </Button>
             <Button variant="outline" onClick={onComplete}>
-              {t('user:assessment.chat.finishButton') || 'Concluir'}
+              {t('user:assessment.chat.finishButton')}
             </Button>
           </div>
 
           <Card className="flex-1 flex flex-col overflow-hidden">
             <div className="p-6 border-b bg-primary/5">
-              <h2 className="font-semibold text-lg">{t('user:assessment.chat.financialAssistant') || 'Assistente Financeiro'}</h2>
+              <h2 className="font-semibold text-lg">{t('user:assessment.chat.financialAssistant')}</h2>
               <p className="text-sm text-muted-foreground">
-                {t('user:assessment.chat.financialDescription') || 'Estou aqui para ajudá-lo com questões financeiras'}
+                {t('user:assessment.chat.financialDescription')}
               </p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
-                  <p>{t('user:assessment.chat.financialGreeting') || 'Olá! Como posso ajudá-lo com questões financeiras hoje?'}</p>
-                  <p className="text-sm mt-2">{t('user:assessment.chat.startPrompt') || 'Digite sua mensagem para começar'}</p>
+                  <p>{t('user:assessment.chat.financialGreeting')}</p>
+                  <p className="text-sm mt-2">{t('user:assessment.chat.startPrompt')}</p>
                 </div>
               )}
               
@@ -155,7 +155,7 @@ const FinancialAssistanceChatInterface: React.FC<FinancialAssistanceChatInterfac
                   onClick={onChooseHuman}
                 >
                   <User className="h-4 w-4" />
-                  {t('user:assessment.chat.speakWithSpecialistButton') || 'Falar com Especialista'}
+                  {t('user:assessment.chat.speakWithSpecialistButton')}
                 </Button>
               )}
               <div className="flex gap-2">
@@ -163,7 +163,7 @@ const FinancialAssistanceChatInterface: React.FC<FinancialAssistanceChatInterfac
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={t('user:assessment.chat.inputPlaceholder') || 'Digite sua mensagem...'}
+                  placeholder={t('user:assessment.chat.inputPlaceholder')}
                   className="resize-none"
                   rows={2}
                   disabled={isLoading}

@@ -103,7 +103,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
         setInitError(true);
         toast({
           title: t('errors:title'),
-          description: t('errors:chatInitFailed') || 'Could not start chat session. Please try again.',
+          description: t('errors:chatInitFailed'),
           variant: 'destructive',
         });
         setMessages([]);
@@ -219,7 +219,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
       // Show user-friendly error
       toast({
         title: t('errors:title'),
-        description: t('errors:messageSendFailed') || 'Failed to send message. Please try again.',
+        description: t('errors:messageSendFailed'),
         variant: 'destructive',
       });
       
