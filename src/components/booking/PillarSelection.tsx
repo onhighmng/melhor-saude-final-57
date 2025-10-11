@@ -2,42 +2,45 @@ import React from 'react';
 import BackButton from '@/components/navigation/BackButton';
 import { BookingPillar } from './BookingFlow';
 import { Brain, Heart, DollarSign, Scale } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface PillarSelectionProps {
   onPillarSelect: (pillar: BookingPillar) => void;
 }
 
 const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
+  const { t } = useTranslation('user');
+  
   const pillars = [
     {
       id: 'psicologica' as BookingPillar,
       icon: Brain,
-      title: 'Saúde mental',
-      description: 'Apoio psicológico e bem-estar mental',
+      title: t('booking.directFlow.pillars.psicologica.title'),
+      description: t('booking.directFlow.pillars.psicologica.description'),
       bgColor: 'bg-gradient-to-br from-purple-500 to-purple-700',
       hoverColor: 'hover:from-purple-600 hover:to-purple-800'
     },
     {
       id: 'fisica' as BookingPillar,
       icon: Heart,
-      title: 'Bem estar físico',
-      description: 'Saúde física e estilo de vida',
+      title: t('booking.directFlow.pillars.fisica.title'),
+      description: t('booking.directFlow.pillars.fisica.description'),
       bgColor: 'bg-gradient-to-br from-green-500 to-green-700',
       hoverColor: 'hover:from-green-600 hover:to-green-800'
     },
     {
       id: 'financeira' as BookingPillar,
       icon: DollarSign,
-      title: 'Assistência financeira',
-      description: 'Consultoria e planeamento financeiro',
+      title: t('booking.directFlow.pillars.financeira.title'),
+      description: t('booking.directFlow.pillars.financeira.description'),
       bgColor: 'bg-gradient-to-br from-blue-500 to-blue-700',
       hoverColor: 'hover:from-blue-600 hover:to-blue-800'
     },
     {
       id: 'juridica' as BookingPillar,
       icon: Scale,
-      title: 'Assistência Jurídica',
-      description: 'Consultoria jurídica especializada',
+      title: t('booking.directFlow.pillars.juridica.title'),
+      description: t('booking.directFlow.pillars.juridica.description'),
       bgColor: 'bg-gradient-to-br from-amber-500 to-amber-700',
       hoverColor: 'hover:from-amber-600 hover:to-amber-800'
     }
@@ -55,10 +58,10 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
           
           <div className="text-center mb-8">
             <h1 className="font-semibold text-2xl sm:text-3xl leading-tight mb-3 text-navy-blue animate-fade-in">
-              Como podemos ajudar?
+              {t('booking.choosePillar')}
             </h1>
             <p className="font-medium text-base text-royal-blue">
-              Escolha a área que precisa de apoio
+              {t('booking.pillarSubtitle')}
             </p>
           </div>
 
