@@ -84,7 +84,17 @@
       "twoFactorEnabled": "2FA Ativado",
       "twoFactorEnabledDesc": "Autenticação de dois fatores foi ativada na sua conta.",
       "changeRequestSent": "Pedido enviado",
-      "changeRequestSentDesc": "O seu pedido de troca será analisado pela equipa."
+      "changeRequestSentDesc": "O seu pedido de troca será analisado pela equipa.",
+      "providerAssigned": "Especialista atribuído",
+      "providerAssignedDesc": "{{name}} está pronto para ajudá-lo com {{specialty}}",
+      "noProvidersAvailable": "Não há especialistas disponíveis no momento",
+      "sessionBooked": "Sessão marcada com sucesso!",
+      "sessionBookedDesc": "Sessão com {{name}} agendada para {{date}} às {{time}}",
+      "selectDateTime": "Por favor, selecione data e hora",
+      "error": "Erro",
+      "feedbackSubmitted": "Feedback enviado",
+      "thankYouFeedback": "Obrigado pelo seu feedback!",
+      "specialistNotified": "Um especialista entrará em contacto em breve"
     },
     "format": {
       "individualOnline": "Sessão Individual Online",
@@ -232,7 +242,19 @@
   "universalChat": {
     "intro": {
       "title": "Como posso ajudar?",
-      "description": "Conte-me o que precisa e vou orientá-lo para o apoio mais adequado"
+      "description": "Partilhe comigo o que sente e veremos juntos como apoiá-lo ou apoiá-la.",
+      "button1": "Gostaria de partilhar o que sinto",
+      "button1Highlight": "sinto",
+      "button2": "Estou um pouco indeciso sobre o que preciso",
+      "button3": "Já percebi o que preciso"
+    },
+    "exit": {
+      "title": "Como foi a sua experiência?",
+      "satisfied": "Satisfeito",
+      "unsatisfied": "Insatisfeito"
+    },
+    "fallback": {
+      "description": "Se preferir, pode também descrever livremente a sua situação."
     },
     "specialists": {
       "juridica": "Especialista Jurídico",

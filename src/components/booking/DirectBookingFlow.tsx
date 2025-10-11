@@ -9,6 +9,7 @@ import PillarSelection from './PillarSelection';
 import { ProviderAssignmentStep } from './ProviderAssignmentStep';
 import CalendarStep from './CalendarStep';
 import { ConfirmationStep } from './ConfirmationStep';
+import { MeetingTypeSelection } from './MeetingTypeSelection';
 import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/MentalHealthAssessmentFlow';
 import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-assessment/PhysicalWellnessAssessmentFlow';
 import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
@@ -16,7 +17,7 @@ import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFl
 import { BookingPillar } from './BookingFlow';
 import { mockProviders } from '@/data/mockData';
 
-type BookingStep = 'pillar' | 'assessment' | 'provider' | 'datetime' | 'confirmation';
+type BookingStep = 'pillar' | 'assessment' | 'provider' | 'meetingType' | 'datetime' | 'confirmation';
 
 interface Provider {
   id: string;
@@ -40,6 +41,7 @@ export const DirectBookingFlow = () => {
   const [assignedProvider, setAssignedProvider] = useState<Provider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [meetingType, setMeetingType] = useState<'virtual' | 'phone'>('virtual');
   const [isConfirming, setIsConfirming] = useState(false);
 
   useEffect(() => {
@@ -95,6 +97,11 @@ export const DirectBookingFlow = () => {
 
 
   const handleProviderNext = () => {
+    setCurrentStep('meetingType');
+  };
+
+  const handleMeetingTypeNext = (type: 'virtual' | 'phone') => {
+    setMeetingType(type);
     setCurrentStep('datetime');
   };
 
@@ -142,8 +149,11 @@ export const DirectBookingFlow = () => {
       case 'provider':
         setCurrentStep('assessment');
         break;
-      case 'datetime':
+      case 'meetingType':
         setCurrentStep('provider');
+        break;
+      case 'datetime':
+        setCurrentStep('meetingType');
         break;
       case 'confirmation':
         setCurrentStep('datetime');
@@ -197,6 +207,13 @@ export const DirectBookingFlow = () => {
         />
       )}
 
+      {currentStep === 'meetingType' && (
+        <MeetingTypeSelection
+          onNext={handleMeetingTypeNext}
+          onBack={handleBack}
+        />
+      )}
+
       {currentStep === 'datetime' && selectedPillar && (
         <CalendarStep
           selectedDate={selectedDate}
@@ -215,6 +232,7 @@ export const DirectBookingFlow = () => {
           provider={assignedProvider}
           selectedDate={selectedDate}
           selectedTime={selectedTime}
+          meetingType={meetingType}
           onBack={handleBack}
           onConfirm={handleConfirmBooking}
           isConfirming={isConfirming}

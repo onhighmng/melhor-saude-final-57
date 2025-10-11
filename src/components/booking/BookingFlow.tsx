@@ -5,6 +5,7 @@ import { mockProviders } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
+import { MeetingTypeSelection } from './MeetingTypeSelection';
 import { useToast } from '@/hooks/use-toast';
 import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
 import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/MentalHealthAssessmentFlow';
@@ -30,11 +31,12 @@ const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation('user');
-  const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
+  const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'meetingType' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [meetingType, setMeetingType] = useState<'virtual' | 'phone'>('virtual');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState('');
@@ -90,19 +92,27 @@ const BookingFlow = () => {
     if (availableProviders.length > 0) {
       const assignedProvider = availableProviders[0];
       setSelectedProvider(assignedProvider);
-      setCurrentStep('datetime');
+      setCurrentStep('meetingType');
       
       toast({
-        title: 'Especialista atribuído',
-        description: 'Nosso especialista está pronto para ajudá-lo',
+        title: t('booking.toasts.providerAssigned'),
+        description: t('booking.toasts.providerAssignedDesc', {
+          name: assignedProvider.name,
+          specialty: assignedProvider.specialty
+        }),
       });
     } else {
       toast({
-        title: 'Erro',
-        description: 'Não há especialistas disponíveis no momento',
+        title: t('errors:title'),
+        description: t('booking.toasts.noProvidersAvailable'),
         variant: "destructive"
       });
     }
+  };
+
+  const handleMeetingTypeNext = (type: 'virtual' | 'phone') => {
+    setMeetingType(type);
+    setCurrentStep('datetime');
   };
 
   const handleDateTimeConfirm = () => {
@@ -181,6 +191,14 @@ const BookingFlow = () => {
           );
         }
         return null;
+      
+      case 'meetingType':
+        return (
+          <MeetingTypeSelection
+            onNext={handleMeetingTypeNext}
+            onBack={() => setCurrentStep('topic-selection')}
+          />
+        );
       
       case 'prediagnostic-cta':
         return (

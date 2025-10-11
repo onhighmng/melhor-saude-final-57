@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare } from 'lucide-react';
+import { UniversalAIChat } from '@/components/booking/UniversalAIChat';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +33,7 @@ const UserDashboard = () => {
   const [showOnboarding, setShowOnboarding] = useState(!onboardingData);
   const [showCompletionScreen, setShowCompletionScreen] = useState(false);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
+  const [showUniversalChat, setShowUniversalChat] = useState(false);
 
   const handleOnboardingComplete = (data: OnboardingData) => {
     localStorage.setItem('onboardingData', JSON.stringify(data));
@@ -120,7 +122,7 @@ const UserDashboard = () => {
                 <Button 
                   size="lg" 
                   className="flex-1 px-6 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white"
-                  onClick={() => navigate('/user/book')}
+                  onClick={() => setShowUniversalChat(true)}
                 >
                   <MessageSquare className="mr-2 h-5 w-5" />
                   {tNav('actions.talkToSpecialist')}
@@ -317,6 +319,10 @@ const UserDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {showUniversalChat && (
+        <UniversalAIChat onClose={() => setShowUniversalChat(false)} />
+      )}
     </div>
   );
 };

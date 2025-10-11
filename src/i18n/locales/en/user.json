@@ -46,6 +46,30 @@
       "personal": "Personal Plan",
       "sessions": "sessions"
     },
+    "toasts": {
+      "providerAssigned": "Specialist assigned",
+      "providerAssignedDesc": "{{name}} is ready to help you with {{specialty}}",
+      "noProvidersAvailable": "No specialists available at the moment",
+      "sessionBooked": "Session booked successfully!",
+      "sessionBookedDesc": "Session with {{name}} scheduled for {{date}} at {{time}}",
+      "selectDateTime": "Please select date and time",
+      "error": "Error",
+      "feedbackSubmitted": "Feedback submitted",
+      "thankYouFeedback": "Thank you for your feedback!",
+      "specialistNotified": "A specialist will contact you soon"
+    },
+    "confirmation": {
+      "confirmTitle": "Confirm Your Booking",
+      "confirmSubtitle": "Review your session details",
+      "sessionDetailsTitle": "Session Details",
+      "ourSpecialist": "Our specialist",
+      "dateLabel": "Date",
+      "timeLabel": "Time",
+      "focusAreaLabel": "Focus Area",
+      "backButton": "Back",
+      "confirmingButton": "Confirming...",
+      "confirmBookingButton": "Confirm Booking"
+    },
     "format": {
       "individualOnline": "Individual Online Session",
       "description": "All sessions are individual and conducted via video call (Google Meet, Zoom or Teams).",
@@ -208,6 +232,14 @@
       "feeling": "I want to talk about how I'm feeling",
       "identify": "I'm not sure what I need",
       "preference": "I already know what I'm looking for"
+    },
+    "intro": {
+      "title": "How can I help?",
+      "description": "Share with me how you feel and we'll see together how to support you.",
+      "button1": "I would like to share what I feel",
+      "button1Highlight": "feel",
+      "button2": "I'm a little unsure about what I need",
+      "button3": "I already understand what I need"
     },
     "exit": {
       "title": "Was this conversation helpful?",
