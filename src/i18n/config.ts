@@ -89,13 +89,14 @@ if (normalizedLang !== i18n.language) {
 }
 
 // Version-based cache busting - increment when translations change
-const TRANSLATION_VERSION = '2.0.1';
+const TRANSLATION_VERSION = '2.0.2';
 
 if (typeof window !== 'undefined') {
   const sessionKey = 'i18n_loaded_v' + TRANSLATION_VERSION;
+  const hasReloaded = window.location.search.includes('i18n_reloaded');
   
   // Check if we've already loaded this version in this session
-  if (!sessionStorage.getItem(sessionKey)) {
+  if (!sessionStorage.getItem(sessionKey) && !hasReloaded) {
     console.log('[i18n] New translation version detected, clearing all caches...');
     
     // Nuclear option: clear everything
@@ -106,59 +107,56 @@ if (typeof window !== 'undefined') {
     sessionStorage.setItem(sessionKey, 'true');
     
     // Force page reload to get fresh resources (only once)
-    if (!window.location.search.includes('i18n_reloaded')) {
-      window.location.search = '?i18n_reloaded=true';
-      throw new Error('Reloading for i18n cache clear'); // Prevent further execution
-    }
+    window.location.search = '?i18n_reloaded=true';
+  } else {
+    // Clear resource store for regular reloads
+    i18n.services.resourceStore.data = {};
+    
+    console.log('[i18n] Reloading resources...');
+    console.log('[i18n] Current language:', i18n.language);
+    console.log('[i18n] Translation version:', TRANSLATION_VERSION);
+    
+    // Reload all resources with retry logic
+    const reloadWithRetry = async (attempt = 1) => {
+      try {
+        await i18n.reloadResources(
+          ['pt', 'en'], 
+          ['user', 'common', 'navigation', 'company', 'admin', 'provider', 'specialist', 'errors', 'toasts']
+        );
+        
+        console.log('[i18n] Resources reloaded successfully');
+        
+        // Verify critical keys loaded
+        const criticalKeys = [
+          'user:booking.providerAssignment.title',
+          'user:assessment.chat.backButton',
+          'navigation:user.help'
+        ];
+        
+        const missingKeys = criticalKeys.filter(key => {
+          const value = i18n.t(key);
+          return value === key || value.includes('.');
+        });
+        
+        if (missingKeys.length > 0) {
+          console.error('[i18n] CRITICAL: Keys still missing after reload:', missingKeys);
+        } else {
+          console.log('[i18n] All critical keys verified');
+        }
+        
+        // Force re-render
+        i18n.changeLanguage(i18n.language);
+        
+      } catch (error) {
+        console.error(`[i18n] Reload attempt ${attempt} failed:`, error);
+        if (attempt < 3) {
+          setTimeout(() => reloadWithRetry(attempt + 1), 1000);
+        }
+      }
+    };
+    
+    reloadWithRetry();
   }
-  
-  // Clear resource store for regular reloads
-  i18n.services.resourceStore.data = {};
-  
-  console.log('[i18n] Reloading resources...');
-  console.log('[i18n] Current language:', i18n.language);
-  console.log('[i18n] Translation version:', TRANSLATION_VERSION);
-  
-  // Reload all resources with retry logic
-  const reloadWithRetry = async (attempt = 1) => {
-    try {
-      await i18n.reloadResources(
-        ['pt', 'en'], 
-        ['user', 'common', 'navigation', 'company', 'admin', 'provider', 'specialist', 'errors', 'toasts']
-      );
-      
-      console.log('[i18n] Resources reloaded successfully');
-      
-      // Verify critical keys loaded
-      const criticalKeys = [
-        'user:booking.providerAssignment.title',
-        'user:assessment.chat.backButton',
-        'navigation:user.help'
-      ];
-      
-      const missingKeys = criticalKeys.filter(key => {
-        const value = i18n.t(key);
-        return value === key || value.includes('.');
-      });
-      
-      if (missingKeys.length > 0) {
-        console.error('[i18n] CRITICAL: Keys still missing after reload:', missingKeys);
-      } else {
-        console.log('[i18n] All critical keys verified');
-      }
-      
-      // Force re-render
-      i18n.changeLanguage(i18n.language);
-      
-    } catch (error) {
-      console.error(`[i18n] Reload attempt ${attempt} failed:`, error);
-      if (attempt < 3) {
-        setTimeout(() => reloadWithRetry(attempt + 1), 1000);
-      }
-    }
-  };
-  
-  reloadWithRetry();
 }
 
 export default i18n;
