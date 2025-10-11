@@ -73,7 +73,7 @@ i18n
       bindI18nStore: 'added removed',
     },
     
-    // Add language normalization
+// Add language normalization
     load: 'languageOnly', // Load 'pt' instead of 'pt-BR'
     
     // Development-only debugging
@@ -86,32 +86,6 @@ const normalizedLang = currentLang.toLowerCase().startsWith('pt') ? 'pt' : 'en';
 
 if (normalizedLang !== i18n.language) {
   i18n.changeLanguage(normalizedLang);
-}
-
-// Simple initialization without aggressive cache busting
-if (typeof window !== 'undefined') {
-  console.log('[i18n] Initializing with language:', i18n.language);
-  
-  // Verify critical keys are loaded
-  const criticalKeys = [
-    'booking.providerAssignment.title',
-    'assessment.chat.backButton',
-    'navigation.help'
-  ];
-  
-  // Check keys after a brief delay to ensure resources are loaded
-  setTimeout(() => {
-    const missingKeys = criticalKeys.filter(key => {
-      const value = i18n.t(key);
-      return value === key || value.includes('.');
-    });
-    
-    if (missingKeys.length > 0) {
-      console.warn('[i18n] Some keys may not be loaded:', missingKeys);
-    } else {
-      console.log('[i18n] All critical keys verified');
-    }
-  }, 100);
 }
 
 export default i18n;
