@@ -23,6 +23,7 @@ export type Database = {
           id: string
           meeting_link: string | null
           meeting_platform: string | null
+          meeting_type: string | null
           notes: string | null
           pillar_specialties: string[] | null
           prediagnostic_completed: boolean | null
@@ -42,6 +43,7 @@ export type Database = {
           id?: string
           meeting_link?: string | null
           meeting_platform?: string | null
+          meeting_type?: string | null
           notes?: string | null
           pillar_specialties?: string[] | null
           prediagnostic_completed?: boolean | null
@@ -61,6 +63,7 @@ export type Database = {
           id?: string
           meeting_link?: string | null
           meeting_platform?: string | null
+          meeting_type?: string | null
           notes?: string | null
           pillar_specialties?: string[] | null
           prediagnostic_completed?: boolean | null
