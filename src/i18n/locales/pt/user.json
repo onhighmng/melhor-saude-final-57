@@ -23,6 +23,29 @@
     "ctaFirstSession": "Marcar Primeira Sessão"
   },
   "booking": {
+    "backButton": "← Voltar",
+    "choosePillar": "Como podemos ajudar?",
+    "pillarSubtitle": "Escolha a área que precisa de apoio",
+    "specialistChoice": {
+      "title": "Como gostaria de receber apoio?",
+      "subtitle": "Escolha entre conversar com nossa IA ou falar diretamente com nosso especialista",
+      "ai": {
+        "title": "Assistente Virtual",
+        "button": "Conversar com IA",
+        "mentalHealth": "Resposta imediata com nosso assistente de saúde mental treinado",
+        "physicalWellness": "Resposta imediata com nosso assistente de bem-estar físico",
+        "financialAssistance": "Resposta imediata com nosso assistente financeiro",
+        "legalAssistance": "Resposta imediata com nosso assistente jurídico inteligente"
+      },
+      "specialist": {
+        "title": "Nosso Especialista",
+        "button": "Falar com Especialista",
+        "mentalHealth": "Agende uma sessão individual com nosso especialista em saúde mental",
+        "physicalWellness": "Agende uma sessão individual com nosso especialista em bem-estar físico",
+        "financialAssistance": "Agende uma sessão individual com nosso especialista financeiro",
+        "legalAssistance": "Agende uma sessão individual com nosso especialista jurídico"
+      }
+    },
     "form": {
       "title": "Agendar Sessão",
       "withProvider": "com {{providerName}}",

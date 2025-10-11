@@ -23,6 +23,29 @@
     "ctaFirstSession": "Book First Session"
   },
   "booking": {
+    "backButton": "← Back",
+    "choosePillar": "How can we help?",
+    "pillarSubtitle": "Choose the area you need support with",
+    "specialistChoice": {
+      "title": "How would you like to receive support?",
+      "subtitle": "Choose between chatting with our AI or speaking directly with our specialist",
+      "ai": {
+        "title": "Virtual Assistant",
+        "button": "Chat with AI",
+        "mentalHealth": "Immediate response with our trained mental health assistant",
+        "physicalWellness": "Immediate response with our physical wellness assistant",
+        "financialAssistance": "Immediate response with our financial assistant",
+        "legalAssistance": "Immediate response with our intelligent legal assistant"
+      },
+      "specialist": {
+        "title": "Our Specialist",
+        "button": "Speak with Specialist",
+        "mentalHealth": "Schedule a one-on-one session with our mental health specialist",
+        "physicalWellness": "Schedule a one-on-one session with our physical wellness specialist",
+        "financialAssistance": "Schedule a one-on-one session with our financial specialist",
+        "legalAssistance": "Schedule a one-on-one session with our legal specialist"
+      }
+    },
     "form": {
       "title": "Book Session",
       "withProvider": "with {{providerName}}",
