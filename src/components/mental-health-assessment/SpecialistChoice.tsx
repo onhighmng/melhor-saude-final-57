@@ -2,7 +2,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Bot, User } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface SpecialistChoiceProps {
   onChooseAI: () => void;
@@ -15,8 +14,6 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
   onChooseHuman,
   onBack
 }) => {
-  const { t } = useTranslation('user');
-  
   return (
     <div className="min-h-screen bg-background">
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
@@ -26,15 +23,15 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
             onClick={onBack}
             className="mb-6"
           >
-            {t('booking.backButton')}
+            ← Voltar
           </Button>
 
           <div className="text-center mb-12">
             <h1 className="text-3xl font-bold text-foreground mb-3">
-              {t('booking.specialistChoice.title')}
+              Como gostaria de receber apoio?
             </h1>
             <p className="text-muted-foreground">
-              {t('booking.specialistChoice.subtitle')}
+              Escolha entre conversar com a nossa IA ou falar diretamente com o nosso especialista
             </p>
           </div>
 
@@ -47,12 +44,12 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
                   <Bot className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">{t('booking.specialistChoice.ai.title')}</h3>
+                <h3 className="text-xl font-semibold">Assistente Virtual</h3>
                 <p className="text-muted-foreground">
-                  {t('booking.specialistChoice.ai.mentalHealth')}
+                  Resposta imediata com o nosso assistente de saúde mental treinado
                 </p>
                 <Button className="w-full mt-4">
-                  {t('booking.specialistChoice.ai.button')}
+                  Conversar com IA
                 </Button>
               </div>
             </Card>
@@ -65,12 +62,12 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
                   <User className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">{t('booking.specialistChoice.specialist.title')}</h3>
+                <h3 className="text-xl font-semibold">Nosso Especialista</h3>
                 <p className="text-muted-foreground">
-                  {t('booking.specialistChoice.specialist.mentalHealth')}
+                  Agende uma sessão individual com o nosso especialista em saúde mental
                 </p>
                 <Button className="w-full mt-4">
-                  {t('booking.specialistChoice.specialist.button')}
+                  Falar com Especialista
                 </Button>
               </div>
             </Card>
