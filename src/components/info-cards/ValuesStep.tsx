@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { values } from './InfoCardsData';
 
 interface ValuesStepProps {
@@ -11,6 +11,7 @@ interface ValuesStepProps {
 
 const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, onLearnMore }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
   
   const handleImplementPillars = () => {
     onImplementPillars();
@@ -33,7 +34,7 @@ const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, 
     >
       <div className="text-center text-navy-blue max-w-4xl mx-auto p-8">
         <h3 className="text-4xl font-bold mb-6 text-navy-blue animate-fade-in">
-          Nossos Valores
+          {t('landing.ourValues')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {values.map((value, index) => (
@@ -50,19 +51,19 @@ const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, 
         </div>
         
         <div className="bg-gradient-to-r from-mint-green/30 to-sky-blue/30 rounded-2xl p-8 mb-8 shadow-lg border border-cool-grey/20 animate-fade-in animation-delay-600 hover:shadow-xl transition-all duration-500">
-          <h4 className="text-2xl font-bold mb-6 text-navy-blue">Resultados Comprovados</h4>
+          <h4 className="text-2xl font-bold mb-6 text-navy-blue">{t('landing.provenResults')}</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center animate-scale-in animation-delay-800">
               <div className="text-3xl font-bold text-mint-green mb-2">500+</div>
-              <p className="text-cool-grey">Empresas Parceiras</p>
+              <p className="text-cool-grey">{t('landing.partnerCompanies')}</p>
             </div>
             <div className="text-center animate-scale-in animation-delay-1000">
               <div className="text-3xl font-bold text-sky-blue mb-2">25k</div>
-              <p className="text-cool-grey">Utilizadores Ativos</p>
+              <p className="text-cool-grey">{t('landing.activeUsers')}</p>
             </div>
             <div className="text-center animate-scale-in animation-delay-1200">
               <div className="text-3xl font-bold text-royal-blue mb-2">98%</div>
-              <p className="text-cool-grey">Satisfação</p>
+              <p className="text-cool-grey">{t('landing.satisfaction')}</p>
             </div>
           </div>
         </div>
@@ -72,13 +73,13 @@ const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, 
             onClick={handleImplementPillars}
             className="bg-royal-blue text-white px-8 py-3 rounded-2xl font-semibold hover:bg-navy-blue transition-all duration-500 hover:scale-110 transform shadow-lg hover:shadow-xl"
           >
-            Implementar os 4 Pilares
+            {t('landing.implementPillars')}
           </button>
           <button 
             onClick={handleLearnMore}
             className="bg-soft-white text-royal-blue border-2 border-royal-blue px-8 py-3 rounded-2xl font-semibold hover:bg-sky-blue/10 transition-all duration-500 hover:scale-110 transform shadow-lg hover:shadow-xl"
           >
-            Saber mais
+            {t('landing.learnMore')}
           </button>
         </div>
       </div>

@@ -275,6 +275,18 @@
       "sessionBookedDesc": "Your session with {{name}} is scheduled for {{date}} at {{time}}"
     }
   },
+  "sessionBalance": {
+    "remaining": "Remaining Sessions",
+    "employerSessions": "Company",
+    "personalSessions": "Personal",
+    "remainingLabel": "remaining",
+    "error": "Error loading sessions",
+    "acquireSessions": "Acquire Sessions",
+    "scheduleSession": "Schedule Session",
+    "inactiveSessions": "Inactive Sessions",
+    "needSessionsTooltip": "You need sessions to book appointments",
+    "contactAdminTooltip": "Contact the administrator to activate your sessions"
+  },
   "sessions": {
     "title": "My Journey",
     "subtitle": "Track your sessions, goals and progress",

@@ -187,7 +187,7 @@ const AdminSidebar = () => {
               <span className="text-base font-medium truncate">
                 {user?.name || user?.email}
               </span>
-              <span className="text-sm text-muted-foreground">Admin</span>
+              <span className="text-sm text-muted-foreground">{t('common:roles.admin')}</span>
             </div>
           </div>
         )}

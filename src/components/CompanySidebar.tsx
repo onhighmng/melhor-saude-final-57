@@ -109,7 +109,7 @@ const CompanySidebar = () => {
               <span className="text-sm font-medium truncate">
                 {user?.name || user?.email}
               </span>
-              <span className="text-xs text-muted-foreground">RH</span>
+              <span className="text-xs text-muted-foreground">{tCommon('roles.hr')}</span>
             </div>
           </div>
         )}

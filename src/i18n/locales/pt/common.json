@@ -3,7 +3,22 @@
     "user": "Utilizador",
     "provider": "Prestador",
     "hr": "RH",
-    "admin": "Administrador"
+    "admin": "Admin"
+  },
+  "pillarNames": {
+    "mentalHealth": "Saúde Mental",
+    "physicalWellness": "Bem-estar Físico",
+    "financialAssistance": "Assistência Financeira",
+    "legalAssistance": "Assistência Jurídica"
+  },
+  "landing": {
+    "provenResults": "Resultados Comprovados",
+    "partnerCompanies": "Empresas Parceiras",
+    "activeUsers": "Utilizadores Ativos",
+    "satisfaction": "Satisfação",
+    "ourValues": "Nossos Valores",
+    "implementPillars": "Implementar os 4 Pilares",
+    "learnMore": "Saber mais"
   },
   "loading": "Carregando...",
   "login": "Entrar",
@@ -97,7 +112,11 @@
     "completed": "Concluído",
     "cancelled": "Cancelado",
     "scheduled": "Agendado",
-    "inProgress": "Em Progresso"
+    "inProgress": "Em Progresso",
+    "expired": "Expirado",
+    "approved": "Aprovado",
+    "rejected": "Rejeitado",
+    "no_show": "Falta"
   },
   "forms": {
     "name": "Nome",
@@ -847,6 +866,37 @@
         "phone": "Telefone",
         "any": "Qualquer"
       }
+    }
+  },
+  "terms": {
+    "title": "Termos e Condições",
+    "subtitle": "Termos de utilização da plataforma",
+    "section1": {
+      "title": "1. Aceitação dos Termos",
+      "content": "Ao aceder e utilizar esta plataforma, concorda em ficar vinculado a estes termos e condições de utilização."
+    },
+    "section2": {
+      "title": "2. Utilização da Plataforma",
+      "content": "Esta plataforma destina-se a facilitar o agendamento e gestão de sessões de saúde mental e bem-estar.",
+      "item1": "Deve fornecer informações precisas e atualizadas",
+      "item2": "É responsável por manter a confidencialidade da sua conta",
+      "item3": "Não deve utilizar a plataforma para fins ilegais ou não autorizados"
+    },
+    "section3": {
+      "title": "3. Privacidade e Proteção de Dados",
+      "content": "Respeitamos a sua privacidade e protegemos os seus dados pessoais de acordo com o RGPD e legislação aplicável."
+    },
+    "section4": {
+      "title": "4. Responsabilidades",
+      "content": "A plataforma atua como intermediário entre utilizadores e prestadores de serviços de saúde mental."
+    },
+    "section5": {
+      "title": "5. Alterações aos Termos",
+      "content": "Reservamo-nos o direito de alterar estes termos a qualquer momento. As alterações entrarão em vigor após a publicação na plataforma."
+    },
+    "section6": {
+      "title": "6. Contacto",
+      "content": "Para questões sobre estes termos, entre em contacto através da secção de ajuda da plataforma."
     }
   }
 }

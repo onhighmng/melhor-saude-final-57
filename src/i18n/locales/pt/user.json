@@ -315,6 +315,18 @@
       "sessionBookedDesc": "Sua sessão com {{name}} foi agendada para {{date}} às {{time}}"
     }
   },
+  "sessionBalance": {
+    "remaining": "Sessões Restantes",
+    "employerSessions": "Empresa",
+    "personalSessions": "Pessoais",
+    "remainingLabel": "restantes",
+    "error": "Erro ao carregar sessões",
+    "acquireSessions": "Adquirir Sessões",
+    "scheduleSes sion": "Agendar Sessão",
+    "inactiveSessions": "Sessões Inativas",
+    "needSessionsTooltip": "Precisa de sessões para agendar consultas",
+    "contactAdminTooltip": "Contacte o administrador para ativar as suas sessões"
+  },
   "sessions": {
     "title": "Meu Percurso",
     "subtitle": "Acompanhe as suas sessões, objetivos e progresso",
