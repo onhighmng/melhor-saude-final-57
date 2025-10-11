@@ -90,15 +90,49 @@ if (normalizedLang !== i18n.language) {
 
 // Aggressively force reload translations to prevent cache issues
 if (typeof window !== 'undefined') {
-  // Clear any cached translations
+  // Clear localStorage i18n cache
+  const i18nKeys = Object.keys(localStorage).filter(key => key.startsWith('i18next'));
+  i18nKeys.forEach(key => localStorage.removeItem(key));
+  
+  // Clear resource store
   i18n.services.resourceStore.data = {};
   
-  // Reload all resources immediately
-  i18n.reloadResources(['pt', 'en'], ['user', 'common', 'navigation', 'company', 'admin', 'provider', 'specialist', 'errors', 'toasts']).then(() => {
-    console.log('i18n resources reloaded successfully');
-    // Force re-render by changing language to the same value
-    i18n.changeLanguage(i18n.language);
-  });
+  console.log('[i18n] Clearing cache and reloading resources...');
+  console.log('[i18n] Current language:', i18n.language);
+  
+  // Reload all resources with retry logic
+  const reloadWithRetry = async (attempt = 1) => {
+    try {
+      await i18n.reloadResources(
+        ['pt', 'en'], 
+        ['user', 'common', 'navigation', 'company', 'admin', 'provider', 'specialist', 'errors', 'toasts']
+      );
+      
+      console.log('[i18n] Resources reloaded successfully');
+      
+      // Verify booking keys loaded
+      const testKey = i18n.t('user:booking.providerAssignment.title');
+      console.log('[i18n] Test key value:', testKey);
+      
+      if (testKey === 'booking.providerAssignment.title') {
+        console.warn('[i18n] Keys still not loading, forcing language toggle...');
+        const currentLang = i18n.language;
+        await i18n.changeLanguage(currentLang === 'pt' ? 'en' : 'pt');
+        await i18n.changeLanguage(currentLang);
+      }
+      
+      // Force re-render
+      i18n.changeLanguage(i18n.language);
+      
+    } catch (error) {
+      console.error(`[i18n] Reload attempt ${attempt} failed:`, error);
+      if (attempt < 3) {
+        setTimeout(() => reloadWithRetry(attempt + 1), 1000);
+      }
+    }
+  };
+  
+  reloadWithRetry();
 }
 
 export default i18n;
