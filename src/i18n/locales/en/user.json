@@ -68,7 +68,15 @@
       "focusAreaLabel": "Focus Area",
       "backButton": "Back",
       "confirmingButton": "Confirming...",
-      "confirmBookingButton": "Confirm Booking"
+      "confirmBookingButton": "Confirm Booking",
+      "title": "Booking Confirmation",
+      "provider": "Provider",
+      "specialty": "Specialty",
+      "date": "Date",
+      "time": "Time",
+      "back": "Back",
+      "confirm": "Confirm Booking",
+      "formatLabel": "Format"
     },
     "format": {
       "individualOnline": "Individual Online Session",
@@ -315,9 +323,9 @@
       "humanButton": "Talk to a Specialist"
     },
     "dateTime": {
-      "title": "Choose a Date and Time",
-      "subtitle": "Select the day and time for your {{pillar}} session",
-      "selectDateTime": "Select Date and Time",
+      "title": "Schedule your session with {{name}}",
+      "subtitle": "Choose the best date and time for your {{pillar}} session",
+      "selectDateTime": "Select date and time",
       "confirmSession": "Confirm Session",
       "selectDateAndTime": "Please select date and time"
     },
@@ -331,15 +339,15 @@
       "confirm": "Confirm Session"
     },
     "preDiagnostic": {
-      "successTitle": "Session Booked Successfully!",
-      "successMessage": "Your legal consultation is confirmed for {{date}} at {{time}}",
-      "helpTitle": "Help the specialist prepare your consultation",
-      "helpDescription": "Do a pre-diagnosis with our AI. This will help the human specialist better understand your case and prepare a more effective consultation when the session time comes.",
-      "benefit1": "Quickly identify relevant legal areas",
-      "benefit2": "Organize your questions and concerns",
-      "benefit3": "Receive preliminary guidance instantly",
+      "successTitle": "Session Successfully Scheduled!",
+      "successMessage": "Your session is scheduled for {{date}} at {{time}}",
+      "helpTitle": "Want to prepare better?",
+      "helpDescription": "Before your legal consultation, you can use our AI assistant to organize your thoughts and make the session more productive.",
+      "benefit1": "Organize the main points you want to discuss",
+      "benefit2": "Get suggestions for documentation to prepare",
+      "benefit3": "Help the specialist better understand your case",
       "skipButton": "Skip for Now",
-      "startButton": "Do Pre-Diagnosis"
+      "startButton": "Start Pre-Diagnosis"
     },
     "provider": {
       "internalSpecialist": {

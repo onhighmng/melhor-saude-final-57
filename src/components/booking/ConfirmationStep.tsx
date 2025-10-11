@@ -92,7 +92,7 @@ export const ConfirmationStep = ({
                 <Phone className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
               )}
               <div>
-                <p className="font-medium mb-1">Formato</p>
+                <p className="font-medium mb-1">{t('booking.confirmation.formatLabel')}</p>
                 <p className="text-sm text-muted-foreground">
                   {meetingType === 'virtual' 
                     ? t('booking.meetingType.virtual.title') 

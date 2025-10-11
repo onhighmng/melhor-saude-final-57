@@ -42,7 +42,15 @@
       "focusAreaLabel": "Área de foco",
       "backButton": "Voltar",
       "confirmingButton": "A confirmar...",
-      "confirmBookingButton": "Confirmar marcação"
+      "confirmBookingButton": "Confirmar marcação",
+      "title": "Confirmação de Marcação",
+      "provider": "Prestador",
+      "specialty": "Especialidade",
+      "date": "Data",
+      "time": "Hora",
+      "back": "Voltar",
+      "confirm": "Confirmar Marcação",
+      "formatLabel": "Formato"
     },
     "postBooking": {
       "title": "Sessão Agendada com Sucesso!",
@@ -345,9 +353,9 @@
       "humanButton": "Falar com um Especialista"
     },
     "dateTime": {
-      "title": "Escolha uma Data e Horário",
-      "subtitle": "Selecione o dia e horário para a sua sessão de {{pillar}}",
-      "selectDateTime": "Selecionar Data e Horário",
+      "title": "Agende sua sessão com {{name}}",
+      "subtitle": "Escolha a melhor data e horário para sua sessão de {{pillar}}",
+      "selectDateTime": "Selecione data e horário",
       "confirmSession": "Confirmar Sessão",
       "selectDateAndTime": "Por favor selecione data e hora"
     },
@@ -362,14 +370,14 @@
     },
     "preDiagnostic": {
       "successTitle": "Sessão Agendada com Sucesso!",
-      "successMessage": "Sua consulta jurídica está confirmada para {{date}} às {{time}}",
-      "helpTitle": "Ajude o especialista a preparar sua consulta",
-      "helpDescription": "Faça um pré-diagnóstico com nossa IA. Isso ajudará o especialista humano a entender melhor seu caso e preparar uma consulta mais eficaz quando chegar o momento da sessão.",
-      "benefit1": "Identifique rapidamente as áreas jurídicas relevantes",
-      "benefit2": "Organize suas questões e preocupações",
-      "benefit3": "Receba orientações preliminares instantaneamente",
-      "skipButton": "Pular por Agora",
-      "startButton": "Fazer Pré-Diagnóstico"
+      "successMessage": "Sua sessão foi marcada para {{date}} às {{time}}",
+      "helpTitle": "Quer preparar-se melhor?",
+      "helpDescription": "Antes da sua consulta jurídica, pode utilizar o nosso assistente AI para organizar as suas ideias e tornar a sessão mais produtiva.",
+      "benefit1": "Organize os pontos principais que quer discutir",
+      "benefit2": "Receba sugestões de documentação a preparar",
+      "benefit3": "Ajude o especialista a conhecer melhor o seu caso",
+      "skipButton": "Saltar por Agora",
+      "startButton": "Iniciar Pré-Diagnóstico"
     },
     "provider": {
       "internalSpecialist": {
