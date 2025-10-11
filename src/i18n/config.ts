@@ -88,4 +88,11 @@ if (normalizedLang !== i18n.language) {
   i18n.changeLanguage(normalizedLang);
 }
 
+// Force reload translations on mount to prevent cache issues
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', () => {
+    i18n.reloadResources(['pt', 'en'], ['user', 'common', 'navigation', 'company', 'admin', 'provider', 'specialist', 'errors', 'toasts']);
+  });
+}
+
 export default i18n;
