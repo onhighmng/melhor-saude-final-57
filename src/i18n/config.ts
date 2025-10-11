@@ -88,10 +88,16 @@ if (normalizedLang !== i18n.language) {
   i18n.changeLanguage(normalizedLang);
 }
 
-// Force reload translations on mount to prevent cache issues
+// Aggressively force reload translations to prevent cache issues
 if (typeof window !== 'undefined') {
-  window.addEventListener('load', () => {
-    i18n.reloadResources(['pt', 'en'], ['user', 'common', 'navigation', 'company', 'admin', 'provider', 'specialist', 'errors', 'toasts']);
+  // Clear any cached translations
+  i18n.services.resourceStore.data = {};
+  
+  // Reload all resources immediately
+  i18n.reloadResources(['pt', 'en'], ['user', 'common', 'navigation', 'company', 'admin', 'provider', 'specialist', 'errors', 'toasts']).then(() => {
+    console.log('i18n resources reloaded successfully');
+    // Force re-render by changing language to the same value
+    i18n.changeLanguage(i18n.language);
   });
 }
 
