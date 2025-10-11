@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -63,14 +64,19 @@ const defaultSettings: PlatformSettings = {
 
 // Pillar names moved to common.json translations
 
-const pillarColors = {
+type PillarKey = 'mentalHealth' | 'physicalWellness' | 'financialAssistance' | 'legalAssistance';
+
+const pillarKeys: PillarKey[] = ['mentalHealth', 'physicalWellness', 'financialAssistance', 'legalAssistance'];
+
+const pillarColors: Record<PillarKey, string> = {
   mentalHealth: "from-blue-500 to-blue-600",
   physicalWellness: "from-green-500 to-green-600",
   financialAssistance: "from-yellow-500 to-yellow-600",
   legalAssistance: "from-purple-500 to-purple-600"
-} as const;
+};
 
 const AdminSettings = () => {
+  const { t } = useTranslation('common');
   const [settings, setSettings] = useState<PlatformSettings>(defaultSettings);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { toast } = useToast();
@@ -209,10 +215,10 @@ const AdminSettings = () => {
 
             {/* Pillar-specific Settings */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {(Object.keys(pillarNames) as Array<keyof typeof pillarNames>).map((pillarKey) => (
+              {pillarKeys.map((pillarKey) => (
                 <Card key={pillarKey} className="border-0 shadow-lg bg-white overflow-hidden">
                   <CardHeader className={`bg-gradient-to-r ${pillarColors[pillarKey]} text-white`}>
-                    <CardTitle className="text-lg">{pillarNames[pillarKey]}</CardTitle>
+                    <CardTitle className="text-lg">{t(`pillarNames.${pillarKey}`)}</CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 space-y-4">
                     <div>
