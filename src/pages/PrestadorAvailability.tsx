@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import { pt } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 interface TimeSlot {
   start: string;
@@ -54,15 +55,7 @@ interface Exception {
   slots?: TimeSlot[];
 }
 
-const dayNames = {
-  monday: 'Segunda-feira',
-  tuesday: 'Terça-feira',
-  wednesday: 'Quarta-feira',
-  thursday: 'Quinta-feira',
-  friday: 'Sexta-feira',
-  saturday: 'Sábado',
-  sunday: 'Domingo'
-};
+// Day names moved to translations
 
 const defaultSlot: TimeSlot = { start: '09:00', end: '17:00' };
 
@@ -77,6 +70,7 @@ const initialSchedule: WeeklySchedule = {
 };
 
 export default function PrestadorAvailability() {
+  const { t } = useTranslation('provider');
   const [schedule, setSchedule] = useState<WeeklySchedule>(initialSchedule);
   const [timezone, setTimezone] = useState('Europe/Lisbon');
   const [bufferBefore, setBufferBefore] = useState('15');
@@ -141,7 +135,7 @@ export default function PrestadorAvailability() {
         const slot2 = slots[j];
         
         if (slot1.start < slot2.end && slot2.start < slot1.end) {
-          overlaps.push(`Sobreposição detetada no dia ${dayNames[day]}`);
+          overlaps.push(`${t('availability.conflictDetected')} ${t(`availability.days.${day}`)}`);
         }
       }
     }
@@ -175,7 +169,7 @@ export default function PrestadorAvailability() {
       id: Date.now().toString(),
       date: selectedExceptionDate,
       type: 'full_day',
-      reason: 'Indisponível'
+      reason: t('availability.unavailable')
     };
     
     setExceptions(prev => [...prev, newException]);
@@ -215,8 +209,8 @@ export default function PrestadorAvailability() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <PageHeader
-        title="Definir Disponibilidade"
-        subtitle="Configure os seus horários e exceções para marcações"
+        title={t('availability.title')}
+        subtitle={t('availability.subtitle')}
         className="bg-white border-b"
         actions={
           <div className="flex items-center gap-3">
@@ -224,12 +218,12 @@ export default function PrestadorAvailability() {
               {isOnline ? (
                 <>
                   <Wifi className="w-4 h-4 text-green-600" />
-                  <span className="text-green-600">Online</span>
+                  <span className="text-green-600">{t('availability.online')}</span>
                 </>
               ) : (
                 <>
                   <WifiOff className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-500">Offline</span>
+                  <span className="text-gray-500">{t('availability.offline')}</span>
                 </>
               )}
             </div>
@@ -239,7 +233,7 @@ export default function PrestadorAvailability() {
               className="hidden sm:flex"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
-              Resetar
+              {t('availability.resetButton')}
             </Button>
             <Button 
               onClick={saveChanges}
@@ -247,7 +241,7 @@ export default function PrestadorAvailability() {
               className="bg-green-600 hover:bg-green-700"
             >
               <Save className="w-4 h-4 mr-2" />
-              Guardar Alterações
+              {t('availability.saveButton')}
             </Button>
           </div>
         }
@@ -258,7 +252,7 @@ export default function PrestadorAvailability() {
         <Alert className="mx-4 mt-4 border-gray-200 bg-gray-50">
           <WifiOff className="h-4 w-4" />
           <AlertDescription>
-            Sem ligação à internet. As alterações serão sincronizadas quando voltar online.
+            {t('availability.offlineWarning')}
           </AlertDescription>
         </Alert>
       )}
@@ -268,7 +262,7 @@ export default function PrestadorAvailability() {
         <Alert className="mx-4 mt-4 border-amber-200 bg-amber-50">
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-amber-800">
-            <strong>Atenção:</strong> As alterações não afetam sessões já agendadas.
+            {t('availability.existingWarning')}
           </AlertDescription>
         </Alert>
       )}
@@ -292,7 +286,7 @@ export default function PrestadorAvailability() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="w-5 h-5" />
-              Agenda Semanal
+              {t('availability.weeklySchedule')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -300,12 +294,12 @@ export default function PrestadorAvailability() {
               <div key={dayKey} className="border rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium text-gray-900">
-                    {dayNames[dayKey as keyof typeof dayNames]}
+                    {t(`availability.days.${dayKey}`)}
                   </h3>
                   
                   <div className="flex items-center gap-3">
                     <Label className="text-sm text-gray-600">
-                      Dia inteiro indisponível
+                      {t('availability.dayUnavailable')}
                     </Label>
                     <Switch
                       checked={daySchedule.unavailable}
@@ -319,7 +313,7 @@ export default function PrestadorAvailability() {
                     {daySchedule.slots.map((slot, index) => (
                       <div key={index} className="flex items-center gap-3">
                         <div className="flex items-center gap-2 flex-1">
-                          <Label className="text-sm w-12">Início:</Label>
+                          <Label className="text-sm w-12">{t('availability.startTime')}</Label>
                           <Input
                             type="time"
                             value={slot.start}
@@ -329,7 +323,7 @@ export default function PrestadorAvailability() {
                         </div>
                         
                         <div className="flex items-center gap-2 flex-1">
-                          <Label className="text-sm w-12">Fim:</Label>
+                          <Label className="text-sm w-12">{t('availability.endTime')}</Label>
                           <Input
                             type="time"
                             value={slot.end}
@@ -357,7 +351,7 @@ export default function PrestadorAvailability() {
                       className="mt-2"
                     >
                       <Plus className="w-4 h-4 mr-2" />
-                      Adicionar Intervalo
+                      {t('availability.addTimeSlot')}
                     </Button>
                   </div>
                 )}
