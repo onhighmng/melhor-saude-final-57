@@ -182,6 +182,51 @@
         "welcomeWithPillar": "Olá! Estou aqui para ajudá-lo com a sua situação. Por favor, conte-me o que o traz aqui hoje.",
         "welcomeGeneral": "Olá! Estou aqui para o ajudar. Pode partilhar comigo o que o traz aqui hoje?"
       }
+    },
+    "meetingType": {
+      "title": "Como prefere a sua sessão?",
+      "subtitle": "Escolha o formato que melhor se adequa a si",
+      "virtual": {
+        "title": "Videochamada Online",
+        "description": "Sessão via videochamada (Google Meet, Zoom ou Teams)"
+      },
+      "phone": {
+        "title": "Chamada Telefónica",
+        "description": "Sessão por telefone com o especialista"
+      },
+      "continue": "Continuar",
+      "selectType": "Por favor, selecione o tipo de sessão"
+    },
+    "providerAssignment": {
+      "title": "Especialista Atribuído",
+      "subtitle": "Encontrámos o especialista ideal para si",
+      "matchFound": "Correspondência encontrada",
+      "matchDescription": "Conectamos você com nosso especialista",
+      "ourSpecialist": "Nosso especialista",
+      "specialistMessage": "Profissional qualificado pronto para ajudar com suas necessidades",
+      "selectDateTime": "Selecionar data e hora"
+    }
+  },
+  "assessment": {
+    "chat": {
+      "backButton": "Voltar ao Resumo",
+      "finishButton": "Finalizar Consulta",
+      "legalAssistant": "Assistente Jurídico",
+      "legalDescription": "Faça perguntas sobre sua situação jurídica",
+      "mentalHealthAssistant": "Assistente de Saúde Mental",
+      "mentalHealthDescription": "Compartilhe seus pensamentos e sentimentos",
+      "financialAssistant": "Assistente Financeiro",
+      "financialDescription": "Fale sobre suas preocupações financeiras",
+      "physicalWellnessAssistant": "Assistente de Bem-estar Físico",
+      "physicalWellnessDescription": "Orientação para melhorar sua saúde física",
+      "greeting": "Olá! Estou aqui para ajudar.",
+      "legalGreeting": "Olá! Estou aqui para ajudar com suas questões jurídicas.",
+      "mentalHealthGreeting": "Olá! Estou aqui para ouvir e apoiar você.",
+      "financialGreeting": "Olá! Estou aqui para ajudar com suas questões financeiras.",
+      "physicalGreeting": "Olá! Estou aqui para ajudar com suas questões de bem-estar físico.",
+      "startPrompt": "Envie uma mensagem para começar.",
+      "inputPlaceholder": "Digite sua pergunta...",
+      "speakWithSpecialistButton": "Falar Com Especialista (1-on-1)"
     }
   },
   "universalChat": {
@@ -209,6 +254,15 @@
       "satisfied": "Sim, consegui o que precisava",
       "unsatisfied": "Não, preciso de mais ajuda",
       "thankYou": "Obrigado pelo seu feedback!",
+      "feedbackReceived": "Feedback recebido",
+      "specialistContact": "Um especialista irá contactá-lo em breve",
+      "feedbackThanks": "Agradecemos o seu feedback",
+      "errorTitle": "Erro",
+      "errorDescription": "Não foi possível enviar o feedback. Tente novamente.",
+      "improvementLabel": "Como podemos melhorar?",
+      "improvementPlaceholder": "Escreva aqui as suas sugestões...",
+      "submitting": "A enviar...",
+      "submitButton": "Enviar Feedback",
       "escalated": "Vamos encaminhar para um especialista que o poderá apoiar melhor"
     },
     "fallback": {

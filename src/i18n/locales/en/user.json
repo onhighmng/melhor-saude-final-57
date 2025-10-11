@@ -142,6 +142,51 @@
         "welcomeWithPillar": "Hello! I'm here to help you with your situation. Please tell me what brings you here today.",
         "welcomeGeneral": "Hello! I'm here to help. Can you share with me what brings you here today?"
       }
+    },
+    "meetingType": {
+      "title": "How do you prefer your session?",
+      "subtitle": "Choose the format that best suits you",
+      "virtual": {
+        "title": "Online Video Call",
+        "description": "Session via video call (Google Meet, Zoom or Teams)"
+      },
+      "phone": {
+        "title": "Phone Call",
+        "description": "Phone session with the specialist"
+      },
+      "continue": "Continue",
+      "selectType": "Please select the session type"
+    },
+    "providerAssignment": {
+      "title": "Specialist Assigned",
+      "subtitle": "We found the ideal specialist for you",
+      "matchFound": "Match found",
+      "matchDescription": "We connected you with our specialist",
+      "ourSpecialist": "Our specialist",
+      "specialistMessage": "Qualified professional ready to help with your needs",
+      "selectDateTime": "Select date and time"
+    }
+  },
+  "assessment": {
+    "chat": {
+      "backButton": "Back to Summary",
+      "finishButton": "Finish Consultation",
+      "legalAssistant": "Legal Assistant",
+      "legalDescription": "Ask questions about your legal situation",
+      "mentalHealthAssistant": "Mental Health Assistant",
+      "mentalHealthDescription": "Share your thoughts and feelings",
+      "financialAssistant": "Financial Assistant",
+      "financialDescription": "Talk about your financial concerns",
+      "physicalWellnessAssistant": "Physical Wellness Assistant",
+      "physicalWellnessDescription": "Guidance to improve your physical health",
+      "greeting": "Hello! I'm here to help.",
+      "legalGreeting": "Hello! I'm here to help with your legal questions.",
+      "mentalHealthGreeting": "Hello! I'm here to listen and support you.",
+      "financialGreeting": "Hello! I'm here to help with your financial questions.",
+      "physicalGreeting": "Hello! I'm here to help with your physical wellness questions.",
+      "startPrompt": "Send a message to get started.",
+      "inputPlaceholder": "Type your question...",
+      "speakWithSpecialistButton": "Speak With Specialist (1-on-1)"
     }
   },
   "universalChat": {
@@ -169,6 +214,15 @@
       "satisfied": "Yes, I got what I needed",
       "unsatisfied": "No, I need more help",
       "thankYou": "Thank you for your feedback!",
+      "feedbackReceived": "Feedback received",
+      "specialistContact": "A specialist will contact you soon",
+      "feedbackThanks": "We appreciate your feedback",
+      "errorTitle": "Error",
+      "errorDescription": "Failed to submit feedback. Please try again.",
+      "improvementLabel": "How can we improve?",
+      "improvementPlaceholder": "Write your suggestions here...",
+      "submitting": "Submitting...",
+      "submitButton": "Submit Feedback",
       "escalated": "We'll connect you with a specialist who can better support you"
     },
     "fallback": {

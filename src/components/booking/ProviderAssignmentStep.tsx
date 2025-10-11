@@ -1,7 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { BookingPillar } from './BookingFlow';
+import { useTranslation } from 'react-i18next';
 
 interface Provider {
   id: string;
@@ -19,11 +20,13 @@ interface ProviderAssignmentStepProps {
 }
 
 export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: ProviderAssignmentStepProps) => {
+  const { t } = useTranslation('user');
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Especialista atribuído</h2>
-        <p className="text-sm text-muted-foreground">Encontrámos o especialista ideal para si</p>
+        <h2 className="text-2xl font-bold mb-2">{t('booking.providerAssignment.title')}</h2>
+        <p className="text-sm text-muted-foreground">{t('booking.providerAssignment.subtitle')}</p>
       </div>
 
       <Card className="border-2 border-primary/20 bg-primary/5">
@@ -31,23 +34,18 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
           <div className="flex items-center gap-4 mb-4">
             <CheckCircle2 className="h-8 w-8 text-green-600 shrink-0" />
             <div>
-              <h3 className="font-semibold text-lg">Correspondência encontrada</h3>
-              <p className="text-sm text-muted-foreground">Conectamos você com nosso especialista</p>
+              <h3 className="font-semibold text-lg">{t('booking.providerAssignment.matchFound')}</h3>
+              <p className="text-sm text-muted-foreground">{t('booking.providerAssignment.matchDescription')}</p>
             </div>
           </div>
 
           <div className="bg-background rounded-lg p-6">
             <div className="space-y-4">
-              <h4 className="text-xl font-semibold">Nosso especialista</h4>
+              <h4 className="text-xl font-semibold">{t('booking.providerAssignment.ourSpecialist')}</h4>
               <p className="text-primary font-medium">{assignedProvider.specialty}</p>
-              
-              <div className="flex items-center gap-2">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="font-medium text-sm">{assignedProvider.rating}</span>
-              </div>
 
               <p className="text-sm text-muted-foreground">
-                Profissional qualificado pronto para ajudar com suas necessidades
+                {t('booking.providerAssignment.specialistMessage')}
               </p>
             </div>
           </div>
@@ -56,7 +54,7 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
 
       <div className="flex justify-end">
         <Button onClick={onNext} size="lg" className="px-8">
-          Selecionar data e hora
+          {t('booking.providerAssignment.selectDateTime')}
         </Button>
       </div>
     </div>
