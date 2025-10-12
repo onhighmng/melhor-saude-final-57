@@ -96,10 +96,17 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
     }
   };
 
-  const handleSelectPrompt = (prompt: string) => {
+  const handleSelectPrompt = async (prompt: string) => {
     setShowIntro(false);
     setShowFallbackMessage(false);
-    setInput(prompt);
+    
+    // Automatically send the prompt instead of just setting it
+    const response = await sendMessage(prompt);
+    
+    if (response?.action === 'provide_phone') {
+      setShowPhoneCard(true);
+      setPhoneContext(response.phone_context || '');
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
