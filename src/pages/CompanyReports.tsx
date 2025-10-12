@@ -71,22 +71,11 @@ const availableReports: Report[] = [
 ];
 
 const CompanyReports = () => {
-<<<<<<< HEAD
-  
-  // Define pillar data with i18n
   const pillarUsageData = [
     { name: 'Saúde Mental', sessions: 142, noShows: 8, color: "#3B82F6" },
     { name: 'Bem-Estar Físico', sessions: 89, noShows: 5, color: "#10B981" },
     { name: 'Assistência Financeira', sessions: 67, noShows: 2, color: "#F59E0B" },
     { name: 'Assistência Jurídica', sessions: 23, noShows: 1, color: "#8B5CF6" }
-=======
-  // Define pillar data
-  const pillarUsageData = [
-    { name: "Saúde Mental", sessions: 142, noShows: 8, color: "#3B82F6" },
-    { name: "Bem-estar Físico", sessions: 89, noShows: 5, color: "#10B981" },
-    { name: "Assistência Financeira", sessions: 67, noShows: 2, color: "#F59E0B" },
-    { name: "Assistência Jurídica", sessions: 23, noShows: 1, color: "#8B5CF6" }
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
   ];
   
   const [selectedPeriod, setSelectedPeriod] = useState<string>("monthly");
@@ -148,17 +137,10 @@ const CompanyReports = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-<<<<<<< HEAD
               Relatórios & Analytics
             </h1>
             <p className="text-muted-foreground">
               Análise detalhada da utilização e impacto do programa de wellbeing
-=======
-              Relatórios
-            </h1>
-            <p className="text-muted-foreground">
-              Análise detalhada do uso do programa de wellbeing
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
             </p>
           </div>
           
@@ -186,11 +168,7 @@ const CompanyReports = () => {
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-<<<<<<< HEAD
                     {dateFrom ? format(dateFrom, "dd/MM/yyyy") : "Data início"}
-=======
-                    {dateFrom ? format(dateFrom, "dd/MM/yyyy") : "De"}
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -214,11 +192,7 @@ const CompanyReports = () => {
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-<<<<<<< HEAD
                     {dateTo ? format(dateTo, "dd/MM/yyyy") : "Data fim"}
-=======
-                    {dateTo ? format(dateTo, "dd/MM/yyyy") : "Até"}
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -265,11 +239,7 @@ const CompanyReports = () => {
           {/* Employee Engagement Overview */}
           <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
             <CardHeader>
-<<<<<<< HEAD
               <CardTitle className="text-lg font-semibold">Visão Geral de Engagement</CardTitle>
-=======
-              <CardTitle className="text-lg font-semibold">Engagement dos Colaboradores</CardTitle>
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
             </CardHeader>
             <CardContent>
               <div className="space-y-6">

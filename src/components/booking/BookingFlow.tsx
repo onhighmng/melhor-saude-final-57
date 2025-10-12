@@ -306,7 +306,7 @@ const BookingFlow = () => {
               <div className="w-full max-w-2xl mx-auto">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Confirmar Agendamento
+                    <CardTitle>Confirmar Agendamento</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">

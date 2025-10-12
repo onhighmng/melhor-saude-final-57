@@ -15,8 +15,10 @@ import { ArrowLeft, Bell, Shield, FileText, Users, Edit, AlertTriangle, Settings
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const UserSettings = () => {
+  const { t } = useTranslation();
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -117,8 +119,8 @@ const UserSettings = () => {
   const handleChangePassword = () => {
     if (passwordData.new !== passwordData.confirm) {
       toast({
-        title: tErrors('title'),
-        description: t('booking.toasts.passwordMismatch'),
+        title: "Erro",
+        description: "As senhas não coincidem",
         variant: "destructive"
       });
       return;
@@ -126,8 +128,8 @@ const UserSettings = () => {
     
     if (passwordData.new.length < 8) {
       toast({
-        title: tErrors('title'),
-        description: t('booking.toasts.passwordTooShort'),
+        title: "Erro",
+        description: "A senha deve ter pelo menos 8 caracteres",
         variant: "destructive"
       });
       return;

@@ -19,15 +19,8 @@ const NavigationActions = ({
   isAuthenticated = false,
   user
 }: NavigationActionsProps) => {
-<<<<<<< HEAD
-  
   return (
     <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
-      
-=======
-  return (
-    <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
       {/* Desktop Actions */}
       <div className="flex items-center gap-1 sm:gap-2 lg:gap-4">
         {isAuthenticated && user ? (

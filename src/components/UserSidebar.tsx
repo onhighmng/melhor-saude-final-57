@@ -2,6 +2,7 @@ import { useState } from "react"
 import { LayoutDashboard, MessageSquare, CalendarCheck, BookOpen, Settings, HelpCircle, FileText, LogOut, Bell, Calendar } from "lucide-react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
+import { useTranslation } from "@/hooks/useTranslation"
 
 import {
   Sidebar,
@@ -26,6 +27,7 @@ import { NotificationBadge } from "@/components/notifications/NotificationBadge"
 // Footer items now use translations inline
 
 export function UserSidebar() {
+  const { t } = useTranslation()
   const { state } = useSidebar()
   const location = useLocation()
   const navigate = useNavigate()
@@ -93,7 +95,7 @@ export function UserSidebar() {
               <span className="text-sm font-medium truncate">
                 {user?.name || user?.email}
               </span>
-              <span className="text-xs text-muted-foreground">{tCommon('roles.user')}</span>
+              <span className="text-xs text-muted-foreground">Utilizador</span>
             </div>
           </div>
         )}

@@ -2,7 +2,6 @@ import { toast } from "@/components/ui/enhanced-toast";
 
 export const companyToasts = {
   // Employee management
-<<<<<<< HEAD
   employeeInvited: () => toast.success('Colaborador convidado com sucesso – Credenciais copiadas'),
   employeeDeactivated: () => toast.success('Colaborador desativado – 1 vaga libertada'),
   employeeActivated: () => toast.success('Colaborador ativado com sucesso'),
@@ -29,32 +28,4 @@ export const companyToasts = {
   actionFailed: (action: string) => toast.error(`Erro ao ${action}. Tente novamente.`),
   networkError: () => toast.error('Erro de conexão. Verifique a sua internet'),
   limitReached: () => toast.warning('Limite de vagas atingido. Desative contas ou contacte suporte.')
-=======
-  employeeInvited: () => toast.success("Colaborador convidado com sucesso"),
-  employeeDeactivated: () => toast.success("Colaborador desativado"),
-  employeeActivated: () => toast.success("Colaborador ativado"),
-  employeeActivationBlocked: () => toast.error("Não é possível ativar: limite de lugares atingido"),
-  quotaUpdated: () => toast.success("Quota atualizada"),
-  
-  // Invite codes
-  codesCopied: (count: number) => toast.success(count === 1 ? "Código copiado" : `${count} códigos copiados`),
-  codesGenerated: (count: number) => toast.success(count === 1 ? "Código gerado" : `${count} códigos gerados`),
-  linkCopied: () => toast.success("Link copiado"),
-  
-  // Data export
-  dataExported: () => toast.success("Dados exportados"),
-  reportScheduled: () => toast.success("Relatório agendado"),
-  
-  // Settings
-  settingsSaved: () => toast.success("Definições guardadas"),
-  policiesUpdated: () => toast.success("Políticas atualizadas"),
-  
-  // Access management
-  accessRevoked: () => toast.success("Acesso revogado"),
-  
-  // Errors
-  actionFailed: (action: string) => toast.error(`Falha ao ${action}`),
-  networkError: () => toast.error("Erro de conexão. Verifique a sua internet"),
-  limitReached: () => toast.warning("Limite atingido")
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
 };

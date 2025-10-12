@@ -22,24 +22,14 @@ const Login = () => {
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img
           src={heroNeural}
-<<<<<<< HEAD
-          alt='Saúde Mental'
-=======
           alt="Saúde Mental"
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
         <div className="relative z-10 flex flex-col justify-end p-12 text-white">
-<<<<<<< HEAD
           <h1 className="text-4xl font-bold mb-4">Bem-vinda ao futuro do bem-estar</h1>
           <p className="text-lg text-white/90">
             Conecte-se com especialistas em saúde mental, bem-estar físico, assistência financeira e jurídica
-=======
-          <h1 className="text-4xl font-bold mb-4">O seu bem-estar é a nossa prioridade</h1>
-          <p className="text-lg text-white/90">
-            Aceda à sua conta e continue a sua jornada de bem-estar
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
           </p>
         </div>
       </div>
@@ -48,15 +38,9 @@ const Login = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:text-left">
-<<<<<<< HEAD
             <h2 className="text-3xl font-bold tracking-tight">Entrar na sua conta</h2>
             <p className="text-muted-foreground mt-2">
               Insira as suas credenciais para aceder à sua área pessoal
-=======
-            <h2 className="text-3xl font-bold tracking-tight">Bem-vindo de volta</h2>
-            <p className="text-muted-foreground mt-2">
-              Entre na sua conta para continuar
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
             </p>
           </div>
 
@@ -115,11 +99,7 @@ const Login = () => {
                 className="px-1"
                 onClick={() => navigate('/register/employee')}
               >
-<<<<<<< HEAD
                 Registe-se aqui
-=======
-                Registar
->>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
               </Button>
             </div>
           </form>
