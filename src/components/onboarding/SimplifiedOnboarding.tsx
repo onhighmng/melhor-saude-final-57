@@ -199,42 +199,35 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
           {/* Step 2: Difficulty Areas (max 2) */}
           {step === 2 && (
-            <div className="space-y-3">
-              <div className="text-center mb-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full">
-                  <span className="text-xs font-medium text-primary">
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+                  <span className="text-sm font-medium text-primary">
                     {difficultyAreas.length}/2 selecionados
                   </span>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {difficultyOptions.map((option) => {
                   const isSelected = difficultyAreas.includes(option.value);
                   const isDisabled = !isSelected && difficultyAreas.length >= 2;
                   
                   return (
-                    <Label
+                    <button
                       key={option.value}
-                      htmlFor={`difficulty-${option.value}`}
-                      className={`relative flex items-center p-3 rounded-xl border-2 transition-all duration-200 ${
+                      type="button"
+                      onClick={() => !isDisabled && handleDifficultyToggle(option.value)}
+                      disabled={isDisabled}
+                      className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${
                         isSelected 
-                          ? 'border-primary bg-primary/5 shadow-md' 
+                          ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' 
                           : isDisabled 
-                            ? 'border-gray-200 opacity-40 cursor-not-allowed' 
-                            : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50 cursor-pointer'
+                            ? 'border-gray-200 bg-white text-muted-foreground opacity-40 cursor-not-allowed' 
+                            : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'
                       }`}
                     >
-                      <Checkbox
-                        id={`difficulty-${option.value}`}
-                        checked={isSelected}
-                        disabled={isDisabled}
-                        onCheckedChange={() => handleDifficultyToggle(option.value)}
-                        className="mr-3"
-                      />
-                      <span className="flex-1 text-sm font-medium">
-                        {option.label}
-                      </span>
-                    </Label>
+                      {option.label}
+                    </button>
                   );
                 })}
               </div>
@@ -243,42 +236,35 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
           {/* Step 3: Main Goals (up to 3) */}
           {step === 3 && (
-            <div className="space-y-3">
-              <div className="text-center mb-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full">
-                  <span className="text-xs font-medium text-primary">
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+                  <span className="text-sm font-medium text-primary">
                     {mainGoals.length}/3 selecionados
                   </span>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {goals.map((goal) => {
                   const isSelected = mainGoals.includes(goal.value);
                   const isDisabled = !isSelected && mainGoals.length >= 3;
                   
                   return (
-                    <Label
+                    <button
                       key={goal.value}
-                      htmlFor={`goal-${goal.value}`}
-                      className={`relative flex items-center p-3 rounded-xl border-2 transition-all duration-200 ${
+                      type="button"
+                      onClick={() => !isDisabled && handleGoalToggle(goal.value)}
+                      disabled={isDisabled}
+                      className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${
                         isSelected 
-                          ? 'border-primary bg-primary/5 shadow-md' 
+                          ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' 
                           : isDisabled 
-                            ? 'border-gray-200 opacity-40 cursor-not-allowed' 
-                            : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50 cursor-pointer'
+                            ? 'border-gray-200 bg-white text-muted-foreground opacity-40 cursor-not-allowed' 
+                            : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'
                       }`}
                     >
-                      <Checkbox
-                        id={`goal-${goal.value}`}
-                        checked={isSelected}
-                        disabled={isDisabled}
-                        onCheckedChange={() => handleGoalToggle(goal.value)}
-                        className="mr-3"
-                      />
-                      <span className="flex-1 text-sm font-medium">
-                        {goal.label}
-                      </span>
-                    </Label>
+                      {goal.label}
+                    </button>
                   );
                 })}
               </div>
@@ -287,31 +273,24 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
           {/* Step 4: Improvement Signs (multiple choice) */}
           {step === 4 && (
-            <div className="space-y-3">
-              <div className="grid sm:grid-cols-2 gap-2">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {improvementSignsOptions.map((option) => {
                   const isSelected = improvementSigns.includes(option.value);
                   
                   return (
-                    <Label
+                    <button
                       key={option.value}
-                      htmlFor={`improvement-${option.value}`}
-                      className={`relative flex items-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
+                      type="button"
+                      onClick={() => handleImprovementSignToggle(option.value)}
+                      className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${
                         isSelected 
-                          ? 'border-primary bg-primary/5 shadow-md' 
-                          : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
+                          ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' 
+                          : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'
                       }`}
                     >
-                      <Checkbox
-                        id={`improvement-${option.value}`}
-                        checked={isSelected}
-                        onCheckedChange={() => handleImprovementSignToggle(option.value)}
-                        className="mr-3"
-                      />
-                      <span className="flex-1 text-sm font-medium">
-                        {option.label}
-                      </span>
-                    </Label>
+                      {option.label}
+                    </button>
                   );
                 })}
               </div>
@@ -320,25 +299,23 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
           {/* Step 5: Frequency */}
           {step === 5 && (
-            <div className="space-y-2">
-              <RadioGroup value={frequency} onValueChange={setFrequency} className="space-y-2">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {frequencies.map((option) => (
-                  <Label
+                  <button
                     key={option.value}
-                    htmlFor={`frequency-${option.value}`}
-                    className={`relative flex items-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
+                    type="button"
+                    onClick={() => setFrequency(option.value)}
+                    className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${
                       frequency === option.value 
-                        ? 'border-primary bg-primary/5 shadow-md' 
-                        : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
+                        ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' 
+                        : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'
                     }`}
                   >
-                    <RadioGroupItem value={option.value} id={`frequency-${option.value}`} className="mr-3" />
-                    <span className="flex-1 text-sm md:text-base font-medium">
-                      {option.label}
-                    </span>
-                  </Label>
+                    {option.label}
+                  </button>
                 ))}
-              </RadioGroup>
+              </div>
             </div>
           )}
 
