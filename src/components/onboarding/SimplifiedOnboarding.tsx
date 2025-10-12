@@ -92,7 +92,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 z-50 flex items-center justify-center p-3 overflow-y-auto">
       <div className="w-full max-w-2xl my-2">
         {/* Header Section */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-6 flex flex-col items-center justify-center">
           {step === 0 && (
             <>
               <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight whitespace-nowrap text-center mx-auto">Bem-vindo à Melhor Saúde!</h1>
