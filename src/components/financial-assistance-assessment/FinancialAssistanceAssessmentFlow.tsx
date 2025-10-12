@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import TopicSelection from './TopicSelection';
 import SymptomSelection from './SymptomSelection';
 import AssessmentResult from './AssessmentResult';
-import SpecialistChoice from './SpecialistChoice';
 import FinancialAssistanceChatInterface from './FinancialAssistanceChatInterface';
 
-type Step = 'topics' | 'symptoms' | 'result' | 'specialist-choice' | 'chat';
+type Step = 'topics' | 'symptoms' | 'result' | 'chat';
 
 interface FinancialAssistanceAssessment {
   selectedTopics: string[];
@@ -84,17 +83,8 @@ const FinancialAssistanceAssessmentFlow: React.FC<FinancialAssistanceAssessmentF
             selectedTopics={assessment.selectedTopics}
             selectedSymptoms={assessment.selectedSymptoms}
             additionalNotes={assessment.additionalNotes}
-            onStartChat={() => setStep('specialist-choice')}
+            onStartChat={() => setStep('chat')}
             onBack={() => setStep('symptoms')}
-          />
-        );
-      
-      case 'specialist-choice':
-        return (
-          <SpecialistChoice
-            onChooseAI={() => setStep('chat')}
-            onChooseHuman={onChooseHuman}
-            onBack={() => setStep('result')}
           />
         );
       
@@ -102,7 +92,7 @@ const FinancialAssistanceAssessmentFlow: React.FC<FinancialAssistanceAssessmentF
         return (
           <FinancialAssistanceChatInterface
             assessment={assessment}
-            onBack={() => setStep('specialist-choice')}
+            onBack={() => setStep('result')}
             onComplete={onChooseHuman}
           />
         );
