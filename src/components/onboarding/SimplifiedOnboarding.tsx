@@ -92,13 +92,13 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 z-50 flex items-center justify-center p-3 overflow-y-auto">
       <div className="w-full max-w-2xl my-2">
         {/* Header Section */}
-        <div className="text-center mb-3">`
+        <div className="text-center mb-6">
           {step === 0 && (
             <>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+              <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">
                 Bem-vindo à Melhor Saúde!
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto">
                 Queremos ajudá-lo a alcançar o seu melhor bem-estar — físico, mental, financeiro e jurídico.
                 Para começarmos, diga-nos um pouco mais sobre si e sobre o que gostaria de melhorar.
               </p>
@@ -107,10 +107,10 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
           
           {step === 1 && (
             <>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+              <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">
                 Passo 1: Como se sente hoje?
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto">
                 Conte-nos sobre o seu estado atual de bem-estar
               </p>
             </>
@@ -118,10 +118,10 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
           
           {step === 2 && (
             <>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+              <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">
                 Passo 2: Defina os seus objetivos
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto">
                 Escolha até 3 áreas onde gostaria de melhorar
               </p>
             </>
@@ -129,10 +129,10 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
           
           {step === 3 && (
             <>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+              <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">
                 Passo 3: Planeie a sua jornada
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto">
                 Com que frequência deseja trabalhar no seu bem-estar?
               </p>
             </>
