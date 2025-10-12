@@ -14,10 +14,10 @@ export const ChatIntroSection = ({ onSelectPrompt }: ChatIntroSectionProps) => {
       <div className="space-y-2">
         <MessageSquare className="h-12 w-12 mx-auto text-primary" />
         <h2 className="text-2xl font-semibold">
-          {t('universalChat.intro.title')}
+          Olá! Estou aqui para ouvir e apoiar você.
         </h2>
         <p className="text-muted-foreground max-w-md mx-auto">
-          {t('universalChat.intro.description')}
+          Envie uma mensagem para o nosso especialista. Ideal para questões rápidas que o nosso especialista irá responder.
         </p>
       </div>
 
