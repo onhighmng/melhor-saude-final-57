@@ -102,9 +102,6 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
           <Card className="flex-1 flex flex-col overflow-hidden">
             <div className="p-6 border-b bg-primary/5">
               <h2 className="font-semibold text-lg">Assistente de Saúde Mental</h2>
-              <p className="text-sm text-muted-foreground">
-                Compartilhe seus pensamentos e sentimentos
-              </p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
