@@ -88,8 +88,8 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
 
   return (
     <div className="min-h-screen bg-soft-white">
-      <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
+      <div className="pt-16 pb-4 px-4">
+        <div className="w-full max-w-6xl mx-auto h-[calc(100vh-120px)] flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <Button variant="ghost" onClick={onBack}>
               Voltar
