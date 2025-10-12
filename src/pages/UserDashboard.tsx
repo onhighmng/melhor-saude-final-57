@@ -127,23 +127,6 @@ const UserDashboard = () => {
           </p>
         </div>
 
-        {/* Progress Bar Section */}
-        <div className="flex justify-center">
-          <Card className="w-full max-w-4xl border shadow-sm bg-card">
-            <CardContent className="pt-6 pb-6">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold">Progresso Pessoal</h3>
-                    <p className="text-sm text-muted-foreground">Continua a sua jornada de bem-estar</p>
-                  </div>
-                  <span className="text-2xl font-bold text-[#4A90E2]">{usagePercent}%</span>
-                </div>
-                <Progress value={usagePercent} className="h-2" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Session Balance Card - Centered */}
         <div className="flex justify-center">
@@ -151,6 +134,14 @@ const UserDashboard = () => {
             <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8">
               <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
                 <Calendar className="w-12 h-12 text-white" />
+              </div>
+              
+              <div className="w-full max-w-md space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Progresso Pessoal</span>
+                  <span className="text-lg font-bold text-[#4A90E2]">{usagePercent}%</span>
+                </div>
+                <Progress value={usagePercent} className="h-2" />
               </div>
               
               <div className="space-y-1">
