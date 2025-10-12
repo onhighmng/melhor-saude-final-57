@@ -86,58 +86,64 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
   };
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <Card className="w-full max-w-2xl shadow-2xl my-8">
-        <CardHeader className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-            {step === 1 && <Sparkles className="w-8 h-8 text-white" />}
-            {step === 2 && <Target className="w-8 h-8 text-white" />}
-            {step === 3 && <Clock className="w-8 h-8 text-white" />}
-          </div>
-          
+    <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <div className="w-full max-w-4xl my-8 px-4">
+        {/* Header Section */}
+        <div className="text-center mb-12">
           {step === 1 && (
             <>
-              <CardTitle className="text-3xl mb-2">Bem-vindo à Melhor Saúde!</CardTitle>
-              <CardDescription className="text-base">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                Bem-vindo à Melhor Saúde!
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Queremos ajudá-lo a alcançar o seu melhor bem-estar — físico, mental, financeiro e jurídico.
                 Para começarmos, diga-nos um pouco mais sobre si e sobre o que gostaria de melhorar.
-              </CardDescription>
+              </p>
             </>
           )}
           
           {step === 2 && (
             <>
-              <CardTitle className="text-3xl">Objetivos Pessoais</CardTitle>
-              <CardDescription className="text-base">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                Objetivos Pessoais
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
                 Quais são as suas principais metas neste momento? (Escolha até 3)
-              </CardDescription>
+              </p>
             </>
           )}
           
           {step === 3 && (
             <>
-              <CardTitle className="text-3xl">Frequência</CardTitle>
-              <CardDescription className="text-base">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                Frequência
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
                 Com que frequência gostaria de cuidar do seu bem-estar?
-              </CardDescription>
+              </p>
             </>
           )}
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-6 max-h-[60vh] overflow-y-auto">
+        {/* Content Section */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12">
           {/* Step 1: Como se sente */}
           {step === 1 && (
             <div className="space-y-4">
-              <h3 className="font-medium text-lg">Como se sente neste momento?</h3>
-              <RadioGroup value={feeling} onValueChange={setFeeling}>
+              <h3 className="font-semibold text-2xl mb-6 text-foreground">Como se sente neste momento?</h3>
+              <RadioGroup value={feeling} onValueChange={setFeeling} className="space-y-3">
                 {feelings.map((option) => (
                   <div 
                     key={option.value} 
-                    className="flex items-center space-x-3 p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer"
+                    className={`relative flex items-center p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${
+                      feeling === option.value 
+                        ? 'border-primary bg-primary/5 shadow-md' 
+                        : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
+                    }`}
                     onClick={() => setFeeling(option.value)}
                   >
-                    <RadioGroupItem value={option.value} id={option.value} />
-                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-base">
+                    <RadioGroupItem value={option.value} id={option.value} className="mr-4" />
+                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-lg font-medium">
                       {option.label}
                     </Label>
                   </div>
@@ -148,11 +154,15 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
           {/* Step 2: Objetivos */}
           {step === 2 && (
-            <div className="space-y-4">
-              <div className="text-sm text-muted-foreground text-center">
-                {selectedGoals.length}/3 selecionados
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
+                  <span className="text-sm font-medium text-primary">
+                    {selectedGoals.length}/3 selecionados
+                  </span>
+                </div>
               </div>
-              <div className="space-y-3">
+              <div className="grid sm:grid-cols-2 gap-4">
                 {goals.map((goal) => {
                   const isSelected = selectedGoals.includes(goal.value);
                   const isDisabled = !isSelected && selectedGoals.length >= 3;
@@ -160,8 +170,12 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                   return (
                     <div
                       key={goal.value}
-                      className={`flex items-center space-x-3 p-4 rounded-lg border transition-colors ${
-                        isSelected ? 'border-primary bg-primary/5' : isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-primary cursor-pointer'
+                      className={`relative flex items-center p-5 rounded-2xl border-2 transition-all duration-200 ${
+                        isSelected 
+                          ? 'border-primary bg-primary/5 shadow-md' 
+                          : isDisabled 
+                            ? 'border-gray-200 opacity-40 cursor-not-allowed' 
+                            : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50 cursor-pointer'
                       }`}
                       onClick={() => !isDisabled && handleGoalToggle(goal.value)}
                     >
@@ -170,10 +184,11 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                         checked={isSelected}
                         disabled={isDisabled}
                         onCheckedChange={() => handleGoalToggle(goal.value)}
+                        className="mr-4"
                       />
                       <Label
                         htmlFor={goal.value}
-                        className={`flex-1 text-base ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                        className={`flex-1 text-base font-medium ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                       >
                         {goal.label}
                       </Label>
@@ -187,15 +202,19 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
           {/* Step 3: Frequência */}
           {step === 3 && (
             <div className="space-y-4">
-              <RadioGroup value={frequency} onValueChange={setFrequency}>
+              <RadioGroup value={frequency} onValueChange={setFrequency} className="space-y-3">
                 {frequencies.map((option) => (
                   <div 
                     key={option.value} 
-                    className="flex items-center space-x-3 p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer"
+                    className={`relative flex items-center p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${
+                      frequency === option.value 
+                        ? 'border-primary bg-primary/5 shadow-md' 
+                        : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
+                    }`}
                     onClick={() => setFrequency(option.value)}
                   >
-                    <RadioGroupItem value={option.value} id={option.value} />
-                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-base">
+                    <RadioGroupItem value={option.value} id={option.value} className="mr-4" />
+                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-lg font-medium">
                       {option.label}
                     </Label>
                   </div>
@@ -205,35 +224,44 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
           )}
 
           {/* Navigation */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-4 mt-10">
             {step > 1 && (
-              <Button variant="outline" onClick={handleBack} className="flex-1">
+              <Button 
+                variant="outline" 
+                onClick={handleBack} 
+                className="flex-1 h-14 text-base rounded-2xl border-2"
+                size="lg"
+              >
                 Voltar
               </Button>
             )}
             <Button
               onClick={handleNext}
-              className="flex-1"
+              className="flex-1 h-14 text-base rounded-2xl shadow-lg bg-foreground hover:bg-foreground/90 text-background"
               size="lg"
               disabled={!canProceed()}
             >
-              {step === 3 ? 'Começar Jornada' : 'Próximo'}
+              {step === 3 ? 'Começar Jornada →' : 'Próximo →'}
             </Button>
           </div>
 
           {/* Progress indicator */}
-          <div className="flex justify-center gap-2 pt-2">
+          <div className="flex justify-center gap-3 mt-8">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className={`h-2 w-2 rounded-full transition-colors ${
-                  i === step ? 'bg-primary' : i < step ? 'bg-primary/50' : 'bg-muted'
+                className={`h-3 rounded-full transition-all duration-300 ${
+                  i === step 
+                    ? 'bg-primary w-12' 
+                    : i < step 
+                      ? 'bg-primary/50 w-3' 
+                      : 'bg-gray-300 w-3'
                 }`}
               />
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
