@@ -158,20 +158,20 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
             <div className="space-y-2">
               <RadioGroup value={feeling} onValueChange={setFeeling} className="space-y-2">
                 {feelings.map((option) => (
-                  <div 
-                    key={option.value} 
+                  <Label
+                    key={option.value}
+                    htmlFor={option.value}
                     className={`relative flex items-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
                       feeling === option.value 
                         ? 'border-primary bg-primary/5 shadow-md' 
                         : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
                     }`}
-                    onClick={() => setFeeling(option.value)}
                   >
                     <RadioGroupItem value={option.value} id={option.value} className="mr-3" />
-                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-sm md:text-base font-medium">
+                    <span className="flex-1 text-sm md:text-base font-medium">
                       {option.label}
-                    </Label>
-                  </div>
+                    </span>
+                  </Label>
                 ))}
               </RadioGroup>
             </div>
@@ -194,8 +194,9 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                   const isDisabled = !isSelected && selectedGoals.length >= 3;
                   
                   return (
-                    <div
+                    <Label
                       key={goal.value}
+                      htmlFor={goal.value}
                       className={`relative flex items-center p-3 rounded-xl border-2 transition-all duration-200 ${
                         isSelected 
                           ? 'border-primary bg-primary/5 shadow-md' 
@@ -203,7 +204,6 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                             ? 'border-gray-200 opacity-40 cursor-not-allowed' 
                             : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50 cursor-pointer'
                       }`}
-                      onClick={() => !isDisabled && handleGoalToggle(goal.value)}
                     >
                       <Checkbox
                         id={goal.value}
@@ -212,13 +212,10 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                         onCheckedChange={() => handleGoalToggle(goal.value)}
                         className="mr-3"
                       />
-                      <Label
-                        htmlFor={goal.value}
-                        className={`flex-1 text-sm font-medium ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                      >
+                      <span className={`flex-1 text-sm font-medium ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
                         {goal.label}
-                      </Label>
-                    </div>
+                      </span>
+                    </Label>
                   );
                 })}
               </div>
@@ -231,20 +228,20 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
             <div className="space-y-2">
               <RadioGroup value={frequency} onValueChange={setFrequency} className="space-y-2">
                 {frequencies.map((option) => (
-                  <div 
-                    key={option.value} 
+                  <Label
+                    key={option.value}
+                    htmlFor={option.value}
                     className={`relative flex items-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
                       frequency === option.value 
                         ? 'border-primary bg-primary/5 shadow-md' 
                         : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
                     }`}
-                    onClick={() => setFrequency(option.value)}
                   >
                     <RadioGroupItem value={option.value} id={option.value} className="mr-3" />
-                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-sm md:text-base font-medium">
+                    <span className="flex-1 text-sm md:text-base font-medium">
                       {option.label}
-                    </Label>
-                  </div>
+                    </span>
+                  </Label>
                 ))}
               </RadioGroup>
             </div>
