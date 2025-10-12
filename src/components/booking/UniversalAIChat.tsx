@@ -185,7 +185,7 @@ export const UniversalAIChat = ({
             </p>
             <Button onClick={handleContactRequest} variant="outline" size="sm" className="w-full sm:w-auto">
               <Phone className="h-4 w-4 mr-2" />
-              Entraremos em contacto consigo
+              Solicitar chamada
             </Button>
           </div>
         </div>
