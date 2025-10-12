@@ -68,7 +68,7 @@ export const ChatExitFeedbackButtons = ({
           <DialogTitle>Foi orientado para o pilar certo do bem-estar</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
+        <div className="flex gap-4 py-4">
           <Button onClick={() => handleFeedback(true)} disabled={isSubmitting} className="w-full h-auto py-6 text-lg" variant="default">
             😊 Fiquei satisfeito
           </Button>
