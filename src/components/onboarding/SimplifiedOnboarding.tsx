@@ -89,15 +89,15 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="w-full max-w-4xl my-8 px-4">
+      <div className="w-full max-w-3xl my-4 px-4">`
         {/* Header Section */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           {step === 0 && (
             <>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
                 Bem-vindo à Melhor Saúde!
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Queremos ajudá-lo a alcançar o seu melhor bem-estar — físico, mental, financeiro e jurídico.
                 Para começarmos, diga-nos um pouco mais sobre si e sobre o que gostaria de melhorar.
               </p>
@@ -106,47 +106,47 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
           
           {step === 1 && (
             <>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-                Como se sente?
+              <h1 className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">
+                Passo 1: Como se sente hoje?
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Conte-nos um pouco sobre o seu momento atual
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Conte-nos sobre o seu estado atual de bem-estar
               </p>
             </>
           )}
           
           {step === 2 && (
             <>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-                Objetivos Pessoais
+              <h1 className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">
+                Passo 2: Defina os seus objetivos
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                Quais são as suas principais metas neste momento? (Escolha até 3)
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                Escolha até 3 áreas onde gostaria de melhorar
               </p>
             </>
           )}
           
           {step === 3 && (
             <>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-                Frequência
+              <h1 className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">
+                Passo 3: Planeie a sua jornada
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                Com que frequência gostaria de cuidar do seu bem-estar?
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                Com que frequência deseja trabalhar no seu bem-estar?
               </p>
             </>
           )}
         </div>
 
         {/* Content Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-8">`
           {/* Step 0: Welcome Screen */}
           {step === 0 && (
-            <div className="text-center py-12">
-              <div className="mx-auto mb-8 w-32 h-32 flex items-center justify-center">
+            <div className="text-center py-8">
+              <div className="mx-auto mb-6 w-28 h-28 flex items-center justify-center">
                 <img src={melhorSaudeLogo} alt="Melhor Saúde" className="w-full h-full object-contain" />
               </div>
-              <p className="text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
+              <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
                 Estamos aqui para o apoiar na sua jornada de bem-estar completo
               </p>
             </div>
@@ -167,27 +167,27 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                     }`}
                     onClick={() => setFeeling(option.value)}
                   >
-                    <RadioGroupItem value={option.value} id={option.value} className="mr-4" />
-                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-lg font-medium">
+                    <RadioGroupItem value={option.value} id={option.value} className="mr-3" />
+                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-base font-medium">
                       {option.label}
                     </Label>
                   </div>
                 ))}
               </RadioGroup>
             </div>
-          )}
+          )}`
 
           {/* Step 2: Objetivos */}
           {step === 2 && (
-            <div className="space-y-6">
-              <div className="text-center mb-6">
+            <div className="space-y-4">
+              <div className="text-center mb-4">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                   <span className="text-sm font-medium text-primary">
                     {selectedGoals.length}/3 selecionados
                   </span>
                 </div>
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-3">`
                 {goals.map((goal) => {
                   const isSelected = selectedGoals.includes(goal.value);
                   const isDisabled = !isSelected && selectedGoals.length >= 3;
@@ -213,7 +213,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                       />
                       <Label
                         htmlFor={goal.value}
-                        className={`flex-1 text-base font-medium ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                        className={`flex-1 text-sm md:text-base font-medium ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                       >
                         {goal.label}
                       </Label>
@@ -222,47 +222,47 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                 })}
               </div>
             </div>
-          )}
+          )}`
 
           {/* Step 3: Frequência */}
           {step === 3 && (
-            <div className="space-y-4">
-              <RadioGroup value={frequency} onValueChange={setFrequency} className="space-y-3">
+            <div className="space-y-3">
+              <RadioGroup value={frequency} onValueChange={setFrequency} className="space-y-2">
                 {frequencies.map((option) => (
                   <div 
                     key={option.value} 
-                    className={`relative flex items-center p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${
+                    className={`relative flex items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
                       frequency === option.value 
                         ? 'border-primary bg-primary/5 shadow-md' 
                         : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
                     }`}
                     onClick={() => setFrequency(option.value)}
                   >
-                    <RadioGroupItem value={option.value} id={option.value} className="mr-4" />
-                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-lg font-medium">
+                    <RadioGroupItem value={option.value} id={option.value} className="mr-3" />
+                    <Label htmlFor={option.value} className="flex-1 cursor-pointer text-base font-medium">
                       {option.label}
                     </Label>
                   </div>
                 ))}
               </RadioGroup>
             </div>
-          )}
+          )}`
 
           {/* Navigation */}
-          <div className="flex gap-4 mt-10">
+          <div className="flex gap-3 mt-6">
             {step > 0 && (
               <Button 
                 variant="outline" 
                 onClick={handleBack} 
-                className="flex-1 h-14 text-base rounded-2xl border-2"
+                className="flex-1 h-12 text-base rounded-xl border-2"
                 size="lg"
               >
                 Voltar
               </Button>
-            )}
+            )}`
             <Button
               onClick={handleNext}
-              className="flex-1 h-14 text-base rounded-2xl shadow-lg bg-foreground hover:bg-foreground/90 text-background"
+              className="flex-1 h-12 text-base rounded-xl shadow-lg bg-foreground hover:bg-foreground/90 text-background"
               size="lg"
               disabled={!canProceed()}
             >
@@ -272,16 +272,16 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
           {/* Progress indicator */}
           {step > 0 && (
-            <div className="flex justify-center gap-3 mt-8">
+            <div className="flex justify-center gap-2 mt-6">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className={`h-3 rounded-full transition-all duration-300 ${
+                  className={`h-2 rounded-full transition-all duration-300 ${
                     i === step 
-                      ? 'bg-primary w-12' 
+                      ? 'bg-primary w-10' 
                       : i < step 
-                        ? 'bg-primary/50 w-3' 
-                        : 'bg-gray-300 w-3'
+                        ? 'bg-primary/50 w-2' 
+                        : 'bg-gray-300 w-2'
                   }`}
                 />
               ))}
