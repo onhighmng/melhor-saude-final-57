@@ -46,22 +46,28 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
         </p>
       </div>
 
-      <div className="space-y-3">
-        {relevantSymptoms.map((symptom) => {
+      <div className="flex flex-wrap gap-3 justify-center items-center px-4">
+        {relevantSymptoms.map((symptom, index) => {
           const isSelected = selectedSymptoms.includes(symptom.id);
+          const isBlue = index % 3 === 0 || index % 5 === 0;
           
           return (
-            <Card
+            <button
               key={symptom.id}
-              className={`p-5 cursor-pointer transition-all border-2 ${
+              className={`px-6 py-4 rounded-full text-base cursor-pointer transition-all border-2 font-medium ${
                 isSelected 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border hover:border-primary/50'
+                  ? 'border-primary bg-primary text-primary-foreground shadow-lg scale-105' 
+                  : isBlue
+                  ? 'border-sky-200 bg-sky-100 hover:border-sky-300 hover:shadow-md text-foreground'
+                  : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md text-foreground'
               }`}
               onClick={() => onSymptomToggle(symptom.id)}
+              style={{
+                transform: `rotate(${(index % 2 === 0 ? 1 : -1) * (index % 3)}deg)`
+              }}
             >
-              <p className="text-base text-foreground">{symptom.text}</p>
-            </Card>
+              {symptom.text}
+            </button>
           );
         })}
       </div>
