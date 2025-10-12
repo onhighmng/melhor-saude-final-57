@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Send, Phone, X } from 'lucide-react';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 import { SpecialistContactCard } from './SpecialistContactCard';
 import { ChatExitFeedbackButtons } from './ChatExitFeedbackButtons';
 import { ChatIntroSection } from './ChatIntroSection';
@@ -111,9 +112,11 @@ export const UniversalAIChat = ({
     setShowExitFeedback(false);
     onClose();
   };
-  const handleBookSession = () => {
-    navigate('/user/book-session');
-    onClose();
+  const handleContactRequest = () => {
+    toast({
+      title: "Estamos disponíveis 24/7",
+      description: "A nossa equipa entrará em contacto consigo o mais breve possível.",
+    });
   };
   return <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-card rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] flex flex-col">
@@ -180,9 +183,9 @@ export const UniversalAIChat = ({
             <p className="text-sm text-muted-foreground">
               Se as suas questões são complexas, solicite uma sessão 1-on-1 com um especialista.
             </p>
-            <Button onClick={handleBookSession} variant="outline" size="sm" className="w-full sm:w-auto">
+            <Button onClick={handleContactRequest} variant="outline" size="sm" className="w-full sm:w-auto">
               <Phone className="h-4 w-4 mr-2" />
-              Solicitar Chamada
+              Entraremos em contacto consigo
             </Button>
           </div>
         </div>
