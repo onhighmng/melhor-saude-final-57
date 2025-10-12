@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Sparkles, Target, Clock } from 'lucide-react';
+import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 
 interface SimplifiedOnboardingProps {
   onComplete: (data: OnboardingData) => void;
@@ -142,8 +143,8 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
           {/* Step 0: Welcome Screen */}
           {step === 0 && (
             <div className="text-center py-12">
-              <div className="mx-auto mb-8 w-24 h-24 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center">
-                <Sparkles className="w-12 h-12 text-white" />
+              <div className="mx-auto mb-8 w-32 h-32 flex items-center justify-center">
+                <img src={melhorSaudeLogo} alt="Melhor Saúde" className="w-full h-full object-contain" />
               </div>
               <p className="text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
                 Estamos aqui para o apoiar na sua jornada de bem-estar completo
