@@ -39,6 +39,12 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
+      <div className="flex items-center justify-between mb-4">
+        <Button variant="ghost" onClick={onBack}>
+          Voltar
+        </Button>
+      </div>
+      
       <div className="text-center">
         <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">
           Quais são os seus sintomas?
