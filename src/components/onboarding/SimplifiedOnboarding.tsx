@@ -40,6 +40,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     { value: 'energia', label: 'Ter mais energia no dia a dia' },
     { value: 'produtividade', label: 'Aumentar a produtividade' },
     { value: 'alimentacao', label: 'Melhorar a alimentação' },
+    { value: 'confianca', label: 'Aumentar a autoconfiança' },
   ];
 
   const frequencies = [
@@ -139,7 +140,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
         </div>
 
         {/* Content Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6">`
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6">
           {/* Step 0: Welcome Screen */}
           {step === 0 && (
             <div className="text-center py-4">
@@ -174,7 +175,8 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                 ))}
               </RadioGroup>
             </div>
-          )}`
+          )}
+
 
           {/* Step 2: Objetivos */}
           {step === 2 && (
@@ -186,7 +188,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                   </span>
                 </div>
               </div>
-              <div className="grid sm:grid-cols-2 gap-2">`
+              <div className="grid sm:grid-cols-2 gap-2">
                 {goals.map((goal) => {
                   const isSelected = selectedGoals.includes(goal.value);
                   const isDisabled = !isSelected && selectedGoals.length >= 3;
@@ -221,7 +223,8 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                 })}
               </div>
             </div>
-          )}`
+          )}
+
 
           {/* Step 3: Frequência */}
           {step === 3 && (
@@ -245,7 +248,8 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
                 ))}
               </RadioGroup>
             </div>
-          )}`
+          )}
+
 
           {/* Navigation */}
           <div className="flex gap-2 mt-4">
@@ -257,7 +261,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
               >
                 Voltar
               </Button>
-            )}`
+            )}
             <Button
               onClick={handleNext}
               className="flex-1 h-11 text-sm rounded-lg shadow-lg bg-foreground hover:bg-foreground/90 text-background"
