@@ -221,9 +221,24 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
           </div>
         </div>
 
-        {showBookingBanner && (
-          <BookingBanner onBookSession={handleBookSession} />
-        )}
+        {/* Permanent 1-on-1 Booking Section */}
+        <div className="bg-muted/50 border-t p-4">
+          <div className="max-w-2xl mx-auto text-center space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Se as suas questões são complexas, solicite uma sessão 1-on-1 com um especialista.
+            </p>
+            <Button 
+              onClick={handleBookSession}
+              variant="outline"
+              size="sm"
+              className="w-full sm:w-auto"
+            >
+              <Phone className="h-4 w-4 mr-2" />
+              Solicitar Sessão 1-on-1
+            </Button>
+          </div>
+        </div>
+
       </div>
 
       {showExitFeedback && (
