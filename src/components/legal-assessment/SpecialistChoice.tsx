@@ -28,10 +28,10 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
 
           <div className="text-center mb-12">
             <h1 className="text-3xl font-bold text-foreground mb-3">
-              Como gostaria de receber orientação?
+              Como gostaria de receber apoio?
             </h1>
             <p className="text-muted-foreground">
-              Escolha entre conversar com nossa IA ou falar diretamente com nosso especialista
+              Escolha entre conversar com a nossa IA ou falar diretamente com o nosso especialista
             </p>
           </div>
 
@@ -46,7 +46,7 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
                 </div>
                 <h3 className="text-xl font-semibold">Assistente Virtual</h3>
                 <p className="text-muted-foreground">
-                  Resposta imediata com nosso assistente jurídico inteligente
+                  Resposta imediata com o nosso assistente jurídico treinado
                 </p>
                 <Button className="w-full mt-4">
                   Conversar com IA
@@ -64,7 +64,7 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
                 </div>
                 <h3 className="text-xl font-semibold">Nosso Especialista</h3>
                 <p className="text-muted-foreground">
-                  Agende uma sessão individual com nosso especialista jurídico
+                  Agende uma sessão individual com o nosso especialista jurídico
                 </p>
                 <Button className="w-full mt-4">
                   Falar com Especialista

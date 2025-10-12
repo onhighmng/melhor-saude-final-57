@@ -71,6 +71,7 @@ const availableReports: Report[] = [
 ];
 
 const CompanyReports = () => {
+<<<<<<< HEAD
   
   // Define pillar data with i18n
   const pillarUsageData = [
@@ -78,6 +79,14 @@ const CompanyReports = () => {
     { name: 'Bem-Estar Físico', sessions: 89, noShows: 5, color: "#10B981" },
     { name: 'Assistência Financeira', sessions: 67, noShows: 2, color: "#F59E0B" },
     { name: 'Assistência Jurídica', sessions: 23, noShows: 1, color: "#8B5CF6" }
+=======
+  // Define pillar data
+  const pillarUsageData = [
+    { name: "Saúde Mental", sessions: 142, noShows: 8, color: "#3B82F6" },
+    { name: "Bem-estar Físico", sessions: 89, noShows: 5, color: "#10B981" },
+    { name: "Assistência Financeira", sessions: 67, noShows: 2, color: "#F59E0B" },
+    { name: "Assistência Jurídica", sessions: 23, noShows: 1, color: "#8B5CF6" }
+>>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
   ];
   
   const [selectedPeriod, setSelectedPeriod] = useState<string>("monthly");
@@ -139,10 +148,17 @@ const CompanyReports = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
+<<<<<<< HEAD
               Relatórios & Analytics
             </h1>
             <p className="text-muted-foreground">
               Análise detalhada da utilização e impacto do programa de wellbeing
+=======
+              Relatórios
+            </h1>
+            <p className="text-muted-foreground">
+              Análise detalhada do uso do programa de wellbeing
+>>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
             </p>
           </div>
           
@@ -170,7 +186,11 @@ const CompanyReports = () => {
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
+<<<<<<< HEAD
                     {dateFrom ? format(dateFrom, "dd/MM/yyyy") : "Data início"}
+=======
+                    {dateFrom ? format(dateFrom, "dd/MM/yyyy") : "De"}
+>>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -194,7 +214,11 @@ const CompanyReports = () => {
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
+<<<<<<< HEAD
                     {dateTo ? format(dateTo, "dd/MM/yyyy") : "Data fim"}
+=======
+                    {dateTo ? format(dateTo, "dd/MM/yyyy") : "Até"}
+>>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -241,7 +265,11 @@ const CompanyReports = () => {
           {/* Employee Engagement Overview */}
           <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
             <CardHeader>
+<<<<<<< HEAD
               <CardTitle className="text-lg font-semibold">Visão Geral de Engagement</CardTitle>
+=======
+              <CardTitle className="text-lg font-semibold">Engagement dos Colaboradores</CardTitle>
+>>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -252,11 +280,11 @@ const CompanyReports = () => {
                   </div>
                   <div className="p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">78%</div>
-                    <div className="text-sm text-muted-foreground">{t('reports.metrics.adoptionRate')}</div>
+                    <div className="text-sm text-muted-foreground">Taxa de Adesão</div>
                   </div>
                   <div className="p-4 bg-purple-50 rounded-lg">
                     <div className="text-2xl font-bold text-purple-600">6.8</div>
-                    <div className="text-sm text-muted-foreground">{t('reports.metrics.avgSessions')}</div>
+                    <div className="text-sm text-muted-foreground">Sessões Médias</div>
                   </div>
                 </div>
               </div>
@@ -267,7 +295,7 @@ const CompanyReports = () => {
         {/* Monthly Trends */}
         <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">{t('reports.charts.monthlyTrends')}</CardTitle>
+            <CardTitle className="text-lg font-semibold">Tendências Mensais</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -306,7 +334,7 @@ const CompanyReports = () => {
         {/* Available Reports */}
         <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">{t('reports.available')}</CardTitle>
+            <CardTitle className="text-lg font-semibold">Relatórios Disponíveis</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
@@ -338,7 +366,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Download className="h-3 w-3 mr-1" />
-                        {t('reports.actions.downloadCSV')}
+                        Baixar CSV
                       </Button>
                       
                       <Button 
@@ -348,7 +376,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Download className="h-3 w-3 mr-1" />
-                        {t('reports.actions.exportPDF')}
+                        Exportar PDF
                       </Button>
                       
                       <Button 
@@ -358,7 +386,7 @@ const CompanyReports = () => {
                         className="text-xs h-7"
                       >
                         <Mail className="h-3 w-3 mr-1" />
-                        {t('reports.actions.scheduleEmail')}
+                        Agendar Email
                       </Button>
                     </div>
                   </CardContent>

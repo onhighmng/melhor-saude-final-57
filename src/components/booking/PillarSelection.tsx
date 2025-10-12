@@ -12,24 +12,24 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
     {
       id: 'psicologica' as BookingPillar,
       icon: Brain,
-      title: 'Saúde mental',
-      description: 'Apoio psicológico e bem-estar mental',
+      title: 'Saúde Mental',
+      description: 'Apoio psicológico e bem-estar emocional',
       bgColor: 'bg-gradient-to-br from-purple-500 to-purple-700',
       hoverColor: 'hover:from-purple-600 hover:to-purple-800'
     },
     {
       id: 'fisica' as BookingPillar,
       icon: Heart,
-      title: 'Bem estar físico',
-      description: 'Saúde física e estilo de vida',
+      title: 'Bem-estar Físico',
+      description: 'Saúde física e qualidade de vida',
       bgColor: 'bg-gradient-to-br from-green-500 to-green-700',
       hoverColor: 'hover:from-green-600 hover:to-green-800'
     },
     {
       id: 'financeira' as BookingPillar,
       icon: DollarSign,
-      title: 'Assistência financeira',
-      description: 'Consultoria e planeamento financeiro',
+      title: 'Assistência Financeira',
+      description: 'Consultoria financeira e planeamento',
       bgColor: 'bg-gradient-to-br from-blue-500 to-blue-700',
       hoverColor: 'hover:from-blue-600 hover:to-blue-800'
     },
@@ -37,7 +37,7 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
       id: 'juridica' as BookingPillar,
       icon: Scale,
       title: 'Assistência Jurídica',
-      description: 'Consultoria jurídica especializada',
+      description: 'Apoio e aconselhamento legal',
       bgColor: 'bg-gradient-to-br from-amber-500 to-amber-700',
       hoverColor: 'hover:from-amber-600 hover:to-amber-800'
     }
@@ -58,7 +58,7 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
               Como podemos ajudar?
             </h1>
             <p className="font-medium text-base text-royal-blue">
-              Escolha a área que precisa de apoio
+              Selecione a área em que precisa de apoio
             </p>
           </div>
 

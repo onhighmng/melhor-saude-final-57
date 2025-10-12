@@ -10,7 +10,11 @@ export const getErrorMessage = (error: any): string => {
   
   if (error?.code) {
     // Map error codes to Portuguese messages
+<<<<<<< HEAD
     const errorMessageMap: Record<string, string> = {
+=======
+    const errorMessages: Record<string, string> = {
+>>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc
       'auth/invalid-email': 'Email inválido',
       'auth/user-not-found': 'Utilizador não encontrado',
       'auth/wrong-password': 'Senha incorreta',
@@ -20,8 +24,16 @@ export const getErrorMessage = (error: any): string => {
       'not-found': 'Recurso não encontrado',
     };
     
+<<<<<<< HEAD
     return errorMessageMap[error.code] || 'Ocorreu um erro';
   }
   
   return 'Ocorreu um erro';
 };
+=======
+    return errorMessages[error.code] || 'Ocorreu um erro';
+  }
+  
+  return 'Ocorreu um erro';
+};
+>>>>>>> 27a8624a17f72448b31e25b6a54f683078672cdc

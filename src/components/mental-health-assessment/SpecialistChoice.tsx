@@ -31,7 +31,7 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
               Como gostaria de receber apoio?
             </h1>
             <p className="text-muted-foreground">
-              Escolha entre conversar com nossa IA ou falar diretamente com nosso especialista
+              Escolha entre conversar com a nossa IA ou falar diretamente com o nosso especialista
             </p>
           </div>
 
@@ -46,7 +46,7 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
                 </div>
                 <h3 className="text-xl font-semibold">Assistente Virtual</h3>
                 <p className="text-muted-foreground">
-                  Resposta imediata com nosso assistente de saúde mental treinado
+                  Resposta imediata com o nosso assistente de saúde mental treinado
                 </p>
                 <Button className="w-full mt-4">
                   Conversar com IA
@@ -64,7 +64,7 @@ const SpecialistChoice: React.FC<SpecialistChoiceProps> = ({
                 </div>
                 <h3 className="text-xl font-semibold">Nosso Especialista</h3>
                 <p className="text-muted-foreground">
-                  Agende uma sessão individual com nosso especialista em saúde mental
+                  Agende uma sessão individual com o nosso especialista em saúde mental
                 </p>
                 <Button className="w-full mt-4">
                   Falar com Especialista

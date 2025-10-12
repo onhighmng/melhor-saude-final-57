@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from 'react-i18next';
 
 interface SymptomSelectionProps {
   selectedTopics: string[];
@@ -33,6 +34,7 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
   onNext,
   onBack
 }) => {
+  const { t } = useTranslation('user');
   const totalSymptoms = physicalWellnessSymptoms.length;
   const selectedCount = selectedSymptoms.length;
   const progressPercentage = totalSymptoms > 0 ? Math.round((selectedCount / totalSymptoms) * 100) : 0;
@@ -41,10 +43,10 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
     <div className="space-y-8 max-w-4xl mx-auto">
       <div className="text-center">
         <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">
-          Descreva sua situação física
+          {t('booking.physicalWellness.symptomSelection.title')}
         </h1>
         <p className="text-lg text-primary">
-          Selecione os pontos que melhor descrevem o seu estado atual
+          {t('booking.physicalWellness.symptomSelection.subtitle')}
         </p>
       </div>
 
@@ -79,12 +81,12 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
 
       <div className="space-y-3">
         <label className="text-base font-medium text-foreground">
-          Informações adicionais (opcional)
+          {t('booking.physicalWellness.symptomSelection.additionalNotesLabel')}
         </label>
         <Textarea
           value={additionalNotes}
           onChange={(e) => onNotesChange(e.target.value)}
-          placeholder="Adicione qualquer detalhe relevante sobre seu bem-estar físico..."
+          placeholder={t('booking.physicalWellness.symptomSelection.additionalNotesPlaceholder')}
           className="min-h-[150px] border-2 resize-none"
         />
       </div>
@@ -96,7 +98,7 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
           size="lg"
           className="min-w-[200px] bg-primary hover:bg-primary/90 text-white rounded-lg"
         >
-          Ver Resultado
+          {t('booking.viewResultButton')}
         </Button>
       </div>
     </div>
