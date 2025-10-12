@@ -30,12 +30,34 @@ const UserDashboard = () => {
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
   const [showUniversalChat, setShowUniversalChat] = useState(false);
 
+  // Get milestone progress from localStorage
+  const getMilestoneProgress = () => {
+    const stored = localStorage.getItem('journeyMilestones');
+    if (stored) {
+      const milestones = JSON.parse(stored);
+      return milestones.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
+    }
+    return 0;
+  };
+  
+  const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress());
+
   const handleOnboardingComplete = (data: OnboardingData) => {
     localStorage.setItem('onboardingData', JSON.stringify(data));
     setOnboardingData(data);
     setShowOnboarding(false);
     setJustCompletedOnboarding(true);
   };
+
+  // Update milestone progress when it changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const progress = getMilestoneProgress();
+      setMilestoneProgress(progress);
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
@@ -139,9 +161,9 @@ const UserDashboard = () => {
               <div className="w-full max-w-md space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Progresso Pessoal</span>
-                  <span className="text-lg font-bold text-[#4A90E2]">{usagePercent}%</span>
+                  <span className="text-lg font-bold text-[#4A90E2]">{milestoneProgress}%</span>
                 </div>
-                <Progress value={usagePercent} className="h-2" />
+                <Progress value={milestoneProgress} className="h-2" />
               </div>
               
               <div className="space-y-1">
