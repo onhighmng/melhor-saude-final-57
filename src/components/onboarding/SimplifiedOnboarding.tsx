@@ -95,9 +95,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
         <div className="text-center mb-6">
           {step === 0 && (
             <>
-              <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">
-                Bem-vindo à Melhor Saúde!
-              </h1>
+              <h1 className="text-6xl md:text-7xl font-bold mb-4 tracking-tight">Bem-vindo à Melhor Saúde!</h1>
               <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto">
                 Queremos ajudá-lo a alcançar o seu melhor bem-estar — físico, mental, financeiro e jurídico.
                 Para começarmos, diga-nos um pouco mais sobre si e sobre o que gostaria de melhorar.
