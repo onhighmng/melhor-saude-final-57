@@ -15,31 +15,34 @@ export default function UserSessions() {
   const navigate = useNavigate();
   const [userBalance] = useState(mockUserBalance);
   
-  // Mock user goals data
+  // Mock user goals data - based on onboarding choices
   const [userGoals] = useState([
     {
       id: '1',
-      title: 'Melhorar saúde mental',
+      title: 'Gerir melhor o stress e a ansiedade',
       pillar: 'saude_mental',
-      targetSessions: 5,
-      completedSessions: 3,
-      progressPercentage: 60
+      targetSessions: 6,
+      completedSessions: 4,
+      progressPercentage: 70,
+      progressEmojis: ['😟', '🙂', '😄']
     },
     {
       id: '2',
-      title: 'Resolver questão jurídica',
+      title: 'Sentir-me mais seguro juridicamente',
       pillar: 'assistencia_juridica',
-      targetSessions: 3,
+      targetSessions: 4,
       completedSessions: 2,
-      progressPercentage: 67
+      progressPercentage: 45,
+      progressEmojis: ['⚪', '⚪', '🔵', '⚪']
     },
     {
       id: '3',
-      title: 'Planeamento financeiro',
+      title: 'Organizar melhor as minhas finanças',
       pillar: 'assistencia_financeira',
-      targetSessions: 4,
+      targetSessions: 3,
       completedSessions: 1,
-      progressPercentage: 25
+      progressPercentage: 30,
+      progressEmojis: ['💸', '💸', '⚪', '⚪']
     }
   ]);
   
@@ -66,26 +69,6 @@ export default function UserSessions() {
     }))
   );
 
-  // Helper function to render session progress
-  const renderSessionProgress = (completed: number, total: number) => {
-    return (
-      <div className="flex gap-1 items-center">
-        {Array.from({ length: total }).map((_, index) => (
-          <div
-            key={index}
-            className={cn(
-              "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
-              index < completed 
-                ? "bg-primary text-primary-foreground" 
-                : "bg-muted text-muted-foreground"
-            )}
-          >
-            ✓
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   const handleViewDetails = (sessionId: string) => {
     navigate(`/user/sessions`);
@@ -130,12 +113,18 @@ export default function UserSessions() {
                 {/* Progress Bar */}
                 <Progress value={goal.progressPercentage} className="h-2" />
                 
-                {/* Skull Icons */}
+                {/* Session Stats and Emoji Progress */}
                 <div className="flex items-center justify-between">
-                  {renderSessionProgress(goal.completedSessions, goal.targetSessions)}
                   <span className="text-sm text-muted-foreground">
                     {goal.completedSessions}/{goal.targetSessions} sessões completadas
                   </span>
+                  <div className="flex gap-1">
+                    {goal.progressEmojis.map((emoji, index) => (
+                      <span key={index} className="text-lg">
+                        {emoji}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
@@ -172,6 +161,15 @@ export default function UserSessions() {
             </CardContent>
           </Card>
         )}
+
+        {/* Motivational Tagline */}
+        <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground italic">
+              Pequenos passos, grandes resultados. O seu bem-estar cresce com cada conquista 💙
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
