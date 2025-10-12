@@ -81,6 +81,14 @@ const translations: Record<string, any> = {
     'Notários',
     'Mediadores'
   ],
+  'pillars.psychological.specialists.sectionTitle': 'Profissionais Disponíveis',
+  'pillars.psychological.specialists.availability': 'disponíveis 24/7',
+  'pillars.physical.specialists.sectionTitle': 'Profissionais Disponíveis',
+  'pillars.physical.specialists.availability': 'disponíveis 24/7',
+  'pillars.financial.specialists.sectionTitle': 'Profissionais Disponíveis',
+  'pillars.financial.specialists.availability': 'disponíveis 24/7',
+  'pillars.legal.specialists.sectionTitle': 'Profissionais Disponíveis',
+  'pillars.legal.specialists.availability': 'disponíveis 24/7',
   
   // Company
   'company.deactivate.confirm': 'Confirmar Desativação',
