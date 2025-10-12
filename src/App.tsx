@@ -15,7 +15,6 @@ import { usePageTracking } from "@/hooks/usePageTracking";
 // Lazy load pages for better performance
 import { lazy } from "react";
 const Index = lazy(() => import("./pages/Index"));
-const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const UserSettings = lazy(() => import("./pages/UserSettings"));
 const PrestadorDashboard = lazy(() => import("./pages/PrestadorDashboard"));
 const PrestadorAvailability = lazy(() => import("./pages/PrestadorAvailability"));
@@ -129,10 +128,6 @@ const AppWithTracking = () => {
           <Route path="/user/book" element={<UserLayout><UserBooking /></UserLayout>} />
           <Route path="/user/book-session" element={<UserLayout><DirectBookingFlow /></UserLayout>} />
           <Route path="/user/book-old" element={<UserLayout><BookingFlow /></UserLayout>} />
-          <Route path="/user/help" element={<UserLayout><HelpCenter /></UserLayout>} />
-          
-          {/* Public help center */}
-          <Route path="/help" element={<HelpCenter />} />
           
           {/* Prestador routes */}
           <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />

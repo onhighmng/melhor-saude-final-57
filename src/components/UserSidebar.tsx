@@ -41,7 +41,6 @@ export function UserSidebar() {
     { title: 'Meu percurso', url: "/user/sessions", icon: CalendarCheck },
     { title: 'Notificações', url: "/user/notifications", icon: Bell, badge: 3 },
     { title: 'Recursos', url: "/user/resources", icon: BookOpen },
-    { title: 'Ajuda', url: "/user/help", icon: HelpCircle },
     { title: 'Definições', url: "/user/settings", icon: Settings },
   ]
 
