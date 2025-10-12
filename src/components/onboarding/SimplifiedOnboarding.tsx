@@ -261,7 +261,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
             )}
             <Button
               onClick={handleNext}
-              className="flex-1 h-11 text-sm rounded-lg shadow-lg bg-foreground hover:bg-foreground/90 text-background"
+              className="flex-1 h-11 text-sm rounded-lg shadow-lg bg-sky-blue hover:bg-sky-blue/90 text-white"
               disabled={!canProceed()}
             >
               {step === 0 ? 'Começar →' : step === 3 ? 'Começar Jornada →' : 'Próximo →'}
