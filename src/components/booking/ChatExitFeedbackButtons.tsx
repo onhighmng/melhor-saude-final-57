@@ -65,7 +65,7 @@ export const ChatExitFeedbackButtons = ({
   return <Dialog open={true}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Foi orientado para o pilar certo do bem-estar</DialogTitle>
+          <DialogTitle>Foi orientado para o pilar certo do bem-estar?</DialogTitle>
         </DialogHeader>
         
         <div className="flex gap-4 py-4">
