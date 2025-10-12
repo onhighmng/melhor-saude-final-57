@@ -111,7 +111,7 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
                   <p>Olá! Estou aqui para ouvir e apoiar você.</p>
-                  <p className="text-sm mt-2">Envie uma mensagem para começar.</p>
+                  <p className="text-sm mt-2">Envie uma mensagem para o nosso especialista. Ideal para questões rápidas que o nosso especialista irá responder.</p>
                 </div>
               )}
               
