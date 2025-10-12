@@ -63,9 +63,6 @@ const SymptomSelection: React.FC<SymptomSelectionProps> = ({
                   : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md text-foreground'
               }`}
               onClick={() => onSymptomToggle(symptom.id)}
-              style={{
-                transform: `rotate(${(index % 2 === 0 ? 1 : -1) * (index % 3)}deg)`
-              }}
             >
               {symptom.text}
             </button>
