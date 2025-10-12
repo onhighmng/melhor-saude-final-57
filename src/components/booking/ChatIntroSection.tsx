@@ -1,14 +1,11 @@
 import { MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
 
 interface ChatIntroSectionProps {
   onSelectPrompt: (prompt: string) => void;
 }
 
 export const ChatIntroSection = ({ onSelectPrompt }: ChatIntroSectionProps) => {
-  const { t } = useTranslation('user');
-
   return (
     <div className="text-center space-y-6 py-8">
       <div className="space-y-2">
@@ -24,28 +21,28 @@ export const ChatIntroSection = ({ onSelectPrompt }: ChatIntroSectionProps) => {
       <div className="space-y-3">
         <Button
           variant="outline"
-          onClick={() => onSelectPrompt(t('universalChat.intro.button1'))}
+          onClick={() => onSelectPrompt('me sinto ultimamente')}
           className="w-full text-left h-auto py-4 px-6"
         >
           <span>
-            Gostaria de partilhar o que <span className="underline">"{t('universalChat.intro.button1Highlight')}"</span>
+            Gostaria de partilhar o que <span className="underline">"me sinto ultimamente"</span>
           </span>
         </Button>
         
         <Button
           variant="outline"
-          onClick={() => onSelectPrompt(t('universalChat.intro.button2'))}
+          onClick={() => onSelectPrompt('Preciso de ajuda com uma questão específica')}
           className="w-full text-left h-auto py-4 px-6"
         >
-          {t('universalChat.intro.button2')}
+          Preciso de ajuda com uma questão específica
         </Button>
         
         <Button
           variant="outline"
-          onClick={() => onSelectPrompt(t('universalChat.intro.button3'))}
+          onClick={() => onSelectPrompt('Tenho uma dúvida sobre os serviços')}
           className="w-full text-left h-auto py-4 px-6"
         >
-          {t('universalChat.intro.button3')}
+          Tenho uma dúvida sobre os serviços
         </Button>
       </div>
     </div>

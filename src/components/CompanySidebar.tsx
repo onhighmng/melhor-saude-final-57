@@ -1,7 +1,6 @@
 import { LayoutDashboard, Users, BarChart3, Settings, HelpCircle, FileText, LogOut, Mail } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTranslation } from 'react-i18next';
 import {
   Sidebar,
   SidebarContent,
@@ -21,20 +20,17 @@ import { Badge } from "@/components/ui/badge";
 import { SupportContact } from "@/components/ui/support-contact";
 
 const CompanySidebar = () => {
-  const { t } = useTranslation('navigation');
-  const { t: tCommon } = useTranslation('common');
-  
   const navigationItems = [
-    { title: t('company.dashboard'), url: "/company/dashboard", icon: LayoutDashboard },
-    { title: t('company.employees'), url: "/company/employees", icon: Users, badge: "seatUsage" },
-    { title: t('company.inviteCodes'), url: "/company/invites", icon: Mail, badge: "activeCodes" },
-    { title: t('company.reports'), url: "/company/reports", icon: BarChart3 },
-    { title: t('company.settings'), url: "/company/settings", icon: Settings },
+    { title: 'Dashboard', url: "/company/dashboard", icon: LayoutDashboard },
+    { title: 'Colaboradores', url: "/company/employees", icon: Users, badge: "seatUsage" },
+    { title: 'Códigos de Convite', url: "/company/invites", icon: Mail, badge: "activeCodes" },
+    { title: 'Relatórios', url: "/company/reports", icon: BarChart3 },
+    { title: 'Definições', url: "/company/settings", icon: Settings },
   ];
 
   const footerItems = [
-    { title: t('admin.support'), url: "/support", icon: HelpCircle },
-    { title: t('company.terms'), url: "/terms", icon: FileText },
+    { title: 'Suporte', url: "/support", icon: HelpCircle },
+    { title: 'Termos', url: "/terms", icon: FileText },
   ];
 
   // Mock seat usage data - in real app this would come from API/state
@@ -109,7 +105,7 @@ const CompanySidebar = () => {
               <span className="text-sm font-medium truncate">
                 {user?.name || user?.email}
               </span>
-              <span className="text-xs text-muted-foreground">{tCommon('roles.hr')}</span>
+              <span className="text-xs text-muted-foreground">RH</span>
             </div>
           </div>
         )}
@@ -161,36 +157,36 @@ const CompanySidebar = () => {
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: t('admin.support') }}>
+            <SidebarMenuItemWithTooltip item={{ title: 'Suporte' }}>
               <SidebarMenuButton asChild size="sm">
                 <NavLink to="/support" className="text-muted-foreground hover:text-foreground">
                   <HelpCircle className={`h-4 w-4 ${isCollapsed ? 'mx-auto' : 'mr-2'}`} />
-                  {!isCollapsed && <span>{t('admin.support')}</span>}
+                  {!isCollapsed && <span>Suporte</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: t('company.terms') }}>
+            <SidebarMenuItemWithTooltip item={{ title: 'Termos' }}>
               <SidebarMenuButton asChild size="sm">
                 <NavLink to="/terms" className="text-muted-foreground hover:text-foreground">
                   <FileText className={`h-4 w-4 ${isCollapsed ? 'mx-auto' : 'mr-2'}`} />
-                  {!isCollapsed && <span>{t('company.terms')}</span>}
+                  {!isCollapsed && <span>Termos</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: tCommon('logout') }}>
+            <SidebarMenuItemWithTooltip item={{ title: 'Sair' }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
                 size="sm"
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <LogOut className={`h-4 w-4 ${isCollapsed ? 'mx-auto' : 'mr-2'}`} />
-                {!isCollapsed && <span>{tCommon('logout')}</span>}
+                {!isCollapsed && <span>Sair</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>

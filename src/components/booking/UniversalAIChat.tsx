@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -18,7 +17,6 @@ interface UniversalAIChatProps {
 }
 
 export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps) => {
-  const { t } = useTranslation(['user', 'common']);
   const { user } = useAuth();
   const navigate = useNavigate();
   const [input, setInput] = useState('');
@@ -136,10 +134,10 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <div>
-            <h2 className="text-xl font-semibold">{t('user:universalChat.intro.title')}</h2>
+            <h2 className="text-xl font-semibold">Chat com Especialista</h2>
             {pillar && (
               <p className="text-sm text-muted-foreground capitalize">
-                {t(`user:universalChat.specialists.${pillar}`)}
+                {pillar === 'saude_mental' ? 'Saúde Mental' : pillar === 'bem_estar_fisico' ? 'Bem-estar Físico' : pillar === 'assistencia_financeira' ? 'Assistência Financeira' : 'Assistência Jurídica'}
               </p>
             )}
           </div>
@@ -160,7 +158,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
             {showFallbackMessage && messages.length === 0 && !showIntro && (
               <div className="flex justify-start">
                 <div className="bg-muted rounded-lg p-3">
-                  <p className="text-sm">{t('user:universalChat.fallback.description')}</p>
+                  <p className="text-sm">Se preferir falar com um especialista humano, pode agendar uma sessão</p>
                 </div>
               </div>
             )}
@@ -187,7 +185,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
                 <div className="bg-muted rounded-lg p-3">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">{t('user:universalChat.typing')}</span>
+                    <span className="text-sm">A escrever...</span>
                   </div>
                 </div>
               </div>
@@ -210,7 +208,7 @@ export const UniversalAIChat = ({ onClose, initialPillar }: UniversalAIChatProps
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={t('user:universalChat.placeholder')}
+              placeholder="Escreva a sua mensagem..."
               className="resize-none"
               rows={2}
               disabled={isLoading || showPhoneCard}

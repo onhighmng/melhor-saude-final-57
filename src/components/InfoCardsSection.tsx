@@ -3,10 +3,8 @@ import React from 'react';
 import { useInfoCardsScroll } from '@/hooks/useInfoCardsScroll';
 import { pillars } from './info-cards/InfoCardsData';
 import PillarStep from './info-cards/PillarStep';
-import { useTranslation } from 'react-i18next';
 
 const InfoCardsSection = () => {
-  const { t } = useTranslation('common');
   const { currentStep, scrollProgress, sectionRef } = useInfoCardsScroll();
 
   const handleImplementPillars = () => {
@@ -25,55 +23,55 @@ const InfoCardsSection = () => {
 
   const pillarFeatures = [
     {
-      title: t('infoCards.psychological.title'),
-      description: t('infoCards.psychological.description'),
+      title: 'Saúde Mental',
+      description: 'Apoio psicológico profissional para o seu bem-estar emocional',
       image: "/lovable-uploads/8e2df1aa-a1c7-4f91-b724-fc348e3347ee.png",
       features: [
-        t('infoCards.psychological.features.0'),
-        t('infoCards.psychological.features.1'),
-        t('infoCards.psychological.features.2'),
-        t('infoCards.psychological.features.3'),
-        t('infoCards.psychological.features.4'),
-        t('infoCards.psychological.features.5')
+        'Sessões individuais com psicólogos certificados',
+        'Terapia online confidencial e segura',
+        'Apoio em saúde mental e gestão de stress',
+        'Desenvolvimento pessoal e autoconhecimento',
+        'Técnicas de mindfulness e relaxamento',
+        'Suporte em momentos de crise'
       ]
     },
     {
-      title: t('infoCards.financial.title'),
-      description: t('infoCards.financial.description'),
+      title: 'Assistência Financeira',
+      description: 'Consultoria financeira para uma vida mais equilibrada',
       image: "/lovable-uploads/922a13c5-6f7f-427b-8497-e5ca6c19e48e.png",
       features: [
-        t('infoCards.financial.features.0'),
-        t('infoCards.financial.features.1'),
-        t('infoCards.financial.features.2'),
-        t('infoCards.financial.features.3'),
-        t('infoCards.financial.features.4'),
-        t('infoCards.financial.features.5')
+        'Planeamento financeiro personalizado',
+        'Gestão de orçamento familiar',
+        'Consultoria para investimentos',
+        'Estratégias de poupança',
+        'Organização de dívidas',
+        'Educação financeira'
       ]
     },
     {
-      title: t('infoCards.physical.title'),
-      description: t('infoCards.physical.description'),
+      title: 'Bem-estar Físico',
+      description: 'Cuidados com a sua saúde física e nutrição',
       image: "/lovable-uploads/fad5a7e1-4fd0-4f9b-8151-d9c8b54fc079.png",
       features: [
-        t('infoCards.physical.features.0'),
-        t('infoCards.physical.features.1'),
-        t('infoCards.physical.features.2'),
-        t('infoCards.physical.features.3'),
-        t('infoCards.physical.features.4'),
-        t('infoCards.physical.features.5')
+        'Nutrição personalizada',
+        'Planos de treino adaptados',
+        'Acompanhamento de personal trainers',
+        'Orientação alimentar',
+        'Programas de exercício físico',
+        'Monitorização de progresso'
       ]
     },
     {
-      title: t('infoCards.legal.title'),
-      description: t('infoCards.legal.description'),
+      title: 'Assistência Jurídica',
+      description: 'Suporte legal para proteger os seus direitos',
       image: "/lovable-uploads/f48e9a64-fcb0-4691-baa9-c6007ac1a750.png",
       features: [
-        t('infoCards.legal.features.0'),
-        t('infoCards.legal.features.1'),
-        t('infoCards.legal.features.2'),
-        t('infoCards.legal.features.3'),
-        t('infoCards.legal.features.4'),
-        t('infoCards.legal.features.5')
+        'Consultas jurídicas especializadas',
+        'Aconselhamento legal personalizado',
+        'Revisão de contratos',
+        'Apoio em questões trabalhistas',
+        'Orientação em direito familiar',
+        'Resolução de conflitos'
       ]
     }
   ];
@@ -128,9 +126,9 @@ const InfoCardsSection = () => {
             {/* Header Section */}
             <div className="flex flex-col justify-start items-center w-full max-w-2xl mx-auto text-center mb-6 sm:mb-12 lg:mb-16 pt-8">
               <h2 className="text-h1 text-navy-blue">
-                <div className="block text-center w-full">{t('infoCards.header.title')}</div>
+                <div className="block text-center w-full">Os Nossos 4 Pilares</div>
                 <div className="block text-center w-full text-white">
-                  <span className="relative">{t('infoCards.header.subtitle')}</span>
+                  <span className="relative">de Bem-Estar</span>
                 </div>
               </h2>
             </div>

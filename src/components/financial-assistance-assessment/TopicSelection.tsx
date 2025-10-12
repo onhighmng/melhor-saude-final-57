@@ -1,9 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
-
-interface TopicSelectionProps {
+interface TopicSelectionProps{
   selectedTopics: string[];
   onTopicToggle: (topicId: string) => void;
   onNext: () => void;
@@ -55,16 +53,14 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
   onNext,
   onBack
 }) => {
-  const { t } = useTranslation('user');
-  
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <div className="text-center">
         <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">
-          {t('booking.financialAssistance.topicSelection.title')}
+          Em que podemos ajudar?
         </h1>
         <p className="text-lg text-muted-foreground">
-          {t('booking.financialAssistance.topicSelection.subtitle')}
+          Selecione uma ou mais áreas de assistência financeira
         </p>
       </div>
 
@@ -103,7 +99,7 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
           size="lg"
           className="min-w-[200px] bg-primary hover:bg-primary/90 text-white rounded-lg"
         >
-          {t('booking.continueButton')}
+          Continuar
         </Button>
       </div>
     </div>

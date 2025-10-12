@@ -2,8 +2,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-
 interface AssessmentResultProps {
   selectedTopics: string[];
   selectedSymptoms: string[];
@@ -36,7 +34,6 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
   onStartChat,
   onBack
 }) => {
-  const { t } = useTranslation('user');
   
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -46,21 +43,21 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
         className="flex items-center gap-2 text-foreground hover:text-foreground"
       >
         <ArrowLeft className="w-4 h-4" />
-        {t('booking.back')}
+        Voltar
       </Button>
 
       <div className="text-center">
         <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">
-          {t('booking.legalAssistance.result.title')}
+          Resultado do Pré-Diagnóstico
         </h1>
         <p className="text-lg text-primary">
-          {t('booking.legalAssistance.result.subtitle')}
+          Preparamos uma análise com base nas suas respostas
         </p>
       </div>
 
       <Card className="p-8 border-2">
         <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
-          {t('booking.legalAssistance.result.areasTitle')}
+          Áreas Selecionadas
         </h2>
         <div className="flex flex-wrap gap-3">
           {selectedTopics.map((topicId) => {
@@ -82,7 +79,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
 
       <Card className="p-8 border-2">
         <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
-          {t('booking.legalAssistance.result.symptomsTitle')}
+          Aspetos Identificados
         </h2>
         <ul className="space-y-3">
           {selectedSymptoms.map((symptomId) => {
@@ -102,7 +99,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
       {additionalNotes && additionalNotes.trim() && (
         <Card className="p-8 border-2">
           <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
-            {t('booking.legalAssistance.result.additionalInfoTitle')}
+            Informações Adicionais
           </h2>
           <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
             {additionalNotes}
@@ -116,7 +113,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
           size="lg"
           className="min-w-[240px] bg-primary hover:bg-primary/90 text-white rounded-lg"
         >
-          {t('booking.startChatButton')}
+          Falar com Especialista
         </Button>
       </div>
     </div>

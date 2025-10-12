@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -32,7 +31,6 @@ interface Provider {
 
 export const DirectBookingFlow = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation(['user', 'common']);
   const { toast } = useToast();
   
   const [currentStep, setCurrentStep] = useState<BookingStep>('pillar');
@@ -86,11 +84,8 @@ export const DirectBookingFlow = () => {
       setCurrentStep('provider');
       
       toast({
-        title: t('booking.toasts.providerAssigned'),
-        description: t('booking.toasts.providerAssignedDesc', { 
-          name: assignedProvider.name, 
-          specialty: assignedProvider.specialty 
-        }),
+        title: 'Especialista Atribuído',
+        description: `Foi-lhe atribuído ${assignedProvider.name} (${assignedProvider.specialty})`,
       });
     }
   };
@@ -108,8 +103,8 @@ export const DirectBookingFlow = () => {
   const handleDateTimeNext = () => {
     if (!selectedDate || !selectedTime) {
       toast({
-        title: t('errors:title'),
-        description: t('user:booking.toasts.selectDateTime'),
+        title: 'Erro',
+        description: 'Por favor, selecione uma data e hora para a sessão',
         variant: 'destructive',
       });
       return;
@@ -124,12 +119,8 @@ export const DirectBookingFlow = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast({
-      title: t('booking.toasts.sessionBooked'),
-      description: t('booking.toasts.sessionBookedDesc', {
-        name: assignedProvider?.name,
-        date: selectedDate?.toLocaleDateString('pt-PT'),
-        time: selectedTime
-      }),
+      title: 'Sessão Agendada',
+      description: `A sua sessão com ${assignedProvider?.name} foi agendada para ${selectedDate?.toLocaleDateString('pt-PT')} às ${selectedTime}`,
     });
     
     setIsConfirming(false);
@@ -221,7 +212,7 @@ export const DirectBookingFlow = () => {
           selectedTime={selectedTime}
           onTimeSelect={setSelectedTime}
           onNext={handleDateTimeNext}
-          pillarName={t(`user:booking.directFlow.pillars.${selectedPillar}.title`)}
+          pillarName={selectedPillar === 'psicologica' ? 'Saúde Mental' : selectedPillar === 'fisica' ? 'Bem-estar Físico' : selectedPillar === 'financeira' ? 'Assistência Financeira' : 'Assistência Jurídica'}
         />
       )}
 

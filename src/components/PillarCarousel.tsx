@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
-import { useTranslation } from 'react-i18next';
 
 const PillarCarousel = () => {
-  const { t } = useTranslation('common');
   const [sectionRef, isSectionVisible] = useScrollAnimation(0.1);
   const [currentSlide, setCurrentSlide] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -12,45 +10,45 @@ const PillarCarousel = () => {
   const slides = [
     {
       id: 1,
-      title: t('carousel.pillars.physical.title'),
-      subtitle: t('carousel.pillars.physical.subtitle'),
-      description: t('carousel.pillars.physical.description'),
+      title: 'Bem-estar Físico',
+      subtitle: 'Cuide do Seu Corpo',
+      description: 'Programas personalizados de nutrição e exercício físico com acompanhamento profissional',
       image: '/lovable-uploads/8e8fac57-f901-4bea-b185-7628c8f592be.png',
       gradient: 'from-royal-blue/20 to-sky-blue/20',
       pillar: 'physical'
     },
     {
       id: 2,
-      title: t('carousel.pillars.mental.title'),
-      subtitle: t('carousel.pillars.mental.subtitle'),
-      description: t('carousel.pillars.mental.description'),
+      title: 'Saúde Mental',
+      subtitle: 'Cuide da Sua Mente',
+      description: 'Apoio psicológico profissional e terapias especializadas para o seu bem-estar emocional',
       image: '/lovable-uploads/f62b9e26-c3c4-4ed4-9b3c-a80c0c8bc8d7.png',
       gradient: 'from-mint-green/20 to-accent-sage/20',
       pillar: 'mental'
     },
     {
       id: 3,
-      title: t('carousel.pillars.legal.title'),
-      subtitle: t('carousel.pillars.legal.subtitle'),
-      description: t('carousel.pillars.legal.description'),
+      title: 'Assistência Jurídica',
+      subtitle: 'Proteja os Seus Direitos',
+      description: 'Consultoria jurídica especializada para questões pessoais e profissionais',
       image: '/lovable-uploads/5b1cc430-06fc-4273-b31c-d45cd43ab6d9.png',
       gradient: 'from-sky-blue/20 to-vibrant-blue/20',
       pillar: 'legal'
     },
     {
       id: 4,
-      title: t('carousel.pillars.financial.title'),
-      subtitle: t('carousel.pillars.financial.subtitle'),
-      description: t('carousel.pillars.financial.description'),
+      title: 'Assistência Financeira',
+      subtitle: 'Organize as Suas Finanças',
+      description: 'Planeamento financeiro personalizado e consultoria para uma vida mais equilibrada',
       image: '/lovable-uploads/e69291be-9261-4671-9624-7d6293b9a0cf.png',
       gradient: 'from-mint-green/20 to-royal-blue/20',
       pillar: 'financial'
     },
     {
       id: 5,
-      title: t('carousel.pillars.golf.title'),
-      subtitle: t('carousel.pillars.golf.subtitle'),
-      description: t('carousel.pillars.golf.description'),
+      title: 'Golf & Networking',
+      subtitle: 'Conecte-se',
+      description: 'Experiências exclusivas de networking e bem-estar através do golfe',
       image: '/lovable-uploads/golf-networking.png',
       gradient: 'from-vibrant-blue/20 to-bright-royal/20',
       isSpecial: true,

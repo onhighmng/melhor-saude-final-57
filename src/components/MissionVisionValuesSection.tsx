@@ -1,25 +1,22 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 const MissionVisionValuesSection = () => {
-  const { t } = useTranslation('common');
-  
   const cards = [
     {
-      title: t('mission.title'),
-      content: t('mission.content'),
+      title: 'Missão',
+      content: 'Promover o bem-estar integral das pessoas através de soluções acessíveis e integradas em saúde mental, física, financeira e jurídica.',
       gradient: "from-vibrant-blue/10 to-sky-blue/10",
       border: "border-vibrant-blue"
     },
     {
-      title: t('vision.title'), 
-      content: t('vision.content'),
+      title: 'Visão', 
+      content: 'Ser a plataforma de referência em Portugal para o bem-estar holístico, criando um impacto positivo na qualidade de vida das pessoas e organizações.',
       gradient: "from-sky-blue/10 to-mint-green/10",
       border: "border-sky-blue"
     },
     {
-      title: t('values.title'),
-      content: t('values.content'),
+      title: 'Valores',
+      content: 'Empatia, excelência, confidencialidade, inovação e compromisso com o bem-estar de cada pessoa que servimos.',
       gradient: "from-mint-green/10 to-accent-sage/10", 
       border: "border-mint-green"
     }

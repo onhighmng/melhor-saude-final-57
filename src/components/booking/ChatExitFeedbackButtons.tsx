@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -16,7 +15,6 @@ export const ChatExitFeedbackButtons = ({
   pillar, 
   onClose 
 }: ChatExitFeedbackButtonsProps) => {
-  const { t } = useTranslation('user');
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -48,8 +46,8 @@ export const ChatExitFeedbackButtons = ({
           await supabase.from('notifications').insert({
             user_id: specialists[0].user_id,
             type: 'chat_escalation',
-            title: t('notifications.chatEscalation.title'),
-            message: t('notifications.chatEscalation.message'),
+            title: 'Escalação de Chat',
+            message: 'Um utilizador precisa de assistência especializada',
             metadata: { 
               chat_session_id: sessionId, 
               pillar,
@@ -60,17 +58,17 @@ export const ChatExitFeedbackButtons = ({
       }
 
       toast({
-        title: t('toasts.feedbackSubmitted'),
+        title: 'Feedback Enviado',
         description: satisfied 
-          ? t('toasts.thankYouFeedback') 
-          : t('toasts.specialistNotified')
+          ? 'Obrigado pelo seu feedback!' 
+          : 'Um especialista entrará em contato consigo em breve'
       });
 
       onClose();
     } catch (error) {
       console.error('Error submitting feedback:', error);
       toast({
-        title: t('errors.feedbackFailed'),
+        title: 'Erro ao enviar feedback',
         variant: 'destructive'
       });
     } finally {
@@ -82,7 +80,7 @@ export const ChatExitFeedbackButtons = ({
     <Dialog open={true}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('universalChat.exit.title')}</DialogTitle>
+          <DialogTitle>Como foi a sua experiência?</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
@@ -92,7 +90,7 @@ export const ChatExitFeedbackButtons = ({
             className="w-full h-auto py-6 text-lg"
             variant="default"
           >
-            😊 {t('universalChat.exit.satisfied')}
+            😊 Fiquei satisfeito
           </Button>
           
           <Button
@@ -101,7 +99,7 @@ export const ChatExitFeedbackButtons = ({
             className="w-full h-auto py-6 text-lg"
             variant="outline"
           >
-            😞 {t('universalChat.exit.unsatisfied')}
+            😞 Preciso de mais ajuda
           </Button>
         </div>
       </DialogContent>

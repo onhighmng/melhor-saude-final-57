@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { InfiniteSlider } from '@/components/ui/infinite-slider';
 import { ProgressiveBlur } from '@/components/ui/progressive-blur';
@@ -8,7 +7,6 @@ import { ChevronRight } from 'lucide-react';
 
 export function ModernHeroSection() {
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
 
   const handleGetStarted = () => {
     navigate('/login');
@@ -30,10 +28,10 @@ export function ModernHeroSection() {
           <div className="relative z-10 mx-auto flex max-w-7xl flex-col px-6 lg:block lg:px-12">
             <div className="mx-auto max-w-lg text-center lg:ml-0 lg:max-w-full lg:text-left">
               <h1 className="mt-8 max-w-2xl text-balance text-5xl md:text-6xl lg:mt-16 xl:text-7xl">
-                {t('hero.mainTitle')}
+                O seu bem-estar começa aqui
               </h1>
               <p className="mt-8 max-w-2xl text-balance text-lg text-muted-foreground">
-                {t('hero.subtitle')}
+                Suporte integrado em saúde mental, bem-estar físico, assistência financeira e jurídica. Tudo num só lugar.
               </p>
 
               <div className="mt-12 flex flex-col items-center justify-center gap-2 sm:flex-row lg:justify-start">
@@ -42,7 +40,7 @@ export function ModernHeroSection() {
                   size="lg"
                   className="h-12 rounded-full pl-5 pr-3 text-base"
                 >
-                  <span className="text-nowrap">{t('hero.startNow')}</span>
+                  <span className="text-nowrap">Começar Agora</span>
                   <ChevronRight className="ml-1" />
                 </Button>
                 <Button
@@ -51,7 +49,7 @@ export function ModernHeroSection() {
                   variant="ghost"
                   className="h-12 rounded-full px-5 text-base"
                 >
-                  <span className="text-nowrap">{t('hero.learnMore')}</span>
+                  <span className="text-nowrap">Saber Mais</span>
                 </Button>
               </div>
             </div>

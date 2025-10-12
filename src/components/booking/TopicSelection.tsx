@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
@@ -22,8 +21,6 @@ export const TopicSelection = ({
   onBack, 
   onNext 
 }: TopicSelectionProps) => {
-  const { t } = useTranslation(['user', 'common']);
-  
   // Convert BookingPillar to topic pillar ID for data lookup
   const topicPillarId = getTopicPillarId(pillar);
   const topics = getTopicsForPillar(topicPillarId);
@@ -43,11 +40,11 @@ export const TopicSelection = ({
           className="gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-          {t('common:actions.back')}
+          Voltar
         </Button>
         <div>
-          <h2 className="text-2xl font-bold">{t('user:booking.directFlow.selectTopic')}</h2>
-          <p className="text-sm text-muted-foreground">{t('user:booking.directFlow.topicSubtitle')}</p>
+          <h2 className="text-2xl font-bold">Selecione o Tópico</h2>
+          <p className="text-sm text-muted-foreground">O que gostaria de abordar na sessão?</p>
         </div>
       </div>
 
@@ -69,10 +66,10 @@ export const TopicSelection = ({
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg mb-1">
-                    {t(`user:topics.${topicPillarId}.${topic.id}.name`)}
+                    {topic.name}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {t(`user:topics.${topicPillarId}.${topic.id}.description`)}
+                    {topic.description}
                   </p>
                 </div>
               </div>
@@ -87,7 +84,7 @@ export const TopicSelection = ({
           disabled={!selectedTopic}
           size="lg"
         >
-          {t('common:actions.continue')}
+          Continuar
         </Button>
       </div>
     </div>

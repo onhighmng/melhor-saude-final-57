@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 const MembershipCardsSection = () => {
-  const { t } = useTranslation('common');
   const [revealedCards, setRevealedCards] = useState<boolean[]>([false, false, false, false]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -41,48 +39,48 @@ const MembershipCardsSection = () => {
   const cardsData = [
     {
       id: 'spend',
-      category: t('membership.cards.progress.category'),
-      title: t('membership.cards.progress.title'),
+      category: 'Acompanhamento e Progresso',
+      title: 'Monitorize a Sua Evolução',
       features: [
-        t('membership.cards.progress.feature1'),
-        t('membership.cards.progress.feature2'),
-        t('membership.cards.progress.feature3')
+        'Dashboard personalizado com métricas de bem-estar',
+        'Histórico completo de sessões e progresso',
+        'Relatórios detalhados de evolução'
       ],
       image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       alt: 'Dashboard de analytics mostrando gráficos de progresso e métricas de desempenho para monitorização contínua'
     },
     {
       id: 'invest',
-      category: t('membership.cards.invest.category'),
-      title: t('membership.cards.invest.title'),
+      category: 'Investimento em Bem-Estar',
+      title: 'Invista na Sua Saúde',
       features: [
-        t('membership.cards.invest.feature1'),
-        t('membership.cards.invest.feature2'),
-        t('membership.cards.invest.feature3')
+        'Acesso ilimitado a especialistas certificados',
+        'Planos flexíveis para empresas e particulares',
+        'ROI comprovado em produtividade e satisfação'
       ],
       image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       alt: 'Equipe diversa em reunião profissional representando investimento em bem-estar corporativo'
     },
     {
       id: 'save',
-      category: t('membership.cards.save.category'),
-      title: t('membership.cards.save.title'),
+      category: 'Economia e Eficiência',
+      title: 'Otimize Recursos',
       features: [
-        t('membership.cards.save.feature1'),
-        t('membership.cards.save.feature2'),
-        t('membership.cards.save.feature3')
+        'Reduza custos com programas integrados',
+        'Diminuição de absentismo e rotatividade',
+        'Gestão centralizada de benefícios'
       ],
       image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       alt: 'Gráficos financeiros mostrando economia de recursos e otimização de custos'
     },
     {
       id: 'technology',
-      category: t('membership.cards.technology.category'),
-      title: t('membership.cards.technology.title'),
+      category: 'Tecnologia e Humanização',
+      title: 'Plataforma Inteligente',
       features: [
-        t('membership.cards.technology.feature1'),
-        t('membership.cards.technology.feature2'),
-        t('membership.cards.technology.feature3')
+        'Interface intuitiva e fácil de usar',
+        'Agendamento automático e lembretes',
+        'Atendimento personalizado com tecnologia de ponta'
       ],
       image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
       alt: 'Profissional de saúde usando tablet digital para atendimento humanizado'
@@ -97,10 +95,10 @@ const MembershipCardsSection = () => {
         {/* Section Header */}
         <div className="text-center mb-6 sm:mb-8 lg:mb-12">
           <h2 className="text-h2 text-navy-blue mb-2 sm:mb-3 lg:mb-4">
-            {t('membership.sectionTitle')}
+            Benefícios do Programa
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-navy-blue/70 max-w-2xl mx-auto px-4">
-            {t('membership.sectionSubtitle')}
+            Descubra como o Melhor Saúde transforma o bem-estar da sua organização
           </p>
         </div>
 

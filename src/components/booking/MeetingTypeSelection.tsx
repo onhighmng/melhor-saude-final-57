@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Video, Phone } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -11,15 +10,14 @@ interface MeetingTypeSelectionProps {
 }
 
 export const MeetingTypeSelection = ({ onNext, onBack }: MeetingTypeSelectionProps) => {
-  const { t } = useTranslation('user');
   const { toast } = useToast();
   const [selectedType, setSelectedType] = useState<'virtual' | 'phone' | null>(null);
 
   const handleContinue = () => {
     if (!selectedType) {
       toast({
-        title: t('errors:title'),
-        description: t('booking.meetingType.selectType'),
+        title: 'Erro',
+        description: 'Por favor, selecione um tipo de sessão',
         variant: 'destructive',
       });
       return;
@@ -30,8 +28,8 @@ export const MeetingTypeSelection = ({ onNext, onBack }: MeetingTypeSelectionPro
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">{t('booking.meetingType.title')}</h2>
-        <p className="text-sm text-muted-foreground">{t('booking.meetingType.subtitle')}</p>
+        <h2 className="text-2xl font-bold mb-2">Escolha o Formato da Sessão</h2>
+        <p className="text-sm text-muted-foreground">Como prefere ter a sua sessão?</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
@@ -45,11 +43,11 @@ export const MeetingTypeSelection = ({ onNext, onBack }: MeetingTypeSelectionPro
             <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
               <Video className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-lg">{t('booking.meetingType.virtual.title')}</CardTitle>
+            <CardTitle className="text-lg">Videochamada Online</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground text-center">
-              {t('booking.meetingType.virtual.description')}
+              Sessão por videochamada através de plataforma segura
             </p>
           </CardContent>
         </Card>
@@ -64,11 +62,11 @@ export const MeetingTypeSelection = ({ onNext, onBack }: MeetingTypeSelectionPro
             <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
               <Phone className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-lg">{t('booking.meetingType.phone.title')}</CardTitle>
+            <CardTitle className="text-lg">Chamada Telefónica</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground text-center">
-              {t('booking.meetingType.phone.description')}
+              Sessão por telefone com privacidade garantida
             </p>
           </CardContent>
         </Card>
@@ -76,10 +74,10 @@ export const MeetingTypeSelection = ({ onNext, onBack }: MeetingTypeSelectionPro
 
       <div className="flex gap-3">
         <Button variant="outline" onClick={onBack} className="flex-1">
-          {t('common:actions.back')}
+          Voltar
         </Button>
         <Button onClick={handleContinue} disabled={!selectedType} className="flex-1">
-          {t('booking.meetingType.continue')}
+          Continuar
         </Button>
       </div>
     </div>

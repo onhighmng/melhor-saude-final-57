@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { SmilePlus, Frown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from 'react-i18next';
 
 interface ChatExitFeedbackProps {
   sessionId: string;
@@ -17,7 +16,6 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { t } = useTranslation('user');
 
   const handleSubmit = async () => {
     if (!selectedRating) return;
@@ -51,14 +49,14 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
           });
 
           toast({
-            title: t('universalChat.exit.feedbackReceived'),
-            description: t('universalChat.exit.specialistContact'),
+            title: 'Feedback Recebido',
+            description: 'Um especialista entrará em contacto consigo em breve',
           });
         }
       } else {
         toast({
-          title: t('universalChat.exit.thankYou'),
-          description: t('universalChat.exit.feedbackThanks'),
+          title: 'Obrigado!',
+          description: 'O seu feedback foi enviado com sucesso',
         });
       }
 
@@ -66,8 +64,8 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
     } catch (error) {
       console.error('Error submitting feedback:', error);
       toast({
-        title: t('universalChat.exit.errorTitle'),
-        description: t('universalChat.exit.errorDescription'),
+        title: 'Erro',
+        description: 'Não foi possível enviar o feedback. Tente novamente.',
         variant: 'destructive'
       });
     } finally {
@@ -79,42 +77,40 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t('universalChat.exit.title')}</DialogTitle>
+          <DialogTitle>Como foi a sua experiência?</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <Button
               variant={selectedRating === 'satisfied' ? 'default' : 'outline'}
-              size="lg"
-              className="h-32 flex flex-col gap-2"
+              className="h-24 flex flex-col gap-2"
               onClick={() => setSelectedRating('satisfied')}
             >
-              <SmilePlus className="h-12 w-12" />
-              <span className="text-lg">{t('universalChat.exit.satisfied')}</span>
+              <SmilePlus className="h-8 w-8" />
+              <span>Satisfeito</span>
             </Button>
 
             <Button
               variant={selectedRating === 'unsatisfied' ? 'default' : 'outline'}
-              size="lg"
-              className="h-32 flex flex-col gap-2"
+              className="h-24 flex flex-col gap-2"
               onClick={() => setSelectedRating('unsatisfied')}
             >
-              <Frown className="h-12 w-12" />
-              <span className="text-lg">{t('universalChat.exit.unsatisfied')}</span>
+              <Frown className="h-8 w-8" />
+              <span>Preciso de ajuda</span>
             </Button>
           </div>
 
           {selectedRating === 'unsatisfied' && (
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                {t('universalChat.exit.improvementLabel')}
+                Diga-nos mais sobre o que precisa (opcional)
               </label>
               <Textarea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder={t('universalChat.exit.improvementPlaceholder')}
-                rows={3}
+                placeholder="Descreva brevemente como podemos ajudar..."
+                rows={4}
               />
             </div>
           )}
@@ -124,7 +120,14 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
             disabled={!selectedRating || isSubmitting}
             className="w-full"
           >
-            {isSubmitting ? t('universalChat.exit.submitting') : t('universalChat.exit.submitButton')}
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                A enviar...
+              </>
+            ) : (
+              'Enviar Feedback'
+            )}
           </Button>
         </div>
       </DialogContent>
