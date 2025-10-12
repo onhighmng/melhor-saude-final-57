@@ -15,15 +15,11 @@ import { ArrowLeft, Bell, Shield, FileText, Users, Edit, AlertTriangle, Settings
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useTranslation } from "react-i18next";
 
 const UserSettings = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation('user');
-  const { t: tCommon } = useTranslation('common');
-  const { t: tErrors } = useTranslation('errors');
   const [activeTab, setActiveTab] = useState("profile");
   const [isChangeProviderOpen, setIsChangeProviderOpen] = useState(false);
   const [selectedPillar, setSelectedPillar] = useState("");

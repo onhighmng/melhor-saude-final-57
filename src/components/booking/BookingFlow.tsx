@@ -12,7 +12,6 @@ import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/Me
 import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-assessment/PhysicalWellnessAssessmentFlow';
 import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
 import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
-import { useTranslation } from 'react-i18next';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -30,7 +29,6 @@ interface MockProvider {
 const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation('user');
   const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'meetingType' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
@@ -95,16 +93,13 @@ const BookingFlow = () => {
       setCurrentStep('meetingType');
       
       toast({
-        title: t('booking.toasts.providerAssigned'),
-        description: t('booking.toasts.providerAssignedDesc', {
-          name: assignedProvider.name,
-          specialty: assignedProvider.specialty
-        }),
+        title: 'Especialista Atribuído',
+        description: `Foi-lhe atribuído o especialista ${assignedProvider.name} (${assignedProvider.specialty})`,
       });
     } else {
       toast({
-        title: t('errors:title'),
-        description: t('booking.toasts.noProvidersAvailable'),
+        title: 'Erro',
+        description: 'Não há especialistas disponíveis no momento. Tente novamente mais tarde.',
         variant: "destructive"
       });
     }
@@ -118,8 +113,8 @@ const BookingFlow = () => {
   const handleDateTimeConfirm = () => {
     if (!selectedDate || !selectedTime) {
       toast({
-        title: t('booking.toasts.error'),
-        description: t('booking.toasts.selectDateTime'),
+        title: 'Erro',
+        description: 'Por favor, selecione uma data e hora para a sessão',
         variant: "destructive"
       });
       return;
@@ -129,12 +124,8 @@ const BookingFlow = () => {
 
   const handleBookingConfirm = () => {
     toast({
-      title: t('booking.toasts.sessionBooked'),
-      description: t('booking.toasts.sessionBookedDesc', { 
-        name: selectedProvider?.name, 
-        date: selectedDate?.toLocaleDateString(), 
-        time: selectedTime 
-      }),
+      title: 'Sessão Agendada',
+      description: `A sua sessão com ${selectedProvider?.name} foi agendada para ${selectedDate?.toLocaleDateString()} às ${selectedTime}`,
     });
     
     // If juridica pillar, show pre-diagnostic CTA
@@ -210,32 +201,29 @@ const BookingFlow = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <CardTitle className="text-2xl">{t('booking.preDiagnostic.successTitle')}</CardTitle>
+                <CardTitle className="text-2xl">Sessão Agendada com Sucesso!</CardTitle>
                 <p className="text-muted-foreground">
-                  {t('booking.preDiagnostic.successMessage', { 
-                    date: selectedDate?.toLocaleDateString(), 
-                    time: selectedTime 
-                  })}
+                  A sua sessão foi agendada para {selectedDate?.toLocaleDateString()} às {selectedTime}
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 space-y-3">
-                  <h3 className="font-semibold text-lg">{t('booking.preDiagnostic.helpTitle')}</h3>
+                  <h3 className="font-semibold text-lg">Como podemos ajudá-la melhor?</h3>
                   <p className="text-sm text-muted-foreground">
-                    {t('booking.preDiagnostic.helpDescription')}
+                    Para prepararmos a sua sessão, gostaríamos de conhecer melhor as suas necessidades
                   </p>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">✓</span>
-                      <span>{t('booking.preDiagnostic.benefit1')}</span>
+                      <span>Sessão mais personalizada e eficaz</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">✓</span>
-                      <span>{t('booking.preDiagnostic.benefit2')}</span>
+                      <span>Diagnóstico mais preciso das suas necessidades</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-primary mt-0.5">✓</span>
-                      <span>{t('booking.preDiagnostic.benefit3')}</span>
+                      <span>Plano de ação mais adequado para si</span>
                     </li>
                   </ul>
                 </div>
@@ -246,13 +234,13 @@ const BookingFlow = () => {
                     onClick={() => navigate('/user/dashboard')}
                     className="flex-1"
                   >
-                    {t('booking.preDiagnostic.skipButton')}
+                    Saltar
                   </Button>
                   <Button 
                     onClick={() => setCurrentStep('prediagnostic-chat')}
                     className="flex-1"
                   >
-                    {t('booking.preDiagnostic.startButton')}
+                    Iniciar
                   </Button>
                 </div>
               </CardContent>
@@ -278,16 +266,16 @@ const BookingFlow = () => {
                   onClick={() => setCurrentStep('pillar')}
                   className="mb-6"
                 >
-                  {t('booking.back')}
+                  Voltar
                 </Button>
                 
                 <Card>
                   <CardHeader>
-                    <CardTitle>{t('booking.dateTime.title', { name: selectedProvider?.name, specialty: selectedProvider?.specialty })}</CardTitle>
+                    <CardTitle>Agendar Sessão com {selectedProvider?.name} ({selectedProvider?.specialty})</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div>
-                      <h3 className="text-h3 mb-3">{t('booking.dateTime.selectDateTime')}</h3>
+                      <h3 className="text-h3 mb-3">Selecionar Data e Hora</h3>
                       <BookingCalendar
                         selectedDate={selectedDate || undefined}
                         onDateSelect={(date) => setSelectedDate(date || null)}
@@ -301,7 +289,7 @@ const BookingFlow = () => {
                     
                     {selectedDate && selectedTime && (
                       <Button onClick={handleDateTimeConfirm} className="w-full mt-6">
-                        {t('booking.dateTime.confirmSession')}
+                        Confirmar Sessão
                       </Button>
                     )}
                   </CardContent>
@@ -318,14 +306,14 @@ const BookingFlow = () => {
               <div className="w-full max-w-2xl mx-auto">
                 <Card>
                   <CardHeader>
-                    <CardTitle>{t('booking.confirmation.title')}</CardTitle>
+                    <CardTitle>Confirmar Agendamento
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <p><strong>{t('booking.confirmation.provider')}</strong> {selectedProvider?.name}</p>
-                      <p><strong>{t('booking.confirmation.specialty')}</strong> {selectedProvider?.specialty}</p>
-                      <p><strong>{t('booking.confirmation.date')}</strong> {selectedDate?.toLocaleDateString()}</p>
-                      <p><strong>{t('booking.confirmation.time')}</strong> {selectedTime}</p>
+                      <p><strong>Especialista:</strong> {selectedProvider?.name}</p>
+                      <p><strong>Especialidade:</strong> {selectedProvider?.specialty}</p>
+                      <p><strong>Data:</strong> {selectedDate?.toLocaleDateString()}</p>
+                      <p><strong>Hora:</strong> {selectedTime}</p>
                     </div>
                     
                     <div className="flex gap-3">
@@ -333,10 +321,10 @@ const BookingFlow = () => {
                         variant="outline" 
                         onClick={() => setCurrentStep('datetime')}
                       >
-                        {t('booking.confirmation.back')}
+                        Voltar
                       </Button>
                       <Button onClick={handleBookingConfirm} className="flex-1">
-                        {t('booking.confirmation.confirm')}
+                        Confirmar
                       </Button>
                     </div>
                   </CardContent>

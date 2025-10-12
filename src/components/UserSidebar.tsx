@@ -2,7 +2,6 @@ import { useState } from "react"
 import { LayoutDashboard, MessageSquare, CalendarCheck, BookOpen, Settings, HelpCircle, FileText, LogOut, Bell, Calendar } from "lucide-react"
 import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
-import { useTranslation } from "react-i18next"
 
 import {
   Sidebar,
@@ -31,20 +30,17 @@ export function UserSidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
-  const { t } = useTranslation('navigation')
-  const { t: tUser } = useTranslation('user')
-  const { t: tCommon } = useTranslation('common')
   const currentPath = location.pathname
   const isCollapsed = state === "collapsed"
 
   const mainItems = [
-    { title: t('user.dashboard'), url: "/user/dashboard", icon: LayoutDashboard },
-    { title: tUser('dashboard.ctaBookSession'), url: "/user/book-session", icon: Calendar },
-    { title: tUser('sessions.title'), url: "/user/sessions", icon: CalendarCheck },
-    { title: t('user.notifications'), url: "/user/notifications", icon: Bell, badge: 3 },
-    { title: t('user.resources'), url: "/user/resources", icon: BookOpen },
-    { title: t('user.help'), url: "/user/help", icon: HelpCircle },
-    { title: t('company.settings'), url: "/user/settings", icon: Settings },
+    { title: 'Dashboard', url: "/user/dashboard", icon: LayoutDashboard },
+    { title: 'Agendar Sessão', url: "/user/book-session", icon: Calendar },
+    { title: 'Minhas Sessões', url: "/user/sessions", icon: CalendarCheck },
+    { title: 'Notificações', url: "/user/notifications", icon: Bell, badge: 3 },
+    { title: 'Recursos', url: "/user/resources", icon: BookOpen },
+    { title: 'Ajuda', url: "/user/help", icon: HelpCircle },
+    { title: 'Definições', url: "/user/settings", icon: Settings },
   ]
 
   const isActive = (path: string) => currentPath === path
@@ -142,35 +138,35 @@ export function UserSidebar() {
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: t('user.help') }}>
+            <SidebarMenuItemWithTooltip item={{ title: 'Ajuda' }}>
               <SidebarMenuButton asChild>
                 <NavLink to="/support" className="text-muted-foreground hover:text-foreground">
                   <HelpCircle className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base">{t('user.help')}</span>}
+                  {!isCollapsed && <span className="text-base">Ajuda</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: t('company.terms') }}>
+            <SidebarMenuItemWithTooltip item={{ title: 'Termos' }}>
               <SidebarMenuButton asChild>
                 <NavLink to="/terms" className="text-muted-foreground hover:text-foreground">
                   <FileText className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base">{t('company.terms')}</span>}
+                  {!isCollapsed && <span className="text-base">Termos</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
           
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: t('common.logout') }}>
+            <SidebarMenuItemWithTooltip item={{ title: 'Sair' }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                {!isCollapsed && <span className="text-base">{t('common.logout')}</span>}
+                {!isCollapsed && <span className="text-base">Sair</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>

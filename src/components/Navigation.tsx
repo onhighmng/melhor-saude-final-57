@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { redirectService } from '@/services/redirectService';
 import MobileMenu from './MobileMenu';
@@ -15,7 +14,6 @@ const Navigation = () => {
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation('navigation');
   const {
     scrollToSobreNos,
     scrollToPillar
@@ -103,8 +101,8 @@ const Navigation = () => {
 
 
   // Choose menu items based on user role
-  const menuItems = isAdmin ? createAdminMenuItems(t, handleNavigation) : isHR ? createHRMenuItems(t, handleNavigation) : createMenuItems(t, handleSobreNosClick, handlePillarClick, handleNavigation, isAuthenticated, handleAuthRedirect);
-  const mobileMenuItems = isAdmin ? createAdminMobileMenuItems(t) : isHR ? createHRMobileMenuItems(t) : createMobileMenuItems(t, isAuthenticated, handleAuthRedirect, handleSobreNosClick, handlePillarClick);
+  const menuItems = isAdmin ? createAdminMenuItems(handleNavigation) : isHR ? createHRMenuItems(handleNavigation) : createMenuItems(handleSobreNosClick, handlePillarClick, handleNavigation, isAuthenticated, handleAuthRedirect);
+  const mobileMenuItems = isAdmin ? createAdminMobileMenuItems() : isHR ? createHRMobileMenuItems() : createMobileMenuItems(isAuthenticated, handleAuthRedirect, handleSobreNosClick, handlePillarClick);
   return <>
       <nav className="fixed top-2 left-0 right-0 z-50 w-full max-w-none">
         <div className="relative z-50 w-full max-w-[1500px] mx-auto px-2 sm:px-8 my-0 py-0">

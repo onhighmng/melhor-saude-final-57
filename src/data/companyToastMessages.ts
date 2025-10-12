@@ -1,32 +1,31 @@
 import { toast } from "@/components/ui/enhanced-toast";
-import i18n from '@/i18n/config';
 
 export const companyToasts = {
   // Employee management
-  employeeInvited: () => toast.success(i18n.t('toasts.company.employeeInvited', { ns: 'toasts' })),
-  employeeDeactivated: () => toast.success(i18n.t('toasts.company.employeeDeactivated', { ns: 'toasts' })),
-  employeeActivated: () => toast.success(i18n.t('toasts.company.employeeActivated', { ns: 'toasts' })),
-  employeeActivationBlocked: () => toast.error(i18n.t('toasts.company.employeeActivationBlocked', { ns: 'toasts' })),
-  quotaUpdated: () => toast.success(i18n.t('toasts.company.quotaUpdated', { ns: 'toasts' })),
+  employeeInvited: () => toast.success('Colaborador convidado com sucesso – Credenciais copiadas'),
+  employeeDeactivated: () => toast.success('Colaborador desativado – 1 vaga libertada'),
+  employeeActivated: () => toast.success('Colaborador ativado com sucesso'),
+  employeeActivationBlocked: () => toast.error('Não é possível ativar – Sem vagas disponíveis'),
+  quotaUpdated: () => toast.success('Sessões atualizadas com sucesso'),
   
   // Invite codes
-  codesCopied: (count: number) => toast.success(i18n.t('toasts.company.codesCopied', { ns: 'toasts', count })),
-  codesGenerated: (count: number) => toast.success(i18n.t('toasts.company.codesGenerated', { ns: 'toasts', count })),
-  linkCopied: () => toast.success(i18n.t('toasts.company.linkCopied', { ns: 'toasts' })),
+  codesCopied: (count: number) => toast.success(`${count} código${count > 1 ? 's' : ''} copiado${count > 1 ? 's' : ''} para a área de transferência`),
+  codesGenerated: (count: number) => toast.success(`${count} novo${count > 1 ? 's' : ''} código${count > 1 ? 's' : ''} gerado${count > 1 ? 's' : ''}`),
+  linkCopied: () => toast.success('Link de convite copiado para a área de transferência'),
   
   // Data export
-  dataExported: () => toast.success(i18n.t('toasts.company.dataExported', { ns: 'toasts' })),
-  reportScheduled: () => toast.success(i18n.t('toasts.company.reportScheduled', { ns: 'toasts' })),
+  dataExported: () => toast.success('Dados exportados com sucesso'),
+  reportScheduled: () => toast.success('Relatório agendado para envio por email'),
   
   // Settings
-  settingsSaved: () => toast.success(i18n.t('toasts.company.settingsSaved', { ns: 'toasts' })),
-  policiesUpdated: () => toast.success(i18n.t('toasts.company.policiesUpdated', { ns: 'toasts' })),
+  settingsSaved: () => toast.success('Alterações guardadas com sucesso'),
+  policiesUpdated: () => toast.success('Políticas de sessões atualizadas'),
   
   // Access management
-  accessRevoked: () => toast.success(i18n.t('toasts.company.accessRevoked', { ns: 'toasts' })),
+  accessRevoked: () => toast.success('Acesso revogado com sucesso'),
   
   // Errors
-  actionFailed: (action: string) => toast.error(i18n.t('toasts.company.actionFailed', { ns: 'toasts', action })),
-  networkError: () => toast.error(i18n.t('errors.network', { ns: 'errors' })),
-  limitReached: () => toast.warning(i18n.t('toasts.company.limitReached', { ns: 'toasts' }))
+  actionFailed: (action: string) => toast.error(`Erro ao ${action}. Tente novamente.`),
+  networkError: () => toast.error('Erro de conexão. Verifique a sua internet'),
+  limitReached: () => toast.warning('Limite de vagas atingido. Desative contas ou contacte suporte.')
 };

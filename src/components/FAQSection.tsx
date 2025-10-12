@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionContent,
@@ -8,142 +7,109 @@ import {
 } from "@/components/ui/accordion";
 
 const FAQSection = () => {
-  const { t } = useTranslation();
-  
   const faqData = [
     {
-      question: t('faq.questions.whatIs.question'),
+      question: "O que é o programa Melhor Saúde?",
       answer: (
         <div>
-          <p>{t('faq.questions.whatIs.intro')}</p>
+          <p>O Melhor Saúde é um programa completo de bem-estar que oferece acesso a especialistas em quatro pilares fundamentais:</p>
           <br />
-          <p><strong>1.</strong> {t('faq.questions.whatIs.mental')}</p>
+          <p><strong>1.</strong> Saúde Mental - Psicólogos e terapeutas para apoio emocional e mental</p>
           <br />
-          <p><strong>2.</strong> {t('faq.questions.whatIs.physical')}</p>
+          <p><strong>2.</strong> Bem-estar Físico - Nutricionistas e personal trainers para saúde física</p>
           <br />
-          <p><strong>3.</strong> {t('faq.questions.whatIs.financial')}</p>
+          <p><strong>3.</strong> Assistência Financeira - Consultores financeiros para gestão do dinheiro</p>
           <br />
-          <p><strong>4.</strong> {t('faq.questions.whatIs.legal')}</p>
+          <p><strong>4.</strong> Assistência Jurídica - Advogados para questões legais</p>
         </div>
       )
     },
     {
-      question: t('faq.questions.howToBook.question'),
-      answer: t('faq.questions.howToBook.answer')
+      question: "Como posso agendar uma sessão?",
+      answer: "É muito simples! Faça login na sua conta, escolha o tipo de especialista que precisa, selecione um horário disponível e confirme o agendamento. Receberá um email de confirmação com todos os detalhes."
     },
     {
-      question: t('faq.questions.sessionsQuota.question'),
-      answer: t('faq.questions.sessionsQuota.answer')
+      question: "Quantas sessões posso ter por mês?",
+      answer: "O número de sessões depende do seu plano. Os planos básicos incluem 2-4 sessões por mês, enquanto os planos premium oferecem sessões ilimitadas. Pode consultar os detalhes do seu plano na área pessoal."
     },
     {
-      question: t('faq.questions.individualPlans.question'),
+      question: "Posso ter planos individuais?",
       answer: (
         <div>
-          <p>{t('faq.questions.individualPlans.intro')}</p>
+          <p>Sim! Oferecemos planos individuais flexíveis:</p>
           <br />
-          <p><strong>{t('faq.questions.individualPlans.monthly')}</strong></p>
-          <p><strong>{t('faq.questions.individualPlans.quarterly')}</strong></p>
-          <p><strong>{t('faq.questions.individualPlans.annual')}</strong></p>
+          <p><strong>Plano Mensal</strong> - Ideal para experimentar os serviços</p>
+          <p><strong>Plano Trimestral</strong> - Melhor valor para uso regular</p>
+          <p><strong>Plano Anual</strong> - Máxima poupança para compromisso a longo prazo</p>
           <br />
-          <p>{t('faq.questions.individualPlans.access')}</p>
+          <p>Os planos individuais dão acesso completo a todos os especialistas e recursos da plataforma.</p>
         </div>
       )
     },
     {
-      question: t('faq.questions.businessPlans.question'),
-      answer: (
-        <div>
-          <p>{t('faq.questions.businessPlans.intro')}</p>
-          <br />
-          <p><strong>{t('faq.questions.businessPlans.small')}</strong></p>
-          <p><strong>{t('faq.questions.businessPlans.large')}</strong></p>
-          <br />
-          <p>{t('faq.questions.businessPlans.contact')}</p>
-        </div>
-      )
+      question: "Os especialistas são certificados?",
+      answer: "Sim, todos os nossos especialistas são certificados e licenciados nas suas áreas de atuação. Passam por um processo rigoroso de verificação antes de se juntarem à nossa rede."
     },
     {
-      question: t('faq.questions.selfHelp.question'),
-      answer: t('faq.questions.selfHelp.answer')
+      question: "Posso cancelar ou reagendar uma sessão?",
+      answer: "Sim, pode cancelar ou reagendar sessões até 24 horas antes do horário agendado através da sua área pessoal. Cancelamentos em cima da hora podem estar sujeitos a políticas específicas."
     },
     {
-      question: t('faq.questions.providers.question'),
-      answer: t('faq.questions.providers.answer')
+      question: "Como funciona a confidencialidade?",
+      answer: "Todas as sessões são 100% confidenciais. Os nossos especialistas seguem rigorosos códigos de ética profissional e nunca partilham informações pessoais sem o seu consentimento explícito."
     },
     {
-      question: t('faq.questions.confidentiality.question'),
-      answer: t('faq.questions.confidentiality.answer')
+      question: "Que tipo de tecnologia utilizam?",
+      answer: "Utilizamos tecnologia de ponta para garantir sessões de alta qualidade. As videochamadas são encriptadas, a plataforma é compatível com todos os dispositivos e oferecemos gravações de sessões (com consentimento) para revisão posterior."
     },
     {
-      question: t('faq.questions.sessionTypes.question'),
-      answer: t('faq.questions.sessionTypes.answer')
+      question: "Posso aceder à plataforma no telemóvel?",
+      answer: "Sim! A nossa plataforma é totalmente responsiva e funciona perfeitamente em smartphones, tablets e computadores. Também pode descarregar a nossa aplicação móvel para acesso ainda mais conveniente."
     },
     {
-      question: t('faq.questions.cancelReschedule.question'),
-      answer: t('faq.questions.cancelReschedule.answer')
-    },
-    {
-      question: t('faq.questions.extraServices.question'),
-      answer: t('faq.questions.extraServices.answer')
-    },
-    {
-      question: t('faq.questions.getStarted.question'),
-      answer: t('faq.questions.getStarted.answer')
+      question: "Como posso contactar o suporte?",
+      answer: "O nosso suporte está disponível 24/7 através de chat ao vivo na plataforma, email (suporte@melhorsaude.pt) ou telefone. Temos uma equipa dedicada pronta para ajudar com qualquer questão."
     }
   ];
 
   return (
-    <section 
-      className="relative bg-background pt-28 sm:pt-32 lg:pt-36 pb-12 sm:pb-16 lg:pb-20 scroll-mt-24"
-    >
-      <div className="w-full px-4 sm:px-6 lg:px-12">
-        <h3 className="text-center text-h1 mt-0 mb-8 sm:mb-12 lg:mb-16">
-          {t('faq.title')}
-        </h3>
-        
-        <div className="w-full max-w-6xl mx-auto px-0 sm:px-4 md:px-8 lg:px-16 relative">
-          <div className="z-10 w-full max-w-4xl mx-auto relative">
-            <Accordion type="single" collapsible className="flex flex-col gap-2 sm:gap-3">
-              {faqData.map((faq, index) => (
-                <AccordionItem 
-                  key={index} 
-                  value={`item-${index}`}
-                  className="bg-[#F5F7FB] rounded-lg sm:rounded-xl border-none"
-                >
-                  <AccordionTrigger className="px-4 sm:px-6 lg:px-12 py-3 sm:py-4 lg:py-5 text-left text-sm sm:text-base md:text-lg lg:text-xl font-medium leading-tight tracking-[-0.2px] hover:no-underline data-[state=open]:pb-3 sm:data-[state=open]:pb-4 lg:data-[state=open]:pb-5">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4 sm:px-6 lg:px-12 pb-4 sm:pb-6 lg:pb-8 text-sm sm:text-base md:text-lg leading-relaxed tracking-[-0.072px]">
-                    {typeof faq.answer === 'string' ? (
-                      <p>{faq.answer}</p>
-                    ) : (
-                      faq.answer
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-          
-          {/* Decorative images - hidden on mobile, positioned further from cards on larger screens */}
-          <img 
-            src="/lovable-uploads/95a2cef7-45be-4018-af8e-4a5caea3205b.png" 
-            loading="lazy" 
-            alt="Blue logo illustration" 
-            className="hidden lg:block w-48 h-48 xl:w-64 xl:h-64 absolute top-20 -right-8 xl:right-0 transform rotate-[15deg] z-0 opacity-60"
-          />
-          <img 
-            src="/lovable-uploads/95a2cef7-45be-4018-af8e-4a5caea3205b.png" 
-            loading="lazy" 
-            alt="Blue logo illustration" 
-            className="hidden lg:block w-32 h-32 xl:h-48 absolute top-[480px] -right-8 xl:right-0 z-0 opacity-50"
-          />
-          <img 
-            src="/lovable-uploads/95a2cef7-45be-4018-af8e-4a5caea3205b.png" 
-            loading="lazy" 
-            alt="Blue logo illustration" 
-            className="hidden lg:block w-32 h-32 xl:h-48 absolute top-[400px] -left-8 xl:left-0 z-0 opacity-50"
-          />
+    <section className="py-16 bg-background">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Perguntas Frequentes
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Encontre respostas às questões mais comuns sobre o nosso programa de bem-estar
+          </p>
+        </div>
+
+        <div className="max-w-3xl mx-auto">
+          <Accordion type="single" collapsible className="space-y-4">
+            {faqData.map((faq, index) => (
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className="border border-border rounded-lg px-6"
+              >
+                <AccordionTrigger className="text-left hover:no-underline py-6">
+                  <span className="font-semibold text-lg">{faq.question}</span>
+                </AccordionTrigger>
+                <AccordionContent className="pb-6 text-muted-foreground">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+
+        <div className="text-center mt-12">
+          <p className="text-muted-foreground mb-4">
+            Não encontrou a resposta que procura?
+          </p>
+          <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+            Contactar Suporte
+          </button>
         </div>
       </div>
     </section>

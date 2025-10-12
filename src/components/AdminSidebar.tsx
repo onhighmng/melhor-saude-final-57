@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTranslation } from 'react-i18next';
 import {
   Sidebar,
   SidebarContent,
@@ -51,7 +50,6 @@ interface MenuItem {
 
 
 const AdminSidebar = () => {
-  const { t } = useTranslation(['navigation', 'admin', 'common']);
   const { state } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
@@ -61,43 +59,43 @@ const AdminSidebar = () => {
 
   // Standalone items
   const standaloneItems: MenuItem[] = [
-    { title: t('navigation:admin.dashboard'), url: "/admin/dashboard", icon: LayoutDashboard },
+    { title: 'Dashboard', url: "/admin/dashboard", icon: LayoutDashboard },
   ];
 
   // Grouped items
   const groupedItems = {
     users: {
-      title: t('navigation:admin.userManagement'),
+      title: 'Gestão de Utilizadores',
       icon: UsersIcon,
       items: [
-        { title: t('navigation:admin.companies'), url: "/admin/companies", icon: Building2 },
-        { title: t('navigation:admin.users'), url: "/admin/usuarios", icon: Users },
-        { title: t('navigation:admin.providers'), url: "/admin/prestadores", icon: UserCog },
+        { title: 'Empresas', url: "/admin/companies", icon: Building2 },
+        { title: 'Utilizadores', url: "/admin/usuarios", icon: Users },
+        { title: 'Prestadores', url: "/admin/prestadores", icon: UserCog },
       ] as MenuItem[]
     },
     operations: {
-      title: t('navigation:admin.operations'),
+      title: 'Operações',
       icon: Activity,
       items: [
-        { title: t('navigation:admin.matching'), url: "/admin/matching", icon: GitPullRequest },
-        { title: t('navigation:admin.schedules'), url: "/admin/agendamentos", icon: Calendar },
-        { title: t('navigation:admin.sessions'), url: "/admin/sessoes", icon: ClipboardCheck },
+        { title: 'Matching', url: "/admin/matching", icon: GitPullRequest },
+        { title: 'Agendamentos', url: "/admin/agendamentos", icon: Calendar },
+        { title: 'Sessões', url: "/admin/sessoes", icon: ClipboardCheck },
       ] as MenuItem[]
     },
     monitoring: {
-      title: t('navigation:admin.monitoring'),
+      title: 'Monitorização',
       icon: Shield,
       items: [
-        { title: t('navigation:admin.support'), url: "/admin/support", icon: Mail, badge: "emailsFailed" },
-        { title: t('navigation:admin.changeRequests'), url: "/admin/providers/change-requests", icon: Shuffle, badge: "pendingRequests" },
-        { title: t('navigation:admin.logs'), url: "/admin/logs", icon: FileSearch, badge: "logAlerts" },
+        { title: 'Suporte', url: "/admin/support", icon: Mail, badge: "emailsFailed" },
+        { title: 'Pedidos de Alteração', url: "/admin/providers/change-requests", icon: Shuffle, badge: "pendingRequests" },
+        { title: 'Logs', url: "/admin/logs", icon: FileSearch, badge: "logAlerts" },
       ] as MenuItem[]
     }
   };
 
   // Settings - standalone section (NOT part of monitoring group)
   const settingsItems: MenuItem[] = [
-    { title: t('common:settings'), url: "/admin/configuracoes", icon: Settings },
+    { title: 'Definições', url: "/admin/configuracoes", icon: Settings },
   ];
 
   // Mock badge data - in real app this would come from API/state
@@ -187,7 +185,7 @@ const AdminSidebar = () => {
               <span className="text-base font-medium truncate">
                 {user?.name || user?.email}
               </span>
-              <span className="text-sm text-muted-foreground">{t('common:roles.admin')}</span>
+              <span className="text-sm text-muted-foreground">Administrador</span>
             </div>
           </div>
         )}
@@ -318,14 +316,14 @@ const AdminSidebar = () => {
       <SidebarFooter className={`p-6 border-t ${isCollapsed ? 'flex justify-center' : ''}`}>
         <SidebarMenu className={isCollapsed ? 'items-center' : ''}>
           <SidebarMenuItem>
-            <SidebarMenuItemWithTooltip item={{ title: t('common:logout') }}>
+            <SidebarMenuItemWithTooltip item={{ title: 'Sair' }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
                 size="sm"
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                {!isCollapsed && <span className="text-base">{t('common:logout')}</span>}
+                {!isCollapsed && <span className="text-base">Sair</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>

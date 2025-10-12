@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -31,7 +30,6 @@ interface PreDiagnosticChatProps {
 }
 
 export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalContext }: PreDiagnosticChatProps) => {
-  const { t } = useTranslation(['user', 'common']);
   const { user } = useAuth();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -102,8 +100,8 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
         setIsInitializing(false);
         setInitError(true);
         toast({
-          title: t('errors:title'),
-          description: t('errors:chatInitFailed'),
+          title: 'Erro',
+          description: 'Não foi possível iniciar a sessão de chat',
           variant: 'destructive',
         });
         setMessages([]);
@@ -115,7 +113,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
     if (!input.trim() || isLoading || isInitializing) return;
     if (!sessionId) {
       toast({
-        title: t('errors:title'),
+        title: 'Erro',
         description: 'Session not ready. Please wait...',
         variant: 'destructive',
       });
@@ -141,7 +139,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
       // Get topic name for context
       const topicPillarId = getTopicPillarId(pillar);
       const topicKey = `user:topics.${topicPillarId}.${topic}.name`;
-      const topicName = t(topicKey);
+      const topicName = topic;
 
       // Build context from user selections
       let contextInfo = `Topic: ${topicName}`;
@@ -150,12 +148,12 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
         if (legalContext.selectedTopics && legalContext.selectedTopics.length > 0) {
           const topicNames = legalContext.selectedTopics.map(topicId => {
             const topicMap: Record<string, string> = {
-              family: t('user:legal.topics.family.title'),
-              labor: t('user:legal.topics.labor.title'),
-              consumer: t('user:legal.topics.consumer.title'),
-              housing: t('user:legal.topics.housing.title'),
-              debt: t('user:legal.topics.debt.title'),
-              criminal: t('user:legal.topics.criminal.title'),
+              family: 'Direito de Família',
+              labor: 'Direito do Trabalho',
+              consumer: 'Direito do Consumidor',
+              housing: 'Direito Habitacional',
+              debt: 'Dívidas e Crédito',
+              criminal: 'Direito Criminal',
             };
             return topicMap[topicId] || topicId;
           }).join(', ');
@@ -163,9 +161,17 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
         }
         
         if (legalContext.selectedSymptoms && legalContext.selectedSymptoms.length > 0) {
-          const symptomNames = legalContext.selectedSymptoms.map(symptomId => 
-            t(`user:legal.symptoms.${symptomId}.text`)
-          ).join(', ');
+          const symptomNames = legalContext.selectedSymptoms.map(symptomId => {
+            const symptomMap: Record<string, string> = {
+              divorce: 'Processo de divórcio ou separação',
+              custody: 'Questões de guarda de filhos',
+              alimony: 'Pensão alimentícia',
+              unfairDismissal: 'Demissão injusta',
+              unpaidWages: 'Salários não pagos',
+              workplaceHarassment: 'Assédio no trabalho'
+            };
+            return symptomMap[symptomId] || symptomId;
+          }).join(', ');
           contextInfo += `\nSpecific Issues: ${symptomNames}`;
         }
         
@@ -218,8 +224,8 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
       
       // Show user-friendly error
       toast({
-        title: t('errors:title'),
-        description: t('errors:messageSendFailed'),
+        title: 'Erro',
+        description: 'Não foi possível enviar a mensagem',
         variant: 'destructive',
       });
       
@@ -253,17 +259,17 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
           className="gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-          {t('common:actions.back')}
+          Voltar
         </Button>
         <div className="flex-1">
-          <h2 className="text-2xl font-bold">{t('user:booking.directFlow.chatTitle')}</h2>
-          <p className="text-sm text-muted-foreground">{t('user:booking.directFlow.chatSubtitle')}</p>
+          <h2 className="text-2xl font-bold">Conte-nos mais sobre a sua situação</h2>
+          <p className="text-sm text-muted-foreground">As suas respostas ajudarão o especialista a preparar-se melhor.</p>
         </div>
       </div>
 
       <Card className="flex-1 flex flex-col">
         <CardHeader className="border-b">
-          <CardTitle className="text-lg">{t('user:booking.directFlow.conversation')}</CardTitle>
+          <CardTitle className="text-lg">Conversa</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col p-0">
           <ScrollArea className="flex-1 p-6">
@@ -284,7 +290,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
               )}
               {!isInitializing && !initError && messages.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  <p className="text-sm">{t('user:booking.directFlow.chatEmptyState')}</p>
+                  <p className="text-sm">Comece por descrever a sua situação. O assistente está pronto para ajudá-lo.</p>
                 </div>
               )}
               {messages.map((message, index) => (
@@ -320,7 +326,7 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={t('user:booking.directFlow.chatPlaceholder')}
+                placeholder="Escreva aqui os detalhes da sua situação..."
                 className="min-h-[60px] resize-none"
                 disabled={isLoading || isInitializing}
               />

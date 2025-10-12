@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/sessionMockData";
 import { mockBookings, getMockBookings } from "@/data/mockData";
 import { QuotaDisplayCard } from "@/components/sessions/QuotaDisplayCard";
@@ -13,7 +12,6 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 export default function UserSessions() {
-  const { t } = useTranslation('user');
   const navigate = useNavigate();
   const [userBalance] = useState(mockUserBalance);
   
@@ -105,18 +103,18 @@ export default function UserSessions() {
     <div className="container mx-auto p-6">
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">{t('sessions.title')}</h1>
-          <p className="text-muted-foreground">{t('sessions.subtitle')}</p>
+          <h1 className="text-3xl font-bold text-foreground">Meu Percurso</h1>
+          <p className="text-muted-foreground">Acompanhe as suas sessões, objetivos e progresso</p>
         </div>
 
         {/* Goals Section */}
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-2">
-              🎯 {t('sessions.goals.title')}
+              🎯 Meus Objetivos
             </CardTitle>
             <CardDescription>
-              {t('sessions.goals.subtitle')}
+              Acompanhe o progresso dos seus objetivos de bem-estar
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -125,7 +123,7 @@ export default function UserSessions() {
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-foreground">{goal.title}</h3>
                   <span className="text-sm text-muted-foreground">
-                    {goal.progressPercentage}% {t('sessions.goals.achieved')}
+                    {goal.progressPercentage}% alcançado
                   </span>
                 </div>
                 
@@ -136,10 +134,7 @@ export default function UserSessions() {
                 <div className="flex items-center justify-between">
                   {renderSkullProgress(goal.completedSessions, goal.targetSessions)}
                   <span className="text-sm text-muted-foreground">
-                    {t('sessions.goals.progress', { 
-                      completed: goal.completedSessions, 
-                      target: goal.targetSessions 
-                    })}
+                    {goal.completedSessions}/{goal.targetSessions} sessões completadas
                   </span>
                 </div>
               </div>
@@ -152,7 +147,7 @@ export default function UserSessions() {
 
         {/* Sessions List */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">{t('sessions.historyTitle')}</h2>
+          <h2 className="text-xl font-semibold">Histórico de Sessões</h2>
           
           {sessions.map((session) => (
             <SessionHistoryCard
@@ -170,9 +165,9 @@ export default function UserSessions() {
             <CardContent className="pt-6">
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">
-                  {t('sessions.noSessionsYet')}
+                  Ainda não tem sessões agendadas
                 </p>
-                <Button onClick={() => navigate('/user/book')}>{t('sessions.bookFirst')}</Button>
+                <Button onClick={() => navigate('/user/book')}>Marcar Primeira Sessão</Button>
               </div>
             </CardContent>
           </Card>

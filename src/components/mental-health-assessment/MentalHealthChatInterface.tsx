@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Send, Loader2, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from 'react-i18next';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -36,7 +35,6 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const { t } = useTranslation(['user', 'errors']);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -72,8 +70,8 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
-        title: t('errors:title'),
-        description: t('errors:messageSendFailed'),
+        title: 'Erro',
+        description: 'Não foi possível enviar a mensagem. Tente novamente.',
         variant: 'destructive'
       });
     } finally {
@@ -94,26 +92,26 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
         <div className="w-full max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <Button variant="ghost" onClick={onBack}>
-              {t('user:assessment.chat.backButton')}
+              Voltar
             </Button>
             <Button variant="outline" onClick={onComplete}>
-              {t('user:assessment.chat.finishButton')}
+              Concluir
             </Button>
           </div>
 
           <Card className="flex-1 flex flex-col overflow-hidden">
             <div className="p-6 border-b bg-primary/5">
-              <h2 className="font-semibold text-lg">{t('user:assessment.chat.mentalHealthAssistant')}</h2>
+              <h2 className="font-semibold text-lg">Assistente de Saúde Mental</h2>
               <p className="text-sm text-muted-foreground">
-                {t('user:assessment.chat.mentalHealthDescription')}
+                Compartilhe seus pensamentos e sentimentos
               </p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
-                  <p>{t('user:assessment.chat.mentalHealthGreeting')}</p>
-                  <p className="text-sm mt-2">{t('user:assessment.chat.startPrompt')}</p>
+                  <p>Olá! Estou aqui para ouvir e apoiar você.</p>
+                  <p className="text-sm mt-2">Envie uma mensagem para começar.</p>
                 </div>
               )}
               
@@ -155,7 +153,7 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
                   onClick={onChooseHuman}
                 >
                   <User className="h-4 w-4" />
-                  {t('user:assessment.chat.speakWithSpecialistButton')}
+                  Falar Com Especialista (1-on-1)
                 </Button>
               )}
               <div className="flex gap-2">
@@ -163,7 +161,7 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={t('user:assessment.chat.inputPlaceholder')}
+                  placeholder="Digite sua pergunta..."
                   className="resize-none"
                   rows={2}
                   disabled={isLoading}

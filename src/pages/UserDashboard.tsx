@@ -9,7 +9,6 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings } from '@/hooks/useBookings';
-import { useTranslation } from 'react-i18next';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
@@ -21,9 +20,6 @@ const UserDashboard = () => {
   const { profile } = useAuth();
   const { sessionBalance } = useSessionBalance();
   const { upcomingBookings, allBookings, formatPillarName } = useBookings();
-  const { t } = useTranslation('user');
-  const { t: tNav } = useTranslation('navigation');
-  const { t: tUser } = useTranslation('user');
   const { toast } = useToast();
   
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(() => {
@@ -53,10 +49,10 @@ const UserDashboard = () => {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      'confirmed': { label: t('sessions.statusConfirmed'), variant: 'secondary' },
-      'completed': { label: t('sessions.statusCompleted'), variant: 'default' },
-      'cancelled': { label: t('sessions.statusCancelled'), variant: 'destructive' },
-      'pending': { label: t('sessions.statusPending'), variant: 'outline' },
+      'confirmed': { label: 'Confirmada', variant: 'secondary' },
+      'completed': { label: 'Concluída', variant: 'default' },
+      'cancelled': { label: 'Cancelada', variant: 'destructive' },
+      'pending': { label: 'Pendente', variant: 'outline' },
     };
     return statusMap[status] || { label: status, variant: 'outline' };
   };
@@ -98,10 +94,10 @@ const UserDashboard = () => {
         {/* Welcome Header */}
         <div className="space-y-1">
           <h1 className="text-3xl font-normal tracking-tight">
-            {t('dashboard.welcome', { name: profile?.name || 'ana.silva' })}
+            Olá, {profile?.name || 'ana.silva'}! 👋
           </h1>
           <p className="text-muted-foreground text-base">
-            {t('dashboard.welcomeBack')}
+            Bem-vinda de volta ao seu espaço de saúde e bem-estar.
           </p>
         </div>
 
@@ -115,7 +111,7 @@ const UserDashboard = () => {
               
               <div className="space-y-1">
                 <div className="text-8xl font-bold text-[#4A90E2]">{remainingSessions}</div>
-                <div className="text-2xl font-serif">{t('dashboard.sessionsRemaining')}</div>
+                <div className="text-2xl font-serif">Sessões Restantes</div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
@@ -125,7 +121,7 @@ const UserDashboard = () => {
                   onClick={() => setShowUniversalChat(true)}
                 >
                   <MessageSquare className="mr-2 h-5 w-5" />
-                  {tNav('actions.talkToSpecialist')}
+                  Falar com Especialista
                 </Button>
               </div>
             </CardContent>
@@ -146,8 +142,8 @@ const UserDashboard = () => {
               <Users className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-normal">{t('dashboard.providersTitle')}</h2>
-              <p className="text-muted-foreground text-base">{t('dashboard.providersSubtitle')}</p>
+              <h2 className="text-2xl font-normal">Seus Prestadores por Pilar</h2>
+              <p className="text-muted-foreground text-base">Profissionais dedicados ao seu bem-estar</p>
             </div>
           </div>
         </div>
@@ -160,7 +156,7 @@ const UserDashboard = () => {
                 <div className="w-12 h-12 rounded-2xl bg-[#4A90E2] flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
-                {t('sessions.upcomingTitle')}
+                Próximas Sessões
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pt-0">
@@ -188,10 +184,10 @@ const UserDashboard = () => {
                           </div>
                           <div className="flex gap-2">
                             {canJoinNow && booking.status === 'confirmed' && (
-                              <Badge className="bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full px-3">{t('sessions.startingSoonBadge')}</Badge>
+                              <Badge className="bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full px-3">Começar em breve</Badge>
                             )}
                             {isTodaySession && !canJoinNow && booking.status === 'confirmed' && (
-                              <Badge className="bg-[#4A90E2] hover:bg-[#3A7BC8] text-white rounded-full px-3">{t('sessions.todayBadge')}</Badge>
+                              <Badge className="bg-[#4A90E2] hover:bg-[#3A7BC8] text-white rounded-full px-3">Hoje</Badge>
                             )}
                             <Badge 
                               variant={statusBadge.variant}
@@ -218,18 +214,18 @@ const UserDashboard = () => {
                               onClick={() => window.open('https://meet.google.com/demo-session-link', '_blank')}
                             >
                               <Video className="w-4 h-4 mr-2" />
-                              {t('sessions.ctaJoinSession')}
+                              Entrar na Sessão
                             </Button>
                           )}
                           {!canJoinNow && booking.status === 'confirmed' && (
                             <Button size="sm" variant="outline" className="flex-1 text-[#DC2626] border-[#DC2626] hover:bg-[#FEE2E2] rounded-lg">
                               <X className="w-4 h-4 mr-2" />
-                              {t('sessions.ctaCancelSession')}
+                              Cancelar Sessão
                             </Button>
                           )}
                           {!canJoinNow && booking.status === 'confirmed' && (
                             <Button size="sm" variant="outline" className="flex-1 rounded-lg">
-                              {t('sessions.ctaViewDetails')}
+                              Ver Detalhes
                             </Button>
                           )}
                         </div>
@@ -239,9 +235,9 @@ const UserDashboard = () => {
                 })
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground mb-4">{t('sessions.noUpcoming')}</p>
+                  <p className="text-sm text-muted-foreground mb-4">Não tem sessões agendadas</p>
                   <Button onClick={() => navigate('/user/book-session')} variant="outline">
-                    {tUser('dashboard.ctaBookSession')}
+                    Marcar Sessão
                   </Button>
                 </div>
               )}
@@ -251,8 +247,8 @@ const UserDashboard = () => {
           {/* Histórico Rápido */}
           <Card className="border shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-xl font-normal">{t('sessions.historyTitle')}</CardTitle>
-              <p className="text-sm text-muted-foreground">{t('sessions.completedCount', { count: completedSessions.length })}</p>
+              <CardTitle className="text-xl font-normal">Histórico de Sessões</CardTitle>
+              <p className="text-sm text-muted-foreground">{completedSessions.length} sessões concluídas</p>
             </CardHeader>
             <CardContent className="space-y-0 pt-0">
               {recentCompleted.length > 0 ? (
@@ -279,15 +275,15 @@ const UserDashboard = () => {
                       className="w-full text-[#4A90E2] p-0 h-auto mt-2 hover:no-underline"
                       onClick={() => navigate('/user/sessions')}
                     >
-                      {t('sessions.viewMore', { count: completedSessions.length - 2 })}
+                      +{completedSessions.length - 2} mais
                     </Button>
                   )}
                 </>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground mb-4">{t('sessions.noHistory')}</p>
+                  <p className="text-sm text-muted-foreground mb-4">Ainda não realizou sessões</p>
                   <Button onClick={() => navigate('/user/book-session')} variant="outline" size="sm">
-                    {tUser('dashboard.ctaBookSession')}
+                    Marcar Sessão
                   </Button>
                 </div>
               )}
@@ -303,16 +299,16 @@ const UserDashboard = () => {
                 <HelpCircle className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-normal mb-2">{t('dashboard.helpTitle')}</h2>
+                <h2 className="text-2xl font-normal mb-2">Ajuda & Recursos</h2>
                 <p className="text-muted-foreground mb-4 text-base">
-                  {t('dashboard.helpSubtitle')}
+                  Acesse conteúdos exclusivos para o seu bem-estar
                 </p>
                 <Button 
                   variant="outline" 
                   className="bg-white hover:bg-white/90 border-gray-200"
                   onClick={() => navigate('/user/resources')}
                 >
-                  {t('dashboard.ctaExploreResources')}
+                  Explorar Recursos de Bem-Estar
                 </Button>
               </div>
             </div>
