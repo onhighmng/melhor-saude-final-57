@@ -116,7 +116,7 @@ export const UniversalAIChat = ({
     onClose();
   };
   return <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-lg shadow-lg w-full max-w-2xl h-[600px] flex flex-col">
+      <div className="bg-card rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <div>
