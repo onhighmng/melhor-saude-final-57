@@ -128,6 +128,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     if (step === 4) return improvementSigns.length > 0;
     if (step === 5) return frequency !== '';
     if (step === 6) return preferredSupport !== '';
+    if (step === 7) return true; // Completion screen
     return false;
   };
 
