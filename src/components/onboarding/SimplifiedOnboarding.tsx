@@ -17,7 +17,7 @@ export interface OnboardingData {
 }
 
 export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at 0 for welcome screen
   const [feeling, setFeeling] = useState('');
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [frequency, setFrequency] = useState('');
@@ -75,10 +75,11 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
   };
 
   const handleBack = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 0) setStep(step - 1);
   };
 
   const canProceed = () => {
+    if (step === 0) return true; // Welcome screen can always proceed
     if (step === 1) return feeling !== '';
     if (step === 2) return selectedGoals.length > 0;
     if (step === 3) return frequency !== '';
@@ -90,7 +91,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
       <div className="w-full max-w-4xl my-8 px-4">
         {/* Header Section */}
         <div className="text-center mb-12">
-          {step === 1 && (
+          {step === 0 && (
             <>
               <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
                 Bem-vindo à Melhor Saúde!
@@ -98,6 +99,17 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
               <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Queremos ajudá-lo a alcançar o seu melhor bem-estar — físico, mental, financeiro e jurídico.
                 Para começarmos, diga-nos um pouco mais sobre si e sobre o que gostaria de melhorar.
+              </p>
+            </>
+          )}
+          
+          {step === 1 && (
+            <>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                Como se sente?
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Conte-nos um pouco sobre o seu momento atual
               </p>
             </>
           )}
@@ -127,6 +139,18 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
         {/* Content Section */}
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12">
+          {/* Step 0: Welcome Screen */}
+          {step === 0 && (
+            <div className="text-center py-12">
+              <div className="mx-auto mb-8 w-24 h-24 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center">
+                <Sparkles className="w-12 h-12 text-white" />
+              </div>
+              <p className="text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
+                Estamos aqui para o apoiar na sua jornada de bem-estar completo
+              </p>
+            </div>
+          )}
+          
           {/* Step 1: Como se sente */}
           {step === 1 && (
             <div className="space-y-4">
@@ -225,7 +249,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
           {/* Navigation */}
           <div className="flex gap-4 mt-10">
-            {step > 1 && (
+            {step > 0 && (
               <Button 
                 variant="outline" 
                 onClick={handleBack} 
@@ -241,25 +265,27 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
               size="lg"
               disabled={!canProceed()}
             >
-              {step === 3 ? 'Começar Jornada →' : 'Próximo →'}
+              {step === 0 ? 'Começar →' : step === 3 ? 'Começar Jornada →' : 'Próximo →'}
             </Button>
           </div>
 
           {/* Progress indicator */}
-          <div className="flex justify-center gap-3 mt-8">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className={`h-3 rounded-full transition-all duration-300 ${
-                  i === step 
-                    ? 'bg-primary w-12' 
-                    : i < step 
-                      ? 'bg-primary/50 w-3' 
-                      : 'bg-gray-300 w-3'
-                }`}
-              />
-            ))}
-          </div>
+          {step > 0 && (
+            <div className="flex justify-center gap-3 mt-8">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className={`h-3 rounded-full transition-all duration-300 ${
+                    i === step 
+                      ? 'bg-primary w-12' 
+                      : i < step 
+                        ? 'bg-primary/50 w-3' 
+                        : 'bg-gray-300 w-3'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
