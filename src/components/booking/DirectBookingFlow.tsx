@@ -195,6 +195,7 @@ export const DirectBookingFlow = () => {
           pillar={selectedPillar}
           assignedProvider={assignedProvider}
           onNext={handleProviderNext}
+          onBack={handleBack}
         />
       )}
 
@@ -212,6 +213,7 @@ export const DirectBookingFlow = () => {
           selectedTime={selectedTime}
           onTimeSelect={setSelectedTime}
           onNext={handleDateTimeNext}
+          onBack={handleBack}
           pillarName={selectedPillar === 'psicologica' ? 'Saúde Mental' : selectedPillar === 'fisica' ? 'Bem-estar Físico' : selectedPillar === 'financeira' ? 'Assistência Financeira' : 'Assistência Jurídica'}
         />
       )}

@@ -9,6 +9,7 @@ interface CalendarStepProps {
   selectedTime: string;
   onTimeSelect: (time: string) => void;
   onNext: () => void;
+  onBack?: () => void;
   pillarName: string;
 }
 
@@ -33,15 +34,23 @@ export default function CalendarStep({
   selectedTime,
   onTimeSelect,
   onNext, 
+  onBack,
   pillarName 
 }: CalendarStepProps) {
   const timeSlots = generateTimeSlots();
 
   return (
     <div className="flex flex-col h-full">
-      <div className="mb-8">
-        <h2 className="text-h2 text-foreground mb-2">Escolha Data e Hora</h2>
-        <p className="text-body text-muted-foreground">Selecione quando quer ter a sua sessão de {pillarName}</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h2 className="text-h2 text-foreground mb-2">Escolha Data e Hora</h2>
+          <p className="text-body text-muted-foreground">Selecione quando quer ter a sua sessão de {pillarName}</p>
+        </div>
+        {onBack && (
+          <Button variant="ghost" onClick={onBack}>
+            Voltar
+          </Button>
+        )}
       </div>
 
       <div className="flex-1">

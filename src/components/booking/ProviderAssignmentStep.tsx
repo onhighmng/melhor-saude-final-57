@@ -17,19 +17,27 @@ interface ProviderAssignmentStepProps {
   pillar: BookingPillar;
   assignedProvider: Provider;
   onNext: () => void;
+  onBack?: () => void;
 }
 
-export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: ProviderAssignmentStepProps) => {
+export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext, onBack }: ProviderAssignmentStepProps) => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">
-          Especialista Atribuído
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Encontrámos o especialista ideal para si
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">
+            Especialista Atribuído
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Encontrámos o especialista ideal para si
+          </p>
+        </div>
+        {onBack && (
+          <Button variant="ghost" onClick={onBack}>
+            Voltar
+          </Button>
+        )}
       </div>
 
       <Card className="border-2 border-primary/20 bg-primary/5">
