@@ -94,19 +94,6 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
             <Button variant="ghost" onClick={onBack}>
               Voltar
             </Button>
-            <div className="text-center flex-1 space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Se as suas questões são complexas, solicite uma sessão 1-on-1 com um especialista.
-              </p>
-              <Button 
-                variant="outline" 
-                onClick={onComplete}
-                className="gap-2"
-              >
-                <Phone className="h-4 w-4" />
-                Solicitar Sessão 1-on-1
-              </Button>
-            </div>
           </div>
 
           <Card className="flex-1 flex flex-col overflow-hidden">
@@ -184,6 +171,22 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
               </div>
             </div>
           </Card>
+
+          <div className="bg-muted/50 border rounded-lg p-4 mt-4">
+            <div className="text-center space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Se as suas questões são complexas, solicite uma sessão 1-on-1 com um especialista.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={onComplete}
+                className="gap-2"
+              >
+                <Phone className="h-4 w-4" />
+                Solicitar Sessão 1-on-1
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
