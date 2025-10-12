@@ -131,7 +131,11 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
               <h3 className="font-medium text-lg">Como se sente neste momento?</h3>
               <RadioGroup value={feeling} onValueChange={setFeeling}>
                 {feelings.map((option) => (
-                  <div key={option.value} className="flex items-center space-x-3 p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer">
+                  <div 
+                    key={option.value} 
+                    className="flex items-center space-x-3 p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer"
+                    onClick={() => setFeeling(option.value)}
+                  >
                     <RadioGroupItem value={option.value} id={option.value} />
                     <Label htmlFor={option.value} className="flex-1 cursor-pointer text-base">
                       {option.label}
@@ -185,7 +189,11 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
             <div className="space-y-4">
               <RadioGroup value={frequency} onValueChange={setFrequency}>
                 {frequencies.map((option) => (
-                  <div key={option.value} className="flex items-center space-x-3 p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer">
+                  <div 
+                    key={option.value} 
+                    className="flex items-center space-x-3 p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer"
+                    onClick={() => setFrequency(option.value)}
+                  >
                     <RadioGroupItem value={option.value} id={option.value} />
                     <Label htmlFor={option.value} className="flex-1 cursor-pointer text-base">
                       {option.label}
