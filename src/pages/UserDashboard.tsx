@@ -35,7 +35,7 @@ const UserDashboard = () => {
     localStorage.setItem('onboardingData', JSON.stringify(data));
     setOnboardingData(data);
     setShowOnboarding(false);
-    setShowCompletionScreen(false); // Skip completion screen
+    setShowCompletionScreen(true);
     setJustCompletedOnboarding(true);
   };
 

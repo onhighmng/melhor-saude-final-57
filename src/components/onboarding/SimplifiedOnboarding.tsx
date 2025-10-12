@@ -94,10 +94,10 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
   };
 
   const handleNext = () => {
-    if (step < 5) {
+    if (step < 6) {
       setStep(step + 1);
     } else {
-      // Step 5 is the last step - complete onboarding
+      // Step 6 is completion screen, complete onboarding
       onComplete({
         wellbeingScore: wellbeingScore!,
         difficultyAreas,
@@ -119,6 +119,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     if (step === 3) return mainGoals.length > 0 && mainGoals.length <= 3;
     if (step === 4) return improvementSigns.length > 0;
     if (step === 5) return frequency !== '';
+    if (step === 6) return true; // Completion screen
     return false;
   };
 
@@ -129,6 +130,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     { title: 'Quais são as suas principais metas neste momento?', subtitle: 'Escolha até 3 metas' },
     { title: 'O que seria um sinal claro de que está a melhorar?', subtitle: 'Selecione todas as que se aplicam' },
     { title: 'Com que frequência gostaria de cuidar do seu bem-estar?', subtitle: 'Personalize o seu ritmo' },
+    { title: '', subtitle: '' }, // Completion screen
   ];
 
   return (
@@ -145,7 +147,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
               </p>
             </>
           )}
-          {step > 0 && step <= 5 && (
+          {step > 0 && step < 6 && (
             <>
               <h2 className="text-2xl md:text-3xl font-bold mb-2 max-w-2xl">
                 {stepHeaders[step].title}
@@ -318,9 +320,42 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
             </div>
           )}
 
+          {/* Step 6: Completion Screen */}
+          {step === 6 && (
+            <div className="text-center py-8 space-y-6">
+              <div className="mx-auto w-32 h-32 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                <div className="w-24 h-24 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                  <CheckCircle2 className="w-14 h-14 text-emerald-500" />
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <h2 className="text-4xl font-bold">Perfeito!</h2>
+                <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                  Criámos um plano inicial com base nas suas respostas.
+                </p>
+                <p className="text-base text-muted-foreground max-w-md mx-auto">
+                  Pode atualizá-las a qualquer momento nas suas definições.
+                </p>
+                <p className="text-base text-muted-foreground max-w-md mx-auto">
+                  O seu progresso será acompanhado automaticamente — cada passo conta 💚
+                </p>
+              </div>
+              
+              <div className="mt-6 max-w-md mx-auto">
+                <Progress value={10} className="h-3" />
+                <p className="text-sm text-sky-blue font-medium mt-2">Progresso: 10%</p>
+              </div>
+              
+              <p className="text-xl font-medium text-sky-blue mt-4">
+                O seu bem-estar começa aqui ✨
+              </p>
+            </div>
+          )}
+
           {/* Navigation */}
           <div className="flex gap-2 mt-4">
-            {step > 0 && step <= 5 && (
+            {step > 0 && step < 6 && (
               <Button 
                 variant="outline" 
                 onClick={handleBack} 
@@ -334,12 +369,12 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
               className="flex-1 h-11 text-sm rounded-lg shadow-lg bg-sky-blue hover:bg-sky-blue/90 text-white"
               disabled={!canProceed()}
             >
-              {step === 0 ? 'Começar →' : step === 5 ? 'Ir para o Dashboard →' : 'Próximo →'}
+              {step === 0 ? 'Começar →' : step === 6 ? 'Continuar para Dashboard →' : step === 5 ? 'Concluir →' : 'Próximo →'}
             </Button>
           </div>
 
           {/* Progress indicator */}
-          {step > 0 && step <= 5 && (
+          {step > 0 && step < 6 && (
             <div className="flex justify-center gap-2 mt-4">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
