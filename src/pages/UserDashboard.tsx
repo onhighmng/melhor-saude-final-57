@@ -12,7 +12,6 @@ import { useBookings } from '@/hooks/useBookings';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
-import { OnboardingComplete } from '@/components/onboarding/OnboardingComplete';
 import { useToast } from '@/hooks/use-toast';
 
 const UserDashboard = () => {
@@ -27,7 +26,6 @@ const UserDashboard = () => {
     return stored ? JSON.parse(stored) : null;
   });
   const [showOnboarding, setShowOnboarding] = useState(true);
-  const [showCompletionScreen, setShowCompletionScreen] = useState(false);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
   const [showUniversalChat, setShowUniversalChat] = useState(false);
 
@@ -35,13 +33,7 @@ const UserDashboard = () => {
     localStorage.setItem('onboardingData', JSON.stringify(data));
     setOnboardingData(data);
     setShowOnboarding(false);
-    setShowCompletionScreen(true);
     setJustCompletedOnboarding(true);
-  };
-
-  const handleCompletionContinue = () => {
-    setShowCompletionScreen(false);
-    // justCompletedOnboarding flag will trigger the celebration in JourneyProgressBar
   };
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
@@ -81,11 +73,6 @@ const UserDashboard = () => {
   // Show onboarding if user hasn't completed it
   if (showOnboarding) {
     return <SimplifiedOnboarding onComplete={handleOnboardingComplete} />;
-  }
-
-  // Show completion screen after onboarding
-  if (showCompletionScreen) {
-    return <OnboardingComplete onContinue={handleCompletionContinue} />;
   }
 
   return (
