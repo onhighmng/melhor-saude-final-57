@@ -18,7 +18,6 @@ export interface OnboardingData {
   mainGoals: string[];
   improvementSigns: string[];
   frequency: string;
-  preferredSupport: string;
 }
 
 export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) => {
@@ -28,7 +27,6 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
   const [mainGoals, setMainGoals] = useState<string[]>([]);
   const [improvementSigns, setImprovementSigns] = useState<string[]>([]);
   const [frequency, setFrequency] = useState('');
-  const [preferredSupport, setPreferredSupport] = useState('');
 
   const difficultyOptions = [
     { value: 'mental', label: 'Saúde mental / stress / ansiedade' },
@@ -66,12 +64,6 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     { value: 'lembretes', label: 'Prefiro receber lembretes personalizados' },
   ];
 
-  const supportTypeOptions = [
-    { value: 'especialista', label: 'Conversa com especialista' },
-    { value: 'recursos', label: 'Recursos práticos (vídeos, artigos, exercícios)' },
-    { value: 'presencial', label: 'Sessões presenciais' },
-    { value: 'online', label: 'Sessões online' },
-  ];
 
   const handleGoalToggle = (goalValue: string) => {
     if (mainGoals.includes(goalValue)) {
@@ -102,7 +94,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
   };
 
   const handleNext = () => {
-    if (step < 7) {
+    if (step < 6) {
       setStep(step + 1);
     } else {
       onComplete({
@@ -111,7 +103,6 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
         mainGoals,
         improvementSigns,
         frequency,
-        preferredSupport,
       });
     }
   };
@@ -127,8 +118,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     if (step === 3) return mainGoals.length > 0 && mainGoals.length <= 3;
     if (step === 4) return improvementSigns.length > 0;
     if (step === 5) return frequency !== '';
-    if (step === 6) return preferredSupport !== '';
-    if (step === 7) return true; // Completion screen
+    if (step === 6) return true; // Completion screen
     return false;
   };
 
@@ -139,7 +129,6 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
     { title: 'Quais são as suas principais metas neste momento?', subtitle: 'Escolha até 3 metas' },
     { title: 'O que seria um sinal claro de que está a melhorar?', subtitle: 'Selecione todas as que se aplicam' },
     { title: 'Com que frequência gostaria de cuidar do seu bem-estar?', subtitle: 'Personalize o seu ritmo' },
-    { title: 'Que tipo de apoio prefere receber primeiro?', subtitle: 'Escolha a sua preferência inicial' },
     { title: '', subtitle: '' },
   ];
 
@@ -157,7 +146,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
               </p>
             </>
           )}
-          {step > 0 && step < 7 && (
+          {step > 0 && step < 6 && (
             <>
               <h2 className="text-2xl md:text-3xl font-bold mb-2 max-w-2xl">
                 {stepHeaders[step].title}
@@ -353,32 +342,8 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
             </div>
           )}
 
-          {/* Step 6: Preferred Support Type */}
+          {/* Step 6: Completion Screen */}
           {step === 6 && (
-            <div className="space-y-2">
-              <RadioGroup value={preferredSupport} onValueChange={setPreferredSupport} className="space-y-2">
-                {supportTypeOptions.map((option) => (
-                  <Label
-                    key={option.value}
-                    htmlFor={`support-${option.value}`}
-                    className={`relative flex items-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-                      preferredSupport === option.value 
-                        ? 'border-primary bg-primary/5 shadow-md' 
-                        : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'
-                    }`}
-                  >
-                    <RadioGroupItem value={option.value} id={`support-${option.value}`} className="mr-3" />
-                    <span className="flex-1 text-sm md:text-base font-medium">
-                      {option.label}
-                    </span>
-                  </Label>
-                ))}
-              </RadioGroup>
-            </div>
-          )}
-
-          {/* Step 7: Completion Screen */}
-          {step === 7 && (
             <div className="text-center py-8 space-y-6">
               <div className="mx-auto w-24 h-24 rounded-full bg-emerald-500/10 flex items-center justify-center">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500" />
@@ -410,7 +375,7 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
 
           {/* Navigation */}
           <div className="flex gap-2 mt-4">
-            {step > 0 && step < 7 && (
+            {step > 0 && step < 6 && (
               <Button 
                 variant="outline" 
                 onClick={handleBack} 
@@ -424,14 +389,14 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
               className="flex-1 h-11 text-sm rounded-lg shadow-lg bg-sky-blue hover:bg-sky-blue/90 text-white"
               disabled={!canProceed()}
             >
-              {step === 0 ? 'Começar →' : step === 7 ? 'Continuar para Dashboard →' : step === 6 ? 'Concluir →' : 'Próximo →'}
+              {step === 0 ? 'Começar →' : step === 6 ? 'Continuar para Dashboard →' : step === 5 ? 'Concluir →' : 'Próximo →'}
             </Button>
           </div>
 
           {/* Progress indicator */}
-          {step > 0 && step < 7 && (
+          {step > 0 && step < 6 && (
             <div className="flex justify-center gap-2 mt-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
