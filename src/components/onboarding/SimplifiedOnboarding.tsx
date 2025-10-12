@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Sparkles, Target, Clock, CheckCircle2 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 
 interface SimplifiedOnboardingProps {
@@ -107,6 +108,42 @@ export const SimplifiedOnboarding = ({ onComplete }: SimplifiedOnboardingProps) 
       });
     }
   };
+
+  // Trigger confetti when reaching completion screen
+  useEffect(() => {
+    if (step === 6) {
+      const duration = 3000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+      const randomInRange = (min: number, max: number) => {
+        return Math.random() * (max - min) + min;
+      };
+
+      const interval = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        });
+      }, 250);
+
+      return () => clearInterval(interval);
+    }
+  }, [step]);
 
   const handleBack = () => {
     if (step > 0) setStep(step - 1);
