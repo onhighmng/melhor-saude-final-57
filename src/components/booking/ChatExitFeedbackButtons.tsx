@@ -70,11 +70,11 @@ export const ChatExitFeedbackButtons = ({
         
         <div className="flex gap-4 py-4">
           <Button onClick={() => handleFeedback(true)} disabled={isSubmitting} className="w-full h-auto py-6 text-lg" variant="default">
-            😊 Fiquei satisfeito
+            😊 Sim
           </Button>
           
           <Button onClick={() => handleFeedback(false)} disabled={isSubmitting} className="w-full h-auto py-6 text-lg" variant="outline">
-            😞 Preciso de mais ajuda
+            😞 Não
           </Button>
         </div>
       </DialogContent>
