@@ -13,8 +13,10 @@ import { SecurePasswordInput, usePasswordValidation } from '@/components/ui/secu
 import { getErrorMessage } from '@/utils/errorMessages';
 import { useState } from 'react';
 import { Mail, Lock, User, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const UnifiedAuthCard = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { login, signup, resetPassword } = useAuth();
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'reset'>('login');

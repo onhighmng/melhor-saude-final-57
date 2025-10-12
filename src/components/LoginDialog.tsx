@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -24,6 +25,7 @@ interface LoginDialogProps {
 }
 
 const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   

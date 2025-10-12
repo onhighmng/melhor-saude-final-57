@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import { useTranslation } from 'react-i18next';
 
 const PillarCarousel = () => {
+  const { t } = useTranslation();
   const [sectionRef, isSectionVisible] = useScrollAnimation(0.1);
   const [currentSlide, setCurrentSlide] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
