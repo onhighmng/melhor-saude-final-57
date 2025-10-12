@@ -55,6 +55,12 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
 }) => {
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between mb-4">
+        <Button variant="ghost" onClick={onBack}>
+          Voltar
+        </Button>
+      </div>
+      
       <div className="text-center">
         <h1 className="text-4xl font-serif font-bold mb-4 text-foreground">
           Qual é a sua questão jurídica?
