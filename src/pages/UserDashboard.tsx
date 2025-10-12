@@ -26,7 +26,7 @@ const UserDashboard = () => {
     const stored = localStorage.getItem('onboardingData');
     return stored ? JSON.parse(stored) : null;
   });
-  const [showOnboarding, setShowOnboarding] = useState(!onboardingData);
+  const [showOnboarding, setShowOnboarding] = useState(true);
   const [showCompletionScreen, setShowCompletionScreen] = useState(false);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
   const [showUniversalChat, setShowUniversalChat] = useState(false);
