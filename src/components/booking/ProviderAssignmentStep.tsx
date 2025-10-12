@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { CheckCircle2, Star } from 'lucide-react';
 import { BookingPillar } from './BookingFlow';
 
 interface Provider {
@@ -46,15 +47,29 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext }: Pro
           </div>
 
           <div className="bg-background rounded-lg p-6">
-            <div className="space-y-4">
-              <h4 className="text-xl font-semibold">
-                Nosso especialista
-              </h4>
-              <p className="text-primary font-medium">{assignedProvider.specialty}</p>
+            <div className="flex items-start gap-6">
+              <Avatar className="h-24 w-24 border-2 border-primary/20">
+                <AvatarImage src={assignedProvider.avatar_url} alt={assignedProvider.name} />
+                <AvatarFallback className="text-2xl">
+                  {assignedProvider.name.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
 
-              <p className="text-sm text-muted-foreground">
-                Profissional qualificado pronto para ajudar com suas necessidades
-              </p>
+              <div className="flex-1 space-y-3">
+                <div>
+                  <h4 className="text-xl font-semibold">{assignedProvider.name}</h4>
+                  <p className="text-primary font-medium">{assignedProvider.specialty}</p>
+                </div>
+
+                <div className="flex items-center gap-1 text-sm">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span className="font-semibold">{assignedProvider.rating.toFixed(1)}</span>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  {assignedProvider.experience}
+                </p>
+              </div>
             </div>
           </div>
         </CardContent>
