@@ -182,7 +182,7 @@ export const UniversalAIChat = ({
             </p>
             <Button onClick={handleBookSession} variant="outline" size="sm" className="w-full sm:w-auto">
               <Phone className="h-4 w-4 mr-2" />
-              Solicitar Sessão 1-on-1
+              Solicitar Chamada
             </Button>
           </div>
         </div>
