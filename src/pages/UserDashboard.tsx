@@ -135,18 +135,6 @@ const UserDashboard = () => {
         {/* Original Progress Bar - Growth Journey with Feedback Milestones */}
         <ProgressBar />
 
-        {/* Seus Prestadores por Pilar */}
-        <div className="space-y-6">
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-[#4A90E2] flex items-center justify-center flex-shrink-0">
-              <Users className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-normal">Seus Prestadores por Pilar</h2>
-              <p className="text-muted-foreground text-base">Profissionais dedicados ao seu bem-estar</p>
-            </div>
-          </div>
-        </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Próximas Sessões */}
