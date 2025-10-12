@@ -20,13 +20,13 @@ export const ChatIntroSection = ({
             </span>
           </Button>
           
-          <Button variant="outline" onClick={() => onSelectPrompt('Estou um pouco indeciso sobre o que preciso')} className="text-center h-auto py-4 px-4 text-sm">
-            Estou um pouco indeciso sobre o que preciso
+          <Button variant="outline" onClick={() => onSelectPrompt('Já percebi o que preciso')} className="text-center h-auto py-4 px-4 text-sm">
+            Já percebi o que preciso
           </Button>
         </div>
         
-        <Button variant="outline" onClick={() => onSelectPrompt('Já percebi o que preciso')} className="w-full text-center h-auto py-4 px-4 text-sm">
-          Já percebi o que preciso
+        <Button variant="outline" onClick={() => onSelectPrompt('Estou um pouco indeciso sobre o que preciso')} className="w-full text-center h-auto py-4 px-4 text-sm">
+          Estou um pouco indeciso sobre o que preciso
         </Button>
       </div>
     </div>;
