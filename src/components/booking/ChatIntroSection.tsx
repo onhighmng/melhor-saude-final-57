@@ -14,18 +14,18 @@ export const ChatIntroSection = ({
       </div>
 
       <div className="space-y-3">
-        <Button variant="outline" onClick={() => onSelectPrompt('me sinto ultimamente')} className="w-full text-left h-auto py-4 px-6">
+        <Button variant="outline" onClick={() => onSelectPrompt('Gostaria de partilhar o que sinto')} className="w-full text-left h-auto py-4 px-6">
           <span>
-            Gostaria de partilhar o que <span className="underline">"me sinto ultimamente"</span>
+            Gostaria de partilhar o que <span className="underline">"sinto"</span>
           </span>
         </Button>
         
-        <Button variant="outline" onClick={() => onSelectPrompt('Preciso de ajuda com uma questão específica')} className="w-full text-left h-auto py-4 px-6">
-          Preciso de ajuda com uma questão específica
+        <Button variant="outline" onClick={() => onSelectPrompt('Estou um pouco indeciso sobre o que preciso')} className="w-full text-left h-auto py-4 px-6">
+          Estou um pouco indeciso sobre o que preciso
         </Button>
         
-        <Button variant="outline" onClick={() => onSelectPrompt('Tenho uma dúvida sobre os serviços')} className="w-full text-left h-auto py-4 px-6">
-          Tenho uma dúvida sobre os serviços
+        <Button variant="outline" onClick={() => onSelectPrompt('Já percebi o que preciso')} className="w-full text-left h-auto py-4 px-6">
+          Já percebi o que preciso
         </Button>
       </div>
     </div>;
