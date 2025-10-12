@@ -66,8 +66,8 @@ export default function UserSessions() {
     }))
   );
 
-  // Helper function to render skull progress
-  const renderSkullProgress = (completed: number, total: number) => {
+  // Helper function to render session progress
+  const renderSessionProgress = (completed: number, total: number) => {
     return (
       <div className="flex gap-1 items-center">
         {Array.from({ length: total }).map((_, index) => (
@@ -80,7 +80,7 @@ export default function UserSessions() {
                 : "bg-muted text-muted-foreground"
             )}
           >
-            💀
+            ✓
           </div>
         ))}
       </div>
@@ -132,7 +132,7 @@ export default function UserSessions() {
                 
                 {/* Skull Icons */}
                 <div className="flex items-center justify-between">
-                  {renderSkullProgress(goal.completedSessions, goal.targetSessions)}
+                  {renderSessionProgress(goal.completedSessions, goal.targetSessions)}
                   <span className="text-sm text-muted-foreground">
                     {goal.completedSessions}/{goal.targetSessions} sessões completadas
                   </span>
