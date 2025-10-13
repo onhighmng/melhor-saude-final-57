@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { BarChart3, Calendar } from 'lucide-react';
-import { Provider } from '@/types/adminProvider';
+import { AdminProvider as Provider } from '@/data/adminMockData';
 
 interface ProviderOptionsModalProps {
   open: boolean;

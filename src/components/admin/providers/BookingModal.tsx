@@ -19,7 +19,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Provider, CalendarSlot, SessionType } from '@/types/adminProvider';
+import { AdminProvider } from '@/data/adminMockData';
+import { CalendarSlot } from '@/types/adminProvider';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { Calendar, Clock } from 'lucide-react';
@@ -27,7 +28,7 @@ import { Calendar, Clock } from 'lucide-react';
 interface BookingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  provider: Provider;
+  provider: AdminProvider | null;
   slot: CalendarSlot;
 }
 
@@ -37,9 +38,11 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
   
   const [formData, setFormData] = useState({
     collaboratorName: '',
-    sessionType: provider.sessionType === 'both' ? '' : provider.sessionType,
+    sessionType: provider?.sessionType === 'Ambos' ? '' : (provider?.sessionType || ''),
     notes: '',
   });
+
+  if (!provider) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,18 +103,18 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
             <Label htmlFor="sessionType">{t('bookingModal.sessionType')}</Label>
             <Select
               value={formData.sessionType}
-              onValueChange={(value) => setFormData({ ...formData, sessionType: value as SessionType })}
-              disabled={provider.sessionType !== 'both'}
+              onValueChange={(value) => setFormData({ ...formData, sessionType: value })}
+              disabled={provider.sessionType !== 'Ambos'}
             >
               <SelectTrigger>
-                <SelectValue placeholder={t('sessionTypes.' + provider.sessionType)} />
+                <SelectValue placeholder={provider.sessionType} />
               </SelectTrigger>
               <SelectContent>
-                {(provider.sessionType === 'both' || provider.sessionType === 'virtual') && (
-                  <SelectItem value="virtual">{t('sessionTypes.virtual')}</SelectItem>
+                {(provider.sessionType === 'Ambos' || provider.sessionType === 'Virtual') && (
+                  <SelectItem value="Virtual">Virtual</SelectItem>
                 )}
-                {(provider.sessionType === 'both' || provider.sessionType === 'presential') && (
-                  <SelectItem value="presential">{t('sessionTypes.presential')}</SelectItem>
+                {(provider.sessionType === 'Ambos' || provider.sessionType === 'Presencial') && (
+                  <SelectItem value="Presencial">Presencial</SelectItem>
                 )}
               </SelectContent>
             </Select>

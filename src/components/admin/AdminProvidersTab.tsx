@@ -39,6 +39,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
 import providerPlaceholder from '@/assets/provider-placeholder.jpg';
+import { ProviderOptionsModal } from '@/components/admin/providers/ProviderOptionsModal';
+import { BookingModal } from '@/components/admin/providers/BookingModal';
+import type { CalendarSlot } from '@/types/adminProvider';
 
 const AdminProvidersTab = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -52,6 +55,10 @@ const AdminProvidersTab = () => {
 
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | null>(null);
 
   // Form states for new provider
   const [newProvider, setNewProvider] = useState({
@@ -140,7 +147,21 @@ const AdminProvidersTab = () => {
   };
 
   const handleCardClick = (provider: Provider) => {
-    navigate(`/admin/provider-metrics/${provider.id}`);
+    setSelectedProvider(provider);
+    setShowOptionsModal(true);
+  };
+
+  const handleViewMetrics = () => {
+    if (selectedProvider) {
+      navigate(`/admin/provider-metrics/${selectedProvider.id}`);
+    }
+  };
+
+  const handleScheduleSession = () => {
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "Por favor, selecione um horário na vista de calendário do prestador para agendar uma sessão.",
+    });
   };
 
 
@@ -544,6 +565,25 @@ const AdminProvidersTab = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Provider Options Modal */}
+      <ProviderOptionsModal
+        open={showOptionsModal}
+        onOpenChange={setShowOptionsModal}
+        provider={selectedProvider}
+        onViewMetrics={handleViewMetrics}
+        onScheduleSession={handleScheduleSession}
+      />
+
+      {/* Booking Modal */}
+      {selectedSlot && (
+        <BookingModal
+          open={showBookingModal}
+          onOpenChange={setShowBookingModal}
+          provider={selectedProvider}
+          slot={selectedSlot}
+        />
+      )}
 
     </div>
   );
