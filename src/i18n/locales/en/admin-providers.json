@@ -18,6 +18,8 @@
     "title": "Add New Provider",
     "fullName": "Full name",
     "fullNamePlaceholder": "E.g.: Dr. John Silva",
+    "specialty": "Specialty",
+    "specialtyPlaceholder": "E.g.: Clinical Psychologist, Nutritionist",
     "email": "Email",
     "emailPlaceholder": "provider@example.com",
     "pillar": "Pillar",
@@ -58,7 +60,9 @@
   "optionsModal": {
     "title": "Provider Options",
     "viewMetrics": "View Metrics & History",
+    "viewMetricsDescription": "View detailed performance and history",
     "scheduleSession": "Schedule Session on Calendar",
+    "scheduleSessionDescription": "Schedule a new session directly",
     "cancel": "Cancel"
   },
 

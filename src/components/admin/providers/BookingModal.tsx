@@ -8,7 +8,6 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -18,11 +17,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { Provider, CalendarSlot, SessionType } from '@/types/adminProvider';
+import { mockCollaborators } from '@/data/adminProvidersData';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface BookingModalProps {
   open: boolean;
@@ -36,15 +50,18 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
+    collaboratorId: '',
     collaboratorName: '',
     sessionType: provider.sessionType === 'both' ? '' : provider.sessionType,
     notes: '',
   });
 
+  const [openCollaboratorSelect, setOpenCollaboratorSelect] = useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.collaboratorName || !formData.sessionType) {
+    if (!formData.collaboratorId || !formData.sessionType) {
       toast({
         title: t('bookingModal.error'),
         variant: 'destructive',
@@ -86,14 +103,59 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="collaborator">{t('bookingModal.selectCollaborator')}</Label>
-            <Input
-              id="collaborator"
-              placeholder={t('bookingModal.collaboratorPlaceholder')}
-              value={formData.collaboratorName}
-              onChange={(e) => setFormData({ ...formData, collaboratorName: e.target.value })}
-              required
-            />
+            <Label>{t('bookingModal.selectCollaborator')}</Label>
+            <Popover open={openCollaboratorSelect} onOpenChange={setOpenCollaboratorSelect}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openCollaboratorSelect}
+                  className="w-full justify-between"
+                >
+                  {formData.collaboratorId
+                    ? mockCollaborators.find((c) => c.id === formData.collaboratorId)?.name
+                    : t('bookingModal.collaboratorPlaceholder')}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <Command>
+                  <CommandInput placeholder={t('bookingModal.collaboratorPlaceholder')} />
+                  <CommandList>
+                    <CommandEmpty>{t('noResults')}</CommandEmpty>
+                    <CommandGroup>
+                      {mockCollaborators.map((collaborator) => (
+                        <CommandItem
+                          key={collaborator.id}
+                          value={`${collaborator.name} ${collaborator.email}`}
+                          onSelect={() => {
+                            setFormData({
+                              ...formData,
+                              collaboratorId: collaborator.id,
+                              collaboratorName: collaborator.name,
+                            });
+                            setOpenCollaboratorSelect(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              formData.collaboratorId === collaborator.id ? 'opacity-100' : 'opacity-0'
+                            )}
+                          />
+                          <div className="flex flex-col">
+                            <span className="font-medium">{collaborator.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {collaborator.email} • {collaborator.company}
+                            </span>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="space-y-2">

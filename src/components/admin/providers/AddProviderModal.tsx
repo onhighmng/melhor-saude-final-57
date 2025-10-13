@@ -32,6 +32,7 @@ export const AddProviderModal = ({ open, onOpenChange, onSuccess }: AddProviderM
   
   const [formData, setFormData] = useState({
     fullName: '',
+    specialty: '',
     email: '',
     pillar: '' as Pillar | '',
     costPerSession: '',
@@ -44,7 +45,7 @@ export const AddProviderModal = ({ open, onOpenChange, onSuccess }: AddProviderM
     e.preventDefault();
     
     // Validate form
-    if (!formData.fullName || !formData.email || !formData.pillar || !formData.costPerSession || !formData.sessionType) {
+    if (!formData.fullName || !formData.specialty || !formData.email || !formData.pillar || !formData.costPerSession || !formData.sessionType) {
       toast({
         title: t('addModal.error'),
         variant: 'destructive',
@@ -62,6 +63,7 @@ export const AddProviderModal = ({ open, onOpenChange, onSuccess }: AddProviderM
     // Reset form
     setFormData({
       fullName: '',
+      specialty: '',
       email: '',
       pillar: '',
       costPerSession: '',
@@ -89,6 +91,17 @@ export const AddProviderModal = ({ open, onOpenChange, onSuccess }: AddProviderM
               placeholder={t('addModal.fullNamePlaceholder')}
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="specialty">{t('addModal.specialty')}</Label>
+            <Input
+              id="specialty"
+              placeholder={t('addModal.specialtyPlaceholder')}
+              value={formData.specialty}
+              onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
               required
             />
           </div>
