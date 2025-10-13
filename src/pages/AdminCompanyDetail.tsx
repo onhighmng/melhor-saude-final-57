@@ -375,8 +375,8 @@ export default function AdminCompanyDetail() {
             </CardHeader>
             <CardContent className="space-y-4">
 
-              <p className="text-sm text-muted-foreground">
-                <a href="#" onClick={(e) => { e.preventDefault(); downloadCSVTemplate(); }} className="text-vibrant-blue hover:underline">
+              <p className="text-base text-muted-foreground">
+                <a href="#" onClick={(e) => { e.preventDefault(); downloadCSVTemplate(); }} className="text-vibrant-blue hover:underline text-base">
                   📎 Descarregar modelo CSV
                 </a>
               </p>
