@@ -4,6 +4,12 @@
   "addProvider": "Add Provider",
   "searchPlaceholder": "Search providers...",
   "noResults": "No providers found",
+
+  "tab": {
+    "title": "Provider Management",
+    "description": "Complete provider management has been moved to a dedicated page with calendar, metrics, and scheduling.",
+    "goToPage": "Go to Provider Management"
+  },
   
   "card": {
     "costPerSession": "Cost/Session",

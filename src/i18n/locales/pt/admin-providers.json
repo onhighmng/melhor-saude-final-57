@@ -4,6 +4,12 @@
   "addProvider": "Adicionar Prestador",
   "searchPlaceholder": "Pesquisar prestadores...",
   "noResults": "Nenhum prestador encontrado",
+
+  "tab": {
+    "title": "Gestão de Prestadores",
+    "description": "A gestão completa de prestadores foi movida para uma página dedicada com calendário, métricas e agendamentos.",
+    "goToPage": "Ir para Gestão de Prestadores"
+  },
   
   "card": {
     "costPerSession": "Custo/Sessão",
