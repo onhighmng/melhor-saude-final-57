@@ -65,7 +65,7 @@ const AdminDashboard = () => {
       icon: Calendar,
       iconColor: 'text-accent-sky',
       bgColor: 'bg-accent-sky/10',
-      route: '/admin/sessions'
+      route: '/admin/operations'
     },
     {
       title: 'Satisfação Média',
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
       icon: Star,
       iconColor: 'text-peach-orange',
       bgColor: 'bg-peach-orange/10',
-      route: '/admin/reports'
+      route: '/admin/resources'
     },
     {
       title: 'Objetivos Atingidos',
