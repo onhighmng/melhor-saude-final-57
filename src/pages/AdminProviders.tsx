@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Search, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +18,6 @@ import { mockProviders, mockProviderMetrics, mockProviderHistory } from '@/data/
 import { Provider, Pillar, ProviderStatus } from '@/types/adminProvider';
 
 export const AdminProviders = () => {
-  const { t } = useTranslation('admin-providers');
   
   // State
   const [providers, setProviders] = useState<Provider[]>(mockProviders);
@@ -95,12 +93,12 @@ export const AdminProviders = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('pageTitle')}</h1>
-          <p className="text-muted-foreground mt-1">{t('pageDescription')}</p>
+          <h1 className="text-3xl font-bold tracking-tight">Gestão de Prestadores</h1>
+          <p className="text-muted-foreground mt-1">Gerir prestadores externos, visualizar métricas e agendar sessões</p>
         </div>
         <Button onClick={() => setShowAddModal(true)} size="lg">
           <Plus className="h-4 w-4 mr-2" />
-          {t('addProvider')}
+          Adicionar Prestador
         </Button>
       </div>
 
@@ -110,7 +108,7 @@ export const AdminProviders = () => {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder={t('searchPlaceholder')}
+            placeholder="Pesquisar prestadores..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -124,10 +122,10 @@ export const AdminProviders = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos os pilares</SelectItem>
-            <SelectItem value="mental_health">{t('pillars.mental_health')}</SelectItem>
-            <SelectItem value="physical_wellness">{t('pillars.physical_wellness')}</SelectItem>
-            <SelectItem value="financial_assistance">{t('pillars.financial_assistance')}</SelectItem>
-            <SelectItem value="legal_assistance">{t('pillars.legal_assistance')}</SelectItem>
+            <SelectItem value="mental_health">Saúde Mental</SelectItem>
+            <SelectItem value="physical_wellness">Bem-Estar Físico</SelectItem>
+            <SelectItem value="financial_assistance">Assistência Financeira</SelectItem>
+            <SelectItem value="legal_assistance">Assistência Jurídica</SelectItem>
           </SelectContent>
         </Select>
 
@@ -138,9 +136,9 @@ export const AdminProviders = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos os estados</SelectItem>
-            <SelectItem value="active">{t('status.active')}</SelectItem>
-            <SelectItem value="busy">{t('status.busy')}</SelectItem>
-            <SelectItem value="inactive">{t('status.inactive')}</SelectItem>
+            <SelectItem value="active">Ativo</SelectItem>
+            <SelectItem value="busy">Ocupado</SelectItem>
+            <SelectItem value="inactive">Inativo</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -148,7 +146,7 @@ export const AdminProviders = () => {
       {/* Providers Grid */}
       {filteredProviders.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">{t('noResults')}</p>
+          <p className="text-muted-foreground">Nenhum prestador encontrado</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
