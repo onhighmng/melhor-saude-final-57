@@ -34,6 +34,7 @@ const AdminReports = lazy(() => import("./pages/AdminReports"));
 const AdminControlCenter = lazy(() => import("./pages/AdminControlCenter"));
 const AdminSupport = lazy(() => import("./pages/AdminSupport"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
+const AdminCompanyDetail = lazy(() => import("./pages/AdminCompanyDetail"));
 
 // Company pages
 const CompanyInvites = lazy(() => import("./pages/CompanyInvites"));
@@ -140,6 +141,8 @@ const AppWithTracking = () => {
           <Route path="/admin/gestao-utilizadores" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
           <Route path="/admin/operations" element={<AdminLayout><AdminOperations /></AdminLayout>} />
           <Route path="/admin/operacoes" element={<AdminLayout><AdminOperations /></AdminLayout>} />
+          <Route path="/admin/companies/:id" element={<AdminLayout><AdminCompanyDetail /></AdminLayout>} />
+          <Route path="/admin/empresas/:id" element={<AdminLayout><AdminCompanyDetail /></AdminLayout>} />
           <Route path="/admin/resources" element={<AdminLayout><AdminResources /></AdminLayout>} />
           <Route path="/admin/recursos" element={<AdminLayout><AdminResources /></AdminLayout>} />
           <Route path="/admin/reports" element={<AdminLayout><AdminReports /></AdminLayout>} />

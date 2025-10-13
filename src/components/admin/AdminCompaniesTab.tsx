@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Progress } from '@/components/ui/progress';
 import { 
   Search, 
@@ -86,17 +86,16 @@ const mockCompanies: Company[] = [
 
 export const AdminCompaniesTab = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
 
   const filteredCompanies = mockCompanies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     company.nuit.includes(searchQuery)
   );
 
+  const navigate = useNavigate();
+
   const handleViewDetails = (company: Company) => {
-    setSelectedCompany(company);
-    setSheetOpen(true);
+    navigate(`/admin/companies/${company.id}`);
   };
 
   // Mock data para gráfico de uso mensal
@@ -196,133 +195,6 @@ export const AdminCompaniesTab = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Details Sheet */}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-          {selectedCompany && (
-            <>
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  {selectedCompany.name}
-                </SheetTitle>
-                <SheetDescription>
-                  Informações detalhadas da empresa
-                </SheetDescription>
-              </SheetHeader>
-
-              <div className="mt-6 space-y-6">
-                {/* Info Cards */}
-                <div className="grid grid-cols-2 gap-4">
-                  <Card>
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 bg-vibrant-blue/10 rounded-lg">
-                          <Users className="h-5 w-5 text-vibrant-blue" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Colaboradores</p>
-                          <p className="text-2xl font-bold">{selectedCompany.employees}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 bg-mint-green/10 rounded-lg">
-                          <TrendingUp className="h-5 w-5 text-mint-green" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Uso do Plano</p>
-                          <p className="text-2xl font-bold">
-                            {Math.round((selectedCompany.usedSessions / selectedCompany.totalSessions) * 100)}%
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Company Info */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Informações da Empresa</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">NUIT</span>
-                      <span className="font-medium">{selectedCompany.nuit}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Plano</span>
-                      <span className="font-medium">{selectedCompany.plan}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Estado</span>
-                      <Badge variant={selectedCompany.status === 'Ativa' ? 'default' : 'secondary'}>
-                        {selectedCompany.status}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Usage Chart */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Uso Mensal de Sessões</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={200}>
-                      <BarChart data={monthlyUsageData}>
-                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                        <XAxis 
-                          dataKey="month" 
-                          tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                        />
-                        <YAxis tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: 'hsl(var(--card))',
-                            border: '1px solid hsl(var(--border))',
-                            borderRadius: '8px'
-                          }}
-                        />
-                        <Bar dataKey="sessions" fill="hsl(var(--vibrant-blue))" radius={[8, 8, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-
-                {/* Billing */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Euro className="h-5 w-5" />
-                      Faturação
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Mensalidade</span>
-                      <span className="font-bold text-lg">MZN {selectedCompany.monthlyFee}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Próxima faturação</span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        01/02/2025
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
     </>
   );
 };
