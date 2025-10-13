@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -6,7 +5,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -24,8 +22,9 @@ import {
   UsersIcon,
   Activity,
   Shield,
+  PanelLeft,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MenuItem {
@@ -88,53 +87,53 @@ const AdminSidebar = () => {
 
 
   return (
-    <Sidebar
-      collapsible="icon"
-    >
-      <SidebarHeader className="p-6 border-b">
-        <div className="flex items-center justify-between mb-3">
-          <SidebarTrigger />
+    <Sidebar collapsible="icon" className="border-r">
+      <SidebarHeader className="p-4 border-b">
+        <div className="flex items-center justify-between mb-4">
+          <SidebarTrigger className="h-8 w-8">
+            <PanelLeft className="h-5 w-5" />
+          </SidebarTrigger>
         </div>
         {!isCollapsed && (
-          <div className="flex items-center gap-4">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={user?.avatar_url} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+          <div className="flex items-center gap-3">
+            {/* Overlapping avatar circles */}
+            <div className="relative">
+              <div className="h-16 w-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-semibold">
                 {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-base font-medium truncate">
-                {user?.name || user?.email}
+              </div>
+              <div className="absolute -right-3 top-3 h-14 w-14 rounded-full bg-blue-400 flex items-center justify-center text-white text-xl font-semibold opacity-80">
+                {user?.name?.charAt(1) || user?.email?.charAt(1) || 'a'}
+              </div>
+            </div>
+            <div className="flex flex-col min-w-0 flex-1 ml-2">
+              <span className="text-base font-normal truncate text-foreground">
+                {user?.email || user?.name}
               </span>
-              <span className="text-sm text-muted-foreground">Administrador</span>
+              <span className="text-sm text-muted-foreground font-light">Administrador</span>
             </div>
           </div>
         )}
         {isCollapsed && (
           <div className="flex justify-center">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={user?.avatar_url} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-base">
-                {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
-              </AvatarFallback>
-            </Avatar>
+            <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-base font-semibold">
+              {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
+            </div>
           </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-3 py-4">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuItemWithTooltip item={item}>
                     <SidebarMenuButton asChild>
                       <NavLink to={item.url} end className={getNavCls}>
-                        <div className="flex items-center py-1">
-                          <item.icon className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                          {!isCollapsed && <span className="text-base whitespace-nowrap">{item.title}</span>}
+                        <div className="flex items-center py-2">
+                          <item.icon className={`h-5 w-5 flex-shrink-0 text-blue-500 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+                          {!isCollapsed && <span className="text-base font-normal text-blue-500">{item.title}</span>}
                         </div>
                       </NavLink>
                     </SidebarMenuButton>
@@ -146,17 +145,26 @@ const AdminSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className={`p-6 border-t ${isCollapsed ? 'flex justify-center' : ''}`}>
-        <SidebarMenu className={isCollapsed ? 'items-center' : ''}>
+      <SidebarFooter className="p-4 border-t space-y-3">
+        {!isCollapsed && (
+          <Card className="border-muted">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Utilizador</span>
+                <span className="font-medium">{user?.name || 'Admin'}</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuItemWithTooltip item={{ title: 'Sair' }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
-                size="sm"
-                className="text-muted-foreground hover:text-foreground cursor-pointer"
+                className="text-muted-foreground hover:text-foreground cursor-pointer w-full"
               >
                 <LogOut className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                {!isCollapsed && <span className="text-base whitespace-nowrap">Sair</span>}
+                {!isCollapsed && <span className="text-base">Sair</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
