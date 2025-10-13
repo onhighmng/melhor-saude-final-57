@@ -59,18 +59,18 @@ export default function PrestadorDashboard() {
   };
 
   const statusLabels = {
-    agendada: t('status.scheduled'),
-    confirmada: t('status.confirmed'),
-    em_curso: t('status.inProgress'),
-    concluida: t('status.completed'),
-    cancelada: t('status.cancelled'),
-    falta: t('status.absence')
+    agendada: 'Agendada',
+    confirmada: 'Confirmada',
+    em_curso: 'Em Curso',
+    concluida: 'Concluída',
+    cancelada: 'Cancelada',
+    falta: 'Falta'
   };
 
   const formatSessionDate = (date: string) => {
     const sessionDate = parseISO(date);
-    if (isToday(sessionDate)) return t('sessions.today');
-    if (isTomorrow(sessionDate)) return t('sessions.tomorrow');
+    if (isToday(sessionDate)) return 'Hoje';
+    if (isTomorrow(sessionDate)) return 'Amanhã';
     return format(sessionDate, 'EEEE, d MMM', { locale: pt });
   };
 
@@ -111,14 +111,14 @@ export default function PrestadorDashboard() {
           ? { ...session, status: 'concluida' as const }
           : session
       ));
-      toast.success(t('dashboard.sessionMarkedComplete'));
+      toast.success('Sessão marcada como concluída');
     } else if (action === 'falta') {
       setSessions(prev => prev.map(session => 
         session.id === sessionId 
           ? { ...session, status: 'falta' as const }
           : session
       ));
-      toast.warning(t('dashboard.absenceRecorded'));
+      toast.warning('Falta registada');
     } else if (action === 'detalhes') {
       console.log(`Viewing details for session ${sessionId}`);
     }
@@ -131,8 +131,8 @@ export default function PrestadorDashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <PageHeader
-        title={t('dashboard.welcome', { name: mockPrestadorUser.name.split(' ')[0] })}
-        subtitle={t('dashboard.subtitle')}
+        title={`Bem-vindo, ${mockPrestadorUser.name.split(' ')[0]}`}
+        subtitle="Gerir as suas sessões e disponibilidade"
         className="bg-white border-b"
       />
 
@@ -151,7 +151,7 @@ export default function PrestadorDashboard() {
                 }`}
               >
                 {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-                {isOnline ? t('dashboard.online') : t('dashboard.offline')}
+                {isOnline ? 'Online' : 'Offline'}
               </button>
             </div>
 
@@ -163,7 +163,7 @@ export default function PrestadorDashboard() {
                 onClick={() => setTimeFilter('hoje')}
                 className="h-8"
               >
-                {t('dashboard.today')}
+                Hoje
               </Button>
               <Button
                 variant={timeFilter === 'proximos7dias' ? 'default' : 'ghost'}
@@ -171,7 +171,7 @@ export default function PrestadorDashboard() {
                 onClick={() => setTimeFilter('proximos7dias')}
                 className="h-8"
               >
-                {t('dashboard.next7Days')}
+                Próximos 7 dias
               </Button>
             </div>
           </div>
@@ -180,15 +180,15 @@ export default function PrestadorDashboard() {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="hidden sm:flex">
               <CalendarDays className="w-4 h-4 mr-2" />
-              {t('dashboard.calendar')}
+              Calendário
             </Button>
             <Button variant="outline" size="sm" className="hidden sm:flex">
               <FileText className="w-4 h-4 mr-2" />
-              {t('dashboard.notes')}
+              Notas
             </Button>
             <Button variant="outline" size="sm">
               <Settings className="w-4 h-4 mr-2" />
-              {t('dashboard.settings')}
+              Definições
             </Button>
           </div>
         </div>
@@ -198,7 +198,7 @@ export default function PrestadorDashboard() {
       {!isOnline && (
         <div className="bg-red-500 text-white px-4 py-2 text-center text-sm">
           <div className="max-w-7xl mx-auto">
-            {t('dashboard.offlineBanner')}
+            Está atualmente offline. As marcações não serão atribuídas até ficar online novamente.
           </div>
         </div>
       )}
@@ -218,7 +218,7 @@ export default function PrestadorDashboard() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
-                      <p className="text-sm text-gray-600">{t('metrics.completed')}</p>
+                      <p className="text-sm text-gray-600">Concluídas</p>
                     </div>
                   </div>
                 </CardContent>
@@ -232,7 +232,7 @@ export default function PrestadorDashboard() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesCanceladas}</p>
-                      <p className="text-sm text-gray-600">{t('metrics.cancelled')}</p>
+                      <p className="text-sm text-gray-600">Canceladas</p>
                     </div>
                   </div>
                 </CardContent>
@@ -246,7 +246,7 @@ export default function PrestadorDashboard() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.faltasRegistadas}</p>
-                      <p className="text-sm text-gray-600">{t('metrics.absences')}</p>
+                      <p className="text-sm text-gray-600">Faltas</p>
                     </div>
                   </div>
                 </CardContent>
@@ -260,7 +260,7 @@ export default function PrestadorDashboard() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
-                      <p className="text-sm text-gray-600">{t('metrics.users')}</p>
+                      <p className="text-sm text-gray-600">Utilizadores</p>
                     </div>
                   </div>
                 </CardContent>
@@ -270,7 +270,7 @@ export default function PrestadorDashboard() {
             {/* Sessões */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">{t('sessions.title')}</h2>
+                <h2 className="text-xl font-semibold text-gray-900">Sessões</h2>
               </div>
               {Object.keys(groupedSessions).length === 0 ? (
                 <Card>
@@ -281,10 +281,10 @@ export default function PrestadorDashboard() {
                       </div>
                       <div>
                         <h3 className="text-lg font-medium text-gray-900 mb-1">
-                          {timeFilter === 'hoje' ? t('dashboard.noSessionsToday') : t('dashboard.noSessionsNext7Days')}
+                          {timeFilter === 'hoje' ? 'Sem sessões hoje' : 'Sem sessões nos próximos 7 dias'}
                         </h3>
                         <p className="text-gray-600">
-                          {t('dashboard.enjoyFreeTime')}
+                          Aproveite o tempo livre!
                         </p>
                       </div>
                     </div>
@@ -329,12 +329,12 @@ export default function PrestadorDashboard() {
                                      {session.location === 'online' ? (
                                        <>
                                          <Video className="w-4 h-4" />
-                                         {t('sessions.online')}
+                                         Online
                                        </>
                                     ) : (
                                        <>
                                          <MapPin className="w-4 h-4" />
-                                         {t('sessions.inPerson')}
+                                         Presencial
                                        </>
                                     )}
                                   </span>
@@ -358,7 +358,7 @@ export default function PrestadorDashboard() {
                                      className="text-green-600 border-green-200 hover:bg-green-50"
                                    >
                                      <CheckCircle className="w-4 h-4 mr-1" />
-                                     {t('sessions.complete')}
+                                     Concluir
                                    </Button>
                                   <Button 
                                     size="sm" 
@@ -367,7 +367,7 @@ export default function PrestadorDashboard() {
                                      className="text-orange-600 border-orange-200 hover:bg-orange-50"
                                    >
                                      <UserX className="w-4 h-4 mr-1" />
-                                     {t('sessions.markAbsence')}
+                                     Marcar Falta
                                    </Button>
                                 </>
                               )}
@@ -396,20 +396,20 @@ export default function PrestadorDashboard() {
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
-                  {t('metrics.monthOverview')}
+                  Visão Geral do Mês
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">{t('metrics.totalSessions')}</span>
+                  <span className="text-sm text-gray-600">Total de Sessões</span>
                   <span className="font-medium">{mockPrestadorMetrics.monthMetrics.totalSessoes}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">{t('metrics.avgSatisfaction')}</span>
+                  <span className="text-sm text-gray-600">Satisfação Média</span>
                   <span className="font-medium">{mockPrestadorMetrics.monthMetrics.satisfacao}/5</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">{t('metrics.avgTime')}</span>
+                  <span className="text-sm text-gray-600">Tempo Médio</span>
                   <span className="font-medium">{mockPrestadorMetrics.monthMetrics.tempoMedio}min</span>
                 </div>
               </CardContent>
@@ -418,7 +418,7 @@ export default function PrestadorDashboard() {
             {/* Quick Access */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{t('quickAccess.title')}</CardTitle>
+                <CardTitle className="text-base">Acesso Rápido</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <Button variant="ghost" className="w-full justify-start text-left">
