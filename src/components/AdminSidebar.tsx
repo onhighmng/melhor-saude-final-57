@@ -127,11 +127,11 @@ const AdminSidebar = () => {
                         end 
                         className={({ isActive }) => `
                           ${isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"}
-                          ${isCollapsed ? "flex justify-center items-center" : "flex items-center"}
+                          ${isCollapsed ? "!flex !justify-center !items-center !px-0" : "flex items-center"}
                         `}
                       >
-                        <item.icon className="h-5 w-5 text-blue-500" />
-                        {!isCollapsed && <span className="text-base font-normal text-blue-500 ml-3">{item.title}</span>}
+                        <item.icon className={`h-5 w-5 text-blue-500 ${isCollapsed ? '' : 'mr-3'}`} />
+                        {!isCollapsed && <span className="text-base font-normal text-blue-500">{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItemWithTooltip>
@@ -158,10 +158,10 @@ const AdminSidebar = () => {
             <SidebarMenuItemWithTooltip item={{ title: 'Sair' }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
-                className={`text-muted-foreground hover:text-foreground cursor-pointer ${isCollapsed ? 'flex justify-center items-center' : 'flex items-center'}`}
+                className={`text-muted-foreground hover:text-foreground cursor-pointer ${isCollapsed ? '!flex !justify-center !items-center !px-0' : 'flex items-center'}`}
               >
-                <LogOut className="h-5 w-5 flex-shrink-0" />
-                {!isCollapsed && <span className="text-base ml-3">Sair</span>}
+                <LogOut className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? '' : 'mr-3'}`} />
+                {!isCollapsed && <span className="text-base">Sair</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
