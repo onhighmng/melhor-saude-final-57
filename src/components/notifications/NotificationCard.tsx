@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Bell, Calendar, AlertCircle, Star, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
 
 export interface Notification {
   id: string;
@@ -39,17 +38,15 @@ const colorMap = {
 };
 
 export function NotificationCard({ notification, onMarkRead, onAction }: NotificationCardProps) {
-  const { t } = useTranslation('user');
-  
   const Icon = iconMap[notification.type];
   const colorClass = colorMap[notification.type];
   
   const ctaMap = {
-    quota_warning: t('notifications.ctaQuotaWarning'),
-    booking_confirmation: t('notifications.ctaViewDetails'),
-    feedback_request: t('notifications.ctaSendFeedback'),
-    session_reminder: t('notifications.ctaJoinSession'),
-    info: t('notifications.ctaViewDetails'),
+    quota_warning: 'Renovar Plano',
+    booking_confirmation: 'Ver Detalhes',
+    feedback_request: 'Enviar Feedback',
+    session_reminder: 'Entrar na Sessão',
+    info: 'Ver Detalhes',
   };
   
   const ctaText = ctaMap[notification.type];
@@ -74,7 +71,7 @@ export function NotificationCard({ notification, onMarkRead, onAction }: Notific
                 <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
               </div>
               {!notification.read && (
-                <Badge variant="default" className="shrink-0">{t('notifications.newBadge')}</Badge>
+                <Badge variant="default" className="shrink-0">Nova</Badge>
               )}
             </div>
             
@@ -95,7 +92,7 @@ export function NotificationCard({ notification, onMarkRead, onAction }: Notific
                     size="sm"
                     onClick={() => onMarkRead(notification.id)}
                   >
-                    {t('notifications.markRead')}
+                    Marcar como lida
                   </Button>
                 )}
                 <Button
