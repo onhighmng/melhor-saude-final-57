@@ -1,11 +1,25 @@
 import { PageHeader } from "@/components/ui/page-header";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export default function Terms() {
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
   
   return (
     <div className="container mx-auto max-w-4xl py-8">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => navigate(-1)}
+        className="mb-4 gap-2"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Voltar
+      </Button>
+      
       <PageHeader
         title={t('terms.title')}
         subtitle={t('terms.subtitle')}

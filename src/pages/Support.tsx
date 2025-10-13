@@ -1,16 +1,29 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageCircle, Headset } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MessageCircle, Headset, ArrowLeft } from "lucide-react";
 import { SupportAssistant } from "@/components/support/SupportAssistant";
 import { SupportForm } from "@/components/support/SupportForm";
 
 export default function Support() {
   const { t } = useTranslation('common');
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("assistant");
 
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => navigate(-1)}
+        className="mb-4 gap-2"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Voltar
+      </Button>
+      
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="font-['Baskervville'] text-3xl md:text-4xl font-semibold text-foreground mb-2">
