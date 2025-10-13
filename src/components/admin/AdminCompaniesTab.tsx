@@ -28,7 +28,7 @@ import {
 interface Company {
   id: string;
   name: string;
-  nif: string;
+  nuit: string;
   employees: number;
   plan: string;
   totalSessions: number;
@@ -41,7 +41,7 @@ const mockCompanies: Company[] = [
   {
     id: '1',
     name: 'TechCorp Lda',
-    nif: '501234567',
+    nuit: '501234567',
     employees: 45,
     plan: '400 sessões',
     totalSessions: 400,
@@ -52,7 +52,7 @@ const mockCompanies: Company[] = [
   {
     id: '2',
     name: 'HealthPlus SA',
-    nif: '502345678',
+    nuit: '502345678',
     employees: 120,
     plan: '1000 sessões',
     totalSessions: 1000,
@@ -63,7 +63,7 @@ const mockCompanies: Company[] = [
   {
     id: '3',
     name: 'StartupHub',
-    nif: '503456789',
+    nuit: '503456789',
     employees: 15,
     plan: '150 sessões',
     totalSessions: 150,
@@ -74,7 +74,7 @@ const mockCompanies: Company[] = [
   {
     id: '4',
     name: 'ConsultPro',
-    nif: '504567890',
+    nuit: '504567890',
     employees: 80,
     plan: '600 sessões',
     totalSessions: 600,
@@ -91,7 +91,7 @@ export const AdminCompaniesTab = () => {
 
   const filteredCompanies = mockCompanies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.nif.includes(searchQuery)
+    company.nuit.includes(searchQuery)
   );
 
   const handleViewDetails = (company: Company) => {
@@ -117,7 +117,7 @@ export const AdminCompaniesTab = () => {
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Pesquisar por nome ou NIF..."
+              placeholder="Pesquisar por nome ou NUIT..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -135,7 +135,7 @@ export const AdminCompaniesTab = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Empresa</TableHead>
-                  <TableHead>NIF</TableHead>
+                  <TableHead>NUIT</TableHead>
                   <TableHead>Colaboradores</TableHead>
                   <TableHead>Plano</TableHead>
                   <TableHead>Sessões</TableHead>
@@ -149,7 +149,7 @@ export const AdminCompaniesTab = () => {
                   return (
                     <TableRow key={company.id}>
                       <TableCell className="font-medium">{company.name}</TableCell>
-                      <TableCell className="text-muted-foreground">{company.nif}</TableCell>
+                      <TableCell className="text-muted-foreground">{company.nuit}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Users className="h-4 w-4 text-muted-foreground" />
@@ -253,8 +253,8 @@ export const AdminCompaniesTab = () => {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">NIF</span>
-                      <span className="font-medium">{selectedCompany.nif}</span>
+                      <span className="text-muted-foreground">NUIT</span>
+                      <span className="font-medium">{selectedCompany.nuit}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Plano</span>
