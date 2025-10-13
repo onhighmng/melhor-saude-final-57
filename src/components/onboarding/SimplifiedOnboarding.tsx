@@ -163,11 +163,11 @@ export const SimplifiedOnboarding = ({
       // Reset progress to 0 first
       setProgressValue(0);
       console.log('[SimplifiedOnboarding] Progress reset to 0');
-      // Animate to 10% after a small delay
+      // Animate to 10% after a longer delay to ensure the 0 value renders first
       const timer = setTimeout(() => {
         console.log('[SimplifiedOnboarding] Setting progress to 10');
         setProgressValue(10);
-      }, 100);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [step]);
