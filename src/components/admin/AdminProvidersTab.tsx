@@ -61,7 +61,6 @@ const AdminProvidersTab = () => {
     pillar: '',
     costPerSession: '',
     sessionType: '',
-    availability: '',
     status: 'Ativo'
   });
 
@@ -135,7 +134,6 @@ const AdminProvidersTab = () => {
       pillar: '',
       costPerSession: '',
       sessionType: '',
-      availability: '',
       status: 'Ativo'
     });
   };
@@ -155,7 +153,7 @@ const AdminProvidersTab = () => {
     setShowCalendarModal(true);
   };
 
-  const handleStatusChange = (newStatus: 'Ativo' | 'Ocupado' | 'Inativo') => {
+  const handleStatusChange = (newStatus: 'Ativo' | 'Inativo') => {
     if (selectedProvider) {
       setProviders(prev => prev.map(p => 
         p.id === selectedProvider.id ? { ...p, status: newStatus } : p
@@ -224,8 +222,6 @@ const AdminProvidersTab = () => {
     switch (status) {
       case 'Ativo':
         return <Badge className="bg-green-100 text-green-800 border-green-200">Ativo</Badge>;
-      case 'Ocupado':
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Ocupado</Badge>;
       case 'Inativo':
         return <Badge className="bg-gray-100 text-gray-600 border-gray-200">Inativo</Badge>;
       default:
@@ -361,7 +357,6 @@ const AdminProvidersTab = () => {
           <SelectContent className="bg-background border border-border shadow-lg z-50">
             <SelectItem value="all">Todos os Estados</SelectItem>
             <SelectItem value="Ativo">Ativo</SelectItem>
-            <SelectItem value="Ocupado">Ocupado</SelectItem>
             <SelectItem value="Inativo">Inativo</SelectItem>
           </SelectContent>
         </Select>
@@ -516,17 +511,6 @@ const AdminProvidersTab = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="availability">Disponibilidade inicial (opcional)</Label>
-              <Textarea
-                id="availability"
-                value={newProvider.availability}
-                onChange={(e) => setNewProvider({ ...newProvider, availability: e.target.value })}
-                placeholder="Ex: Segunda a Sexta, 9h-17h"
-                rows={2}
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="status">Estado *</Label>
               <Select value={newProvider.status} onValueChange={(value) => setNewProvider({ ...newProvider, status: value })}>
                 <SelectTrigger>
@@ -534,7 +518,6 @@ const AdminProvidersTab = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Ativo">Ativo</SelectItem>
-                  <SelectItem value="Ocupado">Ocupado</SelectItem>
                   <SelectItem value="Inativo">Inativo</SelectItem>
                 </SelectContent>
               </Select>
@@ -654,13 +637,6 @@ const AdminProvidersTab = () => {
                         onClick={() => handleStatusChange('Ativo')}
                       >
                         Ativo
-                      </Button>
-                      <Button
-                        variant={selectedProvider.status === 'Ocupado' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => handleStatusChange('Ocupado')}
-                      >
-                        Ocupado
                       </Button>
                       <Button
                         variant={selectedProvider.status === 'Inativo' ? 'default' : 'outline'}
