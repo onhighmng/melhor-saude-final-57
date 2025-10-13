@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser } from '@/data/mockData';
 import { 
   User, 
@@ -25,7 +24,6 @@ const DemoControlPanel = () => {
   const { profile, login, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation('common');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -35,10 +33,10 @@ const DemoControlPanel = () => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   const demoUsers = [
-    { ...mockUser, title: t('roles.user'), icon: User, role: 'user' as const, color: 'bg-blue-500' },
-    { ...mockPrestadorUser, title: t('roles.provider'), icon: UserCheck, role: 'prestador' as const, color: 'bg-green-500' },
-    { ...mockHRUser, title: t('roles.hr'), icon: Building2, role: 'hr' as const, color: 'bg-purple-500' },
-    { ...mockAdminUser, title: t('roles.admin'), icon: Shield, role: 'admin' as const, color: 'bg-red-500' }
+    { ...mockUser, title: 'Utilizador', icon: User, role: 'user' as const, color: 'bg-blue-500' },
+    { ...mockPrestadorUser, title: 'Prestador', icon: UserCheck, role: 'prestador' as const, color: 'bg-green-500' },
+    { ...mockHRUser, title: 'RH', icon: Building2, role: 'hr' as const, color: 'bg-purple-500' },
+    { ...mockAdminUser, title: 'Admin', icon: Shield, role: 'admin' as const, color: 'bg-red-500' }
   ];
 
   const handleRoleSwitch = async (demoUser: typeof demoUsers[0]) => {
