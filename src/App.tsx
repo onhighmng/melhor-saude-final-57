@@ -28,6 +28,7 @@ const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminUsersManagement = lazy(() => import("./pages/AdminUsersManagement"));
+const AdminProviders = lazy(() => import("./pages/AdminProviders"));
 const AdminOperations = lazy(() => import("./pages/AdminOperations"));
 const AdminResources = lazy(() => import("./pages/AdminResources"));
 const AdminReports = lazy(() => import("./pages/AdminReports"));
@@ -139,6 +140,8 @@ const AppWithTracking = () => {
           <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
           <Route path="/admin/users-management" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
           <Route path="/admin/gestao-utilizadores" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
+          <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
+          <Route path="/admin/prestadores" element={<AdminLayout><AdminProviders /></AdminLayout>} />
           <Route path="/admin/operations" element={<AdminLayout><AdminOperations /></AdminLayout>} />
           <Route path="/admin/operacoes" element={<AdminLayout><AdminOperations /></AdminLayout>} />
           <Route path="/admin/companies/:id" element={<AdminLayout><AdminCompanyDetail /></AdminLayout>} />

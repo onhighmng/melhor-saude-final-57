@@ -1,0 +1,117 @@
+{
+  "pageTitle": "Provider Management",
+  "pageDescription": "Manage external providers, view metrics and schedule sessions",
+  "addProvider": "Add Provider",
+  "searchPlaceholder": "Search providers...",
+  "noResults": "No providers found",
+  
+  "card": {
+    "costPerSession": "Cost/Session",
+    "satisfaction": "Satisfaction",
+    "sessions": "Sessions",
+    "available": "Available",
+    "busy": "Busy",
+    "inactive": "Inactive"
+  },
+
+  "addModal": {
+    "title": "Add New Provider",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "E.g.: Dr. John Silva",
+    "email": "Email",
+    "emailPlaceholder": "provider@example.com",
+    "pillar": "Pillar",
+    "pillarPlaceholder": "Select a pillar",
+    "costPerSession": "Cost per session (MZN)",
+    "costPlaceholder": "350",
+    "sessionType": "Session type",
+    "sessionTypePlaceholder": "Select type",
+    "availability": "Initial availability",
+    "availabilityPlaceholder": "E.g.: Mon-Fri 9am-5pm",
+    "status": "Status",
+    "statusPlaceholder": "Select status",
+    "cancel": "Cancel",
+    "save": "Save Provider",
+    "success": "Provider added successfully!",
+    "error": "Error adding provider"
+  },
+
+  "pillars": {
+    "mental_health": "Mental Health",
+    "physical_wellness": "Physical Wellness",
+    "financial_assistance": "Financial Assistance",
+    "legal_assistance": "Legal Assistance"
+  },
+
+  "sessionTypes": {
+    "virtual": "Virtual",
+    "presential": "In-Person",
+    "both": "Both"
+  },
+
+  "status": {
+    "active": "Active",
+    "busy": "Busy",
+    "inactive": "Inactive"
+  },
+
+  "optionsModal": {
+    "title": "Provider Options",
+    "viewMetrics": "View Metrics & History",
+    "scheduleSession": "Schedule Session on Calendar",
+    "cancel": "Cancel"
+  },
+
+  "metricsView": {
+    "title": "Metrics & History",
+    "backToOptions": "Back to Options",
+    "generalData": "General Data",
+    "fullName": "Full name",
+    "pillar": "Pillar",
+    "sessionType": "Session type",
+    "currentStatus": "Current status",
+    "mainMetrics": "Main Metrics",
+    "sessionsCompleted": "Sessions completed",
+    "avgSatisfaction": "Avg. satisfaction",
+    "sessionsThisMonth": "Sessions this month",
+    "companiesServed": "Companies served",
+    "financial": "Financial",
+    "costPerSession": "Cost per session",
+    "platformMargin": "Platform Margin (25%)",
+    "netToProvider": "Net to provider",
+    "totalPaidThisMonth": "Total paid this month",
+    "history": "History",
+    "date": "Date",
+    "collaborator": "Collaborator",
+    "rating": "Rating",
+    "noHistory": "No history available"
+  },
+
+  "calendarView": {
+    "title": "Schedule Session on Calendar",
+    "backToOptions": "Back to Options",
+    "providerCalendar": "{{providerName}}'s Calendar",
+    "weekView": "Week",
+    "monthView": "Month",
+    "filterByType": "Filter by type",
+    "filterByCompany": "Filter by company",
+    "allTypes": "All types",
+    "allCompanies": "All companies",
+    "available": "Available",
+    "booked": "Booked",
+    "selectSlot": "Select an available time slot to schedule"
+  },
+
+  "bookingModal": {
+    "title": "New Session",
+    "selectCollaborator": "Select collaborator",
+    "collaboratorPlaceholder": "Search by name or email...",
+    "sessionType": "Session type",
+    "notes": "Notes (optional)",
+    "notesPlaceholder": "Add relevant information...",
+    "cancel": "Cancel",
+    "confirm": "Confirm Session",
+    "success": "Session scheduled successfully!",
+    "error": "Error scheduling session"
+  }
+}

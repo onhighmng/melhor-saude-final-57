@@ -1,0 +1,117 @@
+{
+  "pageTitle": "Gestão de Prestadores",
+  "pageDescription": "Gerir prestadores externos, visualizar métricas e agendar sessões",
+  "addProvider": "Adicionar Prestador",
+  "searchPlaceholder": "Pesquisar prestadores...",
+  "noResults": "Nenhum prestador encontrado",
+  
+  "card": {
+    "costPerSession": "Custo/Sessão",
+    "satisfaction": "Satisfação",
+    "sessions": "Sessões",
+    "available": "Disponível",
+    "busy": "Ocupado",
+    "inactive": "Inativo"
+  },
+
+  "addModal": {
+    "title": "Adicionar Novo Prestador",
+    "fullName": "Nome completo",
+    "fullNamePlaceholder": "Ex: Dr. João Silva",
+    "email": "Email",
+    "emailPlaceholder": "prestador@exemplo.com",
+    "pillar": "Pilar",
+    "pillarPlaceholder": "Selecione um pilar",
+    "costPerSession": "Custo por sessão (MZN)",
+    "costPlaceholder": "350",
+    "sessionType": "Tipo de sessão",
+    "sessionTypePlaceholder": "Selecione o tipo",
+    "availability": "Disponibilidade inicial",
+    "availabilityPlaceholder": "Ex: Seg-Sex 9h-17h",
+    "status": "Estado",
+    "statusPlaceholder": "Selecione o estado",
+    "cancel": "Cancelar",
+    "save": "Guardar Prestador",
+    "success": "Prestador adicionado com sucesso!",
+    "error": "Erro ao adicionar prestador"
+  },
+
+  "pillars": {
+    "mental_health": "Saúde Mental",
+    "physical_wellness": "Bem-Estar Físico",
+    "financial_assistance": "Assistência Financeira",
+    "legal_assistance": "Assistência Jurídica"
+  },
+
+  "sessionTypes": {
+    "virtual": "Virtual",
+    "presential": "Presencial",
+    "both": "Ambos"
+  },
+
+  "status": {
+    "active": "Ativo",
+    "busy": "Ocupado",
+    "inactive": "Inativo"
+  },
+
+  "optionsModal": {
+    "title": "Opções do Prestador",
+    "viewMetrics": "Ver Métricas e Histórico",
+    "scheduleSession": "Agendar Sessão no Calendário",
+    "cancel": "Cancelar"
+  },
+
+  "metricsView": {
+    "title": "Métricas e Histórico",
+    "backToOptions": "Voltar às Opções",
+    "generalData": "Dados Gerais",
+    "fullName": "Nome completo",
+    "pillar": "Pilar",
+    "sessionType": "Tipo de sessão",
+    "currentStatus": "Estado atual",
+    "mainMetrics": "Métricas Principais",
+    "sessionsCompleted": "Sessões realizadas",
+    "avgSatisfaction": "Média de satisfação",
+    "sessionsThisMonth": "Sessões este mês",
+    "companiesServed": "Empresas atendidas",
+    "financial": "Financeiro",
+    "costPerSession": "Custo por sessão",
+    "platformMargin": "Margem Melhor Saúde (25%)",
+    "netToProvider": "Valor líquido ao prestador",
+    "totalPaidThisMonth": "Total pago este mês",
+    "history": "Histórico",
+    "date": "Data",
+    "collaborator": "Colaborador",
+    "rating": "Nota",
+    "noHistory": "Nenhum histórico disponível"
+  },
+
+  "calendarView": {
+    "title": "Agendar Sessão no Calendário",
+    "backToOptions": "Voltar às Opções",
+    "providerCalendar": "Calendário de {{providerName}}",
+    "weekView": "Semana",
+    "monthView": "Mês",
+    "filterByType": "Filtrar por tipo",
+    "filterByCompany": "Filtrar por empresa",
+    "allTypes": "Todos os tipos",
+    "allCompanies": "Todas as empresas",
+    "available": "Disponível",
+    "booked": "Ocupado",
+    "selectSlot": "Selecione um horário disponível para agendar"
+  },
+
+  "bookingModal": {
+    "title": "Nova Sessão",
+    "selectCollaborator": "Escolher colaborador",
+    "collaboratorPlaceholder": "Pesquisar por nome ou email...",
+    "sessionType": "Tipo de sessão",
+    "notes": "Observações (opcional)",
+    "notesPlaceholder": "Adicione informações relevantes...",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar Sessão",
+    "success": "Sessão agendada com sucesso!",
+    "error": "Erro ao agendar sessão"
+  }
+}
