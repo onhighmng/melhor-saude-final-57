@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +31,6 @@ import { useToast } from "@/hooks/use-toast";
 import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
 
 const AdminProviders = () => {
-  const { t } = useTranslation(['admin', 'common', 'navigation']);
   const navigate = useNavigate();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
@@ -61,8 +59,8 @@ const AdminProviders = () => {
       }, 1000);
     } catch (error) {
       toast({
-        title: t('common:error'),
-        description: t('common:error'),
+        title: "Erro",
+        description: "Erro ao carregar prestadores",
         variant: "destructive"
       });
       setIsLoading(false);
@@ -110,20 +108,20 @@ const AdminProviders = () => {
       ));
       
       toast({
-        title: newStatus === 'active' ? t('providers.providerActivated') : t('providers.providerDeactivated'),
-        description: t('providers.statusUpdatedSuccess')
+        title: newStatus === 'active' ? "Prestador ativado" : "Prestador desativado",
+        description: "Estado atualizado com sucesso"
       });
     } catch (error) {
       toast({
-        title: t('common:error'),
-        description: t('providerDetail.statusUpdateError'),
+        title: "Erro",
+        description: "Erro ao atualizar estado",
         variant: "destructive"
       });
     }
   };
 
   const handleExportProviders = () => {
-    const headers = t('providers.exportHeaders', { returnObjects: true }) as string[];
+    const headers = ['Nome', 'Email', 'Pilares', 'Disponibilidade', 'Estado Licença', 'Capacidade', 'Duração Padrão'];
     const csv = [
       headers.join(','),
       ...filteredProviders.map(p => 
@@ -142,8 +140,8 @@ const AdminProviders = () => {
     window.URL.revokeObjectURL(url);
     
     toast({
-      title: t('providers.exportComplete'),
-      description: t('providers.exportedSuccess', { count: filteredProviders.length })
+      title: "Exportação concluída",
+      description: `${filteredProviders.length} prestadores exportados com sucesso`
     });
   };
 
@@ -158,15 +156,15 @@ const AdminProviders = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">{t('common:active')}</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">Ativo</Badge>;
       case 'inactive':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-600">{t('common:inactive')}</Badge>;
+        return <Badge variant="secondary" className="bg-gray-100 text-gray-600">Inativo</Badge>;
       case 'valid':
-        return <Badge variant="default" className="bg-green-100 text-green-800">{t('providers.status.valid')}</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">Válido</Badge>;
       case 'expired':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800">{t('providers.status.expired')}</Badge>;
+        return <Badge variant="destructive" className="bg-red-100 text-red-800">Expirado</Badge>;
       case 'pending':
-        return <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50">{t('providers.status.pending')}</Badge>;
+        return <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50">Pendente</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -190,13 +188,13 @@ const AdminProviders = () => {
   const getPillarName = (pillar: string) => {
     switch (pillar) {
       case 'mental-health':
-        return t('providers.pillarNames.SM');
+        return 'SM';
       case 'physical-wellness':
-        return t('providers.pillarNames.BF');
+        return 'BF';
       case 'financial-assistance':
-        return t('providers.pillarNames.AF');
+        return 'AF';
       case 'legal-assistance':
-        return t('providers.pillarNames.AJ');
+        return 'AJ';
       default:
         return pillar;
     }
@@ -237,15 +235,15 @@ const AdminProviders = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t('providers.title')}</h1>
-            <p className="text-sm text-muted-foreground">{t('providers.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-foreground">Prestadores</h1>
+            <p className="text-sm text-muted-foreground">Gerir prestadores e disponibilidade</p>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder={t('providers.searchPlaceholder')}
+                placeholder="Procurar prestadores..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 w-80"
@@ -254,48 +252,48 @@ const AdminProviders = () => {
             
             <Select value={pillarFilter} onValueChange={setPillarFilter}>
               <SelectTrigger className="w-40">
-                <SelectValue placeholder={t('providers.pillars')} />
+                <SelectValue placeholder="Pilares" />
               </SelectTrigger>
               <SelectContent className="bg-background border border-border shadow-lg z-50">
-                <SelectItem value="all">{t('providers.pillars')}</SelectItem>
-                <SelectItem value="mental-health">{t('navigation:pillars.mentalHealth', 'Saúde Mental')}</SelectItem>
-                <SelectItem value="physical-wellness">{t('navigation:pillars.physicalWellness', 'Bem-Estar Físico')}</SelectItem>
-                <SelectItem value="financial-assistance">{t('navigation:pillars.financialAssistance', 'Assistência Financeira')}</SelectItem>
-                <SelectItem value="legal-assistance">{t('navigation:pillars.legalAssistance', 'Assistência Jurídica')}</SelectItem>
+                <SelectItem value="all">Todos os Pilares</SelectItem>
+                <SelectItem value="mental-health">Saúde Mental</SelectItem>
+                <SelectItem value="physical-wellness">Bem-Estar Físico</SelectItem>
+                <SelectItem value="financial-assistance">Assistência Financeira</SelectItem>
+                <SelectItem value="legal-assistance">Assistência Jurídica</SelectItem>
               </SelectContent>
             </Select>
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('common.status')} />
+                <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent className="bg-background border border-border shadow-lg z-50">
-                <SelectItem value="all">{t('providers.states')}</SelectItem>
-                <SelectItem value="active">{t('common.active')}</SelectItem>
-                <SelectItem value="inactive">{t('common.inactive')}</SelectItem>
+                <SelectItem value="all">Todos os Estados</SelectItem>
+                <SelectItem value="active">Ativo</SelectItem>
+                <SelectItem value="inactive">Inativo</SelectItem>
               </SelectContent>
             </Select>
             
             <Select value={licenseFilter} onValueChange={setLicenseFilter}>
               <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('providers.licenses')} />
+                <SelectValue placeholder="Licenças" />
               </SelectTrigger>
               <SelectContent className="bg-background border border-border shadow-lg z-50">
-                <SelectItem value="all">{t('providers.licenses')}</SelectItem>
-                <SelectItem value="valid">{t('providers.status.valid')}</SelectItem>
-                <SelectItem value="pending">{t('providers.status.pending')}</SelectItem>
-                <SelectItem value="expired">{t('providers.status.expired')}</SelectItem>
+                <SelectItem value="all">Todas as Licenças</SelectItem>
+                <SelectItem value="valid">Válido</SelectItem>
+                <SelectItem value="pending">Pendente</SelectItem>
+                <SelectItem value="expired">Expirado</SelectItem>
               </SelectContent>
             </Select>
             
             <Button variant="outline" onClick={handleExportProviders}>
               <Search className="h-4 w-4 mr-2" />
-              {t('common.export')}
+              Exportar
             </Button>
             
             <Button onClick={() => navigate('/admin/prestadores/novo')}>
               <Plus className="h-4 w-4 mr-2" />
-              {t('providers.addProvider')}
+              Adicionar Prestador
             </Button>
           </div>
         </div>
@@ -308,14 +306,14 @@ const AdminProviders = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Users className="h-4 w-4 text-blue-600" />
-                {t('providers.metrics.totalProviders')}
+                Total de Prestadores
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{totalProviders}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 <ArrowUpRight className="h-3 w-3 inline text-green-600" />
-                <span className="text-green-600">+2</span> {t('providers.metrics.thisMonth')}
+                <span className="text-green-600">+2</span> este mês
               </p>
             </CardContent>
           </Card>
@@ -324,13 +322,13 @@ const AdminProviders = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <UserCheck className="h-4 w-4 text-green-600" />
-                {t('providers.metrics.activeProviders')}
+                Prestadores Ativos
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-700 dark:text-green-300">{activeProviders}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {Math.round((activeProviders / totalProviders) * 100)}% {t('providers.metrics.ofTotal')}
+                {Math.round((activeProviders / totalProviders) * 100)}% do total
               </p>
             </CardContent>
           </Card>
@@ -339,14 +337,14 @@ const AdminProviders = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Shield className="h-4 w-4 text-amber-600" />
-                {t('providers.metrics.pendingLicenses')}
+                Licenças Pendentes
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">{pendingLicenses}</div>
               <p className="text-xs text-muted-foreground mt-1 flex items-center">
                 <AlertTriangle className="h-3 w-3 mr-1 text-amber-600" />
-                {t('providers.metrics.requiresVerification')}
+                Requer verificação
               </p>
             </CardContent>
           </Card>
@@ -355,13 +353,13 @@ const AdminProviders = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4 text-purple-600" />
-                {t('providers.metrics.avgWeeklyCapacity')}
+                Capacidade Semanal Média
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{avgWeeklyCapacity}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {t('providers.metrics.sessionsPerProvider')}
+                sessões por prestador
               </p>
             </CardContent>
           </Card>
@@ -370,19 +368,19 @@ const AdminProviders = () => {
         {/* Providers Table */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-foreground">{t('providers.title')}</CardTitle>
+            <CardTitle className="text-foreground">Prestadores</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow className="border-muted">
-                  <TableHead>{t('providers.table.provider')}</TableHead>
-                  <TableHead>{t('providers.table.servedPillars')}</TableHead>
-                  <TableHead>{t('providers.table.availability')}</TableHead>
-                  <TableHead>{t('providers.table.license')}</TableHead>
-                  <TableHead>{t('providers.table.capacity')}</TableHead>
-                  <TableHead>{t('providers.table.defaultSlot')}</TableHead>
-                  <TableHead>{t('providers.table.actions')}</TableHead>
+                  <TableHead>Prestador</TableHead>
+                  <TableHead>Pilares Servidos</TableHead>
+                  <TableHead>Disponibilidade</TableHead>
+                  <TableHead>Licença</TableHead>
+                  <TableHead>Capacidade</TableHead>
+                  <TableHead>Duração Padrão</TableHead>
+                  <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -390,8 +388,8 @@ const AdminProviders = () => {
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                       {searchQuery || pillarFilter !== 'all' || statusFilter !== 'all' || licenseFilter !== 'all'
-                        ? t('providers.noProvidersWithFilters') 
-                        : t('providers.noProvidersFound')}
+                        ? 'Nenhum prestador encontrado com os filtros aplicados' 
+                        : 'Nenhum prestador encontrado'}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -431,12 +429,12 @@ const AdminProviders = () => {
                           {getStatusBadge(provider.licenseStatus)}
                            {provider.licenseExpiry && provider.licenseStatus === 'valid' && (
                              <p className="text-xs text-muted-foreground">
-                               {t('providers.table.expiresOn')} {new Date(provider.licenseExpiry).toLocaleDateString('pt-PT')}
+                               Expira em {new Date(provider.licenseExpiry).toLocaleDateString('pt-PT')}
                              </p>
                            )}
                            {provider.licenseStatus === 'expired' && provider.licenseExpiry && (
                              <p className="text-xs text-red-600">
-                               {t('providers.table.expiredOn')} {new Date(provider.licenseExpiry).toLocaleDateString('pt-PT')}
+                               Expirou em {new Date(provider.licenseExpiry).toLocaleDateString('pt-PT')}
                              </p>
                            )}
                         </div>
