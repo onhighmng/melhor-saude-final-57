@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -85,7 +84,6 @@ const getPillarColor = (pillar: string) => {
 };
 
 const AdminProviderChangeRequests = () => {
-  const { t } = useTranslation('admin');
   const [requests, setRequests] = useState(mockChangeRequests);
   const [selectedRequest, setSelectedRequest] = useState<ChangeRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -127,10 +125,10 @@ const AdminProviderChangeRequests = () => {
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {t('changeRequests.title')}
+            Pedidos de Mudança de Prestador
           </h1>
           <p className="text-muted-foreground">
-            {t('changeRequests.subtitle')}
+            Gerir pedidos de mudança e reatribuição de prestadores
           </p>
         </div>
 
@@ -139,14 +137,14 @@ const AdminProviderChangeRequests = () => {
           <Card className="border-0 shadow-sm bg-white/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('changeRequests.kpis.pendingRequests')}
+                Pedidos Pendentes
               </CardTitle>
               <Clock className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{pendingRequests.length}</div>
               <p className="text-xs text-muted-foreground">
-                {t('changeRequests.kpis.awaitingDecision')}
+                Aguardam decisão
               </p>
             </CardContent>
           </Card>
@@ -154,14 +152,14 @@ const AdminProviderChangeRequests = () => {
           <Card className="border-0 shadow-sm bg-white/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('changeRequests.kpis.slaViolations')}
+                Violações SLA
               </CardTitle>
               <AlertCircle className="h-4 w-4 text-orange-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{Math.round((slaViolations / pendingRequests.length) * 100) || 0}%</div>
               <p className="text-xs text-muted-foreground">
-                {slaViolations} {t('changeRequests.kpis.violatedThisWeek')}
+                {slaViolations} violados esta semana
               </p>
             </CardContent>
           </Card>
@@ -169,14 +167,14 @@ const AdminProviderChangeRequests = () => {
           <Card className="border-0 shadow-sm bg-white/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('changeRequests.kpis.capacityWarnings')}
+                Alertas de Capacidade
               </CardTitle>
               <Users className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{capacityWarnings}</div>
               <p className="text-xs text-muted-foreground">
-                {t('changeRequests.kpis.saturatedProviders')}
+                Prestadores saturados
               </p>
             </CardContent>
           </Card>
@@ -184,14 +182,14 @@ const AdminProviderChangeRequests = () => {
           <Card className="border-0 shadow-sm bg-white/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('changeRequests.kpis.utilizationRate')}
+                Taxa de Utilização
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">84%</div>
               <p className="text-xs text-muted-foreground">
-                {t('changeRequests.kpis.avgUtilization')}
+                Utilização média
               </p>
             </CardContent>
           </Card>
@@ -200,17 +198,17 @@ const AdminProviderChangeRequests = () => {
         {/* Change Requests Table */}
         <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">{t('changeRequests.table.changeRequests')}</CardTitle>
+            <CardTitle className="text-xl font-semibold">Pedidos de Mudança</CardTitle>
           </CardHeader>
           <CardContent>
             {pendingRequests.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Users className="h-12 w-12 text-muted-foreground/50 mb-4" />
                 <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                  {t('changeRequests.empty.noPending')}
+                  Sem pedidos pendentes
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {t('changeRequests.empty.allProcessed')}
+                  Todos os pedidos foram processados
                 </p>
               </div>
             ) : (
@@ -218,13 +216,13 @@ const AdminProviderChangeRequests = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left p-4 font-medium text-muted-foreground">{t('changeRequests.table.user')}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">{t('changeRequests.table.pillar')}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">{t('changeRequests.table.currentProvider')}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">{t('changeRequests.table.preferences')}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">{t('changeRequests.table.reason')}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">{t('changeRequests.table.sla')}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">{t('changeRequests.table.actions')}</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">Utilizador</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">Pilar</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">Prestador Atual</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">Preferências</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">Motivo</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">SLA</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -255,7 +253,7 @@ const AdminProviderChangeRequests = () => {
                               {request.currentProvider.atCapacity && (
                                 <div className="flex items-center gap-1 mt-1">
                                   <AlertCircle className="h-3 w-3 text-red-600" />
-                                  <span className="text-xs text-red-600">{t('changeRequests.table.atMaxCapacity')}</span>
+                                  <span className="text-xs text-red-600">Capacidade máxima atingida</span>
                                 </div>
                               )}
                             </div>
@@ -269,7 +267,7 @@ const AdminProviderChangeRequests = () => {
                         </td>
                         <td className="p-4">
                           <Badge variant={getSLABadgeVariant(request.slaRemaining)}>
-                            {request.slaRemaining === 1 ? `1 ${t('changeRequests.table.day')}` : `${request.slaRemaining} ${t('changeRequests.table.days')}`}
+                            {request.slaRemaining === 1 ? "1 dia" : `${request.slaRemaining} dias`}
                           </Badge>
                         </td>
                         <td className="p-4">
@@ -280,7 +278,7 @@ const AdminProviderChangeRequests = () => {
                               className="h-8 px-3 bg-green-600 hover:bg-green-700 text-white"
                             >
                               <CheckCircle className="h-3 w-3 mr-1" />
-                              {t('changeRequests.table.approve')}
+                              Aprovar
                             </Button>
                             
                             <Dialog>
@@ -292,18 +290,18 @@ const AdminProviderChangeRequests = () => {
                                   onClick={() => setSelectedRequest(request)}
                                 >
                                   <XCircle className="h-3 w-3 mr-1" />
-                                  {t('changeRequests.table.reject')}
+                                  Rejeitar
                                 </Button>
                               </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader>
-                                  <DialogTitle>{t('changeRequests.dialogs.rejectRequest')}</DialogTitle>
+                                  <DialogTitle>Rejeitar Pedido</DialogTitle>
                                   <DialogDescription>
-                                    {t('changeRequests.dialogs.rejectRequestDesc', { name: request.user.name })}
+                                    Tem a certeza que deseja rejeitar o pedido de {request.user.name}?
                                   </DialogDescription>
                                 </DialogHeader>
                                 <Textarea
-                                  placeholder={t('changeRequests.dialogs.provideReason')}
+                                  placeholder="Indique o motivo da rejeição..."
                                   value={rejectReason}
                                   onChange={(e) => setRejectReason(e.target.value)}
                                 />
@@ -312,7 +310,7 @@ const AdminProviderChangeRequests = () => {
                                     onClick={() => handleReject(request.id, rejectReason)}
                                     className="bg-red-600 hover:bg-red-700 text-white"
                                   >
-                                    {t('changeRequests.dialogs.confirmRejection')}
+                                    Confirmar Rejeição
                                   </Button>
                                 </DialogFooter>
                               </DialogContent>
@@ -327,18 +325,18 @@ const AdminProviderChangeRequests = () => {
                                   onClick={() => setSelectedRequest(request)}
                                 >
                                   <Info className="h-3 w-3 mr-1" />
-                                  {t('changeRequests.table.requestInfo')}
+                                  Pedir Info
                                 </Button>
                               </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader>
-                                  <DialogTitle>{t('changeRequests.dialogs.requestMoreInfo')}</DialogTitle>
+                                  <DialogTitle>Pedir Mais Informações</DialogTitle>
                                   <DialogDescription>
-                                    {t('changeRequests.dialogs.requestMoreInfoDesc', { name: request.user.name })}
+                                    Solicitar informações adicionais a {request.user.name}
                                   </DialogDescription>
                                 </DialogHeader>
                                 <Textarea
-                                  placeholder={t('changeRequests.dialogs.whatInfoNeeded')}
+                                  placeholder="Que informações necessita?"
                                   value={requestInfoMessage}
                                   onChange={(e) => setRequestInfoMessage(e.target.value)}
                                 />
@@ -346,7 +344,7 @@ const AdminProviderChangeRequests = () => {
                                   <Button
                                     onClick={() => handleRequestInfo(request.id, requestInfoMessage)}
                                   >
-                                    {t('changeRequests.dialogs.sendRequest')}
+                                    Enviar Pedido
                                   </Button>
                                 </DialogFooter>
                               </DialogContent>
