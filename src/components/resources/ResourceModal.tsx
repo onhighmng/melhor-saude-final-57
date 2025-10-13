@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download, ExternalLink } from "lucide-react";
 import { UserResource, pillarNames, resourceTypeNames } from "@/data/userResourcesData";
-import { useTranslation } from 'react-i18next';
 
 interface ResourceModalProps {
   resource: UserResource | null;
@@ -13,8 +12,6 @@ interface ResourceModalProps {
 }
 
 export function ResourceModal({ resource, open, onClose, onDownload }: ResourceModalProps) {
-  const { t } = useTranslation('user');
-  
   if (!resource) return null;
   
   return (
@@ -48,7 +45,7 @@ export function ResourceModal({ resource, open, onClose, onDownload }: ResourceM
               {onDownload && (
                 <Button onClick={() => onDownload(resource)}>
                   <Download className="mr-2 h-4 w-4" />
-                  {t('resources.ctaDownload')}
+                  Descarregar PDF
                 </Button>
               )}
             </div>

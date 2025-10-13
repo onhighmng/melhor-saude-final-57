@@ -4,12 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResourceGrid } from "@/components/resources/ResourceGrid";
 import { ResourceModal } from "@/components/resources/ResourceModal";
 import { mockResources, UserResource, pillarNames } from "@/data/userResourcesData";
-import { useTranslation } from 'react-i18next';
 import { BookOpen } from "lucide-react";
 import { toast } from "sonner";
 
 export default function UserResources() {
-  const { t } = useTranslation('user');
   const [resources] = useState(mockResources);
   const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,8 +30,8 @@ export default function UserResources() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={t('resources.title')}
-        subtitle={t('resources.subtitle')}
+        title="Recursos de Bem-Estar"
+        subtitle="Aceda a guias, vídeos e artigos sobre saúde e bem-estar"
         icon={BookOpen}
       />
       
