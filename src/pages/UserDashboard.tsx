@@ -26,7 +26,10 @@ const UserDashboard = () => {
     const stored = localStorage.getItem('onboardingData');
     return stored ? JSON.parse(stored) : null;
   });
-  const [showOnboarding, setShowOnboarding] = useState(true);
+  
+  // Only show onboarding for users with 'user' role
+  const shouldShowOnboarding = profile?.role === 'user' && !onboardingData;
+  const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
   const [showUniversalChat, setShowUniversalChat] = useState(false);
 
