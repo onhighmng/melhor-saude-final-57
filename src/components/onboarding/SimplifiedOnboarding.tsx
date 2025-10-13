@@ -284,13 +284,13 @@ export const SimplifiedOnboarding = ({
               
               <div className="space-y-3">
                 <h2 className="text-4xl font-bold">Perfeito!</h2>
-                <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                <p className="text-xl text-muted-foreground max-w-md mx-auto">
                   Criámos um plano inicial com base nas suas respostas.
                 </p>
-                <p className="text-base text-muted-foreground max-w-md mx-auto">
+                <p className="text-lg text-muted-foreground max-w-md mx-auto">
                   Pode atualizá-las a qualquer momento nas suas definições.
                 </p>
-                <p className="text-base text-muted-foreground max-w-md mx-auto">
+                <p className="text-lg text-muted-foreground max-w-md mx-auto">
                   O seu progresso será acompanhado automaticamente — cada passo conta 💚
                 </p>
               </div>
