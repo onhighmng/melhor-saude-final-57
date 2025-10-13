@@ -27,7 +27,7 @@ export const JourneyProgressBar = ({ onboardingCompleted = false }: JourneyProgr
       { id: 'specialist', label: 'Falou com um especialista', points: 20, completed: false },
       { id: 'first_session', label: 'Fez a primeira sessão', points: 25, completed: false },
       { id: 'resources', label: 'Usou recursos da plataforma', points: 15, completed: false },
-      { id: 'ratings', label: 'Avaliou 3 sessões', points: 20, completed: false },
+      { id: 'ratings', label: 'Avaliou 3 sessões efetuadas', points: 20, completed: false },
       { id: 'goal', label: 'Atingiu 1 objetivo pessoal', points: 10, completed: false },
     ];
   });
