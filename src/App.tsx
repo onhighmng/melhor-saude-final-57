@@ -40,6 +40,7 @@ const AdminSessions = lazy(() => import("./pages/AdminSessions"));
 const AdminLogs = lazy(() => import("./pages/AdminLogs"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminUsersManagement = lazy(() => import("./pages/AdminUsersManagement"));
 const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
 const CompanyEmployees = lazy(() => import("./pages/CompanyEmployees"));
 const CompanyEmployeeDetail = lazy(() => import("./pages/CompanyEmployeeDetail"));
@@ -140,8 +141,8 @@ const AppWithTracking = () => {
           
           {/* Admin routes */}
           <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-          <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
-          <Route path="/admin/usuarios" element={<AdminLayout><AdminUsers /></AdminLayout>} />
+          <Route path="/admin/users" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
+          <Route path="/admin/usuarios" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
           <Route path="/admin/usuarios/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
           <Route path="/admin/users/:id" element={<AdminLayout><AdminUserDetail /></AdminLayout>} />
           <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
