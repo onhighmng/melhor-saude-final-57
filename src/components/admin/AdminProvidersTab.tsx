@@ -377,8 +377,11 @@ const AdminProvidersTab = () => {
               {/* Provider Image */}
               <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50">
                 <Avatar className="absolute inset-0 w-full h-full rounded-none">
-                  <AvatarImage src={provider.avatar} className="object-cover" />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-4xl rounded-none w-full h-full">
+                  <AvatarImage 
+                    src={provider.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${provider.email}`} 
+                    className="object-cover" 
+                  />
+                  <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-4xl rounded-none w-full h-full">
                     {provider.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                   </AvatarFallback>
                 </Avatar>
