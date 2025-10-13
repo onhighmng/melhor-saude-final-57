@@ -55,9 +55,9 @@ const AdminInternalReportsTab = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip formatter={(value) => `€${Number(value).toLocaleString()}`} />
+              <Tooltip formatter={(value) => `MZN ${Number(value).toLocaleString()}`} />
               <Legend />
-              <Line type="monotone" dataKey="revenue" stroke="#8B5CF6" name="Receita (€)" strokeWidth={2} />
+              <Line type="monotone" dataKey="revenue" stroke="#8B5CF6" name="Receita (MZN)" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>

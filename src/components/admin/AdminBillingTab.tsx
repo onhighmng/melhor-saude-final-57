@@ -74,7 +74,7 @@ const AdminBillingTab = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">€{totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">MZN {totalRevenue.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">+12% vs mês anterior</p>
           </CardContent>
         </Card>
@@ -131,7 +131,7 @@ const AdminBillingTab = () => {
                   {filteredData.map((record) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">{record.company}</TableCell>
-                      <TableCell>€{record.amountBilled.toLocaleString()}</TableCell>
+                      <TableCell>MZN {record.amountBilled.toLocaleString()}</TableCell>
                       <TableCell>{record.sessionsUsed}</TableCell>
                       <TableCell>{record.margin}%</TableCell>
                       <TableCell>{getPaymentStatusBadge(record.paymentStatus)}</TableCell>
@@ -165,7 +165,7 @@ const AdminBillingTab = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `€${Number(value).toLocaleString()}`} />
+                <Tooltip formatter={(value) => `MZN ${Number(value).toLocaleString()}`} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>

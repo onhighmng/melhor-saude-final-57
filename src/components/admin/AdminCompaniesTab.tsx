@@ -307,7 +307,7 @@ export const AdminCompaniesTab = () => {
                   <CardContent className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Mensalidade</span>
-                      <span className="font-bold text-lg">{selectedCompany.monthlyFee}€</span>
+                      <span className="font-bold text-lg">MZN {selectedCompany.monthlyFee}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Próxima faturação</span>

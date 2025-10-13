@@ -78,7 +78,7 @@ const AdminDashboard = () => {
     },
     {
       title: 'Faturação',
-      value: '€24,500',
+      value: 'MZN 24,500',
       trend: '+15%',
       isPositive: true,
       icon: Target,

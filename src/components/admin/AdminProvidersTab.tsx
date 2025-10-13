@@ -187,7 +187,7 @@ export const AdminProvidersTab = () => {
                     <Euro className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <p className="text-xs text-muted-foreground">Custo/Sessão</p>
-                  <p className="font-bold text-sm">{provider.costPerSession}€</p>
+                  <p className="font-bold text-sm">MZN {provider.costPerSession}</p>
                 </div>
 
                 <div className="text-center border-x">
