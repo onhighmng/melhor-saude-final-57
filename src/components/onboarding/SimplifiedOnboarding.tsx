@@ -189,9 +189,7 @@ export const SimplifiedOnboarding = ({
               <h2 className="text-2xl md:text-3xl font-bold mb-2 max-w-2xl">
                 {stepHeaders[step].title}
               </h2>
-              <p className="text-base md:text-lg text-muted-foreground max-w-xl">
-                {stepHeaders[step].subtitle}
-              </p>
+              
             </>}
         </div>
 
@@ -207,9 +205,7 @@ export const SimplifiedOnboarding = ({
 
           {/* Step 1: Wellbeing Score (1-10) */}
           {step === 1 && <div className="space-y-6">
-              <p className="text-center text-base text-muted-foreground mb-4">
-                1 = Muito em baixo, 10 = Excelente
-              </p>
+              
               <div className="flex items-center justify-center gap-2 flex-wrap">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => <button key={num} type="button" onClick={() => setWellbeingScore(num)} className={`w-14 h-14 rounded-full border-2 transition-all font-semibold text-lg ${wellbeingScore === num ? 'bg-primary border-primary text-primary-foreground scale-110 shadow-lg' : 'border-muted-foreground/30 hover:border-primary hover:scale-105 hover:shadow-md'}`}>
                     {num}
