@@ -28,8 +28,8 @@ export function ModernHeroSection() {
       <section>
         <div className="py-24 md:pb-32 lg:pb-36 lg:pt-72">
           <div className="relative z-10 mx-auto flex max-w-7xl flex-col px-6 lg:block lg:px-12">
-            <div className={`mx-auto max-w-lg text-center lg:ml-0 lg:max-w-full lg:text-left transition-all duration-1000 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            <div className={`mx-auto max-w-lg text-center lg:ml-0 lg:max-w-full lg:text-left transition-all duration-1000 ease-out ${
+              isVisible ? 'opacity-100 translate-y-0 scale-100 blur-0' : 'opacity-0 translate-y-20 scale-95 blur-sm'
             }`}>
               <h1 className="mt-8 max-w-2xl text-balance text-5xl md:text-6xl lg:mt-16 xl:text-7xl">
                 O seu bem-estar começa aqui
@@ -38,8 +38,8 @@ export function ModernHeroSection() {
                 Suporte integrado em saúde mental, bem-estar físico, assistência financeira e jurídica. Tudo num só lugar.
               </p>
 
-              <div className={`mt-12 flex flex-col items-center justify-center gap-2 sm:flex-row lg:justify-start transition-all duration-1000 delay-200 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              <div className={`mt-12 flex flex-col items-center justify-center gap-2 sm:flex-row lg:justify-start transition-all duration-1000 delay-300 ease-out ${
+                isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-16 scale-90'
               }`}>
                 <Button
                   onClick={handleGetStarted}

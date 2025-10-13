@@ -11,14 +11,14 @@ const SobreNosSection = () => {
       className="pt-32 pb-16 px-4 bg-white scroll-mt-24"
     >
       <div className="max-w-6xl mx-auto">
-        <div className={`text-center mb-12 transition-all duration-1000 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        <div className={`text-center mb-12 transition-all duration-1000 ease-out ${
+          isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95'
         }`}>
           <h2 className="text-h1 text-vibrant-blue mb-8">Sobre Nós</h2>
         </div>
         
-        <div className={`bg-gradient-to-r from-sky-blue/10 to-mint-green/10 rounded-2xl p-8 border-l-4 border-vibrant-blue transition-all duration-1000 delay-200 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        <div className={`bg-gradient-to-r from-sky-blue/10 to-mint-green/10 rounded-2xl p-8 border-l-4 border-vibrant-blue transition-all duration-1000 delay-300 ease-out ${
+          isVisible ? 'opacity-100 translate-y-0 scale-100 blur-0' : 'opacity-0 translate-y-24 scale-95 blur-sm'
         }`}>
           <div className="max-w-4xl mx-auto text-body text-gray-700 leading-relaxed">
             <p className="mb-6">
