@@ -116,19 +116,17 @@ const AdminSidebar = () => {
         )}
       </SidebarHeader>
 
-      <SidebarContent className="px-3 py-4">
+      <SidebarContent className={isCollapsed ? "flex items-center" : "px-3 py-4"}>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className={`space-y-1 ${isCollapsed ? 'flex flex-col items-center w-full' : ''}`}>
               {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.title} className={isCollapsed ? 'w-full flex justify-center' : ''}>
                   <SidebarMenuItemWithTooltip item={item}>
-                    <SidebarMenuButton asChild>
+                    <SidebarMenuButton asChild className={isCollapsed ? 'justify-center' : ''}>
                       <NavLink to={item.url} end className={getNavCls}>
-                        <div className={`flex items-center ${isCollapsed ? 'justify-center w-full' : ''}`}>
-                          <item.icon className={`h-5 w-5 flex-shrink-0 text-blue-500 ${isCollapsed ? '' : 'mr-3'}`} />
-                          {!isCollapsed && <span className="text-base font-normal text-blue-500">{item.title}</span>}
-                        </div>
+                        <item.icon className="h-5 w-5 text-blue-500" />
+                        {!isCollapsed && <span className="text-base font-normal text-blue-500 ml-3">{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItemWithTooltip>
@@ -151,16 +149,14 @@ const AdminSidebar = () => {
           </Card>
         )}
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className={isCollapsed ? 'w-full flex justify-center' : ''}>
             <SidebarMenuItemWithTooltip item={{ title: 'Sair' }}>
               <SidebarMenuButton 
                 onClick={handleLogout}
-                className="text-muted-foreground hover:text-foreground cursor-pointer w-full"
+                className={`text-muted-foreground hover:text-foreground cursor-pointer w-full ${isCollapsed ? 'justify-center' : ''}`}
               >
-                <div className={`flex items-center ${isCollapsed ? 'justify-center w-full' : ''}`}>
-                  <LogOut className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? '' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base">Sair</span>}
-                </div>
+                <LogOut className="h-5 w-5 flex-shrink-0" />
+                {!isCollapsed && <span className="text-base ml-3">Sair</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
