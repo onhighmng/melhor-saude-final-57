@@ -1,0 +1,152 @@
+{
+  "header": {
+    "title": "Detalhes da Empresa",
+    "nuit": "NUIT",
+    "employees": "Nº de colaboradores",
+    "plan": "Plano atual",
+    "sessionsPerMonth": "sessões/mês",
+    "sessionsUsed": "Sessões usadas",
+    "sessionsRemaining": "sessões restantes",
+    "status": {
+      "active": "Ativa",
+      "onboarding": "Em Onboarding",
+      "inactive": "Inativa"
+    }
+  },
+  "actions": {
+    "editCompany": "Editar Empresa",
+    "viewReport": "Ver Relatório Mensal",
+    "deactivateCompany": "Desativar Empresa",
+    "importEmployees": "Importar Colaboradores",
+    "generateCodes": "Gerar Códigos de Acesso",
+    "sendEmails": "Enviar Códigos por Email",
+    "exportCSV": "Exportar CSV com Códigos"
+  },
+  "tooltips": {
+    "importCSV": "Faça upload de um ficheiro .csv com nome e email dos colaboradores.",
+    "downloadTemplate": "Descarregar modelo CSV",
+    "generateCodes": "Cria códigos únicos para todos os colaboradores importados.",
+    "sendEmails": "Envia automaticamente os códigos para o email de cada colaborador.",
+    "exportCSV": "Descarregue um ficheiro com nomes e códigos para enviar à empresa.",
+    "resendCode": "Reenviar código",
+    "removeEmployee": "Remover colaborador"
+  },
+  "table": {
+    "name": "Nome",
+    "email": "Email",
+    "code": "Código",
+    "sentDate": "Data de Envio",
+    "status": "Estado",
+    "actions": "Ações",
+    "noEmployees": "Nenhum colaborador importado ainda.",
+    "importFirst": "Faça upload de um ficheiro CSV para começar."
+  },
+  "employeeStatus": {
+    "noCode": "Sem Código",
+    "codeGenerated": "Código Gerado",
+    "codeSent": "Enviado",
+    "sendError": "Erro no Envio",
+    "active": "Ativo",
+    "inactive": "Inativo"
+  },
+  "statistics": {
+    "title": "Estatísticas Rápidas",
+    "totalEmployees": "Total de colaboradores",
+    "codesSent": "Com código enviado",
+    "pending": "Por enviar",
+    "adhesionRate": "Taxa de adesão atual",
+    "lastSent": "Último envio",
+    "never": "Nunca"
+  },
+  "dialogs": {
+    "editCompany": {
+      "title": "Editar Empresa",
+      "description": "Atualize as informações da empresa",
+      "companyName": "Nome da Empresa",
+      "nuit": "NUIT",
+      "contactEmail": "Email de Contacto",
+      "contactPhone": "Telefone de Contacto",
+      "planType": "Tipo de Plano",
+      "sessionsAllocated": "Sessões Alocadas",
+      "finalNotes": "Notas Finais",
+      "cancel": "Cancelar",
+      "save": "Guardar Alterações"
+    },
+    "deactivateCompany": {
+      "title": "Desativar Empresa",
+      "description": "Tem a certeza que deseja desativar esta empresa? Todos os colaboradores perderão acesso à plataforma.",
+      "confirm": "Sim, Desativar",
+      "cancel": "Cancelar"
+    },
+    "removeEmployee": {
+      "title": "Remover Colaborador",
+      "description": "Tem a certeza que deseja remover este colaborador?",
+      "confirm": "Sim, Remover",
+      "cancel": "Cancelar"
+    },
+    "resendCode": {
+      "title": "Reenviar Código",
+      "description": "Deseja reenviar o código de acesso para este colaborador?",
+      "confirm": "Sim, Reenviar",
+      "cancel": "Cancelar"
+    }
+  },
+  "validation": {
+    "csvRequired": "Por favor selecione um ficheiro CSV.",
+    "invalidFormat": "Formato de ficheiro inválido. Use apenas .csv",
+    "noCodesGenerated": "Por favor gere códigos antes de enviar emails.",
+    "noEmployees": "Nenhum colaborador para processar.",
+    "duplicateEmail": "Email duplicado encontrado na linha {{line}}: {{email}}",
+    "invalidEmail": "Email inválido na linha {{line}}: {{email}}",
+    "missingFields": "Campos obrigatórios em falta na linha {{line}}",
+    "processingError": "Erro ao processar CSV. Verifique o formato."
+  },
+  "progress": {
+    "uploadingCSV": "A processar CSV...",
+    "generatingCodes": "A gerar códigos...",
+    "sendingEmails": "A enviar emails...",
+    "exportingCSV": "A exportar ficheiro...",
+    "processing": "A processar {{current}} de {{total}}..."
+  },
+  "toasts": {
+    "csvImportSuccess": {
+      "title": "Colaboradores Importados",
+      "description": "{{count}} colaboradores importados com sucesso."
+    },
+    "csvImportError": {
+      "title": "Erro na Importação"
+    },
+    "codesGenerated": {
+      "title": "Códigos Gerados",
+      "description": "{{count}} códigos de acesso criados com sucesso."
+    },
+    "emailsSent": {
+      "title": "Emails Enviados",
+      "description": "{{count}} códigos enviados por email com sucesso."
+    },
+    "emailsError": {
+      "title": "Erro no Envio",
+      "description": "Ocorreu um erro ao enviar alguns emails. Tente novamente."
+    },
+    "exportSuccess": {
+      "title": "Ficheiro Exportado",
+      "description": "CSV com códigos descarregado com sucesso."
+    },
+    "employeeRemoved": {
+      "title": "Colaborador Removido",
+      "description": "{{name}} foi removido da lista."
+    },
+    "companyUpdated": {
+      "title": "Empresa Atualizada",
+      "description": "As informações da empresa foram guardadas."
+    },
+    "companyDeactivated": {
+      "title": "Empresa Desativada",
+      "description": "A empresa foi desativada com sucesso."
+    },
+    "codeResent": {
+      "title": "Código Reenviado",
+      "description": "Código de acesso enviado para {{email}}."
+    }
+  }
+}

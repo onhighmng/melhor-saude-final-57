@@ -1,0 +1,152 @@
+{
+  "header": {
+    "title": "Company Details",
+    "nuit": "Tax ID",
+    "employees": "Number of employees",
+    "plan": "Current plan",
+    "sessionsPerMonth": "sessions/month",
+    "sessionsUsed": "Sessions used",
+    "sessionsRemaining": "sessions remaining",
+    "status": {
+      "active": "Active",
+      "onboarding": "Onboarding",
+      "inactive": "Inactive"
+    }
+  },
+  "actions": {
+    "editCompany": "Edit Company",
+    "viewReport": "View Monthly Report",
+    "deactivateCompany": "Deactivate Company",
+    "importEmployees": "Import Employees",
+    "generateCodes": "Generate Access Codes",
+    "sendEmails": "Send Codes via Email",
+    "exportCSV": "Export CSV with Codes"
+  },
+  "tooltips": {
+    "importCSV": "Upload a .csv file with employee name and email.",
+    "downloadTemplate": "Download CSV template",
+    "generateCodes": "Creates unique codes for all imported employees.",
+    "sendEmails": "Automatically sends codes to each employee's email.",
+    "exportCSV": "Download a file with names and codes to send to the company.",
+    "resendCode": "Resend code",
+    "removeEmployee": "Remove employee"
+  },
+  "table": {
+    "name": "Name",
+    "email": "Email",
+    "code": "Code",
+    "sentDate": "Sent Date",
+    "status": "Status",
+    "actions": "Actions",
+    "noEmployees": "No employees imported yet.",
+    "importFirst": "Upload a CSV file to get started."
+  },
+  "employeeStatus": {
+    "noCode": "No Code",
+    "codeGenerated": "Code Generated",
+    "codeSent": "Sent",
+    "sendError": "Send Error",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "statistics": {
+    "title": "Quick Statistics",
+    "totalEmployees": "Total employees",
+    "codesSent": "Codes sent",
+    "pending": "Pending",
+    "adhesionRate": "Current adhesion rate",
+    "lastSent": "Last sent",
+    "never": "Never"
+  },
+  "dialogs": {
+    "editCompany": {
+      "title": "Edit Company",
+      "description": "Update company information",
+      "companyName": "Company Name",
+      "nuit": "Tax ID",
+      "contactEmail": "Contact Email",
+      "contactPhone": "Contact Phone",
+      "planType": "Plan Type",
+      "sessionsAllocated": "Allocated Sessions",
+      "finalNotes": "Final Notes",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "deactivateCompany": {
+      "title": "Deactivate Company",
+      "description": "Are you sure you want to deactivate this company? All employees will lose access to the platform.",
+      "confirm": "Yes, Deactivate",
+      "cancel": "Cancel"
+    },
+    "removeEmployee": {
+      "title": "Remove Employee",
+      "description": "Are you sure you want to remove this employee?",
+      "confirm": "Yes, Remove",
+      "cancel": "Cancel"
+    },
+    "resendCode": {
+      "title": "Resend Code",
+      "description": "Do you want to resend the access code to this employee?",
+      "confirm": "Yes, Resend",
+      "cancel": "Cancel"
+    }
+  },
+  "validation": {
+    "csvRequired": "Please select a CSV file.",
+    "invalidFormat": "Invalid file format. Use .csv only",
+    "noCodesGenerated": "Please generate codes before sending emails.",
+    "noEmployees": "No employees to process.",
+    "duplicateEmail": "Duplicate email found on line {{line}}: {{email}}",
+    "invalidEmail": "Invalid email on line {{line}}: {{email}}",
+    "missingFields": "Required fields missing on line {{line}}",
+    "processingError": "Error processing CSV. Please check the format."
+  },
+  "progress": {
+    "uploadingCSV": "Processing CSV...",
+    "generatingCodes": "Generating codes...",
+    "sendingEmails": "Sending emails...",
+    "exportingCSV": "Exporting file...",
+    "processing": "Processing {{current}} of {{total}}..."
+  },
+  "toasts": {
+    "csvImportSuccess": {
+      "title": "Employees Imported",
+      "description": "{{count}} employees imported successfully."
+    },
+    "csvImportError": {
+      "title": "Import Error"
+    },
+    "codesGenerated": {
+      "title": "Codes Generated",
+      "description": "{{count}} access codes created successfully."
+    },
+    "emailsSent": {
+      "title": "Emails Sent",
+      "description": "{{count}} codes sent via email successfully."
+    },
+    "emailsError": {
+      "title": "Send Error",
+      "description": "An error occurred while sending some emails. Please try again."
+    },
+    "exportSuccess": {
+      "title": "File Exported",
+      "description": "CSV with codes downloaded successfully."
+    },
+    "employeeRemoved": {
+      "title": "Employee Removed",
+      "description": "{{name}} has been removed from the list."
+    },
+    "companyUpdated": {
+      "title": "Company Updated",
+      "description": "Company information has been saved."
+    },
+    "companyDeactivated": {
+      "title": "Company Deactivated",
+      "description": "The company has been deactivated successfully."
+    },
+    "codeResent": {
+      "title": "Code Resent",
+      "description": "Access code sent to {{email}}."
+    }
+  }
+}
