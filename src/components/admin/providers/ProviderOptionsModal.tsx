@@ -49,7 +49,7 @@ export const ProviderOptionsModal = ({
             <div className="text-left">
               <div className="font-semibold">{t('optionsModal.viewMetrics')}</div>
               <div className="text-xs text-muted-foreground mt-1">
-                {t('optionsModal.viewMetricsDescription')}
+                Ver desempenho e histórico detalhado
               </div>
             </div>
           </Button>
@@ -66,7 +66,7 @@ export const ProviderOptionsModal = ({
             <div className="text-left">
               <div className="font-semibold">{t('optionsModal.scheduleSession')}</div>
               <div className="text-xs text-muted-foreground mt-1">
-                {t('optionsModal.scheduleSessionDescription')}
+                Agendar nova sessão diretamente
               </div>
             </div>
           </Button>

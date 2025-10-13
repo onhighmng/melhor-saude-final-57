@@ -4,12 +4,6 @@
   "addProvider": "Adicionar Prestador",
   "searchPlaceholder": "Pesquisar prestadores...",
   "noResults": "Nenhum prestador encontrado",
-
-  "tab": {
-    "title": "Gestão de Prestadores",
-    "description": "A gestão completa de prestadores foi movida para uma página dedicada com calendário, métricas e agendamentos.",
-    "goToPage": "Ir para Gestão de Prestadores"
-  },
   
   "card": {
     "costPerSession": "Custo/Sessão",
@@ -24,8 +18,6 @@
     "title": "Adicionar Novo Prestador",
     "fullName": "Nome completo",
     "fullNamePlaceholder": "Ex: Dr. João Silva",
-    "specialty": "Especialidade",
-    "specialtyPlaceholder": "Ex: Psicólogo Clínico, Nutricionista",
     "email": "Email",
     "emailPlaceholder": "prestador@exemplo.com",
     "pillar": "Pilar",
@@ -66,9 +58,7 @@
   "optionsModal": {
     "title": "Opções do Prestador",
     "viewMetrics": "Ver Métricas e Histórico",
-    "viewMetricsDescription": "Ver desempenho e histórico detalhado",
     "scheduleSession": "Agendar Sessão no Calendário",
-    "scheduleSessionDescription": "Agendar nova sessão diretamente",
     "cancel": "Cancelar"
   },
 

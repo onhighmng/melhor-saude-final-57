@@ -4,33 +4,32 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Brain,
   Dumbbell,
-  TrendingUp,
+  DollarSign,
   Scale,
   Star,
   CheckCircle2,
   Clock
 } from 'lucide-react';
-import { Provider, Pillar } from '@/types/adminProvider';
+import { Provider } from '@/types/adminProvider';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
 
 interface ProviderCardProps {
   provider: Provider;
   onClick: () => void;
 }
 
-const pillarIcons: Record<Pillar, React.ComponentType<{ className?: string }>> = {
+const pillarIcons: Record<string, any> = {
   'mental_health': Brain,
   'physical_wellness': Dumbbell,
-  'financial_assistance': TrendingUp,
+  'financial_assistance': DollarSign,
   'legal_assistance': Scale,
 };
 
-const pillarColors: Record<Pillar, string> = {
-  'mental_health': 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-  'physical_wellness': 'bg-green-500/10 text-green-600 border-green-500/20',
-  'financial_assistance': 'bg-orange-500/10 text-orange-600 border-orange-500/20',
-  'legal_assistance': 'bg-purple-500/10 text-purple-600 border-purple-500/20',
+const pillarColors: Record<string, string> = {
+  'mental_health': 'bg-mint-green/10 text-mint-green border-mint-green/20',
+  'physical_wellness': 'bg-royal-blue/10 text-royal-blue border-royal-blue/20',
+  'financial_assistance': 'bg-peach-orange/10 text-peach-orange border-peach-orange/20',
+  'legal_assistance': 'bg-sky-blue/10 text-sky-blue border-sky-blue/20',
 };
 
 export const ProviderCard = ({ provider, onClick }: ProviderCardProps) => {
@@ -86,22 +85,28 @@ export const ProviderCard = ({ provider, onClick }: ProviderCardProps) => {
           </Badge>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 pt-3 border-t">
+        <div className="grid grid-cols-3 gap-4 pt-2 border-t">
           <div className="text-center">
-            <p className="text-xs text-muted-foreground mb-1">{t('card.costPerSession')}</p>
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-xs text-muted-foreground">{t('card.costPerSession')}</p>
             <p className="font-bold text-sm">MZN {provider.costPerSession}</p>
           </div>
 
           <div className="text-center border-x">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
-              <p className="text-xs text-muted-foreground">{t('card.satisfaction')}</p>
+              <Star className="h-4 w-4 text-peach-orange fill-peach-orange" />
             </div>
+            <p className="text-xs text-muted-foreground">{t('card.satisfaction')}</p>
             <p className="font-bold text-sm">{provider.avgSatisfaction}/10</p>
           </div>
 
           <div className="text-center">
-            <p className="text-xs text-muted-foreground mb-1">{t('card.sessions')}</p>
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-xs text-muted-foreground">{t('card.sessions')}</p>
             <p className="font-bold text-sm">{provider.totalSessions}</p>
           </div>
         </div>

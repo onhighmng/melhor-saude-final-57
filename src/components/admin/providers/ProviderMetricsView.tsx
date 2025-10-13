@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Users, Calendar, TrendingUp } from 'lucide-react';
+import { ArrowLeft, DollarSign, Users, Calendar, TrendingUp, Euro } from 'lucide-react';
 import { Provider, ProviderMetrics, ProviderHistoryItem, ProviderStatus } from '@/types/adminProvider';
 import { useState } from 'react';
 
@@ -23,30 +23,43 @@ interface ProviderMetricsViewProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   provider: Provider | null;
-  metrics: ProviderMetrics | null;
-  history: ProviderHistoryItem[];
   onBack: () => void;
-  onStatusChange?: (newStatus: ProviderStatus) => void;
 }
+
+// Mock metrics data - replace with real data
+const getMockMetrics = (provider: Provider): ProviderMetrics => ({
+  sessionsCompleted: provider.totalSessions,
+  avgSatisfaction: provider.avgSatisfaction,
+  sessionsThisMonth: 18,
+  companiesServed: 4,
+  costPerSession: provider.costPerSession,
+  platformMargin: provider.costPerSession * 0.25,
+  netToProvider: provider.costPerSession * 0.75,
+  totalPaidThisMonth: provider.costPerSession * 0.75 * 18,
+});
+
+// Mock history data - replace with real data
+const getMockHistory = (): ProviderHistoryItem[] => [
+  { id: '1', date: '2024-10-10', collaborator: 'Ana Silva', rating: 9.5, sessionType: 'virtual' },
+  { id: '2', date: '2024-10-08', collaborator: 'João Santos', rating: 9.0, sessionType: 'presential' },
+  { id: '3', date: '2024-10-05', collaborator: 'Maria Costa', rating: 9.2, sessionType: 'virtual' },
+  { id: '4', date: '2024-10-03', collaborator: 'Pedro Alves', rating: 8.8, sessionType: 'virtual' },
+  { id: '5', date: '2024-10-01', collaborator: 'Sofia Fernandes', rating: 9.4, sessionType: 'presential' },
+];
 
 export const ProviderMetricsView = ({
   open,
   onOpenChange,
   provider,
-  metrics,
-  history,
   onBack,
-  onStatusChange,
 }: ProviderMetricsViewProps) => {
   const { t } = useTranslation('admin-providers');
   const [status, setStatus] = useState<ProviderStatus>(provider?.status || 'active');
 
-  const handleStatusChange = (newStatus: ProviderStatus) => {
-    setStatus(newStatus);
-    onStatusChange?.(newStatus);
-  };
+  if (!provider) return null;
 
-  if (!provider || !metrics) return null;
+  const metrics = getMockMetrics(provider);
+  const history = getMockHistory();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -87,7 +100,7 @@ export const ProviderMetricsView = ({
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('metricsView.currentStatus')}</p>
-                  <Select value={status} onValueChange={handleStatusChange}>
+                  <Select value={status} onValueChange={(value) => setStatus(value as ProviderStatus)}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
