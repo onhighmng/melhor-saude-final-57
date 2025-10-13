@@ -49,6 +49,7 @@ const UserDashboard = () => {
   
   const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress());
   const [animatedProgress, setAnimatedProgress] = useState(0);
+  const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
 
   const handleOnboardingComplete = (data: OnboardingData) => {
     const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
@@ -72,6 +73,7 @@ const UserDashboard = () => {
   // Animate progress bar on page load with smooth 4-second animation
   useEffect(() => {
     setAnimatedProgress(0);
+    setAnimatedMilestoneProgress(0);
     const startTime = Date.now();
     const duration = 4000; // 4 seconds total animation
     
@@ -83,6 +85,7 @@ const UserDashboard = () => {
       const easedProgress = easeOutCubic(progress);
       
       setAnimatedProgress(milestoneProgress * easedProgress);
+      setAnimatedMilestoneProgress(milestoneProgress * easedProgress);
       
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -200,7 +203,7 @@ const UserDashboard = () => {
                   <span className="text-sm font-medium">Progresso Pessoal</span>
                   <span className="text-lg font-bold text-[#4A90E2]">{milestoneProgress}%</span>
                 </div>
-                <Progress value={animatedProgress} className="h-2" />
+                <Progress value={animatedMilestoneProgress} className="h-2" />
               </div>
               
               <div className="space-y-1">
