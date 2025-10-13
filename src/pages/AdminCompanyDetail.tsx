@@ -317,53 +317,57 @@ export default function AdminCompanyDetail() {
       <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Gestão de Colaboradores</CardTitle>
-              <CardDescription>Importe, gere e distribua códigos de acesso</CardDescription>
+              <div className="flex justify-between items-start gap-4">
+                <div>
+                  <CardTitle>Gestão de Colaboradores</CardTitle>
+                  <CardDescription>Importe, gere e distribua códigos de acesso</CardDescription>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" onClick={handleImportCSV} disabled={isUploading} className="w-full justify-start">
+                          <Upload className="h-4 w-4 mr-2" />
+                          {isUploading ? 'A carregar ficheiro...' : 'Importar Colaboradores'}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent><p>Faça upload de um ficheiro .csv com nome e email dos colaboradores</p></TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" onClick={handleGenerateCodes} disabled={isGenerating} className="w-full justify-start">
+                          <RefreshCw className="h-4 w-4 mr-2" />
+                          {isGenerating ? 'A gerar códigos...' : 'Gerar Códigos'}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent><p>Cria códigos únicos para todos os colaboradores importados</p></TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" onClick={handleSendEmails} disabled={isSending} className="w-full justify-start">
+                          <Mail className="h-4 w-4 mr-2" />
+                          {isSending ? `A enviar emails (${sendingProgress.current}/${sendingProgress.total})` : 'Enviar por Email'}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent><p>Envia automaticamente os códigos para o email de cada colaborador</p></TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" onClick={handleExportCSV} className="w-full justify-start">
+                          <Download className="h-4 w-4 mr-2" />
+                          Exportar CSV
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent><p>Descarregue um ficheiro com nomes e códigos para enviar à empresa</p></TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" onClick={handleImportCSV} disabled={isUploading}>
-                        <Upload className="h-4 w-4 mr-2" />
-                        {isUploading ? 'A carregar ficheiro...' : 'Importar Colaboradores'}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent><p>Faça upload de um ficheiro .csv com nome e email dos colaboradores</p></TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" onClick={handleGenerateCodes} disabled={isGenerating}>
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        {isGenerating ? 'A gerar códigos...' : 'Gerar Códigos'}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent><p>Cria códigos únicos para todos os colaboradores importados</p></TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" onClick={handleSendEmails} disabled={isSending}>
-                        <Mail className="h-4 w-4 mr-2" />
-                        {isSending ? `A enviar emails (${sendingProgress.current}/${sendingProgress.total})` : 'Enviar por Email'}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent><p>Envia automaticamente os códigos para o email de cada colaborador</p></TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" onClick={handleExportCSV}>
-                        <Download className="h-4 w-4 mr-2" />
-                        Exportar CSV
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent><p>Descarregue um ficheiro com nomes e códigos para enviar à empresa</p></TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
 
               <p className="text-sm text-muted-foreground">
                 <a href="#" onClick={(e) => { e.preventDefault(); downloadCSVTemplate(); }} className="text-vibrant-blue hover:underline">
