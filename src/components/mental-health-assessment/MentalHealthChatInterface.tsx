@@ -100,7 +100,7 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.length === 0 && <div className="text-center text-muted-foreground py-8">
                   
-                  <p className="text-sm mt-2">Contcacte no nosso especialista por mensagem para uma repsosta imediata.</p>
+                  <p className="text-base mt-2">Contcacte no nosso especialista por mensagem para uma repsosta imediata.</p>
                 </div>}
               
               {messages.map((message, index) => <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
