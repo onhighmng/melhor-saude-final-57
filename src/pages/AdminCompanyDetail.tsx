@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
 import {
   Table,
   TableBody,
@@ -93,6 +94,7 @@ export default function AdminCompanyDetail() {
   const [csvPreview, setCsvPreview] = useState<CSVEmployee[] | null>(null);
   const [csvErrors, setCsvErrors] = useState<CSVValidationError[]>([]);
   const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const [lastSendTimestamp, setLastSendTimestamp] = useState<string | null>(null);
   const [companyData, setCompanyData] = useState({
     id: mockCompany.id,
     name: mockCompany.name,
@@ -200,6 +202,13 @@ export default function AdminCompanyDetail() {
       }));
     }
 
+    setLastSendTimestamp(new Date().toLocaleString('pt-PT', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }));
     setIsSending(false);
     toast({ title: 'Emails Enviados', description: `${employeesToSend.length} email(s) enviado(s) com sucesso` });
   };
@@ -210,14 +219,38 @@ export default function AdminCompanyDetail() {
   };
 
   const getStatusBadge = (status: Employee['status']) => {
-    const statusMap = {
-      'sem-codigo': { label: 'Sem Código', variant: 'secondary' },
-      'codigo-gerado': { label: 'Código Gerado', variant: 'default' },
-      'enviado': { label: 'Enviado', variant: 'default' },
-      'erro': { label: 'Erro no Envio', variant: 'destructive' },
+    const statusConfig = {
+      'sem-codigo': { 
+        label: 'Sem Código', 
+        className: 'bg-gray-100 text-gray-700 hover:bg-gray-100 border-gray-200' 
+      },
+      'codigo-gerado': { 
+        label: 'Código Gerado', 
+        className: 'bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200' 
+      },
+      'enviado': { 
+        label: 'Enviado', 
+        className: 'bg-green-100 text-green-700 hover:bg-green-100 border-green-200' 
+      },
+      'erro': { 
+        label: 'Erro no Envio', 
+        className: 'bg-red-100 text-red-700 hover:bg-red-100 border-red-200' 
+      },
     };
-    const { label, variant } = statusMap[status];
-    return <Badge variant={variant as any}>{label}</Badge>;
+    
+    const config = statusConfig[status];
+    
+    return (
+      <Badge 
+        variant="outline" 
+        className={cn(
+          'font-medium px-3 py-1 text-sm border',
+          config.className
+        )}
+      >
+        {config.label}
+      </Badge>
+    );
   };
 
   return (
@@ -422,6 +455,12 @@ export default function AdminCompanyDetail() {
               <div>
                 <p className="text-sm text-muted-foreground">Taxa de adesão</p>
                 <p className="text-2xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Último envio</p>
+                <p className="text-sm font-medium">
+                  {lastSendTimestamp || 'Nenhum envio realizado'}
+                </p>
               </div>
             </CardContent>
           </Card>
