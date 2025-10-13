@@ -218,7 +218,7 @@ const AdminUserDetail = () => {
     return (
       <div className="min-h-screen bg-background p-6">
         <div className="container mx-auto">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
+          <Button variant="ghost" onClick={() => navigate('/admin/usuarios')} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
@@ -237,7 +237,7 @@ const AdminUserDetail = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate(-1)}>
+            <Button variant="ghost" onClick={() => navigate('/admin/usuarios')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
