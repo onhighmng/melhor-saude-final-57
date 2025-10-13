@@ -370,6 +370,22 @@ export default function AdminCompanyDetail() {
                 </a>
               </p>
 
+              {isSending && (
+                <Alert className="border-blue-200 bg-blue-50">
+                  <Mail className="h-4 w-4 text-blue-600" />
+                  <AlertTitle className="text-blue-900">A enviar emails...</AlertTitle>
+                  <AlertDescription className="space-y-2">
+                    <p className="text-sm text-blue-700">
+                      {sendingProgress.current} de {sendingProgress.total} emails enviados
+                    </p>
+                    <Progress 
+                      value={(sendingProgress.current / sendingProgress.total) * 100} 
+                      className="h-2"
+                    />
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {csvErrors.length > 0 && (
                 <Alert variant="destructive">
                   <AlertTitle>Erros de Validação</AlertTitle>
@@ -453,7 +469,7 @@ export default function AdminCompanyDetail() {
                 <p className="text-2xl font-bold">{employeesPending}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Taxa de adesão</p>
+                <p className="text-sm text-muted-foreground">Taxa de envio de códigos</p>
                 <p className="text-2xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
               </div>
               <div>
