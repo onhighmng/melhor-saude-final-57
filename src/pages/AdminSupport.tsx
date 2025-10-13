@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdminSupportTicketsTab from '@/components/admin/AdminSupportTicketsTab';
 import AdminChangeRequestsTab from '@/components/admin/AdminChangeRequestsTab';
@@ -10,8 +9,7 @@ export default function AdminSupport() {
   const { t } = useTranslation('admin');
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t('support.title', 'Gestão de Suporte')}</h1>
           <p className="text-muted-foreground">
@@ -40,6 +38,5 @@ export default function AdminSupport() {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
   );
 }
