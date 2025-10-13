@@ -15,10 +15,8 @@ import { ArrowLeft, Bell, Shield, FileText, Users, Edit, AlertTriangle, Settings
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useTranslation } from "@/hooks/useTranslation";
 
 const UserSettings = () => {
-  const { t } = useTranslation();
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -29,33 +27,33 @@ const UserSettings = () => {
   // Mock data for providers
   const fixedProviders = [
     {
-      pillar: t('settings.providers.pillars.mentalHealth'),
+      pillar: 'Saúde Mental',
       provider: {
         name: "Dra. Ana Silva",
-        specialty: t('settings.providers.specialties.clinicalPsychologist'),
+        specialty: 'Psicóloga Clínica',
         avatar: "/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png"
       },
       status: "approved"
     },
     {
-      pillar: t('settings.providers.pillars.physical'),
+      pillar: 'Bem-Estar Físico',
       provider: {
         name: "Dr. Miguel Santos",
-        specialty: t('settings.providers.specialties.physiotherapist'),
+        specialty: 'Fisioterapeuta',
         avatar: "/lovable-uploads/085a608e-3a3e-45e5-898b-2f9b4c0f7f67.png"
       },
       status: "pending"
     },
     {
-      pillar: t('settings.providers.pillars.financial'),
+      pillar: 'Assistência Financeira',
       provider: null,
       status: "none"
     },
     {
-      pillar: t('settings.providers.pillars.legal'),
+      pillar: 'Assistência Jurídica',
       provider: {
         name: "Dr. João Costa",
-        specialty: t('settings.providers.specialties.laborLawyer'),
+        specialty: 'Advogado Laboralista',
         avatar: "/lovable-uploads/0daa1ba3-5b7c-49db-950f-22ccfee40b86.png"
       },
       status: "rejected"
@@ -84,22 +82,22 @@ const UserSettings = () => {
 
   const handleSaveProfile = () => {
     toast({
-      title: t('booking.toasts.profileUpdated'),
-      description: t('booking.toasts.profileUpdatedDesc')
+      title: 'Perfil atualizado',
+      description: 'As suas alterações foram guardadas com sucesso.'
     });
   };
 
   const handleSaveNotifications = () => {
     toast({
-      title: t('booking.toasts.notificationsUpdated'),
-      description: t('booking.toasts.notificationsUpdatedDesc')
+      title: 'Preferências atualizadas',
+      description: 'As suas preferências de notificação foram guardadas.'
     });
   };
 
   const handleSaveConsents = () => {
     toast({
-      title: t('booking.toasts.consentsUpdated'),
-      description: t('booking.toasts.consentsUpdatedDesc')
+      title: 'Consentimentos atualizados',
+      description: 'Os seus consentimentos foram guardados com sucesso.'
     });
   };
 
@@ -138,16 +136,16 @@ const UserSettings = () => {
     setShowPasswordDialog(false);
     setPasswordData({ current: '', new: '', confirm: '' });
     toast({
-      title: t('booking.toasts.passwordChanged'),
-      description: t('booking.toasts.passwordChangedDesc')
+      title: 'Palavra-passe alterada',
+      description: 'A sua palavra-passe foi atualizada com sucesso.'
     });
   };
 
   const handleEnable2FA = () => {
     setShow2FADialog(false);
     toast({
-      title: t('booking.toasts.twoFactorEnabled'),
-      description: t('booking.toasts.twoFactorEnabledDesc')
+      title: 'Autenticação de dois fatores ativada',
+      description: '2FA foi ativado com sucesso na sua conta.'
     });
   };
 
@@ -167,13 +165,13 @@ const UserSettings = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case "pending":
-        return t('settings.providers.status.pending');
+        return 'Pendente';
       case "approved":
-        return t('settings.providers.status.approved');
+        return 'Aprovado';
       case "rejected":
-        return t('settings.providers.status.rejected');
+        return 'Rejeitado';
       default:
-        return t('settings.providers.status.none');
+        return 'Sem pedido';
     }
   };
 
@@ -196,8 +194,8 @@ const UserSettings = () => {
                 <Settings className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h1>
-                <p className="text-sm text-gray-500">{t('settings.subtitle')}</p>
+                <h1 className="text-2xl font-bold text-gray-900">Definições</h1>
+                <p className="text-sm text-gray-500">Gerir as suas preferências e configurações</p>
               </div>
             </div>
           </div>
@@ -210,23 +208,23 @@ const UserSettings = () => {
           <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.profile')}</span>
+              <span className="hidden sm:inline">Perfil</span>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="flex items-center gap-2">
               <Bell className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.notifications')}</span>
+              <span className="hidden sm:inline">Notificações</span>
             </TabsTrigger>
             <TabsTrigger value="security" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.security')}</span>
+              <span className="hidden sm:inline">Segurança</span>
             </TabsTrigger>
             <TabsTrigger value="consents" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.consents')}</span>
+              <span className="hidden sm:inline">Consentimentos</span>
             </TabsTrigger>
             <TabsTrigger value="providers" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.providers')}</span>
+              <span className="hidden sm:inline">Prestadores</span>
             </TabsTrigger>
           </TabsList>
 
@@ -234,9 +232,9 @@ const UserSettings = () => {
           <TabsContent value="profile" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('settings.profile.title')}</CardTitle>
+                <CardTitle>Informação do Perfil</CardTitle>
                 <CardDescription>
-                  {t('settings.profile.description')}
+                  Atualize as suas informações pessoais e preferências.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -255,7 +253,7 @@ const UserSettings = () => {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="name">{t('settings.profile.fullName')}</Label>
+                    <Label htmlFor="name">Nome Completo</Label>
                     <Input
                       id="name"
                       value={profileData.name}
@@ -263,7 +261,7 @@ const UserSettings = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">{t('settings.profile.phone')}</Label>
+                    <Label htmlFor="phone">Telefone</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -272,35 +270,35 @@ const UserSettings = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="language">{t('settings.profile.preferredLanguage')}</Label>
+                    <Label htmlFor="language">Idioma Preferido</Label>
                     <Select value={profileData.language} onValueChange={(value) => setProfileData({ ...profileData, language: value })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="pt">{t('settings.profile.languages.pt')}</SelectItem>
-                        <SelectItem value="en">{t('settings.profile.languages.en')}</SelectItem>
-                        <SelectItem value="es">{t('settings.profile.languages.es')}</SelectItem>
+                        <SelectItem value="pt">Português</SelectItem>
+                        <SelectItem value="en">Inglês</SelectItem>
+                        <SelectItem value="es">Espanhol</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="timezone">{t('settings.profile.timezone')}</Label>
+                    <Label htmlFor="timezone">Fuso Horário</Label>
                     <Select value={profileData.timezone} onValueChange={(value) => setProfileData({ ...profileData, timezone: value })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Europe/Lisbon">{t('settings.profile.timezones.lisbon')}</SelectItem>
-                        <SelectItem value="Europe/London">{t('settings.profile.timezones.london')}</SelectItem>
-                        <SelectItem value="America/New_York">{t('settings.profile.timezones.newYork')}</SelectItem>
+                        <SelectItem value="Europe/Lisbon">Lisboa (GMT+0/+1)</SelectItem>
+                        <SelectItem value="Europe/London">Londres (GMT+0/+1)</SelectItem>
+                        <SelectItem value="America/New_York">Nova Iorque (GMT-5/-4)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <Button onClick={handleSaveProfile} className="w-full md:w-auto">
-                  {t('settings.profile.saveChanges')}
+                  Guardar alterações
                 </Button>
               </CardContent>
             </Card>
