@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
-import { useTranslation } from 'react-i18next';
 
 const PillarCarousel = () => {
-  const { t } = useTranslation();
   const [sectionRef, isSectionVisible] = useScrollAnimation(0.1);
   const [currentSlide, setCurrentSlide] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -121,10 +119,10 @@ const PillarCarousel = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-4xl font-bold text-navy-blue mb-4">
-            {t('carousel.title')}
+            Os Nossos Pilares de Bem-Estar
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t('carousel.subtitle')}
+            Soluções integradas para cuidar de si em todas as áreas da sua vida
           </p>
         </div>
 
@@ -168,7 +166,7 @@ const PillarCarousel = () => {
                           onClick={handleSpecialClick}
                           className="inline-flex items-center gap-2 bg-vibrant-blue hover:bg-bright-royal text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
                         >
-                          {t('carousel.learnMore')}
+                          Saber Mais
                           <ExternalLink className="w-5 h-5" />
                         </button>
                       )}
@@ -213,7 +211,7 @@ const PillarCarousel = () => {
           {/* Auto-scroll indicator */}
           <div className="text-center mt-8">
             <p className="text-gray-500 text-sm">
-              {t('carousel.autoScroll')} • {slides.length} {t('carousel.slides')}
+              Mudança automática a cada 5 segundos • {slides.length} pilares
             </p>
           </div>
       </div>
