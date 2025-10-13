@@ -24,13 +24,10 @@ interface Company {
   id: string;
   name: string;
   nuit: string;
-  totalEmployees: number;
-  planType: string;
-  sessionsAllocated: number;
-  sessionsUsed: number;
-  status: 'active' | 'onboarding' | 'inactive';
   contactEmail: string;
   contactPhone: string;
+  planType: string;
+  sessionsAllocated: number;
   finalNotes: string;
 }
 

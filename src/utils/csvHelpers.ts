@@ -85,8 +85,7 @@ export const parseEmployeeCSV = (file: File): Promise<{
           }
 
           emailSet.add(email);
-          // Type assertion needed because Zod inference doesn't flow perfectly
-          employees.push(validation.data as CSVEmployee);
+          employees.push(validation.data);
         });
 
         resolve({ employees, errors });
