@@ -38,6 +38,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
+import providerPlaceholder from '@/assets/provider-placeholder.jpg';
 
 const AdminProvidersTab = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -378,7 +379,7 @@ const AdminProvidersTab = () => {
               <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50">
                 <Avatar className="absolute inset-0 w-full h-full rounded-none">
                   <AvatarImage 
-                    src={provider.avatar || `https://xsgames.co/randomusers/assets/avatars/${provider.name.toLowerCase().includes('dra') || provider.name.toLowerCase().includes('maria') || provider.name.toLowerCase().includes('ana') ? 'female' : 'male'}/${Math.abs(provider.email.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 50)}.jpg`} 
+                    src={provider.avatar || providerPlaceholder} 
                     className="object-cover" 
                   />
                   <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-4xl rounded-none w-full h-full">
