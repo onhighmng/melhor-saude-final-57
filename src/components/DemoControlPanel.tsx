@@ -42,6 +42,12 @@ const DemoControlPanel = () => {
   const handleRoleSwitch = async (demoUser: typeof demoUsers[0]) => {
     setIsTransitioning(true);
     try {
+      // Clear onboarding flag for user role to show questionnaire every time
+      if (demoUser.role === 'user') {
+        const onboardingKey = `onboarding_completed_${demoUser.email}`;
+        localStorage.removeItem(onboardingKey);
+      }
+      
       const result = await login(demoUser.email, 'demo-password');
       if (!result.error) {
         // Navigate to appropriate dashboard based on role
