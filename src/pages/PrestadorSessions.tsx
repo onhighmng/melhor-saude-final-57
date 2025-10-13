@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -34,7 +33,6 @@ interface SessionData {
 export default function PrestadorSessions() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation('provider');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -106,8 +104,8 @@ export default function PrestadorSessions() {
     ));
 
     toast({
-      title: t('allSessions.linkAdded'),
-      description: t('allSessions.linkAddedDescription'),
+      title: "Link adicionado",
+      description: "O link da reunião foi adicionado com sucesso.",
     });
 
     setEditingSession(null);
@@ -117,23 +115,23 @@ export default function PrestadorSessions() {
 
   const exportToCsv = () => {
     const pillarLabels: Record<string, string> = {
-      saude_mental: t('pillars.saude_mental'),
-      assistencia_juridica: t('pillars.assistencia_juridica'), 
-      assistencia_financeira: t('pillars.assistencia_financeira'),
-      bem_estar_fisico: t('pillars.bem_estar_fisico')
+      saude_mental: "Saúde Mental",
+      assistencia_juridica: "Assistência Jurídica", 
+      assistencia_financeira: "Assistência Financeira",
+      bem_estar_fisico: "Bem-Estar Físico"
     };
 
     const statusLabels: Record<string, string> = {
-      completed: t('status.completed'),
-      confirmed: t('status.confirmed'),
-      pending: t('status.scheduled'),
-      cancelled: t('status.cancelled'),
-      'no-show': t('status.absence')
+      completed: "Concluída",
+      confirmed: "Confirmada",
+      pending: "Agendada",
+      cancelled: "Cancelada",
+      'no-show': "Falta"
     };
 
     const locationLabels: Record<string, string> = {
-      online: t('location.online'),
-      presencial: t('location.inPerson')
+      online: "Online",
+      presencial: "Presencial"
     };
 
     const csvData = filteredSessions.map(session => ({
@@ -162,23 +160,23 @@ export default function PrestadorSessions() {
     URL.revokeObjectURL(link.href);
 
     toast({
-      title: t('allSessions.exportComplete'),
-      description: t('allSessions.exportCompleteDescription', { count: filteredSessions.length }),
+      title: "Exportação concluída",
+      description: `${filteredSessions.length} sessões exportadas com sucesso.`,
     });
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <PageHeader
-        title={t('allSessions.title')}
-        subtitle={t('allSessions.subtitle')}
+        title="Todas as Sessões"
+        subtitle="Gerir e acompanhar todas as suas sessões"
         icon={Activity}
         showBackButton
         backUrl="/prestador/dashboard"
         actions={
           <Button onClick={exportToCsv} className="gap-2">
             <Download className="h-4 w-4" />
-            {t('allSessions.exportCsv')}
+            Exportar CSV
           </Button>
         }
       />
@@ -194,7 +192,7 @@ export default function PrestadorSessions() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{sessionStats.total}</p>
-                  <p className="text-sm text-gray-500">{t('allSessions.totalSessions')}</p>
+                  <p className="text-sm text-gray-500">Total de Sessões</p>
                 </div>
               </div>
             </CardContent>
@@ -208,7 +206,7 @@ export default function PrestadorSessions() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{sessionStats.completed}</p>
-                  <p className="text-sm text-gray-500">{t('allSessions.completed')}</p>
+                  <p className="text-sm text-gray-500">Concluídas</p>
                 </div>
               </div>
             </CardContent>
@@ -222,7 +220,7 @@ export default function PrestadorSessions() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{sessionStats.cancelled}</p>
-                  <p className="text-sm text-gray-500">{t('allSessions.cancelled')}</p>
+                  <p className="text-sm text-gray-500">Canceladas</p>
                 </div>
               </div>
             </CardContent>
@@ -236,7 +234,7 @@ export default function PrestadorSessions() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{sessionStats.noShows}</p>
-                  <p className="text-sm text-gray-500">{t('allSessions.noShows')}</p>
+                  <p className="text-sm text-gray-500">Faltas</p>
                 </div>
               </div>
             </CardContent>
@@ -248,13 +246,13 @@ export default function PrestadorSessions() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Filter className="h-5 w-5" />
-              {t('allSessions.filters')}
+              Filtros
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('allSessions.startDate')}</label>
+                <label className="text-sm font-medium text-gray-700">Data Início</label>
                 <Input
                   type="date"
                   value={dateFrom}
@@ -263,7 +261,7 @@ export default function PrestadorSessions() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('allSessions.endDate')}</label>
+                <label className="text-sm font-medium text-gray-700">Data Fim</label>
                 <Input
                   type="date"
                   value={dateTo}
@@ -272,34 +270,34 @@ export default function PrestadorSessions() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('allSessions.status')}</label>
+                <label className="text-sm font-medium text-gray-700">Estado</label>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder={t('allSessions.allStatuses')} />
+                    <SelectValue placeholder="Todos os Estados" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('allSessions.allStatuses')}</SelectItem>
-                    <SelectItem value="scheduled">{t('status.scheduled')}</SelectItem>
-                    <SelectItem value="confirmed">{t('status.confirmed')}</SelectItem>
-                    <SelectItem value="completed">{t('status.completed')}</SelectItem>
-                    <SelectItem value="cancelled">{t('status.cancelled')}</SelectItem>
-                    <SelectItem value="no-show">{t('status.absence')}</SelectItem>
+                    <SelectItem value="all">Todos os Estados</SelectItem>
+                    <SelectItem value="scheduled">Agendada</SelectItem>
+                    <SelectItem value="confirmed">Confirmada</SelectItem>
+                    <SelectItem value="completed">Concluída</SelectItem>
+                    <SelectItem value="cancelled">Cancelada</SelectItem>
+                    <SelectItem value="no-show">Falta</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('allSessions.pillar')}</label>
+                <label className="text-sm font-medium text-gray-700">Pilar</label>
                 <Select value={pillarFilter} onValueChange={setPillarFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder={t('allSessions.allPillars')} />
+                    <SelectValue placeholder="Todos os Pilares" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('allSessions.allPillars')}</SelectItem>
-                    <SelectItem value="saude_mental">{t('pillars.saude_mental')}</SelectItem>
-                    <SelectItem value="bem_estar_fisico">{t('pillars.bem_estar_fisico')}</SelectItem>
-                    <SelectItem value="assistencia_financeira">{t('pillars.assistencia_financeira')}</SelectItem>
-                    <SelectItem value="assistencia_juridica">{t('pillars.assistencia_juridica')}</SelectItem>
+                    <SelectItem value="all">Todos os Pilares</SelectItem>
+                    <SelectItem value="saude_mental">Saúde Mental</SelectItem>
+                    <SelectItem value="bem_estar_fisico">Bem-Estar Físico</SelectItem>
+                    <SelectItem value="assistencia_financeira">Assistência Financeira</SelectItem>
+                    <SelectItem value="assistencia_juridica">Assistência Jurídica</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -307,7 +305,7 @@ export default function PrestadorSessions() {
 
             <div className="flex gap-2 mt-4">
               <Button variant="outline" onClick={clearFilters}>
-                {t('allSessions.clearFilters')}
+                Limpar Filtros
               </Button>
             </div>
           </CardContent>
@@ -316,17 +314,17 @@ export default function PrestadorSessions() {
         {/* Sessions Table */}
         <Card>
           <CardHeader>
-            <CardTitle>{t('allSessions.sessionsList')}</CardTitle>
+            <CardTitle>Lista de Sessões</CardTitle>
           </CardHeader>
           <CardContent>
             {filteredSessions.length === 0 ? (
               <div className="text-center py-12">
                 <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('allSessions.noSessionsFound')}
+                  Nenhuma sessão encontrada
                 </h3>
                 <p className="text-gray-500">
-                  {t('allSessions.noSessionsDescription')}
+                  Ajuste os filtros para ver mais sessões
                 </p>
               </div>
             ) : (
@@ -334,13 +332,13 @@ export default function PrestadorSessions() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('allSessions.dateAndTime')}</TableHead>
-                      <TableHead>{t('allSessions.user')}</TableHead>
-                      <TableHead>{t('allSessions.pillar')}</TableHead>
-                      <TableHead>{t('allSessions.status')}</TableHead>
-                      <TableHead>{t('allSessions.location')}</TableHead>
-                      <TableHead>{t('allSessions.meetingLink')}</TableHead>
-                      <TableHead className="text-right">{t('allSessions.actions')}</TableHead>
+                      <TableHead>Data e Hora</TableHead>
+                      <TableHead>Utilizador</TableHead>
+                      <TableHead>Pilar</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Local</TableHead>
+                      <TableHead>Link da Reunião</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -363,7 +361,10 @@ export default function PrestadorSessions() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="secondary">
-                              {t(`pillars.${session.pillar}`)}
+                              {session.pillar === 'saude_mental' ? 'Saúde Mental' :
+                               session.pillar === 'bem_estar_fisico' ? 'Bem-Estar Físico' :
+                               session.pillar === 'assistencia_financeira' ? 'Assistência Financeira' :
+                               'Assistência Jurídica'}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -371,7 +372,7 @@ export default function PrestadorSessions() {
                           </TableCell>
                           <TableCell>
                             <span className="text-sm text-gray-600">
-                              {t(`location.${session.location === 'presencial' ? 'inPerson' : 'online'}`)}
+                              {session.location === 'presencial' ? 'Presencial' : 'Online'}
                             </span>
                           </TableCell>
                           <TableCell>
@@ -401,7 +402,7 @@ export default function PrestadorSessions() {
                                     onClick={() => handleAddMeetingLink(session)}
                                   >
                                     <LinkIcon className="h-4 w-4 mr-1" />
-                                    {t('allSessions.addLink')}
+                                    Adicionar
                                   </Button>
                                 </DialogTrigger>
                               </Dialog>
@@ -415,7 +416,7 @@ export default function PrestadorSessions() {
                               onClick={() => navigate(`/prestador/sessoes/${session.id}`)}
                             >
                               <ExternalLink className="h-4 w-4" />
-                              {t('allSessions.details')}
+                              Detalhes
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -433,14 +434,14 @@ export default function PrestadorSessions() {
       <Dialog open={!!editingSession} onOpenChange={() => setEditingSession(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('allSessions.addMeetingLink')}</DialogTitle>
+            <DialogTitle>Adicionar Link da Reunião</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div className="space-y-2">
-              <Label htmlFor="platform">{t('allSessions.meetingPlatform')}</Label>
+              <Label htmlFor="platform">Plataforma da Reunião</Label>
               <Select value={meetingPlatform} onValueChange={setMeetingPlatform}>
                 <SelectTrigger id="platform">
-                  <SelectValue placeholder={t('allSessions.meetingPlatform')} />
+                  <SelectValue placeholder="Plataforma da Reunião" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Google Meet">Google Meet</SelectItem>
@@ -451,7 +452,7 @@ export default function PrestadorSessions() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="link">{t('allSessions.meetingUrl')}</Label>
+              <Label htmlFor="link">URL da Reunião</Label>
               <Input
                 id="link"
                 value={meetingLink}
@@ -461,10 +462,10 @@ export default function PrestadorSessions() {
             </div>
             <div className="flex gap-2 justify-end">
               <Button variant="outline" onClick={() => setEditingSession(null)}>
-                {t('allSessions.cancel')}
+                Cancelar
               </Button>
               <Button onClick={handleSaveMeetingLink}>
-                {t('allSessions.save')}
+                Guardar
               </Button>
             </div>
           </div>
