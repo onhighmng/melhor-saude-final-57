@@ -1,27 +1,54 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useToast } from '@/hooks/use-toast';
 import {
-  ArrowLeft,
-  Building2,
-  Users,
-  TrendingUp,
-  Upload,
-  RefreshCw,
-  Mail,
-  Download,
-  Edit,
-  FileText,
-  Trash2,
-  RotateCcw,
-  X
-} from 'lucide-react';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
+import { Edit, FileText, Trash2, Upload, RefreshCw, Mail, Download, RotateCcw, X, Users, ArrowLeft } from 'lucide-react';
+import { EditCompanyDialog } from '@/components/admin/EditCompanyDialog';
+import {
+  parseEmployeeCSV,
+  generateUniqueAccessCodes,
+  downloadCSVTemplate,
+  exportEmployeesWithCodes,
+  type CSVEmployee,
+  type CSVValidationError,
+} from '@/utils/csvHelpers';
 
 interface Employee {
   id: string;
@@ -32,421 +59,487 @@ interface Employee {
   status: 'sem-codigo' | 'codigo-gerado' | 'enviado' | 'erro';
 }
 
-const mockEmployees: Employee[] = [
-  {
-    id: '1',
-    name: 'Ana Silva',
-    email: 'ana.silva@empresa.co.mz',
-    code: 'MSX9-2K1',
-    sentDate: '13/10/2025',
-    status: 'enviado'
-  },
-  {
-    id: '2',
-    name: 'Carlos Mateus',
-    email: 'carlos@empresa.co.mz',
-    code: 'MSX9-2K2',
-    status: 'codigo-gerado'
-  },
-  {
-    id: '3',
-    name: 'Maria João',
-    email: 'maria.joao@empresa.co.mz',
-    code: '',
-    status: 'sem-codigo'
-  },
-  {
-    id: '4',
-    name: 'Pedro Santos',
-    email: 'pedro@empresa.co.mz',
-    code: 'MSX9-2K4',
-    sentDate: '12/10/2025',
-    status: 'erro'
-  },
-];
-
 const mockCompany = {
-  id: '1',
+  id: '4',
   name: 'TechCorp Lda',
-  nuit: '501234567',
+  nuit: '123456789',
   employees: 100,
-  plan: '400 sessões/mês',
+  plan: 'Professional',
   totalSessions: 400,
-  usedSessions: 287,
+  usedSessions: 245,
   status: 'Ativa' as const,
-  adhesionRate: 65
 };
+
+const mockEmployees: Employee[] = [
+  { id: '1', name: 'Ana Silva', email: 'ana.silva@techcorp.co.mz', code: 'MS-X9K2', sentDate: '13/10/2025', status: 'enviado' },
+  { id: '2', name: 'João Santos', email: 'joao.santos@techcorp.co.mz', code: 'MS-P7M3', sentDate: '13/10/2025', status: 'enviado' },
+  { id: '3', name: 'Maria Costa', email: 'maria.costa@techcorp.co.mz', code: 'MS-R4N8', sentDate: '', status: 'codigo-gerado' },
+  { id: '4', name: 'Pedro Lima', email: 'pedro.lima@techcorp.co.mz', code: '', sentDate: '', status: 'sem-codigo' },
+];
 
 export default function AdminCompanyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation('admin-company-detail');
   const { toast } = useToast();
+
   const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
+  const [employeeToRemove, setEmployeeToRemove] = useState<string | null>(null);
+  const [emailToResend, setEmailToResend] = useState<{ id: string; email: string } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendingProgress, setSendingProgress] = useState({ current: 0, total: 0 });
+  const [csvPreview, setCsvPreview] = useState<CSVEmployee[] | null>(null);
+  const [csvErrors, setCsvErrors] = useState<CSVValidationError[]>([]);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const [companyData, setCompanyData] = useState({
+    id: mockCompany.id,
+    name: mockCompany.name,
+    nuit: mockCompany.nuit,
+    contactEmail: 'contato@techcorp.co.mz',
+    contactPhone: '+258 84 123 4567',
+    planType: 'professional',
+    sessionsAllocated: mockCompany.totalSessions,
+    finalNotes: '',
+  });
 
-  const usagePercent = (mockCompany.usedSessions / mockCompany.totalSessions) * 100;
-  const employeesWithCode = employees.filter(e => e.code).length;
-  const employeesSent = employees.filter(e => e.status === 'enviado').length;
-  const employeesPending = employees.filter(e => e.status === 'codigo-gerado').length;
+  const usagePercent = Math.round((mockCompany.usedSessions / mockCompany.totalSessions) * 100);
+  const employeesWithCode = employees.filter(e => e.status === 'enviado').length;
+  const employeesPending = employees.filter(e => e.status !== 'enviado' && e.code).length + employees.filter(e => !e.code).length;
 
-  const handleImportCSV = () => {
+  const handleImportCSV = async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.csv';
-    input.onchange = (e) => {
+
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        setIsUploading(true);
-        setTimeout(() => {
-          setIsUploading(false);
-          toast({
-            title: 'CSV Importado',
-            description: `${file.name} foi importado com sucesso.`
-          });
-        }, 1500);
+      if (!file) return;
+
+      setIsUploading(true);
+      const { employees: parsedEmployees, errors } = await parseEmployeeCSV(file);
+      setIsUploading(false);
+
+      if (errors.length > 0) {
+        setCsvErrors(errors);
+        toast({ title: t('toasts.csvImportError.title'), variant: 'destructive' });
+        return;
       }
+
+      setCsvPreview(parsedEmployees);
+      setShowPreviewDialog(true);
     };
+
     input.click();
   };
 
-  const handleGenerateCodes = () => {
-    toast({
-      title: 'Códigos Gerados',
-      description: `${employees.filter(e => !e.code).length} códigos únicos foram criados.`
-    });
-    
-    setEmployees(employees.map(emp => {
-      if (!emp.code) {
-        return {
-          ...emp,
-          code: `MSX9-${Math.random().toString(36).substring(2, 5).toUpperCase()}`,
-          status: 'codigo-gerado' as const
-        };
-      }
-      return emp;
+  const confirmCSVImport = () => {
+    if (!csvPreview) return;
+
+    const newEmployees = csvPreview.map((emp, idx) => ({
+      id: `emp-${Date.now()}-${idx}`,
+      name: emp.name,
+      email: emp.email,
+      code: '',
+      status: 'sem-codigo' as const,
     }));
+
+    setEmployees([...employees, ...newEmployees]);
+    toast({ title: t('toasts.csvImportSuccess.title'), description: t('toasts.csvImportSuccess.description', { count: newEmployees.length }) });
+    setShowPreviewDialog(false);
+    setCsvPreview(null);
   };
 
-  const handleSendEmails = () => {
-    toast({
-      title: 'Emails em Envio',
-      description: 'Os códigos estão a ser enviados para os colaboradores.'
-    });
-    
-    setEmployees(employees.map(emp => {
-      if (emp.code && emp.status !== 'enviado') {
-        return {
-          ...emp,
-          status: 'enviado' as const,
-          sentDate: new Date().toLocaleDateString('pt-PT')
-        };
+  const handleGenerateCodes = async () => {
+    const employeesWithoutCodes = employees.filter(e => !e.code);
+    if (employeesWithoutCodes.length === 0) {
+      toast({ title: t('toasts.noCodesNeeded.title'), description: t('toasts.noCodesNeeded.description') });
+      return;
+    }
+
+    setIsGenerating(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const existingCodes = new Set(employees.map(e => e.code).filter(Boolean));
+    const newCodes = generateUniqueAccessCodes(employeesWithoutCodes.length, existingCodes, 'MS');
+
+    let codeIndex = 0;
+    const updatedEmployees = employees.map(emp => {
+      if (!emp.code) {
+        return { ...emp, code: newCodes[codeIndex++], status: 'codigo-gerado' as const };
       }
       return emp;
-    }));
+    });
+
+    setEmployees(updatedEmployees);
+    toast({ title: t('toasts.codesGenerated.title'), description: t('toasts.codesGenerated.description', { count: newCodes.length }) });
+    setIsGenerating(false);
+  };
+
+  const handleSendEmails = async () => {
+    const employeesToSend = employees.filter(e => e.code && e.status !== 'enviado');
+    if (employeesToSend.length === 0) {
+      toast({ title: t('toasts.noEmailsToSend.title'), description: t('toasts.noEmailsToSend.description') });
+      return;
+    }
+
+    setIsSending(true);
+    setSendingProgress({ current: 0, total: employeesToSend.length });
+
+    for (let i = 0; i < employeesToSend.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setSendingProgress({ current: i + 1, total: employeesToSend.length });
+
+      const success = Math.random() > 0.1;
+      setEmployees(prev => prev.map(emp => {
+        if (emp.id === employeesToSend[i].id) {
+          return { ...emp, status: success ? 'enviado' as const : 'erro' as const, sentDate: success ? new Date().toLocaleDateString('pt-PT') : undefined };
+        }
+        return emp;
+      }));
+    }
+
+    setIsSending(false);
+    toast({ title: t('toasts.emailsSent.title'), description: t('toasts.emailsSent.description', { count: employeesToSend.length }) });
   };
 
   const handleExportCSV = () => {
-    toast({
-      title: 'CSV Exportado',
-      description: 'O ficheiro com os códigos foi descarregado.'
-    });
-  };
-
-  const handleResendCode = (employeeId: string) => {
-    toast({
-      title: 'Código Reenviado',
-      description: 'O código foi enviado novamente para o colaborador.'
-    });
-  };
-
-  const handleRemoveEmployee = (employeeId: string) => {
-    setEmployees(employees.filter(emp => emp.id !== employeeId));
-    toast({
-      title: 'Colaborador Removido',
-      description: 'O colaborador foi removido da lista.'
-    });
+    exportEmployeesWithCodes(employees.map(e => ({ name: e.name, email: e.email, code: e.code || null })), mockCompany.name);
+    toast({ title: t('toasts.exportSuccess.title'), description: t('toasts.exportSuccess.description') });
   };
 
   const getStatusBadge = (status: Employee['status']) => {
-    const config = {
-      'sem-codigo': { label: 'Sem Código', variant: 'secondary' as const, className: 'bg-slate-200 text-slate-700' },
-      'codigo-gerado': { label: 'Código Gerado', variant: 'default' as const, className: 'bg-blue-100 text-blue-700' },
-      'enviado': { label: 'Enviado', variant: 'default' as const, className: 'bg-emerald-100 text-emerald-700' },
-      'erro': { label: 'Erro no Envio', variant: 'destructive' as const, className: 'bg-red-100 text-red-700' }
+    const variants = {
+      'sem-codigo': 'secondary',
+      'codigo-gerado': 'default',
+      'enviado': 'default',
+      'erro': 'destructive',
     };
-    
-    const { label, className } = config[status];
-    
-    return (
-      <Badge variant="secondary" className={className}>
-        {label}
-      </Badge>
-    );
+    return <Badge variant={variants[status] as any}>{t(`status.${status}`)}</Badge>;
   };
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        onClick={() => navigate('/admin/operations')}
-        className="mb-4"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Voltar para Empresas
-      </Button>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center gap-4 mb-6">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/admin/operations')}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">{t('header.title')}</h1>
+          <p className="text-muted-foreground">{t('header.subtitle')}</p>
+        </div>
+      </div>
 
-      {/* Company Header */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                <Building2 className="h-6 w-6 text-vibrant-blue" />
-                <CardTitle className="text-3xl">{mockCompany.name}</CardTitle>
-                <Badge 
-                  variant={mockCompany.status === 'Ativa' ? 'default' : 'secondary'}
-                  className={mockCompany.status === 'Ativa' ? 'bg-success' : ''}
-                >
-                  {mockCompany.status}
-                </Badge>
-              </div>
-              <p className="text-sm text-muted-foreground">NUIT: {mockCompany.nuit}</p>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-2" />
-                Editar Empresa
-              </Button>
-              <Button variant="outline" size="sm">
-                <FileText className="h-4 w-4 mr-2" />
-                Ver Relatório Mensal
-              </Button>
-              <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
-                <Trash2 className="h-4 w-4 mr-2" />
-                Desativar Empresa
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 gap-6">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Nº de Colaboradores</p>
-              <p className="text-2xl font-bold">{mockCompany.employees}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Plano Atual</p>
-              <p className="text-lg font-semibold">{mockCompany.plan}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Sessões Usadas/Restantes</p>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">
-                    {mockCompany.usedSessions}/{mockCompany.totalSessions}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {mockCompany.totalSessions - mockCompany.usedSessions} restantes
-                  </span>
-                </div>
-                <Progress value={usagePercent} className="h-2" />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Taxa de Adesão</p>
-              <div className="space-y-2">
-                <p className="text-2xl font-bold">{mockCompany.adhesionRate}%</p>
-                <Progress value={mockCompany.adhesionRate} className="h-2" />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Main Management Section */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">Gestão de Colaboradores</CardTitle>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-2xl">{mockCompany.name}</CardTitle>
+              <CardDescription>{t('company.nuit')}: {mockCompany.nuit}</CardDescription>
+            </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={handleImportCSV}
-                disabled={isUploading}
-                title="Faça upload de um ficheiro .csv com nome e email dos colaboradores."
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                {isUploading ? 'A Importar...' : 'Importar Colaboradores (CSV)'}
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
+                <Edit className="h-4 w-4 mr-2" />
+                {t('actions.editCompany')}
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleGenerateCodes}
-                title="Cria códigos únicos para todos os colaboradores importados."
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Gerar Códigos de Acesso
+              <Button variant="outline" onClick={() => navigate(`/admin/reports?company=${id}`)}>
+                <FileText className="h-4 w-4 mr-2" />
+                {t('actions.viewReport')}
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleSendEmails}
-                title="Envia automaticamente os códigos para o email de cada colaborador."
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                Enviar Códigos por Email
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleExportCSV}
-                title="Descarregue um ficheiro com nomes e códigos para enviar à empresa."
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Exportar CSV com Códigos
+              <Button variant="outline" className="text-destructive" onClick={() => setIsDeactivateDialogOpen(true)}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t('actions.deactivateCompany')}
               </Button>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            📎 <a href="#" className="text-vibrant-blue hover:underline">Descarregar modelo CSV</a>
-          </p>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Código</TableHead>
-                <TableHead>Data de Envio</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {employees.map((employee) => (
-                <TableRow key={employee.id}>
-                  <TableCell className="font-medium">{employee.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{employee.email}</TableCell>
-                  <TableCell>
-                    {employee.code ? (
-                      <code className="px-2 py-1 bg-muted rounded text-sm font-mono">
-                        {employee.code}
-                      </code>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {employee.sentDate || '—'}
-                  </TableCell>
-                  <TableCell>
-                    {getStatusBadge(employee.status)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      {employee.status === 'enviado' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleResendCode(employee.id)}
-                          title="Reenviar código"
-                        >
-                          <RotateCcw className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {employee.status === 'erro' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleResendCode(employee.id)}
-                          title="Reenviar código"
-                          className="text-amber-600"
-                        >
-                          <RotateCcw className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveEmployee(employee.id)}
-                        className="text-destructive hover:text-destructive"
-                        title="Remover colaborador"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div>
+              <p className="text-sm text-muted-foreground">{t('company.employees')}</p>
+              <p className="text-2xl font-bold">{mockCompany.employees}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">{t('company.plan')}</p>
+              <p className="text-2xl font-bold">{mockCompany.plan}</p>
+              <p className="text-xs text-muted-foreground">{mockCompany.totalSessions} {t('company.sessionsPerMonth')}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">{t('sessions.title')}</p>
+              <Progress value={usagePercent} className="mt-2" />
+              <p className="text-xs text-muted-foreground mt-1">{mockCompany.usedSessions} {t('sessions.of')} {mockCompany.totalSessions}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">{t('company.status')}</p>
+              <Badge variant="default" className="mt-2">{t('company.statusActive')}</Badge>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Statistics Panel */}
-      <div className="grid grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-vibrant-blue/10 rounded-lg">
-                <Users className="h-5 w-5 text-vibrant-blue" />
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6">
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('management.title')}</CardTitle>
+              <CardDescription>{t('management.subtitle')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" onClick={handleImportCSV} disabled={isUploading}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {isUploading ? t('progress.uploading') : t('actions.importEmployees')}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>{t('tooltips.importCSV')}</p></TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" onClick={handleGenerateCodes} disabled={isGenerating}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        {isGenerating ? t('progress.generatingCodes') : t('actions.generateCodes')}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>{t('tooltips.generateCodes')}</p></TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" onClick={handleSendEmails} disabled={isSending}>
+                        <Mail className="h-4 w-4 mr-2" />
+                        {isSending ? `${t('progress.sendingEmails')} (${sendingProgress.current}/${sendingProgress.total})` : t('actions.sendEmails')}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>{t('tooltips.sendEmails')}</p></TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" onClick={handleExportCSV}>
+                        <Download className="h-4 w-4 mr-2" />
+                        {t('actions.exportCSV')}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p>{t('tooltips.exportCSV')}</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
+
+              <p className="text-sm text-muted-foreground">
+                <a href="#" onClick={(e) => { e.preventDefault(); downloadCSVTemplate(); }} className="text-vibrant-blue hover:underline">
+                  📎 {t('actions.downloadTemplate')}
+                </a>
+              </p>
+
+              {csvErrors.length > 0 && (
+                <Alert variant="destructive">
+                  <AlertTitle>{t('validation.errors')}</AlertTitle>
+                  <AlertDescription>
+                    <ul className="list-disc list-inside space-y-1">
+                      {csvErrors.slice(0, 5).map((error, idx) => (
+                        <li key={idx}>{t('validation.lineError', { line: error.line, field: error.field, message: error.message })}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {employees.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <Users className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">{t('table.noEmployees')}</h3>
+                  <p className="text-muted-foreground mb-4">{t('table.importFirst')}</p>
+                  <Button onClick={handleImportCSV}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {t('actions.importEmployees')}
+                  </Button>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('table.name')}</TableHead>
+                      <TableHead>{t('table.email')}</TableHead>
+                      <TableHead>{t('table.code')}</TableHead>
+                      <TableHead>{t('table.sentDate')}</TableHead>
+                      <TableHead>{t('table.status')}</TableHead>
+                      <TableHead>{t('table.actions')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {employees.map(emp => (
+                      <TableRow key={emp.id}>
+                        <TableCell className="font-medium">{emp.name}</TableCell>
+                        <TableCell>{emp.email}</TableCell>
+                        <TableCell className="font-mono">{emp.code || '-'}</TableCell>
+                        <TableCell>{emp.sentDate || '-'}</TableCell>
+                        <TableCell>{getStatusBadge(emp.status)}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            {emp.code && (
+                              <Button variant="ghost" size="icon" onClick={() => setEmailToResend({ id: emp.id, email: emp.email })}>
+                                <RotateCcw className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button variant="ghost" size="icon" onClick={() => setEmployeeToRemove(emp.id)}>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('statistics.title')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">Total de Colaboradores</p>
+                <p className="text-sm text-muted-foreground">{t('statistics.totalEmployees')}</p>
                 <p className="text-2xl font-bold">{employees.length}</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-emerald-500/10 rounded-lg">
-                <Mail className="h-5 w-5 text-emerald-600" />
+              <div>
+                <p className="text-sm text-muted-foreground">{t('statistics.codeSent')}</p>
+                <p className="text-2xl font-bold">{employeesWithCode}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Com Código Enviado</p>
-                <p className="text-2xl font-bold">{employeesSent}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-amber-500/10 rounded-lg">
-                <RefreshCw className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Por Enviar</p>
+                <p className="text-sm text-muted-foreground">{t('statistics.pending')}</p>
                 <p className="text-2xl font-bold">{employeesPending}</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-mint-green/10 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-mint-green" />
-              </div>
               <div>
-                <p className="text-sm text-muted-foreground">Taxa de Adesão Atual</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">{mockCompany.adhesionRate}%</p>
-                  <Progress value={mockCompany.adhesionRate} className="h-2 flex-1" />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Último envio: 13/10/2025 às 09h24
-                </p>
+                <p className="text-sm text-muted-foreground">{t('statistics.adoptionRate')}</p>
+                <p className="text-2xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
+
+      <EditCompanyDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        company={companyData}
+        onSave={(updated) => {
+          setCompanyData(updated);
+          toast({ title: t('toasts.companyUpdated.title'), description: t('toasts.companyUpdated.description') });
+        }}
+      />
+
+      <AlertDialog open={isDeactivateDialogOpen} onOpenChange={setIsDeactivateDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('dialogs.deactivateCompany.title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('dialogs.deactivateCompany.description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('dialogs.deactivateCompany.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground"
+              onClick={() => {
+                toast({ title: t('toasts.companyDeactivated.title'), description: t('toasts.companyDeactivated.description') });
+                setTimeout(() => navigate('/admin/operations'), 1000);
+              }}
+            >
+              {t('dialogs.deactivateCompany.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!employeeToRemove} onOpenChange={(open) => !open && setEmployeeToRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('dialogs.removeEmployee.title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('dialogs.removeEmployee.description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('dialogs.removeEmployee.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive"
+              onClick={() => {
+                if (employeeToRemove) {
+                  const employee = employees.find(e => e.id === employeeToRemove);
+                  setEmployees(employees.filter(e => e.id !== employeeToRemove));
+                  toast({ title: t('toasts.employeeRemoved.title'), description: t('toasts.employeeRemoved.description', { name: employee?.name || '' }) });
+                  setEmployeeToRemove(null);
+                }
+              }}
+            >
+              {t('dialogs.removeEmployee.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!emailToResend} onOpenChange={(open) => !open && setEmailToResend(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('dialogs.resendCode.title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('dialogs.resendCode.description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('dialogs.resendCode.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (emailToResend) {
+                  setEmployees(prev => prev.map(emp =>
+                    emp.id === emailToResend.id ? { ...emp, status: 'enviado' as const, sentDate: new Date().toLocaleDateString('pt-PT') } : emp
+                  ));
+                  toast({ title: t('toasts.codeResent.title'), description: t('toasts.codeResent.description', { email: emailToResend.email }) });
+                  setEmailToResend(null);
+                }
+              }}
+            >
+              {t('dialogs.resendCode.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{t('dialogs.csvPreview.title')}</DialogTitle>
+            <DialogDescription>{t('dialogs.csvPreview.description', { count: csvPreview?.length || 0 })}</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-96 overflow-y-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('table.name')}</TableHead>
+                  <TableHead>{t('table.email')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {csvPreview?.map((emp, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell>{emp.name}</TableCell>
+                    <TableCell>{emp.email}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>{t('common.cancel')}</Button>
+            <Button onClick={confirmCSVImport}>{t('dialogs.csvPreview.confirm')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
