@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -39,16 +38,15 @@ const pillarIcons = {
 };
 
 export default function PrestadorDashboard() {
-  const { t } = useTranslation('provider');
   const [isOnline, setIsOnline] = useState(true);
   const [timeFilter, setTimeFilter] = useState<'hoje' | 'proximos7dias'>('hoje');
   const [sessions, setSessions] = useState(mockPrestadorSessions);
 
   const pillarNames = {
-    'saude_mental': t('pillars.saude_mental'),
-    'bem_estar_fisico': t('pillars.bem_estar_fisico'),
-    'assistencia_financeira': t('pillars.assistencia_financeira'),
-    'assistencia_juridica': t('pillars.assistencia_juridica')
+    'saude_mental': 'Saúde Mental',
+    'bem_estar_fisico': 'Bem-Estar Físico',
+    'assistencia_financeira': 'Assistência Financeira',
+    'assistencia_juridica': 'Assistência Jurídica'
   };
 
   const statusColors = {
