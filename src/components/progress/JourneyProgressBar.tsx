@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, Circle, Heart } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 interface Milestone {
   id: string;
@@ -43,6 +44,9 @@ export const JourneyProgressBar = ({ onboardingCompleted = false }: JourneyProgr
   });
 
   const [showCelebration, setShowCelebration] = useState(false);
+  const [animatedProgress, setAnimatedProgress] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
 
   const totalProgress = milestones.reduce((sum, m) => sum + (m.completed ? m.points : 0), 0);
 
@@ -97,8 +101,34 @@ export const JourneyProgressBar = ({ onboardingCompleted = false }: JourneyProgr
     }
   }, [onboardingCompleted]);
 
+  // Animate progress bar when scrolled into view with smooth 4-second animation
+  useEffect(() => {
+    if (!isProgressVisible || hasAnimated || totalProgress === 0) return;
+    
+    setHasAnimated(true);
+    setAnimatedProgress(0);
+    const startTime = Date.now();
+    const duration = 4000; // 4 seconds total animation
+    
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+      
+      setAnimatedProgress(totalProgress * easedProgress);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }, [isProgressVisible, totalProgress, hasAnimated]);
+
   return (
-    <Card className="p-6 relative overflow-hidden">
+    <Card className="p-6 relative overflow-hidden" ref={progressRef}>
       {/* Celebration overlay */}
       {showCelebration && (
         <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex items-center justify-center z-10 animate-fade-in">
@@ -118,7 +148,7 @@ export const JourneyProgressBar = ({ onboardingCompleted = false }: JourneyProgr
             <h3 className="text-xl font-semibold">Progresso Pessoal</h3>
             <span className="text-2xl font-bold text-primary">{totalProgress}%</span>
           </div>
-          <Progress value={totalProgress} className="h-3" />
+          <Progress value={animatedProgress} className="h-3" />
           <p className="text-sm text-muted-foreground">
             {totalProgress === 100 ? '🎉 Jornada completa!' : 'Continue a sua jornada de bem-estar'}
           </p>
