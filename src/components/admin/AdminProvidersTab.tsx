@@ -264,104 +264,121 @@ const AdminProvidersTab = () => {
         </Button>
       </div>
 
-      {/* Summary Cards */}
+      {/* Pillar Cards - Clickable to filter */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Users className="h-4 w-4 text-blue-600" />
-              Total de Prestadores
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{totalProviders}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {activeProviders} ativos
-            </p>
+        <Card 
+          className={`hover-lift border-2 shadow-sm cursor-pointer transition-all ${
+            pillarFilter === 'mental-health' 
+              ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900' 
+              : 'border-transparent bg-gradient-to-br from-blue-50/50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/50 hover:border-blue-300'
+          }`}
+          onClick={() => setPillarFilter('mental-health')}
+        >
+          <CardContent className="p-6 text-center space-y-3">
+            <Brain className="h-12 w-12 mx-auto text-blue-600" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Saúde Mental</p>
+              <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">
+                {providers.filter(p => p.pillar === 'mental-health').length}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <UserCheck className="h-4 w-4 text-green-600" />
-              Prestadores Ativos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-700 dark:text-green-300">{activeProviders}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {Math.round((activeProviders / totalProviders) * 100)}% do total
-            </p>
+        <Card 
+          className={`hover-lift border-2 shadow-sm cursor-pointer transition-all ${
+            pillarFilter === 'physical-wellness' 
+              ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900' 
+              : 'border-transparent bg-gradient-to-br from-orange-50/50 to-orange-100/50 dark:from-orange-950/50 dark:to-orange-900/50 hover:border-orange-300'
+          }`}
+          onClick={() => setPillarFilter('physical-wellness')}
+        >
+          <CardContent className="p-6 text-center space-y-3">
+            <Heart className="h-12 w-12 mx-auto text-orange-600" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Bem-Estar Físico</p>
+              <p className="text-3xl font-bold text-orange-700 dark:text-orange-300">
+                {providers.filter(p => p.pillar === 'physical-wellness').length}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Star className="h-4 w-4 text-amber-600" />
-              Satisfação Média
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">⭐ {avgSatisfaction}/10</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Avaliação dos colaboradores
-            </p>
+        <Card 
+          className={`hover-lift border-2 shadow-sm cursor-pointer transition-all ${
+            pillarFilter === 'financial-assistance' 
+              ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900' 
+              : 'border-transparent bg-gradient-to-br from-green-50/50 to-green-100/50 dark:from-green-950/50 dark:to-green-900/50 hover:border-green-300'
+          }`}
+          onClick={() => setPillarFilter('financial-assistance')}
+        >
+          <CardContent className="p-6 text-center space-y-3">
+            <DollarSign className="h-12 w-12 mx-auto text-green-600" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Assistência Financeira</p>
+              <p className="text-3xl font-bold text-green-700 dark:text-green-300">
+                {providers.filter(p => p.pillar === 'financial-assistance').length}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Clock className="h-4 w-4 text-purple-600" />
-              Sessões Este Mês
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{totalSessionsThisMonth}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Total de todos os prestadores
-            </p>
+        <Card 
+          className={`hover-lift border-2 shadow-sm cursor-pointer transition-all ${
+            pillarFilter === 'legal-assistance' 
+              ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900' 
+              : 'border-transparent bg-gradient-to-br from-purple-50/50 to-purple-100/50 dark:from-purple-950/50 dark:to-purple-900/50 hover:border-purple-300'
+          }`}
+          onClick={() => setPillarFilter('legal-assistance')}
+        >
+          <CardContent className="p-6 text-center space-y-3">
+            <Scale className="h-12 w-12 mx-auto text-purple-600" />
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Assistência Jurídica</p>
+              <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">
+                {providers.filter(p => p.pillar === 'legal-assistance').length}
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="relative flex-1 min-w-[300px]">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Procurar por nome, email ou especialidade..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
+      {/* Search and Status Filter - Only show when pillar is selected */}
+      {pillarFilter && (
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="relative flex-1 min-w-[300px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Procurar por nome, email ou especialidade..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filtrar por Estado" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border border-border shadow-lg z-50">
+              <SelectItem value="all">Todos os Estados</SelectItem>
+              <SelectItem value="Ativo">Ativo</SelectItem>
+              <SelectItem value="Inativo">Inativo</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              setPillarFilter('');
+              setSearchQuery('');
+              setStatusFilter('all');
+            }}
+          >
+            Limpar Filtros
+          </Button>
         </div>
-        
-        <Select value={pillarFilter} onValueChange={setPillarFilter}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Selecione o Pilar" />
-          </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
-            <SelectItem value="mental-health">Saúde Mental</SelectItem>
-            <SelectItem value="physical-wellness">Bem-Estar Físico</SelectItem>
-            <SelectItem value="financial-assistance">Assistência Financeira</SelectItem>
-            <SelectItem value="legal-assistance">Assistência Jurídica</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtrar por Estado" />
-          </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
-            <SelectItem value="all">Todos os Estados</SelectItem>
-            <SelectItem value="Ativo">Ativo</SelectItem>
-            <SelectItem value="Inativo">Inativo</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      )}
 
       {/* Providers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
