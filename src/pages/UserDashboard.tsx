@@ -69,14 +69,29 @@ const UserDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Animate progress bar on page load
+  // Animate progress bar on page load with slower incremental updates
   useEffect(() => {
     setAnimatedProgress(0);
+    const startTime = Date.now();
+    const duration = 8000; // 8 seconds total animation
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      setAnimatedProgress(Math.floor(milestoneProgress * progress));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
     const timer = setTimeout(() => {
-      setAnimatedProgress(milestoneProgress);
+      requestAnimationFrame(animate);
     }, 300);
+    
     return () => clearTimeout(timer);
-  }, []);
+  }, [milestoneProgress]);
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
