@@ -212,8 +212,8 @@ const AdminSidebar = () => {
                     <SidebarMenuButton asChild>
                       <NavLink to={item.url} end className={getNavCls}>
                         <div className="flex items-center py-1">
-                          <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                          {!isCollapsed && <span className="text-base">{item.title}</span>}
+                          <item.icon className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+                          {!isCollapsed && <span className="text-base whitespace-nowrap">{item.title}</span>}
                         </div>
                       </NavLink>
                     </SidebarMenuButton>
@@ -233,15 +233,15 @@ const AdminSidebar = () => {
           return (
             <SidebarGroup key={groupKey}>
               <SidebarGroupLabel 
-                className="flex items-center justify-between cursor-pointer hover:bg-muted/30 rounded-md p-3 transition-colors"
+                className="flex items-center justify-between cursor-pointer hover:bg-muted/30 rounded-md p-3 transition-colors gap-2"
                 onClick={() => toggleGroup(groupKey)}
               >
-                <div className="flex items-center">
-                  <group.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base font-medium">{group.title}</span>}
+                <div className="flex items-center min-w-0 flex-1">
+                  <group.icon className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+                  {!isCollapsed && <span className="text-base font-medium whitespace-nowrap">{group.title}</span>}
                 </div>
                 {!isCollapsed && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {groupBadgeCount > 0 && (
                       <Badge variant="destructive" className="h-5 px-2 text-sm">
                         {groupBadgeCount}
@@ -266,13 +266,13 @@ const AdminSidebar = () => {
                           <SidebarMenuItemWithTooltip item={item}>
                             <SidebarMenuButton asChild>
                               <NavLink to={item.url} end className={getNavCls}>
-                                 <div className="flex items-center justify-between w-full py-1">
-                                   <div className="flex items-center">
-                                     <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                                     {!isCollapsed && <span className="text-base">{item.title}</span>}
+                                 <div className="flex items-center justify-between w-full py-1 gap-2">
+                                   <div className="flex items-center min-w-0 flex-1">
+                                     <item.icon className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+                                     {!isCollapsed && <span className="text-base whitespace-nowrap">{item.title}</span>}
                                   </div>
                                    {!isCollapsed && badgeCount > 0 && (
-                                     <Badge variant="destructive" className="h-6 px-2 text-sm">
+                                     <Badge variant="destructive" className="h-6 px-2 text-sm flex-shrink-0">
                                        {badgeCount}
                                     </Badge>
                                   )}
@@ -300,8 +300,8 @@ const AdminSidebar = () => {
                     <SidebarMenuButton asChild>
                       <NavLink to={item.url} end className={getNavCls}>
                         <div className="flex items-center py-1">
-                          <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                          {!isCollapsed && <span className="text-base">{item.title}</span>}
+                          <item.icon className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+                          {!isCollapsed && <span className="text-base whitespace-nowrap">{item.title}</span>}
                         </div>
                       </NavLink>
                     </SidebarMenuButton>
@@ -322,8 +322,8 @@ const AdminSidebar = () => {
                 size="sm"
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
               >
-                <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                {!isCollapsed && <span className="text-base">Sair</span>}
+                <LogOut className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+                {!isCollapsed && <span className="text-base whitespace-nowrap">Sair</span>}
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
