@@ -74,7 +74,7 @@ const AdminDashboard = () => {
       icon: Star,
       iconColor: 'text-peach-orange',
       bgColor: 'bg-peach-orange/10',
-      route: '/admin/resources'
+      route: '/admin/resources?tab=resultados'
     },
     {
       title: 'Objetivos Atingidos',
