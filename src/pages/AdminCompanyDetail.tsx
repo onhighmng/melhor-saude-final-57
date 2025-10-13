@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from '@/hooks/useTranslation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -80,7 +79,6 @@ const mockEmployees: Employee[] = [
 export default function AdminCompanyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation('admin-company-detail');
   const { toast } = useToast();
 
   const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
@@ -125,7 +123,7 @@ export default function AdminCompanyDetail() {
 
       if (errors.length > 0) {
         setCsvErrors(errors);
-        toast({ title: t('toasts.csvImportError.title'), variant: 'destructive' });
+        toast({ title: 'Erro na Importação', variant: 'destructive' });
         return;
       }
 
@@ -148,7 +146,7 @@ export default function AdminCompanyDetail() {
     }));
 
     setEmployees([...employees, ...newEmployees]);
-    toast({ title: t('toasts.csvImportSuccess.title'), description: t('toasts.csvImportSuccess.description', { count: newEmployees.length }) });
+    toast({ title: 'CSV Importado', description: `${newEmployees.length} colaborador(es) importado(s) com sucesso` });
     setShowPreviewDialog(false);
     setCsvPreview(null);
   };
@@ -156,7 +154,7 @@ export default function AdminCompanyDetail() {
   const handleGenerateCodes = async () => {
     const employeesWithoutCodes = employees.filter(e => !e.code);
     if (employeesWithoutCodes.length === 0) {
-      toast({ title: t('toasts.noCodesNeeded.title'), description: t('toasts.noCodesNeeded.description') });
+      toast({ title: 'Nenhum Código Necessário', description: 'Todos os colaboradores já têm códigos gerados' });
       return;
     }
 
@@ -175,14 +173,14 @@ export default function AdminCompanyDetail() {
     });
 
     setEmployees(updatedEmployees);
-    toast({ title: t('toasts.codesGenerated.title'), description: t('toasts.codesGenerated.description', { count: newCodes.length }) });
+    toast({ title: 'Códigos Gerados', description: `${newCodes.length} código(s) gerado(s) com sucesso` });
     setIsGenerating(false);
   };
 
   const handleSendEmails = async () => {
     const employeesToSend = employees.filter(e => e.code && e.status !== 'enviado');
     if (employeesToSend.length === 0) {
-      toast({ title: t('toasts.noEmailsToSend.title'), description: t('toasts.noEmailsToSend.description') });
+      toast({ title: 'Nenhum Email para Enviar', description: 'Todos os colaboradores já receberam os códigos' });
       return;
     }
 
@@ -203,22 +201,23 @@ export default function AdminCompanyDetail() {
     }
 
     setIsSending(false);
-    toast({ title: t('toasts.emailsSent.title'), description: t('toasts.emailsSent.description', { count: employeesToSend.length }) });
+    toast({ title: 'Emails Enviados', description: `${employeesToSend.length} email(s) enviado(s) com sucesso` });
   };
 
   const handleExportCSV = () => {
     exportEmployeesWithCodes(employees.map(e => ({ name: e.name, email: e.email, code: e.code || null })), mockCompany.name);
-    toast({ title: t('toasts.exportSuccess.title'), description: t('toasts.exportSuccess.description') });
+    toast({ title: 'CSV Exportado', description: 'Ficheiro descarregado com sucesso' });
   };
 
   const getStatusBadge = (status: Employee['status']) => {
-    const variants = {
-      'sem-codigo': 'secondary',
-      'codigo-gerado': 'default',
-      'enviado': 'default',
-      'erro': 'destructive',
+    const statusMap = {
+      'sem-codigo': { label: 'Sem Código', variant: 'secondary' },
+      'codigo-gerado': { label: 'Código Gerado', variant: 'default' },
+      'enviado': { label: 'Enviado', variant: 'default' },
+      'erro': { label: 'Erro no Envio', variant: 'destructive' },
     };
-    return <Badge variant={variants[status] as any}>{t(`status.${status}`)}</Badge>;
+    const { label, variant } = statusMap[status];
+    return <Badge variant={variant as any}>{label}</Badge>;
   };
 
   return (
@@ -228,8 +227,8 @@ export default function AdminCompanyDetail() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{t('header.title')}</h1>
-          <p className="text-muted-foreground">{t('header.subtitle')}</p>
+          <h1 className="text-3xl font-bold">Detalhes da Empresa</h1>
+          <p className="text-muted-foreground">Gestão de colaboradores e códigos de acesso</p>
         </div>
       </div>
 
@@ -238,20 +237,20 @@ export default function AdminCompanyDetail() {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-2xl">{mockCompany.name}</CardTitle>
-              <CardDescription>{t('company.nuit')}: {mockCompany.nuit}</CardDescription>
+              <CardDescription>NUIT: {mockCompany.nuit}</CardDescription>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
                 <Edit className="h-4 w-4 mr-2" />
-                {t('actions.editCompany')}
+                Editar Empresa
               </Button>
               <Button variant="outline" onClick={() => navigate(`/admin/reports?company=${id}`)}>
                 <FileText className="h-4 w-4 mr-2" />
-                {t('actions.viewReport')}
+                Ver Relatório Mensal
               </Button>
               <Button variant="outline" className="text-destructive" onClick={() => setIsDeactivateDialogOpen(true)}>
                 <Trash2 className="h-4 w-4 mr-2" />
-                {t('actions.deactivateCompany')}
+                Desativar Empresa
               </Button>
             </div>
           </div>
@@ -259,22 +258,22 @@ export default function AdminCompanyDetail() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
-              <p className="text-sm text-muted-foreground">{t('company.employees')}</p>
+              <p className="text-sm text-muted-foreground">Colaboradores</p>
               <p className="text-2xl font-bold">{mockCompany.employees}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">{t('company.plan')}</p>
+              <p className="text-sm text-muted-foreground">Plano</p>
               <p className="text-2xl font-bold">{mockCompany.plan}</p>
-              <p className="text-xs text-muted-foreground">{mockCompany.totalSessions} {t('company.sessionsPerMonth')}</p>
+              <p className="text-xs text-muted-foreground">{mockCompany.totalSessions} sessões/mês</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">{t('sessions.title')}</p>
+              <p className="text-sm text-muted-foreground">Sessões</p>
               <Progress value={usagePercent} className="mt-2" />
-              <p className="text-xs text-muted-foreground mt-1">{mockCompany.usedSessions} {t('sessions.of')} {mockCompany.totalSessions}</p>
+              <p className="text-xs text-muted-foreground mt-1">{mockCompany.usedSessions} de {mockCompany.totalSessions}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">{t('company.status')}</p>
-              <Badge variant="default" className="mt-2">{t('company.statusActive')}</Badge>
+              <p className="text-sm text-muted-foreground">Estado</p>
+              <Badge variant="default" className="mt-2">Ativa</Badge>
             </div>
           </div>
         </CardContent>
@@ -284,8 +283,8 @@ export default function AdminCompanyDetail() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>{t('management.title')}</CardTitle>
-              <CardDescription>{t('management.subtitle')}</CardDescription>
+              <CardTitle>Gestão de Colaboradores</CardTitle>
+              <CardDescription>Importe, gere e distribua códigos de acesso</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
@@ -294,57 +293,57 @@ export default function AdminCompanyDetail() {
                     <TooltipTrigger asChild>
                       <Button variant="outline" onClick={handleImportCSV} disabled={isUploading}>
                         <Upload className="h-4 w-4 mr-2" />
-                        {isUploading ? t('progress.uploading') : t('actions.importEmployees')}
+                        {isUploading ? 'A carregar ficheiro...' : 'Importar Colaboradores'}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent><p>{t('tooltips.importCSV')}</p></TooltipContent>
+                    <TooltipContent><p>Faça upload de um ficheiro .csv com nome e email dos colaboradores</p></TooltipContent>
                   </Tooltip>
 
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button variant="outline" onClick={handleGenerateCodes} disabled={isGenerating}>
                         <RefreshCw className="h-4 w-4 mr-2" />
-                        {isGenerating ? t('progress.generatingCodes') : t('actions.generateCodes')}
+                        {isGenerating ? 'A gerar códigos...' : 'Gerar Códigos'}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent><p>{t('tooltips.generateCodes')}</p></TooltipContent>
+                    <TooltipContent><p>Cria códigos únicos para todos os colaboradores importados</p></TooltipContent>
                   </Tooltip>
 
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button variant="outline" onClick={handleSendEmails} disabled={isSending}>
                         <Mail className="h-4 w-4 mr-2" />
-                        {isSending ? `${t('progress.sendingEmails')} (${sendingProgress.current}/${sendingProgress.total})` : t('actions.sendEmails')}
+                        {isSending ? `A enviar emails (${sendingProgress.current}/${sendingProgress.total})` : 'Enviar por Email'}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent><p>{t('tooltips.sendEmails')}</p></TooltipContent>
+                    <TooltipContent><p>Envia automaticamente os códigos para o email de cada colaborador</p></TooltipContent>
                   </Tooltip>
 
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button variant="outline" onClick={handleExportCSV}>
                         <Download className="h-4 w-4 mr-2" />
-                        {t('actions.exportCSV')}
+                        Exportar CSV
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent><p>{t('tooltips.exportCSV')}</p></TooltipContent>
+                    <TooltipContent><p>Descarregue um ficheiro com nomes e códigos para enviar à empresa</p></TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
 
               <p className="text-sm text-muted-foreground">
                 <a href="#" onClick={(e) => { e.preventDefault(); downloadCSVTemplate(); }} className="text-vibrant-blue hover:underline">
-                  📎 {t('actions.downloadTemplate')}
+                  📎 Descarregar modelo CSV
                 </a>
               </p>
 
               {csvErrors.length > 0 && (
                 <Alert variant="destructive">
-                  <AlertTitle>{t('validation.errors')}</AlertTitle>
+                  <AlertTitle>Erros de Validação</AlertTitle>
                   <AlertDescription>
                     <ul className="list-disc list-inside space-y-1">
                       {csvErrors.slice(0, 5).map((error, idx) => (
-                        <li key={idx}>{t('validation.lineError', { line: error.line, field: error.field, message: error.message })}</li>
+                        <li key={idx}>Linha {error.line}: {error.field} - {error.message}</li>
                       ))}
                     </ul>
                   </AlertDescription>
@@ -354,23 +353,23 @@ export default function AdminCompanyDetail() {
               {employees.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <Users className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">{t('table.noEmployees')}</h3>
-                  <p className="text-muted-foreground mb-4">{t('table.importFirst')}</p>
+                  <h3 className="text-lg font-semibold mb-2">Nenhum colaborador importado</h3>
+                  <p className="text-muted-foreground mb-4">Comece por importar colaboradores através de um ficheiro CSV</p>
                   <Button onClick={handleImportCSV}>
                     <Upload className="h-4 w-4 mr-2" />
-                    {t('actions.importEmployees')}
+                    Importar Colaboradores
                   </Button>
                 </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t('table.name')}</TableHead>
-                      <TableHead>{t('table.email')}</TableHead>
-                      <TableHead>{t('table.code')}</TableHead>
-                      <TableHead>{t('table.sentDate')}</TableHead>
-                      <TableHead>{t('table.status')}</TableHead>
-                      <TableHead>{t('table.actions')}</TableHead>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Código</TableHead>
+                      <TableHead>Data de Envio</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -405,23 +404,23 @@ export default function AdminCompanyDetail() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>{t('statistics.title')}</CardTitle>
+              <CardTitle>Estatísticas Rápidas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">{t('statistics.totalEmployees')}</p>
+                <p className="text-sm text-muted-foreground">Total de colaboradores</p>
                 <p className="text-2xl font-bold">{employees.length}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('statistics.codeSent')}</p>
+                <p className="text-sm text-muted-foreground">Com código enviado</p>
                 <p className="text-2xl font-bold">{employeesWithCode}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('statistics.pending')}</p>
+                <p className="text-sm text-muted-foreground">Por enviar</p>
                 <p className="text-2xl font-bold">{employeesPending}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('statistics.adoptionRate')}</p>
+                <p className="text-sm text-muted-foreground">Taxa de adesão</p>
                 <p className="text-2xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
               </div>
             </CardContent>
@@ -435,26 +434,26 @@ export default function AdminCompanyDetail() {
         company={companyData}
         onSave={(updated) => {
           setCompanyData(updated);
-          toast({ title: t('toasts.companyUpdated.title'), description: t('toasts.companyUpdated.description') });
+          toast({ title: 'Empresa Atualizada', description: 'Dados atualizados com sucesso' });
         }}
       />
 
       <AlertDialog open={isDeactivateDialogOpen} onOpenChange={setIsDeactivateDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('dialogs.deactivateCompany.title')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('dialogs.deactivateCompany.description')}</AlertDialogDescription>
+            <AlertDialogTitle>Desativar Empresa</AlertDialogTitle>
+            <AlertDialogDescription>Esta ação irá desativar todos os colaboradores e suspender o acesso da empresa. Tem a certeza?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('dialogs.deactivateCompany.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground"
               onClick={() => {
-                toast({ title: t('toasts.companyDeactivated.title'), description: t('toasts.companyDeactivated.description') });
+                toast({ title: 'Empresa Desativada', description: 'A empresa foi desativada com sucesso' });
                 setTimeout(() => navigate('/admin/operations'), 1000);
               }}
             >
-              {t('dialogs.deactivateCompany.confirm')}
+              Desativar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -463,23 +462,23 @@ export default function AdminCompanyDetail() {
       <AlertDialog open={!!employeeToRemove} onOpenChange={(open) => !open && setEmployeeToRemove(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('dialogs.removeEmployee.title')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('dialogs.removeEmployee.description')}</AlertDialogDescription>
+            <AlertDialogTitle>Remover Colaborador</AlertDialogTitle>
+            <AlertDialogDescription>Tem a certeza que deseja remover este colaborador? Esta ação não pode ser desfeita.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('dialogs.removeEmployee.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive"
               onClick={() => {
                 if (employeeToRemove) {
                   const employee = employees.find(e => e.id === employeeToRemove);
                   setEmployees(employees.filter(e => e.id !== employeeToRemove));
-                  toast({ title: t('toasts.employeeRemoved.title'), description: t('toasts.employeeRemoved.description', { name: employee?.name || '' }) });
+                  toast({ title: 'Colaborador Removido', description: `${employee?.name || ''} foi removido da lista` });
                   setEmployeeToRemove(null);
                 }
               }}
             >
-              {t('dialogs.removeEmployee.confirm')}
+              Remover
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -488,23 +487,23 @@ export default function AdminCompanyDetail() {
       <AlertDialog open={!!emailToResend} onOpenChange={(open) => !open && setEmailToResend(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('dialogs.resendCode.title')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('dialogs.resendCode.description')}</AlertDialogDescription>
+            <AlertDialogTitle>Reenviar Código</AlertDialogTitle>
+            <AlertDialogDescription>Deseja reenviar o código de acesso para o email deste colaborador?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('dialogs.resendCode.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (emailToResend) {
                   setEmployees(prev => prev.map(emp =>
                     emp.id === emailToResend.id ? { ...emp, status: 'enviado' as const, sentDate: new Date().toLocaleDateString('pt-PT') } : emp
                   ));
-                  toast({ title: t('toasts.codeResent.title'), description: t('toasts.codeResent.description', { email: emailToResend.email }) });
+                  toast({ title: 'Código Reenviado', description: `Código enviado para ${emailToResend.email}` });
                   setEmailToResend(null);
                 }
               }}
             >
-              {t('dialogs.resendCode.confirm')}
+              Reenviar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -513,15 +512,15 @@ export default function AdminCompanyDetail() {
       <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{t('dialogs.csvPreview.title')}</DialogTitle>
-            <DialogDescription>{t('dialogs.csvPreview.description', { count: csvPreview?.length || 0 })}</DialogDescription>
+            <DialogTitle>Pré-visualização do CSV</DialogTitle>
+            <DialogDescription>{csvPreview?.length || 0} colaborador(es) encontrado(s). Verifique os dados antes de importar.</DialogDescription>
           </DialogHeader>
           <div className="max-h-96 overflow-y-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('table.name')}</TableHead>
-                  <TableHead>{t('table.email')}</TableHead>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Email</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -535,8 +534,8 @@ export default function AdminCompanyDetail() {
             </Table>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>{t('common.cancel')}</Button>
-            <Button onClick={confirmCSVImport}>{t('dialogs.csvPreview.confirm')}</Button>
+            <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>Cancelar</Button>
+            <Button onClick={confirmCSVImport}>Importar Colaboradores</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
