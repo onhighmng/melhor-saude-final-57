@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdminBillingTab from '@/components/admin/AdminBillingTab';
 import AdminInternalReportsTab from '@/components/admin/AdminInternalReportsTab';
@@ -11,8 +10,7 @@ const AdminReports = () => {
   const [activeTab, setActiveTab] = useState('billing');
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             {t('reports.title', 'Relatórios e Faturação')}
@@ -48,7 +46,6 @@ const AdminReports = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
   );
 };
 
