@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -26,6 +26,7 @@ export const SimplifiedOnboarding = ({
   const [mainGoals, setMainGoals] = useState<string[]>([]);
   const [improvementSigns, setImprovementSigns] = useState<string[]>([]);
   const [frequency, setFrequency] = useState('');
+  const [progressValue, setProgressValue] = useState(0);
   const difficultyOptions = [{
     value: 'mental',
     label: 'Saúde mental / stress / ansiedade'
@@ -154,6 +155,18 @@ export const SimplifiedOnboarding = ({
     if (step === 6) return true; // Completion screen
     return false;
   };
+
+  useEffect(() => {
+    if (step === 6) {
+      // Reset progress to 0 first
+      setProgressValue(0);
+      // Animate to 10% after a small delay
+      const timer = setTimeout(() => {
+        setProgressValue(10);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
   const stepHeaders = [{
     title: '',
     subtitle: ''
@@ -296,8 +309,8 @@ export const SimplifiedOnboarding = ({
               </div>
               
               <div className="mt-6 max-w-md mx-auto">
-                <Progress value={10} className="h-3" />
-                <p className="text-sm text-sky-blue font-medium mt-2">Progresso: 10%</p>
+                <Progress value={progressValue} className="h-3" />
+                <p className="text-sm text-sky-blue font-medium mt-2">Progresso: {progressValue}%</p>
               </div>
               
               <p className="text-xl font-medium text-sky-blue mt-4">
