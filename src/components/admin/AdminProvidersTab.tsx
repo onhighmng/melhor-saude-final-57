@@ -899,4 +899,4 @@ const AdminProvidersTab = () => {
   );
 };
 
-export default AdminProvidersTab;
+export { AdminProvidersTab };
