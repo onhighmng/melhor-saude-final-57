@@ -58,7 +58,9 @@
   "optionsModal": {
     "title": "Opções do Prestador",
     "viewMetrics": "Ver Métricas e Histórico",
+    "viewMetricsDescription": "Ver desempenho e histórico detalhado",
     "scheduleSession": "Agendar Sessão no Calendário",
+    "scheduleSessionDescription": "Agendar nova sessão diretamente",
     "cancel": "Cancelar"
   },
 

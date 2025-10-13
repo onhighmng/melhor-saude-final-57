@@ -158,10 +158,9 @@ const AdminProvidersTab = () => {
   };
 
   const handleScheduleSession = () => {
-    toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "Por favor, selecione um horário na vista de calendário do prestador para agendar uma sessão.",
-    });
+    if (selectedProvider) {
+      navigate(`/admin/provider-calendar/${selectedProvider.id}`);
+    }
   };
 
 

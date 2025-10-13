@@ -58,7 +58,9 @@
   "optionsModal": {
     "title": "Provider Options",
     "viewMetrics": "View Metrics & History",
+    "viewMetricsDescription": "View detailed performance and history",
     "scheduleSession": "Schedule Session on Calendar",
+    "scheduleSessionDescription": "Schedule new session directly",
     "cancel": "Cancel"
   },
 
