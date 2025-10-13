@@ -137,17 +137,7 @@ const AdminSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t space-y-3">
-        {!isCollapsed && (
-          <Card className="border-muted">
-            <CardContent className="p-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Utilizador</span>
-                <span className="font-medium">{user?.name || 'Admin'}</span>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuItemWithTooltip item={{ title: 'Sair' }}>
