@@ -5,8 +5,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const FAQSection = () => {
+  const [sectionRef, isVisible] = useScrollAnimation(0.2);
   const faqData = [
     {
       question: "O que é o programa Melhor Saúde?",
@@ -73,9 +75,11 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-background">
+    <section ref={sectionRef} className="py-16 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className={`text-center mb-12 transition-all duration-1000 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Perguntas Frequentes
           </h2>
@@ -84,7 +88,9 @@ const FAQSection = () => {
           </p>
         </div>
 
-        <div className="max-w-3xl mx-auto">
+        <div className={`max-w-3xl mx-auto transition-all duration-1000 delay-200 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
           <Accordion type="single" collapsible className="space-y-4">
             {faqData.map((faq, index) => (
               <AccordionItem
@@ -103,7 +109,9 @@ const FAQSection = () => {
           </Accordion>
         </div>
 
-        <div className="text-center mt-12">
+        <div className={`text-center mt-12 transition-all duration-1000 delay-300 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
           <p className="text-muted-foreground mb-4">
             Não encontrou a resposta que procura?
           </p>
