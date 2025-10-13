@@ -95,6 +95,7 @@ const AdminSidebar = () => {
 
   // Settings - standalone section (NOT part of monitoring group)
   const settingsItems: MenuItem[] = [
+    { title: 'Recursos', url: "/admin/recursos", icon: FileText },
     { title: 'Definições', url: "/admin/configuracoes", icon: Settings },
   ];
 

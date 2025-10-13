@@ -37,6 +37,7 @@ const AdminProviderNew = lazy(() => import("./pages/AdminProviderNew"));
 const AdminMatching = lazy(() => import("./pages/AdminMatching"));
 const AdminProviderChangeRequests = lazy(() => import("./pages/AdminProviderChangeRequests"));
 const AdminSessions = lazy(() => import("./pages/AdminSessions"));
+const AdminResources = lazy(() => import("./pages/AdminResources"));
 const AdminLogs = lazy(() => import("./pages/AdminLogs"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -155,6 +156,8 @@ const AppWithTracking = () => {
           <Route path="/admin/sessions" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/gestao-sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
+          <Route path="/admin/resources" element={<AdminLayout><AdminResources /></AdminLayout>} />
+          <Route path="/admin/recursos" element={<AdminLayout><AdminResources /></AdminLayout>} />
           <Route path="/admin/matching" element={<AdminLayout><AdminMatching /></AdminLayout>} />
           <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
           <Route path="/admin/companies/:id" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
