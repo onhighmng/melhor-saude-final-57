@@ -110,7 +110,7 @@ const AdminProviderDetail = () => {
         
         if (baseProvider) {
           const providerDetail = generateMockProviderDetail(baseProvider);
-          setProvider(providerDetail as ProviderDetail);
+          setProvider(providerDetail as unknown as ProviderDetail);
         }
         
         setIsLoading(false);

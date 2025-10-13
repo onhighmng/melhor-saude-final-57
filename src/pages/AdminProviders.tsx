@@ -25,7 +25,8 @@ import {
   DollarSign,
   Scale,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Star
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
@@ -37,7 +38,6 @@ const AdminProviders = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [pillarFilter, setPillarFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [licenseFilter, setLicenseFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -47,7 +47,7 @@ const AdminProviders = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [providers, searchQuery, pillarFilter, statusFilter, licenseFilter]);
+  }, [providers, searchQuery, pillarFilter, statusFilter]);
 
   const loadProviders = async () => {
     setIsLoading(true);
@@ -81,34 +81,29 @@ const AdminProviders = () => {
     // Pillar filter
     if (pillarFilter !== 'all') {
       filtered = filtered.filter(provider => 
-        provider.pillars.includes(pillarFilter as any)
+        provider.pillar === pillarFilter
       );
     }
 
     // Status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(provider => provider.availability === statusFilter);
-    }
-
-    // License filter
-    if (licenseFilter !== 'all') {
-      filtered = filtered.filter(provider => provider.licenseStatus === licenseFilter);
+      filtered = filtered.filter(provider => provider.status === statusFilter);
     }
 
     setFilteredProviders(filtered);
   };
 
-  const handleStatusChange = async (providerId: string, newStatus: 'active' | 'inactive') => {
+  const handleStatusChange = async (providerId: string, newStatus: 'Ativo' | 'Inativo') => {
     try {
       // Replace with actual API call
       setProviders(prev => prev.map(provider => 
         provider.id === providerId 
-          ? { ...provider, availability: newStatus }
+          ? { ...provider, status: newStatus }
           : provider
       ));
       
       toast({
-        title: newStatus === 'active' ? "Prestador ativado" : "Prestador desativado",
+        title: newStatus === 'Ativo' ? "Prestador ativado" : "Prestador desativado",
         description: "Estado atualizado com sucesso"
       });
     } catch (error) {
@@ -121,11 +116,11 @@ const AdminProviders = () => {
   };
 
   const handleExportProviders = () => {
-    const headers = ['Nome', 'Email', 'Pilares', 'Disponibilidade', 'Estado Licença', 'Capacidade', 'Duração Padrão'];
+    const headers = ['Nome', 'Email', 'Pilar', 'Especialidade', 'Tipo de Sessão', 'Estado', 'Satisfação'];
     const csv = [
       headers.join(','),
       ...filteredProviders.map(p => 
-        [p.name, p.email, p.pillars.join(';'), p.availability, p.licenseStatus, p.capacity, p.defaultSlot].join(',')
+        [p.name, p.email, p.pillar, p.specialty, p.sessionType, p.status, p.satisfaction].join(',')
       )
     ].join('\n');
     
@@ -147,24 +142,19 @@ const AdminProviders = () => {
 
   // Calculate summary metrics
   const totalProviders = providers.length;
-  const activeProviders = providers.filter(p => p.availability === 'active').length;
-  const pendingLicenses = providers.filter(p => p.licenseStatus === 'pending').length;
-  const avgWeeklyCapacity = providers.length > 0 
-    ? Math.round(providers.reduce((sum, p) => sum + p.capacity, 0) / providers.length)
-    : 0;
+  const activeProviders = providers.filter(p => p.status === 'Ativo').length;
+  const avgSatisfaction = providers.length > 0 
+    ? (providers.reduce((sum, p) => sum + p.satisfaction, 0) / providers.length).toFixed(1)
+    : '0.0';
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active':
+      case 'Ativo':
         return <Badge variant="default" className="bg-green-100 text-green-800">Ativo</Badge>;
-      case 'inactive':
+      case 'Ocupado':
+        return <Badge variant="secondary" className="bg-amber-100 text-amber-800">Ocupado</Badge>;
+      case 'Inativo':
         return <Badge variant="secondary" className="bg-gray-100 text-gray-600">Inativo</Badge>;
-      case 'valid':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Válido</Badge>;
-      case 'expired':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800">Expirado</Badge>;
-      case 'pending':
-        return <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50">Pendente</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -200,15 +190,11 @@ const AdminProviders = () => {
     }
   };
 
-  const formatPillars = (pillars: Provider['pillars']) => {
+  const formatPillar = (pillar: Provider['pillar']) => {
     return (
-      <div className="flex flex-wrap gap-1">
-        {pillars.map(pillar => (
-          <div key={pillar} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md">
-            {getPillarIcon(pillar)}
-            <span className="text-xs font-medium">{getPillarName(pillar)}</span>
-          </div>
-        ))}
+      <div className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md w-fit">
+        {getPillarIcon(pillar)}
+        <span className="text-xs font-medium">{getPillarName(pillar)}</span>
       </div>
     );
   };
@@ -269,20 +255,9 @@ const AdminProviders = () => {
               </SelectTrigger>
               <SelectContent className="bg-background border border-border shadow-lg z-50">
                 <SelectItem value="all">Todos os Estados</SelectItem>
-                <SelectItem value="active">Ativo</SelectItem>
-                <SelectItem value="inactive">Inativo</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select value={licenseFilter} onValueChange={setLicenseFilter}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Licenças" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border border-border shadow-lg z-50">
-                <SelectItem value="all">Todas as Licenças</SelectItem>
-                <SelectItem value="valid">Válido</SelectItem>
-                <SelectItem value="pending">Pendente</SelectItem>
-                <SelectItem value="expired">Expirado</SelectItem>
+                <SelectItem value="Ativo">Ativo</SelectItem>
+                <SelectItem value="Ocupado">Ocupado</SelectItem>
+                <SelectItem value="Inativo">Inativo</SelectItem>
               </SelectContent>
             </Select>
             
@@ -336,15 +311,14 @@ const AdminProviders = () => {
           <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Shield className="h-4 w-4 text-amber-600" />
-                Licenças Pendentes
+                <Star className="h-4 w-4 text-amber-600" />
+                Satisfação Média
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">{pendingLicenses}</div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center">
-                <AlertTriangle className="h-3 w-3 mr-1 text-amber-600" />
-                Requer verificação
+              <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">{avgSatisfaction}/10</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Avaliação geral
               </p>
             </CardContent>
           </Card>
@@ -353,13 +327,13 @@ const AdminProviders = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4 text-purple-600" />
-                Capacidade Semanal Média
+                Total de Sessões
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{avgWeeklyCapacity}</div>
+              <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{providers.reduce((sum, p) => sum + p.totalSessions, 0)}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                sessões por prestador
+                Realizadas até agora
               </p>
             </CardContent>
           </Card>
@@ -375,11 +349,11 @@ const AdminProviders = () => {
               <TableHeader>
                 <TableRow className="border-muted">
                   <TableHead>Prestador</TableHead>
-                  <TableHead>Pilares Servidos</TableHead>
-                  <TableHead>Disponibilidade</TableHead>
-                  <TableHead>Licença</TableHead>
-                  <TableHead>Capacidade</TableHead>
-                  <TableHead>Duração Padrão</TableHead>
+                  <TableHead>Pilar</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Tipo de Sessão</TableHead>
+                  <TableHead>Satisfação</TableHead>
+                  <TableHead>Sessões</TableHead>
                   <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -387,7 +361,7 @@ const AdminProviders = () => {
                 {filteredProviders.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                      {searchQuery || pillarFilter !== 'all' || statusFilter !== 'all' || licenseFilter !== 'all'
+                      {searchQuery || pillarFilter !== 'all' || statusFilter !== 'all'
                         ? 'Nenhum prestador encontrado com os filtros aplicados' 
                         : 'Nenhum prestador encontrado'}
                     </TableCell>
@@ -406,47 +380,30 @@ const AdminProviders = () => {
                           <div>
                             <p className="font-medium text-foreground">{provider.name}</p>
                             <p className="text-sm text-muted-foreground">{provider.email}</p>
-                            {provider.languages && (
-                              <div className="flex gap-1 mt-1">
-                                {provider.languages.map(lang => (
-                                  <Badge key={lang} variant="outline" className="text-xs px-1 py-0">
-                                    {lang}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
+                            <p className="text-xs text-muted-foreground">{provider.specialty}</p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        {formatPillars(provider.pillars)}
+                        {formatPillar(provider.pillar)}
                       </TableCell>
                       <TableCell>
-                        {getStatusBadge(provider.availability)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          {getStatusBadge(provider.licenseStatus)}
-                           {provider.licenseExpiry && provider.licenseStatus === 'valid' && (
-                             <p className="text-xs text-muted-foreground">
-                               Expira em {new Date(provider.licenseExpiry).toLocaleDateString('pt-PT')}
-                             </p>
-                           )}
-                           {provider.licenseStatus === 'expired' && provider.licenseExpiry && (
-                             <p className="text-xs text-red-600">
-                               Expirou em {new Date(provider.licenseExpiry).toLocaleDateString('pt-PT')}
-                             </p>
-                           )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="bg-blue-50 text-blue-700">
-                          {provider.capacity} sessões/semana
-                        </Badge>
+                        {getStatusBadge(provider.status)}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {provider.defaultSlot} min
+                          {provider.sessionType}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="bg-amber-50 text-amber-700">
+                          <Star className="h-3 w-3 mr-1" />
+                          {provider.satisfaction}/10
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="bg-blue-50 text-blue-700">
+                          {provider.sessionsThisMonth} este mês
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -465,10 +422,10 @@ const AdminProviders = () => {
                             size="sm"
                             onClick={() => handleStatusChange(
                               provider.id, 
-                              provider.availability === 'active' ? 'inactive' : 'active'
+                              provider.status === 'Ativo' ? 'Inativo' : 'Ativo'
                             )}
                           >
-                            {provider.availability === 'active' ? (
+                            {provider.status === 'Ativo' ? (
                               <PowerOff className="h-4 w-4 text-red-500" />
                             ) : (
                               <Power className="h-4 w-4 text-green-500" />
