@@ -254,7 +254,9 @@ export default function AdminCompanyDetail() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-auto">
+        <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center gap-4 mb-6">
         <Button variant="ghost" size="icon" onClick={() => navigate('/admin/operations')}>
           <ArrowLeft className="h-5 w-5" />
@@ -312,8 +314,7 @@ export default function AdminCompanyDetail() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6">
-        <div className="space-y-4">
+      <div className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Gestão de Colaboradores</CardTitle>
@@ -450,37 +451,43 @@ export default function AdminCompanyDetail() {
           </Card>
         </div>
 
-        <div className="space-y-4">
+        </div>
+      </div>
+
+      <div className="border-t bg-background p-4">
+        <div className="container mx-auto">
           <Card>
             <CardHeader>
               <CardTitle>Estatísticas Rápidas</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Total de colaboradores</p>
-                <p className="text-2xl font-bold">{employees.length}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Com código enviado</p>
-                <p className="text-2xl font-bold">{employeesWithCode}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Por enviar</p>
-                <p className="text-2xl font-bold">{employeesPending}</p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Taxa de envio de códigos</p>
-                <p className="text-2xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
-                <Progress 
-                  value={employees.length > 0 ? (employeesWithCode / employees.length) * 100 : 0} 
-                  className="h-2"
-                />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Último envio</p>
-                <p className="text-sm font-medium">
-                  {lastSendTimestamp || 'Nenhum envio realizado'}
-                </p>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total de colaboradores</p>
+                  <p className="text-2xl font-bold">{employees.length}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Com código enviado</p>
+                  <p className="text-2xl font-bold">{employeesWithCode}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Por enviar</p>
+                  <p className="text-2xl font-bold">{employeesPending}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">Taxa de envio de códigos</p>
+                  <p className="text-2xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
+                  <Progress 
+                    value={employees.length > 0 ? (employeesWithCode / employees.length) * 100 : 0} 
+                    className="h-2"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Último envio</p>
+                  <p className="text-sm font-medium">
+                    {lastSendTimestamp || 'Nenhum envio realizado'}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
