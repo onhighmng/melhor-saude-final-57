@@ -1,5 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Building2, 
@@ -16,6 +17,7 @@ import { Progress } from '@/components/ui/progress';
 const AdminDashboard = () => {
   const { profile } = useAuth();
   const { data: analytics } = useAnalytics();
+  const navigate = useNavigate();
 
   // Mock data for charts
   const sessionEvolutionData = [
@@ -42,7 +44,8 @@ const AdminDashboard = () => {
       isPositive: true,
       icon: Building2,
       iconColor: 'text-vibrant-blue',
-      bgColor: 'bg-vibrant-blue/10'
+      bgColor: 'bg-vibrant-blue/10',
+      route: '/admin/users-management'
     },
     {
       title: 'Colaboradores Registados',
@@ -51,7 +54,8 @@ const AdminDashboard = () => {
       progressLabel: '78% onboarding completo',
       icon: Users,
       iconColor: 'text-emerald-green',
-      bgColor: 'bg-emerald-green/10'
+      bgColor: 'bg-emerald-green/10',
+      route: '/admin/users-management'
     },
     {
       title: 'Sessões Este Mês',
@@ -60,7 +64,8 @@ const AdminDashboard = () => {
       isPositive: true,
       icon: Calendar,
       iconColor: 'text-accent-sky',
-      bgColor: 'bg-accent-sky/10'
+      bgColor: 'bg-accent-sky/10',
+      route: '/admin/sessions'
     },
     {
       title: 'Satisfação Média',
@@ -68,7 +73,8 @@ const AdminDashboard = () => {
       progress: 82,
       icon: Star,
       iconColor: 'text-peach-orange',
-      bgColor: 'bg-peach-orange/10'
+      bgColor: 'bg-peach-orange/10',
+      route: '/admin/reports'
     },
     {
       title: 'Objetivos Atingidos',
@@ -76,7 +82,8 @@ const AdminDashboard = () => {
       progress: 68,
       icon: Target,
       iconColor: 'text-royal-blue',
-      bgColor: 'bg-royal-blue/10'
+      bgColor: 'bg-royal-blue/10',
+      route: '/admin/reports'
     }
   ];
 
@@ -95,7 +102,11 @@ const AdminDashboard = () => {
       {/* Metric Cards Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {metricCards.map((metric, index) => (
-          <Card key={index} className="hover:shadow-lg transition-shadow">
+          <Card 
+            key={index} 
+            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
+            onClick={() => navigate(metric.route)}
+          >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {metric.title}
