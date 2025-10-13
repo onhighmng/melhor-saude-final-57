@@ -378,7 +378,7 @@ const AdminProvidersTab = () => {
               <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50">
                 <Avatar className="absolute inset-0 w-full h-full rounded-none">
                   <AvatarImage 
-                    src={provider.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${provider.email}`} 
+                    src={provider.avatar || `https://i.pravatar.cc/400?img=${Math.abs(provider.email.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 70)}`} 
                     className="object-cover" 
                   />
                   <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-4xl rounded-none w-full h-full">
