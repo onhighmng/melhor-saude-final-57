@@ -114,31 +114,6 @@ const AdminProviderDetailMetrics = () => {
         </CardContent>
       </Card>
 
-      {/* Provider Header */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={provider.avatar} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-                  {provider.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">{provider.name}</h1>
-                <p className="text-muted-foreground">{provider.specialty}</p>
-                <p className="text-sm text-muted-foreground">{provider.email}</p>
-              </div>
-            </div>
-            <Badge className={getPillarBadgeColor(provider.pillar)}>
-              {getPillarIcon(provider.pillar)}
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Informação do Prestador */}
       <Card>
         <CardHeader>
           <CardTitle>Informação do Prestador</CardTitle>
