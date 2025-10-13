@@ -282,19 +282,6 @@ const UserSettings = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="timezone">Fuso Horário</Label>
-                    <Select value={profileData.timezone} onValueChange={(value) => setProfileData({ ...profileData, timezone: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Europe/Lisbon">Lisboa (GMT+0/+1)</SelectItem>
-                        <SelectItem value="Europe/London">Londres (GMT+0/+1)</SelectItem>
-                        <SelectItem value="America/New_York">Nova Iorque (GMT-5/-4)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
 
                 <Button onClick={handleSaveProfile} className="w-full md:w-auto">
