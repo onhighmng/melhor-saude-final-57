@@ -27,8 +27,12 @@ const UserDashboard = () => {
     return stored ? JSON.parse(stored) : null;
   });
   
-  // Only show onboarding for users with 'user' role
-  const shouldShowOnboarding = profile?.role === 'user' && !onboardingData;
+  // Check if this specific user has completed onboarding
+  const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
+  const hasCompletedOnboarding = localStorage.getItem(userOnboardingKey) === 'true';
+  
+  // Only show onboarding for users with 'user' role who haven't completed it
+  const shouldShowOnboarding = profile?.role === 'user' && !hasCompletedOnboarding;
   const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
   const [showUniversalChat, setShowUniversalChat] = useState(false);
@@ -46,7 +50,9 @@ const UserDashboard = () => {
   const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress());
 
   const handleOnboardingComplete = (data: OnboardingData) => {
+    const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
     localStorage.setItem('onboardingData', JSON.stringify(data));
+    localStorage.setItem(userOnboardingKey, 'true');
     setOnboardingData(data);
     setShowOnboarding(false);
     setJustCompletedOnboarding(true);
