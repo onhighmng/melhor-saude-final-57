@@ -371,57 +371,67 @@ const AdminProvidersTab = () => {
           filteredProviders.map((provider) => (
             <Card 
               key={provider.id} 
-              className="hover:shadow-lg transition-shadow cursor-pointer border-0 shadow-sm"
+              className="hover:shadow-lg transition-shadow cursor-pointer border-0 shadow-sm overflow-hidden"
               onClick={() => handleCardClick(provider)}
             >
-              <CardContent className="p-6 space-y-4">
-                {/* Provider Header */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={provider.avatar} />
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {provider.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="font-semibold text-foreground">{provider.name}</h3>
-                      <p className="text-xs text-muted-foreground">{provider.specialty}</p>
-                    </div>
-                  </div>
+              {/* Provider Image */}
+              <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50">
+                <Avatar className="absolute inset-0 w-full h-full rounded-none">
+                  <AvatarImage src={provider.avatar} className="object-cover" />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-4xl rounded-none w-full h-full">
+                    {provider.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                
+                {/* Status Badge Overlay */}
+                <div className="absolute top-3 right-3">
                   {getStatusBadge(provider.status)}
                 </div>
 
-                {/* Pillar Badge */}
-                <div className="flex items-center justify-between">
-                  <Badge className={`${getPillarBadgeColor(provider.pillar)} flex items-center gap-1`}>
+                {/* Pillar Badge Overlay */}
+                <div className="absolute top-3 left-3">
+                  <Badge className={getPillarBadgeColor(provider.pillar)}>
                     {getPillarIcon(provider.pillar)}
                   </Badge>
-                  <Badge variant="outline" className="text-xs">
-                    {provider.sessionType}
-                  </Badge>
+                </div>
+              </div>
+
+              {/* Provider Info */}
+              <CardContent className="p-6 space-y-4">
+                {/* Name & Specialty */}
+                <div>
+                  <h3 className="font-bold text-lg text-foreground line-clamp-1">{provider.name}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-1">{provider.specialty}</p>
                 </div>
 
-                {/* Stats */}
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Custo por sessão:</span>
-                    <span className="font-semibold">{provider.costPerSession} MZN</span>
+                {/* Email */}
+                <p className="text-xs text-muted-foreground line-clamp-1">{provider.email}</p>
+
+                {/* Session Type */}
+                <Badge variant="outline" className="w-fit">
+                  {provider.sessionType}
+                </Badge>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Custo/sessão</p>
+                    <p className="font-semibold text-sm">{provider.costPerSession} MZN</p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Satisfação:</span>
-                    <span className="font-semibold flex items-center gap-1">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Satisfação</p>
+                    <p className="font-semibold text-sm flex items-center gap-1">
                       <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                       {provider.satisfaction}/10
-                    </span>
+                    </p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Total de sessões:</span>
-                    <span className="font-semibold">{provider.totalSessions}</span>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total sessões</p>
+                    <p className="font-semibold text-sm">{provider.totalSessions}</p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Sessões este mês:</span>
-                    <span className="font-semibold text-blue-600">{provider.sessionsThisMonth}</span>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Este mês</p>
+                    <p className="font-semibold text-sm text-blue-600">{provider.sessionsThisMonth}</p>
                   </div>
                 </div>
               </CardContent>
