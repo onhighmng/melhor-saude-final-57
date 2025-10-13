@@ -183,10 +183,7 @@ export const AdminProvidersTab = () => {
 
               <div className="grid grid-cols-3 gap-4 pt-2 border-t">
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <p className="text-xs text-muted-foreground">Custo/Sessão</p>
+                  <p className="text-xs text-muted-foreground mb-1">Custo/Sessão</p>
                   <p className="font-bold text-sm">MZN {provider.costPerSession}</p>
                 </div>
 
