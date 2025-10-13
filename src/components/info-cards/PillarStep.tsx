@@ -52,7 +52,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
               {pillar.icon}
             </div>
             <h2 className="font-bold text-lg sm:text-xl lg:text-2xl text-navy-blue leading-tight text-center">
-              {t(pillar.title)}
+              {t(`pillars.${pillarKey}.title`)}
             </h2>
           </div>
           <p className="text-sm sm:text-base lg:text-lg text-navy-blue leading-relaxed max-w-2xl mx-auto font-medium px-2">
