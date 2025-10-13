@@ -42,7 +42,7 @@ const AdminProvidersTab = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [pillarFilter, setPillarFilter] = useState<string>('all');
+  const [pillarFilter, setPillarFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -90,7 +90,13 @@ const AdminProvidersTab = () => {
   };
 
   const applyFilters = () => {
-    let filtered = providers;
+    // If no pillar is selected, show no providers
+    if (!pillarFilter) {
+      setFilteredProviders([]);
+      return;
+    }
+
+    let filtered = providers.filter(provider => provider.pillar === pillarFilter);
 
     if (searchQuery) {
       filtered = filtered.filter(provider =>
@@ -98,10 +104,6 @@ const AdminProvidersTab = () => {
         provider.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         provider.specialty.toLowerCase().includes(searchQuery.toLowerCase())
       );
-    }
-
-    if (pillarFilter !== 'all') {
-      filtered = filtered.filter(provider => provider.pillar === pillarFilter);
     }
 
     if (statusFilter !== 'all') {
@@ -339,10 +341,9 @@ const AdminProvidersTab = () => {
         
         <Select value={pillarFilter} onValueChange={setPillarFilter}>
           <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Filtrar por Pilar" />
+            <SelectValue placeholder="Selecione o Pilar" />
           </SelectTrigger>
           <SelectContent className="bg-background border border-border shadow-lg z-50">
-            <SelectItem value="all">Todos os Pilares</SelectItem>
             <SelectItem value="mental-health">Saúde Mental</SelectItem>
             <SelectItem value="physical-wellness">Bem-Estar Físico</SelectItem>
             <SelectItem value="financial-assistance">Assistência Financeira</SelectItem>
@@ -364,11 +365,14 @@ const AdminProvidersTab = () => {
 
       {/* Providers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProviders.length === 0 ? (
+        {!pillarFilter ? (
           <div className="col-span-full text-center py-12 text-muted-foreground">
-            {searchQuery || pillarFilter !== 'all' || statusFilter !== 'all'
-              ? 'Nenhum prestador encontrado com os filtros aplicados' 
-              : 'Nenhum prestador encontrado'}
+            <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p className="text-lg font-medium">Selecione um pilar para ver os prestadores</p>
+          </div>
+        ) : filteredProviders.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-muted-foreground">
+            Nenhum prestador encontrado com os filtros aplicados
           </div>
         ) : (
           filteredProviders.map((provider) => (
