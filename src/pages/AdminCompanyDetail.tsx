@@ -468,9 +468,13 @@ export default function AdminCompanyDetail() {
                 <p className="text-sm text-muted-foreground">Por enviar</p>
                 <p className="text-2xl font-bold">{employeesPending}</p>
               </div>
-              <div>
+              <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Taxa de envio de códigos</p>
                 <p className="text-2xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
+                <Progress 
+                  value={employees.length > 0 ? (employeesWithCode / employees.length) * 100 : 0} 
+                  className="h-2"
+                />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Último envio</p>
