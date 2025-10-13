@@ -52,6 +52,7 @@ const UserDashboard = () => {
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
   const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   const handleOnboardingComplete = (data: OnboardingData) => {
     const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
@@ -74,8 +75,9 @@ const UserDashboard = () => {
 
   // Animate progress bar when scrolled into view with smooth 4-second animation
   useEffect(() => {
-    if (!isProgressVisible) return;
+    if (!isProgressVisible || hasAnimated || milestoneProgress === 0) return;
     
+    setHasAnimated(true);
     setAnimatedProgress(0);
     setAnimatedMilestoneProgress(0);
     const startTime = Date.now();
@@ -97,7 +99,7 @@ const UserDashboard = () => {
     };
     
     requestAnimationFrame(animate);
-  }, [isProgressVisible, milestoneProgress]);
+  }, [isProgressVisible, milestoneProgress, hasAnimated]);
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
