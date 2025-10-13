@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdminAlertsTab from '@/components/admin/AdminAlertsTab';
 import AdminTeamTab from '@/components/admin/AdminTeamTab';
@@ -12,8 +11,7 @@ const AdminControlCenter = () => {
   const [activeTab, setActiveTab] = useState('alerts');
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             {t('controlCenter.title', 'Centro de Controlo')}
@@ -56,7 +54,6 @@ const AdminControlCenter = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
   );
 };
 
