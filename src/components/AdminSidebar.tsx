@@ -96,16 +96,10 @@ const AdminSidebar = () => {
         </div>
         {!isCollapsed && (
           <div className="flex items-center gap-3">
-            {/* Overlapping avatar circles */}
-            <div className="relative">
-              <div className="h-16 w-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-semibold">
-                {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
-              </div>
-              <div className="absolute -right-3 top-3 h-14 w-14 rounded-full bg-blue-400 flex items-center justify-center text-white text-xl font-semibold opacity-80">
-                {user?.name?.charAt(1) || user?.email?.charAt(1) || 'a'}
-              </div>
+            <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-semibold">
+              {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
             </div>
-            <div className="flex flex-col min-w-0 flex-1 ml-2">
+            <div className="flex flex-col min-w-0 flex-1">
               <span className="text-base font-normal truncate text-foreground">
                 {user?.email || user?.name}
               </span>
