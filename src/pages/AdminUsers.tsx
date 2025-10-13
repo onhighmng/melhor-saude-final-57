@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +25,6 @@ import { useToast } from "@/hooks/use-toast";
 import { mockUsers, AdminUser as User } from '@/data/adminMockData';
 
 const AdminUsers = () => {
-  const { t } = useTranslation('admin');
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,8 +53,8 @@ const AdminUsers = () => {
       }, 1000);
     } catch (error) {
       toast({
-        title: t('common.error'),
-        description: t('common.error'),
+        title: "Erro",
+        description: "Erro ao carregar utilizadores",
         variant: "destructive"
       });
       setIsLoading(false);
@@ -97,13 +95,13 @@ const AdminUsers = () => {
       ));
       
       toast({
-        title: newStatus === 'active' ? t('users.userActivated') : t('users.userSuspended'),
-        description: t('users.statusUpdatedSuccess')
+        title: newStatus === 'active' ? "Utilizador ativado" : "Utilizador suspenso",
+        description: "Estado atualizado com sucesso"
       });
     } catch (error) {
       toast({
-        title: t('common.error'),
-        description: t('users.statusUpdateError'),
+        title: "Erro",
+        description: "Erro ao atualizar estado",
         variant: "destructive"
       });
     }
@@ -111,13 +109,13 @@ const AdminUsers = () => {
 
   const handleCreateUser = () => {
     toast({
-      title: t('users.createUser'),
-      description: t('users.createUserComingSoon')
+      title: "Criar Utilizador",
+      description: "Funcionalidade em breve"
     });
   };
 
   const handleExportUsers = () => {
-    const headers = t('users.exportHeaders', { returnObjects: true }) as string[];
+    const headers = ['Nome', 'Email', 'Empresa', 'Departamento', 'Sessões Empresa', 'Sessões Pessoais', 'Estado', 'Criado em'];
     const csv = [
       headers.join(','),
       ...filteredUsers.map(user => 
@@ -136,8 +134,8 @@ const AdminUsers = () => {
     window.URL.revokeObjectURL(url);
     
     toast({
-      title: t('users.exportComplete'),
-      description: t('users.exportedSuccess', { count: filteredUsers.length })
+      title: "Exportação concluída",
+      description: `${filteredUsers.length} utilizadores exportados com sucesso`
     });
   };
 
@@ -151,9 +149,9 @@ const AdminUsers = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">{t('common.active')}</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">Ativo</Badge>;
       case 'inactive':
-        return <Badge variant="destructive">{t('common.inactive')}</Badge>;
+        return <Badge variant="destructive">Inativo</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -172,7 +170,7 @@ const AdminUsers = () => {
         return `${pillarNames[pillar as keyof typeof pillarNames]}: ${name}`;
       });
     
-    return providerList.length > 0 ? providerList.join(', ') : t('users.table.none');
+    return providerList.length > 0 ? providerList.join(', ') : 'Nenhum';
   };
 
   if (isLoading) {
@@ -197,15 +195,15 @@ const AdminUsers = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t('users.title')}</h1>
-            <p className="text-sm text-muted-foreground">{t('users.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-foreground">Utilizadores</h1>
+            <p className="text-sm text-muted-foreground">Gerir utilizadores da plataforma</p>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder={t('users.searchPlaceholder')}
+                placeholder="Pesquisar utilizadores..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 w-80"
@@ -214,21 +212,21 @@ const AdminUsers = () => {
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-40">
-                <SelectValue placeholder={t('common.status')} />
+                <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('common.status')}</SelectItem>
-                <SelectItem value="active">{t('common.active')}</SelectItem>
-                <SelectItem value="inactive">{t('common.inactive')}</SelectItem>
+                <SelectItem value="all">Estado</SelectItem>
+                <SelectItem value="active">Ativo</SelectItem>
+                <SelectItem value="inactive">Inativo</SelectItem>
               </SelectContent>
             </Select>
             
             <Select value={companyFilter} onValueChange={setCompanyFilter}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder={t('common.company')} />
+                <SelectValue placeholder="Empresa" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('common.company')}</SelectItem>
+                <SelectItem value="all">Empresa</SelectItem>
                 {companies.map(company => (
                   <SelectItem key={company} value={company}>{company}</SelectItem>
                 ))}
@@ -237,12 +235,12 @@ const AdminUsers = () => {
             
             <Button variant="outline" onClick={handleExportUsers}>
               <Search className="h-4 w-4 mr-2" />
-              {t('common.export')}
+              Exportar
             </Button>
             
             <Button onClick={handleCreateUser}>
               <Plus className="h-4 w-4 mr-2" />
-              {t('users.createUser')}
+              Criar Utilizador
             </Button>
           </div>
         </div>
@@ -255,14 +253,14 @@ const AdminUsers = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                {t('users.metrics.totalUsers')}
+                Total de Utilizadores
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{totalUsers}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 <ArrowUpRight className="h-3 w-3 inline text-green-600" />
-                <span className="text-green-600">+5</span> {t('users.metrics.thisMonth')}
+                <span className="text-green-600">+5</span> este mês
               </p>
             </CardContent>
           </Card>
@@ -271,13 +269,13 @@ const AdminUsers = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <UserCheck className="h-4 w-4" />
-                {t('users.metrics.activeUsers')}
+                Utilizadores Ativos
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{activeUsers}</div>
               <p className="text-xs text-muted-foreground mt-1">
-                {Math.round((activeUsers / totalUsers) * 100)}% {t('users.metrics.ofTotal')}
+                {Math.round((activeUsers / totalUsers) * 100)}% do total
               </p>
             </CardContent>
           </Card>
@@ -286,14 +284,14 @@ const AdminUsers = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                {t('users.metrics.sessionsMTD')}
+                Sessões (Mês)
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{totalSessionsMTD}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 <ArrowUpRight className="h-3 w-3 inline text-green-600" />
-                <span className="text-green-600">+18%</span> {t('users.metrics.vsPreviousMonth')}
+                <span className="text-green-600">+18%</span> vs mês anterior
               </p>
             </CardContent>
           </Card>
@@ -302,14 +300,14 @@ const AdminUsers = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4" />
-                {t('users.metrics.pendingRequests')}
+                Pedidos Pendentes
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{pendingChangeRequests}</div>
               <p className="text-xs text-muted-foreground mt-1 flex items-center">
                 <AlertCircle className="h-3 w-3 mr-1 text-amber-600" />
-                {t('users.metrics.requiresAttention')}
+                Requer atenção
               </p>
             </CardContent>
           </Card>
@@ -318,19 +316,19 @@ const AdminUsers = () => {
         {/* Users Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-foreground">{t('users.title')}</CardTitle>
+            <CardTitle className="text-foreground">Utilizadores</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('users.table.user')}</TableHead>
-                  <TableHead>{t('users.table.company')}</TableHead>
-                  <TableHead>{t('users.table.department')}</TableHead>
-                  <TableHead>{t('users.table.availableSessions')}</TableHead>
-                  <TableHead>{t('users.table.fixedProviders')}</TableHead>
-                  <TableHead>{t('users.table.status')}</TableHead>
-                  <TableHead>{t('users.table.actions')}</TableHead>
+                  <TableHead>Utilizador</TableHead>
+                  <TableHead>Empresa</TableHead>
+                  <TableHead>Departamento</TableHead>
+                  <TableHead>Sessões Disponíveis</TableHead>
+                  <TableHead>Prestadores Fixos</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -338,8 +336,8 @@ const AdminUsers = () => {
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       {searchQuery || statusFilter !== 'all' || companyFilter !== 'all' 
-                        ? t('users.noUsersWithFilters') 
-                        : t('users.noUsersFound')}
+                        ? 'Nenhum utilizador encontrado com os filtros aplicados' 
+                        : 'Nenhum utilizador encontrado'}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -368,13 +366,13 @@ const AdminUsers = () => {
                        <TableCell>
                          <div className="space-y-1">
                            <div className="flex items-center gap-2">
-                             <span className="text-xs text-muted-foreground">{t('users.table.companyLabel')}</span>
+                             <span className="text-xs text-muted-foreground">Empresa:</span>
                              <Badge variant="outline" className="text-xs">
                                {user.companySessions - user.usedCompanySessions}/{user.companySessions}
                              </Badge>
                            </div>
                            <div className="flex items-center gap-2">
-                             <span className="text-xs text-muted-foreground">{t('users.table.personalLabel')}</span>
+                             <span className="text-xs text-muted-foreground">Pessoal:</span>
                              <Badge variant="outline" className="text-xs">
                                {user.personalSessions - user.usedPersonalSessions}/{user.personalSessions}
                              </Badge>
