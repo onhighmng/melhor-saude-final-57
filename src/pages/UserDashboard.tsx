@@ -48,6 +48,7 @@ const UserDashboard = () => {
   };
   
   const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress());
+  const [animatedProgress, setAnimatedProgress] = useState(0);
 
   const handleOnboardingComplete = (data: OnboardingData) => {
     const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
@@ -66,6 +67,15 @@ const UserDashboard = () => {
     }, 1000);
     
     return () => clearInterval(interval);
+  }, []);
+
+  // Animate progress bar on page load
+  useEffect(() => {
+    setAnimatedProgress(0);
+    const timer = setTimeout(() => {
+      setAnimatedProgress(milestoneProgress);
+    }, 300);
+    return () => clearTimeout(timer);
   }, []);
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
@@ -172,7 +182,7 @@ const UserDashboard = () => {
                   <span className="text-sm font-medium">Progresso Pessoal</span>
                   <span className="text-lg font-bold text-[#4A90E2]">{milestoneProgress}%</span>
                 </div>
-                <Progress value={milestoneProgress} className="h-2" />
+                <Progress value={animatedProgress} className="h-2" />
               </div>
               
               <div className="space-y-1">
