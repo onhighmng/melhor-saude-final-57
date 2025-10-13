@@ -1,4 +1,4 @@
-import { Activity, CalendarRange, Clock, IdCard, HelpCircle, FileText, LogOut } from "lucide-react";
+import { LayoutDashboard, Calendar, Clock, TrendingUp, Settings, HelpCircle, FileText, LogOut } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -20,14 +20,15 @@ import { SupportContact } from "@/components/ui/support-contact";
 
 export function PrestadorSidebar() {
   const navigationItems = [
-    { title: 'Dashboard', url: "/prestador/dashboard", icon: Activity },
-    { title: 'Sessões', url: "/prestador/sessoes", icon: CalendarRange },
-    { title: 'Disponibilidade', url: "/prestador/availability", icon: Clock },
-    { title: 'Perfil', url: "/prestador/profile", icon: IdCard },
+    { title: 'Dashboard', url: "/prestador/dashboard", icon: LayoutDashboard },
+    { title: 'Calendário', url: "/prestador/calendario", icon: Calendar },
+    { title: 'Sessões', url: "/prestador/sessoes", icon: Clock },
+    { title: 'Desempenho', url: "/prestador/desempenho", icon: TrendingUp },
+    { title: 'Perfil e Configurações', url: "/prestador/configuracoes", icon: Settings },
   ];
 
   const footerItems = [
-    { title: 'Guia de Sessões', url: "/prestador/sessoes/guia", icon: HelpCircle },
+    { title: 'Suporte', url: "/support", icon: HelpCircle },
     { title: 'Termos', url: "/terms", icon: FileText },
   ];
 

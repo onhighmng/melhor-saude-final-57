@@ -17,10 +17,11 @@ import { lazy } from "react";
 const Index = lazy(() => import("./pages/Index"));
 const UserSettings = lazy(() => import("./pages/UserSettings"));
 const PrestadorDashboard = lazy(() => import("./pages/PrestadorDashboard"));
-const PrestadorAvailability = lazy(() => import("./pages/PrestadorAvailability"));
 const PrestadorSessions = lazy(() => import("./pages/PrestadorSessions"));
 const PrestadorSessionDetail = lazy(() => import("./pages/PrestadorSessionDetail"));
-const PrestadorProfile = lazy(() => import("./pages/PrestadorProfile"));
+const PrestadorCalendar = lazy(() => import("./pages/PrestadorCalendar"));
+const PrestadorPerformance = lazy(() => import("./pages/PrestadorPerformance"));
+const PrestadorSettings = lazy(() => import("./pages/PrestadorSettings"));
 const Login = lazy(() => import("./pages/Login"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
@@ -39,12 +40,10 @@ const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const AdminCompanyDetail = lazy(() => import("./pages/AdminCompanyDetail"));
 
 // Company pages
-const CompanyInvites = lazy(() => import("./pages/CompanyInvites"));
 const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
-const CompanyEmployees = lazy(() => import("./pages/CompanyEmployees"));
-const CompanyEmployeeDetail = lazy(() => import("./pages/CompanyEmployeeDetail"));
-const CompanyReports = lazy(() => import("./pages/CompanyReports"));
-const CompanySettings = lazy(() => import("./pages/CompanySettings"));
+const CompanyReportsImpact = lazy(() => import("./pages/CompanyReportsImpact"));
+const CompanySessions = lazy(() => import("./pages/CompanySessions"));
+const CompanyCollaborators = lazy(() => import("./pages/CompanyCollaborators"));
 const UserSessions = lazy(() => import("./pages/UserSessions"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const UserNotifications = lazy(() => import("./pages/UserNotifications"));
@@ -131,11 +130,11 @@ const AppWithTracking = () => {
           
           {/* Prestador routes */}
           <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
+          <Route path="/prestador/calendario" element={<PrestadorLayout><PrestadorCalendar /></PrestadorLayout>} />
           <Route path="/prestador/sessoes" element={<PrestadorLayout><PrestadorSessions /></PrestadorLayout>} />
           <Route path="/prestador/sessoes/:id" element={<PrestadorLayout><PrestadorSessionDetail /></PrestadorLayout>} />
-          <Route path="/prestador/sessoes/guia" element={<PrestadorLayout><PrestadorSessionGuide /></PrestadorLayout>} />
-          <Route path="/prestador/availability" element={<PrestadorLayout><PrestadorAvailability /></PrestadorLayout>} />
-          <Route path="/prestador/profile" element={<PrestadorLayout><PrestadorProfile /></PrestadorLayout>} />
+          <Route path="/prestador/desempenho" element={<PrestadorLayout><PrestadorPerformance /></PrestadorLayout>} />
+          <Route path="/prestador/configuracoes" element={<PrestadorLayout><PrestadorSettings /></PrestadorLayout>} />
           
           {/* Admin routes */}
           <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
@@ -161,11 +160,9 @@ const AppWithTracking = () => {
           
           {/* Company HR routes */}
           <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />
-          <Route path="/company/employees" element={<CompanyLayout><CompanyEmployees /></CompanyLayout>} />
-          <Route path="/company/employees/:id" element={<CompanyLayout><CompanyEmployeeDetail /></CompanyLayout>} />
-          <Route path="/company/invites" element={<CompanyLayout><CompanyInvites /></CompanyLayout>} />
-          <Route path="/company/reports" element={<CompanyLayout><CompanyReports /></CompanyLayout>} />
-          <Route path="/company/settings" element={<CompanyLayout><CompanySettings /></CompanyLayout>} />
+          <Route path="/company/relatorios" element={<CompanyLayout><CompanyReportsImpact /></CompanyLayout>} />
+          <Route path="/company/sessoes" element={<CompanyLayout><CompanySessions /></CompanyLayout>} />
+          <Route path="/company/colaboradores" element={<CompanyLayout><CompanyCollaborators /></CompanyLayout>} />
           
           {/* Catch-all route - redirect to home */}
           <Route path="*" element={<Index />} />
