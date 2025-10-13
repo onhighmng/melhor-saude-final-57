@@ -85,7 +85,7 @@ export const parseEmployeeCSV = (file: File): Promise<{
           }
 
           emailSet.add(email);
-          employees.push(validation.data);
+          employees.push(validation.data as CSVEmployee);
         });
 
         resolve({ employees, errors });
