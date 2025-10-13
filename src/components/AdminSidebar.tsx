@@ -116,7 +116,7 @@ const AdminSidebar = () => {
         )}
       </SidebarHeader>
 
-      <SidebarContent className="px-3 py-4 flex flex-col items-center">
+      <SidebarContent className="px-3 py-4">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
@@ -125,10 +125,8 @@ const AdminSidebar = () => {
                   <SidebarMenuItemWithTooltip item={item}>
                     <SidebarMenuButton asChild>
                       <NavLink to={item.url} end className={getNavCls}>
-                        <div className="flex items-center py-2">
-                          <item.icon className={`h-5 w-5 flex-shrink-0 text-blue-500 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                          {!isCollapsed && <span className="text-base font-normal text-blue-500">{item.title}</span>}
-                        </div>
+                        <item.icon className={`h-5 w-5 flex-shrink-0 text-blue-500 ${isCollapsed ? '' : 'mr-3'}`} />
+                        {!isCollapsed && <span className="text-base font-normal text-blue-500">{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItemWithTooltip>
