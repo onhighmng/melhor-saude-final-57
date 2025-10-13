@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -33,7 +32,6 @@ interface BookingModalProps {
 }
 
 export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModalProps) => {
-  const { t } = useTranslation('admin-providers');
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
@@ -49,7 +47,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
     
     if (!formData.collaboratorName || !formData.sessionType) {
       toast({
-        title: t('bookingModal.error'),
+        title: 'Erro ao agendar sessão',
         variant: 'destructive',
       });
       return;
@@ -63,7 +61,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
     });
 
     toast({
-      title: t('bookingModal.success'),
+      title: 'Sessão agendada com sucesso!',
     });
 
     onOpenChange(false);
@@ -73,7 +71,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{t('bookingModal.title')}</DialogTitle>
+          <DialogTitle>Nova Sessão</DialogTitle>
           <div className="space-y-2 mt-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
@@ -89,10 +87,10 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="collaborator">{t('bookingModal.selectCollaborator')}</Label>
+            <Label htmlFor="collaborator">Escolher colaborador</Label>
             <Input
               id="collaborator"
-              placeholder={t('bookingModal.collaboratorPlaceholder')}
+              placeholder="Pesquisar por nome ou email..."
               value={formData.collaboratorName}
               onChange={(e) => setFormData({ ...formData, collaboratorName: e.target.value })}
               required
@@ -100,7 +98,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sessionType">{t('bookingModal.sessionType')}</Label>
+            <Label htmlFor="sessionType">Tipo de sessão</Label>
             <Select
               value={formData.sessionType}
               onValueChange={(value) => setFormData({ ...formData, sessionType: value })}
@@ -121,10 +119,10 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">{t('bookingModal.notes')}</Label>
+            <Label htmlFor="notes">Observações (opcional)</Label>
             <Textarea
               id="notes"
-              placeholder={t('bookingModal.notesPlaceholder')}
+              placeholder="Adicione informações relevantes..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
@@ -137,10 +135,10 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              {t('bookingModal.cancel')}
+              Cancelar
             </Button>
             <Button type="submit">
-              {t('bookingModal.confirm')}
+              Confirmar Sessão
             </Button>
           </DialogFooter>
         </form>
