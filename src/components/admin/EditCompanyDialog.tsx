@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -18,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { showCompanyUpdatedSuccess } from '@/data/adminCompanyToasts';
 
 interface Company {
   id: string;
@@ -44,7 +42,6 @@ export function EditCompanyDialog({
   company,
   onSave,
 }: EditCompanyDialogProps) {
-  const { t } = useTranslation('admin-company-detail');
   const [formData, setFormData] = useState<Company>(company);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -54,7 +51,6 @@ export function EditCompanyDialog({
     await new Promise(resolve => setTimeout(resolve, 800));
     
     onSave(formData);
-    showCompanyUpdatedSuccess(t);
     setIsSaving(false);
     onOpenChange(false);
   };
@@ -63,15 +59,15 @@ export function EditCompanyDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('dialogs.editCompany.title')}</DialogTitle>
+          <DialogTitle>Editar Empresa</DialogTitle>
           <DialogDescription>
-            {t('dialogs.editCompany.description')}
+            Atualize os dados da empresa
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="companyName">{t('dialogs.editCompany.companyName')}</Label>
+            <Label htmlFor="companyName">Nome da Empresa</Label>
             <Input
               id="companyName"
               value={formData.name}
@@ -80,7 +76,7 @@ export function EditCompanyDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="nuit">{t('dialogs.editCompany.nuit')}</Label>
+            <Label htmlFor="nuit">NUIT</Label>
             <Input
               id="nuit"
               value={formData.nuit}
@@ -90,7 +86,7 @@ export function EditCompanyDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="contactEmail">{t('dialogs.editCompany.contactEmail')}</Label>
+              <Label htmlFor="contactEmail">Email de Contacto</Label>
               <Input
                 id="contactEmail"
                 type="email"
@@ -100,7 +96,7 @@ export function EditCompanyDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="contactPhone">{t('dialogs.editCompany.contactPhone')}</Label>
+              <Label htmlFor="contactPhone">Telefone de Contacto</Label>
               <Input
                 id="contactPhone"
                 type="tel"
@@ -112,7 +108,7 @@ export function EditCompanyDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="planType">{t('dialogs.editCompany.planType')}</Label>
+              <Label htmlFor="planType">Tipo de Plano</Label>
               <Select
                 value={formData.planType}
                 onValueChange={(value) => setFormData({ ...formData, planType: value })}
@@ -129,7 +125,7 @@ export function EditCompanyDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="sessionsAllocated">{t('dialogs.editCompany.sessionsAllocated')}</Label>
+              <Label htmlFor="sessionsAllocated">Sessões Alocadas</Label>
               <Input
                 id="sessionsAllocated"
                 type="number"
@@ -140,7 +136,7 @@ export function EditCompanyDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="finalNotes">{t('dialogs.editCompany.finalNotes')}</Label>
+            <Label htmlFor="finalNotes">Notas Finais</Label>
             <Textarea
               id="finalNotes"
               rows={4}
@@ -153,10 +149,10 @@ export function EditCompanyDialog({
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
-            {t('dialogs.editCompany.cancel')}
+            Cancelar
           </Button>
           <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? t('progress.processing', { current: 1, total: 1 }) : t('dialogs.editCompany.save')}
+            {isSaving ? 'A processar...' : 'Guardar Alterações'}
           </Button>
         </div>
       </DialogContent>
