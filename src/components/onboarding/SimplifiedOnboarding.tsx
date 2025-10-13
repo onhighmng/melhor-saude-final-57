@@ -157,11 +157,15 @@ export const SimplifiedOnboarding = ({
   };
 
   useEffect(() => {
+    console.log('[SimplifiedOnboarding] Step changed:', step);
     if (step === 6) {
+      console.log('[SimplifiedOnboarding] Step 6 reached, starting animation');
       // Reset progress to 0 first
       setProgressValue(0);
+      console.log('[SimplifiedOnboarding] Progress reset to 0');
       // Animate to 10% after a small delay
       const timer = setTimeout(() => {
+        console.log('[SimplifiedOnboarding] Setting progress to 10');
         setProgressValue(10);
       }, 100);
       return () => clearTimeout(timer);
