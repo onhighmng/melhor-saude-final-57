@@ -1,6 +1,8 @@
 import React from 'react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const MissionVisionValuesSection = () => {
+  const [sectionRef, isVisible] = useScrollAnimation(0.2);
   const cards = [
     {
       title: 'Missão',
@@ -23,13 +25,16 @@ const MissionVisionValuesSection = () => {
   ];
 
   return (
-    <section className="pt-28 pb-16 px-4 bg-gradient-to-b from-gray-50 to-white scroll-mt-24">
+    <section ref={sectionRef} className="pt-28 pb-16 px-4 bg-gradient-to-b from-gray-50 to-white scroll-mt-24">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-3 gap-8">
           {cards.map((card, index) => (
             <div 
               key={index}
-              className={`bg-gradient-to-br ${card.gradient} rounded-2xl p-8 border-l-4 ${card.border} hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1`}
+              className={`bg-gradient-to-br ${card.gradient} rounded-2xl p-8 border-l-4 ${card.border} hover:shadow-lg transition-all duration-1000 ease-out transform hover:-translate-y-2 hover:scale-105 ${
+                isVisible ? 'opacity-100 translate-y-0 scale-100 rotate-0' : 'opacity-0 translate-y-24 scale-90 -rotate-2'
+              }`}
+              style={{ transitionDelay: `${index * 150}ms` }}
             >
               <h3 className="text-2xl font-bold text-navy-blue mb-6 text-center">
                 {card.title}

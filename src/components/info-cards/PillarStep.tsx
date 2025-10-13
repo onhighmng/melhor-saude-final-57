@@ -23,12 +23,12 @@ const PillarStep: React.FC<PillarStepProps> = ({
   
   const pillarImages = [
     "/lovable-uploads/therapy-session.png", // Saúde Psicológica
-    "/lovable-uploads/financial-planning.png", // Saúde Financeira
     "/lovable-uploads/fad5a7e1-4fd0-4f9b-8151-d9c8b54fc079.png", // Saúde Física
+    "/lovable-uploads/financial-planning.png", // Saúde Financeira
     "/lovable-uploads/business-meeting.png"  // Saúde Jurídica e Social
   ];
 
-  const pillarKeys = ['psychological', 'financial', 'physical', 'legal'];
+  const pillarKeys = ['psychological', 'physical', 'financial', 'legal'];
   const pillarKey = pillarKeys[index];
   
   const specialistsList = t(`pillars.${pillarKey}.specialists.list`, { returnObjects: true }) as string[];

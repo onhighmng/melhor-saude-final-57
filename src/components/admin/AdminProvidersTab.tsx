@@ -38,6 +38,10 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
+import providerPlaceholder from '@/assets/provider-placeholder.jpg';
+import { ProviderOptionsModal } from '@/components/admin/providers/ProviderOptionsModal';
+import { BookingModal } from '@/components/admin/providers/BookingModal';
+import type { CalendarSlot } from '@/types/adminProvider';
 
 const AdminProvidersTab = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -51,6 +55,10 @@ const AdminProvidersTab = () => {
 
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | null>(null);
 
   // Form states for new provider
   const [newProvider, setNewProvider] = useState({
@@ -139,7 +147,20 @@ const AdminProvidersTab = () => {
   };
 
   const handleCardClick = (provider: Provider) => {
-    navigate(`/admin/provider-metrics/${provider.id}`);
+    setSelectedProvider(provider);
+    setShowOptionsModal(true);
+  };
+
+  const handleViewMetrics = () => {
+    if (selectedProvider) {
+      navigate(`/admin/provider-metrics/${selectedProvider.id}`);
+    }
+  };
+
+  const handleScheduleSession = () => {
+    if (selectedProvider) {
+      navigate(`/admin/provider-calendar/${selectedProvider.id}`);
+    }
   };
 
 
@@ -378,7 +399,7 @@ const AdminProvidersTab = () => {
               <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50">
                 <Avatar className="absolute inset-0 w-full h-full rounded-none">
                   <AvatarImage 
-                    src={provider.avatar || `https://xsgames.co/randomusers/assets/avatars/${provider.name.toLowerCase().includes('dra') || provider.name.toLowerCase().includes('maria') || provider.name.toLowerCase().includes('ana') ? 'female' : 'male'}/${Math.abs(provider.email.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 50)}.jpg`} 
+                    src={provider.avatar || providerPlaceholder} 
                     className="object-cover" 
                   />
                   <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-4xl rounded-none w-full h-full">
@@ -543,6 +564,25 @@ const AdminProvidersTab = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Provider Options Modal */}
+      <ProviderOptionsModal
+        open={showOptionsModal}
+        onOpenChange={setShowOptionsModal}
+        provider={selectedProvider}
+        onViewMetrics={handleViewMetrics}
+        onScheduleSession={handleScheduleSession}
+      />
+
+      {/* Booking Modal */}
+      {selectedSlot && (
+        <BookingModal
+          open={showBookingModal}
+          onOpenChange={setShowBookingModal}
+          provider={selectedProvider}
+          slot={selectedSlot}
+        />
+      )}
 
     </div>
   );

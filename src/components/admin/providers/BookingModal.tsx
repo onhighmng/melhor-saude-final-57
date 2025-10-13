@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -19,7 +18,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Provider, CalendarSlot, SessionType } from '@/types/adminProvider';
+import { AdminProvider } from '@/data/adminMockData';
+import { CalendarSlot } from '@/types/adminProvider';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { Calendar, Clock } from 'lucide-react';
@@ -27,26 +27,27 @@ import { Calendar, Clock } from 'lucide-react';
 interface BookingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  provider: Provider;
+  provider: AdminProvider | null;
   slot: CalendarSlot;
 }
 
 export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModalProps) => {
-  const { t } = useTranslation('admin-providers');
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
     collaboratorName: '',
-    sessionType: provider.sessionType === 'both' ? '' : provider.sessionType,
+    sessionType: provider?.sessionType === 'Ambos' ? '' : (provider?.sessionType || ''),
     notes: '',
   });
+
+  if (!provider) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.collaboratorName || !formData.sessionType) {
       toast({
-        title: t('bookingModal.error'),
+        title: 'Erro ao agendar sessão',
         variant: 'destructive',
       });
       return;
@@ -60,7 +61,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
     });
 
     toast({
-      title: t('bookingModal.success'),
+      title: 'Sessão agendada com sucesso!',
     });
 
     onOpenChange(false);
@@ -70,7 +71,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{t('bookingModal.title')}</DialogTitle>
+          <DialogTitle>Nova Sessão</DialogTitle>
           <div className="space-y-2 mt-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
@@ -86,10 +87,10 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="collaborator">{t('bookingModal.selectCollaborator')}</Label>
+            <Label htmlFor="collaborator">Escolher colaborador</Label>
             <Input
               id="collaborator"
-              placeholder={t('bookingModal.collaboratorPlaceholder')}
+              placeholder="Pesquisar por nome ou email..."
               value={formData.collaboratorName}
               onChange={(e) => setFormData({ ...formData, collaboratorName: e.target.value })}
               required
@@ -97,31 +98,31 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sessionType">{t('bookingModal.sessionType')}</Label>
+            <Label htmlFor="sessionType">Tipo de sessão</Label>
             <Select
               value={formData.sessionType}
-              onValueChange={(value) => setFormData({ ...formData, sessionType: value as SessionType })}
-              disabled={provider.sessionType !== 'both'}
+              onValueChange={(value) => setFormData({ ...formData, sessionType: value })}
+              disabled={provider.sessionType !== 'Ambos'}
             >
               <SelectTrigger>
-                <SelectValue placeholder={t('sessionTypes.' + provider.sessionType)} />
+                <SelectValue placeholder={provider.sessionType} />
               </SelectTrigger>
               <SelectContent>
-                {(provider.sessionType === 'both' || provider.sessionType === 'virtual') && (
-                  <SelectItem value="virtual">{t('sessionTypes.virtual')}</SelectItem>
+                {(provider.sessionType === 'Ambos' || provider.sessionType === 'Virtual') && (
+                  <SelectItem value="Virtual">Virtual</SelectItem>
                 )}
-                {(provider.sessionType === 'both' || provider.sessionType === 'presential') && (
-                  <SelectItem value="presential">{t('sessionTypes.presential')}</SelectItem>
+                {(provider.sessionType === 'Ambos' || provider.sessionType === 'Presencial') && (
+                  <SelectItem value="Presencial">Presencial</SelectItem>
                 )}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">{t('bookingModal.notes')}</Label>
+            <Label htmlFor="notes">Observações (opcional)</Label>
             <Textarea
               id="notes"
-              placeholder={t('bookingModal.notesPlaceholder')}
+              placeholder="Adicione informações relevantes..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
@@ -134,10 +135,10 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              {t('bookingModal.cancel')}
+              Cancelar
             </Button>
             <Button type="submit">
-              {t('bookingModal.confirm')}
+              Confirmar Sessão
             </Button>
           </DialogFooter>
         </form>

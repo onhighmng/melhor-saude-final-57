@@ -31,6 +31,7 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminUsersManagement = lazy(() => import("./pages/AdminUsersManagement"));
 const AdminProviders = lazy(() => import("./pages/AdminProviders"));
 const AdminProviderDetailMetrics = lazy(() => import("./pages/AdminProviderDetailMetrics"));
+const AdminProviderCalendar = lazy(() => import("./pages/AdminProviderCalendar"));
 const AdminOperations = lazy(() => import("./pages/AdminOperations"));
 const AdminResources = lazy(() => import("./pages/AdminResources"));
 const AdminReports = lazy(() => import("./pages/AdminReports"));
@@ -143,6 +144,7 @@ const AppWithTracking = () => {
           <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
           <Route path="/admin/prestadores" element={<AdminLayout><AdminProviders /></AdminLayout>} />
           <Route path="/admin/provider-metrics/:providerId" element={<AdminLayout><AdminProviderDetailMetrics /></AdminLayout>} />
+          <Route path="/admin/provider-calendar/:providerId" element={<AdminLayout><AdminProviderCalendar /></AdminLayout>} />
           <Route path="/admin/operations" element={<AdminLayout><AdminOperations /></AdminLayout>} />
           <Route path="/admin/operacoes" element={<AdminLayout><AdminOperations /></AdminLayout>} />
           <Route path="/admin/companies/:id" element={<AdminLayout><AdminCompanyDetail /></AdminLayout>} />

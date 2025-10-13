@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -7,7 +6,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { BarChart3, Calendar } from 'lucide-react';
-import { Provider } from '@/types/adminProvider';
+import { AdminProvider as Provider } from '@/data/adminMockData';
 
 interface ProviderOptionsModalProps {
   open: boolean;
@@ -24,15 +23,13 @@ export const ProviderOptionsModal = ({
   onViewMetrics,
   onScheduleSession,
 }: ProviderOptionsModalProps) => {
-  const { t } = useTranslation('admin-providers');
-
   if (!provider) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>{t('optionsModal.title')}</DialogTitle>
+          <DialogTitle>Opções do Prestador</DialogTitle>
           <p className="text-sm text-muted-foreground mt-2">{provider.name}</p>
         </DialogHeader>
         
@@ -47,7 +44,7 @@ export const ProviderOptionsModal = ({
           >
             <BarChart3 className="h-5 w-5 mr-3 text-vibrant-blue" />
             <div className="text-left">
-              <div className="font-semibold">{t('optionsModal.viewMetrics')}</div>
+              <div className="font-semibold">Ver Métricas e Histórico</div>
               <div className="text-xs text-muted-foreground mt-1">
                 Ver desempenho e histórico detalhado
               </div>
@@ -64,7 +61,7 @@ export const ProviderOptionsModal = ({
           >
             <Calendar className="h-5 w-5 mr-3 text-mint-green" />
             <div className="text-left">
-              <div className="font-semibold">{t('optionsModal.scheduleSession')}</div>
+              <div className="font-semibold">Agendar Sessão no Calendário</div>
               <div className="text-xs text-muted-foreground mt-1">
                 Agendar nova sessão diretamente
               </div>
@@ -76,7 +73,7 @@ export const ProviderOptionsModal = ({
             className="w-full mt-4"
             onClick={() => onOpenChange(false)}
           >
-            {t('optionsModal.cancel')}
+            Cancelar
           </Button>
         </div>
       </DialogContent>

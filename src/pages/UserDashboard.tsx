@@ -14,6 +14,7 @@ import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
 import { useToast } from '@/hooks/use-toast';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -49,6 +50,9 @@ const UserDashboard = () => {
   
   const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress());
   const [animatedProgress, setAnimatedProgress] = useState(0);
+  const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
+  const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   const handleOnboardingComplete = (data: OnboardingData) => {
     const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
@@ -69,14 +73,33 @@ const UserDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Animate progress bar on page load
+  // Animate progress bar when scrolled into view with smooth 4-second animation
   useEffect(() => {
+    if (!isProgressVisible || hasAnimated || milestoneProgress === 0) return;
+    
+    setHasAnimated(true);
     setAnimatedProgress(0);
-    const timer = setTimeout(() => {
-      setAnimatedProgress(milestoneProgress);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, []);
+    setAnimatedMilestoneProgress(0);
+    const startTime = Date.now();
+    const duration = 4000; // 4 seconds total animation
+    
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+      
+      setAnimatedProgress(milestoneProgress * easedProgress);
+      setAnimatedMilestoneProgress(milestoneProgress * easedProgress);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }, [isProgressVisible, milestoneProgress, hasAnimated]);
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
@@ -170,7 +193,7 @@ const UserDashboard = () => {
 
 
         {/* Session Balance Card - Centered */}
-        <div className="flex justify-center">
+        <div className="flex justify-center" ref={progressRef}>
           <Card className="w-full max-w-4xl border shadow-sm bg-card">
             <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8">
               <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
@@ -182,7 +205,7 @@ const UserDashboard = () => {
                   <span className="text-sm font-medium">Progresso Pessoal</span>
                   <span className="text-lg font-bold text-[#4A90E2]">{milestoneProgress}%</span>
                 </div>
-                <Progress value={animatedProgress} className="h-2" />
+                <Progress value={animatedMilestoneProgress} className="h-2" />
               </div>
               
               <div className="space-y-1">

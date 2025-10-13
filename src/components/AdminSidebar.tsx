@@ -47,7 +47,6 @@ const AdminSidebar = () => {
   const menuItems: MenuItem[] = [
     { title: 'Dashboard', url: "/admin/dashboard", icon: LayoutDashboard },
     { title: 'Gestão de Utilizadores', url: "/admin/users-management", icon: UsersIcon },
-    { title: 'Prestadores', url: "/admin/providers", icon: UsersIcon },
     { title: 'Operações', url: "/admin/operations", icon: Activity },
     { title: 'Conteúdos e Feedback', url: "/admin/resources", icon: FileText },
     { title: 'Finanças e Relatórios', url: "/admin/reports", icon: FileText },

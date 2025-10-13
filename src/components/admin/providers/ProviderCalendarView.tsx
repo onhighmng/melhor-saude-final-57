@@ -17,7 +17,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ArrowLeft, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Provider, CalendarSlot } from '@/types/adminProvider';
+import { AdminProvider } from '@/data/adminMockData';
+import { CalendarSlot } from '@/types/adminProvider';
 import { BookingModal } from './BookingModal';
 import { format, addDays, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -25,7 +26,7 @@ import { pt } from 'date-fns/locale';
 interface ProviderCalendarViewProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  provider: Provider | null;
+  provider: AdminProvider | null;
   onBack: () => void;
 }
 

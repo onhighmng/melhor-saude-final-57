@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, Loader2, User } from 'lucide-react';
+import { Send, Loader2, User, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -177,6 +177,18 @@ const PhysicalWellnessChatInterface: React.FC<PhysicalWellnessChatInterfaceProps
               </div>
             </div>
           </Card>
+
+          <div className="bg-muted/50 border rounded-lg p-4 mt-4">
+            <div className="text-center space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Se as suas questões são complexas, solicite uma sessão 1-on-1 com um especialista.
+              </p>
+              <Button variant="outline" onClick={onComplete} className="gap-2">
+                <Phone className="h-4 w-4" />
+                Solicitar Sessão 1-on-1
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
