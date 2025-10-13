@@ -170,6 +170,7 @@ const AppWithTracking = () => {
           <Route path="/admin/agendamentos" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/logs" element={<AdminLayout><AdminLogs /></AdminLayout>} />
           <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
+          <Route path="/admin/suporte" element={<AdminLayout><AdminSupport /></AdminLayout>} />
           <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
           <Route path="/admin/configuracoes" element={<AdminLayout><AdminSettings /></AdminLayout>} />
           
