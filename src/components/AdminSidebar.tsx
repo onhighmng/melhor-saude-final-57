@@ -116,7 +116,7 @@ const AdminSidebar = () => {
         )}
       </SidebarHeader>
 
-      <SidebarContent className="px-3 py-4 flex items-center justify-center">
+      <SidebarContent className="px-3 py-4 flex flex-col items-center">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
