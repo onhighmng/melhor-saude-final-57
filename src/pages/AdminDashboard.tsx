@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Building2, 
   Users, 
@@ -10,18 +10,7 @@ import {
   TrendingUp,
   TrendingDown
 } from 'lucide-react';
-import { 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  Legend
-} from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 
 const AdminDashboard = () => {
@@ -29,154 +18,148 @@ const AdminDashboard = () => {
   const { data: analytics } = useAnalytics();
 
   // Mock data for charts
-  const evolutionData = [
-    { month: 'Ago', sessions: 245 },
-    { month: 'Set', sessions: 312 },
-    { month: 'Out', sessions: 389 },
-    { month: 'Nov', sessions: 421 },
-    { month: 'Dez', sessions: 478 },
-    { month: 'Jan', sessions: 524 },
+  const sessionEvolutionData = [
+    { month: 'Jan', sessions: 120 },
+    { month: 'Fev', sessions: 145 },
+    { month: 'Mar', sessions: 180 },
+    { month: 'Abr', sessions: 220 },
+    { month: 'Mai', sessions: 195 },
+    { month: 'Jun', sessions: 240 },
   ];
 
-  const pillarData = [
-    { name: 'Saúde Mental', value: 450 },
-    { name: 'Bem-Estar Físico', value: 380 },
-    { name: 'Assist. Financeira', value: 250 },
-    { name: 'Assist. Jurídica', value: 190 },
+  const pillarDistributionData = [
+    { pillar: 'Psicológico', sessions: 85 },
+    { pillar: 'Físico', sessions: 65 },
+    { pillar: 'Financeiro', sessions: 45 },
+    { pillar: 'Jurídico', sessions: 45 },
   ];
 
   const metricCards = [
     {
       title: 'Empresas Ativas',
       value: analytics?.total_companies || 0,
-      change: '+12%',
-      trend: 'up',
+      trend: '+12%',
+      isPositive: true,
       icon: Building2,
-      color: 'text-vibrant-blue',
+      iconColor: 'text-vibrant-blue',
       bgColor: 'bg-vibrant-blue/10'
     },
     {
       title: 'Colaboradores Registados',
       value: analytics?.total_users || 0,
-      subtitle: `${Math.round(((analytics?.active_users || 0) / (analytics?.total_users || 1)) * 100)}% onboarding completo`,
-      progress: ((analytics?.active_users || 0) / (analytics?.total_users || 1)) * 100,
+      progress: 78,
+      progressLabel: '78% onboarding completo',
       icon: Users,
-      color: 'text-mint-green',
-      bgColor: 'bg-mint-green/10'
+      iconColor: 'text-emerald-green',
+      bgColor: 'bg-emerald-green/10'
     },
     {
-      title: 'Sessões Realizadas Este Mês',
-      value: 524,
-      change: '+9% vs mês anterior',
-      progress: 75,
+      title: 'Sessões Este Mês',
+      value: analytics?.total_bookings || 0,
+      trend: '+8%',
+      isPositive: true,
       icon: Calendar,
-      color: 'text-royal-blue',
-      bgColor: 'bg-royal-blue/10'
+      iconColor: 'text-accent-sky',
+      bgColor: 'bg-accent-sky/10'
     },
     {
       title: 'Satisfação Média',
       value: '8.2/10',
-      subtitle: 'Baseado em 342 avaliações',
-      rating: 82,
+      progress: 82,
       icon: Star,
-      color: 'text-peach-orange',
+      iconColor: 'text-peach-orange',
       bgColor: 'bg-peach-orange/10'
     },
     {
       title: 'Objetivos Atingidos',
-      value: '67%',
-      subtitle: 'dos colaboradores',
-      progress: 67,
+      value: '68%',
+      progress: 68,
       icon: Target,
-      color: 'text-emerald-green',
-      bgColor: 'bg-emerald-green/10'
+      iconColor: 'text-royal-blue',
+      bgColor: 'bg-royal-blue/10'
     }
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-vibrant-blue/10 to-mint-green/10 rounded-2xl p-6 border border-vibrant-blue/20">
-        <h1 className="text-3xl font-heading font-bold text-foreground mb-1">
+    <div className="space-y-8">
+      {/* Welcome Message */}
+      <div className="bg-gradient-to-r from-vibrant-blue/10 via-accent-sky/10 to-emerald-green/10 rounded-lg p-6 border border-border">
+        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
           Olá {profile?.name?.split(' ')[0] || 'Admin'}, bem-vindo de volta 👋
         </h1>
         <p className="text-muted-foreground">
-          Aqui está um resumo da sua plataforma hoje
+          Aqui está um resumo da plataforma Melhor Saúde
         </p>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {metricCards.map((metric, index) => {
-          const Icon = metric.icon;
-          return (
-            <Card key={index} className="hover-lift">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {metric.title}
-                </CardTitle>
-                <div className={`${metric.bgColor} p-3 rounded-xl`}>
-                  <Icon className={`h-5 w-5 ${metric.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-foreground mb-2">
+      {/* Metric Cards Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {metricCards.map((metric, index) => (
+          <Card key={index} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {metric.title}
+              </CardTitle>
+              <div className={`p-2 rounded-lg ${metric.bgColor}`}>
+                <metric.icon className={`h-4 w-4 ${metric.iconColor}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="text-2xl font-bold text-foreground">
                   {metric.value}
                 </div>
                 
-                {metric.change && (
+                {metric.trend && (
                   <div className="flex items-center gap-1 text-sm">
-                    {metric.trend === 'up' ? (
-                      <TrendingUp className="h-4 w-4 text-success" />
+                    {metric.isPositive ? (
+                      <TrendingUp className="h-4 w-4 text-emerald-green" />
                     ) : (
                       <TrendingDown className="h-4 w-4 text-destructive" />
                     )}
-                    <span className={metric.trend === 'up' ? 'text-success' : 'text-destructive'}>
-                      {metric.change}
+                    <span className={metric.isPositive ? 'text-emerald-green' : 'text-destructive'}>
+                      {metric.trend}
                     </span>
+                    <span className="text-muted-foreground">vs mês anterior</span>
                   </div>
-                )}
-
-                {metric.subtitle && !metric.progress && (
-                  <p className="text-sm text-muted-foreground">
-                    {metric.subtitle}
-                  </p>
                 )}
 
                 {metric.progress !== undefined && (
-                  <div className="space-y-2 mt-3">
+                  <div className="space-y-2">
                     <Progress value={metric.progress} className="h-2" />
-                    <p className="text-xs text-muted-foreground">
-                      {metric.subtitle || `${Math.round(metric.progress)}% completo`}
-                    </p>
+                    {metric.progressLabel && (
+                      <p className="text-xs text-muted-foreground">{metric.progressLabel}</p>
+                    )}
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          );
-        })}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Line Chart - Session Evolution */}
-        <Card>
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Session Evolution Chart */}
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-xl font-heading">Evolução de Sessões</CardTitle>
+            <CardTitle className="text-lg font-heading">
+              Evolução de Sessões
+            </CardTitle>
             <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={evolutionData}>
+              <LineChart data={sessionEvolutionData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis 
                   dataKey="month" 
                   className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  stroke="hsl(var(--muted-foreground))"
                 />
                 <YAxis 
                   className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  stroke="hsl(var(--muted-foreground))"
                 />
                 <Tooltip 
                   contentStyle={{
@@ -185,40 +168,40 @@ const AdminDashboard = () => {
                     borderRadius: '8px'
                   }}
                 />
+                <Legend />
                 <Line 
                   type="monotone" 
                   dataKey="sessions" 
                   stroke="hsl(var(--vibrant-blue))" 
-                  strokeWidth={3}
-                  dot={{ fill: 'hsl(var(--vibrant-blue))', r: 5 }}
-                  activeDot={{ r: 7 }}
+                  strokeWidth={2}
+                  name="Sessões"
+                  dot={{ fill: 'hsl(var(--vibrant-blue))' }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Bar Chart - Pillar Distribution */}
-        <Card>
+        {/* Pillar Distribution Chart */}
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-xl font-heading">Distribuição por Pilar</CardTitle>
-            <p className="text-sm text-muted-foreground">Sessões por categoria</p>
+            <CardTitle className="text-lg font-heading">
+              Distribuição por Pilar
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">Sessões por área</p>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={pillarData}>
+              <BarChart data={pillarDistributionData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis 
-                  dataKey="name" 
+                  dataKey="pillar" 
                   className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  angle={-15}
-                  textAnchor="end"
-                  height={80}
+                  stroke="hsl(var(--muted-foreground))"
                 />
                 <YAxis 
                   className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  stroke="hsl(var(--muted-foreground))"
                 />
                 <Tooltip 
                   contentStyle={{
@@ -227,9 +210,11 @@ const AdminDashboard = () => {
                     borderRadius: '8px'
                   }}
                 />
+                <Legend />
                 <Bar 
-                  dataKey="value" 
-                  fill="hsl(var(--mint-green))" 
+                  dataKey="sessions" 
+                  fill="hsl(var(--emerald-green))"
+                  name="Sessões"
                   radius={[8, 8, 0, 0]}
                 />
               </BarChart>

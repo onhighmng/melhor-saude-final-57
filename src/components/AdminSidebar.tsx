@@ -17,29 +17,16 @@ import {
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
-  Building2,
-  Users,
-  UserCog,
-  GitPullRequest,
-  Calendar,
-  ClipboardCheck,
   Mail,
-  Shuffle,
-  FileSearch,
   Settings,
-  HelpCircle,
   FileText,
   LogOut,
   UsersIcon,
   Activity,
   Shield,
-  ChevronDown,
-  ChevronRight
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-import { SupportContact } from "@/components/ui/support-contact";
 
 interface MenuItem {
   title: string;
@@ -57,72 +44,18 @@ const AdminSidebar = () => {
   const currentPath = location.pathname;
   const isCollapsed = state === "collapsed";
 
-  // Standalone items
-  const standaloneItems: MenuItem[] = [
+  // Main menu items
+  const menuItems: MenuItem[] = [
     { title: 'Dashboard', url: "/admin/dashboard", icon: LayoutDashboard },
+    { title: 'Gestão de Utilizadores', url: "/admin/users-management", icon: UsersIcon },
+    { title: 'Operações', url: "/admin/operations", icon: Activity },
+    { title: 'Conteúdos e Feedback', url: "/admin/resources", icon: FileText },
+    { title: 'Finanças e Relatórios', url: "/admin/reports", icon: FileText },
+    { title: 'Monitorização', url: "/admin/control-center", icon: Shield },
+    { title: 'Suporte', url: "/admin/support", icon: Mail },
+    { title: 'Definições', url: "/admin/settings", icon: Settings },
   ];
 
-  // Grouped items
-  const groupedItems = {
-    users: {
-      title: 'Gestão de Utilizadores',
-      icon: UsersIcon,
-      items: [
-        { title: 'Empresas', url: "/admin/companies", icon: Building2 },
-        { title: 'Utilizadores', url: "/admin/usuarios", icon: Users },
-        { title: 'Prestadores', url: "/admin/prestadores", icon: UserCog },
-      ] as MenuItem[]
-    },
-    operations: {
-      title: 'Operações',
-      icon: Activity,
-      items: [
-        { title: 'Matching', url: "/admin/matching", icon: GitPullRequest },
-        { title: 'Agendamentos', url: "/admin/agendamentos", icon: Calendar },
-        { title: 'Sessões', url: "/admin/sessoes", icon: ClipboardCheck },
-      ] as MenuItem[]
-    },
-    monitoring: {
-      title: 'Monitorização',
-      icon: Shield,
-      items: [
-        { title: 'Suporte', url: "/admin/support", icon: Mail, badge: "emailsFailed" },
-        { title: 'Pedidos de Alteração', url: "/admin/providers/change-requests", icon: Shuffle, badge: "pendingRequests" },
-        { title: 'Logs', url: "/admin/logs", icon: FileSearch, badge: "logAlerts" },
-      ] as MenuItem[]
-    }
-  };
-
-  // Settings - standalone section (NOT part of monitoring group)
-  const settingsItems: MenuItem[] = [
-    { title: 'Recursos', url: "/admin/recursos", icon: FileText },
-    { title: 'Relatórios', url: "/admin/relatorios", icon: FileText },
-    { title: 'Centro de Controlo', url: "/admin/centro-controlo", icon: Shield },
-    { title: 'Definições', url: "/admin/configuracoes", icon: Settings },
-  ];
-
-  // Mock badge data - in real app this would come from API/state
-  const mockBadgeData = {
-    emailsFailed: 3,
-    pendingRequests: 7,
-    logAlerts: 2,
-  };
-
-  // State for collapsible groups
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    users: false,
-    operations: false,
-    monitoring: false,
-  });
-
-  const toggleGroup = (groupKey: string) => {
-    if (!isCollapsed) {
-      setOpenGroups(prev => ({
-        ...prev,
-        [groupKey]: !prev[groupKey]
-      }));
-    }
-  };
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
@@ -153,20 +86,6 @@ const AdminSidebar = () => {
     return <>{children}</>;
   };
 
-  const getBadgeCount = (badgeKey?: string) => {
-    if (!badgeKey) return 0;
-    return mockBadgeData[badgeKey as keyof typeof mockBadgeData] || 0;
-  };
-
-  const getGroupBadgeCount = (groupKey: keyof typeof groupedItems) => {
-    return groupedItems[groupKey].items.reduce((total: number, item: MenuItem) => {
-      return total + getBadgeCount(item.badge);
-    }, 0);
-  };
-
-  const isGroupActive = (items: MenuItem[]) => {
-    return items.some(item => currentPath === item.url);
-  };
 
   return (
     <Sidebar
@@ -205,99 +124,10 @@ const AdminSidebar = () => {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Standalone items */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {standaloneItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuItemWithTooltip item={item}>
-                    <SidebarMenuButton asChild>
-                      <NavLink to={item.url} end className={getNavCls}>
-                        <div className="flex items-center py-1">
-                          <item.icon className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                          {!isCollapsed && <span className="text-base whitespace-nowrap">{item.title}</span>}
-                        </div>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItemWithTooltip>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Grouped items */}
-        {Object.entries(groupedItems).map(([groupKey, group]) => {
-          const groupBadgeCount = getGroupBadgeCount(groupKey as keyof typeof groupedItems);
-          const isGroupExpanded = openGroups[groupKey];
-          const hasActiveItem = isGroupActive(group.items);
-          
-          return (
-            <SidebarGroup key={groupKey}>
-              <SidebarGroupLabel 
-                className="flex items-center justify-between cursor-pointer hover:bg-muted/30 rounded-md p-3 transition-colors gap-2"
-                onClick={() => toggleGroup(groupKey)}
-              >
-                <div className="flex items-center min-w-0 flex-1">
-                  <group.icon className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && <span className="text-base font-medium whitespace-nowrap">{group.title}</span>}
-                </div>
-                {!isCollapsed && (
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {groupBadgeCount > 0 && (
-                      <Badge variant="destructive" className="h-5 px-2 text-sm">
-                        {groupBadgeCount}
-                      </Badge>
-                    )}
-                    {isGroupExpanded ? (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </div>
-                )}
-              </SidebarGroupLabel>
-              
-              {(isCollapsed || isGroupExpanded) && (
-                <SidebarGroupContent className={isCollapsed ? "" : "pl-6"}>
-                  <SidebarMenu>
-                    {group.items.map((item) => {
-                      const badgeCount = getBadgeCount(item.badge);
-                      return (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuItemWithTooltip item={item}>
-                            <SidebarMenuButton asChild>
-                              <NavLink to={item.url} end className={getNavCls}>
-                                 <div className="flex items-center justify-between w-full py-1 gap-2">
-                                   <div className="flex items-center min-w-0 flex-1">
-                                     <item.icon className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                                     {!isCollapsed && <span className="text-base whitespace-nowrap">{item.title}</span>}
-                                  </div>
-                                   {!isCollapsed && badgeCount > 0 && (
-                                     <Badge variant="destructive" className="h-6 px-2 text-sm flex-shrink-0">
-                                       {badgeCount}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </NavLink>
-                            </SidebarMenuButton>
-                          </SidebarMenuItemWithTooltip>
-                        </SidebarMenuItem>
-                      );
-                    })}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              )}
-            </SidebarGroup>
-          );
-        })}
-
-        {/* Settings */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsItems.map((item) => (
+              {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuItemWithTooltip item={item}>
                     <SidebarMenuButton asChild>
