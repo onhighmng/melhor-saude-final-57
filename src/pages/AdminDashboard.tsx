@@ -77,13 +77,14 @@ const AdminDashboard = () => {
       route: '/admin/resources?tab=resultados'
     },
     {
-      title: 'Objetivos Atingidos',
-      value: '68%',
-      progress: 68,
+      title: 'Faturação',
+      value: '€24,500',
+      trend: '+15%',
+      isPositive: true,
       icon: Target,
       iconColor: 'text-royal-blue',
       bgColor: 'bg-royal-blue/10',
-      route: '/admin/reports'
+      route: '/admin/reports?tab=billing'
     }
   ];
 
