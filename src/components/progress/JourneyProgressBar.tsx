@@ -18,11 +18,8 @@ interface JourneyProgressBarProps {
 export const JourneyProgressBar = ({ onboardingCompleted = false }: JourneyProgressBarProps) => {
   const [milestones, setMilestones] = useState<Milestone[]>(() => {
     const stored = localStorage.getItem('journeyMilestones');
-    if (stored) {
-      return JSON.parse(stored);
-    }
     
-    return [
+    const defaultMilestones = [
       { id: 'onboarding', label: 'Concluiu o onboarding', points: 10, completed: false },
       { id: 'specialist', label: 'Falou com um especialista', points: 20, completed: false },
       { id: 'first_session', label: 'Fez a primeira sessão', points: 25, completed: false },
@@ -30,6 +27,19 @@ export const JourneyProgressBar = ({ onboardingCompleted = false }: JourneyProgr
       { id: 'ratings', label: 'Avaliou 3 sessões efetuadas', points: 20, completed: false },
       { id: 'goal', label: 'Atingiu 1 objetivo pessoal', points: 10, completed: false },
     ];
+    
+    if (stored) {
+      const parsedMilestones = JSON.parse(stored);
+      // Update the ratings milestone label if it's outdated
+      return parsedMilestones.map((m: Milestone) => {
+        if (m.id === 'ratings' && m.label === 'Avaliou 3 sessões') {
+          return { ...m, label: 'Avaliou 3 sessões efetuadas' };
+        }
+        return m;
+      });
+    }
+    
+    return defaultMilestones;
   });
 
   const [showCelebration, setShowCelebration] = useState(false);
