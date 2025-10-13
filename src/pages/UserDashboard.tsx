@@ -69,17 +69,20 @@ const UserDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Animate progress bar on page load with slower incremental updates
+  // Animate progress bar on page load with smooth 4-second animation
   useEffect(() => {
     setAnimatedProgress(0);
     const startTime = Date.now();
-    const duration = 8000; // 8 seconds total animation
+    const duration = 4000; // 4 seconds total animation
+    
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
     
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
       
-      setAnimatedProgress(Math.floor(milestoneProgress * progress));
+      setAnimatedProgress(milestoneProgress * easedProgress);
       
       if (progress < 1) {
         requestAnimationFrame(animate);
