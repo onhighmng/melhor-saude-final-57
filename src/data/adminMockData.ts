@@ -24,15 +24,21 @@ export interface AdminProvider {
   id: string;
   name: string;
   email: string;
-  pillars: ('mental-health' | 'physical-wellness' | 'financial-assistance' | 'legal-assistance')[];
-  availability: 'active' | 'inactive';
-  licenseStatus: 'valid' | 'expired' | 'pending';
-  capacity: number;
-  defaultSlot: number;
-  licenseExpiry?: string;
+  specialty: string; // e.g., "Psicólogo Clínico", "Advogado", etc.
+  pillar: 'mental-health' | 'physical-wellness' | 'financial-assistance' | 'legal-assistance'; // Only ONE pillar
+  costPerSession: number; // in MZN
+  sessionType: 'Virtual' | 'Presencial' | 'Ambos';
+  availability: string; // "Disponível", "Ocupado", "Indisponível" or for filters: 'active' | 'inactive'
+  status: 'Ativo' | 'Ocupado' | 'Inativo';
+  satisfaction: number; // rating out of 10
+  totalSessions: number;
+  sessionsThisMonth: number;
+  companiesServed: number;
   avatar?: string;
   bio?: string;
-  languages: string[];
+  // For financial calculations
+  platformMargin: number; // percentage, e.g., 25
+  monthlyPayment: number; // total paid this month in MZN
 }
 
 // Mock Users Data
@@ -247,128 +253,180 @@ export const mockProviders: AdminProvider[] = [
     id: '1',
     name: 'Dra. Maria Santos',
     email: 'maria.santos@clinic.pt',
-    pillars: ['mental-health', 'physical-wellness'],
+    specialty: 'Psicóloga Clínica',
+    pillar: 'mental-health',
+    costPerSession: 350,
+    sessionType: 'Ambos',
     availability: 'active',
-    licenseStatus: 'valid',
-    capacity: 20,
-    defaultSlot: 50,
-    licenseExpiry: '2025-12-31',
-    languages: ['PT', 'EN'],
+    status: 'Ativo',
+    satisfaction: 9.2,
+    totalSessions: 142,
+    sessionsThisMonth: 18,
+    companiesServed: 4,
+    platformMargin: 25,
+    monthlyPayment: 4725,
     bio: 'Psicóloga clínica com mais de 10 anos de experiência em terapia cognitivo-comportamental e mindfulness.'
   },
   {
     id: '2',
     name: 'Dr. Paulo Reis',
     email: 'paulo.reis@financial.pt',
-    pillars: ['financial-assistance'],
+    specialty: 'Consultor Financeiro',
+    pillar: 'financial-assistance',
+    costPerSession: 300,
+    sessionType: 'Virtual',
     availability: 'active',
-    licenseStatus: 'pending',
-    capacity: 15,
-    defaultSlot: 45,
-    languages: ['PT'],
+    status: 'Ativo',
+    satisfaction: 8.9,
+    totalSessions: 98,
+    sessionsThisMonth: 12,
+    companiesServed: 3,
+    platformMargin: 25,
+    monthlyPayment: 2700,
     bio: 'Consultor financeiro especializado em planeamento financeiro pessoal e gestão de dívidas.'
   },
   {
     id: '3',
     name: 'Dra. Sofia Alves',
     email: 'sofia.alves@legal.pt',
-    pillars: ['legal-assistance'],
+    specialty: 'Advogada',
+    pillar: 'legal-assistance',
+    costPerSession: 400,
+    sessionType: 'Presencial',
     availability: 'inactive',
-    licenseStatus: 'expired',
-    capacity: 12,
-    defaultSlot: 60,
-    licenseExpiry: '2024-01-15',
-    languages: ['PT', 'ES'],
+    status: 'Inativo',
+    satisfaction: 9.5,
+    totalSessions: 76,
+    sessionsThisMonth: 0,
+    companiesServed: 2,
+    platformMargin: 25,
+    monthlyPayment: 0,
     bio: 'Advogada especializada em direito do trabalho e direito da família.'
   },
   {
     id: '4',
     name: 'Prof. Ana Rodrigues',
     email: 'ana.rodrigues@wellness.pt',
-    pillars: ['physical-wellness', 'mental-health'],
+    specialty: 'Personal Trainer',
+    pillar: 'physical-wellness',
+    costPerSession: 250,
+    sessionType: 'Ambos',
     availability: 'active',
-    licenseStatus: 'valid',
-    capacity: 25,
-    defaultSlot: 30,
-    licenseExpiry: '2026-06-30',
-    languages: ['PT', 'EN', 'FR'],
+    status: 'Ativo',
+    satisfaction: 9.1,
+    totalSessions: 203,
+    sessionsThisMonth: 25,
+    companiesServed: 5,
+    platformMargin: 25,
+    monthlyPayment: 4687.5,
     bio: 'Personal trainer e coach de wellness com certificação em nutrição desportiva.'
   },
   {
     id: '5',
     name: 'Dr. Fernando Alves',
     email: 'fernando.alves@finance.pt',
-    pillars: ['financial-assistance'],
+    specialty: 'Economista',
+    pillar: 'financial-assistance',
+    costPerSession: 320,
+    sessionType: 'Virtual',
     availability: 'active',
-    licenseStatus: 'valid',
-    capacity: 18,
-    defaultSlot: 50,
-    licenseExpiry: '2026-03-15',
-    languages: ['PT', 'EN'],
+    status: 'Ocupado',
+    satisfaction: 9.3,
+    totalSessions: 165,
+    sessionsThisMonth: 20,
+    companiesServed: 4,
+    platformMargin: 25,
+    monthlyPayment: 4800,
     bio: 'Economista e consultor financeiro com foco em investimentos e planeamento de reformas.'
   },
   {
     id: '6',
     name: 'Dra. Beatriz Silva',
     email: 'beatriz.silva@mental.pt',
-    pillars: ['mental-health'],
+    specialty: 'Psiquiatra',
+    pillar: 'mental-health',
+    costPerSession: 450,
+    sessionType: 'Ambos',
     availability: 'active',
-    licenseStatus: 'valid',
-    capacity: 22,
-    defaultSlot: 60,
-    licenseExpiry: '2025-09-20',
-    languages: ['PT'],
+    status: 'Ativo',
+    satisfaction: 9.7,
+    totalSessions: 187,
+    sessionsThisMonth: 22,
+    companiesServed: 6,
+    platformMargin: 25,
+    monthlyPayment: 7425,
     bio: 'Psiquiatra especializada em perturbações de ansiedade e depressão.'
   },
   {
     id: '7',
     name: 'Dr. Ricardo Costa',
     email: 'ricardo.costa@legal.pt',
-    pillars: ['legal-assistance'],
+    specialty: 'Advogado',
+    pillar: 'legal-assistance',
+    costPerSession: 380,
+    sessionType: 'Ambos',
     availability: 'active',
-    licenseStatus: 'valid',
-    capacity: 16,
-    defaultSlot: 45,
-    licenseExpiry: '2025-11-30',
-    languages: ['PT', 'EN'],
+    status: 'Ativo',
+    satisfaction: 8.8,
+    totalSessions: 112,
+    sessionsThisMonth: 14,
+    companiesServed: 3,
+    platformMargin: 25,
+    monthlyPayment: 3990,
     bio: 'Advogado com experiência em direito empresarial e contratos.'
   },
   {
     id: '8',
     name: 'Prof. Joana Martins',
     email: 'joana.martins@fitness.pt',
-    pillars: ['physical-wellness'],
+    specialty: 'Instrutora de Fitness',
+    pillar: 'physical-wellness',
+    costPerSession: 200,
+    sessionType: 'Presencial',
     availability: 'active',
-    licenseStatus: 'valid',
-    capacity: 30,
-    defaultSlot: 30,
-    licenseExpiry: '2026-08-15',
-    languages: ['PT', 'EN'],
+    status: 'Ativo',
+    satisfaction: 9.4,
+    totalSessions: 256,
+    sessionsThisMonth: 30,
+    companiesServed: 7,
+    platformMargin: 25,
+    monthlyPayment: 4500,
     bio: 'Professora de educação física e instrutora de pilates e yoga.'
   },
   {
     id: '9',
     name: 'Dr. Nuno Pereira',
     email: 'nuno.pereira@psych.pt',
-    pillars: ['mental-health'],
+    specialty: 'Psicólogo Clínico',
+    pillar: 'mental-health',
+    costPerSession: 340,
+    sessionType: 'Virtual',
     availability: 'inactive',
-    licenseStatus: 'pending',
-    capacity: 15,
-    defaultSlot: 55,
-    languages: ['PT'],
+    status: 'Inativo',
+    satisfaction: 8.6,
+    totalSessions: 89,
+    sessionsThisMonth: 0,
+    companiesServed: 2,
+    platformMargin: 25,
+    monthlyPayment: 0,
     bio: 'Psicólogo clínico com especialização em terapia de casal e família.'
   },
   {
     id: '10',
     name: 'Dra. Carla Fernandes',
     email: 'carla.fernandes@wellness.pt',
-    pillars: ['physical-wellness', 'mental-health'],
+    specialty: 'Nutricionista',
+    pillar: 'physical-wellness',
+    costPerSession: 280,
+    sessionType: 'Ambos',
     availability: 'active',
-    licenseStatus: 'valid',
-    capacity: 20,
-    defaultSlot: 45,
-    licenseExpiry: '2026-01-10',
-    languages: ['PT', 'EN', 'ES'],
+    status: 'Ativo',
+    satisfaction: 9.0,
+    totalSessions: 134,
+    sessionsThisMonth: 16,
+    companiesServed: 4,
+    platformMargin: 25,
+    monthlyPayment: 3360,
     bio: 'Nutricionista e coach de bem-estar holístico.'
   }
 ];
@@ -420,22 +478,18 @@ export const generateMockProviderDetail = (provider: AdminProvider) => {
     { degree: 'Licenciatura em Psicologia', institution: 'Universidade do Porto', year: '2010' }
   ];
   
-  const specialtiesMapped = provider.pillars.map(p => {
-    const names = {
-      'mental-health': 'Saúde Mental',
-      'physical-wellness': 'Bem-Estar Físico',
-      'financial-assistance': 'Assistência Financeira',
-      'legal-assistance': 'Assistência Jurídica'
-    };
-    return names[p];
-  });
+  const pillarName = {
+    'mental-health': 'Saúde Mental',
+    'physical-wellness': 'Bem-Estar Físico',
+    'financial-assistance': 'Assistência Financeira',
+    'legal-assistance': 'Assistência Jurídica'
+  }[provider.pillar];
   
   return {
     ...provider,
     phone: '+351 ' + Math.floor(900000000 + Math.random() * 100000000),
-    rating: parseFloat((4 + Math.random()).toFixed(1)),
-    totalSessions: Math.floor(50 + Math.random() * 200),
-    completedSessions: Math.floor(45 + Math.random() * 180),
+    rating: provider.satisfaction,
+    completedSessions: provider.totalSessions,
     experience: 5 + Math.floor(Math.random() * 15),
     location: 'Lisboa, Portugal',
     website: 'https://provider-site.pt',
@@ -444,7 +498,7 @@ export const generateMockProviderDetail = (provider: AdminProvider) => {
     sessionHistory: generateProviderSessionHistory(provider),
     monthlyStats: generateProviderMonthlyStats(),
     education: educationMapped,
-    specialties: specialtiesMapped
+    specialties: [pillarName]
   };
 };
 
@@ -506,7 +560,7 @@ function generateUpcomingBookings(provider: AdminProvider) {
       date: date.toISOString().split('T')[0],
       time: `${9 + i * 2}:00`,
       patient: users[Math.floor(Math.random() * users.length)],
-      pillar: provider.pillars[Math.floor(Math.random() * provider.pillars.length)],
+      pillar: provider.pillar,
       status: (i % 2 === 0 ? 'confirmed' : 'scheduled') as 'confirmed' | 'scheduled'
     });
   }
@@ -518,6 +572,7 @@ function generateProviderSessionHistory(provider: AdminProvider) {
   const history = [];
   const users = ['João Silva', 'Maria Oliveira', 'Ana Costa', 'Pedro Ferreira', 'Carlos Santos'];
   const statuses = ['completed', 'cancelled', 'no-show'];
+  const ratings = [8.5, 9.0, 9.2, 9.5, 9.8, 8.8, 9.3];
   
   for (let i = 0; i < 15; i++) {
     const date = new Date();
@@ -527,8 +582,9 @@ function generateProviderSessionHistory(provider: AdminProvider) {
       id: `session-${i}`,
       date: date.toISOString().split('T')[0],
       patient: users[Math.floor(Math.random() * users.length)],
-      pillar: provider.pillars[Math.floor(Math.random() * provider.pillars.length)],
-      duration: provider.defaultSlot,
+      pillar: provider.pillar,
+      duration: 50,
+      rating: i < 12 ? ratings[Math.floor(Math.random() * ratings.length)] : undefined,
       status: i < 12 ? 'completed' : statuses[Math.floor(Math.random() * statuses.length)]
     });
   }
