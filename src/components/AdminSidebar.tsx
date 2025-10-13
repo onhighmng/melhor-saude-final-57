@@ -97,6 +97,7 @@ const AdminSidebar = () => {
   const settingsItems: MenuItem[] = [
     { title: 'Recursos', url: "/admin/recursos", icon: FileText },
     { title: 'Relatórios', url: "/admin/relatorios", icon: FileText },
+    { title: 'Centro de Controlo', url: "/admin/centro-controlo", icon: Shield },
     { title: 'Definições', url: "/admin/configuracoes", icon: Settings },
   ];
 
