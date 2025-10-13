@@ -154,6 +154,7 @@ const AppWithTracking = () => {
           <Route path="/admin/providers/change-requests" element={<AdminLayout><AdminProviderChangeRequests /></AdminLayout>} />
           <Route path="/admin/sessions" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
+          <Route path="/admin/gestao-sessoes" element={<AdminLayout><AdminSessions /></AdminLayout>} />
           <Route path="/admin/matching" element={<AdminLayout><AdminMatching /></AdminLayout>} />
           <Route path="/admin/companies" element={<AdminLayout><AdminCompanies /></AdminLayout>} />
           <Route path="/admin/companies/:id" element={<AdminLayout><AdminCompanyInvites /></AdminLayout>} />
