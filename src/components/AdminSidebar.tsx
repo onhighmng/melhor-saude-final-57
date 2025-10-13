@@ -125,8 +125,10 @@ const AdminSidebar = () => {
                   <SidebarMenuItemWithTooltip item={item}>
                     <SidebarMenuButton asChild>
                       <NavLink to={item.url} end className={getNavCls}>
-                        <item.icon className={`h-5 w-5 flex-shrink-0 text-blue-500 ${isCollapsed ? '' : 'mr-3'}`} />
-                        {!isCollapsed && <span className="text-base font-normal text-blue-500">{item.title}</span>}
+                        <div className={`flex items-center ${isCollapsed ? 'justify-center w-full' : ''}`}>
+                          <item.icon className={`h-5 w-5 flex-shrink-0 text-blue-500 ${isCollapsed ? '' : 'mr-3'}`} />
+                          {!isCollapsed && <span className="text-base font-normal text-blue-500">{item.title}</span>}
+                        </div>
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItemWithTooltip>
@@ -155,8 +157,10 @@ const AdminSidebar = () => {
                 onClick={handleLogout}
                 className="text-muted-foreground hover:text-foreground cursor-pointer w-full"
               >
-                <LogOut className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                {!isCollapsed && <span className="text-base">Sair</span>}
+                <div className={`flex items-center ${isCollapsed ? 'justify-center w-full' : ''}`}>
+                  <LogOut className={`h-5 w-5 flex-shrink-0 ${isCollapsed ? '' : 'mr-3'}`} />
+                  {!isCollapsed && <span className="text-base">Sair</span>}
+                </div>
               </SidebarMenuButton>
             </SidebarMenuItemWithTooltip>
           </SidebarMenuItem>
