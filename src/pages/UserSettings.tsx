@@ -269,19 +269,6 @@ const UserSettings = () => {
                       onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="language">Idioma Preferido</Label>
-                    <Select value={profileData.language} onValueChange={(value) => setProfileData({ ...profileData, language: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pt">Português</SelectItem>
-                        <SelectItem value="en">Inglês</SelectItem>
-                        <SelectItem value="es">Espanhol</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
 
                 <Button onClick={handleSaveProfile} className="w-full md:w-auto">
