@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { mockProviders, AdminProvider } from '@/data/adminMockData';
-import { useTranslation } from 'react-i18next';
 import { BookingModal } from '@/components/admin/providers/BookingModal';
 import { CalendarSlot } from '@/types/adminProvider';
 import { format, addDays, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
@@ -51,7 +50,6 @@ const generateMockSlots = (startDate: Date, pillar: string): CalendarSlot[] => {
 const AdminProviderCalendar = () => {
   const { providerId } = useParams<{ providerId: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation('admin-providers');
   const [provider, setProvider] = useState<AdminProvider | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
@@ -128,7 +126,7 @@ const AdminProviderCalendar = () => {
           </Button>
           <div>
             <h1 className="text-3xl font-heading font-bold text-foreground">
-              {t('calendarView.providerCalendar', { providerName: provider.name })}
+              Calendário de {provider.name}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {provider.specialty} • {provider.pillar}
@@ -155,10 +153,10 @@ const AdminProviderCalendar = () => {
           <div className="flex gap-2">
             <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder={t('calendarView.filterByType')} />
+                <SelectValue placeholder="Filtrar por tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('calendarView.allTypes')}</SelectItem>
+                <SelectItem value="all">Todos os tipos</SelectItem>
                 <SelectItem value="virtual">Virtual</SelectItem>
                 <SelectItem value="presential">Presencial</SelectItem>
               </SelectContent>
@@ -170,11 +168,11 @@ const AdminProviderCalendar = () => {
         <div className="flex gap-4 mb-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-green-100 border border-green-300"></div>
-            <span className="text-sm text-muted-foreground">{t('calendarView.available')}</span>
+            <span className="text-sm text-muted-foreground">Disponível</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-blue-100 border border-blue-300"></div>
-            <span className="text-sm text-muted-foreground">{t('calendarView.booked')}</span>
+            <span className="text-sm text-muted-foreground">Ocupado</span>
           </div>
         </div>
 
@@ -239,7 +237,7 @@ const AdminProviderCalendar = () => {
         </div>
 
         <p className="text-sm text-muted-foreground text-center mt-6">
-          {t('calendarView.selectSlot')}
+          Selecione um horário disponível para agendar
         </p>
       </Card>
 
