@@ -14,6 +14,7 @@ import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
 import { useToast } from '@/hooks/use-toast';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ const UserDashboard = () => {
   const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress());
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
+  const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
 
   const handleOnboardingComplete = (data: OnboardingData) => {
     const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
@@ -70,8 +72,10 @@ const UserDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Animate progress bar on page load with smooth 4-second animation
+  // Animate progress bar when scrolled into view with smooth 4-second animation
   useEffect(() => {
+    if (!isProgressVisible) return;
+    
     setAnimatedProgress(0);
     setAnimatedMilestoneProgress(0);
     const startTime = Date.now();
@@ -92,12 +96,8 @@ const UserDashboard = () => {
       }
     };
     
-    const timer = setTimeout(() => {
-      requestAnimationFrame(animate);
-    }, 300);
-    
-    return () => clearTimeout(timer);
-  }, [milestoneProgress]);
+    requestAnimationFrame(animate);
+  }, [isProgressVisible, milestoneProgress]);
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
@@ -191,7 +191,7 @@ const UserDashboard = () => {
 
 
         {/* Session Balance Card - Centered */}
-        <div className="flex justify-center">
+        <div className="flex justify-center" ref={progressRef}>
           <Card className="w-full max-w-4xl border shadow-sm bg-card">
             <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8">
               <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
