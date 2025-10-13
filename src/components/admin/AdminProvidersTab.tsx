@@ -371,14 +371,14 @@ const AdminProvidersTab = () => {
           filteredProviders.map((provider) => (
             <Card 
               key={provider.id} 
-              className="hover:shadow-lg transition-shadow cursor-pointer border-0 shadow-sm overflow-hidden"
+              className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-border shadow-sm overflow-hidden"
               onClick={() => handleCardClick(provider)}
             >
               {/* Provider Image */}
               <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50">
                 <Avatar className="absolute inset-0 w-full h-full rounded-none">
                   <AvatarImage 
-                    src={provider.avatar || `https://i.pravatar.cc/400?img=${Math.abs(provider.email.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 70)}`} 
+                    src={provider.avatar || `https://xsgames.co/randomusers/assets/avatars/${provider.name.toLowerCase().includes('dra') || provider.name.toLowerCase().includes('maria') || provider.name.toLowerCase().includes('ana') ? 'female' : 'male'}/${Math.abs(provider.email.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 50)}.jpg`} 
                     className="object-cover" 
                   />
                   <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-4xl rounded-none w-full h-full">
