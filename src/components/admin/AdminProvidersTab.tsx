@@ -399,7 +399,6 @@ const AdminProvidersTab = () => {
                 <div className="flex items-center justify-between">
                   <Badge className={`${getPillarBadgeColor(provider.pillar)} flex items-center gap-1`}>
                     {getPillarIcon(provider.pillar)}
-                    {getPillarName(provider.pillar)}
                   </Badge>
                   <Badge variant="outline" className="text-xs">
                     {provider.sessionType}
