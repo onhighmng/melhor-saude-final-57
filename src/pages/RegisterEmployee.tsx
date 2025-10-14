@@ -421,9 +421,9 @@ export default function RegisterEmployee() {
         <img 
           src={heroFitness}
           alt="Bem-estar e Saúde" 
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover z-0"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40 z-10" />
         <div className="relative z-10 flex flex-col justify-end p-12 text-white">
           <h1 className="text-4xl font-bold mb-4">Melhor Saúde</h1>
           <p className="text-lg text-white/90">
