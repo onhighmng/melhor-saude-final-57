@@ -161,7 +161,7 @@ export const JourneyProgressBar = ({ onboardingCompleted = false }: JourneyProgr
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold">Progresso Pessoal</h3>
-            <span className="text-2xl font-bold text-primary">{totalProgress}%</span>
+            <span className="text-2xl font-bold text-primary">{Math.round(animatedProgress)}%</span>
           </div>
           <Progress value={animatedProgress} className="h-3" />
           <p className="text-sm text-muted-foreground">
