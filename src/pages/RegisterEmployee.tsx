@@ -9,6 +9,7 @@ import { Eye, EyeOff, User, Mail, Key, Lock, ArrowLeft, CheckCircle, AlertCircle
 import { useToast } from '@/hooks/use-toast';
 import { getInviteCodeByCode, mockInviteCodes } from '@/data/inviteCodesMockData';
 import { generateUUID } from '@/utils/uuid';
+import heroFitness from '@/assets/hero-fitness.jpg';
 
 type FormStep = 'invite-code' | 'user-details';
 
@@ -418,7 +419,7 @@ export default function RegisterEmployee() {
       {/* Left side - Hero Image */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
         <img 
-          src="/src/assets/hero-fitness.jpg"
+          src={heroFitness}
           alt="Bem-estar e Saúde" 
           className="absolute inset-0 w-full h-full object-cover"
         />
