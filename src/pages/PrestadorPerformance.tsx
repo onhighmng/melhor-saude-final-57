@@ -165,7 +165,7 @@ const PrestadorPerformance = () => {
                 <Tooltip 
                   formatter={(value, name) => [
                     name === 'sessions' ? value : `${value}/10`,
-                    name === 'sessions' ? 'Sessões' : 'Satisfação'
+                    name === 'sessions' ? 'Sessões completas' : 'Satisfação'
                   ]}
                 />
                 <Legend />
