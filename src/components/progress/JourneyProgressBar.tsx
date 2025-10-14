@@ -101,6 +101,21 @@ export const JourneyProgressBar = ({ onboardingCompleted = false }: JourneyProgr
     }
   }, [onboardingCompleted]);
 
+  // Listen for milestone completion events
+  useEffect(() => {
+    const handleMilestoneCompleted = () => {
+      const stored = localStorage.getItem('journeyMilestones');
+      if (stored) {
+        setMilestones(JSON.parse(stored));
+      }
+    };
+
+    window.addEventListener('milestoneCompleted', handleMilestoneCompleted);
+    return () => {
+      window.removeEventListener('milestoneCompleted', handleMilestoneCompleted);
+    };
+  }, []);
+
   // Animate progress bar when scrolled into view with smooth 4-second animation
   useEffect(() => {
     if (!isProgressVisible || hasAnimated || totalProgress === 0) return;

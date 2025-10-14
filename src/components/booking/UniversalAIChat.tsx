@@ -109,6 +109,16 @@ export const UniversalAIChat = ({
     setShowExitFeedback(true);
   };
   const handleFeedbackComplete = () => {
+    // Mark specialist milestone as completed
+    const milestones = JSON.parse(localStorage.getItem('journeyMilestones') || '[]');
+    const updatedMilestones = milestones.map((m: any) => 
+      m.id === 'specialist' && !m.completed ? { ...m, completed: true } : m
+    );
+    localStorage.setItem('journeyMilestones', JSON.stringify(updatedMilestones));
+    
+    // Dispatch custom event to notify JourneyProgressBar
+    window.dispatchEvent(new CustomEvent('milestoneCompleted', { detail: { id: 'specialist' } }));
+    
     setShowExitFeedback(false);
     onClose();
   };
