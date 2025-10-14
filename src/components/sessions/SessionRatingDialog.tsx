@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Star } from "lucide-react";
+import { RatingScaleGroup, RatingScaleItem } from "@/components/ui/rating-scale-group";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { userToastMessages } from "@/data/userToastMessages";
@@ -27,13 +27,12 @@ export function SessionRatingDialog({
   sessionId,
   pillarName 
 }: SessionRatingDialogProps) {
-  const [rating, setRating] = useState(0);
-  const [hoveredRating, setHoveredRating] = useState(0);
+  const [rating, setRating] = useState("");
   const [comments, setComments] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (rating === 0) {
+    if (!rating) {
       toast({
         title: "Avaliação incompleta",
         description: "Por favor, selecione uma classificação",
@@ -62,7 +61,7 @@ export function SessionRatingDialog({
     onOpenChange(false);
     
     // Reset form
-    setRating(0);
+    setRating("");
     setComments("");
   };
 
@@ -82,33 +81,20 @@ export function SessionRatingDialog({
               Numa escala de 1 a 10, até que ponto sente que compreende melhor os seus direitos e se sente mais seguro juridicamente após esta sessão?
             </Label>
             
-            <div className="flex items-center justify-center gap-2 py-4">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  onMouseEnter={() => setHoveredRating(star)}
-                  onMouseLeave={() => setHoveredRating(0)}
-                  className="transition-all hover:scale-110 cursor-pointer"
-                >
-                  <Star
-                    className={cn(
-                      "h-8 w-8 transition-colors",
-                      star <= (hoveredRating || rating)
-                        ? "fill-amber-400 text-amber-400"
-                        : "text-gray-300"
-                    )}
-                  />
-                </button>
+            <RatingScaleGroup value={rating} onValueChange={setRating}>
+              {Array.from({ length: 10 }).map((_, i) => (
+                <RatingScaleItem 
+                  key={i} 
+                  value={(i + 1).toString()} 
+                  label={(i + 1).toString()} 
+                />
               ))}
-            </div>
+            </RatingScaleGroup>
 
-            {rating > 0 && (
-              <p className="text-center text-sm text-muted-foreground">
-                Classificação: {rating}/10
-              </p>
-            )}
+            <div className="flex justify-between text-xs font-medium text-muted-foreground">
+              <span>Pouco seguro 😞</span>
+              <span>Muito seguro 🤩</span>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -136,7 +122,7 @@ export function SessionRatingDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isSubmitting || rating === 0}
+            disabled={isSubmitting || !rating}
           >
             {isSubmitting ? "A enviar..." : "Enviar Avaliação"}
           </Button>
