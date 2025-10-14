@@ -38,12 +38,24 @@ const UserDashboard = () => {
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
   const [showUniversalChat, setShowUniversalChat] = useState(false);
 
-  // Get milestone progress from localStorage
+  // Get milestone progress from sessionStorage (resets on logout)
   const getMilestoneProgress = () => {
-    const stored = localStorage.getItem('journeyMilestones');
+    const stored = sessionStorage.getItem('journeyMilestones');
     if (stored) {
       const milestones = JSON.parse(stored);
       return milestones.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
+    }
+    // Initialize from localStorage if not in session
+    const localStored = localStorage.getItem('journeyMilestones');
+    if (localStored) {
+      const milestones = JSON.parse(localStored);
+      // Reset all milestones except onboarding for new session
+      const sessionMilestones = milestones.map((m: any) => ({
+        ...m,
+        completed: m.id === 'onboarding' ? m.completed : false
+      }));
+      sessionStorage.setItem('journeyMilestones', JSON.stringify(sessionMilestones));
+      return sessionMilestones.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
     }
     return 0;
   };
@@ -63,14 +75,22 @@ const UserDashboard = () => {
     setJustCompletedOnboarding(true);
   };
 
-  // Update milestone progress when it changes
+  // Listen for milestone completion events
   useEffect(() => {
-    const interval = setInterval(() => {
-      const progress = getMilestoneProgress();
-      setMilestoneProgress(progress);
-    }, 1000);
-    
-    return () => clearInterval(interval);
+    const handleMilestoneCompleted = () => {
+      const stored = localStorage.getItem('journeyMilestones');
+      if (stored) {
+        // Update sessionStorage with the new milestone
+        sessionStorage.setItem('journeyMilestones', stored);
+        const progress = getMilestoneProgress();
+        setMilestoneProgress(progress);
+      }
+    };
+
+    window.addEventListener('milestoneCompleted', handleMilestoneCompleted);
+    return () => {
+      window.removeEventListener('milestoneCompleted', handleMilestoneCompleted);
+    };
   }, []);
 
   // Animate progress bar when scrolled into view with smooth 4-second animation
@@ -203,7 +223,7 @@ const UserDashboard = () => {
               <div className="w-full max-w-md space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Progresso Pessoal</span>
-                  <span className="text-lg font-bold text-[#4A90E2]">{milestoneProgress}%</span>
+                  <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
                 </div>
                 <Progress value={animatedMilestoneProgress} className="h-2" />
               </div>
