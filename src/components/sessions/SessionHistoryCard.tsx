@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, Building2, User as UserIcon, ExternalLink } from "lucide-react";
 import { Session, getStatusLabel, getPillarLabel, getPayerSourceLabel } from "@/data/sessionMockData";
 import { SessionDeductionBadge } from "./SessionDeductionBadge";
+import { SessionRatingDialog } from "./SessionRatingDialog";
 import { useState, useEffect } from "react";
 
 interface SessionHistoryCardProps {
@@ -20,6 +21,7 @@ export function SessionHistoryCard({
   onCancel 
 }: SessionHistoryCardProps) {
   const [showMeetingLink, setShowMeetingLink] = useState(false);
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
 
   useEffect(() => {
     const checkMeetingLinkAvailability = () => {
@@ -192,13 +194,24 @@ export function SessionHistoryCard({
             )}
             
             {session.status === 'completed' && (
-              <Button size="sm" variant="secondary">
+              <Button 
+                size="sm" 
+                variant="secondary"
+                onClick={() => setShowRatingDialog(true)}
+              >
                 Avaliar Sessão
               </Button>
             )}
           </div>
         </div>
       </CardContent>
+
+      <SessionRatingDialog
+        open={showRatingDialog}
+        onOpenChange={setShowRatingDialog}
+        sessionId={session.id}
+        pillarName={getPillarLabel(session.pillar)}
+      />
     </Card>
   );
 }
