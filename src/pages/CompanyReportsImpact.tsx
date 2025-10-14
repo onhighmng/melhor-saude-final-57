@@ -272,50 +272,41 @@ const CompanyReportsImpact = () => {
         </Card>
       </div>
 
-      {/* Employee Highlights Table */}
+      {/* Aggregated Statistics - Anonymous Data Only */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Destaques dos Colaboradores
+            <TrendingUp className="h-5 w-5" />
+            Estatísticas Agregadas por Pilar
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4 font-medium">Colaborador</th>
-                  <th className="text-left p-4 font-medium">Pilar Mais Utilizado</th>
-                  <th className="text-left p-4 font-medium">Última Sessão</th>
-                  <th className="text-left p-4 font-medium">Nota Média</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockEmployeeHighlights.map((employee) => (
-                  <tr key={employee.id} className="border-b hover:bg-muted/30">
-                    <td className="p-4">
-                      <div className="font-medium">{employee.name}</div>
-                    </td>
-                    <td className="p-4">
-                      <Badge className={`${getPillarBadgeColor(employee.pillar)} flex items-center gap-1 w-fit`}>
-                        {getPillarIcon(employee.pillar)}
-                        {employee.pillar}
-                      </Badge>
-                    </td>
-                    <td className="p-4 text-sm text-muted-foreground">
-                      {new Date(employee.lastSession).toLocaleDateString('pt-PT')}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                        <span className="font-medium">{employee.avgRating}/10</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {mockPillarDistribution.map((pillar, index) => (
+              <Card key={index} className="border">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    {getPillarIcon(pillar.pillar)}
+                    <h4 className="font-semibold text-sm">{pillar.pillar}</h4>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Sessões:</span>
+                      <span className="font-medium">{pillar.sessions}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Percentagem:</span>
+                      <span className="font-medium">{pillar.percentage}%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-6 p-4 bg-muted/30 rounded-lg">
+            <p className="text-sm text-muted-foreground text-center">
+              📊 Todos os dados apresentados são agregados e anónimos para proteger a privacidade dos colaboradores
+            </p>
           </div>
         </CardContent>
       </Card>
