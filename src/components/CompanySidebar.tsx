@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, BarChart3, Settings, HelpCircle, FileText, LogOut, Calendar } from "lucide-react";
+import { LayoutDashboard, Users, BarChart3, Settings, HelpCircle, FileText, LogOut } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -23,7 +23,6 @@ const CompanySidebar = () => {
   const navigationItems = [
     { title: 'Dashboard', url: "/company/dashboard", icon: LayoutDashboard },
     { title: 'Relatórios e Impacto', url: "/company/relatorios", icon: BarChart3 },
-    { title: 'Sessões', url: "/company/sessoes", icon: Calendar },
     { title: 'Colaboradores', url: "/company/colaboradores", icon: Users, badge: "seatUsage" },
   ];
 

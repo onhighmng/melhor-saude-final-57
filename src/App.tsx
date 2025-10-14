@@ -162,7 +162,6 @@ const AppWithTracking = () => {
           {/* Company HR routes */}
           <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />
           <Route path="/company/relatorios" element={<CompanyLayout><CompanyReportsImpact /></CompanyLayout>} />
-          <Route path="/company/sessoes" element={<CompanyLayout><CompanySessions /></CompanyLayout>} />
           <Route path="/company/colaboradores" element={<CompanyLayout><CompanyCollaborators /></CompanyLayout>} />
           
           {/* Catch-all route - redirect to home */}
