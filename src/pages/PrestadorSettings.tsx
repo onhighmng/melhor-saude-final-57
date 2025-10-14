@@ -136,7 +136,6 @@ const PrestadorSettings = () => {
             {/* Profile Picture */}
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={settings.avatar} />
                 <AvatarFallback className="bg-primary text-primary-foreground text-xl">
                   {settings.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                 </AvatarFallback>

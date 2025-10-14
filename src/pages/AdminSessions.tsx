@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Users, GitBranch, UserCog } from 'lucide-react';
+import { Calendar, UserCog } from 'lucide-react';
 import AdminSessionsTab from '@/components/admin/AdminSessionsTab';
-import AdminBookingsTab from '@/components/admin/AdminBookingsTab';
-import AdminMatchingTab from '@/components/admin/AdminMatchingTab';
 import AdminSpecialistTab from '@/components/admin/AdminSpecialistTab';
 
 export default function AdminSessions() {
@@ -23,18 +21,10 @@ export default function AdminSessions() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
+        <TabsList className="grid w-full grid-cols-2 max-w-md">
           <TabsTrigger value="sessions" className="gap-2">
-            <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Sessões</span>
-          </TabsTrigger>
-          <TabsTrigger value="bookings" className="gap-2">
             <Calendar className="h-4 w-4" />
-            <span className="hidden sm:inline">Agendamentos</span>
-          </TabsTrigger>
-          <TabsTrigger value="matching" className="gap-2">
-            <GitBranch className="h-4 w-4" />
-            <span className="hidden sm:inline">Matching</span>
+            <span className="hidden sm:inline">Sessões</span>
           </TabsTrigger>
           <TabsTrigger value="specialist" className="gap-2">
             <UserCog className="h-4 w-4" />
@@ -44,14 +34,6 @@ export default function AdminSessions() {
 
         <TabsContent value="sessions">
           <AdminSessionsTab />
-        </TabsContent>
-
-        <TabsContent value="bookings">
-          <AdminBookingsTab />
-        </TabsContent>
-
-        <TabsContent value="matching">
-          <AdminMatchingTab />
         </TabsContent>
 
         <TabsContent value="specialist">
