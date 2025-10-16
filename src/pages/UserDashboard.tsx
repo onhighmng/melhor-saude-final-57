@@ -274,7 +274,8 @@ const UserDashboard = () => {
             className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
             background={
               <div className="absolute inset-0 flex flex-col p-6">
-                <h3 className="text-xl font-semibold mb-4">Progresso Pessoal</h3>
+                <h3 className="text-xl font-semibold mb-1">Progresso Pessoal</h3>
+                <p className="text-sm text-muted-foreground mb-4 italic">"Pequenos passos todos os dias levam a grandes conquistas"</p>
                 <div className="flex-1 flex flex-col justify-center">
                   <div className="w-full space-y-4">
                     <div className="space-y-3">
