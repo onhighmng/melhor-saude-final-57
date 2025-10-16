@@ -302,6 +302,8 @@ const UserDashboard = () => {
             Icon={BookOpen}
             onClick={() => navigate('/user/resources')}
             className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4"
+            textColor="text-white"
+            iconColor="text-white"
             background={
               <div className="absolute inset-0">
                 <img 
