@@ -4,9 +4,10 @@ import { useRef, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 
-// Mesh gradient shader for subtle background effect
-const meshVertexShader = `
+// Custom shader material for advanced effects
+const vertexShader = `
   uniform float time;
+  uniform float intensity;
   varying vec2 vUv;
   varying vec3 vPosition;
   
@@ -15,127 +16,113 @@ const meshVertexShader = `
     vPosition = position;
     
     vec3 pos = position;
-    // Subtle wave motion
-    pos.z += sin(pos.x * 3.0 + time * 0.5) * 0.3;
-    pos.z += cos(pos.y * 2.0 + time * 0.3) * 0.2;
+    pos.y += sin(pos.x * 10.0 + time) * 0.1 * intensity;
+    pos.x += cos(pos.y * 8.0 + time * 1.5) * 0.05 * intensity;
     
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   }
 `
 
-const meshFragmentShader = `
+const fragmentShader = `
   uniform float time;
+  uniform float intensity;
   uniform vec3 color1;
   uniform vec3 color2;
-  uniform vec3 color3;
-  uniform vec3 color4;
   varying vec2 vUv;
   varying vec3 vPosition;
   
   void main() {
     vec2 uv = vUv;
     
-    // Create flowing gradient pattern
-    float pattern1 = sin(uv.x * 3.0 + time * 0.2) * cos(uv.y * 3.0 - time * 0.15);
-    float pattern2 = sin(uv.x * 5.0 - time * 0.1) * sin(uv.y * 4.0 + time * 0.25);
+    // Create animated noise pattern
+    float noise = sin(uv.x * 20.0 + time) * cos(uv.y * 15.0 + time * 0.8);
+    noise += sin(uv.x * 35.0 - time * 2.0) * cos(uv.y * 25.0 + time * 1.2) * 0.5;
     
-    // Mix multiple colors based on patterns
-    vec3 color = mix(color1, color2, (pattern1 + 1.0) * 0.5);
-    color = mix(color, color3, (pattern2 + 1.0) * 0.3);
-    color = mix(color, color4, length(uv - 0.5) * 0.4);
+    // Mix colors based on noise and position
+    vec3 color = mix(color1, color2, noise * 0.5 + 0.5);
+    color = mix(color, vec3(1.0), pow(abs(noise), 2.0) * intensity);
     
-    // Very subtle opacity for background effect
-    float alpha = 0.3 + sin(time * 0.5) * 0.1;
+    // Add glow effect
+    float glow = 1.0 - length(uv - 0.5) * 2.0;
+    glow = pow(glow, 2.0);
     
-    gl_FragColor = vec4(color, alpha);
+    gl_FragColor = vec4(color * glow, glow * 0.8);
   }
 `
 
-export function MeshGradientPlane({
-  position = [0, 0, 0],
-  colors = ["#000000", "#1a1a1a", "#333333", "#ffffff"],
+export function ShaderPlane({
+  position,
+  color1 = "#ff5722",
+  color2 = "#ffffff",
 }: {
+  position: [number, number, number]
+  color1?: string
+  color2?: string
+}) {
+  const mesh = useRef<THREE.Mesh>(null)
+
+  const uniforms = useMemo(
+    () => ({
+      time: { value: 0 },
+      intensity: { value: 1.0 },
+      color1: { value: new THREE.Color(color1) },
+      color2: { value: new THREE.Color(color2) },
+    }),
+    [color1, color2],
+  )
+
+  useFrame((state) => {
+    if (mesh.current && uniforms) {
+      uniforms.time.value = state.clock.elapsedTime
+      uniforms.intensity.value = 1.0 + Math.sin(state.clock.elapsedTime * 2) * 0.3
+    }
+  })
+
+  const material = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader,
+      fragmentShader,
+      transparent: true,
+      side: THREE.DoubleSide,
+    })
+  }, [uniforms])
+
+  return (
+    <mesh ref={mesh} position={position} material={material}>
+      <planeGeometry args={[2, 2, 32, 32]} />
+    </mesh>
+  )
+}
+
+export function EnergyRing({
+  radius = 1,
+  position = [0, 0, 0],
+}: {
+  radius?: number
   position?: [number, number, number]
-  colors?: string[]
 }) {
   const mesh = useRef<THREE.Mesh>(null)
 
   const material = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        time: { value: 0 },
-        color1: { value: new THREE.Color(colors[0] || "#000000") },
-        color2: { value: new THREE.Color(colors[1] || "#1a1a1a") },
-        color3: { value: new THREE.Color(colors[2] || "#333333") },
-        color4: { value: new THREE.Color(colors[3] || "#ffffff") },
-      },
-      vertexShader: meshVertexShader,
-      fragmentShader: meshFragmentShader,
+    return new THREE.MeshBasicMaterial({
+      color: "#ff5722",
       transparent: true,
+      opacity: 0.6,
       side: THREE.DoubleSide,
-    });
-  }, [colors])
+    })
+  }, [])
 
   useFrame((state) => {
-    if (material.uniforms) {
-      material.uniforms.time.value = state.clock.elapsedTime
+    if (mesh.current) {
+      mesh.current.rotation.z = state.clock.elapsedTime
+      material.opacity = 0.5 + Math.sin(state.clock.elapsedTime * 3) * 0.3
     }
   })
 
   return (
     <mesh ref={mesh} position={position} material={material}>
-      <planeGeometry args={[20, 20, 64, 64]} />
+      <ringGeometry args={[radius * 0.8, radius, 32]} />
     </mesh>
-  )
-}
-
-// Dot orbit effect
-export function DotOrbit({
-  count = 50,
-  radius = 3,
-}: {
-  count?: number
-  radius?: number
-}) {
-  const points = useRef<THREE.Points>(null)
-
-  const geometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry()
-    const positions = new Float32Array(count * 3)
-    const sizes = new Float32Array(count)
-    
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2
-      const r = radius + Math.random() * 0.5
-      positions[i * 3] = Math.cos(angle) * r
-      positions[i * 3 + 1] = Math.sin(angle) * r
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 2
-      sizes[i] = Math.random() * 0.05 + 0.02
-    }
-    
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
-    
-    return geo
-  }, [count, radius])
-
-  const material = useMemo(() => {
-    return new THREE.PointsMaterial({
-      size: 0.05,
-      color: "#333333",
-      transparent: true,
-      opacity: 0.4,
-      sizeAttenuation: true,
-    })
-  }, [])
-
-  useFrame((state) => {
-    if (points.current) {
-      points.current.rotation.z = state.clock.elapsedTime * 0.1
-    }
-  })
-
-  return (
-    <points ref={points} geometry={geometry} material={material} />
   )
 }
