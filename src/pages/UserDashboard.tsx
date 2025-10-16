@@ -262,7 +262,7 @@ const UserDashboard = () => {
         {/* Bento Grid Layout */}
         <BentoGrid className="lg:grid-rows-3">
           {/* Top Left - Session History */}
-          <BentoCard name="Histórico de Sessões" description={`${completedSessions.length} sessões concluídas`} Icon={Calendar} onClick={() => navigate('/user/sessions')} className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />} />
+          <BentoCard name="Histórico de Sessões" description={`${completedSessions.length} sessões concluídas`} Icon={Calendar} onClick={() => navigate('/user/sessions')} className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />} />
 
           {/* Top Right - Notifications */}
           <BentoCard name="Notificações" description="Fique atualizado com as suas últimas atividades" Icon={Bell} onClick={() => navigate('/user/notifications')} className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />} />
