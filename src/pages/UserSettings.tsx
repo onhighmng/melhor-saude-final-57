@@ -205,7 +205,7 @@ const UserSettings = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           {/* Navigation */}
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">Perfil</span>
@@ -221,10 +221,6 @@ const UserSettings = () => {
             <TabsTrigger value="consents" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Consentimentos</span>
-            </TabsTrigger>
-            <TabsTrigger value="providers" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Prestadores</span>
             </TabsTrigger>
           </TabsList>
 
@@ -538,135 +534,9 @@ const UserSettings = () => {
             </Card>
           </TabsContent>
 
-          {/* Fixed Providers Tab */}
-          <TabsContent value="providers" className="space-y-6">
-            {/* Pending request banner */}
-            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                <p className="text-yellow-800">
-                  Tem um pedido de troca pendente para Bem-Estar Físico.
-                </p>
-              </div>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Prestador Fixo por Pilar</CardTitle>
-                <CardDescription>
-                  Os seus prestadores atribuídos em cada área de especialidade.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  {fixedProviders.map((item, index) => (
-                    <div key={index} className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Users className="w-6 h-6 text-primary" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold">{item.pillar}</h4>
-                            {item.provider ? (
-                              <div className="flex items-center gap-2">
-                                <Avatar className="w-6 h-6">
-                                  <AvatarImage src={item.provider.avatar} />
-                                  <AvatarFallback className="text-xs">
-                                    {item.provider.name.charAt(0)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-sm text-muted-foreground">
-                                  {item.provider.name} - {item.provider.specialty}
-                                </span>
-                              </div>
-                            ) : (
-                              <p className="text-sm text-muted-foreground">
-                                Nenhum prestador atribuído
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className={getStatusColor(item.status)}>
-                            {getStatusText(item.status)}
-                          </Badge>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleRequestProviderChange(item.pillar)}
-                            disabled={item.status === "pending"}
-                          >
-                            <Edit className="w-4 h-4 mr-1" />
-                            Pedir troca
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
 
-      {/* Provider Change Modal */}
-      <Dialog open={isChangeProviderOpen} onOpenChange={setIsChangeProviderOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Pedir Troca de Prestador</DialogTitle>
-            <DialogDescription>
-              Indique o motivo para a troca de prestador em {selectedPillar}.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="reason">Motivo da troca</Label>
-              <Textarea 
-                id="reason"
-                placeholder="Descreva o motivo para solicitar a troca do prestador..."
-                rows={3}
-              />
-            </div>
-            <div className="space-y-3">
-              <Label>Preferências (opcional)</Label>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="pref-gender" />
-                  <Label htmlFor="pref-gender" className="text-sm">Preferência de género</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="pref-language" />
-                  <Label htmlFor="pref-language" className="text-sm">Preferência de língua</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="pref-schedule" />
-                  <Label htmlFor="pref-schedule" className="text-sm">Preferência de horário</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="pref-experience" />
-                  <Label htmlFor="pref-experience" className="text-sm">Preferência de experiência específica</Label>
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setIsChangeProviderOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={() => {
-                setIsChangeProviderOpen(false);
-                toast({
-                  title: "Pedido enviado",
-                  description: "O seu pedido de troca será analisado pela equipa."
-                });
-              }}>
-                Enviar Pedido
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
