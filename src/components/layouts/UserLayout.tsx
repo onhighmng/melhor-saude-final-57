@@ -23,7 +23,7 @@ export function UserLayout({ children }: UserLayoutProps) {
           />
         </div>
         <UserSidebar />
-        <main className="flex-1 flex flex-col min-w-0 relative z-10 md:ml-[60px]">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10 md:ml-[300px]">
           <div className={`flex-1 overflow-auto ${isFullScreenPage ? '' : 'p-6'}`}>
             <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
               {children}
