@@ -1,33 +1,11 @@
 import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { UserSidebar } from '@/components/UserSidebar';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { useAnimatedSidebar } from '@/components/ui/animated-sidebar';
 
 interface UserLayoutProps {
   children: ReactNode;
-}
-
-function UserLayoutContent({ children, isFullScreenPage }: { children: ReactNode; isFullScreenPage: boolean }) {
-  const { open } = useAnimatedSidebar();
-  
-  return (
-    <motion.main
-      className="flex-1 flex flex-col min-w-0 relative z-10"
-      animate={{
-        marginLeft: open ? '300px' : '60px',
-      }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-    >
-      <div className={`flex-1 overflow-auto ${isFullScreenPage ? '' : 'p-6'}`}>
-        <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
-          {children}
-        </div>
-      </div>
-    </motion.main>
-  );
 }
 
 export function UserLayout({ children }: UserLayoutProps) {
@@ -45,9 +23,13 @@ export function UserLayout({ children }: UserLayoutProps) {
           />
         </div>
         <UserSidebar />
-        <UserLayoutContent isFullScreenPage={isFullScreenPage}>
-          {children}
-        </UserLayoutContent>
+        <main className="flex-1 flex flex-col min-w-0 relative z-10 ml-[60px] md:ml-[60px] transition-[margin] duration-300 ease-in-out">
+          <div className={`flex-1 overflow-auto ${isFullScreenPage ? '' : 'p-6'}`}>
+            <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
+              {children}
+            </div>
+          </div>
+        </main>
       </div>
     </SidebarProvider>
   );
