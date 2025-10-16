@@ -176,7 +176,7 @@ export const AdminCompaniesTab = () => {
                       <TableCell>
                         <Badge 
                           variant={company.status === 'Ativa' ? 'default' : 'secondary'}
-                          className={company.status === 'Ativa' ? 'bg-success' : ''}
+                          className={company.status === 'Ativa' ? 'bg-success text-white' : 'text-primary'}
                         >
                           {company.status}
                         </Badge>
