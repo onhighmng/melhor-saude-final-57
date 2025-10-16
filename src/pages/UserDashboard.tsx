@@ -237,7 +237,7 @@ const UserDashboard = () => {
         <div className="flex justify-center" ref={progressRef}>
           <Card className="w-full max-w-4xl border shadow-sm overflow-hidden relative">
             <div className="absolute inset-0">
-              <img src={cardBackground} alt="" className="w-full h-full object-cover opacity-50" />
+              <img src={cardBackground} alt="" className="w-full h-full object-cover" />
             </div>
             <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8 relative z-10">
               <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
