@@ -1,7 +1,3 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { FileText, Video, BookOpen, Download, Eye, Play } from "lucide-react";
 import { UserResource, pillarNames, resourceTypeNames } from "@/data/userResourcesData";
 
 interface ResourceCardProps {
@@ -10,90 +6,45 @@ interface ResourceCardProps {
   onDownload?: (resource: UserResource) => void;
 }
 
-const iconMap = {
-  pdf: FileText,
-  video: Video,
-  article: BookOpen,
-};
-
-const colorMap = {
-  pdf: 'text-red-500',
-  video: 'text-purple-500',
-  article: 'text-blue-500',
-};
-
 export function ResourceCard({ resource, onView, onDownload }: ResourceCardProps) {
-  const Icon = iconMap[resource.type];
-  const colorClass = colorMap[resource.type];
-  
-  const getCTA = () => {
-    switch (resource.type) {
-      case 'video':
-        return 'Assistir';
-      case 'article':
-        return 'Ler';
-      case 'pdf':
-      default:
-        return 'Ler';
+  const getDurationDisplay = () => {
+    if (resource.duration) {
+      return `${resource.duration} min`;
     }
+    return null;
   };
-  
+
   return (
-    <Card className="h-full hover:shadow-lg transition-shadow">
-      {resource.thumbnail && (
-        <div className="aspect-video w-full overflow-hidden rounded-t-lg">
-          <img 
-            src={resource.thumbnail} 
-            alt={resource.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+    <div
+      style={{
+        backgroundImage: `url(${resource.thumbnail})`
+      }}
+      className="group relative flex size-full min-h-[300px] cursor-pointer flex-col justify-end overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat p-5 text-white transition-all duration-300 hover:scale-[0.98] hover:rotate-[0.3deg]"
+      onClick={() => onView(resource)}
+    >
+      <div className="absolute inset-0 -z-0 h-[130%] w-full bg-gradient-to-t from-black/80 to-transparent transition-all duration-500 group-hover:h-full" />
       
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className={colorClass}>
-            <Icon className="h-5 w-5" />
-          </div>
-          <Badge variant="outline">{resourceTypeNames[resource.type]}</Badge>
-        </div>
-        <CardTitle className="text-lg line-clamp-2">{resource.title}</CardTitle>
-        <CardDescription className="line-clamp-2">{resource.description}</CardDescription>
-      </CardHeader>
-      
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {pillarNames[resource.pillar]}
-          </span>
-          {resource.duration && (
-            <span className="text-muted-foreground">{resource.duration}</span>
-          )}
-        </div>
-        
-        <div className="flex gap-2">
-          <Button 
-            onClick={() => onView(resource)}
-            className="flex-1"
-          >
-            {resource.type === 'video' ? (
-              <Play className="mr-2 h-4 w-4" />
-            ) : (
-              <Eye className="mr-2 h-4 w-4" />
-            )}
-            {getCTA()}
-          </Button>
+      <article className="relative z-0 flex items-end">
+        <div className="flex flex-1 flex-col gap-3">
+          <h1 className="text-2xl font-semibold md:text-3xl">{resource.title}</h1>
           
-          {resource.type === 'pdf' && onDownload && (
-            <Button 
-              variant="outline"
-              onClick={() => onDownload(resource)}
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-          )}
+          <div className="flex flex-col gap-3">
+            <span className="text-base capitalize py-px px-2 rounded-md bg-white/40 w-fit text-white backdrop-blur-md">
+              {pillarNames[resource.pillar]}
+            </span>
+            
+            <div className="flex items-center gap-3 text-lg font-thin">
+              <span className="capitalize">{resourceTypeNames[resource.type]}</span>
+              {getDurationDisplay() && (
+                <>
+                  <span>•</span>
+                  <span>{getDurationDisplay()}</span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </article>
+    </div>
   );
 }
