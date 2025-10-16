@@ -11,7 +11,7 @@ export function PrestadorLayout({ children }: PrestadorLayoutProps) {
     <SidebarProvider defaultOpen>
       <div className="min-h-screen flex w-full bg-background">
         <PrestadorSidebar />
-        <main className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col min-w-0 ml-[300px]">
           <div className="flex-1 overflow-auto p-6 bg-background">
             <div className="max-w-none w-full mx-auto">
               {children}
