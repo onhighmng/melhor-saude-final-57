@@ -133,7 +133,10 @@ export function UserSidebar() {
 
 const Logo = ({ open, user, role }: { open: boolean; user: any; role: string }) => {
   return (
-    <div className="flex items-center gap-3 py-2">
+    <div className={cn(
+      "flex items-center py-2",
+      open ? "gap-3 justify-start" : "justify-center"
+    )}>
       <Avatar className="h-10 w-10 flex-shrink-0">
         <AvatarImage src={user?.avatar_url} />
         <AvatarFallback className="bg-primary text-primary-foreground text-lg">

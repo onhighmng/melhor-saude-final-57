@@ -115,7 +115,10 @@ const AdminSidebar = () => {
 
 const Logo = ({ open, user }: { open: boolean; user: any }) => {
   return (
-    <div className="flex items-center gap-3 py-2">
+    <div className={cn(
+      "flex items-center py-2",
+      open ? "gap-3 justify-start" : "justify-center"
+    )}>
       <Avatar className="h-10 w-10 flex-shrink-0">
         <AvatarFallback className="bg-primary text-primary-foreground text-lg">
           {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
