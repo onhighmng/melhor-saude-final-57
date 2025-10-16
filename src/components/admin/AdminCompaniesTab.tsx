@@ -176,7 +176,7 @@ export const AdminCompaniesTab = () => {
                       <TableCell>
                         <Badge 
                           variant={company.status === 'Ativa' ? 'default' : 'secondary'}
-                          className={company.status === 'Ativa' ? 'bg-success text-white hover:bg-success hover:text-white' : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'}
+                          className={company.status === 'Ativa' ? 'bg-emerald-600 text-white hover:bg-emerald-600 hover:text-white border-0' : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'}
                         >
                           {company.status}
                         </Badge>
