@@ -69,29 +69,63 @@ export default function UserResources() {
         icon={BookOpen}
       />
       
-      <BlogPosts
-        title="Recursos Mais Populares de 2024"
-        description="Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro"
-        backgroundLabel="RECURSOS"
-        backgroundPosition="left"
-        posts={resourcePosts}
-        onPostClick={(post) => {
-          toast.success(`A abrir: ${post.title}`);
-        }}
-        className="mb-8"
-      >
-        <TabsList className="inline-flex w-auto mx-auto mb-6">
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="saude_mental">Saúde Mental</TabsTrigger>
-          <TabsTrigger value="bem_estar_fisico">Bem-Estar</TabsTrigger>
-          <TabsTrigger value="assistencia_financeira">Financeiro</TabsTrigger>
-          <TabsTrigger value="assistencia_juridica">Jurídico</TabsTrigger>
-        </TabsList>
-      </BlogPosts>
-      
       <div className="max-w-7xl mx-auto px-6">
         <Tabs defaultValue="all" className="w-full">
+          <div className="space-y-8">
+            {/* Title and Description */}
+            <div className="text-center space-y-4">
+              <h1 className="text-4xl font-semibold capitalize !leading-[1.4] md:text-5xl lg:text-6xl">
+                Recursos Mais Populares de 2024
+              </h1>
+              <p className="mx-auto max-w-[800px] text-xl !leading-[2] text-foreground/50 md:text-2xl">
+                Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro
+              </p>
+            </div>
+            
+            {/* Tabs Bar */}
+            <TabsList className="inline-flex w-auto mx-auto">
+              <TabsTrigger value="all">Todos</TabsTrigger>
+              <TabsTrigger value="saude_mental">Saúde Mental</TabsTrigger>
+              <TabsTrigger value="bem_estar_fisico">Bem-Estar</TabsTrigger>
+              <TabsTrigger value="assistencia_financeira">Financeiro</TabsTrigger>
+              <TabsTrigger value="assistencia_juridica">Jurídico</TabsTrigger>
+            </TabsList>
+            
+            {/* Blog Cards */}
+            <div className="grid h-auto grid-cols-1 gap-5 md:h-[650px] md:grid-cols-2 lg:grid-cols-[1fr_0.5fr]">
+              {resourcePosts.map((post, index) => {
+                const isPrimary = index === 0;
+                return (
+                  <div
+                    key={post.id}
+                    style={{ backgroundImage: `url(${post.imageUrl})` }}
+                    className={`group relative row-span-1 flex size-full cursor-pointer flex-col justify-end overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat p-5 text-white max-md:h-[300px] transition-all duration-300 hover:scale-[0.98] hover:rotate-[0.3deg] ${
+                      isPrimary ? 'col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-1' : ''
+                    }`}
+                    onClick={() => toast.success(`A abrir: ${post.title}`)}
+                  >
+                    <div className="absolute inset-0 -z-0 h-[130%] w-full bg-gradient-to-t from-black/80 to-transparent transition-all duration-500 group-hover:h-full" />
+                    <article className="relative z-0 flex items-end">
+                      <div className="flex flex-1 flex-col gap-3">
+                        <h1 className="text-3xl font-semibold md:text-4xl">{post.title}</h1>
+                        <div className="flex flex-col gap-3">
+                          <span className="text-base capitalize py-px px-2 rounded-md bg-white/40 w-fit text-white backdrop-blur-md">
+                            {post.category}
+                          </span>
+                          <div className="text-lg font-thin">({post.views} Views)</div>
+                          {post.readTime && (
+                            <div className="text-xl font-semibold">{post.readTime} min read</div>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
           
+          {/* Tab Contents */}
           <TabsContent value="all" className="mt-6">
             <ResourceGrid
               resources={filterByPillar('all')}
