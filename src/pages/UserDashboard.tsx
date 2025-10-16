@@ -274,13 +274,56 @@ const UserDashboard = () => {
             Icon={Calendar}
             className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
             background={
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-                <div className="w-full max-w-md space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Progresso</span>
-                    <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+                <div className="w-full space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Progresso</span>
+                      <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
+                    </div>
+                    <Progress value={animatedMilestoneProgress} className="h-2" />
                   </div>
-                  <Progress value={animatedMilestoneProgress} className="h-2" />
+                  
+                  <div className="space-y-2 max-h-[280px] overflow-y-auto">
+                    {(() => {
+                      const stored = localStorage.getItem('journeyMilestones');
+                      const milestones = stored ? JSON.parse(stored) : [
+                        { id: 'onboarding', label: 'Concluiu o onboarding', points: 10, completed: false },
+                        { id: 'specialist', label: 'Falou com um especialista', points: 20, completed: false },
+                        { id: 'first_session', label: 'Fez a primeira sessão', points: 25, completed: false },
+                        { id: 'resources', label: 'Usou recursos da plataforma', points: 15, completed: false },
+                        { id: 'ratings', label: 'Avaliou 3 sessões efetuadas', points: 20, completed: false },
+                        { id: 'goal', label: 'Atingiu 1 objetivo pessoal', points: 10, completed: false },
+                      ];
+                      
+                      return milestones.map((milestone: any) => (
+                        <div
+                          key={milestone.id}
+                          className={`flex items-center gap-2 p-2 rounded-lg border text-xs ${
+                            milestone.completed
+                              ? 'bg-green-50 border-green-200'
+                              : 'bg-white/50 border-gray-200'
+                          }`}
+                        >
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                            milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300'
+                          }`}>
+                            {milestone.completed && (
+                              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          <span className={`flex-1 ${milestone.completed ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
+                            {milestone.label}
+                          </span>
+                          <span className={`text-xs font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
+                            +{milestone.points}%
+                          </span>
+                        </div>
+                      ));
+                    })()}
+                  </div>
                 </div>
               </div>
             }
