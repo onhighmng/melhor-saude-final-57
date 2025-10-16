@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { UserSidebar } from '@/components/UserSidebar';
-import { ShaderBackground } from '@/components/ui/shader-background';
+import { DiagonalGradientBackground } from '@/components/ui/diagonal-gradient-background';
 
 interface UserLayoutProps {
   children: ReactNode;
@@ -15,7 +15,7 @@ export function UserLayout({ children }: UserLayoutProps) {
   return (
     <SidebarProvider defaultOpen>
       <div className="min-h-screen flex w-full relative">
-        <ShaderBackground />
+        <DiagonalGradientBackground />
         <UserSidebar />
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
           <div className={`flex-1 overflow-auto ${isFullScreenPage ? '' : 'p-6'}`}>
