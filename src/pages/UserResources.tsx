@@ -83,7 +83,7 @@ export default function UserResources() {
       
       <div className="max-w-7xl mx-auto px-6">
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="inline-flex w-auto mx-auto">
             <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="saude_mental">Saúde Mental</TabsTrigger>
             <TabsTrigger value="bem_estar_fisico">Bem-Estar</TabsTrigger>
