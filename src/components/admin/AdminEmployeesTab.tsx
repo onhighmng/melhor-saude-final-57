@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { useToast } from '@/hooks/use-toast';
+import { AddEmployeeModal } from '@/components/admin/AddEmployeeModal';
 import { 
   Search, 
   Eye, 
@@ -101,7 +101,7 @@ export const AdminEmployeesTab = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const { toast } = useToast();
+  const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
 
   const filteredEmployees = mockEmployees.filter(emp =>
     emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -115,10 +115,7 @@ export const AdminEmployeesTab = () => {
   };
 
   const handleAddEmployee = () => {
-    toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "A adição de colaboradores estará disponível em breve.",
-    });
+    setIsAddEmployeeModalOpen(true);
   };
 
   return (
@@ -314,6 +311,12 @@ export const AdminEmployeesTab = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Add Employee Modal */}
+      <AddEmployeeModal
+        open={isAddEmployeeModalOpen}
+        onOpenChange={setIsAddEmployeeModalOpen}
+      />
     </>
   );
 };
