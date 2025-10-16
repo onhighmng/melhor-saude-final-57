@@ -159,11 +159,12 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'Baskervville', serif;
-    overflow-x: hidden;
-  }
+body {
+  @apply bg-background text-foreground;
+  font-family: 'Baskervville', serif;
+  font-size: 17.6px; /* 10% increase from default 16px */
+  overflow-x: hidden;
+}
 }
 
 /* Typography System - Updated with specified requirements */
