@@ -128,78 +128,73 @@ export const UniversalAIChat = ({
       description: "A nossa equipa entrará em contacto consigo o mais breve possível.",
     });
   };
-  return <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <div>
-            <h2 className="text-xl font-semibold">Fale com um Especialista da Melhor Saúde
+  return <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between p-6 border-b bg-card">
+        <div>
+          <h2 className="text-2xl font-semibold">Fale com um Especialista da Melhor Saúde</h2>
+          {pillar && <p className="text-sm text-muted-foreground capitalize mt-1">
+              {pillar === 'saude_mental' ? 'Saúde Mental' : pillar === 'bem_estar_fisico' ? 'Bem-estar Físico' : pillar === 'assistencia_financeira' ? 'Assistência Financeira' : 'Assistência Jurídica'}
+            </p>}
+        </div>
+        <Button variant="ghost" size="icon" onClick={handleClose}>
+          <X className="h-5 w-5" />
+        </Button>
+      </div>
 
-          </h2>
-            {pillar && <p className="text-sm text-muted-foreground capitalize">
-                {pillar === 'saude_mental' ? 'Saúde Mental' : pillar === 'bem_estar_fisico' ? 'Bem-estar Físico' : pillar === 'assistencia_financeira' ? 'Assistência Financeira' : 'Assistência Jurídica'}
-              </p>}
-          </div>
-          <Button variant="ghost" size="icon" onClick={handleClose}>
-            <X className="h-5 w-5" />
+      {/* Messages */}
+      <ScrollArea className="flex-1 px-6 py-8" ref={scrollRef}>
+        <div className="max-w-4xl mx-auto space-y-4">
+          {/* Show intro section if no messages */}
+          {showIntro && messages.length === 0 && <ChatIntroSection onSelectPrompt={handleSelectPrompt} />}
+
+          {/* Show fallback message after 20s inactivity */}
+          {showFallbackMessage && messages.length === 0 && !showIntro && <div className="flex justify-start">
+              <div className="bg-muted rounded-lg p-3">
+                <p className="text-sm">Se preferir falar com um especialista humano, pode agendar uma sessão</p>
+              </div>
+            </div>}
+
+          {messages.map((message, index) => <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] rounded-lg p-3 ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              </div>
+            </div>)}
+
+          {isLoading && <div className="flex justify-start">
+              <div className="bg-muted rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">A escrever...</span>
+                </div>
+              </div>
+            </div>}
+
+          {showPhoneCard && <SpecialistContactCard pillar={pillar || 'general'} context={phoneContext} sessionId={sessionId || ''} />}
+        </div>
+      </ScrollArea>
+
+      {/* Input */}
+      <div className="border-t bg-card px-6 py-4">
+        <div className="max-w-4xl mx-auto flex gap-2">
+          <Textarea value={input} onChange={e => setInput(e.target.value)} onKeyPress={handleKeyPress} placeholder="Escreva a sua mensagem..." className="resize-none" rows={2} disabled={isLoading || showPhoneCard} />
+          <Button onClick={handleSend} disabled={isLoading || !input.trim() || showPhoneCard}>
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
+      </div>
 
-        {/* Messages */}
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-          <div className="space-y-4">
-            {/* Show intro section if no messages */}
-            {showIntro && messages.length === 0 && <ChatIntroSection onSelectPrompt={handleSelectPrompt} />}
-
-            {/* Show fallback message after 20s inactivity */}
-            {showFallbackMessage && messages.length === 0 && !showIntro && <div className="flex justify-start">
-                <div className="bg-muted rounded-lg p-3">
-                  <p className="text-sm">Se preferir falar com um especialista humano, pode agendar uma sessão</p>
-                </div>
-              </div>}
-
-            {messages.map((message, index) => <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] rounded-lg p-3 ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                </div>
-              </div>)}
-
-            {isLoading && <div className="flex justify-start">
-                <div className="bg-muted rounded-lg p-3">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">A escrever...</span>
-                  </div>
-                </div>
-              </div>}
-
-            {showPhoneCard && <SpecialistContactCard pillar={pillar || 'general'} context={phoneContext} sessionId={sessionId || ''} />}
-          </div>
-        </ScrollArea>
-
-        {/* Input */}
-        <div className="p-4 border-t">
-          <div className="flex gap-2">
-            <Textarea value={input} onChange={e => setInput(e.target.value)} onKeyPress={handleKeyPress} placeholder="Escreva a sua mensagem..." className="resize-none" rows={2} disabled={isLoading || showPhoneCard} />
-            <Button onClick={handleSend} disabled={isLoading || !input.trim() || showPhoneCard}>
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            </Button>
-          </div>
+      {/* Permanent 1-on-1 Booking Section */}
+      <div className="bg-muted/50 border-t px-6 py-4">
+        <div className="max-w-4xl mx-auto text-center space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Se precisar de conversar, o nosso especialista está sempre disponível para si, 24/7.
+          </p>
+          <Button onClick={handleContactRequest} variant="outline" size="sm" className="w-full sm:w-auto">
+            <Phone className="h-4 w-4 mr-2" />
+            Solicitar chamada
+          </Button>
         </div>
-
-        {/* Permanent 1-on-1 Booking Section */}
-        <div className="bg-muted/50 border-t p-4">
-          <div className="max-w-2xl mx-auto text-center space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Se precisar de conversar, o nosso especialista está sempre disponível para si, 24/7.
-            </p>
-            <Button onClick={handleContactRequest} variant="outline" size="sm" className="w-full sm:w-auto">
-              <Phone className="h-4 w-4 mr-2" />
-              Solicitar chamada
-            </Button>
-          </div>
-        </div>
-
       </div>
 
       {showExitFeedback && <ChatExitFeedbackButtons sessionId={sessionId || ''} pillar={pillar} onClose={handleFeedbackComplete} />}
