@@ -141,20 +141,20 @@ const createUpcomingSession = () => {
   return {
     id: 'book-now',
     provider_name: 'Dra. Maria Costa',
-    provider_avatar: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png',
-    pillar: 'saude_mental',
+    provider_avatar: '/lovable-uploads/676d62ef-5d2a-46ab-9c4f-1c94521aabed.png',
+    pillar: 'assistencia_financeira',
     date: sessionTime.toISOString().split('T')[0],
     time: `${hours}:${minutes}`,
     status: 'confirmed',
     session_type: 'individual',
-    notes: 'Sessão de terapia - Começa em 5 minutos',
+    notes: 'Consultoria Financeira - Começa em 5 minutos',
     booking_date: now.toISOString(),
     meeting_link: 'https://meet.google.com/demo-session-link',
     meeting_platform: 'Google Meet',
     prestadores: {
       name: 'Dra. Maria Costa',
-      pillar: 'saude_mental',
-      avatar_url: '/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png'
+      pillar: 'assistencia_financeira',
+      avatar_url: '/lovable-uploads/676d62ef-5d2a-46ab-9c4f-1c94521aabed.png'
     }
   };
 };
