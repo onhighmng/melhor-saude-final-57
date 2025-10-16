@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare } from 'lucide-react';
+import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare, BookOpen, Bell } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
 import { useToast } from '@/hooks/use-toast';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -243,180 +244,119 @@ const UserDashboard = () => {
           </Card>
         </div>
 
+        {/* Bento Grid Layout */}
+        <BentoGrid className="lg:grid-rows-3">
+          {/* Top Left - Resources */}
+          <BentoCard
+            name="Recursos"
+            description="Acesse conteúdos exclusivos para o seu bem-estar"
+            Icon={BookOpen}
+            onClick={() => navigate('/user/resources')}
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
+          />
 
-        {/* Journey Progress Bar with Milestones */}
-        <JourneyProgressBar onboardingCompleted={justCompletedOnboarding} />
+          {/* Top Right - Notifications */}
+          <BentoCard
+            name="Notificações"
+            description="Fique atualizado com as suas últimas atividades"
+            Icon={Bell}
+            onClick={() => navigate('/user/notifications')}
+            className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
+          />
 
-        {/* Original Progress Bar - Growth Journey with Feedback Milestones */}
-        <ProgressBar />
-
-
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Próximas Sessões */}
-          <Card className="border shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3 text-xl font-normal">
-                <div className="w-12 h-12 rounded-2xl bg-[#4A90E2] flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-white" />
+          {/* Middle - Progress (Progreso Pessoal) */}
+          <BentoCard
+            name="Progresso Pessoal"
+            description={`${Math.round(animatedMilestoneProgress)}% concluído - Continue sua jornada de bem-estar`}
+            Icon={Calendar}
+            className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
+            background={
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
+                <div className="w-full max-w-md space-y-6">
+                  <div className="w-20 h-20 mx-auto rounded-3xl bg-[#4A90E2] flex items-center justify-center">
+                    <Calendar className="w-10 h-10 text-white" />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Progresso</span>
+                      <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
+                    </div>
+                    <Progress value={animatedMilestoneProgress} className="h-2" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-6xl font-bold text-[#4A90E2]">{remainingSessions}</div>
+                    <div className="text-xl font-serif mt-2">Sessões Restantes</div>
+                  </div>
                 </div>
-                Próximas Sessões
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 pt-0">
-              {upcomingBookings && upcomingBookings.length > 0 ? (
-                upcomingBookings.slice(0, 3).map((booking) => {
-                  const statusBadge = getStatusBadge(booking.status);
-                  const isTodaySession = isToday(booking.date);
-                  const canJoinNow = isWithin5Minutes(booking.date, booking.time);
-                  
-                  return (
-                    <Card 
-                      key={booking.id} 
-                      className={`${booking.status === 'cancelled' ? 'bg-muted/30 border-muted' : canJoinNow ? 'border-[#22C55E] border-2 bg-[#F0FDF4]/80 backdrop-blur-sm' : isTodaySession ? 'border-[#4A90E2] bg-[#EFF6FF]/80 backdrop-blur-sm' : 'border bg-white/80 backdrop-blur-sm'}`}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="space-y-0.5">
-                            <div className="font-medium text-base">
-                              {new Date(booking.date).getDate()} de {new Date(booking.date).toLocaleDateString('pt-PT', { month: 'short' })}
-                            </div>
-                            <div className="text-sm text-muted-foreground flex items-center gap-1.5">
-                              <Calendar className="w-3.5 h-3.5" />
-                              {booking.time}
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            {canJoinNow && booking.status === 'confirmed' && (
-                              <Badge className="bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-full px-3">Começar em breve</Badge>
-                            )}
-                            {isTodaySession && !canJoinNow && booking.status === 'confirmed' && (
-                              <Badge className="bg-[#4A90E2] hover:bg-[#3A7BC8] text-white rounded-full px-3">Hoje</Badge>
-                            )}
-                            <Badge 
-                              variant={statusBadge.variant}
-                              className={statusBadge.variant === 'secondary' ? 'bg-[#E0F2FE] text-[#0284C7] hover:bg-[#BAE6FD] rounded-full' : statusBadge.variant === 'destructive' ? 'bg-[#FEE2E2] text-[#DC2626] hover:bg-[#FECACA] rounded-full' : ''}
-                            >
-                              {statusBadge.label}
-                            </Badge>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-0.5 mb-4">
-                          <div className="font-medium text-[#4A90E2]">{formatPillarName(booking.pillar)}</div>
-                          <div className="text-sm text-muted-foreground flex items-center gap-1.5">
-                            <User className="w-3.5 h-3.5" />
-                            {booking.provider_name}
-                          </div>
-                        </div>
+              </div>
+            }
+          />
 
-                        <div className="flex gap-2">
-                          {canJoinNow && booking.status === 'confirmed' && (
-                            <Button 
-                              size="sm" 
-                              className="flex-1 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-lg"
-                              onClick={() => window.open('https://meet.google.com/demo-session-link', '_blank')}
-                            >
-                              <Video className="w-4 h-4 mr-2" />
-                              Entrar na Sessão
-                            </Button>
-                          )}
-                          {!canJoinNow && booking.status === 'confirmed' && (
-                            <Button size="sm" variant="outline" className="flex-1 text-[#DC2626] border-[#DC2626] hover:bg-[#FEE2E2] rounded-lg">
-                              <X className="w-4 h-4 mr-2" />
-                              Cancelar Sessão
-                            </Button>
-                          )}
-                          {!canJoinNow && booking.status === 'confirmed' && (
-                            <Button size="sm" variant="outline" className="flex-1 rounded-lg">
-                              Ver Detalhes
-                            </Button>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground mb-4">Não tem sessões agendadas</p>
-                  <Button onClick={() => navigate('/user/book-session')} variant="outline">
-                    Marcar Sessão
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Histórico Rápido */}
-          <Card className="border shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xl font-normal">Histórico de Sessões</CardTitle>
-              <p className="text-sm text-muted-foreground">{completedSessions.length} sessões concluídas</p>
-            </CardHeader>
-            <CardContent className="space-y-0 pt-0">
-              {recentCompleted.length > 0 ? (
-                <>
-                  {recentCompleted.map((session) => (
-                    <div key={session.id} className="flex items-center justify-between py-4 border-b last:border-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#4A90E2]/10 flex items-center justify-center">
-                          <Calendar className="w-5 h-5 text-[#4A90E2]" />
-                        </div>
-                        <div>
-                          <div className="font-medium">{formatPillarName(session.pillar)}</div>
-                          <div className="text-sm text-muted-foreground">{session.provider_name}</div>
-                        </div>
+          {/* Bottom Left - Session History */}
+          <BentoCard
+            name="Histórico de Sessões"
+            description={`${completedSessions.length} sessões concluídas`}
+            Icon={Calendar}
+            onClick={() => navigate('/user/sessions')}
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4"
+            background={
+              <div className="absolute inset-0 p-6">
+                <div className="space-y-3 mt-20">
+                  {recentCompleted.slice(0, 2).map((session) => (
+                    <div key={session.id} className="flex items-center gap-3 bg-white/50 rounded-lg p-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#4A90E2]/10 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-4 h-4 text-[#4A90E2]" />
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {new Date(session.date).getDate()}/{String(new Date(session.date).getMonth() + 1).padStart(2, '0')}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm truncate">{formatPillarName(session.pillar)}</div>
+                        <div className="text-xs text-muted-foreground truncate">{session.provider_name}</div>
                       </div>
                     </div>
                   ))}
-                  {completedSessions.length > 2 && (
-                    <Button 
-                      variant="link" 
-                      className="w-full text-[#4A90E2] p-0 h-auto mt-2 hover:no-underline"
-                      onClick={() => navigate('/user/sessions')}
-                    >
-                      +{completedSessions.length - 2} mais
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground mb-4">Ainda não realizou sessões</p>
-                  <Button onClick={() => navigate('/user/book-session')} variant="outline" size="sm">
-                    Marcar Sessão
-                  </Button>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </div>
+            }
+          />
 
-        {/* Ajuda & Recursos */}
-        <Card className="border shadow-sm bg-gradient-to-br from-green-50 to-emerald-50">
-          <CardContent className="p-8">
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-full bg-[#22C55E] flex items-center justify-center flex-shrink-0">
-                <HelpCircle className="w-7 h-7 text-white" />
+          {/* Bottom Right - Upcoming Sessions */}
+          <BentoCard
+            name="Próximas Sessões"
+            description={upcomingBookings && upcomingBookings.length > 0 ? `${upcomingBookings.length} sessões agendadas` : 'Nenhuma sessão agendada'}
+            Icon={Calendar}
+            onClick={() => navigate('/user/sessions')}
+            className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4"
+            background={
+              <div className="absolute inset-0 p-6">
+                <div className="space-y-3 mt-20">
+                  {upcomingBookings && upcomingBookings.length > 0 ? (
+                    upcomingBookings.slice(0, 2).map((booking) => {
+                      const isTodaySession = isToday(booking.date);
+                      const canJoinNow = isWithin5Minutes(booking.date, booking.time);
+                      
+                      return (
+                        <div key={booking.id} className={`flex items-center gap-3 rounded-lg p-3 ${canJoinNow ? 'bg-green-50/80' : isTodaySession ? 'bg-blue-50/80' : 'bg-white/50'}`}>
+                          <div className="w-8 h-8 rounded-lg bg-[#4A90E2]/10 flex items-center justify-center flex-shrink-0">
+                            <Calendar className="w-4 h-4 text-[#4A90E2]" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm truncate">{formatPillarName(booking.pillar)}</div>
+                            <div className="text-xs text-muted-foreground">{booking.time}</div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center text-sm text-muted-foreground">
+                      Nenhuma sessão agendada
+                    </div>
+                  )}
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-normal mb-2">Ajuda & Recursos</h2>
-                <p className="text-muted-foreground mb-4 text-base">
-                  Acesse conteúdos exclusivos para o seu bem-estar
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="bg-white hover:bg-white/90 border-gray-200"
-                  onClick={() => navigate('/user/resources')}
-                >
-                  Explorar Recursos de Bem-Estar
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            }
+          />
+        </BentoGrid>
       </div>
     </div>
   );
