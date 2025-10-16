@@ -215,28 +215,28 @@ const UserDashboard = () => {
         {/* Session Balance Card - Centered */}
         <div className="flex justify-center" ref={progressRef}>
           <Card className="w-full max-w-4xl border shadow-sm bg-card">
-            <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8 transition-all duration-300 group hover:bg-[#4A90E2]">
-              <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] group-hover:bg-white flex items-center justify-center transition-colors duration-300">
-                <Calendar className="w-12 h-12 text-white group-hover:text-[#4A90E2] transition-colors duration-300" />
+            <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8">
+              <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
+                <Calendar className="w-12 h-12 text-white" />
               </div>
               
               <div className="w-full max-w-md space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium group-hover:text-white transition-colors duration-300">Progresso Pessoal</span>
-                  <span className="text-lg font-bold text-[#4A90E2] group-hover:text-white transition-colors duration-300">{Math.round(animatedMilestoneProgress)}%</span>
+                  <span className="text-sm font-medium">Progresso Pessoal</span>
+                  <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
                 </div>
                 <Progress value={animatedMilestoneProgress} className="h-2" />
               </div>
               
               <div className="space-y-1">
-                <div className="text-8xl font-bold text-[#4A90E2] group-hover:text-white transition-colors duration-300">{remainingSessions}</div>
-                <div className="text-2xl font-serif group-hover:text-white transition-colors duration-300">Sessões</div>
+                <div className="text-8xl font-bold text-[#4A90E2]">{remainingSessions}</div>
+                <div className="text-2xl font-serif">Sessões</div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
                 <Button 
                   size="lg" 
-                  className="flex-1 px-6 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white group-hover:bg-white group-hover:text-[#4A90E2] group-hover:hover:bg-gray-100 transition-colors duration-300"
+                  className="flex-1 px-6 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white"
                   onClick={() => setShowUniversalChat(true)}
                 >
                   <MessageSquare className="mr-2 h-5 w-5" />
