@@ -16,6 +16,7 @@ import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/Si
 import { useToast } from '@/hooks/use-toast';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import recursosWellness from '@/assets/recursos-wellness.jpg';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -297,11 +298,20 @@ const UserDashboard = () => {
           {/* Bottom Left - Resources */}
           <BentoCard
             name="Recursos"
-            description="Acesse conteúdos exclusivos para o seu bem-estar"
+            description=""
             Icon={BookOpen}
             onClick={() => navigate('/user/resources')}
             className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4"
-            background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
+            background={
+              <div className="absolute inset-0">
+                <img 
+                  src={recursosWellness} 
+                  alt="Wellness activities" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/20" />
+              </div>
+            }
           />
 
           {/* Bottom Right - Upcoming Sessions */}
