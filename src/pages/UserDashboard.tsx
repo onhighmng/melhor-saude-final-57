@@ -237,7 +237,7 @@ const UserDashboard = () => {
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
                 <InteractiveHoverButton 
                   text="Falar com Especialista"
-                  className="flex-1 px-6 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white w-full"
+                  className="w-full"
                   onClick={() => setShowUniversalChat(true)}
                 />
               </div>
