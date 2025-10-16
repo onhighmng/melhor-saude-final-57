@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { UniversalAIChat } from '@/components/booking/UniversalAIChat';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
@@ -37,7 +36,6 @@ const UserDashboard = () => {
   const shouldShowOnboarding = profile?.role === 'user' && !hasCompletedOnboarding;
   const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
-  const [showUniversalChat, setShowUniversalChat] = useState(false);
 
   // Get milestone progress from sessionStorage (resets on logout)
   const getMilestoneProgress = () => {
@@ -238,7 +236,7 @@ const UserDashboard = () => {
                 <InteractiveHoverButton 
                   text="Falar com Especialista"
                   className="w-full"
-                  onClick={() => setShowUniversalChat(true)}
+                  onClick={() => navigate('/user/chat')}
                 />
               </div>
             </CardContent>
@@ -420,10 +418,6 @@ const UserDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {showUniversalChat && (
-        <UniversalAIChat onClose={() => setShowUniversalChat(false)} />
-      )}
     </div>
   );
 };
