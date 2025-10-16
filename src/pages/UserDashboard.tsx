@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings } from '@/hooks/useBookings';
@@ -234,14 +235,11 @@ const UserDashboard = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                <Button 
-                  size="lg" 
-                  className="flex-1 px-6 py-6 text-base rounded-xl bg-[#4A90E2] hover:bg-[#3A7BC8] text-white"
+                <InteractiveHoverButton 
+                  text="Falar com Especialista"
+                  icon={<MessageSquare className="h-5 w-5" />}
                   onClick={() => setShowUniversalChat(true)}
-                >
-                  <MessageSquare className="mr-2 h-5 w-5" />
-                  Falar com Especialista
-                </Button>
+                />
               </div>
             </CardContent>
           </Card>
