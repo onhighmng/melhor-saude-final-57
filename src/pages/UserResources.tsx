@@ -69,13 +69,20 @@ export default function UserResources() {
         icon={BookOpen}
       />
       
-      <div className="max-w-7xl mx-auto px-6 mb-8">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold mb-2">Recursos Mais Populares de 2024</h2>
-          <p className="text-muted-foreground">Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro</p>
-        </div>
-        
-        <Tabs defaultValue="all" className="w-full mb-8">
+      <BlogPosts
+        title="Recursos Mais Populares de 2024"
+        description="Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro"
+        backgroundLabel="RECURSOS"
+        backgroundPosition="left"
+        posts={resourcePosts}
+        onPostClick={(post) => {
+          toast.success(`A abrir: ${post.title}`);
+        }}
+        className="mb-8"
+      />
+      
+      <div className="max-w-7xl mx-auto px-6">
+        <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="saude_mental">Saúde Mental</TabsTrigger>
@@ -124,33 +131,6 @@ export default function UserResources() {
             />
           </TabsContent>
         </Tabs>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          {resourcePosts.map((post) => (
-            <div
-              key={post.id}
-              onClick={() => toast.success(`A abrir: ${post.title}`)}
-              className="cursor-pointer group"
-            >
-              <div className="relative overflow-hidden rounded-lg mb-3">
-                <img
-                  src={post.imageUrl}
-                  alt={post.title}
-                  className="w-full h-48 object-cover transition-transform group-hover:scale-105"
-                />
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">{post.category}</p>
-              <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                {post.title}
-              </h3>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span>{post.views} visualizações</span>
-                <span>{post.readTime} min</span>
-                <span>{'⭐'.repeat(post.rating)}</span>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
       
       <ResourceModal
