@@ -17,13 +17,13 @@ export const ChatIntroSection = ({
         </p>
       </div>
 
-      <div className="space-y-3 px-4">
-        <div className="grid grid-cols-2 gap-3">
+      <div className="px-4">
+        <div className="flex gap-3 justify-center flex-wrap">
           <PromptSuggestion 
             onClick={() => onSelectPrompt('Gostaria de partilhar o que sinto')}
             variant="outline"
             size="lg"
-            className="h-auto py-3 text-sm"
+            className="h-auto py-3 px-8 text-sm"
           >
             Gostaria de partilhar o que <span className="underline">"sinto"</span>
           </PromptSuggestion>
@@ -32,20 +32,20 @@ export const ChatIntroSection = ({
             onClick={() => onSelectPrompt('Já percebi o que preciso')}
             variant="outline"
             size="lg"
-            className="h-auto py-3 text-sm"
+            className="h-auto py-3 px-8 text-sm"
           >
             Já percebi o que preciso
           </PromptSuggestion>
+
+          <PromptSuggestion 
+            onClick={() => onSelectPrompt('Estou um pouco indeciso sobre o que preciso')}
+            variant="outline"
+            size="lg"
+            className="h-auto py-3 px-8 text-sm"
+          >
+            Estou um pouco indeciso sobre o que preciso
+          </PromptSuggestion>
         </div>
-        
-        <PromptSuggestion 
-          onClick={() => onSelectPrompt('Estou um pouco indeciso sobre o que preciso')}
-          variant="outline"
-          size="lg"
-          className="w-full h-auto py-3 px-8 text-sm"
-        >
-          Estou um pouco indeciso sobre o que preciso
-        </PromptSuggestion>
       </div>
     </div>
   );
