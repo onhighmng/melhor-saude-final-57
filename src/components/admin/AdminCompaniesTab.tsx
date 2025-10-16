@@ -139,6 +139,7 @@ export const AdminCompaniesTab = () => {
                   <TableHead>Plano</TableHead>
                   <TableHead>Sessões</TableHead>
                   <TableHead>Estado</TableHead>
+                  <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -179,6 +180,19 @@ export const AdminCompaniesTab = () => {
                         >
                           {company.status}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewDetails(company);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Ver Detalhes
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
