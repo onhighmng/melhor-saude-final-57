@@ -14,32 +14,32 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
       icon: Brain,
       title: 'Saúde Mental',
       description: 'Apoio psicológico e bem-estar emocional',
-      bgColor: 'bg-pillar-mental',
-      hoverColor: 'hover:brightness-110'
+      bgColor: 'bg-gradient-to-br from-blue-500 to-blue-700',
+      hoverColor: 'hover:from-blue-600 hover:to-blue-800'
     },
     {
       id: 'fisica' as BookingPillar,
       icon: Heart,
       title: 'Bem-estar Físico',
       description: 'Saúde física e qualidade de vida',
-      bgColor: 'bg-pillar-physical',
-      hoverColor: 'hover:brightness-110'
+      bgColor: 'bg-gradient-to-br from-orange-500 to-orange-700',
+      hoverColor: 'hover:from-orange-600 hover:to-orange-800'
     },
     {
       id: 'financeira' as BookingPillar,
       icon: DollarSign,
       title: 'Assistência Financeira',
       description: 'Consultoria financeira e planeamento',
-      bgColor: 'bg-pillar-financial',
-      hoverColor: 'hover:brightness-110'
+      bgColor: 'bg-gradient-to-br from-green-500 to-green-700',
+      hoverColor: 'hover:from-green-600 hover:to-green-800'
     },
     {
       id: 'juridica' as BookingPillar,
       icon: Scale,
       title: 'Assistência Jurídica',
       description: 'Apoio e aconselhamento legal',
-      bgColor: 'bg-pillar-legal',
-      hoverColor: 'hover:brightness-110'
+      bgColor: 'bg-gradient-to-br from-purple-500 to-purple-700',
+      hoverColor: 'hover:from-purple-600 hover:to-purple-800'
     }
   ];
 
