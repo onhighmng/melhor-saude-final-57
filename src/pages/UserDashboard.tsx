@@ -253,23 +253,7 @@ const UserDashboard = () => {
             Icon={Calendar}
             onClick={() => navigate('/user/sessions')}
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
-            background={
-              <div className="absolute inset-0 p-6">
-                <div className="space-y-3 mt-20">
-                  {recentCompleted.slice(0, 2).map((session) => (
-                    <div key={session.id} className="flex items-center gap-3 bg-white/50 rounded-lg p-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#4A90E2]/10 flex items-center justify-center flex-shrink-0">
-                        <Calendar className="w-4 h-4 text-[#4A90E2]" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm truncate">{formatPillarName(session.pillar)}</div>
-                        <div className="text-xs text-muted-foreground truncate">{session.provider_name}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            }
+            background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
           />
 
           {/* Top Right - Notifications */}
