@@ -69,18 +69,6 @@ export default function UserResources() {
         icon={BookOpen}
       />
       
-      <BlogPosts
-        title="Recursos Mais Populares de 2024"
-        description="Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro"
-        backgroundLabel="RECURSOS"
-        backgroundPosition="left"
-        posts={resourcePosts}
-        onPostClick={(post) => {
-          toast.success(`A abrir: ${post.title}`);
-        }}
-        className="mb-8"
-      />
-      
       <div className="max-w-7xl mx-auto px-6">
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
@@ -132,6 +120,18 @@ export default function UserResources() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      <BlogPosts
+        title="Recursos Mais Populares de 2024"
+        description="Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro"
+        backgroundLabel="RECURSOS"
+        backgroundPosition="left"
+        posts={resourcePosts}
+        onPostClick={(post) => {
+          toast.success(`A abrir: ${post.title}`);
+        }}
+        className="mb-8"
+      />
       
       <ResourceModal
         resource={selectedResource}
