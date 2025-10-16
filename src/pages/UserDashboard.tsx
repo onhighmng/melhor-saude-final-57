@@ -275,21 +275,12 @@ const UserDashboard = () => {
             className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
             background={
               <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-                <div className="w-full max-w-md space-y-6">
-                  <div className="w-20 h-20 mx-auto rounded-3xl bg-[#4A90E2] flex items-center justify-center">
-                    <Calendar className="w-10 h-10 text-white" />
+                <div className="w-full max-w-md space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Progresso</span>
+                    <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Progresso</span>
-                      <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
-                    </div>
-                    <Progress value={animatedMilestoneProgress} className="h-2" />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-6xl font-bold text-[#4A90E2]">{remainingSessions}</div>
-                    <div className="text-xl font-serif mt-2">Sessões Restantes</div>
-                  </div>
+                  <Progress value={animatedMilestoneProgress} className="h-2" />
                 </div>
               </div>
             }
