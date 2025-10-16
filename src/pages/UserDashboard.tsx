@@ -252,8 +252,8 @@ const UserDashboard = () => {
               </div>
               
               <div className="space-y-1">
-                <div className="text-8xl font-bold text-[#4A90E2]">{remainingSessions}</div>
-                <div className="text-2xl font-serif">Sessões</div>
+                <div className="text-8xl font-bold text-white">{remainingSessions}</div>
+                <div className="text-2xl font-serif text-white">Sessões</div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
