@@ -105,6 +105,23 @@ All colors MUST be HSL.
     --warning: var(--warm-orange);
     --warning-foreground: var(--soft-white);
 
+    /* Pillar Colors - HSL format for consistent theming */
+    --pillar-mental: 217 91% 60%;         /* Blue for Mental Health */
+    --pillar-mental-light: 217 91% 95%;   /* Light blue background */
+    --pillar-mental-dark: 217 91% 40%;    /* Dark blue for text */
+    
+    --pillar-physical: 25 95% 53%;        /* Orange for Physical Wellness */
+    --pillar-physical-light: 25 95% 95%;  /* Light orange background */
+    --pillar-physical-dark: 25 95% 35%;   /* Dark orange for text */
+    
+    --pillar-financial: 142 76% 36%;      /* Green for Financial Assistance */
+    --pillar-financial-light: 142 76% 95%; /* Light green background */
+    --pillar-financial-dark: 142 76% 25%;  /* Dark green for text */
+    
+    --pillar-legal: 270 60% 50%;          /* Purple for Legal Assistance */
+    --pillar-legal-light: 270 60% 95%;    /* Light purple background */
+    --pillar-legal-dark: 270 60% 35%;     /* Dark purple for text */
+
     --sidebar-background: var(--soft-white);
     --sidebar-foreground: var(--deep-navy);
     --sidebar-primary: var(--bright-royal);
@@ -270,6 +287,31 @@ All colors MUST be HSL.
   .border-slate-grey { border-color: hsl(var(--slate-grey)); }
   .border-accent-sage { border-color: hsl(var(--accent-sage)); }
   .border-accent-sky { border-color: hsl(var(--accent-sky)); }
+
+  /* Pillar Color Utilities */
+  .text-pillar-mental { color: hsl(var(--pillar-mental)); }
+  .text-pillar-mental-dark { color: hsl(var(--pillar-mental-dark)); }
+  .bg-pillar-mental { background-color: hsl(var(--pillar-mental)); }
+  .bg-pillar-mental-light { background-color: hsl(var(--pillar-mental-light)); }
+  .border-pillar-mental { border-color: hsl(var(--pillar-mental)); }
+  
+  .text-pillar-physical { color: hsl(var(--pillar-physical)); }
+  .text-pillar-physical-dark { color: hsl(var(--pillar-physical-dark)); }
+  .bg-pillar-physical { background-color: hsl(var(--pillar-physical)); }
+  .bg-pillar-physical-light { background-color: hsl(var(--pillar-physical-light)); }
+  .border-pillar-physical { border-color: hsl(var(--pillar-physical)); }
+  
+  .text-pillar-financial { color: hsl(var(--pillar-financial)); }
+  .text-pillar-financial-dark { color: hsl(var(--pillar-financial-dark)); }
+  .bg-pillar-financial { background-color: hsl(var(--pillar-financial)); }
+  .bg-pillar-financial-light { background-color: hsl(var(--pillar-financial-light)); }
+  .border-pillar-financial { border-color: hsl(var(--pillar-financial)); }
+  
+  .text-pillar-legal { color: hsl(var(--pillar-legal)); }
+  .text-pillar-legal-dark { color: hsl(var(--pillar-legal-dark)); }
+  .bg-pillar-legal { background-color: hsl(var(--pillar-legal)); }
+  .bg-pillar-legal-light { background-color: hsl(var(--pillar-legal-light)); }
+  .border-pillar-legal { border-color: hsl(var(--pillar-legal)); }
 
   /* Enhanced interaction utilities */
   .transition-smooth { transition: var(--transition-normal); }

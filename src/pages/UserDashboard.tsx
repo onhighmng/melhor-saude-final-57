@@ -16,6 +16,7 @@ import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/Si
 import { useToast } from '@/hooks/use-toast';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import { getPillarColors, cn } from '@/lib/utils';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -345,12 +346,16 @@ const UserDashboard = () => {
                   {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 2).map(booking => {
               const isTodaySession = isToday(booking.date);
               const canJoinNow = isWithin5Minutes(booking.date, booking.time);
-              return <div key={booking.id} className={`flex items-center gap-3 rounded-lg p-3 ${canJoinNow ? 'bg-green-50/80' : isTodaySession ? 'bg-blue-50/80' : 'bg-white/50'}`}>
-                          <div className="w-8 h-8 rounded-lg bg-[#4A90E2]/10 flex items-center justify-center flex-shrink-0">
-                            <Calendar className="w-4 h-4 text-[#4A90E2]" />
+              const pillarColors = getPillarColors(booking.pillar);
+              return <div key={booking.id} className={cn(
+                'flex items-center gap-3 rounded-lg p-3',
+                canJoinNow ? 'bg-green-50/80' : pillarColors.bg
+              )}>
+                          <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0', pillarColors.bg)}>
+                            <Calendar className={cn('w-4 h-4', pillarColors.textLight)} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-sm truncate">{formatPillarName(booking.pillar)}</div>
+                            <div className={cn('font-medium text-sm truncate', pillarColors.text)}>{formatPillarName(booking.pillar)}</div>
                             <div className="text-xs text-muted-foreground">{booking.time}</div>
                           </div>
                         </div>;
