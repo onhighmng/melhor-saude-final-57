@@ -202,10 +202,10 @@ const UserDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
         {/* Welcome Header */}
         <div className="space-y-1">
-          <h1 className="text-3xl font-normal tracking-tight">
+          <h1 className="text-3xl font-normal tracking-tight text-white">
             Olá, {profile?.name || 'ana.silva'}! 👋
           </h1>
-          <p className="text-muted-foreground text-base">
+          <p className="text-white text-base">
             Bem-vinda de volta ao seu espaço de saúde e bem-estar.
           </p>
         </div>

@@ -11,7 +11,7 @@ export function CompanyLayout({ children }: CompanyLayoutProps) {
     <SidebarProvider defaultOpen>
       <div className="min-h-screen flex w-full bg-background">
         <CompanySidebar />
-        <main className="flex-1 flex flex-col min-w-0 ml-[60px] md:ml-[60px] transition-[margin] duration-300 ease-in-out">
+        <main className="flex-1 flex flex-col min-w-0">
           <div className="flex-1 overflow-auto p-6 bg-background">
             <div className="max-w-none w-full mx-auto">
               {children}

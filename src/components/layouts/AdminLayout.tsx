@@ -11,7 +11,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     <SidebarProvider defaultOpen>
       <div className="min-h-screen flex w-full bg-background">
         <AdminSidebar />
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden ml-[60px] md:ml-[60px] transition-[margin] duration-300 ease-in-out">
+        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <div className="flex-1 overflow-auto p-6 bg-background pb-0">
             <div className="max-w-none w-full mx-auto pb-6">
               {children}
