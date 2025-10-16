@@ -9,8 +9,8 @@ export const ChatIntroSection = ({
   onSelectPrompt
 }: ChatIntroSectionProps) => {
   return (
-    <div className="space-y-6 py-2">
-      <div className="space-y-4 text-center">
+    <div className="space-y-4">
+      <div className="space-y-3 text-center">
         <MessageSquare className="h-12 w-12 mx-auto text-[#4A90E2]" strokeWidth={2.5} />
         <p className="text-lg font-normal px-4 leading-relaxed">
           Estamos aqui para o ajudar a identificar o tipo de apoio certo — psicológico, físico, financeiro ou jurídico.
