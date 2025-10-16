@@ -130,7 +130,7 @@ export const UniversalAIChat = ({
   };
   return <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b bg-card">
+      <div className="flex items-center justify-between px-8 py-6 border-b bg-card">
         <div>
           <h2 className="text-2xl font-semibold">Fale com um Especialista da Melhor Saúde</h2>
           {pillar && <p className="text-sm text-muted-foreground capitalize mt-1">
@@ -143,8 +143,8 @@ export const UniversalAIChat = ({
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 px-6 py-8" ref={scrollRef}>
-        <div className="max-w-4xl mx-auto space-y-4">
+      <ScrollArea className="flex-1 px-8 py-8" ref={scrollRef}>
+        <div className="max-w-5xl mx-auto space-y-6">
           {/* Show intro section if no messages */}
           {showIntro && messages.length === 0 && <ChatIntroSection onSelectPrompt={handleSelectPrompt} />}
 
@@ -174,19 +174,34 @@ export const UniversalAIChat = ({
         </div>
       </ScrollArea>
 
-      {/* Input */}
-      <div className="border-t bg-card px-6 py-4">
-        <div className="max-w-4xl mx-auto flex gap-2">
-          <Textarea value={input} onChange={e => setInput(e.target.value)} onKeyPress={handleKeyPress} placeholder="Escreva a sua mensagem..." className="resize-none" rows={2} disabled={isLoading || showPhoneCard} />
-          <Button onClick={handleSend} disabled={isLoading || !input.trim() || showPhoneCard}>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-          </Button>
+      {/* Input Area */}
+      <div className="border-t bg-card px-8 py-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="relative flex items-center gap-2 border rounded-3xl bg-background px-6 py-3 shadow-sm">
+            <Textarea 
+              value={input} 
+              onChange={e => setInput(e.target.value)} 
+              onKeyPress={handleKeyPress} 
+              placeholder="Escreva a sua mensagem..." 
+              className="resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[60px] pr-14" 
+              rows={1} 
+              disabled={isLoading || showPhoneCard} 
+            />
+            <Button 
+              onClick={handleSend} 
+              disabled={isLoading || !input.trim() || showPhoneCard}
+              size="icon"
+              className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full shrink-0"
+            >
+              {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Permanent 1-on-1 Booking Section */}
-      <div className="bg-muted/50 border-t px-6 py-4">
-        <div className="max-w-4xl mx-auto text-center space-y-3">
+      <div className="bg-muted/50 border-t px-8 py-4">
+        <div className="max-w-5xl mx-auto text-center space-y-3">
           <p className="text-sm text-muted-foreground">
             Se precisar de conversar, o nosso especialista está sempre disponível para si, 24/7.
           </p>
