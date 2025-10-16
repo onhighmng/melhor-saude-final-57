@@ -79,17 +79,18 @@ export default function UserResources() {
           toast.success(`A abrir: ${post.title}`);
         }}
         className="mb-8"
-      />
+      >
+        <TabsList className="inline-flex w-auto mx-auto mb-6">
+          <TabsTrigger value="all">Todos</TabsTrigger>
+          <TabsTrigger value="saude_mental">Saúde Mental</TabsTrigger>
+          <TabsTrigger value="bem_estar_fisico">Bem-Estar</TabsTrigger>
+          <TabsTrigger value="assistencia_financeira">Financeiro</TabsTrigger>
+          <TabsTrigger value="assistencia_juridica">Jurídico</TabsTrigger>
+        </TabsList>
+      </BlogPosts>
       
       <div className="max-w-7xl mx-auto px-6">
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="inline-flex w-auto mx-auto">
-            <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="saude_mental">Saúde Mental</TabsTrigger>
-            <TabsTrigger value="bem_estar_fisico">Bem-Estar</TabsTrigger>
-            <TabsTrigger value="assistencia_financeira">Financeiro</TabsTrigger>
-            <TabsTrigger value="assistencia_juridica">Jurídico</TabsTrigger>
-          </TabsList>
           
           <TabsContent value="all" className="mt-6">
             <ResourceGrid

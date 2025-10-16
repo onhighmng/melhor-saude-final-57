@@ -21,6 +21,7 @@ interface GridSectionProps {
   posts?: BlogPost[];
   className?: string;
   onPostClick?: (post: BlogPost) => void;
+  children?: React.ReactNode;
 }
 
 export const Component = ({
@@ -31,6 +32,7 @@ export const Component = ({
     posts = [],
     className,
     onPostClick,
+    children,
   }: GridSectionProps) => {
 
   return (
@@ -56,6 +58,8 @@ export const Component = ({
       <p className="mx-auto max-w-[800px] text-center text-xl !leading-[2] text-foreground/50 md:text-2xl mb-8">
         {description}
       </p>
+      
+      {children}
       
       <div className="grid h-auto grid-cols-1 gap-5 md:h-[650px] md:grid-cols-2 lg:grid-cols-[1fr_0.5fr]">
         {posts.map((post, index) => {
