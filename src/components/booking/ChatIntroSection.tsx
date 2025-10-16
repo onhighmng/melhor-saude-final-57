@@ -42,7 +42,7 @@ export const ChatIntroSection = ({
           onClick={() => onSelectPrompt('Estou um pouco indeciso sobre o que preciso')}
           variant="outline"
           size="lg"
-          className="w-full h-auto py-3 text-sm"
+          className="w-full h-auto py-3 px-8 text-sm"
         >
           Estou um pouco indeciso sobre o que preciso
         </PromptSuggestion>
