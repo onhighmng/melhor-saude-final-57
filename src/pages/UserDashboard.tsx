@@ -343,20 +343,20 @@ const UserDashboard = () => {
           {/* Bottom Right - Upcoming Sessions */}
           <BentoCard name="Próximas Sessões" description={upcomingBookings && upcomingBookings.length > 0 ? `${upcomingBookings.length} sessões agendadas` : 'Nenhuma sessão agendada'} onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6">
                 <div className="space-y-3 mt-20">
-                  {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 2).map(booking => {
+                  {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
               const isTodaySession = isToday(booking.date);
               const canJoinNow = isWithin5Minutes(booking.date, booking.time);
               const pillarColors = getPillarColors(booking.pillar);
               return <div key={booking.id} className={cn(
-                'flex items-center gap-3 rounded-lg p-3',
-                canJoinNow ? 'bg-green-50/80' : pillarColors.bg
+                'flex items-center gap-3 rounded-lg p-3 border-l-4 transition-all',
+                canJoinNow ? 'bg-green-50/80 border-green-500' : `${pillarColors.bg} ${pillarColors.border}`
               )}>
-                          <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0', pillarColors.bg)}>
-                            <Calendar className={cn('w-4 h-4', pillarColors.textLight)} />
+                          <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
+                            <Calendar className="w-5 h-5 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className={cn('font-medium text-sm truncate', pillarColors.text)}>{formatPillarName(booking.pillar)}</div>
-                            <div className="text-xs text-muted-foreground">{booking.time}</div>
+                            <div className={cn('font-semibold text-sm truncate', pillarColors.text)}>{formatPillarName(booking.pillar)}</div>
+                            <div className="text-xs text-muted-foreground">{booking.date} • {booking.time}</div>
                           </div>
                         </div>;
             }) : <div className="text-center text-sm text-muted-foreground">
