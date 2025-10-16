@@ -139,14 +139,17 @@ export const AdminCompaniesTab = () => {
                   <TableHead>Plano</TableHead>
                   <TableHead>Sessões</TableHead>
                   <TableHead>Estado</TableHead>
-                  <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredCompanies.map((company) => {
                   const usagePercent = (company.usedSessions / company.totalSessions) * 100;
                   return (
-                    <TableRow key={company.id}>
+                    <TableRow 
+                      key={company.id}
+                      onClick={() => handleViewDetails(company)}
+                      className="cursor-pointer hover:bg-muted/50"
+                    >
                       <TableCell className="font-medium">{company.name}</TableCell>
                       <TableCell className="text-muted-foreground">{company.nuit}</TableCell>
                       <TableCell>
@@ -176,16 +179,6 @@ export const AdminCompaniesTab = () => {
                         >
                           {company.status}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewDetails(company)}
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          Ver Detalhes
-                        </Button>
                       </TableCell>
                     </TableRow>
                   );
