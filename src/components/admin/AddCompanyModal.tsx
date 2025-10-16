@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -47,7 +46,6 @@ interface AddCompanyModalProps {
 }
 
 export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) => {
-  const { t } = useTranslation('admin');
   const { toast } = useToast();
   const [selectedPillars, setSelectedPillars] = useState<string[]>([
     'mental',
@@ -91,8 +89,8 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
       });
 
       toast({
-        title: t('addCompany.successTitle'),
-        description: t('addCompany.successDescription'),
+        title: 'Empresa adicionada com sucesso',
+        description: 'A empresa foi registada e os colaboradores já podem aceder ao programa',
       });
 
       reset();
@@ -100,8 +98,8 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
       onOpenChange(false);
     } catch (error) {
       toast({
-        title: t('addCompany.errorTitle'),
-        description: t('addCompany.errorDescription'),
+        title: 'Erro ao adicionar empresa',
+        description: 'Ocorreu um erro ao tentar adicionar a empresa. Por favor, tente novamente.',
         variant: 'destructive',
       });
     }
@@ -113,10 +111,10 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <Building2 className="h-6 w-6" />
-            {t('addCompany.title')}
+            Adicionar Empresa
           </DialogTitle>
           <DialogDescription>
-            {t('addCompany.description')}
+            Preencha os dados para registar uma nova empresa no programa
           </DialogDescription>
         </DialogHeader>
 
@@ -124,13 +122,13 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
           {/* Company Information Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">
-              {t('addCompany.companyInfoTitle')}
+              Informações da Empresa
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="companyName">
-                  {t('addCompany.companyName')} *
+                  Nome da Empresa *
                 </Label>
                 <Input
                   id="companyName"
@@ -145,7 +143,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="nuit">{t('addCompany.nuit')} *</Label>
+                <Label htmlFor="nuit">NUIT *</Label>
                 <Input
                   id="nuit"
                   {...register('nuit')}
@@ -158,7 +156,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
               <div className="space-y-2">
                 <Label htmlFor="corporateEmail">
-                  {t('addCompany.corporateEmail')} *
+                  Email Corporativo *
                 </Label>
                 <Input
                   id="corporateEmail"
@@ -174,7 +172,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">{t('addCompany.phone')} *</Label>
+                <Label htmlFor="phone">Telefone *</Label>
                 <Input
                   id="phone"
                   {...register('phone')}
@@ -186,7 +184,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="address">{t('addCompany.address')}</Label>
+                <Label htmlFor="address">Endereço</Label>
                 <Input
                   id="address"
                   {...register('address')}
@@ -196,7 +194,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
               <div className="space-y-2">
                 <Label htmlFor="numberOfEmployees">
-                  {t('addCompany.numberOfEmployees')} *
+                  Número de Colaboradores *
                 </Label>
                 <Input
                   id="numberOfEmployees"
@@ -213,7 +211,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
               <div className="space-y-2">
                 <Label htmlFor="hrContactPerson">
-                  {t('addCompany.hrContactPerson')} *
+                  Pessoa de Contacto / Gestor de RH *
                 </Label>
                 <Input
                   id="hrContactPerson"
@@ -229,7 +227,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
               <div className="space-y-2">
                 <Label htmlFor="hrEmail">
-                  {t('addCompany.hrEmail')} *
+                  Email do Gestor de RH *
                 </Label>
                 <Input
                   id="hrEmail"
@@ -249,13 +247,13 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
           {/* Program Settings Section */}
           <div className="space-y-4 pt-4 border-t">
             <h3 className="text-lg font-semibold">
-              {t('addCompany.programSettingsTitle')}
+              Definições do Programa
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="programStartDate">
-                  {t('addCompany.programStartDate')} *
+                  Data de Início do Programa *
                 </Label>
                 <div className="relative">
                   <Input
@@ -274,7 +272,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
               <div className="space-y-2">
                 <Label htmlFor="sessionsPerEmployee">
-                  {t('addCompany.sessionsPerEmployee')} *
+                  Número de Sessões por Colaborador / Mês *
                 </Label>
                 <Input
                   id="sessionsPerEmployee"
@@ -291,7 +289,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
               <div className="space-y-2">
                 <Label htmlFor="sessionModel">
-                  {t('addCompany.sessionModel')} *
+                  Modelo de Sessões *
                 </Label>
                 <Select
                   value={sessionModel}
@@ -304,10 +302,10 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pool">
-                      {t('addCompany.poolMonthly')}
+                      Pool Mensal (recomendado)
                     </SelectItem>
                     <SelectItem value="fixed">
-                      {t('addCompany.fixedSessions')}
+                      Sessões Fixas
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -315,7 +313,7 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
               <div className="space-y-2">
                 <Label htmlFor="pricePerSession">
-                  {t('addCompany.pricePerSession')} *
+                  Preço por Sessão (MZN) *
                 </Label>
                 <Input
                   id="pricePerSession"
@@ -331,13 +329,13 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label>{t('addCompany.sessionTypesIncluded')} *</Label>
+                <Label>Tipo de Sessões Incluídas *</Label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { value: 'mental', label: t('addCompany.mental') },
-                    { value: 'physical', label: t('addCompany.physical') },
-                    { value: 'financial', label: t('addCompany.financial') },
-                    { value: 'legal', label: t('addCompany.legal') },
+                    { value: 'mental', label: 'Psicológico' },
+                    { value: 'physical', label: 'Físico' },
+                    { value: 'financial', label: 'Financeiro' },
+                    { value: 'legal', label: 'Jurídico' },
                   ].map((pillar) => (
                     <div key={pillar.value} className="flex items-center space-x-2">
                       <Checkbox
@@ -366,10 +364,10 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
             >
-              {t('addCompany.cancel')}
+              Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? t('addCompany.adding') : t('addCompany.addCompany')}
+              {isSubmitting ? 'A adicionar...' : 'Adicionar Empresa'}
             </Button>
           </div>
         </form>
