@@ -145,9 +145,6 @@ export const UniversalAIChat = ({
       {/* Messages */}
       <ScrollArea className="flex-1 px-8 py-8" ref={scrollRef}>
         <div className="max-w-5xl mx-auto space-y-6">
-          {/* Show intro section if no messages */}
-          {showIntro && messages.length === 0 && <ChatIntroSection onSelectPrompt={handleSelectPrompt} />}
-
           {/* Show fallback message after 20s inactivity */}
           {showFallbackMessage && messages.length === 0 && !showIntro && <div className="flex justify-start">
               <div className="bg-muted rounded-lg p-3">
@@ -173,6 +170,15 @@ export const UniversalAIChat = ({
           {showPhoneCard && <SpecialistContactCard pillar={pillar || 'general'} context={phoneContext} sessionId={sessionId || ''} />}
         </div>
       </ScrollArea>
+
+      {/* Prompt Suggestions - Above Input */}
+      {showIntro && messages.length === 0 && (
+        <div className="px-8 py-4 border-t bg-card">
+          <div className="max-w-5xl mx-auto">
+            <ChatIntroSection onSelectPrompt={handleSelectPrompt} />
+          </div>
+        </div>
+      )}
 
       {/* Input Area */}
       <div className="border-t bg-card px-8 py-6">
