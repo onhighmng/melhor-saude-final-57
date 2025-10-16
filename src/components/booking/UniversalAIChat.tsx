@@ -173,7 +173,7 @@ export const UniversalAIChat = ({
 
       {/* Prompt Suggestions - Above Input */}
       {showIntro && messages.length === 0 && (
-        <div className="px-8 py-4 border-t bg-card">
+        <div className="px-8 pb-4">
           <div className="max-w-5xl mx-auto">
             <ChatIntroSection onSelectPrompt={handleSelectPrompt} />
           </div>
