@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, Users, UserCog } from 'lucide-react';
+import { Building2, Users, UserCog, Plus } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
 import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
@@ -8,13 +9,19 @@ const AdminUsersManagement = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-heading font-bold text-foreground">
-          Gestão de Utilizadores
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Gerir empresas, colaboradores e prestadores da plataforma
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-heading font-bold text-foreground">
+            Gestão de Utilizadores
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Gerir empresas, colaboradores e prestadores da plataforma
+          </p>
+        </div>
+        <Button onClick={() => console.log('Add company')} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Adicionar Empresa
+        </Button>
       </div>
 
       {/* Tabs Navigation */}
