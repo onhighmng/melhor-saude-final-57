@@ -93,7 +93,8 @@ const AdminSidebar = () => {
           <button
             onClick={handleLogout}
             className={cn(
-              "flex items-center justify-start gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors hover:bg-muted/50 w-full"
+              "flex items-center gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors hover:bg-muted/50 w-full",
+              open ? "justify-start" : "justify-center"
             )}
           >
             <LogOut className="text-muted-foreground h-5 w-5 flex-shrink-0" />
