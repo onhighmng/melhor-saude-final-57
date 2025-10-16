@@ -44,7 +44,7 @@ const PillarSelection = ({ onPillarSelect }: PillarSelectionProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-soft-white text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
+    <div className="min-h-screen text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
       <section className="relative pt-20 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-3xl mx-auto">
           

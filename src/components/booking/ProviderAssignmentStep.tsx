@@ -54,7 +54,7 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext, onBac
             </div>
           </div>
 
-          <div className="bg-background rounded-lg p-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6">
             <div className="flex items-start gap-6">
               <Avatar className="h-24 w-24 border-2 border-primary/20">
                 <AvatarImage src={assignedProvider.avatar_url} alt={assignedProvider.name} />

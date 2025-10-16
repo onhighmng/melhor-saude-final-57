@@ -13,7 +13,7 @@ export const NotificationBanner: React.FC = () => {
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 z-50 max-w-md shadow-lg border-primary/20">
+    <Card className="fixed bottom-4 right-4 z-50 max-w-md shadow-lg border-primary/20 bg-white/95 backdrop-blur-sm">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <Bell className="h-5 w-5 text-primary mt-0.5" />

@@ -128,9 +128,9 @@ export const UniversalAIChat = ({
       description: "A nossa equipa entrará em contacto consigo o mais breve possível.",
     });
   };
-  return <div className="min-h-screen bg-background flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-8 py-6 border-b bg-card">
+      <div className="flex items-center justify-between px-8 py-6 border-b bg-card/80 backdrop-blur-sm">
         <div>
           <h2 className="text-2xl font-semibold">Fale com um Especialista da Melhor Saúde</h2>
           {pillar && <p className="text-sm text-muted-foreground capitalize mt-1">
@@ -181,9 +181,9 @@ export const UniversalAIChat = ({
       )}
 
       {/* Input Area */}
-      <div className="border-t bg-card px-8 py-6">
+      <div className="border-t bg-card/80 backdrop-blur-sm px-8 py-6">
         <div className="max-w-5xl mx-auto">
-          <div className="relative flex items-center gap-2 border rounded-3xl bg-background px-6 py-3 shadow-sm">
+          <div className="relative flex items-center gap-2 border rounded-3xl bg-white/90 px-6 py-3 shadow-sm">
             <Textarea 
               value={input} 
               onChange={e => setInput(e.target.value)} 

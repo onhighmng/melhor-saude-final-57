@@ -213,7 +213,7 @@ const UserDashboard = () => {
 
         {/* Session Balance Card - Centered */}
         <div className="flex justify-center" ref={progressRef}>
-          <Card className="w-full max-w-4xl border shadow-sm bg-card">
+          <Card className="w-full max-w-4xl border shadow-sm bg-white/90 backdrop-blur-sm">
             <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8">
               <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
                 <Calendar className="w-12 h-12 text-white" />
@@ -272,7 +272,7 @@ const UserDashboard = () => {
                   return (
                     <Card 
                       key={booking.id} 
-                      className={`${booking.status === 'cancelled' ? 'bg-muted/30 border-muted' : canJoinNow ? 'border-[#22C55E] border-2 bg-[#F0FDF4]' : isTodaySession ? 'border-[#4A90E2] bg-[#EFF6FF]' : 'border bg-background'}`}
+                      className={`${booking.status === 'cancelled' ? 'bg-muted/30 border-muted' : canJoinNow ? 'border-[#22C55E] border-2 bg-[#F0FDF4]/80 backdrop-blur-sm' : isTodaySession ? 'border-[#4A90E2] bg-[#EFF6FF]/80 backdrop-blur-sm' : 'border bg-white/80 backdrop-blur-sm'}`}
                     >
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-3">

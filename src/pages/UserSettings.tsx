@@ -176,9 +176,9 @@ const UserSettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Modern Header */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+      <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center gap-4">
             <Button

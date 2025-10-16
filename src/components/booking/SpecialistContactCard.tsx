@@ -35,7 +35,7 @@ export const SpecialistContactCard = ({ pillar, context, sessionId }: Specialist
   };
 
   return (
-    <Card className="p-6 border-primary/20 bg-primary/5">
+    <Card className="p-6 border-primary/20 bg-primary/5 backdrop-blur-sm">
       <div className="space-y-4">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -45,7 +45,7 @@ export const SpecialistContactCard = ({ pillar, context, sessionId }: Specialist
             <h3 className="font-semibold text-lg mb-2">Consulta Telefónica Detalhada</h3>
             <p className="text-sm text-muted-foreground mb-4">{context}</p>
             
-            <div className="bg-background rounded-lg p-4 border-2 border-primary/20 mb-4">
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 border-2 border-primary/20 mb-4">
               <p className="text-xs font-medium text-muted-foreground mb-2">
                 Contacto Direto dos Especialistas
               </p>

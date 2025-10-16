@@ -42,7 +42,7 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
   );
 
   return (
-    <div className="min-h-screen bg-soft-white text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
+    <div className="min-h-screen text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
       <section className="relative pt-32 pb-24">
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <button 

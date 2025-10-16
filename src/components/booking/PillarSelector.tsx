@@ -40,8 +40,8 @@ interface PillarSelectorProps {
 
 export default function PillarSelector({ onPillarSelect }: PillarSelectorProps) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="bg-white border-b border-gray-100 p-6">
+    <div className="min-h-screen flex flex-col">
+      <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 p-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Escolha o seu Pilar</h1>
           <p className="text-gray-600">Selecione a área onde precisa de apoio</p>

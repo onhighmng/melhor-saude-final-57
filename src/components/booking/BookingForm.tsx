@@ -57,7 +57,7 @@ const BookingForm = ({ provider, onSubmit, onBack }: BookingFormProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-soft-white text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
+    <div className="min-h-screen text-navy-blue font-medium antialiased" style={{ fontFamily: "'PP Neue Montreal', sans-serif" }}>
       
       
       <section className="relative pt-32 pb-24">
