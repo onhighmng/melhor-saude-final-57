@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Building2, Users, UserCog, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
+import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
 import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
 
 const AdminUsersManagement = () => {
+  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -35,7 +39,7 @@ const AdminUsersManagement = () => {
             Prestadores
           </TabsTrigger>
         </TabsList>
-        <Button onClick={() => console.log('Add company')} className="gap-2">
+        <Button onClick={() => setIsAddCompanyModalOpen(true)} className="gap-2">
           <Plus className="h-4 w-4" />
           Adicionar Empresa
         </Button>
@@ -53,6 +57,12 @@ const AdminUsersManagement = () => {
           <AdminProvidersTab />
         </TabsContent>
       </Tabs>
+
+      {/* Add Company Modal */}
+      <AddCompanyModal
+        open={isAddCompanyModalOpen}
+        onOpenChange={setIsAddCompanyModalOpen}
+      />
     </div>
   );
 };
