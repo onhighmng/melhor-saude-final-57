@@ -342,7 +342,7 @@ const UserDashboard = () => {
 
           {/* Bottom Right - Upcoming Sessions */}
           <BentoCard name="Próximas Sessões" description={upcomingBookings && upcomingBookings.length > 0 ? `${upcomingBookings.length} sessões agendadas` : 'Nenhuma sessão agendada'} onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6">
-                <div className="space-y-3 mt-20 py-0">
+                <div className="space-y-3 mt-20 py-[3px]">
                   {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
               const isTodaySession = isToday(booking.date);
               const canJoinNow = isWithin5Minutes(booking.date, booking.time);
