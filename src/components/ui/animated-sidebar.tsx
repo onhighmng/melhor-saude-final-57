@@ -179,7 +179,8 @@ export const AnimatedSidebarLink = ({
       to={link.href}
       className={({ isActive }) =>
         cn(
-          "flex items-center justify-start gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors",
+          "flex items-center gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors",
+          open ? "justify-start" : "justify-center",
           isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50",
           className
         )
