@@ -1,14 +1,10 @@
-import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, Users, UserCog, Plus } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { Building2, Users, UserCog } from 'lucide-react';
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
-import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
 import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
 
 const AdminUsersManagement = () => {
-  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -24,8 +20,7 @@ const AdminUsersManagement = () => {
 
       {/* Tabs Navigation */}
       <Tabs defaultValue="companies" className="w-full">
-        <div className="flex items-center gap-4">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="companies" className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
             Empresas
@@ -39,11 +34,6 @@ const AdminUsersManagement = () => {
             Prestadores
           </TabsTrigger>
         </TabsList>
-        <Button onClick={() => setIsAddCompanyModalOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Adicionar Empresa
-        </Button>
-        </div>
 
         <TabsContent value="companies" className="mt-6">
           <AdminCompaniesTab />
@@ -57,12 +47,6 @@ const AdminUsersManagement = () => {
           <AdminProvidersTab />
         </TabsContent>
       </Tabs>
-
-      {/* Add Company Modal */}
-      <AddCompanyModal
-        open={isAddCompanyModalOpen}
-        onOpenChange={setIsAddCompanyModalOpen}
-      />
     </div>
   );
 };

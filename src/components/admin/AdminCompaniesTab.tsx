@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
+import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
 import { 
   Search, 
   Eye, 
@@ -13,7 +14,8 @@ import {
   Users, 
   TrendingUp,
   Calendar,
-  Euro
+  Euro,
+  Plus
 } from 'lucide-react';
 import {
   BarChart,
@@ -86,6 +88,7 @@ const mockCompanies: Company[] = [
 
 export const AdminCompaniesTab = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
 
   const filteredCompanies = mockCompanies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -111,6 +114,19 @@ export const AdminCompaniesTab = () => {
   return (
     <>
       <div className="space-y-6">
+        {/* Header with Add Button */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Empresas</h2>
+            <p className="text-sm text-muted-foreground">Gerir empresas e planos de sessões</p>
+          </div>
+          
+          <Button onClick={() => setIsAddCompanyModalOpen(true)} size="lg">
+            <Plus className="h-4 w-4 mr-2" />
+            Adicionar Empresa
+          </Button>
+        </div>
+
         {/* Search Bar */}
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-md">
@@ -202,6 +218,12 @@ export const AdminCompaniesTab = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Company Modal */}
+      <AddCompanyModal
+        open={isAddCompanyModalOpen}
+        onOpenChange={setIsAddCompanyModalOpen}
+      />
     </>
   );
 };

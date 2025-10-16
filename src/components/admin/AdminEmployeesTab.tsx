@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Search, 
   Eye, 
@@ -14,7 +15,8 @@ import {
   DollarSign,
   Scale,
   Star,
-  Calendar
+  Calendar,
+  Plus
 } from 'lucide-react';
 
 interface Employee {
@@ -99,6 +101,7 @@ export const AdminEmployeesTab = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { toast } = useToast();
 
   const filteredEmployees = mockEmployees.filter(emp =>
     emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -111,9 +114,29 @@ export const AdminEmployeesTab = () => {
     setSheetOpen(true);
   };
 
+  const handleAddEmployee = () => {
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "A adição de colaboradores estará disponível em breve.",
+    });
+  };
+
   return (
     <>
       <div className="space-y-6">
+        {/* Header with Add Button */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Colaboradores</h2>
+            <p className="text-sm text-muted-foreground">Gerir colaboradores e acompanhar progresso</p>
+          </div>
+          
+          <Button onClick={handleAddEmployee} size="lg">
+            <Plus className="h-4 w-4 mr-2" />
+            Adicionar Colaborador
+          </Button>
+        </div>
+
         {/* Search Bar */}
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-md">
