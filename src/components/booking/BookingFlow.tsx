@@ -258,7 +258,7 @@ const BookingFlow = () => {
       
       case 'datetime':
         return (
-          <div className="min-h-screen bg-soft-white">
+          <div className="min-h-screen">
             <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
               <div className="w-full max-w-2xl mx-auto">
                 <Button 
@@ -301,7 +301,7 @@ const BookingFlow = () => {
       
       case 'confirmation':
         return (
-          <div className="min-h-screen bg-soft-white">
+          <div className="min-h-screen">
             <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
               <div className="w-full max-w-2xl mx-auto">
                 <Card>

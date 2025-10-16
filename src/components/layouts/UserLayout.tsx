@@ -15,7 +15,7 @@ export function UserLayout({ children }: UserLayoutProps) {
   return (
     <SidebarProvider defaultOpen>
       <div className="min-h-screen flex w-full relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-10">
+        <div className="absolute inset-0 z-0 opacity-20">
           <AspectRatio ratio={16 / 9} className="w-full h-full">
             <img
               src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
