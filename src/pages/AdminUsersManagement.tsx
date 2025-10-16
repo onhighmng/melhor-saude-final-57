@@ -18,7 +18,7 @@ const AdminUsersManagement = () => {
             Gerir empresas, colaboradores e prestadores da plataforma
           </p>
         </div>
-        <Button onClick={() => console.log('Add company')} className="gap-2">
+        <Button onClick={() => console.log('Add company')} className="gap-2 self-start">
           <Plus className="h-4 w-4" />
           Adicionar Empresa
         </Button>
