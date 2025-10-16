@@ -9,24 +9,19 @@ const AdminUsersManagement = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">
-            Gestão de Utilizadores
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Gerir empresas, colaboradores e prestadores da plataforma
-          </p>
-        </div>
-        <Button onClick={() => console.log('Add company')} className="gap-2 self-start">
-          <Plus className="h-4 w-4" />
-          Adicionar Empresa
-        </Button>
+      <div>
+        <h1 className="text-3xl font-heading font-bold text-foreground">
+          Gestão de Utilizadores
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Gerir empresas, colaboradores e prestadores da plataforma
+        </p>
       </div>
 
       {/* Tabs Navigation */}
       <Tabs defaultValue="companies" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
+        <div className="flex items-center gap-4">
+          <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="companies" className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
             Empresas
@@ -40,6 +35,11 @@ const AdminUsersManagement = () => {
             Prestadores
           </TabsTrigger>
         </TabsList>
+        <Button onClick={() => console.log('Add company')} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Adicionar Empresa
+        </Button>
+        </div>
 
         <TabsContent value="companies" className="mt-6">
           <AdminCompaniesTab />
