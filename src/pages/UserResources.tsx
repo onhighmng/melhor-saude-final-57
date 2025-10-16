@@ -83,7 +83,7 @@ export default function UserResources() {
             </div>
             
             {/* Tabs Bar */}
-            <TabsList className="inline-flex w-auto mx-auto">
+            <TabsList className="flex w-full justify-center flex-wrap gap-2">
               <TabsTrigger value="all">Todos</TabsTrigger>
               <TabsTrigger value="saude_mental">Saúde Mental</TabsTrigger>
               <TabsTrigger value="bem_estar_fisico">Bem-Estar</TabsTrigger>
