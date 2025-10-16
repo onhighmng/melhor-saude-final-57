@@ -245,7 +245,7 @@ const UserDashboard = () => {
               
               <div className="w-full max-w-md space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-50 font-bold">Progresso Pessoal</span>
+                  <span className="text-base text-slate-50 font-bold">Progresso Pessoal</span>
                   <span className="text-lg font-bold text-zinc-50">{Math.round(animatedMilestoneProgress)}%</span>
                 </div>
                 <Progress value={animatedMilestoneProgress} className="h-2" />
