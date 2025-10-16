@@ -18,6 +18,8 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { getPillarColors, cn } from '@/lib/utils';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
+import cardBackground from '@/assets/card-background.png';
+
 const UserDashboard = () => {
   const navigate = useNavigate();
   const {
@@ -233,8 +235,11 @@ const UserDashboard = () => {
 
         {/* Session Balance Card - Centered */}
         <div className="flex justify-center" ref={progressRef}>
-          <Card className="w-full max-w-4xl border shadow-sm bg-[#D4B896]/90 backdrop-blur-sm">
-            <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8">
+          <Card className="w-full max-w-4xl border shadow-sm overflow-hidden relative">
+            <div className="absolute inset-0">
+              <img src={cardBackground} alt="" className="w-full h-full object-cover" />
+            </div>
+            <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8 relative z-10">
               <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
                 <Calendar className="w-12 h-12 text-white" />
               </div>
