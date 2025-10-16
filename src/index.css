@@ -11,7 +11,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    font-size: 110%; /* Scale entire platform by 10% */
+    font-size: 121%; /* Scale entire platform by 21% (110% * 1.10) */
     
     /* Modern Clean Color System */
     --royal-blue: 218 58% 40%;        
