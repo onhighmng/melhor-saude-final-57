@@ -19,7 +19,6 @@ import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { getPillarColors, cn } from '@/lib/utils';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import cardBackground from '@/assets/card-background.png';
-
 const UserDashboard = () => {
   const navigate = useNavigate();
   const {
@@ -246,8 +245,8 @@ const UserDashboard = () => {
               
               <div className="w-full max-w-md space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Progresso Pessoal</span>
-                  <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
+                  <span className="text-sm text-slate-50 font-bold">Progresso Pessoal</span>
+                  <span className="text-lg font-bold text-zinc-50">{Math.round(animatedMilestoneProgress)}%</span>
                 </div>
                 <Progress value={animatedMilestoneProgress} className="h-2" />
               </div>
