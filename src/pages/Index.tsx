@@ -3,6 +3,7 @@ import Navigation from '@/components/Navigation';
 import HeroSection from '@/components/HeroSection';
 import { ModernHeroSection } from '@/components/ModernHeroSection';
 import SobreNosSection from '@/components/SobreNosSection';
+import { StackedCircularFooter } from '@/components/ui/stacked-circular-footer';
 
 // Lazy load heavy below-the-fold components
 const CloudsScrollProvider = lazy(() => import('@/components/clouds/CloudsScrollProvider'));
@@ -56,6 +57,8 @@ const Index = () => {
       <Suspense fallback={null}>
         <DemoFloatingButton />
       </Suspense>
+      
+      <StackedCircularFooter />
     </div>
   );
 };
