@@ -83,12 +83,12 @@ export default function UserResources() {
             </div>
             
             {/* Tabs Bar */}
-            <TabsList className="flex w-full justify-center flex-wrap gap-2">
-              <TabsTrigger value="all">Todos</TabsTrigger>
-              <TabsTrigger value="saude_mental">Saúde Mental</TabsTrigger>
-              <TabsTrigger value="bem_estar_fisico">Bem-Estar</TabsTrigger>
-              <TabsTrigger value="assistencia_financeira">Financeiro</TabsTrigger>
-              <TabsTrigger value="assistencia_juridica">Jurídico</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+              <TabsTrigger value="all" className="w-full">Todos</TabsTrigger>
+              <TabsTrigger value="saude_mental" className="w-full">Saúde Mental</TabsTrigger>
+              <TabsTrigger value="bem_estar_fisico" className="w-full">Bem-Estar</TabsTrigger>
+              <TabsTrigger value="assistencia_financeira" className="w-full">Financeiro</TabsTrigger>
+              <TabsTrigger value="assistencia_juridica" className="w-full">Jurídico</TabsTrigger>
             </TabsList>
             
             {/* Blog Cards */}
