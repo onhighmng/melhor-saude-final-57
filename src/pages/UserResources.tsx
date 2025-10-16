@@ -70,6 +70,15 @@ export default function UserResources() {
       />
       
       <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Recursos Mais Populares de 2024</h2>
+          <p className="mx-auto max-w-[800px] text-center text-xl !leading-[2] text-foreground/50 md:text-2xl mb-8">
+            Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro
+          </p>
+        </div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-6">
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="all">Todos</TabsTrigger>
@@ -121,17 +130,33 @@ export default function UserResources() {
         </Tabs>
       </div>
       
-      <BlogPosts
-        title="Recursos Mais Populares de 2024"
-        description="Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro"
-        backgroundLabel="RECURSOS"
-        backgroundPosition="left"
-        posts={resourcePosts}
-        onPostClick={(post) => {
-          toast.success(`A abrir: ${post.title}`);
-        }}
-        className="mb-8"
-      />
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {resourcePosts.map((post) => (
+            <div
+              key={post.id}
+              onClick={() => toast.success(`A abrir: ${post.title}`)}
+              className="cursor-pointer group"
+            >
+              <div className="rounded-lg overflow-hidden mb-4">
+                <img 
+                  src={post.imageUrl} 
+                  alt={post.title}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">{post.category}</p>
+                <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">{post.title}</h3>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span>{post.views} visualizações</span>
+                  <span>{post.readTime} min leitura</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
       
       <ResourceModal
         resource={selectedResource}
