@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Component as BlogPosts } from "@/components/ui/blog-posts";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResourceGrid } from "@/components/resources/ResourceGrid";
@@ -27,12 +28,57 @@ export default function UserResources() {
     return resources.filter(r => r.pillar === pillar);
   };
   
+  const resourcePosts = [
+    {
+      id: 1,
+      title: "Guia Completo de Saúde Mental",
+      category: "Saúde Mental",
+      imageUrl: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070",
+      href: "#",
+      views: 2180,
+      readTime: 8,
+      rating: 5
+    },
+    {
+      id: 2,
+      title: "Planeamento Financeiro Pessoal",
+      category: "Assistência Financeira",
+      imageUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070",
+      href: "#",
+      views: 1456,
+      readTime: 12,
+      rating: 4
+    },
+    {
+      id: 3,
+      title: "Direitos do Trabalhador",
+      category: "Assistência Jurídica",
+      imageUrl: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070",
+      href: "#",
+      views: 987,
+      readTime: 6,
+      rating: 4
+    }
+  ];
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Recursos de Bem-Estar"
         subtitle="Aceda a guias, vídeos e artigos sobre saúde e bem-estar"
         icon={BookOpen}
+      />
+      
+      <BlogPosts
+        title="Recursos Mais Populares de 2024"
+        description="Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro"
+        backgroundLabel="RECURSOS"
+        backgroundPosition="left"
+        posts={resourcePosts}
+        onPostClick={(post) => {
+          toast.success(`A abrir: ${post.title}`);
+        }}
+        className="mb-8"
       />
       
       <div className="max-w-7xl mx-auto px-6">
