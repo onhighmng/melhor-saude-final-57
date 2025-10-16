@@ -233,7 +233,7 @@ const UserDashboard = () => {
 
         {/* Session Balance Card - Centered */}
         <div className="flex justify-center" ref={progressRef}>
-          <Card className="w-full max-w-4xl border shadow-sm bg-teal-50/90 backdrop-blur-sm">
+          <Card className="w-full max-w-4xl border shadow-sm bg-amber-50/90 backdrop-blur-sm">
             <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8">
               <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
                 <Calendar className="w-12 h-12 text-white" />
