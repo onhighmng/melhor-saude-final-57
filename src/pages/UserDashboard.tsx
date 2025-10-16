@@ -271,7 +271,6 @@ const UserDashboard = () => {
           <BentoCard
             name=""
             description=""
-            Icon={Calendar}
             className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
             background={
               <div className="absolute inset-0 flex flex-col p-6">
