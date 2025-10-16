@@ -61,7 +61,7 @@ export default function UserResources() {
             <div className="text-center space-y-4">
               <h1 className="text-4xl font-semibold capitalize !leading-[1.4] md:text-5xl lg:text-6xl">Recursos Mais Populares De 2025</h1>
               <p className="mx-auto max-w-[800px] text-xl !leading-[2] text-foreground/50 md:text-2xl">
-                Descubra o conteúdo mais relevante para o seu bem-estar físico, mental e financeiro
+                Descubra o conteúdo mais relevante para o seu bem-estar físico, mental, financeiro e jurídico
               </p>
             </div>
             
