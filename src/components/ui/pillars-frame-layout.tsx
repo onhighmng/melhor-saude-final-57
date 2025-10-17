@@ -35,11 +35,10 @@ function PillarFrameComponent({
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    if (isHovered) {
+    if (isHovered && videoRef.current?.paused) {
       videoRef.current?.play()
-    } else {
-      videoRef.current?.pause()
     }
+    // Don't pause when unhovered - let video keep playing
   }, [isHovered])
 
   const handleClick = () => {
@@ -79,21 +78,25 @@ function PillarFrameComponent({
         </div>
 
         {/* Content */}
-        <div className="relative z-10 h-full flex flex-col items-center justify-center p-6 text-center">
+        <div className={`relative z-10 h-full flex flex-col p-6 transition-all duration-300 ${isHovered ? 'items-start justify-end' : 'items-center justify-center text-center'}`}>
           {/* Icon */}
-          <div 
+          <motion.div 
             className="mb-4 p-4 rounded-full transition-all duration-300"
             style={{ 
               backgroundColor: pillar.darkColor,
               transform: isHovered ? "scale(1.1)" : "scale(1)"
             }}
+            animate={{ 
+              opacity: isHovered ? 0 : 1
+            }}
+            transition={{ duration: 0.3 }}
           >
             {pillar.icon}
-          </div>
+          </motion.div>
 
           {/* Title */}
           <h3 
-            className="text-xl font-bold mb-2 transition-colors duration-300"
+            className={`text-xl font-bold mb-2 transition-all duration-300 ${isHovered ? 'text-left' : 'text-center'}`}
             style={{ 
               color: pillar.darkColor,
               fontSize: isHovered ? "1.5rem" : "1.25rem"
@@ -104,7 +107,7 @@ function PillarFrameComponent({
 
           {/* Description - only show on hover */}
           <motion.p
-            className="text-sm leading-relaxed transition-all duration-300"
+            className={`text-sm leading-relaxed transition-all duration-300 ${isHovered ? 'text-left' : 'text-center'}`}
             style={{ color: pillar.darkColor }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ 
