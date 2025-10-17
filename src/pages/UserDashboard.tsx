@@ -346,16 +346,16 @@ const UserDashboard = () => {
 
           {/* Bottom Right - Upcoming Sessions */}
           <BentoCard name="" description="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col">
-                <div className="flex-1 space-y-4 mb-auto">
+                <div className="flex-1 space-y-3 mb-auto">
                   {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
               const pillarColors = getPillarColors(booking.pillar);
-              return <div key={booking.id} className={cn('flex items-start gap-4 rounded-2xl p-4 border-l-[6px] transition-all', `${pillarColors.bg} ${pillarColors.border}`)}>
-                          <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
-                            <Calendar className="w-7 h-7 text-white" />
+              return <div key={booking.id} className={cn('flex items-start gap-3 rounded-2xl p-3 border-l-[6px] transition-all', `${pillarColors.bg} ${pillarColors.border}`)}>
+                          <div className={cn('w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
+                            <Calendar className="w-6 h-6 text-white" />
                           </div>
-                          <div className="flex-1 min-w-0 pt-1">
-                            <div className={cn('font-semibold text-base mb-1', pillarColors.text)}>{formatPillarName(booking.pillar)}</div>
-                            <div className="text-sm text-muted-foreground">{booking.date} • {booking.time}</div>
+                          <div className="flex-1 min-w-0 pt-0.5">
+                            <div className={cn('font-semibold text-sm mb-0.5', pillarColors.text)}>{formatPillarName(booking.pillar)}</div>
+                            <div className="text-xs text-muted-foreground">{booking.date} • {booking.time}</div>
                           </div>
                         </div>;
             }) : <div className="text-center text-sm text-muted-foreground">
