@@ -166,8 +166,8 @@ export function PillarsFrameLayout({
       description: "Saúde física e qualidade de vida através de programas de exercícios, nutrição e prevenção. Promovemos hábitos saudáveis para uma vida ativa e energética.",
       video: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       icon: <Heart className="w-8 h-8 text-white" />,
-      lightColor: "#FED7AA", // Light orange
-      darkColor: "#EA580C", // Dark orange
+      lightColor: "#FEF3C7", // Light yellow
+      darkColor: "#D97706", // Dark yellow/amber
       defaultPos: { x: 6, y: 0, w: 6, h: 6 }
     },
     {
