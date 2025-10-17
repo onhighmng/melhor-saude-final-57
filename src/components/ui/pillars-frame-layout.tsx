@@ -21,6 +21,7 @@ interface PillarFrameComponentProps {
   height: number | string
   className?: string
   isHovered: boolean
+  onPillarSelect?: (pillar: string) => void
 }
 
 function PillarFrameComponent({
@@ -29,6 +30,7 @@ function PillarFrameComponent({
   height,
   className = "",
   isHovered,
+  onPillarSelect,
 }: PillarFrameComponentProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -40,14 +42,21 @@ function PillarFrameComponent({
     }
   }, [isHovered])
 
+  const handleClick = () => {
+    if (onPillarSelect) {
+      onPillarSelect(pillar.title);
+    }
+  };
+
   return (
     <div
-      className={`relative ${className}`}
+      className={`relative cursor-pointer ${className}`}
       style={{
         width,
         height,
         transition: "width 0.3s ease-in-out, height 0.3s ease-in-out",
       }}
+      onClick={handleClick}
     >
       <div className="relative w-full h-full overflow-hidden rounded-lg">
         {/* Background with light color */}
@@ -129,12 +138,14 @@ interface PillarsFrameLayoutProps {
   className?: string
   hoverSize?: number
   gapSize?: number
+  onPillarSelect?: (pillar: string) => void
 }
 
 export function PillarsFrameLayout({ 
   className,
   hoverSize = 8,
-  gapSize = 6
+  gapSize = 6,
+  onPillarSelect
 }: PillarsFrameLayoutProps) {
   const [hovered, setHovered] = useState<{ row: number; col: number } | null>(null)
 
@@ -234,6 +245,7 @@ export function PillarsFrameLayout({
               height="100%"
               className="absolute inset-0"
               isHovered={hovered?.row === row && hovered?.col === col}
+              onPillarSelect={onPillarSelect}
             />
           </motion.div>
         )

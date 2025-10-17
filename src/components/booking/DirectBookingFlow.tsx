@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -32,15 +32,46 @@ interface Provider {
 export const DirectBookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   
-  const [currentStep, setCurrentStep] = useState<BookingStep>('pillar');
-  const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
+  // Initialize state based on URL parameters to avoid flash
+  const getInitialState = () => {
+    const pillarParam = searchParams.get('pillar');
+    if (pillarParam && ['psicologica', 'fisica', 'financeira', 'juridica'].includes(pillarParam)) {
+      return {
+        currentStep: 'assessment' as BookingStep,
+        selectedPillar: pillarParam as BookingPillar
+      };
+    }
+    return {
+      currentStep: 'pillar' as BookingStep,
+      selectedPillar: null as BookingPillar | null
+    };
+  };
+
+  const initialState = getInitialState();
+  
+  const [currentStep, setCurrentStep] = useState<BookingStep>(initialState.currentStep);
+  const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(initialState.selectedPillar);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [assignedProvider, setAssignedProvider] = useState<Provider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [meetingType, setMeetingType] = useState<'virtual' | 'phone'>('virtual');
   const [isConfirming, setIsConfirming] = useState(false);
+
+  // Update state when URL parameters change
+  useEffect(() => {
+    const pillarParam = searchParams.get('pillar');
+    if (pillarParam && ['psicologica', 'fisica', 'financeira', 'juridica'].includes(pillarParam)) {
+      setSelectedPillar(pillarParam as BookingPillar);
+      setCurrentStep('assessment');
+    } else if (!pillarParam && currentStep === 'assessment') {
+      // If pillar parameter is removed, go back to pillar selection
+      setSelectedPillar(null);
+      setCurrentStep('pillar');
+    }
+  }, [searchParams, currentStep]);
 
   useEffect(() => {
     console.log('[DirectBookingFlow] Step:', currentStep, 'Pillar:', selectedPillar, 'Topic:', selectedTopic);
@@ -160,7 +191,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'psicologica' && (
         <MentalHealthAssessmentFlow
-          onBack={() => setCurrentStep('pillar')}
+          onBack={() => navigate('/user/book')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -168,7 +199,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'fisica' && (
         <PhysicalWellnessAssessmentFlow
-          onBack={() => setCurrentStep('pillar')}
+          onBack={() => navigate('/user/book')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -176,7 +207,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'financeira' && (
         <FinancialAssistanceAssessmentFlow
-          onBack={() => setCurrentStep('pillar')}
+          onBack={() => navigate('/user/book')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -184,7 +215,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'juridica' && (
         <LegalAssessmentFlow
-          onBack={() => setCurrentStep('pillar')}
+          onBack={() => navigate('/user/book')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
