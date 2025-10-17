@@ -96,9 +96,9 @@ function PillarFrameComponent({
 
           {/* Title */}
           <h3 
-            className={`text-xl font-bold mb-2 transition-all duration-300 ${isHovered ? 'text-left' : 'text-center'}`}
+            className={`text-xl font-bold mb-2 transition-all duration-300 ${isHovered ? 'text-left text-white' : 'text-center'}`}
             style={{ 
-              color: pillar.darkColor,
+              color: isHovered ? 'white' : pillar.darkColor,
               fontSize: isHovered ? "1.5rem" : "1.25rem"
             }}
           >
@@ -107,8 +107,8 @@ function PillarFrameComponent({
 
           {/* Description - only show on hover */}
           <motion.p
-            className={`text-sm leading-relaxed transition-all duration-300 ${isHovered ? 'text-left' : 'text-center'}`}
-            style={{ color: pillar.darkColor }}
+            className={`text-sm leading-relaxed transition-all duration-300 ${isHovered ? 'text-left text-white' : 'text-center'}`}
+            style={{ color: isHovered ? 'white' : pillar.darkColor }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ 
               opacity: isHovered ? 1 : 0,
