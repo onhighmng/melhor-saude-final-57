@@ -12,6 +12,7 @@ const MissionVisionValuesSection = lazy(() => import('@/components/MissionVision
 const InfoCardsSection = lazy(() => import('@/components/InfoCardsSection'));
 const GuidesSection = lazy(() => import('@/components/GuidesSection'));
 const PillarCarousel = lazy(() => import('@/components/PillarCarousel'));
+const PillarsInteractiveSection = lazy(() => import('@/components/PillarsInteractiveSection'));
 const MembershipCardsSection = lazy(() => import('@/components/MembershipCardsSection'));
 const FAQSection = lazy(() => import('@/components/FAQSection'));
 const DemoFloatingButton = lazy(() => import('@/components/DemoFloatingButton'));
@@ -28,6 +29,7 @@ const Index = () => {
       <HeroSection />
       <ModernHeroSection />
       <SobreNosSection />
+      
       
       <Suspense fallback={<LoadingSkeleton />}>
         <CloudsScrollProvider>

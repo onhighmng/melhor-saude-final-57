@@ -14,6 +14,9 @@ export default defineConfig(({ mode }) => ({
       usePolling: true,
       interval: 1000,
       ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**']
+    },
+    fs: {
+      strict: false
     }
   },
   plugins: [
