@@ -154,7 +154,7 @@ export function PillarsFrameLayout({
       id: 1,
       title: "Saúde Mental",
       description: "Apoio psicológico e bem-estar emocional para uma vida mais equilibrada e feliz. Nossos especialistas oferecem terapia individual, grupos de apoio e recursos de autocuidado.",
-      video: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      video: "https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/block_video_for_pillar_de_saude_mental.mp4",
       icon: <Brain className="w-8 h-8 text-white" />,
       lightColor: "#E0F2FE", // Light blue
       darkColor: "#0369A1", // Dark blue
@@ -164,7 +164,7 @@ export function PillarsFrameLayout({
       id: 2,
       title: "Bem-estar Físico",
       description: "Saúde física e qualidade de vida através de programas de exercícios, nutrição e prevenção. Promovemos hábitos saudáveis para uma vida ativa e energética.",
-      video: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      video: "https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/block_de_fisico.mp4",
       icon: <Heart className="w-8 h-8 text-white" />,
       lightColor: "#FEF3C7", // Light yellow
       darkColor: "#D97706", // Dark yellow/amber
@@ -174,7 +174,7 @@ export function PillarsFrameLayout({
       id: 3,
       title: "Assistência Financeira",
       description: "Consultoria financeira e planejamento para estabilidade econômica. Oferecemos orientação sobre orçamento, investimentos e gestão de dívidas.",
-      video: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      video: "https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/bloco_3_financeiro.mp4",
       icon: <DollarSign className="w-8 h-8 text-white" />,
       lightColor: "#DCFCE7", // Light green
       darkColor: "#16A34A", // Dark green
@@ -184,7 +184,7 @@ export function PillarsFrameLayout({
       id: 4,
       title: "Assistência Jurídica",
       description: "Apoio e aconselhamento legal para proteger seus direitos. Nossa equipe jurídica oferece consultoria em diversas áreas do direito.",
-      video: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      video: "https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/bloco_4_juridico.mp4",
       icon: <Scale className="w-8 h-8 text-white" />,
       lightColor: "#F3E8FF", // Light purple
       darkColor: "#7C3AED", // Dark purple
