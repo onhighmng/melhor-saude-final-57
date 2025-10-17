@@ -10,7 +10,7 @@ export function NotificationList({ notifications, onMarkRead, onAction }: Notifi
   if (notifications.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Sem notificações</p>
+        <p className="text-gray-500">Sem notificações</p>
       </div>
     );
   }

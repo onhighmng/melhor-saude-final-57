@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   AnimatedSidebar,
   AnimatedSidebarBody,
   AnimatedSidebarLink,
+  useAnimatedSidebar,
 } from "@/components/ui/animated-sidebar";
 import {
   LayoutDashboard,
@@ -23,7 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 export function UserSidebar() {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useAnimatedSidebar();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -35,7 +35,7 @@ export function UserSidebar() {
     },
     {
       label: "Agendar Sessão",
-      href: "/user/book-session",
+      href: "/user/book",
       icon: <Calendar className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
@@ -86,7 +86,7 @@ export function UserSidebar() {
   return (
     <AnimatedSidebar open={open} setOpen={setOpen}>
       <AnimatedSidebarBody className="justify-between gap-10">
-        <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="flex flex-col flex-1 overflow-hidden">
           <Logo open={open} user={user} role="Utilizador" />
           <div className="mt-8 flex flex-col gap-2">
             {mainLinks.map((link, idx) => (

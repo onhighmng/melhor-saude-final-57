@@ -27,7 +27,7 @@ export function PageHeader({
 
   return (
     <div className={cn(
-      "bg-white/90 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-40 shadow-sm",
+      "bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm",
       className
     )}>
       <div className="max-w-7xl mx-auto px-6 py-6">

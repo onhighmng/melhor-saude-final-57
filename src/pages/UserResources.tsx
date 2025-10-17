@@ -7,6 +7,71 @@ import { ResourceModal } from "@/components/resources/ResourceModal";
 import { mockResources, UserResource, pillarNames } from "@/data/userResourcesData";
 import { BookOpen } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+// Pillar color mapping
+const getPillarColors = (pillar: string) => {
+  const colorMap: Record<string, { bg: string; text: string; border: string; hover: string }> = {
+    'saude_mental': {
+      bg: 'bg-blue-50',
+      text: 'text-blue-700',
+      border: 'border-blue-200',
+      hover: 'hover:bg-blue-100'
+    },
+    'bem_estar_fisico': {
+      bg: 'bg-yellow-50',
+      text: 'text-yellow-700',
+      border: 'border-yellow-200',
+      hover: 'hover:bg-yellow-100'
+    },
+    'assistencia_financeira': {
+      bg: 'bg-green-50',
+      text: 'text-green-700',
+      border: 'border-green-200',
+      hover: 'hover:bg-green-100'
+    },
+    'assistencia_juridica': {
+      bg: 'bg-purple-50',
+      text: 'text-purple-700',
+      border: 'border-purple-200',
+      hover: 'hover:bg-purple-100'
+    },
+    'all': {
+      bg: 'bg-gray-50',
+      text: 'text-gray-700',
+      border: 'border-gray-200',
+      hover: 'hover:bg-gray-100'
+    }
+  };
+  return colorMap[pillar] || colorMap['all'];
+};
+
+// Category to pillar color mapping for blog posts
+const getCategoryColors = (category: string) => {
+  const categoryMap: Record<string, { bg: string; text: string; border: string }> = {
+    'Saúde Mental': {
+      bg: 'bg-blue-500/80',
+      text: 'text-white',
+      border: 'border-blue-400'
+    },
+    'Assistência Financeira': {
+      bg: 'bg-green-500/80',
+      text: 'text-white',
+      border: 'border-green-400'
+    },
+    'Assistência Jurídica': {
+      bg: 'bg-purple-500/80',
+      text: 'text-white',
+      border: 'border-purple-400'
+    },
+    'Bem-Estar Físico': {
+      bg: 'bg-yellow-500/80',
+      text: 'text-white',
+      border: 'border-yellow-400'
+    }
+  };
+  return categoryMap[category] || { bg: 'bg-gray-500/80', text: 'text-white', border: 'border-gray-400' };
+};
+
 export default function UserResources() {
   const [resources] = useState(mockResources);
   const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
@@ -66,18 +131,63 @@ export default function UserResources() {
             </div>
             
             {/* Tabs Bar */}
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-              <TabsTrigger value="all" className="w-full">Todos</TabsTrigger>
-              <TabsTrigger value="saude_mental" className="w-full">Saúde Mental</TabsTrigger>
-              <TabsTrigger value="bem_estar_fisico" className="w-full">Bem-Estar</TabsTrigger>
-              <TabsTrigger value="assistencia_financeira" className="w-full">Financeiro</TabsTrigger>
-              <TabsTrigger value="assistencia_juridica" className="w-full">Jurídico</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 bg-transparent p-0">
+              <TabsTrigger 
+                value="all" 
+                className={cn(
+                  "w-full data-[state=active]:bg-gray-100 data-[state=active]:text-gray-800 data-[state=active]:border-gray-300",
+                  "border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
+                )}
+              >
+                Todos
+              </TabsTrigger>
+              <TabsTrigger 
+                value="saude_mental" 
+                className={cn(
+                  "w-full data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800 data-[state=active]:border-blue-300",
+                  "border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                )}
+              >
+                Saúde Mental
+              </TabsTrigger>
+              <TabsTrigger 
+                value="bem_estar_fisico" 
+                className={cn(
+                  "w-full data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-800 data-[state=active]:border-yellow-300",
+                  "border border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
+                )}
+              >
+                Bem-Estar
+              </TabsTrigger>
+              <TabsTrigger 
+                value="assistencia_financeira" 
+                className={cn(
+                  "w-full data-[state=active]:bg-green-100 data-[state=active]:text-green-800 data-[state=active]:border-green-300",
+                  "border border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
+                )}
+              >
+                Financeiro
+              </TabsTrigger>
+              <TabsTrigger 
+                value="assistencia_juridica" 
+                className={cn(
+                  "w-full data-[state=active]:bg-purple-100 data-[state=active]:text-purple-800 data-[state=active]:border-purple-300",
+                  "border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100"
+                )}
+              >
+                Jurídico
+              </TabsTrigger>
             </TabsList>
             
-            {/* Blog Cards */}
-            <div className="grid h-auto grid-cols-1 gap-5 md:h-[650px] md:grid-cols-2 lg:grid-cols-[1fr_0.5fr]">
+          </div>
+          
+          {/* Tab Contents */}
+          <TabsContent value="all" className="mt-6">
+            {/* Blog Cards - Only show in "Todos" tab */}
+            <div className="grid h-auto grid-cols-1 gap-5 md:h-[650px] md:grid-cols-2 lg:grid-cols-[1fr_0.5fr] mb-8">
               {resourcePosts.map((post, index) => {
               const isPrimary = index === 0;
+              const categoryColors = getCategoryColors(post.category);
               return <div key={post.id} style={{
                 backgroundImage: `url(${post.imageUrl})`
               }} className={`group relative row-span-1 flex size-full cursor-pointer flex-col justify-end overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat p-5 text-white max-md:h-[300px] transition-all duration-300 hover:scale-[0.98] hover:rotate-[0.3deg] ${isPrimary ? 'col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-1' : ''}`} onClick={() => toast.success(`A abrir: ${post.title}`)}>
@@ -86,7 +196,12 @@ export default function UserResources() {
                       <div className="flex flex-1 flex-col gap-3">
                         <h1 className="text-3xl font-semibold md:text-4xl">{post.title}</h1>
                         <div className="flex flex-col gap-3">
-                          <span className="text-base capitalize py-px px-2 rounded-md bg-white/40 w-fit text-white backdrop-blur-md">
+                          <span className={cn(
+                            "text-base capitalize py-px px-2 rounded-md w-fit backdrop-blur-md border",
+                            categoryColors.bg,
+                            categoryColors.text,
+                            categoryColors.border
+                          )}>
                             {post.category}
                           </span>
                           <div className="text-lg font-thin">({post.views} Views)</div>
@@ -97,10 +212,7 @@ export default function UserResources() {
                   </div>;
             })}
             </div>
-          </div>
-          
-          {/* Tab Contents */}
-          <TabsContent value="all" className="mt-6">
+            
             <ResourceGrid resources={filterByPillar('all')} onView={handleView} onDownload={handleDownload} />
           </TabsContent>
           

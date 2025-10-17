@@ -32,42 +32,45 @@ const BentoCard = ({
   href,
   cta,
   onClick,
-  textColor = "text-neutral-700",
-  iconColor = "text-neutral-700",
+  iconColor = "text-white",
+  textColor = "text-white",
+  descriptionColor = "text-white/80",
 }: {
   name: string;
   className: string;
   background: ReactNode;
   Icon?: any;
   description: string;
-  href?: string;
-  cta?: string;
+  href: string;
+  cta: string;
   onClick?: () => void;
-  textColor?: string;
   iconColor?: string;
+  textColor?: string;
+  descriptionColor?: string;
 }) => (
   <div
     key={name}
-    onClick={onClick}
     className={cn(
-      "group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-xl cursor-pointer",
+      "group relative flex flex-col justify-between overflow-hidden rounded-2xl cursor-pointer h-full min-h-[220px] w-full",
       // light styles
-      "bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
+      "bg-white [box-shadow:0_4px_20px_rgba(0,0,0,0.05)]",
       // dark styles
       "transform-gpu dark:bg-black dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]",
+      "hover:scale-[1.01] transition-all duration-300",
       className,
     )}
+    onClick={onClick}
   >
     <div>{background}</div>
     <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 p-6 transition-all duration-300 group-hover:-translate-y-10">
-      {Icon && <Icon className={cn("h-12 w-12 origin-left transform-gpu transition-all duration-300 ease-in-out group-hover:scale-75", iconColor)} />}
-      {name && <h3 className={cn("text-xl font-semibold dark:text-neutral-300", textColor)}>
+      {Icon && <Icon className={cn("h-12 w-12 origin-left transform-gpu transition-all duration-300 ease-in-out group-hover:scale-75 drop-shadow-lg", iconColor)} />}
+      <h3 className={cn("text-xl font-semibold drop-shadow-lg", textColor)}>
         {name}
-      </h3>}
-      {description && <p className="max-w-lg text-neutral-400">{description}</p>}
+      </h3>
+      {description && <p className={cn("max-w-lg drop-shadow-md", descriptionColor)}>{description}</p>}
     </div>
 
-    {cta && href && (
+    {cta && (
       <div
         className={cn(
           "pointer-events-none absolute bottom-0 flex w-full translate-y-10 transform-gpu flex-row items-center p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100",

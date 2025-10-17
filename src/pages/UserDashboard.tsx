@@ -232,9 +232,9 @@ const UserDashboard = () => {
         </div>
 
 
-        {/* Session Balance Card - Centered */}
-        <div className="flex justify-center" ref={progressRef}>
-          <Card className="w-full max-w-4xl border shadow-sm overflow-hidden relative">
+        {/* Session Balance Card - Full Width */}
+        <div ref={progressRef}>
+          <Card className="w-full border shadow-sm overflow-hidden relative">
             <div className="absolute inset-0">
               <img src={cardBackground} alt="" className="w-full h-full object-cover" />
             </div>
@@ -266,10 +266,34 @@ const UserDashboard = () => {
         {/* Bento Grid Layout */}
         <BentoGrid className="lg:grid-rows-3">
           {/* Top Left - Session History */}
-          <BentoCard name="Histórico de Sessões" description={`${completedSessions.length} sessões concluídas`} Icon={Calendar} onClick={() => navigate('/user/sessions')} className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />} />
+          <BentoCard 
+            name="Histórico de Sessões" 
+            description={`${completedSessions.length} sessões concluídas`} 
+            Icon={Calendar} 
+            onClick={() => navigate('/user/sessions')} 
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
+            iconColor="text-black"
+            textColor="text-black"
+            descriptionColor="text-black/70"
+            href="#"
+            cta=""
+          />
 
           {/* Top Right - Notifications */}
-          <BentoCard name="Notificações" description="Fique atualizado com as suas últimas atividades" Icon={Bell} onClick={() => navigate('/user/notifications')} className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />} />
+          <BentoCard 
+            name="Notificações" 
+            description="Fique atualizado com as suas últimas atividades" 
+            Icon={Bell} 
+            onClick={() => navigate('/user/notifications')} 
+            className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
+            iconColor="text-black"
+            textColor="text-black"
+            descriptionColor="text-black/70"
+            href="#"
+            cta=""
+          />
 
           {/* Middle - Progress (Progreso Pessoal) */}
           <BentoCard name="" description="" className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" background={<div className="absolute inset-0 flex flex-col p-6">

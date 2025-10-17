@@ -1,8 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { AnimatedSidebarProvider } from '@/components/ui/animated-sidebar';
 import { UserSidebar } from '@/components/UserSidebar';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { motion } from 'framer-motion';
 
 interface UserLayoutProps {
   children: ReactNode;
@@ -11,9 +11,10 @@ interface UserLayoutProps {
 export function UserLayout({ children }: UserLayoutProps) {
   const location = useLocation();
   const isFullScreenPage = location.pathname === '/user/chat';
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <SidebarProvider defaultOpen>
+    <AnimatedSidebarProvider open={sidebarOpen} setOpen={setSidebarOpen}>
       <div className="min-h-screen flex w-full relative">
         <div className="fixed inset-0 z-0 opacity-20">
           <img
@@ -23,14 +24,20 @@ export function UserLayout({ children }: UserLayoutProps) {
           />
         </div>
         <UserSidebar />
-        <main className="flex-1 flex flex-col min-w-0 relative z-10">
+        <motion.main 
+          className="flex-1 flex flex-col min-w-0 relative z-10"
+          animate={{
+            marginLeft: sidebarOpen ? '300px' : '60px',
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
           <div className={`flex-1 overflow-auto ${isFullScreenPage ? '' : 'p-6'}`}>
             <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
               {children}
             </div>
           </div>
-        </main>
+        </motion.main>
       </div>
-    </SidebarProvider>
+    </AnimatedSidebarProvider>
   );
 }

@@ -68,7 +68,7 @@ export function NotificationCard({ notification, onMarkRead, onAction }: Notific
             <div className="flex items-start justify-between gap-2">
               <div>
                 <h4 className="font-semibold text-sm">{notification.title}</h4>
-                <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
+                <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
               </div>
               {!notification.read && (
                 <Badge variant="default" className="shrink-0">Nova</Badge>
@@ -76,7 +76,7 @@ export function NotificationCard({ notification, onMarkRead, onAction }: Notific
             </div>
             
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-gray-500">
                 {new Date(notification.createdAt).toLocaleDateString('pt-PT', {
                   day: 'numeric',
                   month: 'short',

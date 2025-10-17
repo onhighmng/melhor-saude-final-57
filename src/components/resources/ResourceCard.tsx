@@ -1,4 +1,32 @@
 import { UserResource, pillarNames, resourceTypeNames } from "@/data/userResourcesData";
+import { cn } from "@/lib/utils";
+
+// Pillar color mapping
+const getPillarColors = (pillar: string) => {
+  const colorMap: Record<string, { bg: string; text: string; border: string }> = {
+    'saude_mental': {
+      bg: 'bg-blue-500/80',
+      text: 'text-white',
+      border: 'border-blue-400'
+    },
+    'bem_estar_fisico': {
+      bg: 'bg-yellow-500/80',
+      text: 'text-white',
+      border: 'border-yellow-400'
+    },
+    'assistencia_financeira': {
+      bg: 'bg-green-500/80',
+      text: 'text-white',
+      border: 'border-green-400'
+    },
+    'assistencia_juridica': {
+      bg: 'bg-purple-500/80',
+      text: 'text-white',
+      border: 'border-purple-400'
+    }
+  };
+  return colorMap[pillar] || { bg: 'bg-gray-500/80', text: 'text-white', border: 'border-gray-400' };
+};
 
 interface ResourceCardProps {
   resource: UserResource;
@@ -13,6 +41,8 @@ export function ResourceCard({ resource, onView, onDownload }: ResourceCardProps
     }
     return null;
   };
+
+  const pillarColors = getPillarColors(resource.pillar);
 
   return (
     <div
@@ -29,7 +59,12 @@ export function ResourceCard({ resource, onView, onDownload }: ResourceCardProps
           <h1 className="text-2xl font-semibold md:text-3xl">{resource.title}</h1>
           
           <div className="flex flex-col gap-3">
-            <span className="text-base capitalize py-px px-2 rounded-md bg-white/40 w-fit text-white backdrop-blur-md">
+            <span className={cn(
+              "text-base capitalize py-px px-2 rounded-md w-fit backdrop-blur-md border",
+              pillarColors.bg,
+              pillarColors.text,
+              pillarColors.border
+            )}>
               {pillarNames[resource.pillar]}
             </span>
             

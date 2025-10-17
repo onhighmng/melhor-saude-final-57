@@ -81,7 +81,7 @@ const AdminSidebar = () => {
   return (
     <AnimatedSidebar open={open} setOpen={setOpen}>
       <AnimatedSidebarBody className="justify-between gap-10">
-        <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="flex flex-col flex-1 overflow-hidden">
           <Logo open={open} user={user} />
           <div className="mt-8 flex flex-col gap-2">
             {links.map((link, idx) => (
