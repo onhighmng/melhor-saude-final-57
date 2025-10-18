@@ -15,12 +15,14 @@ import { ArrowLeft, Bell, Shield, FileText, Users, Edit, AlertTriangle, Settings
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
+import { NotificationList } from "@/components/notifications/NotificationList";
+import { Notification } from "@/components/notifications/NotificationCard";
 
 const UserSettings = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("profile");
   const [isChangeProviderOpen, setIsChangeProviderOpen] = useState(false);
   const [selectedPillar, setSelectedPillar] = useState("");
 
@@ -67,7 +69,7 @@ const UserSettings = () => {
     timezone: "Europe/Lisbon"
   });
 
-  const [notifications, setNotifications] = useState({
+  const [notificationPreferences, setNotificationPreferences] = useState({
     emailConfirmation: true,
     pushNotification: false,
     reminder24h: true,
@@ -79,6 +81,60 @@ const UserSettings = () => {
     wellnessCommunications: false,
     anonymousReports: true
   });
+
+  // Mock notifications data from UserNotifications
+  const mockNotifications: Notification[] = [
+    {
+      id: 'notif-1',
+      type: 'session_reminder',
+      title: 'Sessão Hoje',
+      message: 'Tem uma sessão hoje às 14:00 com Dr. João Silva',
+      read: false,
+      createdAt: new Date().toISOString(),
+      actionUrl: '/user/sessions',
+      sessionId: 'sess-1',
+    },
+    {
+      id: 'notif-2',
+      type: 'feedback_request',
+      title: 'Avalie a Sessão',
+      message: 'Que tal avaliar a sua sessão com Dra. Maria Santos?',
+      read: false,
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      sessionId: 'sess-2',
+    },
+    {
+      id: 'notif-3',
+      type: 'quota_warning',
+      title: 'Sessões a Expirar',
+      message: 'Restam apenas 2 sessões. Renove o seu plano!',
+      read: true,
+      createdAt: new Date(Date.now() - 172800000).toISOString(),
+    },
+    {
+      id: 'notif-4',
+      type: 'booking_confirmation',
+      title: 'Sessão Confirmada',
+      message: 'A sua sessão foi confirmada para 25 de Março às 10:00',
+      read: true,
+      createdAt: new Date(Date.now() - 259200000).toISOString(),
+      sessionId: 'sess-3',
+    },
+    {
+      id: 'notif-5',
+      type: 'info',
+      title: 'Novos Recursos',
+      message: 'Novos recursos de bem-estar disponíveis na sua área pessoal',
+      read: true,
+      createdAt: new Date(Date.now() - 345600000).toISOString(),
+      actionUrl: '/user/resources',
+    },
+  ];
+  
+  const [notifications, setNotifications] = useState(mockNotifications);
+  
+  const unreadNotifications = notifications.filter(n => !n.read);
+  const readNotifications = notifications.filter(n => n.read);
 
   const handleSaveProfile = () => {
     toast({
@@ -149,6 +205,44 @@ const UserSettings = () => {
     });
   };
 
+  const handleMarkRead = (id: string) => {
+    setNotifications(prev =>
+      prev.map(n => n.id === id ? { ...n, read: true } : n)
+    );
+    toast({
+      title: 'Notificação marcada como lida',
+      description: 'A notificação foi atualizada.'
+    });
+  };
+  
+  const handleNotificationAction = (notification: Notification) => {
+    // Mark as read when taking action
+    if (!notification.read) {
+      handleMarkRead(notification.id);
+    }
+    
+    // Navigate based on notification type
+    switch (notification.type) {
+      case 'session_reminder':
+      case 'booking_confirmation':
+        navigate('/user/sessions');
+        break;
+      case 'feedback_request':
+        if (notification.sessionId) {
+          navigate(`/user/feedback/${notification.sessionId}`);
+        }
+        break;
+      case 'quota_warning':
+        navigate('/user/book');
+        break;
+      case 'info':
+        if (notification.actionUrl) {
+          navigate(notification.actionUrl);
+        }
+        break;
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -176,78 +270,72 @@ const UserSettings = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-white">
-        {/* Modern Header */}
+    <div className="w-full bg-white">
+      {/* Modern Header */}
         <div className="bg-white border-b border-gray-100 shadow-sm">
-          <div className="max-w-7xl mx-auto px-6 py-6">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/user/dashboard')}
-                className="h-10 w-10 hover:bg-gray-100 rounded-full"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <Settings className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Definições</h1>
-                  <p className="text-sm text-gray-500">Gerir as suas preferências e configurações</p>
-                </div>
+        <div className="w-full px-4 py-4">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/user/dashboard')}
+              className="h-9 w-9 hover:bg-gray-100 rounded-full"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center">
+                <Settings className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Definições</h1>
+                <p className="text-xs text-gray-500">Gerir as suas preferências e configurações</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          {/* Navigation */}
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Perfil</span>
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
-              <Bell className="w-4 h-4" />
-              <span className="hidden sm:inline">Notificações</span>
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              <span className="hidden sm:inline">Segurança</span>
-            </TabsTrigger>
-            <TabsTrigger value="consents" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              <span className="hidden sm:inline">Consentimentos</span>
-            </TabsTrigger>
-          </TabsList>
+      <div className="w-full px-4 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Row 1 - Profile and Notification Preferences side by side */}
+          <div className="lg:col-span-6">
+            <BentoCard
+              name=""
+              description=""
+              href="#"
+              cta=""
+              className="w-full h-fit"
+              background={<div className="absolute inset-0 bg-white" />}
+              textColor="text-gray-900"
+              descriptionColor="text-gray-600"
+              onClick={() => {}}
+            >
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-center">
+                    <Users className="w-3 h-3 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Informação do Perfil</h3>
+                    <p className="text-xs text-gray-600">Atualize as suas informações pessoais e preferências</p>
+                  </div>
+                </div>
 
-          {/* Profile Tab */}
-          <TabsContent value="profile" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Informação do Perfil</CardTitle>
-                <CardDescription>
-                  Atualize as suas informações pessoais e preferências.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center gap-6">
-                  <Avatar className="w-20 h-20">
+                <div className="flex items-center gap-4 mb-4">
+                  <Avatar className="w-16 h-16">
                     <AvatarImage src={profile?.avatar_url} />
-                    <AvatarFallback className="text-lg">
+                    <AvatarFallback className="text-sm">
                       {profile?.name?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold text-lg">{profile?.name}</h3>
-                    <p className="text-muted-foreground">{profile?.email}</p>
+                    <h3 className="font-semibold text-base">{profile?.name}</h3>
+                    <p className="text-sm text-muted-foreground">{profile?.email}</p>
                   </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-3 md:grid-cols-2 mb-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nome Completo</Label>
                     <Input
@@ -270,93 +358,185 @@ const UserSettings = () => {
                 <Button onClick={handleSaveProfile} className="w-full md:w-auto">
                   Guardar alterações
                 </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            </BentoCard>
+          </div>
 
-          {/* Notifications Tab */}
-          <TabsContent value="notifications" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Preferências de Notificação</CardTitle>
-                <CardDescription>
-                  Pode gerir aqui como quer ser notificado.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label>Email de confirmação de sessão</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Receber email quando uma sessão for confirmada
-                      </p>
-                    </div>
-                    <Switch
-                      checked={notifications.emailConfirmation}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, emailConfirmation: checked })}
-                    />
+          {/* Notification Preferences */}
+          <div className="lg:col-span-6">
+            <BentoCard
+              name=""
+              description=""
+              href="#"
+              cta=""
+              className="w-full h-fit"
+              background={<div className="absolute inset-0 bg-white" />}
+              textColor="text-gray-900"
+              descriptionColor="text-gray-600"
+              onClick={() => {}}
+            >
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-center">
+                    <Bell className="w-3 h-3 text-white" />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label>Notificação push</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Receber notificações push no dispositivo
-                      </p>
-                    </div>
-                    <Switch
-                      checked={notifications.pushNotification}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, pushNotification: checked })}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label>Lembrete 24h antes da sessão</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Receber lembrete no dia anterior à sessão
-                      </p>
-                    </div>
-                    <Switch
-                      checked={notifications.reminder24h}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, reminder24h: checked })}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label>Lembrete de feedback após sessão</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Receber lembrete para avaliar a sessão
-                      </p>
-                    </div>
-                    <Switch
-                      checked={notifications.feedbackReminder}
-                      onCheckedChange={(checked) => setNotifications({ ...notifications, feedbackReminder: checked })}
-                    />
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Preferências de Notificação</h3>
+                    <p className="text-xs text-gray-600">Pode gerir aqui como quer ser notificado</p>
                   </div>
                 </div>
 
-                <Button onClick={handleSaveNotifications} className="w-full md:w-auto">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">Email de confirmação de sessão</Label>
+                      <p className="text-xs text-gray-600">Receber email quando uma sessão for confirmada</p>
+                    </div>
+                    <Switch
+                      checked={notificationPreferences.emailConfirmation}
+                      onCheckedChange={(checked) => 
+                        setNotificationPreferences({ ...notificationPreferences, emailConfirmation: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">Notificação push</Label>
+                      <p className="text-xs text-gray-600">Receber notificações push no dispositivo</p>
+                    </div>
+                    <Switch
+                      checked={notificationPreferences.pushNotification}
+                      onCheckedChange={(checked) => 
+                        setNotificationPreferences({ ...notificationPreferences, pushNotification: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">Lembrete 24h antes da sessão</Label>
+                      <p className="text-xs text-gray-600">Receber lembrete no dia anterior à sessão</p>
+                    </div>
+                    <Switch
+                      checked={notificationPreferences.reminder24h}
+                      onCheckedChange={(checked) => 
+                        setNotificationPreferences({ ...notificationPreferences, reminder24h: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">Lembrete de feedback após sessão</Label>
+                      <p className="text-xs text-gray-600">Receber lembrete para avaliar a sessão</p>
+                    </div>
+                    <Switch
+                      checked={notificationPreferences.feedbackReminder}
+                      onCheckedChange={(checked) => 
+                        setNotificationPreferences({ ...notificationPreferences, feedbackReminder: checked })
+                      }
+                    />
+                </div>
+
+                  <div className="pt-4">
+                    <Button onClick={handleSaveNotifications} className="w-full">
                   Guardar preferências
                 </Button>
-              </CardContent>
-            </Card>
+                  </div>
+                </div>
+              </div>
+            </BentoCard>
+          </div>
+
+          {/* Notifications - Full width card */}
+          <div className="lg:col-span-12">
+            <BentoCard
+              name=""
+              description=""
+              href="#"
+              cta=""
+              className="w-full h-fit"
+              background={<div className="absolute inset-0 bg-white" />}
+              textColor="text-gray-900"
+              descriptionColor="text-gray-600"
+              onClick={() => {}}
+            >
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 flex items-center justify-center">
+                    <Bell className="w-3 h-3 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Notificações</h3>
+                    <p className="text-xs text-gray-600">{unreadNotifications.length} não lidas</p>
+                  </div>
+                </div>
+
+                <Tabs defaultValue="unread" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-3">
+                    <TabsTrigger value="unread">
+                      Não Lidas ({unreadNotifications.length})
+            </TabsTrigger>
+                    <TabsTrigger value="all">
+                      Todas ({notifications.length})
+            </TabsTrigger>
+          </TabsList>
+                  
+                  <TabsContent value="unread" className="space-y-3">
+                    {unreadNotifications.length > 0 ? (
+                      <NotificationList
+                        notifications={unreadNotifications.slice(0, 3)}
+                        onMarkRead={handleMarkRead}
+                        onAction={handleNotificationAction}
+                      />
+                    ) : (
+                      <p className="text-center text-gray-500 text-sm py-4">Sem notificações não lidas</p>
+                    )}
           </TabsContent>
 
-          {/* Security Tab */}
-          <TabsContent value="security" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Segurança & Acesso</CardTitle>
-                <CardDescription>
-                  Gerir as definições de segurança da sua conta.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <TabsContent value="all" className="space-y-3">
+                    <NotificationList
+                      notifications={notifications.slice(0, 5)}
+                      onMarkRead={handleMarkRead}
+                      onAction={handleNotificationAction}
+                    />
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </BentoCard>
+          </div>
+
+          {/* Bottom row - Security and Consents */}
+          <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            {/* Security */}
+            <BentoCard
+              name=""
+              description=""
+              href="#"
+              cta=""
+              className="w-full h-fit"
+              background={<div className="absolute inset-0 bg-white" />}
+              textColor="text-gray-900"
+              descriptionColor="text-gray-600"
+              onClick={() => {}}
+            >
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
+                    <Shield className="w-3 h-3 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Segurança & Acesso</h3>
+                    <p className="text-xs text-gray-600">Gerir as definições de segurança da sua conta</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <Label className="text-base">Palavra-passe</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-sm">Palavra-passe</Label>
+                      <p className="text-xs text-muted-foreground">
                         Última alteração em 15 de Janeiro, 2024
                       </p>
                     </div>
@@ -414,10 +594,10 @@ const UserSettings = () => {
                     </Dialog>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <Label className="text-base">Autenticação de dois fatores (2FA)</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-sm">Autenticação de dois fatores (2FA)</Label>
+                      <p className="text-xs text-muted-foreground">
                         Estado: Desativado
                       </p>
                     </div>
@@ -462,21 +642,33 @@ const UserSettings = () => {
                     </Dialog>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            </BentoCard>
 
-          {/* Consents Tab */}
-          <TabsContent value="consents" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Consentimentos</CardTitle>
-                <CardDescription>
-                  Gerir os seus consentimentos para tratamento de dados.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
+            {/* Consents */}
+            <BentoCard
+              name=""
+              description=""
+              href="#"
+              cta=""
+              className="w-full h-fit"
+              background={<div className="absolute inset-0 bg-white" />}
+              textColor="text-gray-900"
+              descriptionColor="text-gray-600"
+              onClick={() => {}}
+            >
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-400 to-purple-500 flex items-center justify-center">
+                    <FileText className="w-3 h-3 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Consentimentos</h3>
+                    <p className="text-xs text-gray-600">Gerir os seus consentimentos para tratamento de dados</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
                   <div className="flex items-start space-x-3">
                     <Checkbox 
                       id="consent-data"
@@ -485,10 +677,10 @@ const UserSettings = () => {
                       disabled
                     />
                     <div className="space-y-1">
-                      <Label htmlFor="consent-data" className="text-base">
+                      <Label htmlFor="consent-data" className="text-sm">
                         Consentimento para tratamento de dados pessoais
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         Obrigatório para o funcionamento da plataforma.
                       </p>
                     </div>
@@ -501,10 +693,10 @@ const UserSettings = () => {
                       onCheckedChange={(checked) => setConsents({ ...consents, wellnessCommunications: checked as boolean })}
                     />
                     <div className="space-y-1">
-                      <Label htmlFor="consent-wellness" className="text-base">
+                      <Label htmlFor="consent-wellness" className="text-sm">
                         Consentimento para comunicações de bem-estar
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         Receber dicas e conteúdos sobre saúde e bem-estar.
                       </p>
                     </div>
@@ -517,25 +709,24 @@ const UserSettings = () => {
                       onCheckedChange={(checked) => setConsents({ ...consents, anonymousReports: checked as boolean })}
                     />
                     <div className="space-y-1">
-                      <Label htmlFor="consent-anonymous" className="text-base">
+                      <Label htmlFor="consent-anonymous" className="text-sm">
                         Uso de dados anónimos em relatórios agregados
                       </Label>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         Ajudar a melhorar os serviços através de análises agregadas.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <Button onClick={handleSaveConsents} className="w-full md:w-auto">
+                <Button onClick={handleSaveConsents} className="w-full md:w-auto mt-4">
                   Guardar consentimentos
                 </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-        </Tabs>
+              </div>
+            </BentoCard>
+          </div>
         </div>
+      </div>
     </div>
   );
 };

@@ -41,7 +41,6 @@ const DemoControlPanel = () => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   const demoUsers = [
-    { ...mockUser, title: 'Utilizador', icon: User, role: 'user' as const, color: 'bg-blue-500' },
     { ...mockPrestadorUser, title: 'Prestador', icon: UserCheck, role: 'prestador' as const, color: 'bg-green-500' },
     { ...mockHRUser, title: 'RH', icon: Building2, role: 'hr' as const, color: 'bg-purple-500' },
     { ...mockAdminUser, title: 'Admin', icon: Shield, role: 'admin' as const, color: 'bg-red-500' }
@@ -50,17 +49,10 @@ const DemoControlPanel = () => {
   const handleRoleSwitch = async (demoUser: typeof demoUsers[0]) => {
     setIsTransitioning(true);
     try {
-      // Clear onboarding flag for user role to show questionnaire every time
-      if (demoUser.role === 'user') {
-        const onboardingKey = `onboarding_completed_${demoUser.email}`;
-        localStorage.removeItem(onboardingKey);
-      }
-      
       const result = await login(demoUser.email, 'demo-password');
       if (!result.error) {
         // Navigate to appropriate dashboard based on role
         const dashboardPaths = {
-          user: '/user/sessions',
           prestador: '/prestador/dashboard',
           hr: '/company/dashboard',
           admin: '/admin/users'

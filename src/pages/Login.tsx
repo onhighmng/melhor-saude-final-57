@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import heroNeural from '@/assets/hero-neural.jpg';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -37,6 +39,17 @@ const Login = () => {
       {/* Right side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
+          {/* Back to Home Button */}
+          <div className="text-center lg:text-left">
+            <Link
+              to="/"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-800 mb-6 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar à página inicial
+            </Link>
+          </div>
+          
           <div className="text-center lg:text-left">
             <h2 className="text-3xl font-bold tracking-tight">Entrar na sua conta</h2>
             <p className="text-muted-foreground mt-2">

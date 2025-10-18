@@ -49,12 +49,6 @@ export function UserSidebar() {
       icon: <BookOpen className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
-      label: "Notificações",
-      href: "/user/notifications",
-      icon: <Bell className="text-primary h-5 w-5 flex-shrink-0" />,
-      badge: 3,
-    },
-    {
       label: "Definições",
       href: "/user/settings",
       icon: <Settings className="text-primary h-5 w-5 flex-shrink-0" />,

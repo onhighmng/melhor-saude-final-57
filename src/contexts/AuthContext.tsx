@@ -40,20 +40,15 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // Mock authentication state - defaulting to authenticated user
+  // Mock authentication state - starting with no user signed in
   const mockUserWithUserId = { ...mockUser, user_id: mockUser.id };
   const mockAdminUserWithUserId = { ...mockAdminUser, user_id: mockAdminUser.id };
   const mockHRUserWithUserId = { ...mockHRUser, user_id: mockHRUser.id };
   const mockPrestadorUserWithUserId = { ...mockPrestadorUser, user_id: mockPrestadorUser.id };
 
-  const [user, setUser] = useState<any>({
-    id: mockUserWithUserId.id,
-    email: mockUserWithUserId.email
-  });
-  const [session, setSession] = useState<any>({
-    access_token: 'mock-token'
-  });
-  const [profile, setProfile] = useState<UserProfile | null>(mockUserWithUserId);
+  const [user, setUser] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Mock authentication methods

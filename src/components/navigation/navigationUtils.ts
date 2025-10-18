@@ -2,39 +2,32 @@
 export const scrollToSobreNos = () => {
   console.log('[Scroll] Scroll to Sobre Nos called');
   
-  // Look for ControlSection with specific background gradient
-  const controlSection = document.querySelector('section[class*="bg-gradient-to-br from-soft-white"]');
+  // Look for the Sobre Nos section by its ID
+  const sobreNosSection = document.getElementById('sobre-nos');
   
-  if (controlSection) {
-    console.log('[Scroll] Found ControlSection, scrolling...');
+  if (sobreNosSection) {
+    console.log('[Scroll] Found Sobre Nos section, scrolling...');
     
-    // Get precise position with better calculation for the three cards view
-    const rect = controlSection.getBoundingClientRect();
+    const rect = sobreNosSection.getBoundingClientRect();
     const navigationHeight = 80; // Account for fixed navigation
-    const viewportHeight = window.innerHeight;
-    
-    // Position to show the three cards section perfectly centered
-    // The cards should appear after some initial content, so we need to scroll down a bit more
-    const optimalOffset = viewportHeight * 0.15; // Scroll down 15% of viewport height into the section
-    const targetPosition = window.pageYOffset + rect.top - navigationHeight + optimalOffset;
+    const targetPosition = window.pageYOffset + rect.top - navigationHeight;
     
     console.log('[Scroll] Scroll calculation:', {
       currentScroll: window.pageYOffset,
       sectionTop: rect.top,
       navigationHeight,
-      optimalOffset,
       targetPosition
     });
     
-    // Use smooth scrolling with precise positioning
+    // Use smooth scrolling to the section
     window.scrollTo({
       top: targetPosition,
       behavior: 'smooth'
     });
   } else {
-    console.log('[Scroll] ControlSection not found, using fallback');
-    // Fallback - scroll to roughly where ControlSection should be
-    const fallbackPosition = window.innerHeight * 1.1; // Slightly past the hero section
+    console.log('[Scroll] Sobre Nos section not found, using fallback');
+    // Fallback - scroll to roughly where the section should be
+    const fallbackPosition = window.innerHeight * 1.5; // After hero sections
     window.scrollTo({
       top: fallbackPosition,
       behavior: 'smooth'

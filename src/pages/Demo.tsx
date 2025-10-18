@@ -32,21 +32,6 @@ const Demo = () => {
 
   const demoUsers = [
     {
-      ...mockUser,
-      title: t('demo.roles.regularUser'),
-      description: t('demo.roles.regularUserDesc'),
-      icon: User,
-      role: 'user' as const,
-      dashboardPath: '/user/sessions',
-      quickLinks: [
-        { label: tNav('user.sessions'), path: '/user/sessions', icon: Calendar },
-        { label: tNav('company.settings'), path: '/user/settings', icon: Settings },
-        { label: t('demo.helpCenter'), path: '/help', icon: Users }
-      ],
-      features: ['Marcar Sessões', 'Ver Histórico', 'Dashboard Pessoal', 'Ajuda'],
-      color: 'bg-blue-500'
-    },
-    {
       ...mockPrestadorUser,
       title: t('demo.roles.serviceProvider'),
       description: t('demo.roles.serviceProviderDesc'),

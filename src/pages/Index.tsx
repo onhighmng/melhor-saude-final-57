@@ -15,7 +15,6 @@ const PillarCarousel = lazy(() => import('@/components/PillarCarousel'));
 const PillarsInteractiveSection = lazy(() => import('@/components/PillarsInteractiveSection'));
 const MembershipCardsSection = lazy(() => import('@/components/MembershipCardsSection'));
 const FAQSection = lazy(() => import('@/components/FAQSection'));
-const DemoFloatingButton = lazy(() => import('@/components/DemoFloatingButton'));
 
 // Lightweight loading skeleton
 const LoadingSkeleton = () => (
@@ -56,9 +55,6 @@ const Index = () => {
         </CloudsScrollProvider>
       </Suspense>
       
-      <Suspense fallback={null}>
-        <DemoFloatingButton />
-      </Suspense>
       
       <StackedCircularFooter />
     </div>

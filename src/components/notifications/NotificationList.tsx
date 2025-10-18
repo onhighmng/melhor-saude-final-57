@@ -16,7 +16,7 @@ export function NotificationList({ notifications, onMarkRead, onAction }: Notifi
   }
   
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {notifications.map((notification) => (
         <NotificationCard
           key={notification.id}

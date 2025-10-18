@@ -75,6 +75,21 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
   }
 
+  // Global restriction - no user routes accessible in demo
+  if (location.pathname.startsWith('/user/')) {
+    // Redirect based on actual user role
+    switch (profile.role) {
+      case 'admin':
+        return <Navigate to="/admin/dashboard" replace />;
+      case 'hr':
+        return <Navigate to="/company/dashboard" replace />;
+      case 'prestador':
+        return <Navigate to="/prestador/dashboard" replace />;
+      default:
+        return <Navigate to="/demo" replace />;
+    }
+  }
+
   // Global prestador access restriction - dynamic route matrix
   const allowedPublicRoutes = ['/', '/login', '/register/company', '/register/employee', '/reset-password'];
   const isPrestadorOnPublicRoute = profile.role === 'prestador' && allowedPublicRoutes.includes(location.pathname);

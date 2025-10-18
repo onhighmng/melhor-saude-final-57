@@ -58,51 +58,53 @@ export function NotificationCard({ notification, onMarkRead, onAction }: Notific
         !notification.read && "border-primary/30 bg-primary/5"
       )}
     >
-      <CardContent className="p-4">
+      <CardContent className="p-6">
         <div className="flex gap-4">
-          <div className={cn("mt-1", colorClass)}>
-            <Icon className="h-5 w-5" />
+          <div className={cn("mt-0.5", colorClass)}>
+            <Icon className="h-6 w-6" />
           </div>
           
-          <div className="flex-1 space-y-2">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h4 className="font-semibold text-sm">{notification.title}</h4>
-                <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+          <div className="flex-1 space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-base">{notification.title}</h4>
+                <p className="text-sm text-gray-600 leading-relaxed">{notification.message}</p>
               </div>
               {!notification.read && (
-                <Badge variant="default" className="shrink-0">Nova</Badge>
+                <Badge variant="default" className="shrink-0 ml-4">Nova</Badge>
               )}
             </div>
             
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-gray-500">
-                {new Date(notification.createdAt).toLocaleDateString('pt-PT', {
-                  day: 'numeric',
-                  month: 'short',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </span>
-              
-              <div className="flex gap-2">
+            <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-gray-500">
+                  {new Date(notification.createdAt).toLocaleDateString('pt-PT', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }).replace(',', ', ')}
+                </span>
                 {!notification.read && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onMarkRead(notification.id)}
+                    className="text-xs h-auto p-0 font-medium text-gray-600 hover:text-gray-900"
                   >
                     Marcar como lida
                   </Button>
                 )}
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => onAction(notification)}
-                >
-                  {ctaText}
-                </Button>
               </div>
+              
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => onAction(notification)}
+                className="ml-8"
+              >
+                {ctaText}
+              </Button>
             </div>
           </div>
         </div>

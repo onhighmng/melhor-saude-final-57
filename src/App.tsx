@@ -10,7 +10,6 @@ import { useEffect } from "react";
 
 import ScrollIndicator from "@/components/ScrollIndicator";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
-import DemoControlPanel from "@/components/DemoControlPanel";
 import { usePageTracking } from "@/hooks/usePageTracking";
 // Lazy load pages for better performance
 import { lazy } from "react";
@@ -47,7 +46,6 @@ const CompanySessions = lazy(() => import("./pages/CompanySessions"));
 const CompanyCollaborators = lazy(() => import("./pages/CompanyCollaborators"));
 const UserSessions = lazy(() => import("./pages/UserSessions"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
-const UserNotifications = lazy(() => import("./pages/UserNotifications"));
 const UserResources = lazy(() => import("./pages/UserResources"));
 const UserFeedback = lazy(() => import("./pages/UserFeedback"));
 const UserChat = lazy(() => import("./pages/UserChat"));
@@ -117,16 +115,7 @@ const AppWithTracking = () => {
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />
           
-          {/* User routes */}
-          <Route path="/user/dashboard" element={<UserLayout><UserDashboard /></UserLayout>} />
-          <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
-          <Route path="/user/notifications" element={<UserLayout><UserNotifications /></UserLayout>} />
-          <Route path="/user/resources" element={<UserLayout><UserResources /></UserLayout>} />
-          <Route path="/user/feedback/:sessionId" element={<UserLayout><UserFeedback /></UserLayout>} />
-          <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
-          <Route path="/user/chat" element={<UserLayout><UserChat /></UserLayout>} />
-          <Route path="/user/book" element={<UserLayout><BookingRouter /></UserLayout>} />
-          <Route path="/user/book-old" element={<UserLayout><BookingFlow /></UserLayout>} />
+          {/* User routes - Removed for demo restrictions */}
           
           {/* Prestador routes */}
           <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
@@ -183,7 +172,6 @@ const App = () => (
           <AppWithTracking />
           <ScrollIndicator />
           <PWAInstallPrompt />
-          <DemoControlPanel />
           <PerformanceMonitor />
         </ErrorBoundary>
       </AuthProvider>

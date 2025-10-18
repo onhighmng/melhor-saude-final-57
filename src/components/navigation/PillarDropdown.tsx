@@ -1,13 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { usePillarNavigation } from '@/hooks/usePillarNavigation';
-import { pillars } from '@/components/info-cards/InfoCardsData';
 
-const PILLARS = pillars.map((pillar, index) => ({
-  id: `pillar-${index}`,
-  label: pillar.title,
-  pillarIndex: index
-}));
+const PILLARS = [
+  {
+    id: 'pillar-0',
+    label: 'Saúde Mental',
+    pillarIndex: 0
+  },
+  {
+    id: 'pillar-1', 
+    label: 'Bem-estar Físico',
+    pillarIndex: 1
+  },
+  {
+    id: 'pillar-2',
+    label: 'Assistência Financeira', 
+    pillarIndex: 2
+  },
+  {
+    id: 'pillar-3',
+    label: 'Assistência Jurídica',
+    pillarIndex: 3
+  }
+];
 
 interface PillarDropdownProps {
   onClose?: () => void;
