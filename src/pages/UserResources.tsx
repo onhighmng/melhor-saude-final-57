@@ -116,8 +116,9 @@ export default function UserResources() {
     readTime: 6,
     rating: 4
   }];
-  return <div className="space-y-6">
-      <PageHeader title="Recursos de Bem-Estar" subtitle="Aceda a guias, vídeos e artigos sobre saúde e bem-estar" icon={BookOpen} />
+  return <div className="w-full min-h-screen bg-white">
+    <div className="space-y-6">
+      <PageHeader title="Recursos de Bem-Estar" subtitle="Aceda a guias, vídeos e artigos sobre saúde e bem-estar" icon={BookOpen} sticky={false} />
       
       <div className="max-w-7xl mx-auto px-6">
         <Tabs defaultValue="all" className="w-full">
@@ -157,7 +158,7 @@ export default function UserResources() {
                   "border border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
                 )}
               >
-                Bem-Estar
+                Bem-Estar Físico
               </TabsTrigger>
               <TabsTrigger 
                 value="assistencia_financeira" 
@@ -184,14 +185,14 @@ export default function UserResources() {
           {/* Tab Contents */}
           <TabsContent value="all" className="mt-6">
             {/* Blog Cards - Only show in "Todos" tab */}
-            <div className="grid h-auto grid-cols-1 gap-5 md:h-[650px] md:grid-cols-2 lg:grid-cols-[1fr_0.5fr] mb-8">
+            <div className="grid h-auto grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[1fr_0.5fr] mb-8">
               {resourcePosts.map((post, index) => {
               const isPrimary = index === 0;
               const categoryColors = getCategoryColors(post.category);
               return <div key={post.id} style={{
                 backgroundImage: `url(${post.imageUrl})`
-              }} className={`group relative row-span-1 flex size-full cursor-pointer flex-col justify-end overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat p-5 text-white max-md:h-[300px] transition-all duration-300 hover:scale-[0.98] hover:rotate-[0.3deg] ${isPrimary ? 'col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-1' : ''}`} onClick={() => toast.success(`A abrir: ${post.title}`)}>
-                    <div className="absolute inset-0 -z-0 h-[130%] w-full bg-gradient-to-t from-black/80 to-transparent transition-all duration-500 group-hover:h-full" />
+              }} className={`group relative row-span-1 flex size-full cursor-pointer flex-col justify-end overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat p-5 text-white max-md:h-[300px] transition-all duration-300 hover:scale-[0.99] ${isPrimary ? 'col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-1' : ''}`} onClick={() => toast.success(`A abrir: ${post.title}`)}>
+                <div className="absolute inset-0 -z-0 h-[130%] w-full bg-gradient-to-t from-black/80 to-transparent transition-all duration-300 group-hover:h-full" />
                     <article className="relative z-0 flex items-end">
                       <div className="flex flex-1 flex-col gap-3">
                         <h1 className="text-3xl font-semibold md:text-4xl">{post.title}</h1>
@@ -235,5 +236,6 @@ export default function UserResources() {
       </div>
       
       <ResourceModal resource={selectedResource} open={modalOpen} onClose={() => setModalOpen(false)} onDownload={handleDownload} />
-    </div>;
+    </div>
+  </div>;
 }

@@ -219,7 +219,23 @@ const UserDashboard = () => {
   if (showOnboarding) {
     return <SimplifiedOnboarding onComplete={handleOnboardingComplete} />;
   }
-  return <div className="h-full flex flex-col">
+  return <div className="relative w-full min-h-screen h-full flex flex-col">
+    {/* Background that covers main content area */}
+    <div 
+      className="absolute inset-0 w-full h-full"
+      style={{
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1600 900\'%3E%3Cdefs%3E%3ClinearGradient id=\'blueGrad\' x1=\'0%25\' y1=\'0%25\' x2=\'100%25\' y2=\'100%25\'%3E%3Cstop offset=\'0%25\' style=\'stop-color:%23F0F9FF;stop-opacity:1\' /%3E%3Cstop offset=\'20%25\' style=\'stop-color:%23E0F2FE;stop-opacity:1\' /%3E%3Cstop offset=\'40%25\' style=\'stop-color:%23BAE6FD;stop-opacity:1\' /%3E%3Cstop offset=\'60%25\' style=\'stop-color:%237DD3FC;stop-opacity:1\' /%3E%3Cstop offset=\'80%25\' style=\'stop-color:%2338BDF8;stop-opacity:1\' /%3E%3Cstop offset=\'100%25\' style=\'stop-color:%230EA5E9;stop-opacity:1\' /%3E%3C/linearGradient%3E%3CradialGradient id=\'highlight\' cx=\'50%25\' cy=\'20%25\' r=\'60%25\'%3E%3Cstop offset=\'0%25\' style=\'stop-color:%23FFFFFF;stop-opacity:0.3\' /%3E%3Cstop offset=\'100%25\' style=\'stop-color:%23FFFFFF;stop-opacity:0\' /%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width=\'1600\' height=\'900\' fill=\'url(%23blueGrad)\'/%3E%3Crect width=\'1600\' height=\'900\' fill=\'url(%23highlight)\'/%3E%3C/svg%3E")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    />
+    
+    {/* Gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none"></div>
+    
+    {/* Content */}
+    <div className="relative z-10 h-full flex flex-col">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full overflow-y-auto flex flex-col">
         {/* Welcome Header */}
         <div className="space-y-1 flex-shrink-0">
@@ -265,7 +281,7 @@ const UserDashboard = () => {
 
         {/* Bento Grid Layout */}
         <div className="flex-1 min-h-0">
-          <BentoGrid className="lg:grid-rows-3 h-full grid-rows-[12rem] lg:grid-rows-[14rem]">
+          <BentoGrid className="lg:grid-rows-3 h-full grid-rows-[10rem] lg:grid-rows-[12rem]">
           {/* Top Left - Session History */}
           <BentoCard 
             name="Histórico de Sessões" 
@@ -397,6 +413,7 @@ const UserDashboard = () => {
           </BentoGrid>
         </div>
       </div>
+    </div>
     </div>;
 };
 export default UserDashboard;

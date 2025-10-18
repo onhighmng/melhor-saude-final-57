@@ -12,6 +12,7 @@ interface PageHeaderProps {
   backUrl?: string;
   actions?: React.ReactNode;
   className?: string;
+  sticky?: boolean;
 }
 
 export function PageHeader({
@@ -21,13 +22,15 @@ export function PageHeader({
   showBackButton = false,
   backUrl = '/dashboard',
   actions,
-  className
+  className,
+  sticky = true
 }: PageHeaderProps) {
   const navigate = useNavigate();
 
   return (
     <div className={cn(
-      "bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm",
+      "bg-white border-b border-gray-100 shadow-sm",
+      sticky && "sticky top-0 z-40",
       className
     )}>
       <div className="max-w-7xl mx-auto px-6 py-6">
