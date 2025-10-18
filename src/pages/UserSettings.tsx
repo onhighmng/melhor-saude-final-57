@@ -18,6 +18,10 @@ import { useToast } from "@/hooks/use-toast";
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
 import { NotificationList } from "@/components/notifications/NotificationList";
 import { Notification } from "@/components/notifications/NotificationCard";
+import { ProfileEditModal } from "@/components/settings/ProfileEditModal";
+import { NotificationPrefsModal } from "@/components/settings/NotificationPrefsModal";
+import { SecurityModal } from "@/components/settings/SecurityModal";
+import { ConsentsModal } from "@/components/settings/ConsentsModal";
 
 const UserSettings = () => {
   const { profile, user } = useAuth();
@@ -170,6 +174,12 @@ const UserSettings = () => {
     confirm: ''
   });
 
+  // Modal states
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isNotifPrefsModalOpen, setIsNotifPrefsModalOpen] = useState(false);
+  const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
+  const [isConsentsModalOpen, setIsConsentsModalOpen] = useState(false);
+
   const handleChangePassword = () => {
     if (passwordData.new !== passwordData.confirm) {
       toast({
@@ -297,435 +307,100 @@ const UserSettings = () => {
       </div>
 
       <div className="w-full px-4 py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Row 1 - Profile and Notification Preferences side by side */}
-          <div className="lg:col-span-6">
-            <BentoCard
-              name=""
-              description=""
-              href="#"
-              cta=""
-              className="w-full h-fit"
-              background={<div className="absolute inset-0 bg-white" />}
-              textColor="text-gray-900"
-              descriptionColor="text-gray-600"
-              onClick={() => {}}
-            >
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-center">
-                    <Users className="w-3 h-3 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Informação do Perfil</h3>
-                    <p className="text-xs text-gray-600">Atualize as suas informações pessoais e preferências</p>
-                  </div>
-                </div>
+        <BentoGrid className="lg:grid-rows-2">
+          <BentoCard
+            name="Perfil"
+            description={profile?.name || "Utilizador"}
+            Icon={Users}
+            href="#"
+            cta="Editar"
+            className="lg:row-start-1 lg:row-end-2 lg:col-start-1 lg:col-end-2"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50" />}
+            onClick={() => setIsProfileModalOpen(true)}
+          />
 
-                <div className="flex items-center gap-4 mb-4">
-                  <Avatar className="w-16 h-16">
-                    <AvatarImage src={profile?.avatar_url} />
-                    <AvatarFallback className="text-sm">
-                      {profile?.name?.charAt(0) || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-semibold text-base">{profile?.name}</h3>
-                    <p className="text-sm text-muted-foreground">{profile?.email}</p>
-                  </div>
-                </div>
+          <BentoCard
+            name="Notificações"
+            description={`${unreadNotifications.length} não lidas`}
+            Icon={Bell}
+            href="#"
+            cta="Gerir"
+            className="lg:row-start-1 lg:row-end-2 lg:col-start-2 lg:col-end-3"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50" />}
+            onClick={() => setIsNotifPrefsModalOpen(true)}
+          />
 
-                <div className="grid gap-3 md:grid-cols-2 mb-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nome Completo</Label>
-                    <Input
-                      id="name"
-                      value={profileData.name}
-                      onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
+          <BentoCard
+            name="Segurança"
+            description="Palavra-passe & 2FA"
+            Icon={Shield}
+            href="#"
+            cta="Configurar"
+            className="lg:row-start-1 lg:row-end-2 lg:col-start-3 lg:col-end-4"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-50" />}
+            onClick={() => setIsSecurityModalOpen(true)}
+          />
 
-                <Button onClick={handleSaveProfile} className="w-full md:w-auto">
-                  Guardar alterações
-                </Button>
-              </div>
-            </BentoCard>
-          </div>
+          <BentoCard
+            name="Consentimentos"
+            description="Tratamento de dados"
+            Icon={FileText}
+            href="#"
+            cta="Rever"
+            className="lg:row-start-2 lg:row-end-3 lg:col-start-1 lg:col-end-2"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50" />}
+            onClick={() => setIsConsentsModalOpen(true)}
+          />
 
-          {/* Notification Preferences */}
-          <div className="lg:col-span-6">
-            <BentoCard
-              name=""
-              description=""
-              href="#"
-              cta=""
-              className="w-full h-fit"
-              background={<div className="absolute inset-0 bg-white" />}
-              textColor="text-gray-900"
-              descriptionColor="text-gray-600"
-              onClick={() => {}}
-            >
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-center">
-                    <Bell className="w-3 h-3 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Preferências de Notificação</h3>
-                    <p className="text-xs text-gray-600">Pode gerir aqui como quer ser notificado</p>
-                  </div>
-                </div>
+          <BentoCard
+            name="Histórico de Notificações"
+            description={`${notifications.length} notificações`}
+            Icon={AlertTriangle}
+            href="#"
+            cta="Ver todas"
+            className="lg:row-start-2 lg:row-end-3 lg:col-start-2 lg:col-end-4"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-50" />}
+            onClick={() => navigate('/user/notifications')}
+          />
+        </BentoGrid>
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-sm font-medium">Email de confirmação de sessão</Label>
-                      <p className="text-xs text-gray-600">Receber email quando uma sessão for confirmada</p>
-                    </div>
-                    <Switch
-                      checked={notificationPreferences.emailConfirmation}
-                      onCheckedChange={(checked) => 
-                        setNotificationPreferences({ ...notificationPreferences, emailConfirmation: checked })
-                      }
-                    />
-                  </div>
+        {/* Modals */}
+        <ProfileEditModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          profile={profile}
+          onSave={(data) => {
+            setProfileData({ ...profileData, ...data });
+            handleSaveProfile();
+          }}
+        />
 
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-sm font-medium">Notificação push</Label>
-                      <p className="text-xs text-gray-600">Receber notificações push no dispositivo</p>
-                    </div>
-                    <Switch
-                      checked={notificationPreferences.pushNotification}
-                      onCheckedChange={(checked) => 
-                        setNotificationPreferences({ ...notificationPreferences, pushNotification: checked })
-                      }
-                    />
-                  </div>
+        <NotificationPrefsModal
+          isOpen={isNotifPrefsModalOpen}
+          onClose={() => setIsNotifPrefsModalOpen(false)}
+          preferences={notificationPreferences}
+          onSave={(prefs) => {
+            setNotificationPreferences(prefs);
+            handleSaveNotifications();
+          }}
+        />
 
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-sm font-medium">Lembrete 24h antes da sessão</Label>
-                      <p className="text-xs text-gray-600">Receber lembrete no dia anterior à sessão</p>
-                    </div>
-                    <Switch
-                      checked={notificationPreferences.reminder24h}
-                      onCheckedChange={(checked) => 
-                        setNotificationPreferences({ ...notificationPreferences, reminder24h: checked })
-                      }
-                    />
-                  </div>
+        <SecurityModal
+          isOpen={isSecurityModalOpen}
+          onClose={() => setIsSecurityModalOpen(false)}
+          onChangePassword={handleChangePassword}
+          onEnable2FA={handleEnable2FA}
+        />
 
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label className="text-sm font-medium">Lembrete de feedback após sessão</Label>
-                      <p className="text-xs text-gray-600">Receber lembrete para avaliar a sessão</p>
-                    </div>
-                    <Switch
-                      checked={notificationPreferences.feedbackReminder}
-                      onCheckedChange={(checked) => 
-                        setNotificationPreferences({ ...notificationPreferences, feedbackReminder: checked })
-                      }
-                    />
-                </div>
-
-                  <div className="pt-4">
-                    <Button onClick={handleSaveNotifications} className="w-full">
-                  Guardar preferências
-                </Button>
-                  </div>
-                </div>
-              </div>
-            </BentoCard>
-          </div>
-
-          {/* Notifications - Full width card */}
-          <div className="lg:col-span-12">
-            <BentoCard
-              name=""
-              description=""
-              href="#"
-              cta=""
-              className="w-full h-fit"
-              background={<div className="absolute inset-0 bg-white" />}
-              textColor="text-gray-900"
-              descriptionColor="text-gray-600"
-              onClick={() => {}}
-            >
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 flex items-center justify-center">
-                    <Bell className="w-3 h-3 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Notificações</h3>
-                    <p className="text-xs text-gray-600">{unreadNotifications.length} não lidas</p>
-                  </div>
-                </div>
-
-                <Tabs defaultValue="unread" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-3">
-                    <TabsTrigger value="unread">
-                      Não Lidas ({unreadNotifications.length})
-            </TabsTrigger>
-                    <TabsTrigger value="all">
-                      Todas ({notifications.length})
-            </TabsTrigger>
-          </TabsList>
-                  
-                  <TabsContent value="unread" className="space-y-3">
-                    {unreadNotifications.length > 0 ? (
-                      <NotificationList
-                        notifications={unreadNotifications.slice(0, 3)}
-                        onMarkRead={handleMarkRead}
-                        onAction={handleNotificationAction}
-                      />
-                    ) : (
-                      <p className="text-center text-gray-500 text-sm py-4">Sem notificações não lidas</p>
-                    )}
-          </TabsContent>
-
-                  <TabsContent value="all" className="space-y-3">
-                    <NotificationList
-                      notifications={notifications.slice(0, 5)}
-                      onMarkRead={handleMarkRead}
-                      onAction={handleNotificationAction}
-                    />
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </BentoCard>
-          </div>
-
-          {/* Bottom row - Security and Consents */}
-          <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-            {/* Security */}
-            <BentoCard
-              name=""
-              description=""
-              href="#"
-              cta=""
-              className="w-full h-fit"
-              background={<div className="absolute inset-0 bg-white" />}
-              textColor="text-gray-900"
-              descriptionColor="text-gray-600"
-              onClick={() => {}}
-            >
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center">
-                    <Shield className="w-3 h-3 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Segurança & Acesso</h3>
-                    <p className="text-xs text-gray-600">Gerir as definições de segurança da sua conta</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <Label className="text-sm">Palavra-passe</Label>
-                      <p className="text-xs text-muted-foreground">
-                        Última alteração em 15 de Janeiro, 2024
-                      </p>
-                    </div>
-                    <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">
-                          Alterar Palavra-Passe
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Alterar Palavra-Passe</DialogTitle>
-                          <DialogDescription>
-                            Introduza a sua palavra-passe atual e escolha uma nova palavra-passe.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="current-password">Palavra-passe atual</Label>
-                            <Input
-                              id="current-password"
-                              type="password"
-                              value={passwordData.current}
-                              onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="new-password">Nova palavra-passe</Label>
-                            <Input
-                              id="new-password"
-                              type="password"
-                              value={passwordData.new}
-                              onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="confirm-password">Confirmar nova palavra-passe</Label>
-                            <Input
-                              id="confirm-password"
-                              type="password"
-                              value={passwordData.confirm}
-                              onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex justify-end gap-3">
-                          <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
-                            Cancelar
-                          </Button>
-                          <Button onClick={handleChangePassword}>
-                            Alterar Palavra-Passe
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <Label className="text-sm">Autenticação de dois fatores (2FA)</Label>
-                      <p className="text-xs text-muted-foreground">
-                        Estado: Desativado
-                      </p>
-                    </div>
-                    <Dialog open={show2FADialog} onOpenChange={setShow2FADialog}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">
-                          Ativar 2FA
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Ativar Autenticação de Dois Fatores</DialogTitle>
-                          <DialogDescription>
-                            Adicione uma camada extra de segurança à sua conta.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <div className="bg-muted p-4 rounded-lg text-center">
-                            <p className="text-sm mb-2">Digitalize este código QR com a sua aplicação de autenticação:</p>
-                            <div className="w-48 h-48 bg-white mx-auto flex items-center justify-center rounded">
-                              <div className="text-xs text-muted-foreground">[QR Code simulado]</div>
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="2fa-code">Código de verificação</Label>
-                            <Input
-                              id="2fa-code"
-                              placeholder="000000"
-                              maxLength={6}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex justify-end gap-3">
-                          <Button variant="outline" onClick={() => setShow2FADialog(false)}>
-                            Cancelar
-                          </Button>
-                          <Button onClick={handleEnable2FA}>
-                            Ativar 2FA
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </div>
-              </div>
-            </BentoCard>
-
-            {/* Consents */}
-            <BentoCard
-              name=""
-              description=""
-              href="#"
-              cta=""
-              className="w-full h-fit"
-              background={<div className="absolute inset-0 bg-white" />}
-              textColor="text-gray-900"
-              descriptionColor="text-gray-600"
-              onClick={() => {}}
-            >
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-400 to-purple-500 flex items-center justify-center">
-                    <FileText className="w-3 h-3 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Consentimentos</h3>
-                    <p className="text-xs text-gray-600">Gerir os seus consentimentos para tratamento de dados</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-start space-x-3">
-                    <Checkbox 
-                      id="consent-data"
-                      checked={consents.dataProcessing}
-                      onCheckedChange={(checked) => setConsents({ ...consents, dataProcessing: checked as boolean })}
-                      disabled
-                    />
-                    <div className="space-y-1">
-                      <Label htmlFor="consent-data" className="text-sm">
-                        Consentimento para tratamento de dados pessoais
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Obrigatório para o funcionamento da plataforma.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start space-x-3">
-                    <Checkbox 
-                      id="consent-wellness"
-                      checked={consents.wellnessCommunications}
-                      onCheckedChange={(checked) => setConsents({ ...consents, wellnessCommunications: checked as boolean })}
-                    />
-                    <div className="space-y-1">
-                      <Label htmlFor="consent-wellness" className="text-sm">
-                        Consentimento para comunicações de bem-estar
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Receber dicas e conteúdos sobre saúde e bem-estar.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <Checkbox 
-                      id="consent-anonymous"
-                      checked={consents.anonymousReports}
-                      onCheckedChange={(checked) => setConsents({ ...consents, anonymousReports: checked as boolean })}
-                    />
-                    <div className="space-y-1">
-                      <Label htmlFor="consent-anonymous" className="text-sm">
-                        Uso de dados anónimos em relatórios agregados
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Ajudar a melhorar os serviços através de análises agregadas.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <Button onClick={handleSaveConsents} className="w-full md:w-auto mt-4">
-                  Guardar consentimentos
-                </Button>
-              </div>
-            </BentoCard>
-          </div>
-        </div>
+        <ConsentsModal
+          isOpen={isConsentsModalOpen}
+          onClose={() => setIsConsentsModalOpen(false)}
+          consents={consents}
+          onSave={(newConsents) => {
+            setConsents(newConsents);
+            handleSaveConsents();
+          }}
+        />
       </div>
     </div>
   );

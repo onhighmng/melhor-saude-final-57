@@ -14,7 +14,7 @@ const BentoGrid = ({
   return (
     <div
       className={cn(
-        "grid w-full grid-cols-3 gap-4",
+        "grid w-full auto-rows-[22rem] grid-cols-3 gap-4",
         className,
       )}
     >
@@ -32,9 +32,9 @@ const BentoCard = ({
   href,
   cta,
   onClick,
-  iconColor = "text-white",
-  textColor = "text-white",
-  descriptionColor = "text-white/80",
+  iconColor,
+  textColor,
+  descriptionColor,
   children,
 }: {
   name: string;
@@ -53,28 +53,25 @@ const BentoCard = ({
   <div
     key={name}
     className={cn(
-      "group relative flex flex-col justify-start overflow-hidden rounded-xl",
+      "group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-xl cursor-pointer",
       // light styles
       "bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
       // dark styles
       "transform-gpu dark:bg-black dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]",
-      "hover:scale-[1.01] transition-all duration-300 cursor-pointer",
       className,
     )}
     onClick={onClick}
   >
     <div>{background}</div>
     {children ? (
-      <div className="relative z-10 flex flex-col justify-start">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
     ) : (
-      <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 p-4 transition-all duration-300 group-hover:-translate-y-10 justify-start">
+      <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 p-6 transition-all duration-300 group-hover:-translate-y-10">
         {Icon && <Icon className={cn("h-12 w-12 origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:scale-75", iconColor)} />}
         <h3 className={cn("text-xl font-semibold text-neutral-700 dark:text-neutral-300", textColor)}>
           {name}
         </h3>
-        {description && <p className={cn("max-w-lg text-neutral-400", descriptionColor)}>{description}</p>}
+        <p className={cn("max-w-lg text-neutral-400", descriptionColor)}>{description}</p>
       </div>
     )}
 
