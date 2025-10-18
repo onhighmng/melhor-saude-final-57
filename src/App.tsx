@@ -54,6 +54,7 @@ const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const BookingRouter = lazy(() => import("./components/booking/BookingRouter"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Support = lazy(() => import("./pages/Support"));
+// Demo page - force reload
 const Demo = lazy(() => import("./pages/Demo"));
 import { Suspense } from "react";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
