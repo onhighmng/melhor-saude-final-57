@@ -32,10 +32,10 @@ export function ModernHeroSection() {
               isVisible ? 'opacity-100 translate-y-0 scale-100 blur-0' : 'opacity-0 translate-y-20 scale-95 blur-sm'
             }`}>
               <h1 className="mt-8 max-w-2xl text-balance text-5xl md:text-6xl lg:mt-16 xl:text-7xl">
-                O seu bem-estar começa aqui
+                Melhor Saúde
               </h1>
               <p className="mt-8 max-w-2xl text-balance text-lg text-muted-foreground">
-                Suporte integrado em saúde mental, bem-estar físico, assistência financeira e jurídica. Tudo num só lugar.
+                Cuidamos da sua saúde mental e bem-estar com profissionais qualificados disponíveis 24 horas por dia, 7 dias por semana.
               </p>
 
               <div className={`mt-12 flex flex-col items-center justify-center gap-2 sm:flex-row lg:justify-start transition-all duration-1000 delay-300 ease-out ${

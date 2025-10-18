@@ -23,7 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 export function UserSidebar() {
-  const { open, setOpen } = useAnimatedSidebar();
+  const { open } = useAnimatedSidebar();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -84,8 +84,8 @@ export function UserSidebar() {
   };
 
   return (
-    <AnimatedSidebar open={open} setOpen={setOpen}>
-      <AnimatedSidebarBody className="justify-between gap-10">
+    <AnimatedSidebar>
+      <AnimatedSidebarBody className="justify-between gap-10 h-full">
         <div className="flex flex-col flex-1 overflow-hidden">
           <Logo open={open} user={user} role="Utilizador" />
           <div className="mt-8 flex flex-col gap-2">
@@ -111,17 +111,19 @@ export function UserSidebar() {
           <button
             onClick={handleLogout}
             className={cn(
-              "flex items-center gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors hover:bg-muted/50 w-full",
+              "flex flex-row items-center gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors hover:bg-muted/50 w-full",
               open ? "justify-start" : "justify-center"
             )}
           >
-            <LogOut className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+            <span className="flex-shrink-0">
+              <LogOut className="text-muted-foreground h-5 w-5" />
+            </span>
             <motion.span
               animate={{
                 display: open ? "inline-block" : "none",
                 opacity: open ? 1 : 0,
               }}
-              className="text-muted-foreground text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+              className="text-muted-foreground text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0 flex-shrink-0"
             >
               Sair
             </motion.span>

@@ -219,44 +219,44 @@ const UserDashboard = () => {
   if (showOnboarding) {
     return <SimplifiedOnboarding onComplete={handleOnboardingComplete} />;
   }
-  return <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+  return <div className="h-full flex flex-col">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full overflow-y-auto flex flex-col">
         {/* Welcome Header */}
-        <div className="space-y-1">
-          <h1 className="text-3xl font-normal tracking-tight">
+        <div className="space-y-1 flex-shrink-0">
+          <h1 className="text-2xl font-normal tracking-tight">
             Olá, {profile?.name || 'ana.silva'}! 👋
           </h1>
-          <p className="text-muted-foreground text-base">
+          <p className="text-muted-foreground text-sm">
             Bem-vinda de volta ao seu espaço de saúde e bem-estar.
           </p>
         </div>
 
 
         {/* Session Balance Card - Full Width */}
-        <div ref={progressRef}>
+        <div ref={progressRef} className="flex-shrink-0">
           <Card className="w-full border shadow-sm overflow-hidden relative">
             <div className="absolute inset-0">
               <img src={cardBackground} alt="" className="w-full h-full object-cover" />
             </div>
-            <CardContent className="pt-16 pb-12 flex flex-col items-center text-center space-y-8 relative z-10">
-              <div className="w-24 h-24 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
-                <Calendar className="w-12 h-12 text-white" />
+            <CardContent className="pt-8 pb-6 flex flex-col items-center text-center space-y-4 relative z-10">
+              <div className="w-16 h-16 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
+                <Calendar className="w-8 h-8 text-white" />
               </div>
               
-              <div className="w-full max-w-md space-y-3">
+              <div className="w-full max-w-md space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-base text-slate-50 font-bold">Progresso Pessoal</span>
-                  <span className="text-lg font-bold text-zinc-50">{Math.round(animatedMilestoneProgress)}%</span>
+                  <span className="text-sm text-slate-50 font-bold">Progresso Pessoal</span>
+                  <span className="text-base font-bold text-zinc-50">{Math.round(animatedMilestoneProgress)}%</span>
                 </div>
                 <Progress value={animatedMilestoneProgress} className="h-2" />
               </div>
               
               <div className="space-y-1">
-                <div className="text-8xl font-bold text-white">{remainingSessions}</div>
-                <div className="text-2xl font-serif text-white">Sessões</div>
+                <div className="text-6xl font-bold text-white">{remainingSessions}</div>
+                <div className="text-lg font-serif text-white">Sessões</div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+              <div className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
                 <InteractiveHoverButton text="Falar com Especialista" className="w-full" onClick={() => navigate('/user/chat')} />
               </div>
             </CardContent>
@@ -264,7 +264,8 @@ const UserDashboard = () => {
         </div>
 
         {/* Bento Grid Layout */}
-        <BentoGrid className="lg:grid-rows-3">
+        <div className="flex-1 min-h-0">
+          <BentoGrid className="lg:grid-rows-3 h-full grid-rows-[12rem] lg:grid-rows-[14rem]">
           {/* Top Left - Session History */}
           <BentoCard 
             name="Histórico de Sessões" 
@@ -393,7 +394,8 @@ const UserDashboard = () => {
                   </p>
                 </div>
               </div>} />
-        </BentoGrid>
+          </BentoGrid>
+        </div>
       </div>
     </div>;
 };

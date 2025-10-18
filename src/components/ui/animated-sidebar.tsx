@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
@@ -80,7 +80,7 @@ export const AnimatedSidebarBody = ({
 }) => {
   return (
     <>
-      <DesktopSidebar className={className}>
+      <DesktopSidebar className={cn("flex flex-col", className)}>
         {children}
       </DesktopSidebar>
       <MobileSidebar className={className}>
@@ -96,18 +96,42 @@ export const DesktopSidebar = ({
   ...props
 }: React.ComponentProps<typeof motion.div>) => {
   const { open, setOpen, animate } = useAnimatedSidebar();
+  const timeoutRef = useRef<number | null>(null);
+  
+  const handleMouseEnter = useCallback(() => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setOpen(true);
+  }, [setOpen]);
+  
+  const handleMouseLeave = useCallback(() => {
+    timeoutRef.current = window.setTimeout(() => {
+      setOpen(false);
+    }, 150); // Longer delay to prevent flickering
+  }, [setOpen]);
+  
   return (
     <motion.div
       className={cn(
-        "h-full py-4 hidden md:flex md:flex-col bg-background border-r w-[300px] flex-shrink-0",
+        "h-screen py-4 hidden md:flex md:flex-col bg-background border-r flex-shrink-0 relative",
         open ? "px-4" : "px-2",
         className
       )}
       animate={{
         width: animate ? (open ? "300px" : "60px") : "300px",
       }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      transition={{ 
+        duration: 0.3, 
+        ease: 'easeInOut',
+        type: "tween"
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        pointerEvents: 'auto',
+      }}
       {...props}
     >
       {children}
@@ -180,7 +204,7 @@ export const AnimatedSidebarLink = ({
       to={link.href}
       className={({ isActive }) =>
         cn(
-          "flex items-center gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors",
+          "flex flex-row items-center gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors w-full",
           open ? "justify-start" : "justify-center",
           isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50",
           className
@@ -188,13 +212,15 @@ export const AnimatedSidebarLink = ({
       }
       {...props}
     >
-      {link.icon}
+      <span className="flex-shrink-0">
+        {link.icon}
+      </span>
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-foreground text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        className="text-foreground text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0 flex-shrink-0"
       >
         {link.label}
       </motion.span>

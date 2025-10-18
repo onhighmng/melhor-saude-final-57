@@ -15,7 +15,7 @@ export function UserLayout({ children }: UserLayoutProps) {
 
   return (
     <AnimatedSidebarProvider open={sidebarOpen} setOpen={setSidebarOpen}>
-      <div className="min-h-screen flex w-full relative">
+      <div className="h-screen flex w-full relative overflow-hidden">
         <div className="fixed inset-0 z-0 opacity-20">
           <img
             src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
@@ -25,13 +25,13 @@ export function UserLayout({ children }: UserLayoutProps) {
         </div>
         <UserSidebar />
         <motion.main 
-          className="flex-1 flex flex-col min-w-0 relative z-10"
+          className="flex flex-col relative z-10 h-screen min-w-0 overflow-hidden"
           animate={{
-            marginLeft: sidebarOpen ? '300px' : '60px',
+            width: sidebarOpen ? 'calc(100% - 300px)' : 'calc(100% - 60px)',
           }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          <div className={`flex-1 overflow-auto ${isFullScreenPage ? '' : 'p-6'}`}>
+          <div className={`flex-1 overflow-y-auto ${isFullScreenPage ? '' : 'p-6'}`}>
             <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
               {children}
             </div>

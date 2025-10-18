@@ -27,7 +27,15 @@ const DemoControlPanel = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [position, setPosition] = useState({ x: 16, y: window.innerHeight - 200 });
+  
+  const [position, setPosition] = useState(() => {
+    // Use window.location.pathname for initial render since location might not be ready
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    if (currentPath === '/terms') {
+      return { x: window.innerWidth - 300, y: 16 }; // Top right corner
+    }
+    return { x: 16, y: window.innerHeight - 200 }; // Default bottom left
+  });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const panelRef = useRef<HTMLDivElement>(null);
@@ -82,7 +90,11 @@ const DemoControlPanel = () => {
 
   // Reset position on page change
   useEffect(() => {
-    setPosition({ x: 16, y: window.innerHeight - 200 });
+    if (location.pathname === '/terms') {
+      setPosition({ x: window.innerWidth - 300, y: 16 }); // Top right corner
+    } else {
+      setPosition({ x: 16, y: window.innerHeight - 200 }); // Default bottom left
+    }
     setIsExpanded(false);
   }, [location.pathname]);
 
@@ -127,6 +139,22 @@ const DemoControlPanel = () => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, dragOffset]);
+
+  // Handle window resize to maintain position for terms page
+  useEffect(() => {
+    const handleResize = () => {
+      if (location.pathname === '/terms') {
+        setPosition(prevPosition => ({
+          ...prevPosition,
+          x: window.innerWidth - 300, // Maintain top right positioning
+          y: Math.min(prevPosition.y, 16) // Keep at top if it was already there
+        }));
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [location.pathname]);
 
   // Don't show on demo page itself
   if (window.location.pathname === '/demo') return null;

@@ -77,7 +77,7 @@ export function PrestadorSidebar() {
 
   return (
     <AnimatedSidebar open={open} setOpen={setOpen}>
-      <AnimatedSidebarBody className="justify-between gap-10">
+      <AnimatedSidebarBody className="justify-between gap-10 h-full">
         <div className="flex flex-col flex-1 overflow-hidden">
           <Logo open={open} user={user} role="Prestador" />
           <div className="mt-8 flex flex-col gap-2">

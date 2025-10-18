@@ -22,7 +22,7 @@ const SobreNosSection = () => {
         }`}>
           <div className="max-w-4xl mx-auto text-body text-gray-700 leading-relaxed">
             <p className="mb-6">
-              O Melhor Saúde é uma plataforma integrada de bem-estar que oferece suporte completo em saúde mental, bem-estar físico, assistência financeira e jurídica. Conectamos pessoas a especialistas qualificados através de uma plataforma moderna e acessível, promovendo o equilíbrio e a qualidade de vida.
+              A Melhor Saúde é a plataforma líder em bem-estar corporativo em Moçambique, criada para transformar a forma como as empresas cuidam das suas pessoas. Nascemos da necessidade de soluções completas, acessíveis e eficazes, que promovam ambientes organizacionais mais fortes, humanos e produtivos. Unimos tecnologia, confiança profissional e uma abordagem centrada nas pessoas para conectar empresas, colaboradores e especialistas em saúde e bem-estar. Atuamos com rigor ético, valorizando a confidencialidade e o sigilo profissional em todos os atendimentos, e oferecemos um cuidado humanizado, estratégico e digital que redefine a experiência de bem-estar no meio corporativo.
             </p>
           </div>
         </div>
