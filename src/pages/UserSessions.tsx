@@ -141,7 +141,7 @@ export default function UserSessions() {
                 href="#"
                 cta=""
                 className="w-full"
-                background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50" />}
+                background={<div className="absolute inset-0 bg-white" />}
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 onClick={() => {}}
