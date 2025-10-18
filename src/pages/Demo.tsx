@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,63 +19,80 @@ import {
   LogOut,
   Home,
   Play,
-  Eye
+  Eye,
+  CalendarCheck,
+  BookOpen
 } from 'lucide-react';
 
 const Demo = () => {
-  const { t } = useTranslation('common');
-  const { t: tNav } = useTranslation('navigation');
   const { profile, login, logout } = useAuth();
   const navigate = useNavigate();
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const demoUsers = [
     {
+      ...mockUser,
+      title: 'Utilizador',
+      description: 'Aceda aos recursos de bem-estar e agende sessões',
+      icon: User,
+      role: 'user' as const,
+      dashboardPath: '/user/dashboard',
+      quickLinks: [
+        { label: 'Dashboard', path: '/user/dashboard', icon: BarChart3 },
+        { label: 'Agendar Sessão', path: '/user/book', icon: Calendar },
+        { label: 'Sessões', path: '/user/sessions', icon: CalendarCheck },
+        { label: 'Recursos', path: '/user/resources', icon: BookOpen },
+        { label: 'Definições', path: '/user/settings', icon: Settings }
+      ],
+      features: ['Agendamento', 'Recursos', 'Acompanhamento', 'Feedback'],
+      color: 'bg-blue-500'
+    },
+    {
       ...mockPrestadorUser,
-      title: t('demo.roles.serviceProvider'),
-      description: t('demo.roles.serviceProviderDesc'),
+      title: 'Prestador de Serviços',
+      description: 'Gerir as suas sessões e disponibilidade',
       icon: UserCheck,
       role: 'prestador' as const,
       dashboardPath: '/prestador/dashboard',
       quickLinks: [
-        { label: tNav('provider.dashboard'), path: '/prestador/dashboard', icon: BarChart3 },
-        { label: tNav('provider.sessions'), path: '/prestador/sessoes', icon: Calendar },
-        { label: tNav('provider.availability'), path: '/prestador/availability', icon: Settings },
-        { label: tNav('provider.profile'), path: '/prestador/profile', icon: User }
+        { label: 'Dashboard', path: '/prestador/dashboard', icon: BarChart3 },
+        { label: 'Sessões', path: '/prestador/sessoes', icon: Calendar },
+        { label: 'Disponibilidade', path: '/prestador/availability', icon: Settings },
+        { label: 'Perfil', path: '/prestador/profile', icon: User }
       ],
       features: ['Gestão de Sessões', 'Disponibilidade', 'Perfil', 'Vídeos'],
       color: 'bg-green-500'
     },
     {
       ...mockHRUser,
-      title: t('demo.roles.humanResources'),
-      description: t('demo.roles.humanResourcesDesc'),
+      title: 'Recursos Humanos',
+      description: 'Gerir colaboradores e acompanhar métricas da empresa',
       icon: Building2,
       role: 'hr' as const,
       dashboardPath: '/company/dashboard',
       quickLinks: [
-        { label: tNav('company.dashboard'), path: '/company/dashboard', icon: BarChart3 },
-        { label: tNav('company.employees'), path: '/company/employees', icon: Users },
-        { label: tNav('company.inviteCodes'), path: '/company/invites', icon: ArrowRight },
-        { label: tNav('company.reports'), path: '/company/reports', icon: BarChart3 },
-        { label: tNav('company.settings'), path: '/company/settings', icon: Settings }
+        { label: 'Dashboard', path: '/company/dashboard', icon: BarChart3 },
+        { label: 'Colaboradores', path: '/company/employees', icon: Users },
+        { label: 'Convites', path: '/company/invites', icon: ArrowRight },
+        { label: 'Relatórios', path: '/company/reports', icon: BarChart3 },
+        { label: 'Configurações', path: '/company/settings', icon: Settings }
       ],
       features: ['Gestão de Colaboradores', 'Relatórios', 'Convites', 'Configurações'],
       color: 'bg-purple-500'
     },
     {
       ...mockAdminUser,
-      title: t('demo.roles.administrator'),
-      description: t('demo.roles.administratorDesc'),
+      title: 'Administrador',
+      description: 'Controlo total da plataforma e gestão de utilizadores',
       icon: Shield,
       role: 'admin' as const,
       dashboardPath: '/admin/users',
       quickLinks: [
-        { label: tNav('admin.users'), path: '/admin/users', icon: Users },
-        { label: tNav('admin.providers'), path: '/admin/providers', icon: UserCheck },
-        { label: tNav('admin.sessions'), path: '/admin/sessions', icon: Calendar },
-        { label: t('demo.support'), path: '/admin/support', icon: Settings },
-        { label: tNav('admin.settings'), path: '/admin/settings', icon: Settings }
+        { label: 'Utilizadores', path: '/admin/users', icon: Users },
+        { label: 'Prestadores', path: '/admin/providers', icon: UserCheck },
+        { label: 'Sessões', path: '/admin/sessions', icon: Calendar },
+        { label: 'Suporte', path: '/admin/support', icon: Settings },
+        { label: 'Configurações', path: '/admin/settings', icon: Settings }
       ],
       features: ['Gestão Completa', 'Analytics', 'Suporte', 'Configurações'],
       color: 'bg-red-500'
@@ -150,7 +166,7 @@ const Demo = () => {
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-card p-6 rounded-lg shadow-lg flex items-center gap-3">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-            <span className="text-sm font-medium">{t('demo.switchingUser')}</span>
+            <span className="text-sm font-medium">A mudar de utilizador...</span>
           </div>
         </div>
       )}
@@ -163,11 +179,11 @@ const Demo = () => {
               <Play className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-4xl font-bold tracking-tight">
-              {t('demo.title')}
+              Demo Interativo
             </h1>
           </div>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            {t('demo.subtitle')}
+            Explore a plataforma com diferentes perfis de utilizador
           </p>
         </div>
 
@@ -182,10 +198,10 @@ const Demo = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-primary">
-                      {t('demo.activeSession')}: {demoUsers.find(u => u.role === profile.role)?.title}
+                      Sessão Ativa: {demoUsers.find(u => u.role === profile.role)?.title}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      {t('demo.connectedAs')} <strong>{profile.name}</strong> ({profile.email})
+                      Conectado como <strong>{profile.name}</strong> ({profile.email})
                     </p>
                   </div>
                 </div>
@@ -197,7 +213,7 @@ const Demo = () => {
                     className="flex items-center gap-2"
                   >
                     <Home className="h-4 w-4" />
-                    {t('demo.home')}
+                    Início
                   </Button>
                   <Button 
                     variant="destructive" 
@@ -207,7 +223,7 @@ const Demo = () => {
                     disabled={isTransitioning}
                   >
                     <LogOut className="h-4 w-4" />
-                    {t('demo.logout')}
+                    Sair
                   </Button>
                 </div>
               </div>
@@ -217,8 +233,8 @@ const Demo = () => {
 
         <Tabs defaultValue="users" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="users">{t('demo.switchUsers')}</TabsTrigger>
-            <TabsTrigger value="navigation">{t('demo.quickNavigation')}</TabsTrigger>
+            <TabsTrigger value="users">Mudar Utilizador</TabsTrigger>
+            <TabsTrigger value="navigation">Navegação Rápida</TabsTrigger>
           </TabsList>
           
           <TabsContent value="users" className="space-y-6">
@@ -242,7 +258,7 @@ const Demo = () => {
                         </div>
                         {isCurrentUser && (
                           <Badge variant="default" className="text-xs">
-                            {t('status.active')}
+                            Ativo
                           </Badge>
                         )}
                       </div>
@@ -269,13 +285,13 @@ const Demo = () => {
                           variant={isCurrentUser ? "secondary" : "default"}
                           disabled={isCurrentUser || isTransitioning}
                         >
-                          {isCurrentUser ? t('demo.currentUser') : `${t('demo.enterAs')} ${demoUser.title}`}
+                          {isCurrentUser ? 'Utilizador Atual' : `Entrar como ${demoUser.title}`}
                         </Button>
 
                         {/* Quick navigation for current user */}
                         {isCurrentUser && demoUser.quickLinks && (
                           <div className="space-y-2 pt-2 border-t">
-                            <h5 className="text-xs font-medium text-muted-foreground">{t('demo.quickNavigationLabel')}</h5>
+                            <h5 className="text-xs font-medium text-muted-foreground">Navegação Rápida</h5>
                             <div className="grid grid-cols-2 gap-1">
                               {demoUser.quickLinks.map((link, index) => {
                                 const LinkIcon = link.icon;
@@ -307,7 +323,7 @@ const Demo = () => {
             {/* General Navigation */}
             <Card>
               <CardHeader>
-                <CardTitle>{t('demo.mainPages')}</CardTitle>
+                <CardTitle>Páginas Principais</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -317,7 +333,7 @@ const Demo = () => {
                     className="flex items-center gap-2 h-12"
                   >
                     <Home className="h-4 w-4" />
-                    {t('demo.homePage')}
+                    Página Inicial
                   </Button>
                   <Button 
                     variant="outline" 
@@ -325,7 +341,7 @@ const Demo = () => {
                     className="flex items-center gap-2 h-12"
                   >
                     <Users className="h-4 w-4" />
-                    {t('demo.helpCenter')}
+                    Centro de Ajuda
                   </Button>
                   <Button 
                     variant="outline" 
@@ -333,7 +349,7 @@ const Demo = () => {
                     className="flex items-center gap-2 h-12"
                   >
                     <Settings className="h-4 w-4" />
-                    {t('demo.support')}
+                    Suporte
                   </Button>
                   <Button 
                     variant="outline" 
@@ -341,7 +357,7 @@ const Demo = () => {
                     className="flex items-center gap-2 h-12"
                   >
                     <BarChart3 className="h-4 w-4" />
-                    {t('demo.terms')}
+                    Termos
                   </Button>
                 </div>
               </CardContent>
@@ -351,7 +367,7 @@ const Demo = () => {
             {profile && (
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('demo.pagesOf')} {demoUsers.find(u => u.role === profile.role)?.title}</CardTitle>
+                  <CardTitle>Páginas de {demoUsers.find(u => u.role === profile.role)?.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -378,7 +394,7 @@ const Demo = () => {
 
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground py-4 border-t">
-          <p>{t('demo.footer')}</p>
+          <p>Modo Demo - Explore todas as funcionalidades da plataforma</p>
         </div>
       </div>
     </div>

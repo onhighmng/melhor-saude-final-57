@@ -120,7 +120,15 @@ const AppWithTracking = () => {
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />
           
-          {/* User routes - Removed for demo restrictions */}
+          {/* User routes */}
+          <Route path="/user/dashboard" element={<UserLayout><UserDashboard /></UserLayout>} />
+          <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
+          <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
+          <Route path="/user/resources" element={<UserLayout><UserResources /></UserLayout>} />
+          <Route path="/user/feedback" element={<UserLayout><UserFeedback /></UserLayout>} />
+          <Route path="/user/chat" element={<UserLayout><UserChat /></UserLayout>} />
+          <Route path="/user/book" element={<UserLayout><BookingRouter /></UserLayout>} />
+          <Route path="/user/booking/:step" element={<UserLayout><BookingFlow /></UserLayout>} />
           
           {/* Prestador routes */}
           <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
