@@ -118,20 +118,7 @@ export default function UserSessions() {
   };
 
   return (
-    <div className="relative w-full min-h-screen">
-      {/* Background that covers main content area */}
-      <div 
-        className="absolute inset-0 w-full h-full"
-        style={{
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1600 900\'%3E%3Cdefs%3E%3ClinearGradient id=\'blueGrad\' x1=\'0%25\' y1=\'0%25\' x2=\'100%25\' y2=\'100%25\'%3E%3Cstop offset=\'0%25\' style=\'stop-color:%23F0F9FF;stop-opacity:1\' /%3E%3Cstop offset=\'20%25\' style=\'stop-color:%23E0F2FE;stop-opacity:1\' /%3E%3Cstop offset=\'40%25\' style=\'stop-color:%23BAE6FD;stop-opacity:1\' /%3E%3Cstop offset=\'60%25\' style=\'stop-color:%237DD3FC;stop-opacity:1\' /%3E%3Cstop offset=\'80%25\' style=\'stop-color:%2338BDF8;stop-opacity:1\' /%3E%3Cstop offset=\'100%25\' style=\'stop-color:%230EA5E9;stop-opacity:1\' /%3E%3C/linearGradient%3E%3CradialGradient id=\'highlight\' cx=\'50%25\' cy=\'20%25\' r=\'60%25\'%3E%3Cstop offset=\'0%25\' style=\'stop-color:%23FFFFFF;stop-opacity:0.3\' /%3E%3Cstop offset=\'100%25\' style=\'stop-color:%23FFFFFF;stop-opacity:0\' /%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width=\'1600\' height=\'900\' fill=\'url(%23blueGrad)\'/%3E%3Crect width=\'1600\' height=\'900\' fill=\'url(%23highlight)\'/%3E%3C/svg%3E")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
-      
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none"></div>
+    <div className="relative w-full min-h-screen bg-white">
       
       {/* Content */}
       <div className="relative z-10">
@@ -154,7 +141,7 @@ export default function UserSessions() {
                 href="#"
                 cta=""
                 className="w-full"
-                background={<div className="absolute inset-0 bg-white" />}
+                background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50" />}
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 onClick={() => {}}
@@ -172,7 +159,7 @@ export default function UserSessions() {
                 href="#"
                 cta=""
                 className="w-full"
-                background={<div className="absolute inset-0 bg-white" />}
+                background={<div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50" />}
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 onClick={() => {}}
@@ -192,8 +179,8 @@ export default function UserSessions() {
                 cta="Ver todas"
                 className="w-full"
                 Icon={History}
-                background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
-                iconColor="text-amber-600"
+                background={<div className="absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-50" />}
+                iconColor="text-rose-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 onClick={() => setIsPastSessionsModalOpen(true)}
@@ -206,8 +193,8 @@ export default function UserSessions() {
                 cta="Ver todas"
                 className="w-full"
                 Icon={CalendarDays}
-                background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
-                iconColor="text-blue-600"
+                background={<div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50" />}
+                iconColor="text-violet-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 onClick={() => setIsFutureSessionsModalOpen(true)}
@@ -217,9 +204,9 @@ export default function UserSessions() {
 
           {/* Motivational Tagline */}
           <div className="mt-6">
-            <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+            <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
               <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground italic">
+                <p className="text-center text-gray-700 italic">
                   Pequenos passos, grandes resultados. O seu bem-estar cresce com cada conquista 💙
                 </p>
               </CardContent>
