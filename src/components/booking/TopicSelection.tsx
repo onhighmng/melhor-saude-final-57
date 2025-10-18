@@ -83,6 +83,7 @@ export const TopicSelection = ({
           onClick={onNext}
           disabled={!selectedTopic}
           size="lg"
+          className="hover:text-white"
         >
           Continuar
         </Button>

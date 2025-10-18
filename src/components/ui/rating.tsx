@@ -118,7 +118,7 @@ export const Rating = ({
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting || selectedRating === 0}
-            className="bg-emerald-green hover:bg-emerald-green/90"
+            className="bg-emerald-green hover:bg-emerald-green/90 hover:text-white text-white"
           >
             {isSubmitting ? t('rating.submitting') : t('rating.submitRating')}
           </Button>

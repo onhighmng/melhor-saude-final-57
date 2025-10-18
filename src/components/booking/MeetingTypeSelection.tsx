@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Video, Phone } from 'lucide-react';
+import { Video, Phone, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -27,9 +27,18 @@ export const MeetingTypeSelection = ({ onNext, onBack }: MeetingTypeSelectionPro
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Escolha o Formato da Sessão</h2>
-        <p className="text-sm text-muted-foreground">Como prefere ter a sua sessão?</p>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex-1"></div>
+        <div className="text-center flex-2">
+          <h2 className="text-2xl font-bold mb-2">Escolha o Formato da Sessão</h2>
+          <p className="text-sm text-muted-foreground">Como prefere ter a sua sessão?</p>
+        </div>
+        <div className="flex justify-end flex-1">
+          <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-white">
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
@@ -72,12 +81,9 @@ export const MeetingTypeSelection = ({ onNext, onBack }: MeetingTypeSelectionPro
         </Card>
       </div>
 
-      <div className="flex gap-3">
-        <Button variant="outline" onClick={onBack} className="flex-1">
-          Voltar
-        </Button>
-        <Button onClick={handleContinue} disabled={!selectedType} className="flex-1">
-          Continuar
+      <div className="flex justify-end">
+        <Button onClick={handleContinue} disabled={!selectedType} className="px-8">
+          Selecionar data e hora
         </Button>
       </div>
     </div>

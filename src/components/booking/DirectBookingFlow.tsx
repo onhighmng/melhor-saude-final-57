@@ -60,22 +60,35 @@ export const DirectBookingFlow = () => {
   const [meetingType, setMeetingType] = useState<'virtual' | 'phone'>('virtual');
   const [isConfirming, setIsConfirming] = useState(false);
 
-  // Update state when URL parameters change
+  // Update state when URL parameters change - only handle initial load
   useEffect(() => {
     const pillarParam = searchParams.get('pillar');
     if (pillarParam && ['psicologica', 'fisica', 'financeira', 'juridica'].includes(pillarParam)) {
-      setSelectedPillar(pillarParam as BookingPillar);
-      setCurrentStep('assessment');
-    } else if (!pillarParam && currentStep === 'assessment') {
-      // If pillar parameter is removed, go back to pillar selection
-      setSelectedPillar(null);
-      setCurrentStep('pillar');
+      // Only initialize from URL if we don't have a selected pillar yet
+      if (!selectedPillar) {
+        setSelectedPillar(pillarParam as BookingPillar);
+        setCurrentStep('assessment');
+      }
     }
-  }, [searchParams, currentStep]);
+  }, [searchParams, selectedPillar]); // Only run when URL changes or selectedPillar is null
 
   useEffect(() => {
     console.log('[DirectBookingFlow] Step:', currentStep, 'Pillar:', selectedPillar, 'Topic:', selectedTopic);
   }, [currentStep, selectedPillar, selectedTopic]);
+
+  // Function to get proper pillar name in Portuguese
+  const getPillarDisplayName = (pillar: BookingPillar | null): string => {
+    if (!pillar) return '';
+    
+    const pillarNames = {
+      'psicologica': 'Saúde Mental',
+      'fisica': 'Bem-estar Físico',
+      'financeira': 'Assistência Financeira',
+      'juridica': 'Assistência Jurídica'
+    };
+    
+    return pillarNames[pillar] || '';
+  };
 
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
@@ -111,7 +124,7 @@ export const DirectBookingFlow = () => {
       };
       
       setAssignedProvider(assignedProvider);
-      setSelectedTopic('assessment');
+      setSelectedTopic(getPillarDisplayName(selectedPillar));
       setCurrentStep('provider');
       
       toast({
@@ -191,7 +204,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'psicologica' && (
         <MentalHealthAssessmentFlow
-          onBack={() => navigate('/user/book')}
+          onBack={() => setCurrentStep('pillar')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -199,7 +212,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'fisica' && (
         <PhysicalWellnessAssessmentFlow
-          onBack={() => navigate('/user/book')}
+          onBack={() => setCurrentStep('pillar')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -207,7 +220,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'financeira' && (
         <FinancialAssistanceAssessmentFlow
-          onBack={() => navigate('/user/book')}
+          onBack={() => setCurrentStep('pillar')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -215,7 +228,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'juridica' && (
         <LegalAssessmentFlow
-          onBack={() => navigate('/user/book')}
+          onBack={() => setCurrentStep('pillar')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -249,10 +262,10 @@ export const DirectBookingFlow = () => {
         />
       )}
 
-      {currentStep === 'confirmation' && selectedPillar && selectedTopic && assignedProvider && selectedDate && (
+      {currentStep === 'confirmation' && selectedPillar && assignedProvider && selectedDate && (
         <ConfirmationStep
           pillar={selectedPillar}
-          topic={selectedTopic || 'assessment'}
+          topic={selectedTopic || getPillarDisplayName(selectedPillar)}
           provider={assignedProvider}
           selectedDate={selectedDate}
           selectedTime={selectedTime}

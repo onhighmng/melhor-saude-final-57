@@ -2,47 +2,11 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
-const dayNames = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
-const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-
-interface CalendarDayProps {
-  day: number | string;
-  isHeader?: boolean;
-  isSelected?: boolean;
-  isDisabled?: boolean;
-  isToday?: boolean;
-  onClick?: () => void;
-}
-
-const CalendarDay: React.FC<CalendarDayProps> = ({
-  day,
-  isHeader,
-  isSelected,
-  isDisabled,
-  isToday,
-  onClick,
-}) => {
-  return (
-    <button
-      onClick={onClick}
-      disabled={isDisabled || isHeader}
-      className={cn(
-        "flex h-12 w-full items-center justify-center transition-all duration-200 font-baskervville",
-        isHeader ? "cursor-default font-comfortaa text-xs font-medium text-muted-foreground" : "rounded-lg cursor-pointer text-sm",
-        !isHeader && !isDisabled && !isSelected && "hover:bg-muted hover:scale-105",
-        isSelected && "bg-foreground text-background font-semibold",
-        isToday && !isSelected && "bg-muted font-semibold",
-        !isHeader && !isSelected && !isToday && "text-foreground",
-        isDisabled && !isHeader && "opacity-30 cursor-not-allowed text-muted-foreground",
-      )}
-    >
-      {day}
-    </button>
-  );
-};
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface TimeSlot {
   time: string;
@@ -53,7 +17,7 @@ interface BookingCalendarProps {
   /** Currently selected date */
   selectedDate?: Date;
   /** Callback when a date is selected */
-  onDateSelect?: (date: Date) => void;
+  onDateSelect?: (date: Date | undefined) => void;
   /** Currently selected time */
   selectedTime?: string;
   /** Callback when a time is selected */
@@ -75,164 +39,114 @@ export function BookingCalendar({
   showTimeSelection = true,
   className,
 }: BookingCalendarProps) {
-  const [currentMonth, setCurrentMonth] = React.useState(new Date());
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  
+  // Default time slots if none provided
+  const defaultTimeSlots = [
+    { time: "09:00", available: true },
+    { time: "09:30", available: true },
+    { time: "10:00", available: true },
+    { time: "10:30", available: true },
+    { time: "11:00", available: true },
+    { time: "11:30", available: true },
+    { time: "12:00", available: true },
+    { time: "12:30", available: true },
+    { time: "13:00", available: true },
+    { time: "13:30", available: true },
+    { time: "14:00", available: true },
+    { time: "14:30", available: true },
+    { time: "15:00", available: true },
+    { time: "15:30", available: true },
+    { time: "16:00", available: true },
+    { time: "16:30", available: true },
+    { time: "17:00", available: true },
+  ];
 
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
-  const firstDayOfMonth = new Date(year, month, 1);
-  const firstDayOfWeek = firstDayOfMonth.getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  const handlePrevMonth = () => {
-    setCurrentMonth(new Date(year, month - 1, 1));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentMonth(new Date(year, month + 1, 1));
-  };
-
-  const handleDateClick = (day: number) => {
-    if (onDateSelect) {
-      const newDate = new Date(year, month, day);
-      onDateSelect(newDate);
-    }
-  };
-
-  const isDateSelected = (day: number) => {
-    if (!selectedDate) return false;
-    return (
-      selectedDate.getDate() === day &&
-      selectedDate.getMonth() === month &&
-      selectedDate.getFullYear() === year
-    );
-  };
-
-  const isDateToday = (day: number) => {
-    return (
-      today.getDate() === day &&
-      today.getMonth() === month &&
-      today.getFullYear() === year
-    );
-  };
-
-  const isDateDisabled = (day: number) => {
-    const date = new Date(year, month, day);
-    date.setHours(0, 0, 0, 0);
-    return date < today;
-  };
-
-  const renderCalendarDays = () => {
-    let days: React.ReactNode[] = [
-      ...dayNames.map((day, i) => (
-        <CalendarDay key={`header-${day}`} day={day} isHeader />
-      )),
-      ...Array(firstDayOfWeek)
-        .fill(null)
-        .map((_, i) => (
-          <div key={`empty-start-${i}`} className="h-12 w-full" />
-        )),
-      ...Array(daysInMonth)
-        .fill(null)
-        .map((_, i) => {
-          const day = i + 1;
-          return (
-            <CalendarDay
-              key={`date-${day}`}
-              day={day}
-              isSelected={isDateSelected(day)}
-              isToday={isDateToday(day)}
-              isDisabled={isDateDisabled(day)}
-              onClick={() => !isDateDisabled(day) && handleDateClick(day)}
-            />
-          );
-        }),
-    ];
-
-    return days;
-  };
-
-  const formatSelectedDate = () => {
-    if (!selectedDate) return "";
-    const dayName = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][selectedDate.getDay()];
-    return `${dayName} ${selectedDate.getDate().toString().padStart(2, '0')}`;
-  };
+  const slots = timeSlots.length > 0 ? timeSlots : defaultTimeSlots;
 
   return (
-    <div className={cn("flex gap-8", className)}>
-      {/* Calendar Section */}
-      <div className="flex-1 max-w-md">
-        <div className="bg-card rounded-2xl border border-border p-6">
-          {/* Calendar Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-comfortaa font-semibold text-foreground">
-              {monthNames[month]} {year}
-            </h3>
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handlePrevMonth}
-                className="h-8 w-8 rounded-lg"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleNextMonth}
-                className="h-8 w-8 rounded-lg"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+    <div className={cn("w-full", className)}>
+
+      {/* Main Calendar Container */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="flex flex-col lg:flex-row">
+          {/* Calendar Section */}
+          <div className="flex-1 p-8 min-w-0">
+            <Calendar
+              key="booking-calendar"
+              mode="single"
+              selected={selectedDate}
+              onSelect={(newDate) => {
+                if (onDateSelect) {
+                  onDateSelect(newDate || undefined);
+                }
+              }}
+              className="w-full max-w-none"
+              disabled={[
+                { before: today },
+              ]}
+              locale={ptBR}
+              classNames={{
+                caption_label: "text-2xl font-bold text-gray-900",
+                day_selected: "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700 rounded-lg font-semibold",
+                day_today: "bg-blue-50 text-blue-600 font-bold",
+                head_cell: "text-gray-600 flex-1 font-semibold text-lg text-center py-3",
+                day: "h-12 w-12 p-0 font-semibold text-lg aria-selected:opacity-100 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors",
+              }}
+            />
           </div>
 
-          {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-1">
-            {renderCalendarDays()}
-          </div>
-        </div>
-      </div>
+          {/* Time Selection Section */}
+          {showTimeSelection && selectedDate && (
+            <div className="lg:w-80 border-l border-gray-200 bg-gray-50">
+              <div className="p-6 h-full flex flex-col">
+                {/* Selected Date Header */}
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR })}
+                  </h3>
+                </div>
 
-      {/* Time Selection Section */}
-      {showTimeSelection && selectedDate && (
-        <div className="w-80">
-          <div className="sticky top-4">
-            <h3 className="text-lg font-comfortaa font-semibold text-foreground mb-4">
-              {formatSelectedDate()}
-            </h3>
-            <div className="bg-card rounded-2xl border border-border p-4 max-h-[600px] overflow-y-auto scrollbar-hide">
-              <div className="space-y-2">
-                {timeSlots.length > 0 ? (
-                  timeSlots.map((slot) => (
-                    <button
-                      key={slot.time}
-                      onClick={() => slot.available && onTimeSelect?.(slot.time)}
-                      disabled={!slot.available}
-                      className={cn(
-                        "w-full py-3 px-4 rounded-lg text-center font-baskervville transition-all duration-200",
-                        selectedTime === slot.time
-                          ? "bg-foreground text-background font-semibold"
-                          : slot.available
-                          ? "bg-background hover:bg-muted border border-border hover:border-foreground/20"
-                          : "bg-muted/50 text-muted-foreground cursor-not-allowed opacity-50"
-                      )}
-                    >
-                      {slot.time}
-                    </button>
-                  ))
-                ) : (
-                  <p className="text-center text-muted-foreground py-8 font-baskervville">
-                    Nenhum horário disponível para esta data
-                  </p>
-                )}
+                {/* Time Slots */}
+                <div className="flex-1">
+                  <ScrollArea className="h-[400px] pr-4">
+                    <div className="space-y-2">
+                      {slots.map(({ time: timeSlot, available }) => (
+                        <button
+                          key={timeSlot}
+                          onClick={() => available && onTimeSelect?.(timeSlot)}
+                          disabled={!available}
+                          className={cn(
+                            "w-full text-left px-4 py-3 rounded-lg border transition-all duration-200",
+                            "text-sm font-medium",
+                            available
+                              ? selectedTime === timeSlot
+                                ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                                : "bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-sm"
+                              : "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed"
+                          )}
+                        >
+                          {timeSlot}
+                        </button>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+
+                {/* Time Zone Info */}
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Horário de Moçambique GMT+2</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

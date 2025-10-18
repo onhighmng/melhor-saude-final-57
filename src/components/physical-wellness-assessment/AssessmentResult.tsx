@@ -41,9 +41,9 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <Button 
-        variant="ghost" 
         onClick={onBack}
-        className="flex items-center gap-2 text-foreground hover:text-foreground"
+        variant="outline"
+        className="flex items-center gap-2 hover:bg-green-600 hover:text-white transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Voltar

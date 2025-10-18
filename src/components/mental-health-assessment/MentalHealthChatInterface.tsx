@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, Loader2, User, Phone } from 'lucide-react';
+import { Send, Loader2, User, Phone, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 interface Message {
@@ -87,7 +87,8 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
       <div className="pt-16 pb-4 px-4">
         <div className="w-full max-w-6xl mx-auto h-[calc(100vh-120px)] flex flex-col">
           <div className="flex items-center justify-between mb-6">
-            <Button variant="ghost" onClick={onBack}>
+            <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-white">
+              <ArrowLeft className="h-4 w-4" />
               Voltar
             </Button>
           </div>
@@ -119,10 +120,6 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
             </div>
 
             <div className="p-4 border-t space-y-3">
-              {onChooseHuman && <Button variant="outline" className="w-full gap-2" onClick={onChooseHuman}>
-                  <User className="h-4 w-4" />
-                  Falar Com Especialista (1-on-1)
-                </Button>}
               <div className="flex gap-2">
                 <Textarea value={input} onChange={e => setInput(e.target.value)} onKeyPress={handleKeyPress} placeholder="Digite sua pergunta..." className="resize-none" rows={2} disabled={isLoading} />
                 <Button onClick={sendMessage} disabled={!input.trim() || isLoading} size="icon" className="h-full">
@@ -137,7 +134,11 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
               <p className="text-sm text-muted-foreground">
                 Se as suas questões são complexas, solicite uma sessão 1-on-1 com um especialista.
               </p>
-              <Button variant="outline" onClick={onComplete} className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={onChooseHuman} 
+                className="gap-2"
+              >
                 <Phone className="h-4 w-4" />
                 Solicitar Sessão 1-on-1
               </Button>

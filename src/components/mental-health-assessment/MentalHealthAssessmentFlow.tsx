@@ -93,7 +93,8 @@ const MentalHealthAssessmentFlow: React.FC<MentalHealthAssessmentFlowProps> = ({
           <MentalHealthChatInterface
             assessment={assessment}
             onBack={() => setStep('result')}
-            onComplete={onChooseHuman}
+            onComplete={onComplete}
+            onChooseHuman={onChooseHuman}
           />
         );
       

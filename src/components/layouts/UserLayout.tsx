@@ -10,7 +10,7 @@ interface UserLayoutProps {
 
 export function UserLayout({ children }: UserLayoutProps) {
   const location = useLocation();
-  const isFullScreenPage = location.pathname === '/user/chat';
+  const isFullScreenPage = location.pathname === '/user/chat' || location.pathname === '/user/book';
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (

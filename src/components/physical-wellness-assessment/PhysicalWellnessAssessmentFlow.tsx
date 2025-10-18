@@ -93,7 +93,8 @@ const PhysicalWellnessAssessmentFlow: React.FC<PhysicalWellnessAssessmentFlowPro
           <PhysicalWellnessChatInterface
             assessment={assessment}
             onBack={() => setStep('result')}
-            onComplete={onChooseHuman}
+            onComplete={onComplete}
+            onChooseHuman={onChooseHuman}
           />
         );
       

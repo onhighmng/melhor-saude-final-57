@@ -93,7 +93,8 @@ const FinancialAssistanceAssessmentFlow: React.FC<FinancialAssistanceAssessmentF
           <FinancialAssistanceChatInterface
             assessment={assessment}
             onBack={() => setStep('result')}
-            onComplete={onChooseHuman}
+            onComplete={onComplete}
+            onChooseHuman={onChooseHuman}
           />
         );
       

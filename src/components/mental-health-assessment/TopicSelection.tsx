@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
 interface TopicSelectionProps {
   selectedTopics: string[];
   onTopicToggle: (topicId: string) => void;
@@ -56,7 +57,8 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-4">
-        <Button variant="ghost" onClick={onBack}>
+        <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-white">
+          <ArrowLeft className="h-4 w-4" />
           Voltar
         </Button>
       </div>
@@ -103,7 +105,7 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
           onClick={onNext}
           disabled={selectedTopics.length === 0}
           size="lg"
-          className="min-w-[200px] bg-primary hover:bg-primary/90 text-white rounded-lg"
+          className="min-w-[200px] bg-primary hover:bg-primary/90 hover:text-white text-white rounded-lg"
         >
           Continuar
         </Button>

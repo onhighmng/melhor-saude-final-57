@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, Loader2, User, Phone } from 'lucide-react';
+import { Send, Loader2, User, Phone, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -91,11 +91,9 @@ const PhysicalWellnessChatInterface: React.FC<PhysicalWellnessChatInterfaceProps
       <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
           <div className="flex items-center justify-between mb-6">
-            <Button variant="ghost" onClick={onBack}>
-              Voltar ao Resumo
-            </Button>
-            <Button variant="outline" onClick={onComplete}>
-              Finalizar Consulta
+            <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-white">
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
             </Button>
           </div>
 
@@ -146,16 +144,6 @@ const PhysicalWellnessChatInterface: React.FC<PhysicalWellnessChatInterfaceProps
             </div>
 
             <div className="p-4 border-t space-y-3">
-              {onChooseHuman && (
-                <Button 
-                  variant="outline" 
-                  className="w-full gap-2"
-                  onClick={onChooseHuman}
-                >
-                  <User className="h-4 w-4" />
-                  Falar Com Especialista (1-on-1)
-                </Button>
-              )}
               <div className="flex gap-2">
                 <Textarea
                   value={input}
@@ -183,7 +171,11 @@ const PhysicalWellnessChatInterface: React.FC<PhysicalWellnessChatInterfaceProps
               <p className="text-sm text-muted-foreground">
                 Se as suas questões são complexas, solicite uma sessão 1-on-1 com um especialista.
               </p>
-              <Button variant="outline" onClick={onComplete} className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={onChooseHuman} 
+                className="gap-2"
+              >
                 <Phone className="h-4 w-4" />
                 Solicitar Sessão 1-on-1
               </Button>

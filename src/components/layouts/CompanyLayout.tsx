@@ -1,5 +1,7 @@
-import { ReactNode } from 'react';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { ReactNode, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { AnimatedSidebarProvider } from '@/components/ui/animated-sidebar';
 import CompanySidebar from '@/components/CompanySidebar';
 
 interface CompanyLayoutProps {
@@ -7,18 +9,28 @@ interface CompanyLayoutProps {
 }
 
 export function CompanyLayout({ children }: CompanyLayoutProps) {
+  const location = useLocation();
+  const isFullScreenPage = location.pathname === '/company/chat';
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <SidebarProvider defaultOpen>
-      <div className="min-h-screen flex w-full bg-background">
+    <AnimatedSidebarProvider open={sidebarOpen} setOpen={setSidebarOpen}>
+      <div className="h-screen flex w-full relative overflow-hidden">
         <CompanySidebar />
-        <main className="flex-1 flex flex-col min-w-0">
-          <div className="flex-1 overflow-auto p-6 bg-background">
-            <div className="max-w-none w-full mx-auto">
+        <motion.main 
+          className="flex flex-col relative z-10 h-screen min-w-0 overflow-hidden"
+          animate={{
+            width: sidebarOpen ? 'calc(100% - 300px)' : 'calc(100% - 60px)',
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <div className={`flex-1 overflow-y-auto ${isFullScreenPage ? '' : 'p-6'}`}>
+            <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
               {children}
             </div>
           </div>
-        </main>
+        </motion.main>
       </div>
-    </SidebarProvider>
+    </AnimatedSidebarProvider>
   );
 }

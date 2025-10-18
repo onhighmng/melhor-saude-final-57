@@ -88,7 +88,8 @@ const LegalAssessmentFlow: React.FC<LegalAssessmentFlowProps> = ({
           <LegalChatInterface
             assessment={assessment}
             onBack={() => setStep('result')}
-            onComplete={onChooseHuman}
+            onComplete={onComplete}
+            onChooseHuman={onChooseHuman}
           />
         );
       

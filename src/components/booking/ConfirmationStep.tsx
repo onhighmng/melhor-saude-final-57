@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, User, CheckCircle2, Video, Phone } from 'lucide-react';
+import { Calendar, Clock, User, CheckCircle2, Video, Phone, ArrowLeft } from 'lucide-react';
 import { BookingPillar } from './BookingFlow';
 interface Provider {
   id: string;
@@ -44,12 +44,26 @@ export const ConfirmationStep = ({
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-          <CheckCircle2 className="h-8 w-8 text-primary" />
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex-1"></div>
+        <div className="text-center flex-2">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+            <CheckCircle2 className="h-8 w-8 text-primary" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Confirmar Agendamento</h2>
+          <p className="text-sm text-muted-foreground">Reveja os detalhes da sua sessão antes de confirmar</p>
         </div>
-        <h2 className="text-2xl font-bold mb-2">Confirmar Agendamento</h2>
-        <p className="text-sm text-muted-foreground">Reveja os detalhes da sua sessão antes de confirmar</p>
+        <div className="flex justify-end flex-1">
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            disabled={isConfirming}
+            className="flex items-center gap-2 text-gray-600 hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -107,19 +121,11 @@ export const ConfirmationStep = ({
         </CardContent>
       </Card>
 
-      <div className="flex gap-3">
-        <Button 
-          variant="outline" 
-          onClick={onBack}
-          disabled={isConfirming}
-          className="flex-1"
-        >
-          Voltar
-        </Button>
+      <div className="flex justify-end">
         <Button 
           onClick={onConfirm}
           disabled={isConfirming}
-          className="flex-1"
+          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm"
         >
           {isConfirming ? 'A confirmar...' : 'Confirmar Agendamento'}
         </Button>

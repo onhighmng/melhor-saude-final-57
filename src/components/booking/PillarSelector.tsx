@@ -69,7 +69,7 @@ export default function PillarSelector({ onPillarSelect }: PillarSelectorProps) 
                     {pillar.description}
                   </p>
                   <Button 
-                    className="mt-6 w-full bg-emerald-green hover:bg-emerald-green/90"
+                    className="mt-6 w-full bg-emerald-green hover:bg-emerald-green/90 hover:text-white text-white"
                     size="lg"
                   >
                     Selecionar

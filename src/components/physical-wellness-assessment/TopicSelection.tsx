@@ -103,7 +103,7 @@ const TopicSelection: React.FC<TopicSelectionProps> = ({
           onClick={onNext}
           disabled={selectedTopics.length === 0}
           size="lg"
-          className="min-w-[200px] bg-primary hover:bg-primary/90 text-white rounded-lg"
+          className="min-w-[200px] bg-primary hover:bg-primary/90 hover:text-white text-white rounded-lg"
         >
           Continuar
         </Button>

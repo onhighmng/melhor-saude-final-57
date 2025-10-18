@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -19,10 +18,10 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const AdminSidebar = () => {
-  const [open, setOpen] = useState(false);
+  const { open } = useAnimatedSidebar();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -79,7 +78,7 @@ const AdminSidebar = () => {
   };
 
   return (
-    <AnimatedSidebar open={open} setOpen={setOpen}>
+    <AnimatedSidebar>
       <AnimatedSidebarBody className="justify-between gap-10 h-full">
         <div className="flex flex-col flex-1 overflow-hidden">
           <Logo open={open} user={user} />
@@ -93,17 +92,19 @@ const AdminSidebar = () => {
           <button
             onClick={handleLogout}
             className={cn(
-              "flex items-center gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors hover:bg-muted/50 w-full",
+              "flex flex-row items-center gap-2 group/sidebar py-2 px-2 rounded-lg transition-colors hover:bg-muted/50 w-full",
               open ? "justify-start" : "justify-center"
             )}
           >
-            <LogOut className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+            <span className="flex-shrink-0">
+              <LogOut className="text-muted-foreground h-5 w-5" />
+            </span>
             <motion.span
               animate={{
                 display: open ? "inline-block" : "none",
                 opacity: open ? 1 : 0,
               }}
-              className="text-muted-foreground text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+              className="text-muted-foreground text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0 flex-shrink-0"
             >
               Sair
             </motion.span>
@@ -121,6 +122,7 @@ const Logo = ({ open, user }: { open: boolean; user: any }) => {
       open ? "gap-3 justify-start" : "justify-center"
     )}>
       <Avatar className="h-10 w-10 flex-shrink-0">
+        <AvatarImage src={user?.avatar_url} />
         <AvatarFallback className="bg-primary text-primary-foreground text-lg">
           {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
         </AvatarFallback>
@@ -132,10 +134,10 @@ const Logo = ({ open, user }: { open: boolean; user: any }) => {
         }}
         className="flex flex-col min-w-0 flex-1"
       >
-        <span className="text-base font-medium text-foreground truncate">
-          {user?.email || user?.name}
+        <span className="text-sm font-medium text-foreground truncate">
+          {user?.name || user?.email}
         </span>
-        <span className="text-sm text-muted-foreground">Administrador</span>
+        <span className="text-xs text-muted-foreground">Administrador</span>
       </motion.div>
     </div>
   );

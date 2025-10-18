@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { CheckCircle2, Star } from 'lucide-react';
+import { CheckCircle2, Star, ArrowLeft } from 'lucide-react';
 import { BookingPillar } from './BookingFlow';
 
 interface Provider {
@@ -34,7 +34,8 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext, onBac
           </p>
         </div>
         {onBack && (
-          <Button variant="ghost" onClick={onBack}>
+          <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-white">
+            <ArrowLeft className="h-4 w-4" />
             Voltar
           </Button>
         )}
@@ -85,7 +86,7 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext, onBac
 
       <div className="flex justify-end">
         <Button onClick={onNext} size="lg" className="px-8">
-          Selecionar data e hora
+          Escolher formato da sessão
         </Button>
       </div>
     </div>
