@@ -119,7 +119,7 @@ const MainGuidesSection: React.FC = () => {
               >
                 <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Final%20Melhor%20Saude%20Platform%20Video.mp4?v=2" type="video/mp4" />
                 <source src="https://ygxamuymjjpqhjoegweb.supabase.co/storage/v1/object/public/Videos/Final%20Melhor%20Saude%20Platform%20Video.webm?v=2" type="video/webm" />
-                {t('guides.browserNotSupported')}
+                O seu navegador não suporta o elemento de vídeo.
               </video>
             </div>
             
@@ -128,7 +128,7 @@ const MainGuidesSection: React.FC = () => {
               <div className="mt-4 flex items-center justify-center">
                 <div className="flex items-center gap-2 px-3 py-2 bg-primary/10 rounded-full animate-fade-in">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                  <span className="text-sm text-primary font-medium">{t('guides.playingWithSound')}</span>
+                  <span className="text-sm text-primary font-medium">A reproduzir com som</span>
                 </div>
               </div>
             )}
