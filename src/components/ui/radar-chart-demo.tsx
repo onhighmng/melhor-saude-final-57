@@ -1,8 +1,13 @@
 // src/demo.tsx
 import React from 'react';
 import { Component } from "@/components/ui/radar-chart";
-import { letterFrequency, LetterFrequency } from '@visx/mock-data';
-import { cn } from "@/lib/utils"; 
+import { letterFrequency } from '@visx/mock-data';
+import { cn } from "@/lib/utils";
+
+type LetterFrequency = {
+  letter: string;
+  frequency: number;
+};
 
 const demoData = letterFrequency.slice(2, 12);
 

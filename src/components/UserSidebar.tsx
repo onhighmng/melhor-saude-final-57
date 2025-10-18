@@ -84,17 +84,7 @@ export function UserSidebar() {
           <Logo open={open} user={user} role="Utilizador" />
           <div className="mt-8 flex flex-col gap-2">
             {mainLinks.map((link, idx) => (
-              <div key={idx} className="relative">
-                <AnimatedSidebarLink link={link} />
-                {link.badge && open && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute right-2 top-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                  >
-                    {link.badge}
-                  </Badge>
-                )}
-              </div>
+              <AnimatedSidebarLink key={idx} link={link} />
             ))}
           </div>
         </div>

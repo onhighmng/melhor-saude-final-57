@@ -3,10 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { SkipLink } from "@/components/ui/accessibility";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { setNavigateFunction } from "@/services/redirectService";
 import { useEffect } from "react";
+import { DemoAccessButton } from "@/components/DemoAccessButton";
 
 import ScrollIndicator from "@/components/ScrollIndicator";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
@@ -65,6 +66,7 @@ import { AuthenticatedLayout } from "@/components/layouts/AuthenticatedLayout";
 
 const AppWithTracking = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   usePageTracking();
   
   // Set up navigate function for redirectService and error boundary
@@ -87,8 +89,11 @@ const AppWithTracking = () => {
     };
   }, []);
   
+  const showDemoButton = location.pathname !== '/demo' && location.pathname !== '/';
+
   return (
     <>
+      {showDemoButton && <DemoAccessButton />}
       
       <Suspense fallback={
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">

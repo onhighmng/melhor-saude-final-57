@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Pie, ProvidedProps, PieArcDatum } from '@visx/shape';
+import { Pie } from '@visx/shape';
 import { scaleOrdinal } from '@visx/scale';
 import { Group } from '@visx/group';
 import { GradientPinkBlue } from '@visx/gradient';
-import { letterFrequency, browserUsage, LetterFrequency } from '@visx/mock-data';
+import { letterFrequency, browserUsage } from '@visx/mock-data';
 import { animated, useTransition, interpolate } from '@react-spring/web';
 
 type BrowserNames = keyof (typeof browserUsage)[0];
@@ -13,7 +13,12 @@ interface BrowserUsage {
   usage: number;
 }
 
-const letters: LetterFrequency[] = letterFrequency.slice(0, 4);
+type LetterFrequency = {
+  letter: string;
+  frequency: number;
+};
+
+const letters: LetterFrequency[] = letterFrequency.slice(0, 4) as LetterFrequency[];
 const browserNames = Object.keys(browserUsage[0]).filter((k) => k !== 'date') as BrowserNames[];
 const browsers: BrowserUsage[] = browserNames.map((name) => ({
   label: name,
@@ -140,22 +145,22 @@ export const PieChart = ({
 
 type AnimatedStyles = { startAngle: number; endAngle: number; opacity: number };
 
-const fromLeaveTransition = ({ endAngle }: PieArcDatum<any>) => ({
+const fromLeaveTransition = ({ endAngle }: any) => ({
   startAngle: endAngle > Math.PI ? 2 * Math.PI : 0,
   endAngle: endAngle > Math.PI ? 2 * Math.PI : 0,
   opacity: 0,
 });
-const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
+const enterUpdateTransition = ({ startAngle, endAngle }: any) => ({
   startAngle,
   endAngle,
   opacity: 1,
 });
 
-type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
+type AnimatedPieProps<Datum> = any & {
   animate?: boolean;
-  getKey: (d: PieArcDatum<Datum>) => string;
-  getColor: (d: PieArcDatum<Datum>) => string;
-  onClickDatum: (d: PieArcDatum<Datum>) => void;
+  getKey: (d: any) => string;
+  getColor: (d: any) => string;
+  onClickDatum: (d: any) => void;
   delay?: number;
 };
 
@@ -167,7 +172,7 @@ function AnimatedPie<Datum>({
   getColor,
   onClickDatum,
 }: AnimatedPieProps<Datum>) {
-  const transitions = useTransition<PieArcDatum<Datum>, AnimatedStyles>(arcs, {
+  const transitions = useTransition<any, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
     enter: enterUpdateTransition,
     update: enterUpdateTransition,

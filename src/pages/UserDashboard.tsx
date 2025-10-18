@@ -313,7 +313,7 @@ const UserDashboard = () => {
           />
 
           {/* Middle - Progress (Progreso Pessoal) */}
-          <BentoCard name="" description="" className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" background={<div className="absolute inset-0 flex flex-col p-6">
+          <BentoCard name="" description="" href="#" cta="" className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" background={<div className="absolute inset-0 flex flex-col p-6">
                 <h3 className="text-xl font-semibold mb-1">Progresso Pessoal</h3>
                 <p className="text-sm text-muted-foreground mb-4 italic py-0 my-[3px]">"Pequenos passos todos os dias levam a grandes conquistas"</p>
                 <div className="flex-1 flex flex-col justify-center">
@@ -380,13 +380,13 @@ const UserDashboard = () => {
               </div>} />
 
           {/* Bottom Left - Resources */}
-          <BentoCard name="Recursos" description="" Icon={BookOpen} onClick={() => navigate('/user/resources')} className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" textColor="text-white" iconColor="text-white" background={<div className="absolute inset-0">
+          <BentoCard name="Recursos" description="" href="#" cta="" Icon={BookOpen} onClick={() => navigate('/user/resources')} className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" textColor="text-white" iconColor="text-white" background={<div className="absolute inset-0">
                 <img src={recursosWellness} alt="Wellness activities" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/20" />
               </div>} />
 
           {/* Bottom Right - Upcoming Sessions */}
-          <BentoCard name="" description="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col">
+          <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col">
                 <div className="flex-1 space-y-3 mb-auto">
                   {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
               const pillarColors = getPillarColors(booking.pillar);

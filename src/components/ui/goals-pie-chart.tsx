@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pie, ProvidedProps, PieArcDatum } from '@visx/shape';
+import { Pie } from '@visx/shape';
 import { scaleOrdinal } from '@visx/scale';
 import { Group } from '@visx/group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -87,22 +87,22 @@ const defaultMargin = { top: 20, right: 20, bottom: 20, left: 20 };
 
 type AnimatedStyles = { startAngle: number; endAngle: number; opacity: number };
 
-const fromLeaveTransition = ({ endAngle }: PieArcDatum<any>) => ({
+const fromLeaveTransition = ({ endAngle }: any) => ({
   startAngle: endAngle > Math.PI ? 2 * Math.PI : 0,
   endAngle: endAngle > Math.PI ? 2 * Math.PI : 0,
   opacity: 0,
 });
-const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
+const enterUpdateTransition = ({ startAngle, endAngle }: any) => ({
   startAngle,
   endAngle,
   opacity: 1,
 });
 
-type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
+type AnimatedPieProps<Datum> = any & {
   animate?: boolean;
-  getKey: (d: PieArcDatum<Datum>) => string;
-  getColor: (d: PieArcDatum<Datum>) => string;
-  onClickDatum: (d: PieArcDatum<Datum>) => void;
+  getKey: (d: any) => string;
+  getColor: (d: any) => string;
+  onClickDatum: (d: any) => void;
   delay?: number;
 };
 
@@ -114,7 +114,7 @@ function AnimatedPie<Datum>({
   getColor,
   onClickDatum,
 }: AnimatedPieProps<Datum>) {
-  const transitions = useTransition<PieArcDatum<Datum>, AnimatedStyles>(arcs, {
+  const transitions = useTransition<any, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
     enter: enterUpdateTransition,
     update: enterUpdateTransition,

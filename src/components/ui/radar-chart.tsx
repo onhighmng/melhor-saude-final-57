@@ -1,10 +1,14 @@
 // src/components/ui/radar-chart.tsx
 import React from 'react';
 import { Group } from '@visx/group';
-import { LetterFrequency } from '@visx/mock-data';
 import { scaleLinear } from '@visx/scale';
 import { Point } from '@visx/point';
 import { Line, LineRadial } from '@visx/shape';
+
+type LetterFrequency = {
+  letter: string;
+  frequency: number;
+};
 
 const orange = '#ff9933';
 export const pumpkin = '#f5810c';
