@@ -118,7 +118,7 @@ export default function UserSessions() {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-white">
+    <div className="relative w-full min-h-screen bg-gray-50">
       
       {/* Content */}
       <div className="relative z-10">
@@ -159,7 +159,7 @@ export default function UserSessions() {
                 href="#"
                 cta=""
                 className="w-full"
-                background={<div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50" />}
+                background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 onClick={() => {}}
@@ -179,8 +179,8 @@ export default function UserSessions() {
                 cta="Ver todas"
                 className="w-full"
                 Icon={History}
-                background={<div className="absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-50" />}
-                iconColor="text-rose-600"
+                background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
+                iconColor="text-amber-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 onClick={() => setIsPastSessionsModalOpen(true)}
@@ -193,8 +193,8 @@ export default function UserSessions() {
                 cta="Ver todas"
                 className="w-full"
                 Icon={CalendarDays}
-                background={<div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50" />}
-                iconColor="text-violet-600"
+                background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
+                iconColor="text-blue-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 onClick={() => setIsFutureSessionsModalOpen(true)}
