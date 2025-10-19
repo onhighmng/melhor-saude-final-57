@@ -6,6 +6,7 @@ import { Calendar, Clock, User, Building2, User as UserIcon, ExternalLink } from
 import { Session, SessionStatus, getStatusLabel, getPillarLabel, getPayerSourceLabel, Pillar } from "@/data/sessionMockData";
 import { SessionDeductionBadge } from "./SessionDeductionBadge";
 import { SessionRatingDialog } from "./SessionRatingDialog";
+import { SessionCard, SessionCardData, HistorySessionCard } from "@/components/ui/session-card";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -105,6 +106,57 @@ export function SessionModal({
     setShowRatingDialog(true);
   };
 
+  // Handler functions for the three action buttons
+  const handleRescheduleSession = (sessionId: string) => {
+    console.log('Reschedule session:', sessionId);
+    if (onReschedule) {
+      onReschedule(sessionId);
+    }
+  };
+
+  const handleJoinSession = (sessionId: string) => {
+    console.log('Join session:', sessionId);
+    // Find the session and open meeting link if available
+    const session = sessions.find(s => s.id === sessionId);
+    if (session && session.meetingLink) {
+      window.open(session.meetingLink, '_blank');
+    }
+  };
+
+  const handleCancelSession = (sessionId: string) => {
+    console.log('Cancel session:', sessionId);
+    if (onCancel) {
+      onCancel(sessionId);
+    }
+  };
+
+  // Transform Session data to SessionCardData
+  const transformSessionToSessionCardData = (session: Session): SessionCardData => {
+    // Determine meeting type based on available data
+    let meetingType: 'virtual' | 'presencial' | 'phone' = 'virtual';
+    
+    if (session.meetingPlatform || session.meetingLink) {
+      meetingType = 'virtual';
+    } else {
+      // Default to virtual if we have meeting platform info, otherwise we'd need more data to determine
+      meetingType = 'virtual';
+    }
+
+    return {
+      id: session.id,
+      pillar: session.pillar,
+      date: session.date,
+      time: session.time,
+      duration: session.minutes || 60,
+      prestador: session.prestadorName,
+      meetingType: meetingType,
+      meetingPlatform: session.meetingPlatform,
+      meetingLink: session.meetingLink,
+      status: session.status === 'confirmed' || session.status === 'scheduled' ? 'confirmed' : 'pending',
+      quota: session.payerSource === 'company' ? 'Quota Empresa' : 'Quota Pessoal'
+    };
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -113,149 +165,49 @@ export function SessionModal({
             <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             {sessions.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
                   {type === 'past' ? 'Nenhuma sessão passada encontrada' : 'Nenhuma sessão futura agendada'}
                 </p>
               </div>
+            ) : type === 'future' ? (
+              // Use SessionCard components for future sessions to show all requested information
+              sessions.map((session) => (
+                <SessionCard
+                  key={session.id}
+                  session={transformSessionToSessionCardData(session)}
+                  onReschedule={handleRescheduleSession}
+                  onJoin={handleJoinSession}
+                  onCancel={handleCancelSession}
+                  className="w-full"
+                />
+              ))
             ) : (
-              sessions.map((session) => {
-                const pillarColors = getPillarColors(session.pillar);
-                return (
-                  <Card key={session.id} className={cn("w-full", pillarColors.light, pillarColors.border)}>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <CardTitle className={cn("text-lg font-semibold", pillarColors.dark)}>
-                            {getPillarLabel(session.pillar)}
-                          </CardTitle>
-                          <CardDescription className={cn("text-sm", pillarColors.dark.replace('text-', 'text-').replace('-700', '-600'))}>
-                            Sessão com nosso especialista
-                          </CardDescription>
-                        </div>
-                        <div className="flex flex-col gap-2 items-end">
-                          <Badge variant={getStatusVariant(session.status)}>
-                            {getStatusLabel(session.status)}
-                          </Badge>
-                          <SessionDeductionBadge
-                            status={session.status}
-                            wasDeducted={session.wasDeducted}
-                            payerSource={session.payerSource}
-                            deductedAt={session.deductedAt}
-                          />
-                        </div>
-                      </div>
-                    </CardHeader>
-                  
-                  <CardContent>
-                    <div className="space-y-4">
-                      {/* Session Details */}
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
-                          <span>{formatDate(session.date)}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Clock className="h-4 w-4" />
-                          <span>{session.time} ({session.minutes}min)</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <User className="h-4 w-4" />
-                          <span>{session.prestadorName}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          {session.payerSource === 'company' ? (
-                            <Building2 className="h-4 w-4" />
-                          ) : (
-                            <UserIcon className="h-4 w-4" />
-                          )}
-                          <span>Quota {getPayerSourceLabel(session.payerSource)}</span>
-                        </div>
-                      </div>
-
-                      {/* Deduction Information */}
-                      {session.wasDeducted && session.deductedAt && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                          <div className="text-sm text-red-800">
-                            <p className="font-medium">Sessão Deduzida</p>
-                            <p>
-                              Deduzida da quota {getPayerSourceLabel(session.payerSource).toLowerCase()} em {new Date(session.deductedAt).toLocaleString('pt-PT')}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Non-deduction information */}
-                      {!session.wasDeducted && ['cancelled', 'no_show', 'rescheduled'].includes(session.status) && (
-                        <div className="bg-gray-100 border border-gray-300 rounded-lg p-3">
-                          <div className="text-sm text-gray-800">
-                            <p className="font-medium">Sessão Não Deduzida</p>
-                            <p>
-                              {session.status === 'cancelled' && 'Cancelamentos não consomem sessões da sua quota.'}
-                              {session.status === 'no_show' && 'Faltas não consomem sessões da sua quota.'}
-                              {session.status === 'rescheduled' && 'Reagendamentos não consomem sessões da sua quota.'}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Meeting Link - Show for future sessions or completed sessions */}
-                      {session.meetingLink && (type === 'future' || session.status === 'completed') && (
-                        <div className="bg-cyan-50 border border-cyan-300 rounded-lg p-3">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm font-medium text-cyan-800">Link da Reunião</p>
-                              <p className="text-xs text-cyan-600">{getMeetingPlatformDisplay(session.meetingPlatform)}</p>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => window.open(session.meetingLink, '_blank')}
-                              className="gap-2"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                              {type === 'future' ? 'Entrar na Reunião' : 'Ver Link'}
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Actions */}
-                      <div className="flex gap-2 pt-2">
-                        {onViewDetails && (
-                          <Button size="sm" variant="outline" onClick={() => onViewDetails(session.id)}>
-                            Ver Detalhes
-                          </Button>
-                        )}
-                        
-                        {canReschedule(session.status) && onReschedule && (
-                          <Button size="sm" variant="outline" onClick={() => onReschedule(session.id)}>
-                            Reagendar
-                          </Button>
-                        )}
-                        
-                        {canCancel(session.status) && onCancel && (
-                          <Button size="sm" variant="destructive" onClick={() => onCancel(session.id)}>
-                            Cancelar
-                          </Button>
-                        )}
-                        
-                        {session.status === 'completed' && (
-                          <Button 
-                            size="sm" 
-                            variant="secondary"
-                            onClick={() => handleRatingClick(session)}
-                          >
-                            Avaliar Sessão
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                );
-              })
+              // Use HistorySessionCard for past sessions
+              sessions.map((session) => (
+                <HistorySessionCard
+                  key={session.id}
+                  session={{
+                    id: session.id,
+                    pillar: session.pillar,
+                    date: session.date,
+                    time: session.time,
+                    prestadorName: session.prestadorName,
+                    meetingPlatform: session.meetingPlatform,
+                    meetingType: 'virtual', // Default to virtual since we have meetingPlatform
+                    status: session.status
+                  }}
+                  onRate={(sessionId) => {
+                    const sessionToRate = sessions.find(s => s.id === sessionId);
+                    if (sessionToRate) {
+                      handleRatingClick(sessionToRate);
+                    }
+                  }}
+                  className="w-full"
+                />
+              ))
             )}
           </div>
         </DialogContent>

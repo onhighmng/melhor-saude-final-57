@@ -23,6 +23,10 @@ export interface ChatSession {
   phone_escalation_reason: string | null;
   phone_contact_made: boolean;
   session_booked_by_specialist: string | null;
+  type: 'triage' | 'pre_diagnosis';
+  resolved: boolean;
+  assigned_specialist_id?: string | null;
+  company_id?: string | null;
   created_at: string;
   ended_at: string | null;
 }
@@ -50,6 +54,35 @@ export interface SpecialistAnalytics {
 export interface EscalatedChat extends ChatSession {
   user_name: string;
   user_email: string;
+  user_phone?: string;
+  company_name?: string;
+  company_id?: string;
   messages: ChatMessage[];
   call_log?: SpecialistCallLog;
+}
+
+export interface EspecialistaGeral {
+  id: string;
+  name: string;
+  email: string;
+  assigned_companies: string[];
+  is_active: boolean;
+}
+
+export interface CallRequest {
+  id: string;
+  user_id: string;
+  user_name: string;
+  user_email: string;
+  user_phone: string;
+  company_id: string;
+  company_name: string;
+  pillar: 'legal' | 'psychological' | 'physical' | 'financial' | null;
+  status: 'pending' | 'resolved' | 'escalated';
+  wait_time: number; // in minutes
+  chat_session_id?: string;
+  assigned_specialist_id?: string;
+  created_at: string;
+  resolved_at?: string;
+  notes?: string;
 }

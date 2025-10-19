@@ -8,43 +8,52 @@ import {
 } from "@/components/ui/animated-sidebar";
 import {
   LayoutDashboard,
-  FileText,
-  LogOut,
-  UsersIcon,
-  Activity,
-  Shield,
   Phone,
   Calendar,
+  Users,
+  ArrowRight,
+  Settings,
+  LogOut,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const AdminSidebar = () => {
+const EspecialistaSidebar = () => {
   const { open } = useAnimatedSidebar();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const links = [
     {
-      label: "Dashboard Geral",
-      href: "/admin/dashboard",
+      label: "Dashboard",
+      href: "/especialista/dashboard",
       icon: <LayoutDashboard className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
-      label: "Gestão",
-      href: "/admin/users-management",
-      icon: <UsersIcon className="text-primary h-5 w-5 flex-shrink-0" />,
-    },
-    {
-      label: "Solicitações de Chamada",
-      href: "/admin/call-requests",
+      label: "Pedidos de Chamada",
+      href: "/especialista/call-requests",
       icon: <Phone className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Sessões Agendadas",
-      href: "/admin/operations",
+      href: "/especialista/sessions",
       icon: <Calendar className="text-primary h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Historial de Utilizadores",
+      href: "/especialista/user-history",
+      icon: <Users className="text-primary h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Encaminhamentos",
+      href: "/especialista/referrals",
+      icon: <ArrowRight className="text-primary h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Definições",
+      href: "/especialista/settings",
+      icon: <Settings className="text-primary h-5 w-5 flex-shrink-0" />,
     },
   ];
 
@@ -104,7 +113,7 @@ const Logo = ({ open, user }: { open: boolean; user: any }) => {
       <Avatar className="h-10 w-10 flex-shrink-0">
         <AvatarImage src={user?.avatar_url} />
         <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-          {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
+          {user?.name?.charAt(0) || user?.email?.charAt(0) || 'E'}
         </AvatarFallback>
       </Avatar>
       <motion.div
@@ -117,10 +126,10 @@ const Logo = ({ open, user }: { open: boolean; user: any }) => {
         <span className="text-sm font-medium text-foreground truncate">
           {user?.name || user?.email}
         </span>
-        <span className="text-xs text-muted-foreground">Administrador</span>
+        <span className="text-xs text-muted-foreground">Especialista Geral</span>
       </motion.div>
     </div>
   );
 };
 
-export default AdminSidebar;
+export default EspecialistaSidebar;

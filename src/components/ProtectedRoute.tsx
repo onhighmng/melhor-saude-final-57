@@ -4,8 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: ('admin' | 'hr' | 'prestador' | 'user')[];
-  requiredRole?: 'admin' | 'hr' | 'prestador' | 'user';
+  allowedRoles?: ('admin' | 'hr' | 'prestador' | 'user' | 'especialista_geral')[];
+  requiredRole?: 'admin' | 'hr' | 'prestador' | 'user' | 'especialista_geral';
   strictDashboardOnly?: boolean;
 }
 
@@ -42,6 +42,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         return <Navigate to="/company/dashboard" replace />;
       case 'prestador':
         return <Navigate to="/prestador/dashboard" replace />;
+      case 'especialista_geral':
+        return <Navigate to="/especialista/dashboard" replace />;
       default:
         return <Navigate to="/user/dashboard" replace />;
     }
@@ -57,6 +59,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         return <Navigate to="/company/dashboard" replace />;
       case 'prestador':
         return <Navigate to="/prestador/dashboard" replace />;
+      case 'especialista_geral':
+        return <Navigate to="/especialista/dashboard" replace />;
       default:
         return <Navigate to="/user/dashboard" replace />;
     }
@@ -85,6 +89,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         return <Navigate to="/company/dashboard" replace />;
       case 'prestador':
         return <Navigate to="/prestador/dashboard" replace />;
+      case 'especialista_geral':
+        return <Navigate to="/especialista/dashboard" replace />;
       default:
         return <Navigate to="/demo" replace />;
     }
@@ -97,6 +103,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   
   if (profile.role === 'prestador' && !isPrestadorOnPublicRoute && !isPrestadorOnAllowedRoute) {
     return <Navigate to="/prestador/dashboard" replace />;
+  }
+
+  // Global especialista_geral access restriction - dynamic route matrix
+  const isEspecialistaOnPublicRoute = profile.role === 'especialista_geral' && allowedPublicRoutes.includes(location.pathname);
+  const isEspecialistaOnAllowedRoute = profile.role === 'especialista_geral' && location.pathname.startsWith('/especialista/');
+  
+  if (profile.role === 'especialista_geral' && !isEspecialistaOnPublicRoute && !isEspecialistaOnAllowedRoute) {
+    return <Navigate to="/especialista/dashboard" replace />;
   }
 
   return <>{children}</>;

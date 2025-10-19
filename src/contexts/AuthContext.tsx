@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser } from '@/data/mockData';
+import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser, mockEspecialistaGeralUser } from '@/data/mockData';
 import { generateUUID } from '@/utils/uuid';
 
 interface UserProfile {
@@ -7,7 +7,7 @@ interface UserProfile {
   user_id: string;
   name: string;
   email: string;
-  role: 'admin' | 'user' | 'hr' | 'prestador';
+  role: 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral';
   company?: string;
   phone?: string;
   avatar_url?: string;
@@ -22,6 +22,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isHR: boolean;
   isPrestador: boolean;
+  isEspecialistaGeral: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
   signup: (email: string, password: string, name: string) => Promise<{ error?: string }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
@@ -45,6 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const mockAdminUserWithUserId = { ...mockAdminUser, user_id: mockAdminUser.id };
   const mockHRUserWithUserId = { ...mockHRUser, user_id: mockHRUser.id };
   const mockPrestadorUserWithUserId = { ...mockPrestadorUser, user_id: mockPrestadorUser.id };
+  const mockEspecialistaGeralUserWithUserId = { ...mockEspecialistaGeralUser, user_id: mockEspecialistaGeralUser.id };
 
   const [user, setUser] = useState<any>(null);
   const [session, setSession] = useState<any>(null);
@@ -64,6 +66,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         mockUserData = mockHRUserWithUserId;
       } else if (email.includes('prestador')) {
         mockUserData = mockPrestadorUserWithUserId;
+      } else if (email.includes('especialista')) {
+        mockUserData = mockEspecialistaGeralUserWithUserId;
       }
       
       setUser({ id: mockUserData.id, email: mockUserData.email });
@@ -139,6 +143,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const isAdmin = profile?.role === 'admin';
   const isHR = profile?.role === 'hr';
   const isPrestador = profile?.role === 'prestador';
+  const isEspecialistaGeral = profile?.role === 'especialista_geral';
 
   const value: AuthContextType = {
     user,
@@ -148,6 +153,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     isAdmin,
     isHR,
     isPrestador,
+    isEspecialistaGeral,
     login,
     signup,
     resetPassword,

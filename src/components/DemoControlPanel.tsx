@@ -4,12 +4,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser } from '@/data/mockData';
+import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser, mockEspecialistaGeralUser } from '@/data/mockData';
 import { 
   User, 
   Shield, 
   Building2, 
   UserCheck,
+  Users,
   LogOut,
   Settings,
   ChevronUp,
@@ -43,7 +44,8 @@ const DemoControlPanel = () => {
   const demoUsers = [
     { ...mockPrestadorUser, title: 'Prestador', icon: UserCheck, role: 'prestador' as const, color: 'bg-green-500' },
     { ...mockHRUser, title: 'RH', icon: Building2, role: 'hr' as const, color: 'bg-purple-500' },
-    { ...mockAdminUser, title: 'Admin', icon: Shield, role: 'admin' as const, color: 'bg-red-500' }
+    { ...mockAdminUser, title: 'Admin', icon: Shield, role: 'admin' as const, color: 'bg-red-500' },
+    { ...mockEspecialistaGeralUser, title: 'Especialista Geral', icon: Users, role: 'especialista_geral' as const, color: 'bg-orange-500' }
   ];
 
   const handleRoleSwitch = async (demoUser: typeof demoUsers[0]) => {
@@ -55,7 +57,8 @@ const DemoControlPanel = () => {
         const dashboardPaths = {
           prestador: '/prestador/dashboard',
           hr: '/company/dashboard',
-          admin: '/admin/users'
+          admin: '/admin/dashboard',
+          especialista_geral: '/especialista/dashboard'
         };
         navigate(dashboardPaths[demoUser.role]);
       }

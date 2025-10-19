@@ -44,6 +44,17 @@ export const mockPrestadorUser = {
   is_active: true
 };
 
+export const mockEspecialistaGeralUser = {
+  id: '550e8400-e29b-41d4-a716-446655440004',
+  name: 'Geral Especialista',
+  email: 'geral@especialista.co.mz',
+  role: 'especialista_geral' as const,
+  company: 'Melhor Saúde',
+  phone: '+258 84 111 2222',
+  avatar_url: '/lovable-uploads/8e2df1aa-a1c7-4f91-b724-fc348e3347ee.png',
+  is_active: true
+};
+
 export const mockSessionBalance = {
   totalRemaining: 9,
   employerRemaining: 6,

@@ -14,7 +14,7 @@ const BentoGrid = ({
   return (
     <div
       className={cn(
-        "grid w-full h-[calc(100vh-12rem)] grid-cols-3 gap-4",
+        "grid w-full h-full min-h-0 grid-cols-3 gap-4",
         className,
       )}
     >

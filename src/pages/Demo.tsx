@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser } from '@/data/mockData';
+import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser, mockEspecialistaGeralUser } from '@/data/mockData';
 import { 
   User, 
   Shield, 
@@ -21,7 +21,8 @@ import {
   Play,
   Eye,
   CalendarCheck,
-  BookOpen
+  BookOpen,
+  UserCog
 } from 'lucide-react';
 
 const Demo = () => {
@@ -86,7 +87,7 @@ const Demo = () => {
       description: 'Controlo total da plataforma e gestão de utilizadores',
       icon: Shield,
       role: 'admin' as const,
-      dashboardPath: '/admin/users',
+      dashboardPath: '/admin/dashboard',
       quickLinks: [
         { label: 'Utilizadores', path: '/admin/users', icon: Users },
         { label: 'Prestadores', path: '/admin/providers', icon: UserCheck },
@@ -96,6 +97,23 @@ const Demo = () => {
       ],
       features: ['Gestão Completa', 'Analytics', 'Suporte', 'Configurações'],
       color: 'bg-red-500'
+    },
+    {
+      ...mockEspecialistaGeralUser,
+      title: 'Especialista Geral',
+      description: 'Atendimento de chamadas, gestão de sessões e encaminhamentos',
+      icon: UserCog,
+      role: 'especialista_geral' as const,
+      dashboardPath: '/especialista/dashboard',
+      quickLinks: [
+        { label: 'Dashboard', path: '/especialista/dashboard', icon: BarChart3 },
+        { label: 'Pedidos de Chamada', path: '/especialista/call-requests', icon: Calendar },
+        { label: 'Sessões Agendadas', path: '/especialista/sessions', icon: CalendarCheck },
+        { label: 'Historial', path: '/especialista/user-history', icon: Users },
+        { label: 'Encaminhamentos', path: '/especialista/referrals', icon: ArrowRight }
+      ],
+      features: ['Chamadas', 'Sessões', 'Historial', 'Encaminhamentos'],
+      color: 'bg-orange-500'
     }
   ];
 

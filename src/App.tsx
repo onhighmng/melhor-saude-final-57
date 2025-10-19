@@ -28,6 +28,7 @@ const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
 const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminAlerts = lazy(() => import("./pages/AdminAlerts"));
 const AdminUsersManagement = lazy(() => import("./pages/AdminUsersManagement"));
 const AdminProviders = lazy(() => import("./pages/AdminProviders"));
 const AdminProviderDetailMetrics = lazy(() => import("./pages/AdminProviderDetailMetrics"));
@@ -39,6 +40,15 @@ const AdminControlCenter = lazy(() => import("./pages/AdminControlCenter"));
 const AdminSupport = lazy(() => import("./pages/AdminSupport"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const AdminCompanyDetail = lazy(() => import("./pages/AdminCompanyDetail"));
+const AdminCallRequests = lazy(() => import("./pages/AdminCallRequests"));
+
+// Specialist pages
+const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboard"));
+const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequests"));
+const EspecialistaSessions = lazy(() => import("./pages/EspecialistaSessions"));
+const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistory"));
+const EspecialistaReferrals = lazy(() => import("./pages/EspecialistaReferrals"));
+const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettings"));
 
 // Company pages
 const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
@@ -62,6 +72,7 @@ import { PerformanceMonitor } from "@/components/ui/performance-monitor";
 import { UserLayout } from "@/components/layouts/UserLayout";
 import { PrestadorLayout } from "@/components/layouts/PrestadorLayout";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
+import { EspecialistaLayout } from "@/components/layouts/EspecialistaLayout";
 import { CompanyLayout } from "@/components/layouts/CompanyLayout";
 import { AuthenticatedLayout } from "@/components/layouts/AuthenticatedLayout";
 
@@ -90,7 +101,7 @@ const AppWithTracking = () => {
     };
   }, []);
   
-  const showDemoButton = location.pathname !== '/demo' && location.pathname !== '/';
+  const showDemoButton = location.pathname !== '/demo';
 
   return (
     <>
@@ -141,6 +152,8 @@ const AppWithTracking = () => {
           
           {/* Admin routes */}
           <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+          <Route path="/admin/alerts" element={<AdminLayout><AdminAlerts /></AdminLayout>} />
+          <Route path="/admin/call-requests" element={<AdminLayout><AdminCallRequests /></AdminLayout>} />
           <Route path="/admin/users-management" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
           <Route path="/admin/gestao-utilizadores" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
           <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
@@ -161,6 +174,14 @@ const AppWithTracking = () => {
           <Route path="/admin/suporte" element={<AdminLayout><AdminSupport /></AdminLayout>} />
           <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
           <Route path="/admin/configuracoes" element={<AdminLayout><AdminSettings /></AdminLayout>} />
+          
+          {/* Especialista Geral routes */}
+          <Route path="/especialista/dashboard" element={<EspecialistaLayout><SpecialistDashboard /></EspecialistaLayout>} />
+          <Route path="/especialista/call-requests" element={<EspecialistaLayout><EspecialistaCallRequests /></EspecialistaLayout>} />
+          <Route path="/especialista/sessions" element={<EspecialistaLayout><EspecialistaSessions /></EspecialistaLayout>} />
+          <Route path="/especialista/user-history" element={<EspecialistaLayout><EspecialistaUserHistory /></EspecialistaLayout>} />
+          <Route path="/especialista/referrals" element={<EspecialistaLayout><EspecialistaReferrals /></EspecialistaLayout>} />
+          <Route path="/especialista/settings" element={<EspecialistaLayout><EspecialistaSettings /></EspecialistaLayout>} />
           
           {/* Company HR routes */}
           <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />

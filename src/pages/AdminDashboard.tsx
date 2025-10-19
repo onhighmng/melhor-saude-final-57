@@ -9,8 +9,12 @@ import {
   Star, 
   Target,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  Phone,
+  MessageSquare,
+  AlertTriangle
 } from 'lucide-react';
+import { mockAdminAlerts } from '@/data/especialistaGeralMockData';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 
@@ -148,6 +152,78 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Alert Summary Cards */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Alertas Requerem Atenção</h2>
+          <button 
+            onClick={() => navigate('/admin/alerts')}
+            className="text-sm text-primary hover:underline"
+          >
+            Ver Todos os Alertas
+          </button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card 
+            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
+            onClick={() => navigate('/admin/alerts?tab=calls')}
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Chamadas Pendentes</CardTitle>
+              <Phone className="h-4 w-4 text-orange-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockAdminAlerts.pending_calls}</div>
+              <p className="text-xs text-muted-foreground">
+                {mockAdminAlerts.pending_calls > 5 ? '⚠️ Requer atenção imediata' : 'Aguardam ligação'}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
+            onClick={() => navigate('/admin/alerts?tab=sessions')}
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Sessões Hoje</CardTitle>
+              <Calendar className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockAdminAlerts.scheduled_sessions}</div>
+              <p className="text-xs text-muted-foreground">Com Especialista Geral</p>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
+            onClick={() => navigate('/admin/alerts?tab=feedback')}
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Feedback Negativo</CardTitle>
+              <MessageSquare className="h-4 w-4 text-red-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockAdminAlerts.negative_feedback}</div>
+              <p className="text-xs text-muted-foreground">Avaliações ≤ 6/10</p>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
+            onClick={() => navigate('/admin/alerts?tab=inactive')}
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Utilizadores Inativos</CardTitle>
+              <Users className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockAdminAlerts.inactive_users}</div>
+              <p className="text-xs text-muted-foreground">Há +30 dias</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Charts Row */}
