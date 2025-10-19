@@ -110,9 +110,9 @@ All colors MUST be HSL.
     --pillar-mental-light: 217 91% 95%;   /* Light blue background */
     --pillar-mental-dark: 217 91% 40%;    /* Dark blue for text */
     
-    --pillar-physical: 25 95% 53%;        /* Orange for Physical Wellness */
-    --pillar-physical-light: 25 95% 95%;  /* Light orange background */
-    --pillar-physical-dark: 25 95% 35%;   /* Dark orange for text */
+    --pillar-physical: 45 95% 55%;        /* Yellow for Physical Wellness */
+    --pillar-physical-light: 45 95% 95%;  /* Light yellow background */
+    --pillar-physical-dark: 45 95% 35%;   /* Dark yellow for text */
     
     --pillar-financial: 142 76% 36%;      /* Green for Financial Assistance */
     --pillar-financial-light: 142 76% 95%; /* Light green background */
