@@ -150,49 +150,55 @@ export default function UserSessions() {
               </div>
             </BentoCard>
 
-            {/* Middle row - Three equal cards */}
+            {/* Middle row - Three equal square cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <BentoCard
-                name="Recursos"
-                description="Explore recursos de bem-estar"
-                href="#"
-                cta="Ver recursos"
-                className="w-full"
-                Icon={History}
-                background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
-                iconColor="text-blue-600"
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                onClick={() => navigate('/user/resources')}
-              />
+              <div className="aspect-square">
+                <BentoCard
+                  name="Recursos"
+                  description="Explore recursos de bem-estar"
+                  href="#"
+                  cta="Ver recursos"
+                  className="w-full h-full"
+                  Icon={History}
+                  background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
+                  iconColor="text-blue-600"
+                  textColor="text-gray-900"
+                  descriptionColor="text-gray-600"
+                  onClick={() => navigate('/user/resources')}
+                />
+              </div>
 
-              <BentoCard
-                name="Recursos Favoritos"
-                description="Os seus recursos guardados"
-                href="#"
-                cta="Ver favoritos"
-                className="w-full"
-                Icon={History}
-                background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50" />}
-                iconColor="text-purple-600"
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                onClick={() => navigate('/user/resources')}
-              />
+              <div className="aspect-square">
+                <BentoCard
+                  name="Recursos Favoritos"
+                  description="Os seus recursos guardados"
+                  href="#"
+                  cta="Ver favoritos"
+                  className="w-full h-full"
+                  Icon={History}
+                  background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50" />}
+                  iconColor="text-purple-600"
+                  textColor="text-gray-900"
+                  descriptionColor="text-gray-600"
+                  onClick={() => navigate('/user/resources')}
+                />
+              </div>
 
-              <BentoCard
-                name="Histórico de Recursos"
-                description="Recursos já visualizados"
-                href="#"
-                cta="Ver histórico"
-                className="w-full"
-                Icon={History}
-                background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
-                iconColor="text-green-600"
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                onClick={() => navigate('/user/resources')}
-              />
+              <div className="aspect-square">
+                <BentoCard
+                  name="Histórico de Recursos"
+                  description="Recursos já visualizados"
+                  href="#"
+                  cta="Ver histórico"
+                  className="w-full h-full"
+                  Icon={History}
+                  background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
+                  iconColor="text-green-600"
+                  textColor="text-gray-900"
+                  descriptionColor="text-gray-600"
+                  onClick={() => navigate('/user/resources')}
+                />
+              </div>
             </div>
 
             {/* Bottom - Quote Card */}
