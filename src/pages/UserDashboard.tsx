@@ -403,7 +403,7 @@ const UserDashboard = () => {
                       Nenhuma sessão agendada
                     </div>}
                 </div>
-                <div className="mt-auto pt-6">
+                <div className="mt-auto pt-6 transition-transform duration-200 group-hover:scale-105">
                   <h3 className="text-2xl font-semibold mb-1">Próximas Sessões</h3>
                   <p className="text-sm text-muted-foreground">
                     {upcomingBookings && upcomingBookings.length > 0 ? `${upcomingBookings.length} sessões agendadas` : 'Nenhuma sessão agendada'}
