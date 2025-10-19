@@ -313,20 +313,20 @@ const UserDashboard = () => {
           />
 
           {/* Middle - Progress (Progreso Pessoal) */}
-          <BentoCard name="" description="" href="#" cta="" className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" background={<div className="absolute inset-0 flex flex-col p-6 overflow-y-auto">
-                <h3 className="text-xl font-semibold mb-1">Progresso Pessoal</h3>
-                <p className="text-sm text-muted-foreground mb-4 italic py-0 my-[3px]">"Pequenos passos todos os dias levam a grandes conquistas"</p>
+          <BentoCard name="" description="" href="#" cta="" className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" background={<div className="absolute inset-0 flex flex-col p-8 overflow-y-auto">
+                <h3 className="text-2xl font-semibold mb-2">Progresso Pessoal</h3>
+                <p className="text-base text-muted-foreground mb-6 italic">"Pequenos passos todos os dias levam a grandes conquistas"</p>
                 <div className="flex-1 flex flex-col justify-start min-h-0">
-                  <div className="w-full space-y-4">
-                    <div className="space-y-3">
+                  <div className="w-full space-y-6">
+                    <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Progresso</span>
-                        <span className="text-lg font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
+                        <span className="text-base font-medium">Progresso</span>
+                        <span className="text-2xl font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
                       </div>
-                      <Progress value={animatedMilestoneProgress} className="h-2" />
+                      <Progress value={animatedMilestoneProgress} className="h-3" />
                     </div>
                     
-                    <div className="space-y-2 overflow-y-auto pr-2">
+                    <div className="space-y-3 overflow-y-auto pr-2">
                       {(() => {
                   const stored = localStorage.getItem('journeyMilestones');
                   const milestones = stored ? JSON.parse(stored) : [{
@@ -360,16 +360,16 @@ const UserDashboard = () => {
                     points: 10,
                     completed: false
                   }];
-                  return milestones.map((milestone: any) => <div key={milestone.id} className={`flex items-center gap-2 p-2 rounded-lg border text-xs ${milestone.completed ? 'bg-green-50 border-green-200' : 'bg-white/50 border-gray-200'}`}>
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300'}`}>
-                              {milestone.completed && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  return milestones.map((milestone: any) => <div key={milestone.id} className={`flex items-center gap-3 p-3.5 rounded-lg border text-sm ${milestone.completed ? 'bg-green-50 border-green-200' : 'bg-white/50 border-gray-200'}`}>
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300'}`}>
+                              {milestone.completed && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>}
                             </div>
                             <span className={`flex-1 ${milestone.completed ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
                               {milestone.label}
                             </span>
-                            <span className={`text-xs font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
+                            <span className={`text-sm font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
                               +{milestone.points}%
                             </span>
                           </div>);
