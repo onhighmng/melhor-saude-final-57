@@ -386,8 +386,8 @@ const UserDashboard = () => {
               </div>} />
 
           {/* Bottom Right - Upcoming Sessions */}
-          <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col">
-                <div className="flex-1 space-y-3 mb-auto">
+          <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col justify-between">
+                <div className="space-y-3 flex-shrink-0">
                   {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
               const pillarColors = getPillarColors(booking.pillar);
               return <div key={booking.id} className={cn('flex items-start gap-3 rounded-2xl p-3 border-l-[6px] transition-all', `${pillarColors.bg} ${pillarColors.border}`)}>
@@ -403,7 +403,7 @@ const UserDashboard = () => {
                       Nenhuma sessão agendada
                     </div>}
                 </div>
-                <div className="mt-auto pt-6 transition-transform duration-200 group-hover:scale-105">
+                <div className="pt-6 flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
                   <h3 className="text-2xl font-semibold mb-1">Próximas Sessões</h3>
                   <p className="text-sm text-muted-foreground">
                     {upcomingBookings && upcomingBookings.length > 0 ? `${upcomingBookings.length} sessões agendadas` : 'Nenhuma sessão agendada'}
