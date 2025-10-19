@@ -386,8 +386,8 @@ const UserDashboard = () => {
               </div>} />
 
           {/* Bottom Right - Upcoming Sessions */}
-          <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col overflow-y-auto">
-                <div className="flex-1 space-y-3 mb-auto overflow-y-auto pr-2">
+          <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col">
+                <div className="flex-1 space-y-3 mb-auto">
                   {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
               const pillarColors = getPillarColors(booking.pillar);
               return <div key={booking.id} className={cn('flex items-start gap-3 rounded-2xl p-3 border-l-[6px] transition-all', `${pillarColors.bg} ${pillarColors.border}`)}>
