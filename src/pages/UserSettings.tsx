@@ -22,6 +22,7 @@ import { ProfileEditModal } from "@/components/settings/ProfileEditModal";
 import { NotificationPrefsModal } from "@/components/settings/NotificationPrefsModal";
 import { SecurityModal } from "@/components/settings/SecurityModal";
 import { ConsentsModal } from "@/components/settings/ConsentsModal";
+import { NotificationHistoryModal } from "@/components/settings/NotificationHistoryModal";
 
 const UserSettings = () => {
   const { profile, user } = useAuth();
@@ -179,6 +180,7 @@ const UserSettings = () => {
   const [isNotifPrefsModalOpen, setIsNotifPrefsModalOpen] = useState(false);
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
   const [isConsentsModalOpen, setIsConsentsModalOpen] = useState(false);
+  const [isNotificationHistoryModalOpen, setIsNotificationHistoryModalOpen] = useState(false);
 
   const handleChangePassword = () => {
     if (passwordData.new !== passwordData.confirm) {
@@ -360,7 +362,7 @@ const UserSettings = () => {
             cta="Ver todas"
             className="lg:row-start-2 lg:row-end-3 lg:col-start-2 lg:col-end-4"
             background={<div className="absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-50" />}
-            onClick={() => navigate('/user/notifications')}
+            onClick={() => setIsNotificationHistoryModalOpen(true)}
           />
         </BentoGrid>
 
@@ -400,6 +402,14 @@ const UserSettings = () => {
             setConsents(newConsents);
             handleSaveConsents();
           }}
+        />
+
+        <NotificationHistoryModal
+          isOpen={isNotificationHistoryModalOpen}
+          onClose={() => setIsNotificationHistoryModalOpen(false)}
+          notifications={notifications}
+          onMarkRead={handleMarkRead}
+          onNotificationAction={handleNotificationAction}
         />
       </div>
     </div>
