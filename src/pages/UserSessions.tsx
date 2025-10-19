@@ -132,78 +132,70 @@ export default function UserSessions() {
 
         {/* Bento Grid Layout */}
         <div className="container mx-auto p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Top row - Goals and Quotas */}
-            <div className="lg:col-span-2">
-              <BentoCard
-                name=""
-                description=""
-                href="#"
-                cta=""
-                className="w-full"
-                background={<div className="absolute inset-0 bg-white" />}
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                onClick={() => {}}
-              >
-                <div className="p-4">
-                  <GoalsDisplay goals={userGoals} />
-                </div>
-              </BentoCard>
-            </div>
+          <div className="space-y-4">
+            {/* Top row - Goals (Full Width) */}
+            <BentoCard
+              name=""
+              description=""
+              href="#"
+              cta=""
+              className="w-full"
+              background={<div className="absolute inset-0 bg-white" />}
+              textColor="text-gray-900"
+              descriptionColor="text-gray-600"
+              onClick={() => {}}
+            >
+              <div className="p-4">
+                <GoalsDisplay goals={userGoals} />
+              </div>
+            </BentoCard>
 
-            <div className="lg:col-span-1">
+            {/* Middle row - Three equal cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <BentoCard
-                name=""
-                description=""
+                name="Recursos"
+                description="Explore recursos de bem-estar"
                 href="#"
-                cta=""
-                className="w-full"
-                background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                onClick={() => {}}
-              >
-                <div className="p-4">
-                  <QuotaDisplay balance={userBalance} />
-                </div>
-              </BentoCard>
-            </div>
-
-            {/* Bottom row - Session History Cards */}
-            <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <BentoCard
-                name="Histórico de Sessões"
-                description={`${completedSessionsCount} sessões concluídas`}
-                href="#"
-                cta="Ver todas"
+                cta="Ver recursos"
                 className="w-full"
                 Icon={History}
-                background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
-                iconColor="text-amber-600"
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                onClick={() => setIsPastSessionsModalOpen(true)}
-              />
-
-              <BentoCard
-                name="Próximas Sessões"
-                description={`${futureSessionsCount} sessões agendadas`}
-                href="#"
-                cta="Ver todas"
-                className="w-full"
-                Icon={CalendarDays}
                 background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
                 iconColor="text-blue-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
-                onClick={() => setIsFutureSessionsModalOpen(true)}
+                onClick={() => navigate('/user/resources')}
+              />
+
+              <BentoCard
+                name="Recursos Favoritos"
+                description="Os seus recursos guardados"
+                href="#"
+                cta="Ver favoritos"
+                className="w-full"
+                Icon={History}
+                background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50" />}
+                iconColor="text-purple-600"
+                textColor="text-gray-900"
+                descriptionColor="text-gray-600"
+                onClick={() => navigate('/user/resources')}
+              />
+
+              <BentoCard
+                name="Histórico de Recursos"
+                description="Recursos já visualizados"
+                href="#"
+                cta="Ver histórico"
+                className="w-full"
+                Icon={History}
+                background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
+                iconColor="text-green-600"
+                textColor="text-gray-900"
+                descriptionColor="text-gray-600"
+                onClick={() => navigate('/user/resources')}
               />
             </div>
-          </div>
 
-          {/* Motivational Tagline */}
-          <div className="mt-6">
+            {/* Bottom - Quote Card */}
             <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
               <CardContent className="pt-6">
                 <p className="text-center text-gray-700 italic">
