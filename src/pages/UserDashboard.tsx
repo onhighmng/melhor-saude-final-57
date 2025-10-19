@@ -281,7 +281,7 @@ const UserDashboard = () => {
 
         {/* Bento Grid Layout */}
         <div className="flex-1 min-h-0">
-          <BentoGrid className="lg:grid-rows-3 h-full grid-rows-[10rem] lg:grid-rows-[12rem]">
+          <BentoGrid className="lg:grid-rows-3 h-full grid-rows-[10rem] lg:auto-rows-[minmax(14rem,1fr)]">
           {/* Top Left - Session History */}
           <BentoCard 
             name="Histórico de Sessões" 
@@ -313,10 +313,10 @@ const UserDashboard = () => {
           />
 
           {/* Middle - Progress (Progreso Pessoal) */}
-          <BentoCard name="" description="" href="#" cta="" className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" background={<div className="absolute inset-0 flex flex-col p-6">
+          <BentoCard name="" description="" href="#" cta="" className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" background={<div className="absolute inset-0 flex flex-col p-6 overflow-y-auto">
                 <h3 className="text-xl font-semibold mb-1">Progresso Pessoal</h3>
                 <p className="text-sm text-muted-foreground mb-4 italic py-0 my-[3px]">"Pequenos passos todos os dias levam a grandes conquistas"</p>
-                <div className="flex-1 flex flex-col justify-center">
+                <div className="flex-1 flex flex-col justify-start min-h-0">
                   <div className="w-full space-y-4">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
@@ -326,7 +326,7 @@ const UserDashboard = () => {
                       <Progress value={animatedMilestoneProgress} className="h-2" />
                     </div>
                     
-                    <div className="space-y-2 max-h-[280px] overflow-y-auto">
+                    <div className="space-y-2 overflow-y-auto pr-2">
                       {(() => {
                   const stored = localStorage.getItem('journeyMilestones');
                   const milestones = stored ? JSON.parse(stored) : [{
@@ -386,8 +386,8 @@ const UserDashboard = () => {
               </div>} />
 
           {/* Bottom Right - Upcoming Sessions */}
-          <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col">
-                <div className="flex-1 space-y-3 mb-auto">
+          <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-6 flex flex-col overflow-y-auto">
+                <div className="flex-1 space-y-3 mb-auto overflow-y-auto pr-2">
                   {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
               const pillarColors = getPillarColors(booking.pillar);
               return <div key={booking.id} className={cn('flex items-start gap-3 rounded-2xl p-3 border-l-[6px] transition-all', `${pillarColors.bg} ${pillarColors.border}`)}>
