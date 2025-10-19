@@ -154,49 +154,51 @@ export default function UserSessions() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="aspect-square">
                 <BentoCard
-                  name="Recursos"
-                  description="Explore recursos de bem-estar"
+                  name="Suas Quotas de Sessões"
+                  description="Acompanhe o uso das suas quotas"
                   href="#"
-                  cta="Ver recursos"
+                  cta="Ver detalhes"
                   className="w-full h-full"
-                  Icon={History}
-                  background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
-                  iconColor="text-blue-600"
+                  background={<div className="absolute inset-0 bg-white" />}
                   textColor="text-gray-900"
                   descriptionColor="text-gray-600"
-                  onClick={() => navigate('/user/resources')}
-                />
+                  onClick={() => {}}
+                >
+                  <div className="p-4">
+                    <QuotaDisplay balance={userBalance} />
+                  </div>
+                </BentoCard>
               </div>
 
               <div className="aspect-square">
                 <BentoCard
-                  name="Recursos Favoritos"
-                  description="Os seus recursos guardados"
-                  href="#"
-                  cta="Ver favoritos"
-                  className="w-full h-full"
-                  Icon={History}
-                  background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50" />}
-                  iconColor="text-purple-600"
-                  textColor="text-gray-900"
-                  descriptionColor="text-gray-600"
-                  onClick={() => navigate('/user/resources')}
-                />
-              </div>
-
-              <div className="aspect-square">
-                <BentoCard
-                  name="Histórico de Recursos"
-                  description="Recursos já visualizados"
+                  name="Histórico de Sessões"
+                  description={`${completedSessionsCount} sessões concluídas`}
                   href="#"
                   cta="Ver histórico"
                   className="w-full h-full"
                   Icon={History}
-                  background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
-                  iconColor="text-green-600"
+                  background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50" />}
+                  iconColor="text-orange-600"
                   textColor="text-gray-900"
                   descriptionColor="text-gray-600"
-                  onClick={() => navigate('/user/resources')}
+                  onClick={() => setIsPastSessionsModalOpen(true)}
+                />
+              </div>
+
+              <div className="aspect-square">
+                <BentoCard
+                  name="Próximas Sessões"
+                  description={`${futureSessionsCount} sessões agendadas`}
+                  href="#"
+                  cta="Ver sessões"
+                  className="w-full h-full"
+                  Icon={CalendarDays}
+                  background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
+                  iconColor="text-blue-600"
+                  textColor="text-gray-900"
+                  descriptionColor="text-gray-600"
+                  onClick={() => setIsFutureSessionsModalOpen(true)}
                 />
               </div>
             </div>
