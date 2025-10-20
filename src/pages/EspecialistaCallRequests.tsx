@@ -58,24 +58,32 @@ const EspecialistaCallRequests = () => {
         </p>
       </div>
 
-      {filteredRequests.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Phone className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-sm text-muted-foreground">
-              Não há chamadas pendentes no momento
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {filteredRequests.map((request) => (
-            <Card key={request.id}>
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between gap-4">
+      {/* Call Requests List */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Phone className="h-5 w-5" />
+            Pedidos de Chamada Pendentes
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {filteredRequests.length} pedidos de chamada pendentes
+          </p>
+        </CardHeader>
+        <CardContent>
+          {filteredRequests.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Phone className="h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-sm text-muted-foreground text-center">
+                Não há chamadas pendentes no momento
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredRequests.map((request) => (
+                <div key={request.id} className="flex items-start justify-between gap-4 p-4 border rounded-lg">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold">{request.user_name}</h3>
+                    <div className="flex items-center gap-3 mb-2 flex-wrap">
+                      <h4 className="font-semibold">{request.user_name}</h4>
                       <Badge variant="outline">{request.company_name}</Badge>
                       <Badge variant="secondary">{getPillarLabel(request.pillar)}</Badge>
                       <div className={`text-sm font-medium ${getWaitTimeColor(request.wait_time)}`}>
@@ -83,7 +91,7 @@ const EspecialistaCallRequests = () => {
                         {Math.floor(request.wait_time / 60)}h {request.wait_time % 60}min
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground mb-2">
+                    <div className="text-sm text-muted-foreground space-y-1">
                       <p><strong>Email:</strong> {request.user_email}</p>
                       <p><strong>Telefone:</strong> {request.user_phone}</p>
                       {request.notes && <p><strong>Notas:</strong> {request.notes}</p>}
@@ -108,11 +116,11 @@ const EspecialistaCallRequests = () => {
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

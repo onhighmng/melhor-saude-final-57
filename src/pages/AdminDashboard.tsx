@@ -6,97 +6,27 @@ import {
   Building2, 
   Users, 
   Calendar, 
-  Star, 
-  Target,
-  TrendingUp,
-  TrendingDown,
   Phone,
   MessageSquare,
-  AlertTriangle
+  AlertTriangle,
+  Activity
 } from 'lucide-react';
 import { mockAdminAlerts } from '@/data/especialistaGeralMockData';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Progress } from '@/components/ui/progress';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 
 const AdminDashboard = () => {
   const { profile } = useAuth();
   const { data: analytics } = useAnalytics();
   const navigate = useNavigate();
 
-  // Mock data for charts
-  const sessionEvolutionData = [
-    { month: 'Jan', sessions: 120 },
-    { month: 'Fev', sessions: 145 },
-    { month: 'Mar', sessions: 180 },
-    { month: 'Abr', sessions: 220 },
-    { month: 'Mai', sessions: 195 },
-    { month: 'Jun', sessions: 240 },
-  ];
 
-  const pillarDistributionData = [
-    { pillar: 'Psicológico', sessions: 85 },
-    { pillar: 'Físico', sessions: 65 },
-    { pillar: 'Financeiro', sessions: 45 },
-    { pillar: 'Jurídico', sessions: 45 },
-  ];
-
-  const metricCards = [
-    {
-      title: 'Empresas Ativas',
-      value: analytics?.total_companies || 0,
-      trend: '+12%',
-      isPositive: true,
-      icon: Building2,
-      iconColor: 'text-vibrant-blue',
-      bgColor: 'bg-vibrant-blue/10',
-      route: '/admin/users-management'
-    },
-    {
-      title: 'Colaboradores Registados',
-      value: analytics?.total_users || 0,
-      progress: 78,
-      progressLabel: '78% onboarding completo',
-      icon: Users,
-      iconColor: 'text-emerald-green',
-      bgColor: 'bg-emerald-green/10',
-      route: '/admin/users-management'
-    },
-    {
-      title: 'Sessões Este Mês',
-      value: analytics?.total_bookings || 0,
-      trend: '+8%',
-      isPositive: true,
-      icon: Calendar,
-      iconColor: 'text-accent-sky',
-      bgColor: 'bg-accent-sky/10',
-      route: '/admin/operations'
-    },
-    {
-      title: 'Satisfação Média',
-      value: '8.2/10',
-      progress: 82,
-      icon: Star,
-      iconColor: 'text-peach-orange',
-      bgColor: 'bg-peach-orange/10',
-      route: '/admin/resources?tab=resultados'
-    },
-    {
-      title: 'Faturação',
-      value: 'MZN 24,500',
-      trend: '+15%',
-      isPositive: true,
-      icon: Target,
-      iconColor: 'text-royal-blue',
-      bgColor: 'bg-royal-blue/10',
-      route: '/admin/reports?tab=billing'
-    }
-  ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Welcome Message */}
-      <div className="bg-gradient-to-r from-vibrant-blue/10 via-accent-sky/10 to-emerald-green/10 rounded-lg p-6 border border-border">
-        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
+      <div className="bg-gradient-to-r from-vibrant-blue/10 via-accent-sky/10 to-emerald-green/10 rounded-lg p-4 border border-border">
+        <h1 className="text-2xl font-heading font-bold text-foreground mb-2">
           Olá {profile?.name?.split(' ')[0] || 'Admin'}, bem-vindo de volta 👋
         </h1>
         <p className="text-muted-foreground">
@@ -104,211 +34,151 @@ const AdminDashboard = () => {
         </p>
       </div>
 
-      {/* Metric Cards Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {metricCards.map((metric, index) => (
-          <Card 
-            key={index} 
-            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
-            onClick={() => navigate(metric.route)}
+      {/* Bento Grid Layout - PRD Content Only */}
+      <div>
+        <BentoGrid className="lg:grid-rows-2 gap-3" style={{ gridAutoRows: '100px' }}>
+          {/* Top Left - Companies */}
+          <BentoCard 
+            name="Empresas Ativas" 
+            description={`${analytics?.total_companies || 0} empresas ativas`} 
+            Icon={Building2} 
+            onClick={() => navigate('/admin/users-management?tab=companies')} 
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
+            iconColor="text-blue-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta="Gerir Empresas"
           >
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {metric.title}
-              </CardTitle>
-              <div className={`p-2 rounded-lg ${metric.bgColor}`}>
-                <metric.icon className={`h-4 w-4 ${metric.iconColor}`} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="text-2xl font-bold text-foreground">
-                  {metric.value}
+            <div className="p-4">
+              <div className="text-3xl font-bold text-blue-600 mb-2">{analytics?.total_companies || 0}</div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Ativas:</span>
+                  <span className="font-semibold">{analytics?.total_companies || 0}</span>
                 </div>
-                
-                {metric.trend && (
-                  <div className="flex items-center gap-1 text-sm">
-                    {metric.isPositive ? (
-                      <TrendingUp className="h-4 w-4 text-emerald-green" />
-                    ) : (
-                      <TrendingDown className="h-4 w-4 text-destructive" />
-                    )}
-                    <span className={metric.isPositive ? 'text-emerald-green' : 'text-destructive'}>
-                      {metric.trend}
-                    </span>
-                    <span className="text-muted-foreground">vs mês anterior</span>
-                  </div>
-                )}
-
-                {metric.progress !== undefined && (
-                  <div className="space-y-2">
-                    <Progress value={metric.progress} className="h-2" />
-                    {metric.progressLabel && (
-                      <p className="text-xs text-muted-foreground">{metric.progressLabel}</p>
-                    )}
-                  </div>
-                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Onboarding:</span>
+                  <span className="font-semibold text-orange-600">3</span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          </BentoCard>
+
+          {/* Top Middle - Users */}
+          <BentoCard 
+            name="Colaboradores Registados" 
+            description={`${analytics?.total_users || 0} utilizadores ativos`} 
+            Icon={Users} 
+            onClick={() => navigate('/admin/users-management?tab=employees')} 
+            className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100" />}
+            iconColor="text-green-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta="Ver Utilizadores"
+          >
+            <div className="p-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Taxa de Onboarding</span>
+                  <span className="text-lg font-bold text-green-600">78%</span>
+                </div>
+                <Progress value={78} className="h-2" />
+                <p className="text-xs text-muted-foreground">78% onboarding completo</p>
+              </div>
+            </div>
+          </BentoCard>
+
+          {/* Top Right - Sessions */}
+          <BentoCard 
+            name="Sessões Este Mês" 
+            description={`${analytics?.total_bookings || 0} sessões realizadas`} 
+            Icon={Calendar} 
+            onClick={() => navigate('/admin/operations')} 
+            className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100" />}
+            iconColor="text-purple-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta="Ver Sessões"
+          >
+            <div className="p-4">
+              <div className="text-3xl font-bold text-purple-600 mb-2">{analytics?.total_bookings || 0}</div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Hoje:</span>
+                  <span className="font-semibold">12</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Taxa utilização:</span>
+                  <span className="font-semibold text-green-600">78%</span>
+                </div>
+              </div>
+            </div>
+          </BentoCard>
+
+          {/* Alerts - Span across full width */}
+          <BentoCard 
+            name="" 
+            description="" 
+            href="#" 
+            cta="" 
+            className="lg:col-start-1 lg:col-end-4 lg:row-start-2 lg:row-end-3" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50" />}
+          >
+            <div className="p-6 h-full flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <AlertTriangle className="h-6 w-6 text-orange-600" />
+                  <h3 className="text-xl font-semibold text-gray-900">Alertas Críticos</h3>
+                </div>
+                <div className="space-y-4">
+                  <div 
+                    className="flex items-center justify-between p-3 bg-white/60 rounded-lg cursor-pointer hover:bg-white/80 transition-colors"
+                    onClick={() => navigate('/admin/call-requests')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-5 w-5 text-orange-500" />
+                      <span className="font-medium">Chamadas Pendentes</span>
+                    </div>
+                    <span className="text-xl font-bold text-orange-600">{mockAdminAlerts.pending_calls}</span>
+                  </div>
+                  <div 
+                    className="flex items-center justify-between p-3 bg-white/60 rounded-lg cursor-pointer hover:bg-white/80 transition-colors"
+                    onClick={() => navigate('/admin/alerts?tab=feedback')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <MessageSquare className="h-5 w-5 text-red-500" />
+                      <span className="font-medium">Feedback Negativo</span>
+                    </div>
+                    <span className="text-xl font-bold text-red-600">{mockAdminAlerts.negative_feedback}</span>
+                  </div>
+                  <div 
+                    className="flex items-center justify-between p-3 bg-white/60 rounded-lg cursor-pointer hover:bg-white/80 transition-colors"
+                    onClick={() => navigate('/admin/alerts?tab=inactive')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Users className="h-5 w-5 text-gray-500" />
+                      <span className="font-medium">Utilizadores Inativos</span>
+                    </div>
+                    <span className="text-xl font-bold text-gray-600">{mockAdminAlerts.inactive_users}</span>
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={() => navigate('/admin/alerts')}
+                className="mt-4 text-sm text-primary hover:underline font-medium"
+              >
+                Ver Todos os Alertas →
+              </button>
       </div>
+          </BentoCard>
 
-      {/* Alert Summary Cards */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Alertas Requerem Atenção</h2>
-          <button 
-            onClick={() => navigate('/admin/alerts')}
-            className="text-sm text-primary hover:underline"
-          >
-            Ver Todos os Alertas
-          </button>
-        </div>
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card 
-            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
-            onClick={() => navigate('/admin/alerts?tab=calls')}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Chamadas Pendentes</CardTitle>
-              <Phone className="h-4 w-4 text-orange-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{mockAdminAlerts.pending_calls}</div>
-              <p className="text-xs text-muted-foreground">
-                {mockAdminAlerts.pending_calls > 5 ? '⚠️ Requer atenção imediata' : 'Aguardam ligação'}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
-            onClick={() => navigate('/admin/alerts?tab=sessions')}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Sessões Hoje</CardTitle>
-              <Calendar className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{mockAdminAlerts.scheduled_sessions}</div>
-              <p className="text-xs text-muted-foreground">Com Especialista Geral</p>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
-            onClick={() => navigate('/admin/alerts?tab=feedback')}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Feedback Negativo</CardTitle>
-              <MessageSquare className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{mockAdminAlerts.negative_feedback}</div>
-              <p className="text-xs text-muted-foreground">Avaliações ≤ 6/10</p>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="hover:shadow-lg transition-all cursor-pointer hover:scale-105"
-            onClick={() => navigate('/admin/alerts?tab=inactive')}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Utilizadores Inativos</CardTitle>
-              <Users className="h-4 w-4 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{mockAdminAlerts.inactive_users}</div>
-              <p className="text-xs text-muted-foreground">Há +30 dias</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Charts Row */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Session Evolution Chart */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-lg font-heading">
-              Evolução de Sessões
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={sessionEvolutionData}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis 
-                  dataKey="month" 
-                  className="text-xs"
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <YAxis 
-                  className="text-xs"
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="sessions" 
-                  stroke="hsl(var(--vibrant-blue))" 
-                  strokeWidth={2}
-                  name="Sessões"
-                  dot={{ fill: 'hsl(var(--vibrant-blue))' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Pillar Distribution Chart */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-lg font-heading">
-              Distribuição por Pilar
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">Sessões por área</p>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={pillarDistributionData}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis 
-                  dataKey="pillar" 
-                  className="text-xs"
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <YAxis 
-                  className="text-xs"
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Legend />
-                <Bar 
-                  dataKey="sessions" 
-                  fill="hsl(var(--emerald-green))"
-                  name="Sessões"
-                  radius={[8, 8, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        </BentoGrid>
       </div>
     </div>
   );

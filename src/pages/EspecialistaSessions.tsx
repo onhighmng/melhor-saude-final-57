@@ -49,31 +49,39 @@ const EspecialistaSessions = () => {
         </p>
       </div>
 
-      {filteredSessions.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-sm text-muted-foreground">
-              Não há sessões agendadas
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {filteredSessions.map((session) => (
-            <Card key={session.id}>
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between gap-4">
+      {/* Sessions List */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Sessões Agendadas
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {filteredSessions.length} sessões agendadas
+          </p>
+        </CardHeader>
+        <CardContent>
+          {filteredSessions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-sm text-muted-foreground text-center">
+                Não há sessões agendadas
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredSessions.map((session) => (
+                <div key={session.id} className="flex items-start justify-between gap-4 p-4 border rounded-lg">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold">{session.user_name}</h3>
+                    <div className="flex items-center gap-3 mb-2 flex-wrap">
+                      <h4 className="font-semibold">{session.user_name}</h4>
                       <Badge variant="outline">{session.company_name}</Badge>
                       <Badge variant="secondary">{getPillarLabel(session.pillar)}</Badge>
                       <Badge variant={session.status === 'scheduled' ? 'default' : 'destructive'}>
                         {session.status}
                       </Badge>
                     </div>
-                    <div className="text-sm text-muted-foreground mb-2">
+                    <div className="text-sm text-muted-foreground space-y-1">
                       <p><strong>Data:</strong> {session.date}</p>
                       <p><strong>Horário:</strong> {session.time}</p>
                       <p><strong>Tipo:</strong> {session.type}</p>
@@ -99,11 +107,11 @@ const EspecialistaSessions = () => {
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

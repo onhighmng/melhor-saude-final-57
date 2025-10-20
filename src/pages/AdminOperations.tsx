@@ -2,8 +2,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClipboardList, MessageSquare } from 'lucide-react';
 import AdminSessionsTab from '@/components/admin/AdminSessionsTab';
 import AdminSpecialistTab from '@/components/admin/AdminSpecialistTab';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 const AdminOperations = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState('sessions');
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['sessions', 'specialist'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setSearchParams({ tab: value });
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -16,27 +34,44 @@ const AdminOperations = () => {
         </p>
       </div>
 
-      {/* Tabs Navigation */}
-      <Tabs defaultValue="sessions" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="sessions" className="flex items-center gap-2">
-            <ClipboardList className="h-4 w-4" />
-            Sessões
-          </TabsTrigger>
-          <TabsTrigger value="specialist" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            Especialista Geral
-          </TabsTrigger>
-        </TabsList>
+      {/* Bento Grid Layout - Tab Navigation */}
+      <div className="space-y-6">
+        <BentoGrid className="grid-rows-1 auto-rows-[80px] grid-cols-2" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <BentoCard 
+            name="Sessões Agendadas" 
+            description="Gerir sessões e agendamentos" 
+            Icon={ClipboardList} 
+            onClick={() => handleTabChange('sessions')} 
+            className={`col-span-1 ${activeTab === 'sessions' ? 'ring-2 ring-blue-500' : ''}`}
+            background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'sessions' ? 'from-blue-100 to-blue-200' : 'from-blue-50 to-blue-100'}`} />}
+            iconColor="text-blue-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta=""
+          />
 
-        <TabsContent value="sessions" className="mt-6">
-          <AdminSessionsTab />
-        </TabsContent>
+          <BentoCard 
+            name="Especialista Geral" 
+            description="Gerir especialista geral" 
+            Icon={MessageSquare} 
+            onClick={() => handleTabChange('specialist')} 
+            className={`col-span-1 ${activeTab === 'specialist' ? 'ring-2 ring-green-500' : ''}`}
+            background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'specialist' ? 'from-green-100 to-green-200' : 'from-green-50 to-green-100'}`} />}
+            iconColor="text-green-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta=""
+          />
+        </BentoGrid>
 
-        <TabsContent value="specialist" className="mt-6">
-          <AdminSpecialistTab />
-        </TabsContent>
-      </Tabs>
+        {/* Content Area */}
+        <div className="mt-6">
+          {activeTab === 'sessions' && <AdminSessionsTab />}
+          {activeTab === 'specialist' && <AdminSpecialistTab />}
+        </div>
+      </div>
     </div>
   );
 };

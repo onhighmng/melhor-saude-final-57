@@ -11,7 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowRight, Users, Calendar } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ArrowRight, Plus } from 'lucide-react';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { useToast } from '@/hooks/use-toast';
 import { mockProviders } from '@/data/mockData';
 import { mockAvailableUsers, mockReferrals } from '@/data/especialistaGeralMockData';
@@ -24,6 +26,9 @@ const EspecialistaReferrals = () => {
   const [selectedPillar, setSelectedPillar] = useState('');
   const [selectedProvider, setSelectedProvider] = useState('');
   const [referralNotes, setReferralNotes] = useState('');
+  
+  // Modal states
+  const [isNewReferralModalOpen, setIsNewReferralModalOpen] = useState(false);
 
   // Filter users by assigned companies
   const filteredUsers = filterByCompanyAccess(mockAvailableUsers);
@@ -60,11 +65,12 @@ const EspecialistaReferrals = () => {
     setSelectedPillar('');
     setSelectedProvider('');
     setReferralNotes('');
+    setIsNewReferralModalOpen(false);
   };
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="h-screen flex flex-col">
+      <div className="flex-shrink-0 mb-4">
         <h1 className="text-3xl font-heading font-bold text-foreground">
           Encaminhamentos
         </h1>
@@ -73,11 +79,31 @@ const EspecialistaReferrals = () => {
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Novo Encaminhamento</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      {/* Bento Grid Layout */}
+      <div className="w-full flex-1">
+        <BentoGrid className="h-full" style={{ gridAutoRows: '1fr' }}>
+          <BentoCard
+            name="Novo Encaminhamento"
+            description={`${filteredUsers.length} utilizadores disponíveis`}
+            Icon={Plus}
+            href="#"
+            cta="Criar"
+            className="col-span-full"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50" />}
+            onClick={() => setIsNewReferralModalOpen(true)}
+            iconColor="text-blue-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+          />
+        </BentoGrid>
+
+        {/* Modals */}
+        <Dialog open={isNewReferralModalOpen} onOpenChange={setIsNewReferralModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Novo Encaminhamento</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6">
           {/* User Selection */}
           <div className="space-y-2">
             <Label htmlFor="user">Utilizador *</Label>
@@ -157,52 +183,19 @@ const EspecialistaReferrals = () => {
             />
           </div>
 
-          <Button onClick={handleCreateReferral} className="w-full">
-            <ArrowRight className="h-4 w-4 mr-2" />
-            Criar Encaminhamento
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Recent Referrals */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Encaminhamentos Recentes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredReferrals.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Nenhum encaminhamento recente</p>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsNewReferralModalOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleCreateReferral}>
+                  <ArrowRight className="h-4 w-4 mr-2" />
+                  Criar Encaminhamento
+                </Button>
+              </div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredReferrals.map((referral) => (
-                <div key={referral.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h4 className="font-medium">{referral.user_name}</h4>
-                      <Badge variant="outline">{referral.company_name}</Badge>
-                      <Badge variant={referral.status === 'completed' ? 'default' : 'secondary'}>
-                        {referral.status === 'completed' ? 'Concluído' : 'Agendado'}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Para: {referral.provider_name} • {referral.pillar}
-                    </p>
-                    {referral.notes && (
-                      <p className="text-sm text-muted-foreground">{referral.notes}</p>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Criado em: {new Date(referral.created_at).toLocaleDateString('pt-PT')}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };

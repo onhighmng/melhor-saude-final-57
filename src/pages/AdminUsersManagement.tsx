@@ -1,10 +1,27 @@
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Building2, Users, UserCog } from 'lucide-react';
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
 import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 
 const AdminUsersManagement = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState('companies');
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['companies', 'employees', 'providers'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setSearchParams({ tab: value });
+  };
 
   return (
     <div className="space-y-6">
@@ -18,35 +35,59 @@ const AdminUsersManagement = () => {
         </p>
       </div>
 
-      {/* Tabs Navigation */}
-      <Tabs defaultValue="companies" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
-          <TabsTrigger value="companies" className="flex items-center gap-2">
-            <Building2 className="h-4 w-4" />
-            Empresas
-          </TabsTrigger>
-          <TabsTrigger value="employees" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Colaboradores
-          </TabsTrigger>
-          <TabsTrigger value="providers" className="flex items-center gap-2">
-            <UserCog className="h-4 w-4" />
-            Prestadores
-          </TabsTrigger>
-        </TabsList>
+      {/* Bento Grid Layout - Tab Navigation */}
+      <div className="space-y-6">
+        <BentoGrid className="grid-rows-1 auto-rows-[80px]">
+          <BentoCard 
+            name="Empresas" 
+            description="Gerir empresas e códigos" 
+            Icon={Building2} 
+            onClick={() => handleTabChange('companies')} 
+            className={`col-span-1 ${activeTab === 'companies' ? 'ring-2 ring-blue-500' : ''}`}
+            background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'companies' ? 'from-blue-100 to-blue-200' : 'from-blue-50 to-blue-100'}`} />}
+            iconColor="text-blue-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta="Gerir"
+          />
 
-        <TabsContent value="companies" className="mt-6">
-          <AdminCompaniesTab />
-        </TabsContent>
+          <BentoCard 
+            name="Colaboradores" 
+            description="Gerir utilizadores" 
+            Icon={Users} 
+            onClick={() => handleTabChange('employees')} 
+            className={`col-span-1 ${activeTab === 'employees' ? 'ring-2 ring-green-500' : ''}`}
+            background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'employees' ? 'from-green-100 to-green-200' : 'from-green-50 to-green-100'}`} />}
+            iconColor="text-green-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta="Gerir"
+          />
 
-        <TabsContent value="employees" className="mt-6">
-          <AdminEmployeesTab />
-        </TabsContent>
+          <BentoCard 
+            name="Prestadores" 
+            description="Gerir especialistas" 
+            Icon={UserCog} 
+            onClick={() => handleTabChange('providers')} 
+            className={`col-span-1 ${activeTab === 'providers' ? 'ring-2 ring-purple-500' : ''}`}
+            background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'providers' ? 'from-purple-100 to-purple-200' : 'from-purple-50 to-purple-100'}`} />}
+            iconColor="text-purple-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta="Gerir"
+          />
+        </BentoGrid>
 
-        <TabsContent value="providers" className="mt-6">
-          <AdminProvidersTab />
-        </TabsContent>
-      </Tabs>
+        {/* Content Area */}
+        <div className="mt-6">
+          {activeTab === 'companies' && <AdminCompaniesTab />}
+          {activeTab === 'employees' && <AdminEmployeesTab />}
+          {activeTab === 'providers' && <AdminProvidersTab />}
+        </div>
+      </div>
     </div>
   );
 };
