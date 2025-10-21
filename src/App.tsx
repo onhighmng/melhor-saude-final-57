@@ -55,6 +55,7 @@ const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
 const CompanyReportsImpact = lazy(() => import("./pages/CompanyReportsImpact"));
 const CompanySessions = lazy(() => import("./pages/CompanySessions"));
 const CompanyCollaborators = lazy(() => import("./pages/CompanyCollaborators"));
+const CompanySettings = lazy(() => import("./pages/CompanySettings"));
 const UserSessions = lazy(() => import("./pages/UserSessions"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const UserResources = lazy(() => import("./pages/UserResources"));
@@ -186,7 +187,9 @@ const AppWithTracking = () => {
           {/* Company HR routes */}
           <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />
           <Route path="/company/relatorios" element={<CompanyLayout><CompanyReportsImpact /></CompanyLayout>} />
+          <Route path="/company/sessions" element={<CompanyLayout><CompanySessions /></CompanyLayout>} />
           <Route path="/company/colaboradores" element={<CompanyLayout><CompanyCollaborators /></CompanyLayout>} />
+          <Route path="/company/settings" element={<CompanyLayout><CompanySettings /></CompanyLayout>} />
           
           {/* Catch-all route - redirect to home */}
           <Route path="*" element={<Index />} />

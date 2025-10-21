@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,11 +15,15 @@ import {
   CheckCircle,
   XCircle,
   Shield,
-  TrendingUp
+  TrendingUp,
+  Activity,
+  Target,
+  BarChart3
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { InviteEmployeeModal } from '@/components/company/InviteEmployeeModal';
 import { mockCompanies } from '@/data/companyMockData';
+import { mockEmployeeMetrics } from '@/data/companyMetrics';
 
 const CompanyCollaborators = () => {
   const { toast } = useToast();
@@ -29,6 +33,16 @@ const CompanyCollaborators = () => {
   // Mock company data (in real app, fetch from context/API)
   const company = mockCompanies[0];
   const seatUsagePercent = Math.round((company.seatUsed / company.seatLimit) * 100);
+
+  useEffect(() => {
+    // Add admin-page class to body for gray background
+    document.body.classList.add('admin-page');
+    
+    // Cleanup: remove class when component unmounts
+    return () => {
+      document.body.classList.remove('admin-page');
+    };
+  }, []);
 
   const generateInviteCode = () => {
     const code = `MS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
@@ -75,6 +89,102 @@ const CompanyCollaborators = () => {
           Convide colaboradores e gere códigos de acesso de forma segura e anónima
         </p>
       </div>
+
+      {/* Aggregated Metrics Overview */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-blue-200 bg-blue-50/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-blue-800">Total Registrados</CardTitle>
+            <Users className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-900">{mockEmployeeMetrics.totalRegistered}</div>
+            <p className="text-xs text-blue-600 mt-1">
+              Colaboradores com acesso
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-orange-200 bg-orange-50/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-orange-800">Pendentes</CardTitle>
+            <Activity className="h-4 w-4 text-orange-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-900">{mockEmployeeMetrics.pendingRegistration}</div>
+            <p className="text-xs text-orange-600 mt-1">
+              Aguardando registo
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-green-200 bg-green-50/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-green-800">Sessões Médias</CardTitle>
+            <BarChart3 className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-900">{mockEmployeeMetrics.averageSessionsPerEmployee}</div>
+            <p className="text-xs text-green-600 mt-1">
+              Por colaborador
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-purple-200 bg-purple-50/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-purple-800">Pilar Popular</CardTitle>
+            <Target className="h-4 w-4 text-purple-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold text-purple-900 truncate">{mockEmployeeMetrics.mostPopularPillar}</div>
+            <p className="text-xs text-purple-600 mt-1">
+              Mais utilizado
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Activity Distribution Chart */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Distribuição de Atividade
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium">Colaboradores Ativos</span>
+                </div>
+                <span className="text-2xl font-bold text-green-700">{mockEmployeeMetrics.activityDistribution.active}%</span>
+              </div>
+              <Progress value={mockEmployeeMetrics.activityDistribution.active} className="h-3" />
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <XCircle className="h-5 w-5 text-red-600" />
+                  <span className="font-medium">Colaboradores Inativos</span>
+                </div>
+                <span className="text-2xl font-bold text-red-700">{mockEmployeeMetrics.activityDistribution.inactive}%</span>
+              </div>
+              <Progress value={mockEmployeeMetrics.activityDistribution.inactive} className="h-3" />
+            </div>
+            
+            <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg">
+              <h4 className="text-lg font-semibold text-slate-900 mb-2">Objetivos Concluídos</h4>
+              <div className="text-4xl font-bold text-slate-700 mb-2">{mockEmployeeMetrics.goalsCompleted.completionRate}%</div>
+              <p className="text-sm text-slate-600">
+                {mockEmployeeMetrics.goalsCompleted.completedGoals} de {mockEmployeeMetrics.goalsCompleted.totalGoals} objetivos
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Seat Usage Overview */}
       <div className="grid gap-4 md:grid-cols-3">

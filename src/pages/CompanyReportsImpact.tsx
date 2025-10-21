@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,10 @@ import {
   mockCompanyMetrics, 
   mockPillarDistribution, 
   mockWellnessTrends, 
-  mockEmployeeHighlights 
+  mockEmployeeHighlights,
+  mockROIData,
+  mockAbsenteeismData,
+  mockEmployeeMetrics
 } from '@/data/companyMetrics';
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +29,16 @@ import { useToast } from "@/hooks/use-toast";
 const CompanyReportsImpact = () => {
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Add admin-page class to body for gray background
+    document.body.classList.add('admin-page');
+    
+    // Cleanup: remove class when component unmounts
+    return () => {
+      document.body.classList.remove('admin-page');
+    };
+  }, []);
 
   const handleExportReport = async () => {
     setIsExporting(true);
@@ -172,6 +185,169 @@ const CompanyReportsImpact = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* ROI Calculator Section */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Análise de ROI (Retorno do Investimento)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                <div>
+                  <p className="text-sm font-medium text-green-800">Custo Mensal</p>
+                  <p className="text-2xl font-bold text-green-900">{mockROIData.monthlyCost.toLocaleString()} MZN</p>
+                </div>
+                <DollarSign className="h-8 w-8 text-green-600" />
+              </div>
+              
+              <div className="space-y-3">
+                <h4 className="font-semibold text-gray-900">Poupanças Estimadas (Mensais)</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
+                    <span className="text-sm">Redução de Absenteísmo</span>
+                    <span className="font-semibold text-blue-900">{mockROIData.estimatedSavings.absenteeism.toLocaleString()} MZN</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-green-50 rounded">
+                    <span className="text-sm">Custos de Saúde</span>
+                    <span className="font-semibold text-green-900">{mockROIData.estimatedSavings.healthcare.toLocaleString()} MZN</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-purple-50 rounded">
+                    <span className="text-sm">Aumento de Produtividade</span>
+                    <span className="font-semibold text-purple-900">{mockROIData.estimatedSavings.productivity.toLocaleString()} MZN</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-orange-50 rounded">
+                    <span className="text-sm">Retenção de Talentos</span>
+                    <span className="font-semibold text-orange-900">{mockROIData.estimatedSavings.retention.toLocaleString()} MZN</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="text-center p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg">
+                <h3 className="text-lg font-semibold text-emerald-900 mb-2">ROI Total</h3>
+                <div className="text-4xl font-bold text-emerald-700 mb-2">{mockROIData.roiPercentage}%</div>
+                <p className="text-sm text-emerald-600">Retorno do investimento</p>
+              </div>
+              
+              <div className="text-center p-4 bg-slate-50 rounded-lg">
+                <h4 className="font-semibold text-gray-900 mb-2">Período de Retorno</h4>
+                <div className="text-2xl font-bold text-slate-700">{mockROIData.paybackPeriod} meses</div>
+                <p className="text-sm text-gray-600">Para recuperar o investimento</p>
+              </div>
+              
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2">Poupança Líquida</h4>
+                <div className="text-2xl font-bold text-blue-700">{(mockROIData.totalEstimatedSavings - mockROIData.monthlyCost).toLocaleString()} MZN</div>
+                <p className="text-sm text-blue-600">Poupança mensal líquida</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Absenteeism Estimation Section */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Estimativa de Redução de Absenteísmo
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-red-50 rounded-lg">
+                  <h4 className="text-sm font-medium text-red-800 mb-1">Taxa Atual</h4>
+                  <div className="text-2xl font-bold text-red-900">{mockAbsenteeismData.currentRate}%</div>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <h4 className="text-sm font-medium text-green-800 mb-1">Redução Estimada</h4>
+                  <div className="text-2xl font-bold text-green-900">{mockAbsenteeismData.estimatedReduction}%</div>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2">Sessões Mensais</h4>
+                <div className="text-3xl font-bold text-blue-700">{mockAbsenteeismData.monthlySessions}</div>
+                <p className="text-sm text-blue-600">Total de sessões realizadas</p>
+              </div>
+            </div>
+            
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={mockAbsenteeismData.trendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis domain={[0, 5]} />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      `${value}%`,
+                      name === 'before' ? 'Antes do Programa' : 'Após o Programa'
+                    ]}
+                  />
+                  <Legend />
+                  <Line 
+                    type="monotone" 
+                    dataKey="before" 
+                    stroke="#ef4444" 
+                    strokeWidth={3}
+                    dot={{ fill: '#ef4444', strokeWidth: 2, r: 6 }}
+                    name="Antes do Programa"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="after" 
+                    stroke="#10b981" 
+                    strokeWidth={3}
+                    dot={{ fill: '#10b981', strokeWidth: 2, r: 6 }}
+                    name="Após o Programa"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Goals Completed Section */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Star className="h-5 w-5" />
+            Objetivos Concluídos pelos Colaboradores
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg">
+              <h4 className="text-lg font-semibold text-indigo-900 mb-2">Taxa de Conclusão</h4>
+              <div className="text-4xl font-bold text-indigo-700 mb-2">{mockEmployeeMetrics.goalsCompleted.completionRate}%</div>
+              <p className="text-sm text-indigo-600">
+                {mockEmployeeMetrics.goalsCompleted.completedGoals} de {mockEmployeeMetrics.goalsCompleted.totalGoals} objetivos
+              </p>
+            </div>
+            
+            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+              <h4 className="text-lg font-semibold text-green-900 mb-2">Objetivos Concluídos</h4>
+              <div className="text-4xl font-bold text-green-700 mb-2">{mockEmployeeMetrics.goalsCompleted.completedGoals}</div>
+              <p className="text-sm text-green-600">Total de objetivos atingidos</p>
+            </div>
+            
+            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+              <h4 className="text-lg font-semibold text-purple-900 mb-2">Sessões por Colaborador</h4>
+              <div className="text-4xl font-bold text-purple-700 mb-2">{mockEmployeeMetrics.averageSessionsPerEmployee}</div>
+              <p className="text-sm text-purple-600">Média de sessões utilizadas</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

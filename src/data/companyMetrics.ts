@@ -5,6 +5,110 @@ export interface CompanyMetrics {
   totalSessions: number;
   avgSatisfaction: number;
   utilizationRate: number;
+  totalEmployeesInPlan: number;
+  registeredEmployees: number;
+  unregisteredEmployees: number;
+  contractedSessions: number;
+  usedSessions: number;
+  mostUsedPillar: string;
+  activePercentage: number;
+  inactivePercentage: number;
+}
+
+export interface ContractInfo {
+  planName: string;
+  planType: 'basic' | 'premium' | 'enterprise';
+  totalEmployees: number;
+  sessionsIncluded: number;
+  monthlyFee: number;
+  currency: string;
+  nextBillingDate: string;
+  contractStartDate: string;
+  contractEndDate: string;
+}
+
+export interface InvoiceHistory {
+  id: string;
+  invoiceNumber: string;
+  date: string;
+  amount: number;
+  status: 'paid' | 'pending' | 'overdue';
+  downloadUrl: string;
+}
+
+export interface ROIData {
+  monthlyCost: number;
+  estimatedSavings: {
+    absenteeism: number;
+    healthcare: number;
+    productivity: number;
+    retention: number;
+  };
+  totalEstimatedSavings: number;
+  roiPercentage: number;
+  paybackPeriod: number; // months
+}
+
+export interface AbsenteeismData {
+  currentRate: number;
+  estimatedReduction: number;
+  monthlySessions: number;
+  trendData: Array<{
+    month: string;
+    before: number;
+    after: number;
+  }>;
+}
+
+export interface SessionAnalytics {
+  totalContracted: number;
+  totalUsed: number;
+  utilizationRate: number;
+  employeesUsingServices: number;
+  pillarBreakdown: Array<{
+    pillar: string;
+    sessionsUsed: number;
+    sessionsAvailable: number;
+    utilizationRate: number;
+    topSpecialists: Array<{
+      name: string;
+      sessions: number;
+    }>;
+  }>;
+  monthlyTrend: Array<{
+    month: string;
+    total: number;
+    byPillar: {
+      mental: number;
+      physical: number;
+      financial: number;
+      legal: number;
+    };
+  }>;
+  peakHours: Array<{
+    hour: string;
+    sessions: number;
+  }>;
+  peakDays: Array<{
+    day: string;
+    sessions: number;
+  }>;
+}
+
+export interface EmployeeMetrics {
+  totalRegistered: number;
+  pendingRegistration: number;
+  averageSessionsPerEmployee: number;
+  mostPopularPillar: string;
+  activityDistribution: {
+    active: number;
+    inactive: number;
+  };
+  goalsCompleted: {
+    totalGoals: number;
+    completedGoals: number;
+    completionRate: number;
+  };
 }
 
 export interface PillarDistribution {
@@ -60,7 +164,179 @@ export const mockCompanyMetrics: CompanyMetrics = {
   activeEmployees: 47,
   totalSessions: 234,
   avgSatisfaction: 8.7,
-  utilizationRate: 78
+  utilizationRate: 78,
+  totalEmployeesInPlan: 50,
+  registeredEmployees: 47,
+  unregisteredEmployees: 3,
+  contractedSessions: 400,
+  usedSessions: 234,
+  mostUsedPillar: 'Saúde Mental',
+  activePercentage: 78,
+  inactivePercentage: 22
+};
+
+// Mock Contract Information
+export const mockContractInfo: ContractInfo = {
+  planName: 'Plano Premium',
+  planType: 'premium',
+  totalEmployees: 50,
+  sessionsIncluded: 400,
+  monthlyFee: 140000,
+  currency: 'MZN',
+  nextBillingDate: '2024-11-05',
+  contractStartDate: '2024-01-01',
+  contractEndDate: '2024-12-31'
+};
+
+// Mock Invoice History
+export const mockInvoiceHistory: InvoiceHistory[] = [
+  {
+    id: '1',
+    invoiceNumber: 'INV-2024-001',
+    date: '2024-10-01',
+    amount: 140000,
+    status: 'paid',
+    downloadUrl: '/invoices/inv-2024-001.pdf'
+  },
+  {
+    id: '2',
+    invoiceNumber: 'INV-2024-002',
+    date: '2024-09-01',
+    amount: 140000,
+    status: 'paid',
+    downloadUrl: '/invoices/inv-2024-002.pdf'
+  },
+  {
+    id: '3',
+    invoiceNumber: 'INV-2024-003',
+    date: '2024-08-01',
+    amount: 140000,
+    status: 'paid',
+    downloadUrl: '/invoices/inv-2024-003.pdf'
+  }
+];
+
+// Mock ROI Data
+export const mockROIData: ROIData = {
+  monthlyCost: 140000,
+  estimatedSavings: {
+    absenteeism: 45000,
+    healthcare: 32000,
+    productivity: 28000,
+    retention: 15000
+  },
+  totalEstimatedSavings: 120000,
+  roiPercentage: 85.7,
+  paybackPeriod: 1.2
+};
+
+// Mock Absenteeism Data
+export const mockAbsenteeismData: AbsenteeismData = {
+  currentRate: 4.2,
+  estimatedReduction: 15,
+  monthlySessions: 234,
+  trendData: [
+    { month: 'Jan', before: 4.5, after: 4.2 },
+    { month: 'Fev', before: 4.3, after: 4.0 },
+    { month: 'Mar', before: 4.1, after: 3.8 },
+    { month: 'Abr', before: 3.9, after: 3.6 },
+    { month: 'Mai', before: 3.7, after: 3.4 },
+    { month: 'Jun', before: 3.5, after: 3.2 }
+  ]
+};
+
+// Mock Session Analytics
+export const mockSessionAnalytics: SessionAnalytics = {
+  totalContracted: 400,
+  totalUsed: 234,
+  utilizationRate: 58.5,
+  employeesUsingServices: 42,
+  pillarBreakdown: [
+    {
+      pillar: 'Saúde Mental',
+      sessionsUsed: 98,
+      sessionsAvailable: 100,
+      utilizationRate: 98,
+      topSpecialists: [
+        { name: 'Dra. Maria Santos', sessions: 25 },
+        { name: 'Dr. Fernando Alves', sessions: 20 },
+        { name: 'Dra. Ana Costa', sessions: 15 }
+      ]
+    },
+    {
+      pillar: 'Bem-Estar Físico',
+      sessionsUsed: 66,
+      sessionsAvailable: 100,
+      utilizationRate: 66,
+      topSpecialists: [
+        { name: 'Prof. Ana Rodrigues', sessions: 18 },
+        { name: 'Prof. Joana Martins', sessions: 15 },
+        { name: 'Dr. Carlos Silva', sessions: 12 }
+      ]
+    },
+    {
+      pillar: 'Assistência Financeira',
+      sessionsUsed: 42,
+      sessionsAvailable: 100,
+      utilizationRate: 42,
+      topSpecialists: [
+        { name: 'Dr. Paulo Reis', sessions: 12 },
+        { name: 'Dr. Ricardo Costa', sessions: 10 },
+        { name: 'Dra. Sofia Lima', sessions: 8 }
+      ]
+    },
+    {
+      pillar: 'Assistência Jurídica',
+      sessionsUsed: 28,
+      sessionsAvailable: 100,
+      utilizationRate: 28,
+      topSpecialists: [
+        { name: 'Dra. Beatriz Silva', sessions: 8 },
+        { name: 'Dr. Miguel Santos', sessions: 6 },
+        { name: 'Dra. Catarina Alves', sessions: 5 }
+      ]
+    }
+  ],
+  monthlyTrend: [
+    { month: 'Jan', total: 45, byPillar: { mental: 20, physical: 12, financial: 8, legal: 5 } },
+    { month: 'Fev', total: 52, byPillar: { mental: 22, physical: 15, financial: 10, legal: 5 } },
+    { month: 'Mar', total: 67, byPillar: { mental: 28, physical: 18, financial: 12, legal: 9 } },
+    { month: 'Abr', total: 58, byPillar: { mental: 24, physical: 16, financial: 11, legal: 7 } },
+    { month: 'Mai', total: 72, byPillar: { mental: 30, physical: 20, financial: 14, legal: 8 } },
+    { month: 'Jun', total: 65, byPillar: { mental: 27, physical: 18, financial: 13, legal: 7 } }
+  ],
+  peakHours: [
+    { hour: '09:00', sessions: 15 },
+    { hour: '10:00', sessions: 22 },
+    { hour: '11:00', sessions: 18 },
+    { hour: '14:00', sessions: 25 },
+    { hour: '15:00', sessions: 20 },
+    { hour: '16:00', sessions: 16 }
+  ],
+  peakDays: [
+    { day: 'Segunda', sessions: 45 },
+    { day: 'Terça', sessions: 52 },
+    { day: 'Quarta', sessions: 48 },
+    { day: 'Quinta', sessions: 55 },
+    { day: 'Sexta', sessions: 34 }
+  ]
+};
+
+// Mock Employee Metrics
+export const mockEmployeeMetrics: EmployeeMetrics = {
+  totalRegistered: 47,
+  pendingRegistration: 3,
+  averageSessionsPerEmployee: 4.98,
+  mostPopularPillar: 'Saúde Mental',
+  activityDistribution: {
+    active: 78,
+    inactive: 22
+  },
+  goalsCompleted: {
+    totalGoals: 150,
+    completedGoals: 89,
+    completionRate: 59.3
+  }
 };
 
 // Mock Pillar Distribution

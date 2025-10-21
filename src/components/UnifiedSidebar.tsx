@@ -84,8 +84,9 @@ const getMenuItemsByRole = (role: string): MenuItem[] => {
     case 'hr':
       return [
         { title: 'Dashboard', url: "/company/dashboard", icon: LayoutDashboard },
-        { title: 'Colaboradores', url: "/company/employees", icon: Users },
-        { title: 'Relatórios', url: "/company/reports", icon: BarChart3 },
+        { title: 'Colaboradores', url: "/company/colaboradores", icon: Users },
+        { title: 'Sessões', url: "/company/sessions", icon: Calendar },
+        { title: 'Relatórios', url: "/company/relatorios", icon: BarChart3 },
         { title: 'Definições', url: "/company/settings", icon: Settings },
       ];
     

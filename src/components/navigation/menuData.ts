@@ -148,10 +148,28 @@ export const createHRMenuItems = (
     onClick: () => handleNavigation('/company/dashboard')
   },
   {
+    title: 'Colaboradores',
+    key: 'colaboradores-rh',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/company/colaboradores')
+  },
+  {
+    title: 'Sessões',
+    key: 'sessoes-rh',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/company/sessions')
+  },
+  {
     title: 'Relatórios',
     key: 'relatorios-rh',
     hasDropdown: false,
-    onClick: () => handleNavigation('/company/dashboard')
+    onClick: () => handleNavigation('/company/relatorios')
+  },
+  {
+    title: 'Definições',
+    key: 'definicoes-rh',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/company/settings')
   }
 ];
 
