@@ -1,158 +1,273 @@
-"use client"
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
+import { UserPlus, MessageCircle, Star, CheckCircle2, Calendar, Building2, Brain, Dumbbell, DollarSign, Scale, Eye } from 'lucide-react';
 
-import { Star, MessageCircle, UserPlus } from "lucide-react"
-import { cn } from "@/lib/utils"
-
-type ProfileCardProps = {
-  name: string
-  role: string
-  status: "online" | "offline" | "away"
-  avatar: string
-  tags?: string[]
-  isVerified?: boolean
-  followers?: number
+interface InfoCardProps {
+  name: string;
+  title?: string;
+  subtitle?: string;
+  avatar?: string;
+  followers?: string;
+  badge?: string;
+  status?: 'online' | 'offline' | 'busy';
+  rating?: number;
+  isPremium?: boolean;
+  onView?: () => void;
+  onContact?: () => void;
+  className?: string;
+  variant?: 'default' | 'premium' | 'specialist';
+  // Employee specific props
+  company?: string;
+  pillars?: string[];
+  progress?: number;
+  completedSessions?: number;
+  totalSessions?: number;
+  // Provider specific props
+  specialty?: string;
+  experience?: string;
+  location?: string;
+  nextAvailable?: string;
+  type?: 'employee' | 'provider';
 }
 
-interface AnimatedProfileCardProps {
-  variant?: "fullscreen" | "modal" | "inline"
-}
+export function InfoCard({
+  name,
+  title,
+  subtitle,
+  avatar,
+  followers,
+  badge,
+  status = 'offline',
+  rating,
+  isPremium = false,
+  onView,
+  onContact,
+  className,
+  variant = 'default',
+  // Employee specific props
+  company,
+  pillars = [],
+  progress,
+  completedSessions,
+  totalSessions,
+  // Provider specific props
+  specialty,
+  experience,
+  location,
+  nextAvailable,
+  type = 'employee'
+}: InfoCardProps) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'online': return 'bg-green-500';
+      case 'busy': return 'bg-yellow-500';
+      default: return 'bg-gray-400';
+    }
+  };
 
-export default function AnimatedProfileCard({ variant = "fullscreen" }: AnimatedProfileCardProps) {
-  const alexProfile: ProfileCardProps = {
-    name: "Alex Thompson",
-    role: "UI/UX Designer",
-    status: "online",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-    tags: ["Premium"],
-    isVerified: true,
-    followers: 1240,
-  }
+  const getVariantStyles = (variant: string) => {
+    switch (variant) {
+      case 'premium':
+        return 'bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200';
+      case 'specialist':
+        return 'bg-gradient-to-br from-emerald-50 to-green-100 border-emerald-200';
+      default:
+        return 'bg-white border-gray-200';
+    }
+  };
 
-  // For modal or inline usage, render just the card without fullscreen wrapper
-  if (variant === "modal" || variant === "inline") {
-    return (
-      <div className="relative">
-        <ProfileCard {...alexProfile} />
-      </div>
-    )
-  }
+  const getPillarIcon = (pillar: string) => {
+    switch (pillar) {
+      case 'Saúde Mental': return Brain;
+      case 'Bem-Estar Físico': return Dumbbell;
+      case 'Assistência Financeira': return DollarSign;
+      case 'Assistência Jurídica': return Scale;
+      default: return Brain;
+    }
+  };
 
-  // Fullscreen variant (original behavior)
+  const getPillarColor = (pillar: string) => {
+    switch (pillar) {
+      case 'Saúde Mental': return 'text-blue-600 bg-blue-100';
+      case 'Bem-Estar Físico': return 'text-green-600 bg-green-100';
+      case 'Assistência Financeira': return 'text-yellow-600 bg-yellow-100';
+      case 'Assistência Jurídica': return 'text-purple-600 bg-purple-100';
+      default: return 'text-gray-600 bg-gray-100';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center w-full justify-center p-4 relative overflow-hidden">
-      {/* Animated Grid Background */}
-      <div className="absolute inset-0 opacity-20">
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(156, 163, 175, 0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(156, 163, 175, 0.3) 1px, transparent 1px)
-            `,
-            backgroundSize: "40px 40px",
-            animation: "gridMove 20s linear infinite",
-          }}
-        />
-      </div>
-
-      <ProfileCard {...alexProfile} />
-    </div>
-  )
-}
-
-function ProfileCard({ name, role, status, avatar, tags = [], isVerified, followers }: ProfileCardProps) {
-  return (
-    <div className="group relative overflow-hidden rounded-3xl bg-white dark:bg-gray-800 p-6 w-80 shadow-[12px_12px_24px_rgba(0,0,0,0.15),-12px_-12px_24px_rgba(255,255,255,0.9)] dark:shadow-[12px_12px_24px_rgba(0,0,0,0.3),-12px_-12px_24px_rgba(255,255,255,0.1)] transition-all duration-500 hover:shadow-[20px_20px_40px_rgba(0,0,0,0.2),-20px_-20px_40px_rgba(255,255,255,1)] dark:hover:shadow-[20px_20px_40px_rgba(0,0,0,0.4),-20px_-20px_40px_rgba(255,255,255,0.15)] hover:scale-105 hover:-translate-y-2">
-      {/* Status indicator with pulse animation */}
-      <div className="absolute right-4 top-4 z-10">
-        <div className="relative">
-          <div
-            className={cn(
-              "h-3 w-3 rounded-full border-2 border-white dark:border-gray-800 transition-all duration-300 group-hover:scale-125",
-              status === "online"
-                ? "bg-green-500 group-hover:shadow-[0_0_20px_rgba(34,197,94,0.6)]"
-                : status === "away"
-                  ? "bg-amber-500"
-                  : "bg-gray-400",
-            )}
-          ></div>
-          {status === "online" && (
-            <div className="absolute inset-0 h-3 w-3 rounded-full bg-green-500 animate-ping opacity-30"></div>
+    <Card className={cn(
+      'relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105 group',
+      getVariantStyles(variant),
+      className
+    )}>
+      <CardContent className="p-4">
+        {/* Status Indicators - Minimal */}
+        <div className="absolute top-3 right-3">
+          {rating && (
+            <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1 shadow-sm">
+              <Star className="w-3 h-3 text-yellow-500 fill-current" />
+              <span className="text-xs font-medium">{rating}</span>
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Verified badge with bounce animation */}
-      {isVerified && (
-        <div className="absolute right-4 top-10 z-10">
-          <div className="rounded-full bg-blue-500 dark:bg-blue-600 p-1 shadow-[2px_2px_4px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-            <Star className="h-3 w-3 fill-white text-white" />
+        {/* Avatar - Minimal */}
+        <div className="flex justify-center mb-3">
+          <div className="relative">
+            <Avatar className="w-12 h-12 ring-2 ring-white shadow-md">
+              <AvatarImage src={avatar} alt={name} />
+              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold text-sm">
+                {name.split(' ').map(n => n[0]).join('').toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {isPremium && (
+              <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-0.5">
+                <CheckCircle2 className="w-3 h-3 text-white" />
+      </div>
+            )}
           </div>
         </div>
-      )}
 
-      {/* Profile Photo with enhanced hover effects */}
-      <div className="mb-4 flex justify-center relative z-10">
-        <div className="relative group-hover:animate-pulse">
-          <div className="h-28 w-28 overflow-hidden rounded-full bg-white dark:bg-gray-700 p-1 shadow-[inset_6px_6px_12px_rgba(0,0,0,0.1),inset_-6px_-6px_12px_rgba(255,255,255,0.9)] dark:shadow-[inset_6px_6px_12px_rgba(0,0,0,0.3),inset_-6px_-6px_12px_rgba(255,255,255,0.1)] transition-all duration-500 group-hover:shadow-[inset_8px_8px_16px_rgba(0,0,0,0.15),inset_-8px_-8px_16px_rgba(255,255,255,1)] dark:group-hover:shadow-[inset_8px_8px_16px_rgba(0,0,0,0.4),inset_-8px_-8px_16px_rgba(255,255,255,0.15)] group-hover:scale-110">
-            <img
-              src={avatar}
-              alt={name}
-              className="h-full w-full rounded-full object-contain transition-transform duration-500 group-hover:scale-105"
-            />
-          </div>
-          {/* Glowing ring on hover */}
-          <div className="absolute inset-0 rounded-full border-2 border-blue-400 dark:border-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
+        {/* Name and Title - Minimal */}
+        <div className="text-center mb-3">
+          <h3 className="font-semibold text-gray-900 text-base group-hover:text-blue-600 transition-colors truncate">
+            {name}
+          </h3>
+          {title && (
+            <p className="text-xs text-gray-500 mt-1 truncate">{title}</p>
+          )}
         </div>
+
+        {/* Employee specific content - Minimal */}
+        {type === 'employee' && (
+          <>
+            {/* Company - Minimal */}
+            {company && (
+              <div className="text-center mb-3">
+                <p className="text-xs text-gray-500 truncate">{company}</p>
       </div>
+            )}
 
-      {/* Profile Info with slide-up animation */}
-      <div className="text-center relative z-10 transition-transform duration-300 group-hover:-translate-y-1">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-          {name}
-        </h3>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 group-hover:text-gray-700 dark:group-hover:text-gray-300">
-          {role}
-        </p>
+            {/* Sessions Count - Main info */}
+            {completedSessions !== undefined && totalSessions !== undefined && (
+              <div className="text-center mb-3">
+                <p className="text-lg font-semibold text-blue-600">
+                  {completedSessions}/{totalSessions}
+                </p>
+                <p className="text-xs text-gray-500">sessões</p>
+              </div>
+            )}
 
-        {followers && (
-          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500 transition-all duration-300 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:font-medium">
-            {followers.toLocaleString()} followers
-          </p>
+            {/* Pillars - Minimal badges */}
+            {pillars.length > 0 && (
+              <div className="flex justify-center gap-1 mb-3">
+                {pillars.slice(0, 2).map((pillar) => {
+                  const Icon = getPillarIcon(pillar);
+                  return (
+                    <div key={pillar} className={cn("p-1 rounded-full", getPillarColor(pillar))}>
+                      <Icon className="w-3 h-3" />
+                    </div>
+                  );
+                })}
+                {pillars.length > 2 && (
+                  <div className="p-1 rounded-full bg-gray-100">
+                    <span className="text-xs text-gray-500">+{pillars.length - 2}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
-      </div>
 
-      {/* Tags with bounce animation */}
-      {tags.length > 0 && (
-        <div className="mt-4 flex justify-center gap-2 relative z-10">
-          {tags.map((tag, i) => (
-            <span
-              key={i}
+        {/* Provider specific content - Minimal */}
+        {type === 'provider' && (
+          <>
+            {/* Specialty - Main info */}
+            {specialty && (
+              <div className="text-center mb-3">
+                <p className="text-sm font-medium text-gray-700 truncate">{specialty}</p>
+              </div>
+            )}
+
+            {/* Experience - Minimal */}
+            {experience && (
+              <div className="text-center mb-3">
+                <p className="text-xs text-gray-500">{experience}</p>
+              </div>
+            )}
+
+            {/* Next Available - Key info */}
+            {nextAvailable && (
+              <div className="text-center mb-3">
+                <p className="text-sm text-green-600 font-medium">
+                  {nextAvailable}
+                </p>
+                <p className="text-xs text-gray-500">próxima disponibilidade</p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Generic content for other types */}
+        {type !== 'employee' && type !== 'provider' && (
+          <>
+            {/* Followers */}
+            {followers && (
+              <div className="text-center mb-3">
+                <p className="text-sm text-blue-600 font-medium">{followers}</p>
+      </div>
+            )}
+
+            {/* Badge */}
+            {badge && (
+              <div className="flex justify-center mb-4">
+                <Badge 
+                  variant={isPremium ? "default" : "secondary"}
               className={cn(
-                "inline-block rounded-full bg-white dark:bg-gray-700 px-3 py-1 text-xs font-medium shadow-[2px_2px_4px_rgba(0,0,0,0.05),-2px_-2px_4px_rgba(255,255,255,0.8)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.2),-2px_-2px_4px_rgba(255,255,255,0.1)] transition-all duration-300",
-                tag === "Premium"
-                  ? "text-blue-600 dark:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 group-hover:scale-105 group-hover:shadow-[0_0_10px_rgba(59,130,246,0.3)]"
-                  : "text-gray-600 dark:text-gray-300 group-hover:scale-105",
-              )}
+                    "text-xs px-3 py-1",
+                    isPremium ? "bg-gradient-to-r from-yellow-400 to-orange-500 text-white" : ""
+                  )}
+                >
+                  {badge}
+                </Badge>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Action Buttons - Minimal */}
+        <div className="flex gap-2">
+          {onView && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 hover:text-blue-800 text-xs"
+              onClick={onView}
             >
-              {tag}
-            </span>
-          ))}
+              <Eye className="w-3 h-3 mr-1" />
+              Ver
+            </Button>
+          )}
+          {onContact && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full bg-white hover:bg-gray-50 border-gray-200 text-gray-700 hover:text-gray-800 text-xs"
+              onClick={onContact}
+            >
+              <MessageCircle className="w-3 h-3 mr-1" />
+              Contactar
+            </Button>
+          )}
         </div>
-      )}
-
-      {/* Action Buttons with enhanced hover effects and increased height */}
-      <div className="mt-6 flex gap-2 relative z-10">
-        <button className="flex-1 rounded-full bg-white dark:bg-gray-700 py-4 text-sm font-medium text-blue-600 dark:text-blue-400 shadow-[6px_6px_12px_rgba(0,0,0,0.1),-6px_-6px_12px_rgba(255,255,255,0.9)] dark:shadow-[6px_6px_12px_rgba(0,0,0,0.2),-6px_-6px_12px_rgba(255,255,255,0.1)] transition-all duration-300 hover:shadow-[2px_2px_4px_rgba(0,0,0,0.05),-2px_-2px_4px_rgba(255,255,255,0.8)] dark:hover:shadow-[2px_2px_4px_rgba(0,0,0,0.15),-2px_-2px_4px_rgba(255,255,255,0.05)] hover:scale-95 active:scale-90 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30">
-          <UserPlus className="mx-auto h-4 w-4 transition-transform duration-300 hover:scale-110" />
-        </button>
-        <button className="flex-1 rounded-full bg-white dark:bg-gray-700 py-4 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-[6px_6px_12px_rgba(0,0,0,0.1),-6px_-6px_12px_rgba(255,255,255,0.9)] dark:shadow-[6px_6px_12px_rgba(0,0,0,0.2),-6px_-6px_12px_rgba(255,255,255,0.1)] transition-all duration-300 hover:shadow-[2px_2px_4px_rgba(0,0,0,0.05),-2px_-2px_4px_rgba(255,255,255,0.8)] dark:hover:shadow-[2px_2px_4px_rgba(0,0,0,0.15),-2px_-2px_4px_rgba(255,255,255,0.05)] hover:scale-95 active:scale-90 group-hover:bg-gray-50 dark:group-hover:bg-gray-600">
-          <MessageCircle className="mx-auto h-4 w-4 transition-transform duration-300 hover:scale-110" />
-        </button>
-      </div>
-
-      {/* Animated border on hover */}
-      <div className="absolute inset-0 rounded-3xl border border-blue-200 dark:border-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-    </div>
-  )
+      </CardContent>
+    </Card>
+  );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,16 @@ const AdminCallRequests = () => {
   
   // Admin sees all call requests (no company filtering)
   const allRequests = mockCallRequests;
+
+  useEffect(() => {
+    // Add admin-page class to body for gray background
+    document.body.classList.add('admin-page');
+    
+    // Cleanup: remove class when component unmounts
+    return () => {
+      document.body.classList.remove('admin-page');
+    };
+  }, []);
   
   const filteredRequests = allRequests.filter(request => {
     const matchesSearch = request.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,56 +83,58 @@ const AdminCallRequests = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-heading font-bold text-foreground">
-          Solicitações de Chamada
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Gerir todas as solicitações de chamada de utilizadores que clicaram "Quero falar com alguém"
-        </p>
-      </div>
+    <div className="relative w-full min-h-screen h-full flex flex-col">
+      <div className="relative z-10 h-full flex flex-col">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
+          <div>
+            <h1 className="text-3xl font-heading font-bold text-foreground">
+              Solicitações de Chamada
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Gerir todas as solicitações de chamada de utilizadores que clicaram "Quero falar com alguém"
+            </p>
+          </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Pesquisar por nome ou empresa..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        
-        <Select value={statusFilter} onValueChange={(value: any) => setStatusFilter(value)}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Filtrar por status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            <SelectItem value="pending">Pendente</SelectItem>
-            <SelectItem value="resolved">Resolvido</SelectItem>
-          </SelectContent>
-        </Select>
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Pesquisar por nome ou empresa..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select value={statusFilter} onValueChange={(value: any) => setStatusFilter(value)}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Filtrar por status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="pending">Pendente</SelectItem>
+                <SelectItem value="resolved">Resolvido</SelectItem>
+              </SelectContent>
+            </Select>
 
-        <Select value={pillarFilter} onValueChange={setPillarFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Filtrar por pilar" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os pilares</SelectItem>
-            <SelectItem value="psychological">Saúde Mental</SelectItem>
-            <SelectItem value="physical">Bem-Estar Físico</SelectItem>
-            <SelectItem value="financial">Assistência Financeira</SelectItem>
-            <SelectItem value="legal">Assistência Jurídica</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+            <Select value={pillarFilter} onValueChange={setPillarFilter}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Filtrar por pilar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os pilares</SelectItem>
+                <SelectItem value="psychological">Saúde Mental</SelectItem>
+                <SelectItem value="physical">Bem-Estar Físico</SelectItem>
+                <SelectItem value="financial">Assistência Financeira</SelectItem>
+                <SelectItem value="legal">Assistência Jurídica</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-      {/* Bento Grid Layout - Fixed Sizing */}
-      <div>
-        <BentoGrid className="grid-rows-1" style={{ gridAutoRows: '100px' }}>
+          {/* Bento Grid Layout - Fixed Sizing */}
+          <div>
+            <BentoGrid className="grid-rows-1" style={{ gridAutoRows: '100px' }}>
           {/* Summary Cards Row */}
           <BentoCard 
             name="Total Solicitações" 
@@ -263,6 +275,8 @@ const AdminCallRequests = () => {
             )}
           </CardContent>
         </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

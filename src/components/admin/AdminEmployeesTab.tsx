@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { AddEmployeeModal } from '@/components/admin/AddEmployeeModal';
+import { InfoCard } from '@/components/ui/info-card';
 import { 
   Search, 
   Eye, 
@@ -114,6 +115,7 @@ export const AdminEmployeesTab = () => {
     setSheetOpen(true);
   };
 
+
   const handleAddEmployee = () => {
     setIsAddEmployeeModalOpen(true);
   };
@@ -148,73 +150,28 @@ export const AdminEmployeesTab = () => {
         </div>
 
         {/* Employees Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredEmployees.map((employee) => (
-            <Card key={employee.id} className="hover-lift">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {employee.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <CardTitle className="text-base">{employee.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{employee.email}</p>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Empresa</p>
-                  <p className="font-medium text-sm">{employee.company}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Pilares</p>
-                  <div className="flex flex-wrap gap-2">
-                    {employee.pillars.map((pillar) => {
-                      const Icon = pillarIcons[pillar];
-                      return (
-                        <Badge 
-                          key={pillar} 
-                          variant="outline" 
-                          className={pillarColors[pillar]}
-                        >
-                          <Icon className="h-3 w-3 mr-1" />
-                          {pillar}
-                        </Badge>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-sm text-muted-foreground">Progresso</p>
-                    <p className="text-sm font-medium">{employee.progress}%</p>
-                  </div>
-                  <Progress value={employee.progress} className="h-2" />
-                </div>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleViewProfile(employee)}
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Ver Perfil
-                </Button>
-              </CardContent>
-            </Card>
+            <InfoCard
+              key={employee.id}
+              name={employee.name}
+              title={employee.email}
+              company={employee.company}
+              pillars={employee.pillars}
+              completedSessions={employee.completedSessions}
+              totalSessions={employee.totalSessions}
+              rating={employee.avgRating}
+              isPremium={employee.avgRating >= 4.5}
+              variant="default"
+              type="employee"
+              onView={() => handleViewProfile(employee)}
+              className="w-full"
+            />
           ))}
         </div>
-      </div>
 
-      {/* Profile Sheet */}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        {/* Profile Sheet */}
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
           {selectedEmployee && (
             <>
@@ -310,13 +267,15 @@ export const AdminEmployeesTab = () => {
             </>
           )}
         </SheetContent>
-      </Sheet>
+        </Sheet>
 
-      {/* Add Employee Modal */}
-      <AddEmployeeModal
-        open={isAddEmployeeModalOpen}
-        onOpenChange={setIsAddEmployeeModalOpen}
-      />
+        {/* Add Employee Modal */}
+        <AddEmployeeModal
+          open={isAddEmployeeModalOpen}
+          onOpenChange={setIsAddEmployeeModalOpen}
+        />
+
+      </div>
     </>
   );
 };

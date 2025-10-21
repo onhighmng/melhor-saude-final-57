@@ -4,3 +4,4 @@ export default function DemoOne() {
   return <AnimatedProfileCard variant="fullscreen" />;
 }
 
+

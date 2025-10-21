@@ -183,6 +183,11 @@ All colors MUST be HSL.
     font-family: 'Baskervville', serif;
     overflow-x: hidden;
   }
+
+  /* Admin pages background */
+  body.admin-page {
+    @apply bg-gray-50;
+  }
 }
 
 /* Typography System - Updated with specified requirements */

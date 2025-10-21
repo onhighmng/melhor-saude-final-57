@@ -41,6 +41,7 @@ import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
 import providerPlaceholder from '@/assets/provider-placeholder.jpg';
 import { ProviderOptionsModal } from '@/components/admin/providers/ProviderOptionsModal';
 import { BookingModal } from '@/components/admin/providers/BookingModal';
+import { InfoCard } from '@/components/ui/info-card';
 import type { CalendarSlot } from '@/types/adminProvider';
 
 const AdminProvidersTab = () => {
@@ -146,10 +147,11 @@ const AdminProvidersTab = () => {
     });
   };
 
-  const handleCardClick = (provider: Provider) => {
+  const handleViewProvider = (provider: Provider) => {
     setSelectedProvider(provider);
     setShowOptionsModal(true);
   };
+
 
   const handleViewMetrics = () => {
     if (selectedProvider) {
@@ -390,76 +392,21 @@ const AdminProvidersTab = () => {
           </div>
         ) : (
           filteredProviders.map((provider) => (
-            <Card 
-              key={provider.id} 
-              className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-border shadow-sm overflow-hidden"
-              onClick={() => handleCardClick(provider)}
-            >
-              {/* Provider Image */}
-              <div className="relative h-48 bg-gradient-to-br from-muted to-muted/50">
-                <Avatar className="absolute inset-0 w-full h-full rounded-none">
-                  <AvatarImage 
-                    src={provider.avatar || providerPlaceholder} 
-                    className="object-cover" 
-                  />
-                  <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-4xl rounded-none w-full h-full">
-                    {provider.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                  </AvatarFallback>
-                </Avatar>
-                
-                {/* Status Badge Overlay */}
-                <div className="absolute top-3 right-3">
-                  {getStatusBadge(provider.status)}
-                </div>
-
-                {/* Pillar Badge Overlay */}
-                <div className="absolute top-3 left-3">
-                  <Badge className={getPillarBadgeColor(provider.pillar)}>
-                    {getPillarIcon(provider.pillar)}
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Provider Info */}
-              <CardContent className="p-6 space-y-4">
-                {/* Name & Specialty */}
-                <div>
-                  <h3 className="font-bold text-lg text-foreground line-clamp-1">{provider.name}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-1">{provider.specialty}</p>
-                </div>
-
-                {/* Email */}
-                <p className="text-xs text-muted-foreground line-clamp-1">{provider.email}</p>
-
-                {/* Session Type */}
-                <Badge variant="outline" className="w-fit">
-                  {provider.sessionType}
-                </Badge>
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Custo/sessão</p>
-                    <p className="font-semibold text-sm">{provider.costPerSession} MZN</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Satisfação</p>
-                    <p className="font-semibold text-sm flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                      {provider.satisfaction}/10
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Total sessões</p>
-                    <p className="font-semibold text-sm">{provider.totalSessions}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Este mês</p>
-                    <p className="font-semibold text-sm text-blue-600">{provider.sessionsThisMonth}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <InfoCard
+              key={provider.id}
+              name={provider.name}
+              title={provider.email}
+              avatar={provider.avatar || providerPlaceholder}
+              specialty={provider.specialty}
+              experience={`${provider.experience} anos`}
+              nextAvailable={provider.nextAvailable}
+              rating={provider.satisfaction}
+              isPremium={provider.satisfaction >= 8}
+              variant="specialist"
+              type="provider"
+              onView={() => handleViewProvider(provider)}
+              className="w-full"
+            />
           ))
         )}
       </div>

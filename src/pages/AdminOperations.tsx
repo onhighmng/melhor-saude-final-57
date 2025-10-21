@@ -17,59 +17,73 @@ const AdminOperations = () => {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    // Add admin-page class to body for gray background
+    document.body.classList.add('admin-page');
+    
+    // Cleanup: remove class when component unmounts
+    return () => {
+      document.body.classList.remove('admin-page');
+    };
+  }, []);
+
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     setSearchParams({ tab: value });
   };
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-heading font-bold text-foreground">
-          Operações
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Gerir sessões e especialista geral
-        </p>
-      </div>
+    <div className="relative w-full min-h-screen h-full flex flex-col">
+      <div className="relative z-10 h-full flex flex-col">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
+          {/* Page Header */}
+          <div>
+            <h1 className="text-3xl font-heading font-bold text-foreground">
+              Operações
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Gerir sessões e especialista geral
+            </p>
+          </div>
 
-      {/* Bento Grid Layout - Tab Navigation */}
-      <div className="space-y-6">
-        <BentoGrid className="grid-rows-1 auto-rows-[80px] grid-cols-2" style={{ gridTemplateColumns: '1fr 1fr' }}>
-          <BentoCard 
-            name="Sessões Agendadas" 
-            description="Gerir sessões e agendamentos" 
-            Icon={ClipboardList} 
-            onClick={() => handleTabChange('sessions')} 
-            className={`col-span-1 ${activeTab === 'sessions' ? 'ring-2 ring-blue-500' : ''}`}
-            background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'sessions' ? 'from-blue-100 to-blue-200' : 'from-blue-50 to-blue-100'}`} />}
-            iconColor="text-blue-600"
-            textColor="text-gray-900"
-            descriptionColor="text-gray-600"
-            href="#"
-            cta=""
-          />
+          {/* Bento Grid Layout - Tab Navigation */}
+          <div className="space-y-6">
+            <BentoGrid className="grid-rows-1 auto-rows-[80px] grid-cols-2" style={{ gridTemplateColumns: '1fr 1fr' }}>
+              <BentoCard 
+                name="Sessões Agendadas" 
+                description="Gerir sessões e agendamentos" 
+                Icon={ClipboardList} 
+                onClick={() => handleTabChange('sessions')} 
+                className={`col-span-1 ${activeTab === 'sessions' ? 'ring-2 ring-blue-500' : ''}`}
+                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'sessions' ? 'from-blue-100 to-blue-200' : 'from-blue-50 to-blue-100'}`} />}
+                iconColor="text-blue-600"
+                textColor="text-gray-900"
+                descriptionColor="text-gray-600"
+                href="#"
+                cta=""
+              />
 
-          <BentoCard 
-            name="Especialista Geral" 
-            description="Gerir especialista geral" 
-            Icon={MessageSquare} 
-            onClick={() => handleTabChange('specialist')} 
-            className={`col-span-1 ${activeTab === 'specialist' ? 'ring-2 ring-green-500' : ''}`}
-            background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'specialist' ? 'from-green-100 to-green-200' : 'from-green-50 to-green-100'}`} />}
-            iconColor="text-green-600"
-            textColor="text-gray-900"
-            descriptionColor="text-gray-600"
-            href="#"
-            cta=""
-          />
-        </BentoGrid>
+              <BentoCard 
+                name="Especialista Geral" 
+                description="Gerir especialista geral" 
+                Icon={MessageSquare} 
+                onClick={() => handleTabChange('specialist')} 
+                className={`col-span-1 ${activeTab === 'specialist' ? 'ring-2 ring-green-500' : ''}`}
+                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'specialist' ? 'from-green-100 to-green-200' : 'from-green-50 to-green-100'}`} />}
+                iconColor="text-green-600"
+                textColor="text-gray-900"
+                descriptionColor="text-gray-600"
+                href="#"
+                cta=""
+              />
+            </BentoGrid>
 
-        {/* Content Area */}
-        <div className="mt-6">
-          {activeTab === 'sessions' && <AdminSessionsTab />}
-          {activeTab === 'specialist' && <AdminSpecialistTab />}
+            {/* Content Area */}
+            <div className="mt-6">
+              {activeTab === 'sessions' && <AdminSessionsTab />}
+              {activeTab === 'specialist' && <AdminSpecialistTab />}
+            </div>
+          </div>
         </div>
       </div>
     </div>
