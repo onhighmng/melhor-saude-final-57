@@ -64,10 +64,10 @@ const CompanyDashboard = () => {
             </p>
           </div>
           
-          {/* Bento Grid Layout - Fixed height */}
+          {/* Bento Grid Layout - 6 Cards as per PRD */}
           <div className="h-[calc(100vh-200px)]">
             <BentoGrid className="h-full grid-rows-3 gap-4">
-              {/* Top Left - Total Employees */}
+              {/* 1. Nº total de colaboradores incluídos no plano */}
               <BentoCard 
                 name="Total de Colaboradores" 
                 description={`${mockCompanyMetrics.totalEmployeesInPlan} incluídos no plano`} 
@@ -88,10 +88,34 @@ const CompanyDashboard = () => {
                 textColor="text-slate-900"
                 descriptionColor="text-slate-600"
                 href="#"
-                cta="Gerir Colaboradores"
+                cta="Ver Colaboradores"
               />
 
-              {/* Top Right - Sessions Usage */}
+              {/* 2. Nº de colaboradores registados vs por registar */}
+              <BentoCard 
+                name="Registrados vs Por Registar" 
+                description={`${mockCompanyMetrics.registeredEmployees} registados, ${mockCompanyMetrics.unregisteredEmployees} pendentes`} 
+                Icon={Users} 
+                onClick={() => navigate('/company/colaboradores')} 
+                className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
+                background={
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100">
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
+                      style={{
+                        backgroundImage: "url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
+                      }}
+                    />
+                  </div>
+                }
+                iconColor="text-yellow-700"
+                textColor="text-slate-900"
+                descriptionColor="text-slate-600"
+                href="#"
+                cta="Ver Detalhes"
+              />
+
+              {/* 3. Sessões contratadas vs sessões utilizadas */}
               <BentoCard 
                 name="Sessões Contratadas vs Utilizadas" 
                 description={`${mockCompanyMetrics.usedSessions} de ${mockCompanyMetrics.contractedSessions} este mês`} 
@@ -115,13 +139,13 @@ const CompanyDashboard = () => {
                 cta="Ver Sessões"
               />
 
-              {/* Bottom Left - Most Used Pillar */}
+              {/* 4. Pilar mais utilizado */}
               <BentoCard 
                 name="Pilar Mais Utilizado" 
                 description={`${mockCompanyMetrics.mostUsedPillar} - 42% das sessões`} 
                 Icon={PillarIcon} 
                 onClick={() => navigate('/company/relatorios')} 
-                className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
+                className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3" 
                 background={
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100">
                     <div 
@@ -139,13 +163,13 @@ const CompanyDashboard = () => {
                 cta="Ver Relatórios"
               />
 
-              {/* Bottom Right - Satisfaction Rating */}
+              {/* 5. Satisfação média (1-10) */}
               <BentoCard 
                 name="Satisfação Média" 
                 description={`${mockCompanyMetrics.avgSatisfaction}/10 - Avaliação dos colaboradores`} 
                 Icon={Star} 
                 onClick={() => navigate('/company/relatorios')} 
-                className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
+                className="lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3" 
                 background={
                   <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100">
                     <div 
@@ -154,7 +178,7 @@ const CompanyDashboard = () => {
                         backgroundImage: "url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
                       }}
                     />
-                  </div>
+        </div>
                 }
                 iconColor="text-amber-700"
                 textColor="text-slate-900"
@@ -163,96 +187,29 @@ const CompanyDashboard = () => {
                 cta="Ver Relatórios"
               />
 
-              {/* Center - Activity Overview */}
+              {/* 6. % de colaboradores ativos / inativos */}
               <BentoCard 
-                name="" 
-                description="" 
-                href="#" 
-                cta="" 
-                className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
-                background={<div className="absolute inset-0 bg-gradient-to-br from-red-100 to-red-200" />}
-                iconColor="text-red-800"
+                name="Atividade dos Colaboradores" 
+                description={`${mockCompanyMetrics.activePercentage}% ativos / ${mockCompanyMetrics.inactivePercentage}% inativos`} 
+                Icon={Activity} 
+                onClick={() => navigate('/company/colaboradores')} 
+                className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-3" 
+                background={
+                  <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100">
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
+                      style={{
+                        backgroundImage: "url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
+                      }}
+                    />
+                </div>
+                }
+                iconColor="text-red-700"
                 textColor="text-slate-900"
                 descriptionColor="text-slate-600"
-                onClick={() => navigate('/company/colaboradores')}
-              >
-                <div className="relative z-30 flex flex-col h-full p-6">
-                  <div className="mb-4">
-                    <h3 className="text-3xl font-semibold text-gray-900 mb-2">Atividade dos Colaboradores</h3>
-                    <p className="text-gray-600">Distribuição entre colaboradores ativos e inativos</p>
-                  </div>
-                  
-                  <div className="flex-1 space-y-3">
-                    <div 
-                      className="flex items-center justify-between p-3 bg-white/70 rounded-lg cursor-pointer hover:bg-white/90 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/company/colaboradores');
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <UserCheck className="h-5 w-5 text-green-600" />
-                        <span className="font-medium">Colaboradores Ativos</span>
-                      </div>
-                      <span className="text-xl font-bold text-green-700">{mockCompanyMetrics.activePercentage}%</span>
-                    </div>
-                    
-                    <div 
-                      className="flex items-center justify-between p-3 bg-white/70 rounded-lg cursor-pointer hover:bg-white/90 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/company/colaboradores');
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <UserX className="h-5 w-5 text-red-600" />
-                        <span className="font-medium">Colaboradores Inativos</span>
-                      </div>
-                      <span className="text-xl font-bold text-red-700">{mockCompanyMetrics.inactivePercentage}%</span>
-        </div>
-
-                    <div 
-                      className="flex items-center justify-between p-3 bg-white/70 rounded-lg cursor-pointer hover:bg-white/90 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/company/colaboradores');
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Users className="h-5 w-5 text-blue-600" />
-                        <span className="font-medium">Registrados vs Pendentes</span>
-                      </div>
-                      <span className="text-xl font-bold text-blue-700">{mockCompanyMetrics.registeredEmployees}/{mockCompanyMetrics.unregisteredEmployees}</span>
-                    </div>
-
-                    <div 
-                      className="flex items-center justify-between p-3 bg-white/70 rounded-lg cursor-pointer hover:bg-white/90 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/company/sessions');
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Activity className="h-5 w-5 text-purple-600" />
-                        <span className="font-medium">Taxa de Utilização</span>
-                      </div>
-                      <span className="text-xl font-bold text-purple-700">{mockCompanyMetrics.utilizationRate}%</span>
-                    </div>
-                </div>
-
-                  <div className="mt-4">
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/company/colaboradores');
-                      }}
-                      className="text-sm text-red-600 hover:text-red-700 font-medium hover:underline"
-                    >
-                      Ver Todos os Detalhes →
-                    </button>
-                </div>
-                </div>
-              </BentoCard>
+                href="#"
+                cta="Ver Detalhes"
+              />
             </BentoGrid>
               </div>
         </div>

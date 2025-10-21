@@ -214,14 +214,12 @@ const CompanySessions = () => {
                 
                 <div>
                   <h5 className="font-medium text-sm mb-2">Especialistas mais envolvidos:</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {pillar.topSpecialists.map((specialist, specIndex) => (
-                      <div key={specIndex} className="flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm">
-                        <span className="font-medium">{specialist.name}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {specialist.sessions} sessões
-                        </Badge>
-                      </div>
+                  <div className="text-sm text-muted-foreground">
+                    {pillar.topSpecialists.slice(0, 2).map((specialist, specIndex) => (
+                      <span key={specIndex}>
+                        {specialist.name}
+                        {specIndex < pillar.topSpecialists.slice(0, 2).length - 1 ? ', ' : ''}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -280,52 +278,7 @@ const CompanySessions = () => {
           </CardContent>
         </Card>
 
-        {/* Peak Hours Chart */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Horários de Pico
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockSessionAnalytics.peakHours}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="sessions" fill="#8B5CF6" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
       </div>
-
-      {/* Peak Days Chart */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Distribuição por Dias da Semana
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mockSessionAnalytics.peakDays}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="sessions" fill="#06B6D4" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Privacy Notice */}
       <Card className="border-amber-200 bg-amber-50/50">

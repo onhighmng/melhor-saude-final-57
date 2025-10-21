@@ -216,25 +216,16 @@ const CompanySettings = () => {
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Phone className="h-5 w-5" />
+                <Mail className="h-5 w-5" />
                 Contacto Melhor Saúde
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-                  <Mail className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium">E-mail de Suporte</p>
-                    <p className="text-sm text-muted-foreground">suporte@melhorsaude.co.mz</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                  <Phone className="h-5 w-5 text-green-600" />
-                  <div>
-                    <p className="font-medium">Telefone</p>
-                    <p className="text-sm text-muted-foreground">+258 21 123 456</p>
-                  </div>
+              <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                <Mail className="h-5 w-5 text-blue-600" />
+                <div>
+                  <p className="font-medium">E-mail de Suporte</p>
+                  <p className="text-sm text-muted-foreground">suporte@melhorsaude.co.mz</p>
                 </div>
               </div>
             </CardContent>
@@ -313,41 +304,6 @@ const CompanySettings = () => {
             </CardContent>
           </Card>
 
-          {/* Plan Management */}
-          <Card className="border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Gestão do Plano
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-semibold text-blue-900 mb-2">Upgrade de Plano</h4>
-                  <p className="text-sm text-blue-700 mb-3">
-                    Precisa de mais colaboradores ou sessões? Contacte-nos para um upgrade.
-                  </p>
-                  <Button variant="outline" size="sm">
-                    <Phone className="h-4 w-4 mr-2" />
-                    Contactar Vendas
-                  </Button>
-                </div>
-                
-                <div className="p-4 bg-amber-50 rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold text-amber-900 mb-1">Renovação Automática</h4>
-                      <p className="text-sm text-amber-700">
-                        O seu contrato renova automaticamente. Para alterações, contacte-nos com 30 dias de antecedência.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* Notifications Tab */}
@@ -365,7 +321,7 @@ const CompanySettings = () => {
                   <div className="space-y-0.5">
                     <Label className="text-base">Alertas de Utilização</Label>
                     <p className="text-sm text-muted-foreground">
-                      Receber notificações quando atingir 80% e 90% das sessões
+                      Receber notificações quando atingir 90% das sessões
                     </p>
                   </div>
                   <Switch
@@ -384,45 +340,6 @@ const CompanySettings = () => {
                   <Switch
                     checked={notifications.monthlyReports}
                     onCheckedChange={(checked) => setNotifications({...notifications, monthlyReports: checked})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Alertas Críticos</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Notificações urgentes sobre problemas técnicos ou de segurança
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifications.criticalAlerts}
-                    onCheckedChange={(checked) => setNotifications({...notifications, criticalAlerts: checked})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Lembretes de Sessão</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Lembretes para colaboradores sobre sessões agendadas
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifications.sessionReminders}
-                    onCheckedChange={(checked) => setNotifications({...notifications, sessionReminders: checked})}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Atualizações de Objetivos</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Notificações sobre progresso dos objetivos dos colaboradores
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifications.goalUpdates}
-                    onCheckedChange={(checked) => setNotifications({...notifications, goalUpdates: checked})}
                   />
                 </div>
               </div>

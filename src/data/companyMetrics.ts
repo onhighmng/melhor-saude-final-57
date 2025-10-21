@@ -216,7 +216,7 @@ export const mockInvoiceHistory: InvoiceHistory[] = [
   }
 ];
 
-// Mock ROI Data
+// Mock ROI Data - Simplified
 export const mockROIData: ROIData = {
   monthlyCost: 140000,
   estimatedSavings: {
@@ -230,19 +230,12 @@ export const mockROIData: ROIData = {
   paybackPeriod: 1.2
 };
 
-// Mock Absenteeism Data
+// Mock Absenteeism Data - Simplified
 export const mockAbsenteeismData: AbsenteeismData = {
   currentRate: 4.2,
   estimatedReduction: 15,
   monthlySessions: 234,
-  trendData: [
-    { month: 'Jan', before: 4.5, after: 4.2 },
-    { month: 'Fev', before: 4.3, after: 4.0 },
-    { month: 'Mar', before: 4.1, after: 3.8 },
-    { month: 'Abr', before: 3.9, after: 3.6 },
-    { month: 'Mai', before: 3.7, after: 3.4 },
-    { month: 'Jun', before: 3.5, after: 3.2 }
-  ]
+  trendData: [] // Removed detailed trend data
 };
 
 // Mock Session Analytics
@@ -305,21 +298,8 @@ export const mockSessionAnalytics: SessionAnalytics = {
     { month: 'Mai', total: 72, byPillar: { mental: 30, physical: 20, financial: 14, legal: 8 } },
     { month: 'Jun', total: 65, byPillar: { mental: 27, physical: 18, financial: 13, legal: 7 } }
   ],
-  peakHours: [
-    { hour: '09:00', sessions: 15 },
-    { hour: '10:00', sessions: 22 },
-    { hour: '11:00', sessions: 18 },
-    { hour: '14:00', sessions: 25 },
-    { hour: '15:00', sessions: 20 },
-    { hour: '16:00', sessions: 16 }
-  ],
-  peakDays: [
-    { day: 'Segunda', sessions: 45 },
-    { day: 'Terça', sessions: 52 },
-    { day: 'Quarta', sessions: 48 },
-    { day: 'Quinta', sessions: 55 },
-    { day: 'Sexta', sessions: 34 }
-  ]
+          peakHours: [], // Removed detailed peak hours data
+          peakDays: [] // Removed detailed peak days data
 };
 
 // Mock Employee Metrics
