@@ -10,6 +10,7 @@ import { mockEspecialistaSessions } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { SessionNoteModal } from '@/components/specialist/SessionNoteModal';
 import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
+import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
 import { isSameDay } from 'date-fns';
 
 const EspecialistaSessionsRevamped = () => {
@@ -19,6 +20,7 @@ const EspecialistaSessionsRevamped = () => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDaySessionsModalOpen, setIsDaySessionsModalOpen] = useState(false);
+  const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
   
   const allSessions = filterByCompanyAccess(mockEspecialistaSessions);
   
@@ -189,6 +191,7 @@ const EspecialistaSessionsRevamped = () => {
           data={calendarData}
           onEventClick={handleEventClick}
           onDayClick={handleDateClick}
+          onSetAvailability={() => setIsAvailabilityModalOpen(true)}
         />
       </Card>
 
@@ -225,6 +228,12 @@ const EspecialistaSessionsRevamped = () => {
           onSave={handleSaveNote}
         />
       )}
+
+      {/* Availability Settings Modal */}
+      <AvailabilitySettings 
+        open={isAvailabilityModalOpen}
+        onOpenChange={setIsAvailabilityModalOpen}
+      />
     </div>
   );
 };

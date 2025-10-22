@@ -19,6 +19,7 @@ import {
   ChevronRightIcon,
   PlusCircleIcon,
   SearchIcon,
+  Clock,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -43,6 +44,7 @@ interface FullScreenCalendarProps {
   onAddEvent?: () => void
   onEventClick?: (event: Event) => void
   onDayClick?: (date: Date) => void
+  onSetAvailability?: () => void
 }
 
 const colStartClasses = [
@@ -55,7 +57,7 @@ const colStartClasses = [
   "col-start-7",
 ]
 
-export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick }: FullScreenCalendarProps) {
+export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick, onSetAvailability }: FullScreenCalendarProps) {
   const today = startOfToday()
   const [selectedDay, setSelectedDay] = React.useState(today)
   const [currentMonth, setCurrentMonth] = React.useState(
@@ -149,6 +151,17 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick 
             orientation="horizontal"
             className="block w-full md:hidden"
           />
+
+          {onSetAvailability && (
+            <Button 
+              onClick={onSetAvailability} 
+              variant="outline"
+              className="w-full gap-2 md:w-auto h-8 text-sm"
+            >
+              <Clock size={14} strokeWidth={2} aria-hidden="true" />
+              <span>Disponibilidade</span>
+            </Button>
+          )}
 
           {onAddEvent && (
             <Button onClick={onAddEvent} className="w-full gap-2 md:w-auto h-8 text-sm">
