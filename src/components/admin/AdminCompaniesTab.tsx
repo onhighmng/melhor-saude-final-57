@@ -143,17 +143,17 @@ export const AdminCompaniesTab = () => {
         {/* Companies Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Empresas Ativas</CardTitle>
+            <CardTitle className="text-xl">Empresas Ativas</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Empresa</TableHead>
-                  <TableHead>NUIT</TableHead>
-                  <TableHead>Colaboradores</TableHead>
-                  <TableHead>Sessões</TableHead>
-                  <TableHead>Estado</TableHead>
+                  <TableHead className="text-base">Empresa</TableHead>
+                  <TableHead className="text-base">NUIT</TableHead>
+                  <TableHead className="text-base">Colaboradores</TableHead>
+                  <TableHead className="text-base">Sessões</TableHead>
+                  <TableHead className="text-base">Estado</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -165,20 +165,20 @@ export const AdminCompaniesTab = () => {
                       onClick={() => handleViewDetails(company)}
                       className="cursor-pointer hover:bg-muted/50"
                     >
-                      <TableCell className="font-medium">{company.name}</TableCell>
-                      <TableCell className="text-muted-foreground">{company.nuit}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium text-base">{company.name}</TableCell>
+                      <TableCell className="text-muted-foreground text-base">{company.nuit}</TableCell>
+                      <TableCell className="text-base">
                         <div className="flex items-center gap-2">
                           <Users className="h-4 w-4 text-muted-foreground" />
                           {company.employees}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <span className="text-sm">
+                      <TableCell className="text-base">
+                        <span>
                           {company.usedSessions}/{company.totalSessions}
                         </span>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-base">
                         <Badge 
                           variant={company.status === 'Ativa' ? 'default' : 'secondary'}
                           className={company.status === 'Ativa' ? 'bg-emerald-600 text-white hover:bg-emerald-600 hover:text-white border-0' : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'}
