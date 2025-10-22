@@ -197,14 +197,14 @@ export default function PrestadorDashboard() {
                       <div className="p-3 bg-white/70 rounded-lg border border-purple-100">
                         <div className="flex items-center gap-1 mb-1">
                           <CheckCircle className="w-3 h-3 text-green-600" />
-                          <span className="text-xs text-muted-foreground">Concluídas</span>
+                          <span className="text-xs text-muted-foreground">Sessões Concluídas</span>
                         </div>
                         <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
                       </div>
                       <div className="p-3 bg-white/70 rounded-lg border border-purple-100">
                         <div className="flex items-center gap-1 mb-1">
                           <Users className="w-3 h-3 text-blue-600" />
-                          <span className="text-xs text-muted-foreground">Utilizadores</span>
+                          <span className="text-xs text-muted-foreground">Utilizadores Atendidos</span>
                         </div>
                         <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
                       </div>
