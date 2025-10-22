@@ -61,13 +61,13 @@ const AdminProviderDetailMetrics = () => {
   const getPillarIcon = (pillar: string) => {
     switch (pillar) {
       case 'mental-health':
-        return <Brain className="h-4 w-4" />;
+        return <Brain className="h-5 w-5" />;
       case 'physical-wellness':
-        return <Heart className="h-4 w-4" />;
+        return <Heart className="h-5 w-5" />;
       case 'financial-assistance':
-        return <DollarSign className="h-4 w-4" />;
+        return <DollarSign className="h-5 w-5" />;
       case 'legal-assistance':
-        return <Scale className="h-4 w-4" />;
+        return <Scale className="h-5 w-5" />;
       default:
         return null;
     }
@@ -92,22 +92,22 @@ const AdminProviderDetailMetrics = () => {
 
       {/* Provider Header */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-8">
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
+            <div className="flex items-center gap-6">
+              <Avatar className="h-28 w-28">
                 <AvatarImage src={provider.avatar} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+                <AvatarFallback className="bg-primary text-primary-foreground text-3xl">
                   {provider.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">{provider.name}</h1>
-                <p className="text-muted-foreground">{provider.specialty}</p>
-                <p className="text-sm text-muted-foreground">{provider.email}</p>
+                <h1 className="text-4xl font-bold text-foreground">{provider.name}</h1>
+                <p className="text-xl text-muted-foreground mt-1">{provider.specialty}</p>
+                <p className="text-base text-muted-foreground mt-1">{provider.email}</p>
               </div>
             </div>
-            <Badge className={getPillarBadgeColor(provider.pillar)}>
+            <Badge className={`${getPillarBadgeColor(provider.pillar)} text-base px-4 py-2`}>
               {getPillarIcon(provider.pillar)}
             </Badge>
           </div>
@@ -116,52 +116,52 @@ const AdminProviderDetailMetrics = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Informação do Prestador</CardTitle>
+          <CardTitle className="text-2xl">Informação do Prestador</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-6">
+        <CardContent className="grid grid-cols-2 gap-8 p-8">
           <div>
-            <Label className="text-muted-foreground">Nome completo</Label>
-            <p className="text-lg font-semibold">{provider.name}</p>
+            <Label className="text-base text-muted-foreground">Nome completo</Label>
+            <p className="text-xl font-semibold mt-2">{provider.name}</p>
           </div>
           
           <div>
-            <Label className="text-muted-foreground">Email</Label>
-            <p className="text-lg">{provider.email}</p>
+            <Label className="text-base text-muted-foreground">Email</Label>
+            <p className="text-xl mt-2">{provider.email}</p>
           </div>
 
           <div>
-            <Label className="text-muted-foreground">Pilar</Label>
-            <div className="mt-1">
-              <Badge className={getPillarBadgeColor(provider.pillar)}>
+            <Label className="text-base text-muted-foreground">Pilar</Label>
+            <div className="mt-2">
+              <Badge className={`${getPillarBadgeColor(provider.pillar)} text-base px-4 py-2`}>
                 {getPillarIcon(provider.pillar)}
               </Badge>
             </div>
           </div>
 
           <div>
-            <Label className="text-muted-foreground">Tipo de sessão</Label>
-            <div className="mt-1">
-              <Badge variant="outline" className="flex items-center gap-1 w-fit">
-                {provider.sessionType === 'Virtual' && <Video className="h-3 w-3" />}
-                {provider.sessionType === 'Presencial' && <MapPin className="h-3 w-3" />}
+            <Label className="text-base text-muted-foreground">Tipo de sessão</Label>
+            <div className="mt-2">
+              <Badge variant="outline" className="flex items-center gap-2 w-fit text-base px-4 py-2">
+                {provider.sessionType === 'Virtual' && <Video className="h-4 w-4" />}
+                {provider.sessionType === 'Presencial' && <MapPin className="h-4 w-4" />}
                 {provider.sessionType}
               </Badge>
             </div>
           </div>
 
           <div>
-            <Label className="text-muted-foreground">Estado atual</Label>
-            <div className="mt-2 flex gap-2">
+            <Label className="text-base text-muted-foreground">Estado atual</Label>
+            <div className="mt-2 flex gap-3">
               <Button
                 variant={provider.status === 'Ativo' ? 'default' : 'outline'}
-                size="sm"
+                size="default"
                 onClick={() => handleStatusChange('Ativo')}
               >
                 Ativo
               </Button>
               <Button
                 variant={provider.status === 'Inativo' ? 'default' : 'outline'}
-                size="sm"
+                size="default"
                 onClick={() => handleStatusChange('Inativo')}
               >
                 Inativo
@@ -173,27 +173,27 @@ const AdminProviderDetailMetrics = () => {
 
       {/* Métricas Principais */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Métricas de Desempenho</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <h2 className="text-2xl font-semibold mb-6">Métricas de Desempenho</h2>
+        <div className="grid grid-cols-2 gap-6">
           <Card className="border-0 shadow-sm bg-blue-50">
-            <CardContent className="pt-6">
+            <CardContent className="pt-8 pb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Sessões realizadas</p>
-                  <p className="text-2xl font-bold text-blue-700">{provider.totalSessions}</p>
+                  <p className="text-base text-muted-foreground mb-2">Sessões realizadas</p>
+                  <p className="text-4xl font-bold text-blue-700">{provider.totalSessions}</p>
                 </div>
-                <Clock className="h-8 w-8 text-blue-600" />
+                <Clock className="h-12 w-12 text-blue-600" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-sm bg-amber-50">
-            <CardContent className="pt-6">
+            <CardContent className="pt-8 pb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Média de satisfação</p>
-                  <p className="text-2xl font-bold text-amber-700 flex items-center gap-1">
-                    <Star className="h-5 w-5 fill-amber-600 text-amber-600" />
+                  <p className="text-base text-muted-foreground mb-2">Média de satisfação</p>
+                  <p className="text-4xl font-bold text-amber-700 flex items-center gap-2">
+                    <Star className="h-7 w-7 fill-amber-600 text-amber-600" />
                     {provider.satisfaction} / 10
                   </p>
                 </div>
@@ -202,25 +202,25 @@ const AdminProviderDetailMetrics = () => {
           </Card>
 
           <Card className="border-0 shadow-sm bg-green-50">
-            <CardContent className="pt-6">
+            <CardContent className="pt-8 pb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Sessões este mês</p>
-                  <p className="text-2xl font-bold text-green-700">{provider.sessionsThisMonth}</p>
+                  <p className="text-base text-muted-foreground mb-2">Sessões este mês</p>
+                  <p className="text-4xl font-bold text-green-700">{provider.sessionsThisMonth}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-600" />
+                <TrendingUp className="h-12 w-12 text-green-600" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-sm bg-purple-50">
-            <CardContent className="pt-6">
+            <CardContent className="pt-8 pb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Empresas atendidas</p>
-                  <p className="text-2xl font-bold text-purple-700">{provider.companiesServed}</p>
+                  <p className="text-base text-muted-foreground mb-2">Empresas atendidas</p>
+                  <p className="text-4xl font-bold text-purple-700">{provider.companiesServed}</p>
                 </div>
-                <Building className="h-8 w-8 text-purple-600" />
+                <Building className="h-12 w-12 text-purple-600" />
               </div>
             </CardContent>
           </Card>
@@ -230,29 +230,29 @@ const AdminProviderDetailMetrics = () => {
       {/* Informação Financeira */}
       <Card>
         <CardHeader>
-          <CardTitle>Informação Financeira</CardTitle>
+          <CardTitle className="text-2xl">Informação Financeira</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
               <tbody>
                 <tr className="border-b">
-                  <td className="p-4 font-medium">💰 Custo por sessão</td>
-                  <td className="p-4 text-right font-semibold">{provider.costPerSession} MZN</td>
+                  <td className="p-6 font-medium text-lg">💰 Custo por sessão</td>
+                  <td className="p-6 text-right font-semibold text-xl">{provider.costPerSession} MZN</td>
                 </tr>
                 <tr className="border-b bg-muted/30">
-                  <td className="p-4 font-medium">🧾 Margem Melhor Saúde ({provider.platformMargin}%)</td>
-                  <td className="p-4 text-right font-semibold">{(provider.costPerSession * provider.platformMargin / 100).toFixed(2)} MZN</td>
+                  <td className="p-6 font-medium text-lg">🧾 Margem Melhor Saúde ({provider.platformMargin}%)</td>
+                  <td className="p-6 text-right font-semibold text-xl">{(provider.costPerSession * provider.platformMargin / 100).toFixed(2)} MZN</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="p-4 font-medium">💸 Valor líquido ao prestador</td>
-                  <td className="p-4 text-right font-semibold text-green-700">
+                  <td className="p-6 font-medium text-lg">💸 Valor líquido ao prestador</td>
+                  <td className="p-6 text-right font-semibold text-xl text-green-700">
                     {(provider.costPerSession * (100 - provider.platformMargin) / 100).toFixed(2)} MZN
                   </td>
                 </tr>
                 <tr className="bg-blue-50">
-                  <td className="p-4 font-medium">📆 Total pago este mês</td>
-                  <td className="p-4 text-right font-bold text-blue-700 text-lg">
+                  <td className="p-6 font-medium text-lg">📆 Total pago este mês</td>
+                  <td className="p-6 text-right font-bold text-blue-700 text-2xl">
                     {provider.monthlyPayment.toFixed(2)} MZN
                   </td>
                 </tr>
@@ -265,16 +265,16 @@ const AdminProviderDetailMetrics = () => {
       {/* Histórico de Sessões Recentes */}
       <Card>
         <CardHeader>
-          <CardTitle>Histórico de Sessões Recentes</CardTitle>
+          <CardTitle className="text-2xl">Histórico de Sessões Recentes</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead className="bg-muted">
                 <tr>
-                  <th className="p-3 text-left text-sm font-medium">Data</th>
-                  <th className="p-3 text-left text-sm font-medium">Colaborador</th>
-                  <th className="p-3 text-right text-sm font-medium">Nota</th>
+                  <th className="p-5 text-left text-base font-medium">Data</th>
+                  <th className="p-5 text-left text-base font-medium">Colaborador</th>
+                  <th className="p-5 text-right text-base font-medium">Nota</th>
                 </tr>
               </thead>
               <tbody>
@@ -286,10 +286,10 @@ const AdminProviderDetailMetrics = () => {
                   { date: '2024-10-01', collaborator: 'Carlos Santos', rating: 9.3 },
                 ].map((session, idx) => (
                   <tr key={idx} className="border-b hover:bg-muted/30">
-                    <td className="p-3 text-sm">{new Date(session.date).toLocaleDateString('pt-PT')}</td>
-                    <td className="p-3 text-sm">{session.collaborator}</td>
-                    <td className="p-3 text-sm text-right flex items-center justify-end gap-1">
-                      <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                    <td className="p-5 text-base">{new Date(session.date).toLocaleDateString('pt-PT')}</td>
+                    <td className="p-5 text-base">{session.collaborator}</td>
+                    <td className="p-5 text-base text-right flex items-center justify-end gap-2">
+                      <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                       {session.rating}
                     </td>
                   </tr>
