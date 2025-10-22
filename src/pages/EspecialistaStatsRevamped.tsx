@@ -91,23 +91,25 @@ const EspecialistaStatsRevamped = () => {
           href="#"
           cta=""
         >
-          <div className="p-4 h-full flex flex-col relative z-20">
-            <ResponsiveContainer width="100%" height="85%">
-              <LineChart data={stats.evolution_data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="month" stroke="#666" />
-                <YAxis stroke="#666" />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="cases"
-                  stroke="#6366f1"
-                  strokeWidth={3}
-                  dot={{ fill: '#6366f1', r: 5 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-            <div className="mt-2 text-center flex-shrink-0">
+          <div className="relative z-20 p-6 h-full flex flex-col justify-between" style={{ minHeight: '300px' }}>
+            <div style={{ width: '100%', height: '250px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={stats.evolution_data}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                  <XAxis dataKey="month" stroke="#666" />
+                  <YAxis stroke="#666" />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="cases"
+                    stroke="#6366f1"
+                    strokeWidth={3}
+                    dot={{ fill: '#6366f1', r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-4 text-center">
               <Badge variant="secondary" className="gap-1">
                 <TrendingUp className="h-3 w-3" />
                 Crescimento de {Math.round((stats.evolution_data[3].cases - stats.evolution_data[0].cases) / stats.evolution_data[0].cases * 100)}% em 4 meses
