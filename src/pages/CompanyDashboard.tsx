@@ -58,10 +58,10 @@ const CompanyDashboard = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
           {/* Page Header */}
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-4xl font-bold tracking-tight">
               Dashboard da Empresa
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-lg">
               Visão geral do programa de bem-estar e utilização dos serviços
             </p>
           </div>
@@ -94,16 +94,9 @@ const CompanyDashboard = () => {
                 onClick={() => navigate('/company/sessions')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
                 background={
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-emerald-100">
-                    <div 
-                      className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
-                      style={{
-                        backgroundImage: "url('https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
-                      }}
-                    />
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />
                 }
-                iconColor="text-emerald-700"
+                iconColor="text-blue-700"
                 textColor="text-slate-900"
                 descriptionColor="text-slate-600"
                 href="#"
