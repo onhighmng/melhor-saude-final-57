@@ -8,6 +8,8 @@ import { mockResources, UserResource, pillarNames } from "@/data/userResourcesDa
 import { BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 // Pillar color mapping
 const getPillarColors = (pillar: string) => {
   const colorMap: Record<string, { bg: string; text: string; border: string; hover: string }> = {
@@ -76,9 +78,29 @@ export default function UserResources() {
   const [resources] = useState(mockResources);
   const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const handleView = (resource: UserResource) => {
+  const { user } = useAuth();
+  
+  const handleView = async (resource: UserResource) => {
     setSelectedResource(resource);
     setModalOpen(true);
+    
+    // Track resource view in user_progress table
+    if (user?.id) {
+      try {
+        await supabase.from('user_progress').insert({
+          user_id: user.id,
+          action_type: 'resource_viewed',
+          pillar: resource.pillar,
+          metadata: {
+            resource_id: resource.id,
+            resource_type: resource.type,
+            resource_title: resource.title
+          }
+        });
+      } catch (error) {
+        console.error('Error tracking resource view:', error);
+      }
+    }
   };
   const handleDownload = (resource: UserResource) => {
     toast.success(`${resource.title} será descarregado em breve`);
