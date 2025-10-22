@@ -38,6 +38,9 @@ const BentoCard = ({
   iconColor,
   textColor,
   descriptionColor,
+  iconSize,
+  nameSize,
+  descriptionSize,
   children,
   style,
 }: {
@@ -52,6 +55,9 @@ const BentoCard = ({
   iconColor?: string;
   textColor?: string;
   descriptionColor?: string;
+  iconSize?: number;
+  nameSize?: string;
+  descriptionSize?: string;
   children?: ReactNode;
   style?: React.CSSProperties;
 }) => (
@@ -74,11 +80,11 @@ const BentoCard = ({
     ) : (
       <>
         <div className="pointer-events-none z-20 flex transform-gpu flex-col gap-1 p-6 transition-all duration-300 group-hover:-translate-y-10">
-          {Icon && <Icon className={cn("h-12 w-12 origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:scale-75", iconColor)} />}
-          <h3 className={cn("text-xl font-semibold text-neutral-700 dark:text-neutral-300", textColor)}>
+          {Icon && <Icon className={cn("origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:scale-75", iconColor)} style={{ width: iconSize || 48, height: iconSize || 48 }} />}
+          <h3 className={cn("font-semibold text-neutral-700 dark:text-neutral-300", nameSize || "text-xl", textColor)}>
             {name}
           </h3>
-          <p className={cn("max-w-lg text-neutral-400", descriptionColor)}>{description}</p>
+          <p className={cn("max-w-lg text-neutral-400", descriptionSize || "text-base", descriptionColor)}>{description}</p>
         </div>
         
         {cta && (

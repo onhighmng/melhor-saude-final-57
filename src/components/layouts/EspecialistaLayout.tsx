@@ -11,6 +11,7 @@ interface EspecialistaLayoutProps {
 export function EspecialistaLayout({ children }: EspecialistaLayoutProps) {
   const location = useLocation();
   const isFullScreenPage = location.pathname === '/especialista/chat';
+  const isStaticPage = location.pathname === '/especialista/settings';
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -24,8 +25,8 @@ export function EspecialistaLayout({ children }: EspecialistaLayoutProps) {
           }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          <div className={`flex-1 overflow-y-auto ${isFullScreenPage ? '' : 'p-6'}`}>
-            <div className={isFullScreenPage ? '' : 'max-w-7xl w-full mx-auto'}>
+          <div className={`flex-1 ${isStaticPage ? 'overflow-hidden' : 'overflow-y-auto'} ${isFullScreenPage ? '' : 'p-6'}`}>
+            <div className={isFullScreenPage ? '' : 'max-w-7xl w-full mx-auto h-full'}>
               {children}
             </div>
           </div>

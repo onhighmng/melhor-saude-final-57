@@ -41,18 +41,18 @@ const EspecialistaSettings = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="flex-shrink-0 mb-4">
-        <h1 className="text-3xl font-heading font-bold text-foreground">
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="flex-shrink-0 mb-6">
+        <h1 className="text-4xl font-heading font-bold text-foreground">
           Definições
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-2 text-lg">
           Gerir as suas configurações pessoais e preferências
         </p>
       </div>
 
       {/* Bento Grid Layout */}
-      <div className="w-full flex-1">
+      <div className="w-full flex-1 overflow-hidden">
         <BentoGrid className="h-full grid-cols-2" style={{ gridAutoRows: '1fr', gridTemplateColumns: '1fr 1fr' }}>
           <BentoCard
             name="Perfil"
@@ -66,6 +66,9 @@ const EspecialistaSettings = () => {
             iconColor="text-blue-600"
             textColor="text-gray-900"
             descriptionColor="text-gray-600"
+            iconSize={48}
+            nameSize="text-3xl"
+            descriptionSize="text-xl"
           />
 
           <BentoCard
@@ -80,6 +83,9 @@ const EspecialistaSettings = () => {
             iconColor="text-amber-600"
             textColor="text-gray-900"
             descriptionColor="text-gray-600"
+            iconSize={48}
+            nameSize="text-3xl"
+            descriptionSize="text-xl"
           />
         </BentoGrid>
 
