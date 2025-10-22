@@ -25,7 +25,7 @@ export function EspecialistaLayout({ children }: EspecialistaLayoutProps) {
           transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
           <div className={`flex-1 overflow-y-auto ${isFullScreenPage ? '' : 'p-6'}`}>
-            <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
+            <div className={isFullScreenPage ? '' : 'max-w-7xl w-full mx-auto'}>
               {children}
             </div>
           </div>
