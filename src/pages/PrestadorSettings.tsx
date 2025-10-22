@@ -40,9 +40,9 @@ const PrestadorSettings = () => {
       case 'Saúde Mental':
         return <Brain className="h-4 w-4 text-blue-600" />;
       case 'Bem-Estar Físico':
-        return <Heart className="h-4 w-4 text-green-600" />;
+        return <Heart className="h-4 w-4 text-yellow-600" />;
       case 'Assistência Financeira':
-        return <DollarSign className="h-4 w-4 text-orange-600" />;
+        return <DollarSign className="h-4 w-4 text-green-600" />;
       case 'Assistência Jurídica':
         return <Scale className="h-4 w-4 text-purple-600" />;
       default:
@@ -55,9 +55,9 @@ const PrestadorSettings = () => {
       case 'Saúde Mental':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'Bem-Estar Físico':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'Assistência Financeira':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
+        return 'bg-green-100 text-green-800 border-green-200';
       case 'Assistência Jurídica':
         return 'bg-purple-100 text-purple-800 border-purple-200';
       default:

@@ -83,8 +83,8 @@ const pillarIcons = {
 
 const pillarColors = {
   saude_mental: 'bg-blue-500/10 text-blue-700 border-blue-200',
-  bem_estar_fisico: 'bg-green-500/10 text-green-700 border-green-200',
-  assistencia_financeira: 'bg-orange-500/10 text-orange-700 border-orange-200',
+  bem_estar_fisico: 'bg-yellow-500/10 text-yellow-700 border-yellow-200',
+  assistencia_financeira: 'bg-green-500/10 text-green-700 border-green-200',
   assistencia_juridica: 'bg-purple-500/10 text-purple-700 border-purple-200'
 };
 

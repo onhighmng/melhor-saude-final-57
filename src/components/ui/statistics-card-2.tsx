@@ -85,7 +85,7 @@ export function StatisticsCard2({ goals }: StatisticsCard2Props) {
         bg = 'bg-green-600';
         break;
       case 'bem_estar_fisico':
-        bg = 'bg-orange-600';
+        bg = 'bg-yellow-600';
         break;
     }
 

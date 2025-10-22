@@ -25,7 +25,7 @@ const getPillarColor = (pillar: string) => {
     case 'assistencia_financeira':
       return 'bg-green-600';
     case 'bem_estar_fisico':
-      return 'bg-red-600';
+      return 'bg-yellow-600';
     default:
       return 'bg-gray-600';
   }
@@ -40,7 +40,7 @@ const getIndicatorColor = (pillar: string) => {
     case 'assistencia_financeira':
       return 'bg-green-600';
     case 'bem_estar_fisico':
-      return 'bg-red-600';
+      return 'bg-yellow-600';
     default:
       return 'bg-gray-600';
   }

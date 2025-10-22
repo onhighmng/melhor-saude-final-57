@@ -26,10 +26,10 @@ const pillarIcons: Record<string, any> = {
 };
 
 const pillarColors: Record<string, string> = {
-  'mental_health': 'bg-mint-green/10 text-mint-green border-mint-green/20',
-  'physical_wellness': 'bg-royal-blue/10 text-royal-blue border-royal-blue/20',
-  'financial_assistance': 'bg-peach-orange/10 text-peach-orange border-peach-orange/20',
-  'legal_assistance': 'bg-sky-blue/10 text-sky-blue border-sky-blue/20',
+  'mental_health': 'bg-blue-100 text-blue-700 border-blue-200',
+  'physical_wellness': 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  'financial_assistance': 'bg-green-100 text-green-700 border-green-200',
+  'legal_assistance': 'bg-purple-100 text-purple-700 border-purple-200',
 };
 
 export const ProviderCard = ({ provider, onClick }: ProviderCardProps) => {

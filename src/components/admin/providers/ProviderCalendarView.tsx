@@ -31,10 +31,10 @@ interface ProviderCalendarViewProps {
 }
 
 const pillarColors: Record<string, string> = {
-  'mental_health': 'bg-royal-blue/20 border-royal-blue',
-  'physical_wellness': 'bg-mint-green/20 border-mint-green',
-  'financial_assistance': 'bg-peach-orange/20 border-peach-orange',
-  'legal_assistance': 'bg-sky-blue/20 border-sky-blue',
+  'mental_health': 'bg-blue-100 border-blue-300',
+  'physical_wellness': 'bg-yellow-100 border-yellow-300',
+  'financial_assistance': 'bg-green-100 border-green-300',
+  'legal_assistance': 'bg-purple-100 border-purple-300',
 };
 
 // Generate mock calendar slots

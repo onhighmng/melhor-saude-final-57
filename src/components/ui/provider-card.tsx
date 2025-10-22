@@ -13,10 +13,10 @@ const pillarIcons = {
 };
 
 const pillarColors = {
-  'saude_mental': 'text-purple-600 bg-purple-100',
-  'bem_estar_fisico': 'text-green-600 bg-green-100',
-  'assistencia_financeira': 'text-blue-600 bg-blue-100',
-  'assistencia_juridica': 'text-amber-600 bg-amber-100'
+  'saude_mental': 'text-blue-600 bg-blue-100',
+  'bem_estar_fisico': 'text-yellow-600 bg-yellow-100',
+  'assistencia_financeira': 'text-green-600 bg-green-100',
+  'assistencia_juridica': 'text-purple-600 bg-purple-100'
 };
 
 const pillarNames = {
