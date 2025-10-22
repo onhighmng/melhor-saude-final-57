@@ -69,10 +69,10 @@ const mockPrestadores: Prestador[] = [
 ];
 
 const pillarOptions = [
-  { value: 'psychological', label: 'Saúde Mental', bgColor: 'hsl(270 60% 95%)', textColor: 'hsl(270 60% 40%)' },
-  { value: 'physical', label: 'Bem-Estar Físico', bgColor: 'hsl(140 60% 95%)', textColor: 'hsl(140 60% 35%)' },
-  { value: 'financial', label: 'Assistência Financeira', bgColor: 'hsl(210 80% 95%)', textColor: 'hsl(210 80% 40%)' },
-  { value: 'legal', label: 'Assistência Jurídica', bgColor: 'hsl(25 85% 95%)', textColor: 'hsl(25 85% 45%)' },
+  { value: 'psychological', label: 'Saúde Mental', bgColor: 'hsl(210 80% 95%)', textColor: 'hsl(210 80% 40%)' },
+  { value: 'physical', label: 'Bem-Estar Físico', bgColor: 'hsl(45 90% 90%)', textColor: 'hsl(45 90% 35%)' },
+  { value: 'financial', label: 'Assistência Financeira', bgColor: 'hsl(140 60% 95%)', textColor: 'hsl(140 60% 35%)' },
+  { value: 'legal', label: 'Assistência Jurídica', bgColor: 'hsl(270 60% 95%)', textColor: 'hsl(270 60% 40%)' },
 ];
 
 const generateTimeSlots = (date: Date) => {
