@@ -13,11 +13,13 @@ import {
   Brain,
   Heart,
   DollarSign,
-  Scale
+  Scale,
+  BookOpen
 } from 'lucide-react';
 import { mockCompanyMetrics } from '@/data/companyMetrics';
 import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import recursosWellness from '@/assets/recursos-wellness.jpg';
 
 const CompanyDashboard = () => {
   const { profile } = useAuth();
@@ -67,21 +69,21 @@ const CompanyDashboard = () => {
           {/* Bento Grid Layout - Similar to User & Admin Dashboards */}
           <div className="h-[calc(100vh-200px)]">
             <BentoGrid className="h-full grid-rows-3 gap-4">
-              {/* Top Left - Total Employees */}
+              {/* Top Left - Satisfaction */}
               <BentoCard 
-                name="Total de Colaboradores" 
-                description={`${mockCompanyMetrics.totalEmployeesInPlan} incluídos no plano`} 
-                Icon={Building2} 
-                onClick={() => navigate('/company/colaboradores')} 
+                name="Satisfação Média" 
+                description={`${mockCompanyMetrics.avgSatisfaction}/10 - Avaliação dos colaboradores`} 
+                Icon={Star} 
+                onClick={() => navigate('/company/relatorios')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
                 background={
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-cyan-100" />
+                  <div className="absolute inset-0" style={{ backgroundColor: 'hsl(205, 43%, 88%)' }} />
                 }
-                iconColor="text-cyan-700"
+                iconColor="text-amber-700"
                 textColor="text-slate-900"
                 descriptionColor="text-slate-600"
                 href="#"
-                cta="Ver Colaboradores"
+                cta="Ver Relatórios"
               />
 
               {/* Top Right - Sessions */}
@@ -132,21 +134,24 @@ const CompanyDashboard = () => {
                 cta="Ver Detalhes"
               />
 
-              {/* Bottom Right - Satisfaction */}
+              {/* Bottom Right - Recursos */}
               <BentoCard 
-                name="Satisfação Média" 
-                description={`${mockCompanyMetrics.avgSatisfaction}/10 - Avaliação dos colaboradores`} 
-                Icon={Star} 
-                onClick={() => navigate('/company/relatorios')} 
+                name="Recursos" 
+                description="Conteúdos e materiais de apoio" 
+                Icon={BookOpen} 
+                onClick={() => navigate('/company/recursos')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
                 background={
-                  <div className="absolute inset-0" style={{ backgroundColor: 'hsl(205, 43%, 88%)' }} />
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60"
+                    style={{ backgroundImage: `url(${recursosWellness})` }}
+                  />
                 }
-                iconColor="text-amber-700"
-                textColor="text-slate-900"
-                descriptionColor="text-slate-600"
+                iconColor="text-white"
+                textColor="text-white"
+                descriptionColor="text-white"
                 href="#"
-                cta="Ver Relatórios"
+                cta="Ver Recursos"
               />
 
               {/* Center - Activity & Pillar Overview */}
