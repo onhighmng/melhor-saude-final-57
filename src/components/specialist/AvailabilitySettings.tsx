@@ -26,6 +26,14 @@ interface DayAvailability {
   slots: TimeSlot[];
 }
 
+interface BlockedTimeSlot {
+  id: string;
+  date: Date;
+  startTime: string;
+  endTime: string;
+  reason?: string;
+}
+
 interface AvailabilitySettingsProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -58,6 +66,12 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
   const [durationUnit, setDurationUnit] = useState('minutes');
   const [blockedDates, setBlockedDates] = useState<Date[]>([]);
   const [selectedBlockDate, setSelectedBlockDate] = useState<Date | undefined>();
+  
+  // Blocked time slots
+  const [blockedTimeSlots, setBlockedTimeSlots] = useState<BlockedTimeSlot[]>([]);
+  const [timeBlockDate, setTimeBlockDate] = useState<Date | undefined>();
+  const [timeBlockStart, setTimeBlockStart] = useState('09:00 AM');
+  const [timeBlockEnd, setTimeBlockEnd] = useState('10:00 AM');
 
   const toggleDay = (dayKey: string) => {
     setAvailability(prev => ({
@@ -138,6 +152,25 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
 
   const removeBlockedDate = (date: Date) => {
     setBlockedDates(prev => prev.filter(d => d.toDateString() !== date.toDateString()));
+  };
+
+  const addBlockedTimeSlot = () => {
+    if (timeBlockDate && isFuture(timeBlockDate)) {
+      const newSlot: BlockedTimeSlot = {
+        id: Date.now().toString(),
+        date: timeBlockDate,
+        startTime: timeBlockStart,
+        endTime: timeBlockEnd,
+      };
+      setBlockedTimeSlots(prev => [...prev, newSlot].sort((a, b) => a.date.getTime() - b.date.getTime()));
+      setTimeBlockDate(undefined);
+      setTimeBlockStart('09:00 AM');
+      setTimeBlockEnd('10:00 AM');
+    }
+  };
+
+  const removeBlockedTimeSlot = (id: string) => {
+    setBlockedTimeSlots(prev => prev.filter(slot => slot.id !== id));
   };
 
   return (
@@ -367,6 +400,123 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
                         <X className="h-3 w-3" />
                       </Button>
                     </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Separator />
+
+          {/* Blocked Time Slots */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Label className="text-base font-semibold">Bloquear Horário Específico</Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Bloqueie horários específicos em datas futuras</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
+            <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label className="text-sm mb-2 block">Data</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !timeBlockDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {timeBlockDate ? format(timeBlockDate, "PPP") : "Selecionar data"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={timeBlockDate}
+                        onSelect={setTimeBlockDate}
+                        disabled={(date) => !isFuture(date)}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-sm mb-2 block">Hora Início</Label>
+                    <Input
+                      type="text"
+                      value={timeBlockStart}
+                      onChange={(e) => setTimeBlockStart(e.target.value)}
+                      placeholder="09:00 AM"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm mb-2 block">Hora Fim</Label>
+                    <Input
+                      type="text"
+                      value={timeBlockEnd}
+                      onChange={(e) => setTimeBlockEnd(e.target.value)}
+                      placeholder="10:00 AM"
+                    />
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={addBlockedTimeSlot}
+                  disabled={!timeBlockDate}
+                  className="w-full"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Bloqueio de Horário
+                </Button>
+              </div>
+            </div>
+
+            {blockedTimeSlots.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">
+                  Horários bloqueados ({blockedTimeSlots.length})
+                </Label>
+                <div className="space-y-2">
+                  {blockedTimeSlots.map((slot) => (
+                    <div
+                      key={slot.id}
+                      className="flex items-center justify-between p-3 border rounded-lg bg-background hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium text-sm">
+                            {format(slot.date, "dd/MM/yyyy")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {slot.startTime} - {slot.endTime}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => removeBlockedTimeSlot(slot.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ))}
                 </div>
               </div>
