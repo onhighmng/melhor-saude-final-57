@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { BookOpen, TrendingUp, Users, Eye, Download, ArrowUp, ArrowDown, Minus } from "lucide-react";
@@ -9,6 +10,16 @@ import { cn } from "@/lib/utils";
 
 export default function CompanyResources() {
   const { metrics, isLoading } = useCompanyResourceAnalytics();
+
+  useEffect(() => {
+    // Add admin-page class to body for gray background
+    document.body.classList.add('admin-page');
+    
+    // Cleanup: remove class when component unmounts
+    return () => {
+      document.body.classList.remove('admin-page');
+    };
+  }, []);
 
   const handleExportReport = () => {
     toast.success("Relatório de recursos será exportado em breve");
@@ -52,7 +63,7 @@ export default function CompanyResources() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen">
       <PageHeader
         title="Análise de Recursos"
         subtitle="Compreenda como os colaboradores utilizam recursos de bem-estar"
