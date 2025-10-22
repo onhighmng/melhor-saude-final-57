@@ -84,8 +84,8 @@ export default function SpecialistDashboard() {
                 Icon={Phone} 
                 onClick={() => navigate('/especialista/call-requests')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
-                background={<div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50" />}
-                iconColor="text-orange-600"
+                background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100" />}
+                iconColor="text-yellow-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
@@ -123,17 +123,8 @@ export default function SpecialistDashboard() {
                 Icon={TrendingUp} 
                 onClick={() => navigate('/especialista/stats')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
-                background={
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100">
-                    <div 
-                      className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-                      style={{
-                        backgroundImage: "url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
-                      }}
-                    />
-                  </div>
-                }
-                iconColor="text-purple-600"
+                background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
+                iconColor="text-blue-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
@@ -316,59 +307,12 @@ export default function SpecialistDashboard() {
                   </div>
                   
                   <div className="flex-1 space-y-3 overflow-y-auto pr-2">
-                    {/* Personal Metrics */}
+                    {/* Call Requests */}
                     <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Star className="h-5 w-5 text-green-600" />
-                          <span className="font-semibold text-gray-900">Métricas Pessoais</span>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <p className="text-xs text-gray-600">Avaliação Média</p>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold text-green-600">{mockSpecialistPersonalStats.avg_rating}</span>
-                            <span className="text-sm text-gray-500">/10</span>
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-600">Tempo Resposta</p>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold text-blue-600">{mockSpecialistPersonalStats.avg_response_time_minutes}</span>
-                            <span className="text-sm text-gray-500">min</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Resolution Rate */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-5 w-5 text-purple-600" />
-                          <span className="font-semibold text-gray-900">Taxa de Resolução</span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-700">Resolução Interna</span>
-                          <span className="font-bold text-green-600">{mockSpecialistPersonalStats.internal_resolution_rate}%</span>
-                        </div>
-                        <Progress value={mockSpecialistPersonalStats.internal_resolution_rate} className="h-2" />
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-700">Encaminhamentos</span>
-                          <span className="font-bold text-purple-600">{mockSpecialistPersonalStats.referral_rate}%</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="h-5 w-5 text-orange-600" />
-                          <span className="font-semibold text-gray-900">Atividade Recente</span>
+                          <Phone className="h-5 w-5 text-orange-600" />
+                          <span className="font-semibold text-gray-900">Pedidos de Chamada</span>
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -392,50 +336,44 @@ export default function SpecialistDashboard() {
                         ))}
                         {filteredCallRequests.length === 0 && (
                           <div className="text-center py-4 text-gray-500">
-                            <MessageSquare className="h-6 w-6 mx-auto mb-1 opacity-50" />
-                            <p className="text-xs">Sem atividade recente</p>
+                            <Phone className="h-6 w-6 mx-auto mb-1 opacity-50" />
+                            <p className="text-xs">Sem pedidos pendentes</p>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Companies Overview */}
+                    {/* Meetings Booked */}
                     <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Building2 className="h-5 w-5 text-indigo-600" />
-                          <span className="font-semibold text-gray-900">Empresas Atribuídas</span>
+                          <Calendar className="h-5 w-5 text-blue-600" />
+                          <span className="font-semibold text-gray-900">Sessões Agendadas</span>
                         </div>
-                        <Badge variant="secondary">{assignedCompanies.length}</Badge>
+                        <Badge variant="secondary">{filteredSessions.length}</Badge>
                       </div>
                       <div className="space-y-2">
-                        {assignedCompanies.slice(0, 2).map((company) => (
-                          <div key={company.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm truncate">{company.name}</p>
-                              <p className="text-xs text-gray-600">
-                                {company.registered_employees}/{company.total_employees} utilizadores
-                              </p>
+                        {filteredSessions.slice(0, 3).map((session) => (
+                          <div 
+                            key={session.id} 
+                            className="flex items-center gap-3 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
+                            onClick={() => navigate('/especialista/sessions')}
+                          >
+                            <div className="p-2 bg-blue-100 rounded-full">
+                              <Calendar className="h-3 w-3 text-blue-600" />
                             </div>
-                            <Badge variant={company.status === 'active' ? 'default' : 'secondary'} className="text-xs">
-                              {company.status}
-                            </Badge>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{session.user_name}</p>
+                              <p className="text-xs text-gray-600 truncate">{session.time} - {session.type}</p>
+                            </div>
                           </div>
                         ))}
-                      </div>
-                    </div>
-
-                    {/* Referrals */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                      <div 
-                        className="flex items-center justify-between cursor-pointer hover:bg-white/40 rounded p-2 -m-2 transition-colors"
-                        onClick={() => navigate('/especialista/referrals')}
-                      >
-                        <div className="flex items-center gap-2">
-                          <ArrowRight className="h-5 w-5 text-purple-600" />
-                          <span className="font-semibold text-gray-900">Encaminhamentos</span>
-                        </div>
-                        <span className="text-2xl font-bold text-purple-600">{filteredReferrals.length}</span>
+                        {filteredSessions.length === 0 && (
+                          <div className="text-center py-4 text-gray-500">
+                            <Calendar className="h-6 w-6 mx-auto mb-1 opacity-50" />
+                            <p className="text-xs">Sem sessões hoje</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
