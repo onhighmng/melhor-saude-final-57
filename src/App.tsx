@@ -44,10 +44,11 @@ const AdminCallRequests = lazy(() => import("./pages/AdminCallRequests"));
 
 // Specialist pages
 const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboard"));
-const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequests"));
-const EspecialistaSessions = lazy(() => import("./pages/EspecialistaSessions"));
-const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistory"));
+const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequestsRevamped"));
+const EspecialistaSessions = lazy(() => import("./pages/EspecialistaSessionsRevamped"));
+const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistoryRevamped"));
 const EspecialistaReferrals = lazy(() => import("./pages/EspecialistaReferrals"));
+const EspecialistaStats = lazy(() => import("./pages/EspecialistaStats"));
 const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettings"));
 
 // Company pages
@@ -183,6 +184,7 @@ const AppWithTracking = () => {
           <Route path="/especialista/sessions" element={<EspecialistaLayout><EspecialistaSessions /></EspecialistaLayout>} />
           <Route path="/especialista/user-history" element={<EspecialistaLayout><EspecialistaUserHistory /></EspecialistaLayout>} />
           <Route path="/especialista/referrals" element={<EspecialistaLayout><EspecialistaReferrals /></EspecialistaLayout>} />
+          <Route path="/especialista/stats" element={<EspecialistaLayout><EspecialistaStats /></EspecialistaLayout>} />
           <Route path="/especialista/settings" element={<EspecialistaLayout><EspecialistaSettings /></EspecialistaLayout>} />
           
           {/* Company HR routes */}
