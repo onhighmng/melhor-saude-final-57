@@ -77,7 +77,7 @@ const CompanyDashboard = () => {
                 onClick={() => navigate('/company/relatorios')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
                 background={
-                  <div className="absolute inset-0" style={{ backgroundColor: 'hsl(205, 43%, 88%)' }} />
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100" />
                 }
                 iconColor="text-amber-700"
                 textColor="text-slate-900"
@@ -118,7 +118,7 @@ const CompanyDashboard = () => {
                 onClick={() => navigate('/company/colaboradores')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
                 background={
-                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100">
                     <div 
                       className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
                       style={{
@@ -127,7 +127,7 @@ const CompanyDashboard = () => {
                     />
                   </div>
                 }
-                iconColor="text-yellow-700"
+                iconColor="text-purple-700"
                 textColor="text-slate-900"
                 descriptionColor="text-slate-600"
                 href="#"
