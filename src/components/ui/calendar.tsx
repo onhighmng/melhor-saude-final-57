@@ -40,7 +40,7 @@ function Calendar({
         cell: "relative p-0 text-center focus-within:relative focus-within:z-20 flex-1 flex justify-center items-center min-h-[48px]",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-12 w-12 p-0 font-medium text-base aria-selected:opacity-100 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+          "h-12 w-12 p-0 font-medium text-base text-gray-900 aria-selected:opacity-100 flex items-center justify-center rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors"
         ),
         day_range_end: "day-range-end",
         day_selected:
