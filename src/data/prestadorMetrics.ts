@@ -195,89 +195,574 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   }
 ];
 
-// Mock Calendar Events (October 2024)
+// Mock Calendar Events (October-November 2024)
 export const mockCalendarEvents: PrestadorCalendarEvent[] = [
-  // Available slots
-  { id: 'avail-1', date: '2024-10-18', time: '09:00', type: 'available' },
-  { id: 'avail-2', date: '2024-10-18', time: '10:00', type: 'available' },
-  { id: 'avail-3', date: '2024-10-18', time: '14:00', type: 'available' },
-  { id: 'avail-4', date: '2024-10-18', time: '15:00', type: 'available' },
-  
-  // Confirmed sessions
+  // Week 1 - October 21-25, 2024
   {
-    id: 'session-1',
-    date: '2024-10-18',
-    time: '11:00',
+    id: 'session-w1-1',
+    date: '2024-10-21',
+    time: '09:00',
     type: 'session',
     status: 'confirmed',
-    clientName: 'João Silva',
+    clientName: 'Sofia Rodrigues',
     company: 'TechCorp Lda',
-    pillar: 'Saúde Mental',
+    pillar: 'psychological',
     sessionType: 'Virtual'
   },
   {
-    id: 'session-2',
-    date: '2024-10-18',
-    time: '16:00',
+    id: 'session-w1-2',
+    date: '2024-10-21',
+    time: '11:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Miguel Alves',
+    company: 'HealthPlus SA',
+    pillar: 'physical',
+    sessionType: 'Presencial'
+  },
+  {
+    id: 'session-w1-3',
+    date: '2024-10-21',
+    time: '14:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Beatriz Lima',
+    company: 'InnovateLab',
+    pillar: 'financial',
+    sessionType: 'Virtual'
+  },
+  { id: 'block-w1-1', date: '2024-10-21', time: '16:00', type: 'blocked' },
+
+  {
+    id: 'session-w1-4',
+    date: '2024-10-22',
+    time: '10:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'João Silva',
+    company: 'ConsultPro',
+    pillar: 'legal',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w1-5',
+    date: '2024-10-22',
+    time: '13:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Ana Costa',
+    company: 'MediaGroup SA',
+    pillar: 'psychological',
+    sessionType: 'Presencial'
+  },
+  {
+    id: 'session-w1-6',
+    date: '2024-10-22',
+    time: '15:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Pedro Santos',
+    company: 'TechCorp Lda',
+    pillar: 'physical',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w1-7',
+    date: '2024-10-23',
+    time: '09:30',
     type: 'session',
     status: 'confirmed',
     clientName: 'Maria Oliveira',
     company: 'HealthPlus SA',
-    pillar: 'Bem-Estar Físico',
+    pillar: 'financial',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w1-8',
+    date: '2024-10-23',
+    time: '11:30',
+    type: 'session',
+    status: 'cancelled',
+    clientName: 'Carlos Ferreira',
+    company: 'InnovateLab',
+    pillar: 'legal',
     sessionType: 'Presencial'
   },
-  
-  // Blocked time
-  { id: 'block-1', date: '2024-10-18', time: '12:00', type: 'blocked' },
-  { id: 'block-2', date: '2024-10-18', time: '13:00', type: 'blocked' },
-  
-  // Future sessions
+  { id: 'block-w1-2', date: '2024-10-23', time: '14:00', type: 'blocked' },
+  { id: 'block-w1-3', date: '2024-10-23', time: '15:00', type: 'blocked' },
+
   {
-    id: 'session-3',
-    date: '2024-10-19',
+    id: 'session-w1-9',
+    date: '2024-10-24',
+    time: '10:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Rita Mendes',
+    company: 'ConsultPro',
+    pillar: 'psychological',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w1-10',
+    date: '2024-10-24',
+    time: '13:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Tiago Nunes',
+    company: 'MediaGroup SA',
+    pillar: 'physical',
+    sessionType: 'Presencial'
+  },
+  {
+    id: 'session-w1-11',
+    date: '2024-10-24',
+    time: '16:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Luisa Pereira',
+    company: 'TechCorp Lda',
+    pillar: 'financial',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w1-12',
+    date: '2024-10-25',
     time: '09:00',
     type: 'session',
     status: 'confirmed',
-    clientName: 'Ana Costa',
-    company: 'InnovateLab',
-    pillar: 'Assistência Financeira',
+    clientName: 'André Martins',
+    company: 'HealthPlus SA',
+    pillar: 'legal',
     sessionType: 'Virtual'
   },
   {
-    id: 'session-4',
-    date: '2024-10-19',
-    time: '10:30',
+    id: 'session-w1-13',
+    date: '2024-10-25',
+    time: '11:00',
     type: 'session',
     status: 'confirmed',
-    clientName: 'Pedro Ferreira',
+    clientName: 'Mariana Sousa',
+    company: 'InnovateLab',
+    pillar: 'psychological',
+    sessionType: 'Presencial'
+  },
+  { id: 'avail-w1-1', date: '2024-10-25', time: '14:00', type: 'available' },
+
+  // Week 2 - October 28-31, 2024
+  {
+    id: 'session-w2-1',
+    date: '2024-10-28',
+    time: '09:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Francisco Dias',
     company: 'ConsultPro',
-    pillar: 'Assistência Jurídica',
+    pillar: 'physical',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w2-2',
+    date: '2024-10-28',
+    time: '11:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Carolina Gomes',
+    company: 'MediaGroup SA',
+    pillar: 'financial',
     sessionType: 'Presencial'
   },
   {
-    id: 'session-5',
-    date: '2024-10-19',
+    id: 'session-w2-3',
+    date: '2024-10-28',
+    time: '14:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Diogo Pinto',
+    company: 'TechCorp Lda',
+    pillar: 'legal',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w2-4',
+    date: '2024-10-29',
+    time: '10:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Inês Cardoso',
+    company: 'HealthPlus SA',
+    pillar: 'psychological',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w2-5',
+    date: '2024-10-29',
+    time: '13:00',
+    type: 'session',
+    status: 'cancelled',
+    clientName: 'Rui Teixeira',
+    company: 'InnovateLab',
+    pillar: 'physical',
+    sessionType: 'Presencial'
+  },
+  {
+    id: 'session-w2-6',
+    date: '2024-10-29',
+    time: '15:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Vera Ramos',
+    company: 'ConsultPro',
+    pillar: 'financial',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w2-7',
+    date: '2024-10-30',
+    time: '09:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Paulo Moreira',
+    company: 'MediaGroup SA',
+    pillar: 'legal',
+    sessionType: 'Presencial'
+  },
+  { id: 'block-w2-1', date: '2024-10-30', time: '11:00', type: 'blocked' },
+  { id: 'block-w2-2', date: '2024-10-30', time: '12:00', type: 'blocked' },
+  {
+    id: 'session-w2-8',
+    date: '2024-10-30',
     time: '14:00',
     type: 'session',
     status: 'confirmed',
-    clientName: 'Carlos Santos',
+    clientName: 'Teresa Fonseca',
     company: 'TechCorp Lda',
-    pillar: 'Saúde Mental',
+    pillar: 'psychological',
     sessionType: 'Virtual'
   },
-  
-  // Cancelled session
+
   {
-    id: 'session-6',
-    date: '2024-10-20',
+    id: 'session-w2-9',
+    date: '2024-10-31',
+    time: '10:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Hugo Barbosa',
+    company: 'HealthPlus SA',
+    pillar: 'physical',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w2-10',
+    date: '2024-10-31',
+    time: '13:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Sandra Carvalho',
+    company: 'InnovateLab',
+    pillar: 'financial',
+    sessionType: 'Presencial'
+  },
+  { id: 'avail-w2-1', date: '2024-10-31', time: '16:00', type: 'available' },
+
+  // Week 3 - November 1-8, 2024
+  {
+    id: 'session-w3-1',
+    date: '2024-11-04',
+    time: '09:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Isabel Cruz',
+    company: 'ConsultPro',
+    pillar: 'legal',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w3-2',
+    date: '2024-11-04',
     time: '11:00',
     type: 'session',
-    status: 'cancelled',
-    clientName: 'Rita Mendes',
+    status: 'confirmed',
+    clientName: 'Nuno Ribeiro',
     company: 'MediaGroup SA',
-    pillar: 'Bem-Estar Físico',
+    pillar: 'psychological',
     sessionType: 'Presencial'
-  }
+  },
+  {
+    id: 'session-w3-3',
+    date: '2024-11-04',
+    time: '14:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Cristina Lopes',
+    company: 'TechCorp Lda',
+    pillar: 'physical',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w3-4',
+    date: '2024-11-05',
+    time: '10:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Fernando Correia',
+    company: 'HealthPlus SA',
+    pillar: 'financial',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w3-5',
+    date: '2024-11-05',
+    time: '13:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Patrícia Monteiro',
+    company: 'InnovateLab',
+    pillar: 'legal',
+    sessionType: 'Presencial'
+  },
+  {
+    id: 'session-w3-6',
+    date: '2024-11-05',
+    time: '15:30',
+    type: 'session',
+    status: 'cancelled',
+    clientName: 'Ricardo Vieira',
+    company: 'ConsultPro',
+    pillar: 'psychological',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w3-7',
+    date: '2024-11-06',
+    time: '09:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Sílvia Fernandes',
+    company: 'MediaGroup SA',
+    pillar: 'physical',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w3-8',
+    date: '2024-11-06',
+    time: '11:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Jorge Tavares',
+    company: 'TechCorp Lda',
+    pillar: 'financial',
+    sessionType: 'Presencial'
+  },
+  { id: 'block-w3-1', date: '2024-11-06', time: '14:00', type: 'blocked' },
+  { id: 'block-w3-2', date: '2024-11-06', time: '15:00', type: 'blocked' },
+
+  {
+    id: 'session-w3-9',
+    date: '2024-11-07',
+    time: '10:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Mónica Simões',
+    company: 'HealthPlus SA',
+    pillar: 'legal',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w3-10',
+    date: '2024-11-07',
+    time: '13:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Bruno Azevedo',
+    company: 'InnovateLab',
+    pillar: 'psychological',
+    sessionType: 'Presencial'
+  },
+  {
+    id: 'session-w3-11',
+    date: '2024-11-07',
+    time: '16:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Cláudia Marques',
+    company: 'ConsultPro',
+    pillar: 'physical',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w3-12',
+    date: '2024-11-08',
+    time: '09:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Vasco Henriques',
+    company: 'MediaGroup SA',
+    pillar: 'financial',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w3-13',
+    date: '2024-11-08',
+    time: '11:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Filipa Costa',
+    company: 'TechCorp Lda',
+    pillar: 'legal',
+    sessionType: 'Presencial'
+  },
+  { id: 'avail-w3-1', date: '2024-11-08', time: '14:00', type: 'available' },
+  { id: 'avail-w3-2', date: '2024-11-08', time: '15:00', type: 'available' },
+
+  // Week 4 - November 11-15, 2024
+  {
+    id: 'session-w4-1',
+    date: '2024-11-11',
+    time: '09:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Gonçalo Pires',
+    company: 'HealthPlus SA',
+    pillar: 'psychological',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w4-2',
+    date: '2024-11-11',
+    time: '11:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Marta Guerreiro',
+    company: 'InnovateLab',
+    pillar: 'physical',
+    sessionType: 'Presencial'
+  },
+  {
+    id: 'session-w4-3',
+    date: '2024-11-11',
+    time: '14:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Eduardo Batista',
+    company: 'ConsultPro',
+    pillar: 'financial',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w4-4',
+    date: '2024-11-12',
+    time: '10:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Carla Reis',
+    company: 'MediaGroup SA',
+    pillar: 'legal',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w4-5',
+    date: '2024-11-12',
+    time: '13:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Rodrigo Araújo',
+    company: 'TechCorp Lda',
+    pillar: 'psychological',
+    sessionType: 'Presencial'
+  },
+  {
+    id: 'session-w4-6',
+    date: '2024-11-12',
+    time: '15:00',
+    type: 'session',
+    status: 'cancelled',
+    clientName: 'Susana Machado',
+    company: 'HealthPlus SA',
+    pillar: 'physical',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w4-7',
+    date: '2024-11-13',
+    time: '09:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Duarte Miranda',
+    company: 'InnovateLab',
+    pillar: 'financial',
+    sessionType: 'Presencial'
+  },
+  { id: 'block-w4-1', date: '2024-11-13', time: '11:00', type: 'blocked' },
+  { id: 'block-w4-2', date: '2024-11-13', time: '12:00', type: 'blocked' },
+  {
+    id: 'session-w4-8',
+    date: '2024-11-13',
+    time: '14:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Raquel Guedes',
+    company: 'ConsultPro',
+    pillar: 'legal',
+    sessionType: 'Virtual'
+  },
+
+  {
+    id: 'session-w4-9',
+    date: '2024-11-14',
+    time: '10:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Alexandre Branco',
+    company: 'MediaGroup SA',
+    pillar: 'psychological',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w4-10',
+    date: '2024-11-14',
+    time: '13:30',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Helena Coelho',
+    company: 'TechCorp Lda',
+    pillar: 'physical',
+    sessionType: 'Presencial'
+  },
+
+  {
+    id: 'session-w4-11',
+    date: '2024-11-15',
+    time: '09:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Manuel Pinto',
+    company: 'HealthPlus SA',
+    pillar: 'financial',
+    sessionType: 'Virtual'
+  },
+  {
+    id: 'session-w4-12',
+    date: '2024-11-15',
+    time: '11:00',
+    type: 'session',
+    status: 'confirmed',
+    clientName: 'Daniela Rocha',
+    company: 'InnovateLab',
+    pillar: 'legal',
+    sessionType: 'Presencial'
+  },
+  { id: 'avail-w4-1', date: '2024-11-15', time: '14:00', type: 'available' },
+  { id: 'avail-w4-2', date: '2024-11-15', time: '15:00', type: 'available' },
+  { id: 'avail-w4-3', date: '2024-11-15', time: '16:00', type: 'available' }
 ];
 
 // Mock Prestador Settings
