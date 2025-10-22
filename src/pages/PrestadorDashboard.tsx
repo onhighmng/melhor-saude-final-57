@@ -276,7 +276,7 @@ export default function PrestadorDashboard() {
                     {filteredSessions.length > 0 ? `${filteredSessions.length} sessões agendadas` : 'Nenhuma sessão agendada'}
                   </p>
                 </div>
-                <div className="flex-1 space-y-3 min-h-0 flex flex-col justify-start overflow-y-auto">
+                <div className="flex-1 space-y-3 flex flex-col justify-start">
                   {filteredSessions.length > 0 ? filteredSessions.slice(0, 3).map(session => {
                     const PillarIcon = pillarIcons[session.pillar as keyof typeof pillarIcons];
                     return (
