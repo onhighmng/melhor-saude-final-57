@@ -176,58 +176,119 @@ const CompanySessions = () => {
         </Card>
       </div>
 
-      {/* Pillar Breakdown Table */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Análise por Pilar
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {mockSessionAnalytics.pillarBreakdown.map((pillar, index) => (
-              <div key={index} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    {getPillarIcon(pillar.pillar)}
-                    <h4 className="font-semibold text-xl">{pillar.pillar}</h4>
-                    <Badge className={`${getPillarColor(pillar.pillar)} text-base px-3 py-1`}>
-                      {pillar.utilizationRate}% utilizado
-                    </Badge>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold">{pillar.sessionsUsed}</div>
-                    <div className="text-base text-muted-foreground">
-                      de {pillar.sessionsAvailable} sessões
+      {/* Pillar Analysis with Stats Cards */}
+      <div>
+        <div className="flex items-center gap-2 mb-6">
+          <BarChart3 className="h-6 w-6" />
+          <h2 className="text-3xl font-bold">Análise por Pilar</h2>
+        </div>
+        
+        <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+          {mockSessionAnalytics.pillarBreakdown.map((pillar, index) => {
+            const Icon = getPillarIcon(pillar.pillar).type;
+            return (
+              <div key={index} className="p-0 gap-0 rounded-xl border bg-card text-card-foreground shadow flex flex-col">
+                <div className="px-6 py-6">
+                  <dd className="flex items-start justify-between space-x-2">
+                    <div className="flex items-center gap-2">
+                      {getPillarIcon(pillar.pillar)}
+                      <span className="text-base font-medium text-foreground">
+                        {pillar.pillar}
+                      </span>
+                    </div>
+                    <span className="text-base font-semibold text-emerald-700 dark:text-emerald-500">
+                      {pillar.utilizationRate}%
+                    </span>
+                  </dd>
+                  <dd className="mt-3 text-4xl font-bold text-foreground">
+                    {pillar.sessionsUsed}
+                  </dd>
+                  <dd className="mt-1 text-base text-muted-foreground">
+                    de {pillar.sessionsAvailable} sessões
+                  </dd>
+                </div>
+                <div className="flex justify-end border-t border-border !p-0">
+                  <button className="px-6 py-4 text-base font-medium text-primary hover:text-primary/90">
+                    Ver detalhes →
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </dl>
+
+        {/* Radial Chart Cards */}
+        <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {mockSessionAnalytics.pillarBreakdown.map((pillar, index) => {
+            const chartData = [{
+              name: pillar.pillar,
+              capacity: pillar.utilizationRate,
+              current: pillar.sessionsUsed,
+              allowed: pillar.sessionsAvailable,
+              fill: `hsl(var(--chart-${index + 1}))`
+            }];
+
+            const chartConfig = {
+              pillar: {
+                label: pillar.pillar,
+                color: `hsl(var(--chart-${index + 1}))`
+              },
+              background: {
+                label: "Background",
+                color: "hsl(var(--muted))"
+              }
+            };
+
+            return (
+              <div key={index} className="p-6 rounded-xl border bg-card text-card-foreground shadow">
+                <div className="p-0 flex items-center space-x-4">
+                  <div className="relative flex items-center justify-center">
+                    <div className="h-[100px] w-[100px]">
+                      <svg viewBox="0 0 100 100" className="transform -rotate-90">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="none"
+                          stroke="hsl(var(--muted))"
+                          strokeWidth="12"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="none"
+                          stroke={`hsl(var(--chart-${index + 1}))`}
+                          strokeWidth="12"
+                          strokeDasharray={`${pillar.utilizationRate * 2.51} 251`}
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xl font-bold text-foreground">
+                        {pillar.utilizationRate}%
+                      </span>
                     </div>
                   </div>
-                </div>
-                
-                <div className="mb-3">
-                  <div className="flex justify-between text-base mb-1">
-                    <span>Progresso de utilização</span>
-                    <span>{pillar.utilizationRate}%</span>
-                  </div>
-                  <Progress value={pillar.utilizationRate} className="h-3" />
-                </div>
-                
-                <div>
-                  <h5 className="font-medium text-base mb-2">Especialistas mais envolvidos:</h5>
-                  <div className="text-base text-muted-foreground">
-                    {pillar.topSpecialists.slice(0, 2).map((specialist, specIndex) => (
-                      <span key={specIndex}>
-                        {specialist.name}
-                        {specIndex < pillar.topSpecialists.slice(0, 2).length - 1 ? ', ' : ''}
-                      </span>
-                    ))}
+                  <div>
+                    <dt className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      {getPillarIcon(pillar.pillar)}
+                      {pillar.pillar}
+                    </dt>
+                    <dd className="text-base text-muted-foreground mt-1">
+                      {pillar.sessionsUsed} de {pillar.sessionsAvailable} utilizadas
+                    </dd>
+                    <dd className="text-sm text-muted-foreground mt-2">
+                      Top: {pillar.topSpecialists[0]?.name}
+                    </dd>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            );
+          })}
+        </dl>
+      </div>
 
 
       {/* Privacy Notice */}
