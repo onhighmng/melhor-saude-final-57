@@ -16,6 +16,8 @@ import { useNavigate } from 'react-router-dom';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { useEffect } from 'react';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
+import { useResourceStats } from '@/hooks/useResourceStats';
+import { getPillarColors } from '@/utils/pillarColors';
 
 export default function SpecialistDashboard() {
   const { profile, isEspecialistaGeral } = useAuth();
@@ -24,6 +26,7 @@ export default function SpecialistDashboard() {
   const { filterByCompanyAccess } = useCompanyFilter();
   const navigate = useNavigate();
   const [pillarFilter, setPillarFilter] = useState<string>('all');
+  const resourceStats = useResourceStats();
 
   useEffect(() => {
     // Add admin-page class to body for gray background (same as admin/company)
@@ -140,28 +143,112 @@ export default function SpecialistDashboard() {
                 cta="Ver Estatísticas"
               />
 
-              {/* Bottom Right - Recursos */}
+              {/* Bottom Right - Recursos with Pillar Distribution */}
               <BentoCard 
-                name="Recursos" 
-                description="Materiais de apoio e guias" 
+                name="" 
+                description="" 
                 Icon={BookOpen} 
                 onClick={() => navigate('/admin/resources')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
                 background={
-                  <div className="absolute inset-0">
-                    <img 
-                      src={recursosWellness} 
-                      alt="" 
-                      className="w-full h-full object-cover" 
-                    />
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200">
+                    {/* Subtle pattern overlay */}
+                    <div className="absolute inset-0 opacity-5" style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                    }} />
                   </div>
                 }
-                iconColor="text-white"
-                textColor="text-white"
-                descriptionColor="text-white/80"
+                iconColor="text-indigo-600"
+                textColor="text-gray-900"
+                descriptionColor="text-gray-600"
                 href="#"
-                cta="Ver Recursos"
-              />
+                cta="Ver Todos"
+              >
+                <div className="relative z-30 flex flex-col h-full p-6">
+                  {/* Header */}
+                  <div className="mb-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 bg-indigo-100 rounded-lg">
+                        <BookOpen className="h-5 w-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-semibold text-gray-900">Recursos</h3>
+                        <p className="text-sm text-gray-600">{resourceStats.total} materiais disponíveis</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Pillar Distribution Visualization */}
+                  <div className="flex-1 space-y-3">
+                    <div className="text-sm font-medium text-gray-700 mb-2">
+                      Distribuição por Pilar
+                    </div>
+                    
+                    {resourceStats.distribution.map((pillar) => {
+                      const colors = getPillarColors(pillar.pillar);
+                      
+                      return (
+                        <div 
+                          key={pillar.pillar}
+                          className="bg-white/70 backdrop-blur-sm rounded-lg p-3 hover:bg-white/90 transition-all cursor-pointer group"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/admin/resources', { state: { pillar: pillar.pillar } });
+                          }}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: colors.text }}
+                              />
+                              <span className="text-sm font-medium text-gray-900 group-hover:text-indigo-600 transition-colors">
+                                {pillar.label}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-500">{pillar.percentage}%</span>
+                              <span className="text-sm font-bold" style={{ color: colors.text }}>
+                                {pillar.count}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Progress Bar */}
+                          <Progress 
+                            value={pillar.percentage} 
+                            className="h-2"
+                            style={{
+                              backgroundColor: colors.bgLight,
+                            }}
+                            indicatorStyle={{
+                              backgroundColor: colors.text
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Footer Stats */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3">
+                        <p className="text-xs text-gray-600">Mais Popular</p>
+                        <p className="text-sm font-semibold text-gray-900 truncate">
+                          {resourceStats.mostPopular?.label || 'N/A'}
+                        </p>
+                      </div>
+                      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3">
+                        <p className="text-xs text-gray-600">Tipos</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          PDF • Vídeo • Artigo
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </BentoCard>
 
               {/* Center - Activity Overview */}
               <BentoCard 

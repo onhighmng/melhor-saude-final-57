@@ -5,12 +5,13 @@ import { cn } from "@/lib/utils"
 
 interface ProgressProps extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
   indicatorClassName?: string;
+  indicatorStyle?: React.CSSProperties;
 }
 
 const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   ProgressProps
->(({ className, value, indicatorClassName, ...props }, ref) => {
+>(({ className, value, indicatorClassName, indicatorStyle, ...props }, ref) => {
   return (
     <ProgressPrimitive.Root
       ref={ref}
@@ -25,7 +26,10 @@ const Progress = React.forwardRef<
           "h-full w-full flex-1 bg-primary transition-all duration-75 ease-linear",
           indicatorClassName
         )}
-        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+        style={{ 
+          transform: `translateX(-${100 - (value || 0)}%)`,
+          ...indicatorStyle 
+        }}
       />
     </ProgressPrimitive.Root>
   );
