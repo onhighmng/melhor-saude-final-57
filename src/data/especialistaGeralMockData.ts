@@ -410,6 +410,8 @@ export const mockUserHistory = [
     user_email: 'ana.silva@empresa.co.mz',
     company_id: 'comp-1',
     company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'psychological',
+    last_session_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     last_activity: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     total_chats: 3,
     total_sessions: 2,
@@ -421,7 +423,19 @@ export const mockUserHistory = [
         specialist_name: 'Geral Especialista',
         content: 'Usuária demonstra alta ansiedade no trabalho. Recomendo acompanhamento regular.',
         created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        id: 'note-1-2',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Progresso notável desde a última sessão. Técnicas de respiração estão ajudando.',
+        created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
       }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Estou muito stressada com o trabalho', timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Entendo. Pode me contar mais sobre o que especificamente está causando esse stress?', timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'user', content: 'São muitas responsabilidades e prazos apertados', timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() }
     ]
   },
   {
@@ -430,6 +444,8 @@ export const mockUserHistory = [
     user_email: 'carlos.santos@tech.co.mz',
     company_id: 'comp-2',
     company_name: 'Tech Solutions MZ',
+    pillar_attended: 'financial',
+    last_session_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     last_activity: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
     total_chats: 2,
     total_sessions: 1,
@@ -442,6 +458,10 @@ export const mockUserHistory = [
         content: 'Usuário está passando por dificuldades financeiras sérias. Precisa de apoio contínuo.',
         created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
       }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Preciso de ajuda para gerir melhor o meu dinheiro', timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Claro, posso ajudá-lo com isso. Vamos começar por entender a sua situação atual.', timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() }
     ]
   },
   {
@@ -450,6 +470,8 @@ export const mockUserHistory = [
     user_email: 'maria.costa@empresa.co.mz',
     company_id: 'comp-1',
     company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'legal',
+    last_session_date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
     last_activity: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
     total_chats: 1,
     total_sessions: 1,
@@ -462,6 +484,10 @@ export const mockUserHistory = [
         content: 'Questão legal resolvida com sucesso. Usuária satisfeita com o atendimento.',
         created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
       }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Tenho dúvidas sobre o meu contrato de trabalho', timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Posso ajudá-la com essas questões legais. Que tipo de dúvidas tem?', timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() }
     ]
   },
   {
@@ -470,6 +496,8 @@ export const mockUserHistory = [
     user_email: 'joao.ferreira@empresa.co.mz',
     company_id: 'comp-1',
     company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'physical',
+    last_session_date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     last_activity: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
     total_chats: 2,
     total_sessions: 1,
@@ -482,6 +510,114 @@ export const mockUserHistory = [
         content: 'Problema físico relacionado ao trabalho remoto. Sessão de fisioterapia recomendada.',
         created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
       }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Tenho dores nas costas do trabalho em casa', timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Entendo. Vamos avaliar a sua postura e ergonomia no trabalho remoto.', timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-5',
+    user_name: 'Sofia Rodrigues',
+    user_email: 'sofia.rodrigues@tech.co.mz',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar_attended: 'psychological',
+    last_session_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    total_chats: 4,
+    total_sessions: 3,
+    average_rating: 9.5,
+    internal_notes: [
+      {
+        id: 'note-5',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Caso de burnout em recuperação. Excelente progresso nas últimas semanas.',
+        created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Sinto-me esgotada e sem energia para trabalhar', timestamp: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Parece que pode estar experienciando sintomas de burnout. Vamos conversar sobre isso.', timestamp: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-6',
+    user_name: 'Pedro Mendes',
+    user_email: 'pedro.mendes@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'financial',
+    last_session_date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    total_chats: 3,
+    total_sessions: 2,
+    average_rating: 7.5,
+    internal_notes: [
+      {
+        id: 'note-6',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Usuário implementou plano de poupança. Acompanhar progresso mensalmente.',
+        created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Quero começar a poupar mas não sei como', timestamp: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Ótimo! Vamos criar um plano de poupança adequado para si.', timestamp: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-7',
+    user_name: 'Ricardo Almeida',
+    user_email: 'ricardo.almeida@tech.co.mz',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar_attended: 'physical',
+    last_session_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    total_chats: 2,
+    total_sessions: 2,
+    average_rating: 8.8,
+    internal_notes: [
+      {
+        id: 'note-7',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Melhorias significativas na postura e redução de dores. Continuar exercícios recomendados.',
+        created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'As dores no pescoço pioraram', timestamp: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Vamos avaliar sua estação de trabalho e ajustar a ergonomia.', timestamp: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-8',
+    user_name: 'Isabel Martins',
+    user_email: 'isabel.martins@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'legal',
+    last_session_date: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+    total_chats: 1,
+    total_sessions: 1,
+    average_rating: 9.2,
+    internal_notes: [
+      {
+        id: 'note-8',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Questão de direitos laborais esclarecida. Encaminhada para advogado se necessário.',
+        created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Tenho dúvidas sobre férias e licenças', timestamp: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Vou esclarecer seus direitos sobre férias e licenças.', timestamp: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString() }
     ]
   }
 ];

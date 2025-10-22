@@ -1,210 +1,235 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Users, Search, MessageSquare, Calendar, Star, Eye, FileText } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MessageSquare, Star, FileText } from 'lucide-react';
 import { mockUserHistory } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 
 const EspecialistaUserHistory = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCompany, setSelectedCompany] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const { filterByCompanyAccess } = useCompanyFilter();
   
   // Filter users by assigned companies
   const filteredUsers = filterByCompanyAccess(mockUserHistory);
-  
-  // Get unique companies for filter
-  const companies = Array.from(new Set(filteredUsers.map(user => user.company_name)));
 
-  const filteredBySearchAndCompany = filteredUsers.filter(user => {
-    const matchesSearch = user.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.user_email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCompany = selectedCompany === 'all' || user.company_name === selectedCompany;
-    return matchesSearch && matchesCompany;
-  });
-
-  const handleViewUserDetail = (user: any) => {
+  const handleViewChat = (user: any) => {
     setSelectedUser(user);
-    setIsUserDetailModalOpen(true);
+    setIsChatModalOpen(true);
+  };
+
+  const getPillarLabel = (pillar: string) => {
+    const labels = {
+      psychological: 'Saúde Mental',
+      physical: 'Bem-Estar Físico',
+      financial: 'Assistência Financeira',
+      legal: 'Assistência Jurídica'
+    };
+    return labels[pillar as keyof typeof labels] || pillar;
+  };
+
+  const getPillarColor = (pillar: string) => {
+    const colors = {
+      psychological: 'bg-blue-100 text-blue-700',
+      physical: 'bg-green-100 text-green-700',
+      financial: 'bg-purple-100 text-purple-700',
+      legal: 'bg-orange-100 text-orange-700'
+    };
+    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-heading font-bold text-foreground">
+        <h1 className="text-3xl font-heading font-bold">
           Historial de Utilizadores
         </h1>
         <p className="text-muted-foreground mt-1">
-          Ver histórico completo de utilizadores das empresas atribuídas
+          Lista de utilizadores já atendidos com histórico completo
         </p>
       </div>
 
-      {/* Filters */}
-      <div className="w-full space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Procurar Utilizadores</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Procurar por nome ou email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Filtrar por empresa" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as empresas</SelectItem>
-                  {companies.map((company) => (
-                    <SelectItem key={company} value={company}>
-                      {company}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Users List */}
-        {filteredBySearchAndCompany.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Users className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-sm text-muted-foreground">
-                {searchTerm || selectedCompany !== 'all' ? 'Nenhum utilizador encontrado' : 'Não há utilizadores disponíveis'}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {filteredBySearchAndCompany.map((user) => (
-              <Card key={user.user_id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewUserDetail(user)}>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-lg">{user.user_name}</h3>
-                        <Badge variant="outline">{user.company_name}</Badge>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500" />
-                          <span className="text-sm font-medium">{user.average_rating}/10</span>
-                        </div>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        <p>{user.user_email}</p>
-                        <p>Última atividade: {new Date(user.last_activity).toLocaleDateString('pt-PT')}</p>
-                        <p>{user.total_chats} chats • {user.total_sessions} sessões</p>
-                      </div>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nome</TableHead>
+              <TableHead>Pilar Atendido</TableHead>
+              <TableHead>Data da Última Sessão</TableHead>
+              <TableHead>Rating Médio</TableHead>
+              <TableHead>Notas Internas</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredUsers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                  Sem utilizadores atendidos
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredUsers.map((user) => (
+                <TableRow key={user.user_id}>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium">{user.user_name}</div>
+                      <div className="text-xs text-muted-foreground">{user.company_name}</div>
                     </div>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4 mr-1" />
-                      Ver detalhes
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* User Detail Modal */}
-        <Dialog open={isUserDetailModalOpen} onOpenChange={setIsUserDetailModalOpen}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Histórico Completo - {selectedUser?.user_name}</DialogTitle>
-            </DialogHeader>
-            {selectedUser && (
-              <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  <div className="text-sm">
-                    <p className="text-muted-foreground">Email</p>
-                    <p className="font-medium">{selectedUser.user_email}</p>
-                  </div>
-                  <div className="text-sm">
-                    <p className="text-muted-foreground">Empresa</p>
-                    <p className="font-medium">{selectedUser.company_name}</p>
-                  </div>
-                  <div className="text-sm">
-                    <p className="text-muted-foreground">Última Atividade</p>
-                    <p className="font-medium">
-                      {new Date(selectedUser.last_activity).toLocaleDateString('pt-PT')}
-                    </p>
-                  </div>
-                  <div className="text-sm">
-                    <p className="text-muted-foreground">Avaliação Média</p>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={`text-xs ${getPillarColor(user.pillar_attended)}`}>
+                      {getPillarLabel(user.pillar_attended)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(user.last_session_date).toLocaleDateString('pt-PT')}
+                  </TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-500" />
-                      <span className="font-medium">{selectedUser.average_rating}/10</span>
+                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                      <span className="font-medium">{user.average_rating}/10</span>
                     </div>
-                  </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-md">
+                      {user.internal_notes && user.internal_notes.length > 0 ? (
+                        <div className="space-y-1">
+                          <p className="text-sm line-clamp-2">
+                            {user.internal_notes[0].content}
+                          </p>
+                          {user.internal_notes.length > 1 && (
+                            <span className="text-xs text-muted-foreground">
+                              +{user.internal_notes.length - 1} notas
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">Sem notas</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleViewChat(user)}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-1" />
+                      Ver chat anterior
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </Card>
+
+      {/* Chat History Modal */}
+      <Dialog open={isChatModalOpen} onOpenChange={setIsChatModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>
+              Histórico de Triagem e Pré-Diagnóstico - {selectedUser?.user_name}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="space-y-4">
+              {/* User Info */}
+              <div className="grid gap-4 md:grid-cols-3 p-4 bg-muted rounded-lg">
+                <div className="text-sm">
+                  <p className="text-muted-foreground">Email</p>
+                  <p className="font-medium">{selectedUser.user_email}</p>
                 </div>
-
-                {/* Internal Notes */}
-                {selectedUser.internal_notes && selectedUser.internal_notes.length > 0 && (
-                  <div>
-                    <h4 className="font-medium mb-3">Notas Internas</h4>
-                    <div className="space-y-3">
-                      {selectedUser.internal_notes.map((note: any) => (
-                        <Card key={note.id}>
-                          <CardContent className="p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-xs text-muted-foreground">
-                                {note.specialist_name}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(note.created_at).toLocaleDateString('pt-PT')}
-                              </span>
-                            </div>
-                            <p className="text-sm">{note.content}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline">
-                    <MessageSquare className="h-4 w-4 mr-1" />
-                    Ver Chats
-                  </Button>
-                  <Button variant="outline">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    Ver Sessões
-                  </Button>
-                  <Button variant="outline">
-                    <FileText className="h-4 w-4 mr-1" />
-                    Adicionar Nota
-                  </Button>
-                  <Button onClick={() => setIsUserDetailModalOpen(false)}>
-                    Fechar
-                  </Button>
+                <div className="text-sm">
+                  <p className="text-muted-foreground">Empresa</p>
+                  <p className="font-medium">{selectedUser.company_name}</p>
+                </div>
+                <div className="text-sm">
+                  <p className="text-muted-foreground">Pilar</p>
+                  <Badge className={`text-xs ${getPillarColor(selectedUser.pillar_attended)}`}>
+                    {getPillarLabel(selectedUser.pillar_attended)}
+                  </Badge>
                 </div>
               </div>
-            )}
-          </DialogContent>
-        </Dialog>
-      </div>
+
+              {/* Chat History */}
+              <div>
+                <h4 className="font-medium mb-3 flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  Histórico de Conversas
+                </h4>
+                <ScrollArea className="h-[300px] border rounded-lg p-4">
+                  <div className="space-y-4">
+                    {selectedUser.chat_history && selectedUser.chat_history.length > 0 ? (
+                      selectedUser.chat_history.map((message: any, index: number) => (
+                        <div
+                          key={index}
+                          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div
+                            className={`max-w-[80%] rounded-lg p-3 ${
+                              message.role === 'user'
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted'
+                            }`}
+                          >
+                            <p className="text-sm">{message.content}</p>
+                            <p className="text-xs opacity-70 mt-1">
+                              {new Date(message.timestamp).toLocaleString('pt-PT')}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground text-center py-8">
+                        Sem histórico de chat disponível
+                      </p>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
+
+              {/* Internal Notes */}
+              {selectedUser.internal_notes && selectedUser.internal_notes.length > 0 && (
+                <div>
+                  <h4 className="font-medium mb-3 flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Notas Internas do Especialista
+                  </h4>
+                  <div className="space-y-3">
+                    {selectedUser.internal_notes.map((note: any) => (
+                      <Card key={note.id}>
+                        <div className="p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs font-medium">{note.specialist_name}</span>
+                            <span className="text-xs text-muted-foreground">•</span>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(note.created_at).toLocaleDateString('pt-PT')}
+                            </span>
+                          </div>
+                          <p className="text-sm">{note.content}</p>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <Button onClick={() => setIsChatModalOpen(false)}>
+                  Fechar
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
