@@ -768,6 +768,293 @@ export const mockUserHistory = [
       { role: 'user', content: 'Tenho dúvidas sobre férias e licenças', timestamp: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString() },
       { role: 'assistant', content: 'Vou esclarecer seus direitos sobre férias e licenças.', timestamp: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString() }
     ]
+  },
+  {
+    user_id: 'user-9',
+    user_name: 'Luís Pereira',
+    user_email: 'luis.pereira@tech.co.mz',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar_attended: 'legal',
+    last_session_date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    total_chats: 2,
+    total_sessions: 1,
+    average_rating: 8.3,
+    internal_notes: [
+      {
+        id: 'note-9',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Questão sobre direitos laborais em regime de teletrabalho. Esclarecido e encaminhado documentação.',
+        created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Quais são os meus direitos em teletrabalho?', timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Em regime de teletrabalho, mantém todos os direitos laborais. Vamos ver em detalhe.', timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'user', content: 'E sobre o horário de trabalho?', timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-10',
+    user_name: 'Carla Fernandes',
+    user_email: 'carla.fernandes@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'financial',
+    last_session_date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
+    total_chats: 3,
+    total_sessions: 2,
+    average_rating: 9.1,
+    internal_notes: [
+      {
+        id: 'note-10',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Excelente caso de sucesso. Usuária reorganizou totalmente suas finanças e está a poupar consistentemente.',
+        created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        id: 'note-10-2',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Follow-up: Atingiu meta de poupança para fundo de emergência.',
+        created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Estou com dívidas acumuladas e não sei como sair', timestamp: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Vamos criar um plano de ação para reorganizar suas finanças. Primeiro, vamos listar todas as dívidas.', timestamp: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'user', content: 'Já consegui pagar duas dívidas!', timestamp: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-11',
+    user_name: 'Paulo Oliveira',
+    user_email: 'paulo.oliveira@tech.co.mz',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar_attended: 'psychological',
+    last_session_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    total_chats: 5,
+    total_sessions: 4,
+    average_rating: 9.7,
+    internal_notes: [
+      {
+        id: 'note-11',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Síndrome do impostor severa. Trabalhando autoconfiança e reconhecimento de competências.',
+        created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        id: 'note-11-2',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Progresso extraordinário. Usuário apresentou projeto importante e recebeu promoção.',
+        created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Sinto que não sou bom o suficiente no meu trabalho', timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Isso pode ser síndrome do impostor. É muito comum em profissionais competentes. Vamos trabalhar isso.', timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'user', content: 'As técnicas que me ensinou estão a ajudar muito!', timestamp: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-12',
+    user_name: 'Rita Santos',
+    user_email: 'rita.santos@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'physical',
+    last_session_date: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+    total_chats: 2,
+    total_sessions: 2,
+    average_rating: 8.6,
+    internal_notes: [
+      {
+        id: 'note-12',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'LER (Lesão por Esforço Repetitivo) em fase inicial. Recomendadas pausas e exercícios específicos.',
+        created_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Tenho dores nos pulsos de tanto usar o computador', timestamp: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Pode ser início de LER. Vamos avaliar sua postura e criar um plano de prevenção.', timestamp: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-13',
+    user_name: 'Tiago Costa',
+    user_email: 'tiago.costa@consultoria.co.mz',
+    company_id: 'comp-3',
+    company_name: 'Consultoria Financeira Ltda',
+    pillar_attended: 'psychological',
+    last_session_date: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
+    total_chats: 2,
+    total_sessions: 1,
+    average_rating: 7.8,
+    internal_notes: [
+      {
+        id: 'note-13',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Conflitos interpessoais no trabalho causando stress. Trabalhando habilidades de comunicação.',
+        created_at: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Não consigo trabalhar bem com a minha equipa', timestamp: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Vamos trabalhar técnicas de comunicação assertiva e gestão de conflitos.', timestamp: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-14',
+    user_name: 'Beatriz Almeida',
+    user_email: 'beatriz.almeida@tech.co.mz',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar_attended: 'financial',
+    last_session_date: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    total_chats: 1,
+    total_sessions: 1,
+    average_rating: 8.9,
+    internal_notes: [
+      {
+        id: 'note-14',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Planeamento de investimentos de longo prazo. Usuária muito organizada e proativa.',
+        created_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Quero começar a investir mas tenho medo de perder dinheiro', timestamp: new Date(Date.now() - 17 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Vamos discutir diferentes perfis de investimento e encontrar o adequado para si.', timestamp: new Date(Date.now() - 17 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-15',
+    user_name: 'Fernando Silva',
+    user_email: 'fernando.silva@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'legal',
+    last_session_date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(),
+    total_chats: 3,
+    total_sessions: 2,
+    average_rating: 9.4,
+    internal_notes: [
+      {
+        id: 'note-15',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Assédio moral no trabalho. Caso encaminhado para advogado trabalhista e RH da empresa.',
+        created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        id: 'note-15-2',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Situação resolvida com sucesso. Usuário transferido de departamento e está satisfeito.',
+        created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Estou a sofrer assédio do meu superior', timestamp: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Isso é muito sério. Vou ajudá-lo com os procedimentos legais adequados.', timestamp: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'user', content: 'Muito obrigado. A situação foi resolvida!', timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-16',
+    user_name: 'Marta Rodrigues',
+    user_email: 'marta.rodrigues@consultoria.co.mz',
+    company_id: 'comp-3',
+    company_name: 'Consultoria Financeira Ltda',
+    pillar_attended: 'physical',
+    last_session_date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 13 * 60 * 60 * 1000).toISOString(),
+    total_chats: 4,
+    total_sessions: 3,
+    average_rating: 9.0,
+    internal_notes: [
+      {
+        id: 'note-16',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Programa de bem-estar físico completo. Usuária muito comprometida com os exercícios.',
+        created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Quero melhorar minha saúde física mas não tenho tempo para ginásio', timestamp: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Podemos criar uma rotina de exercícios em casa, adequada à sua agenda.', timestamp: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'user', content: 'Já perdi 5kg e sinto-me muito melhor!', timestamp: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-17',
+    user_name: 'Diogo Martins',
+    user_email: 'diogo.martins@tech.co.mz',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar_attended: 'psychological',
+    last_session_date: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 15 * 60 * 60 * 1000).toISOString(),
+    total_chats: 2,
+    total_sessions: 2,
+    average_rating: 8.4,
+    internal_notes: [
+      {
+        id: 'note-17',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Dificuldades de adaptação a trabalho remoto. Trabalhando rotinas e limites trabalho-vida pessoal.',
+        created_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Desde que estou em casa, trabalho até muito tarde', timestamp: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'É importante estabelecer limites claros. Vamos criar uma rotina saudável.', timestamp: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
+  },
+  {
+    user_id: 'user-18',
+    user_name: 'Cláudia Pereira',
+    user_email: 'claudia.pereira@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar_attended: 'financial',
+    last_session_date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    last_activity: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    total_chats: 3,
+    total_sessions: 2,
+    average_rating: 9.6,
+    internal_notes: [
+      {
+        id: 'note-18',
+        specialist_id: 'spec-1',
+        specialist_name: 'Geral Especialista',
+        content: 'Planeamento de reforma antecipada. Caso interessante com objetivos muito claros.',
+        created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ],
+    chat_history: [
+      { role: 'user', content: 'Tenho 45 anos e quero reformar-me aos 55', timestamp: new Date(Date.now() - 19 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'assistant', content: 'Vamos criar um plano financeiro de 10 anos para atingir esse objetivo.', timestamp: new Date(Date.now() - 19 * 24 * 60 * 60 * 1000).toISOString() },
+      { role: 'user', content: 'Estou a seguir o plano religiosamente. Obrigada!', timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() }
+    ]
   }
 ];
 

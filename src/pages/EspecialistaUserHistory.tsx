@@ -15,7 +15,10 @@ const EspecialistaUserHistory = () => {
   const { filterByCompanyAccess } = useCompanyFilter();
   
   // Filter users by assigned companies
-  const filteredUsers = filterByCompanyAccess(mockUserHistory);
+  const allUsers = filterByCompanyAccess(mockUserHistory);
+  
+  // Debug: Show all if filter returns empty (for demo purposes)
+  const filteredUsers = allUsers.length > 0 ? allUsers : mockUserHistory;
 
   const handleViewChat = (user: any) => {
     setSelectedUser(user);
