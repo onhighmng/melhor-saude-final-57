@@ -210,6 +210,7 @@ const CompanyReportsImpact = () => {
                     dataKey="sessions"
                     label={({ pillar, percentage }) => `${pillar}: ${percentage}%`}
                     isAnimationActive={false}
+                    style={{ fontSize: '16px', fontWeight: '600' }}
                   >
                     {mockPillarDistribution.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -226,9 +227,9 @@ const CompanyReportsImpact = () => {
                     style={{ backgroundColor: pillar.color }}
                   ></div>
                   <div className="flex flex-col">
-                    <span className="text-base font-medium">{pillar.pillar}</span>
+                    <span className="text-lg font-medium">{pillar.pillar}</span>
                     <span className="text-5xl font-extrabold text-foreground font-sans">{pillar.sessions}</span>
-                    <span className="text-sm text-muted-foreground">sessões</span>
+                    <span className="text-base text-muted-foreground">sessões</span>
                   </div>
                 </div>
               ))}
@@ -249,20 +250,27 @@ const CompanyReportsImpact = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={mockWellnessTrends}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis domain={[6, 10]} />
+                  <XAxis 
+                    dataKey="month" 
+                    style={{ fontSize: '16px' }}
+                  />
+                  <YAxis 
+                    domain={[6, 10]} 
+                    style={{ fontSize: '16px' }}
+                  />
                   <Tooltip 
                     formatter={(value, name) => [
                       name === 'avgWellness' ? `${value}/10` : value,
                       name === 'avgWellness' ? 'Bem-estar médio' : 'Sessões'
                     ]}
+                    contentStyle={{ fontSize: '16px' }}
                   />
                   <Legend 
                     formatter={(value) => 
                       value === 'avgWellness' ? 'Bem-estar médio' : 
                       value === 'sessions' ? 'Sessões realizadas' : value
                     }
-                    wrapperStyle={{ fontSize: '16px' }}
+                    wrapperStyle={{ fontSize: '18px' }}
                   />
                   <Line 
                     type="monotone" 
