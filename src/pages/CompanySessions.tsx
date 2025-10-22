@@ -176,118 +176,124 @@ const CompanySessions = () => {
         </Card>
       </div>
 
-      {/* Pillar Analysis with Stats Cards */}
+      {/* Pillar Analysis - Stats Cards */}
       <div>
         <div className="flex items-center gap-2 mb-6">
           <BarChart3 className="h-6 w-6" />
           <h2 className="text-3xl font-bold">Análise por Pilar</h2>
         </div>
         
+        {/* Stats Cards with Usage */}
         <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          {mockSessionAnalytics.pillarBreakdown.map((pillar, index) => {
-            const Icon = getPillarIcon(pillar.pillar).type;
-            return (
-              <div key={index} className="p-0 gap-0 rounded-xl border bg-card text-card-foreground shadow flex flex-col">
-                <div className="px-6 py-6">
-                  <dd className="flex items-start justify-between space-x-2">
-                    <div className="flex items-center gap-2">
-                      {getPillarIcon(pillar.pillar)}
-                      <span className="text-base font-medium text-foreground">
-                        {pillar.pillar}
-                      </span>
-                    </div>
-                    <span className="text-base font-semibold text-emerald-700 dark:text-emerald-500">
-                      {pillar.utilizationRate}%
+          {mockSessionAnalytics.pillarBreakdown.map((pillar, index) => (
+            <div key={index} className="rounded-xl border bg-card text-card-foreground shadow-sm flex flex-col overflow-hidden hover-lift transition-all">
+              <div className="px-6 py-6">
+                <dd className="flex items-start justify-between space-x-2 mb-4">
+                  <div className="flex items-center gap-2">
+                    {getPillarIcon(pillar.pillar)}
+                    <span className="text-base font-semibold text-foreground">
+                      {pillar.pillar}
                     </span>
+                  </div>
+                  <span className={`text-base font-bold px-3 py-1 rounded-full ${
+                    pillar.utilizationRate >= 75 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                    pillar.utilizationRate >= 50 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                  }`}>
+                    {pillar.utilizationRate}%
+                  </span>
+                </dd>
+                <dd className="mt-2 text-4xl font-bold text-foreground">
+                  {pillar.sessionsUsed}
+                </dd>
+                <dd className="mt-2 text-base text-muted-foreground">
+                  de {pillar.sessionsAvailable} sessões disponíveis
+                </dd>
+                <div className="mt-4 pt-4 border-t border-border">
+                  <dt className="text-sm font-medium text-muted-foreground mb-2">
+                    Top Especialistas
+                  </dt>
+                  <dd className="text-base text-foreground space-y-1">
+                    {pillar.topSpecialists.slice(0, 2).map((specialist, idx) => (
+                      <div key={idx} className="flex items-center justify-between">
+                        <span className="truncate">{specialist.name}</span>
+                        <span className="text-sm text-muted-foreground ml-2">{specialist.sessions}</span>
+                      </div>
+                    ))}
                   </dd>
-                  <dd className="mt-3 text-4xl font-bold text-foreground">
-                    {pillar.sessionsUsed}
-                  </dd>
-                  <dd className="mt-1 text-base text-muted-foreground">
-                    de {pillar.sessionsAvailable} sessões
-                  </dd>
-                </div>
-                <div className="flex justify-end border-t border-border !p-0">
-                  <button className="px-6 py-4 text-base font-medium text-primary hover:text-primary/90">
-                    Ver detalhes →
-                  </button>
                 </div>
               </div>
-            );
-          })}
+              <div className="flex justify-end border-t border-border bg-muted/30">
+                <button className="px-6 py-4 text-base font-medium text-primary hover:text-primary/90 hover:bg-muted/50 transition-colors w-full text-right">
+                  Ver detalhes completos →
+                </button>
+              </div>
+            </div>
+          ))}
         </dl>
 
-        {/* Radial Chart Cards */}
-        <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {mockSessionAnalytics.pillarBreakdown.map((pillar, index) => {
-            const chartData = [{
-              name: pillar.pillar,
-              capacity: pillar.utilizationRate,
-              current: pillar.sessionsUsed,
-              allowed: pillar.sessionsAvailable,
-              fill: `hsl(var(--chart-${index + 1}))`
-            }];
-
-            const chartConfig = {
-              pillar: {
-                label: pillar.pillar,
-                color: `hsl(var(--chart-${index + 1}))`
-              },
-              background: {
-                label: "Background",
-                color: "hsl(var(--muted))"
-              }
-            };
-
-            return (
-              <div key={index} className="p-6 rounded-xl border bg-card text-card-foreground shadow">
-                <div className="p-0 flex items-center space-x-4">
-                  <div className="relative flex items-center justify-center">
-                    <div className="h-[100px] w-[100px]">
-                      <svg viewBox="0 0 100 100" className="transform -rotate-90">
+        {/* Radial Progress Cards */}
+        <div className="mt-8">
+          <h3 className="text-2xl font-semibold mb-4">Progresso de Utilização Visual</h3>
+          <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {mockSessionAnalytics.pillarBreakdown.map((pillar, index) => {
+              const colors = [
+                'hsl(217, 91%, 60%)',  // Blue
+                'hsl(45, 93%, 47%)',   // Yellow
+                'hsl(142, 71%, 45%)',  // Green
+                'hsl(271, 91%, 65%)',  // Purple
+              ];
+              
+              return (
+                <div key={index} className="p-6 rounded-xl border bg-card text-card-foreground shadow-sm hover-lift transition-all">
+                  <div className="flex items-center space-x-4">
+                    <div className="relative flex items-center justify-center flex-shrink-0">
+                      <svg viewBox="0 0 100 100" className="w-[100px] h-[100px] transform -rotate-90">
                         <circle
                           cx="50"
                           cy="50"
                           r="40"
                           fill="none"
                           stroke="hsl(var(--muted))"
-                          strokeWidth="12"
+                          strokeWidth="10"
                         />
                         <circle
                           cx="50"
                           cy="50"
                           r="40"
                           fill="none"
-                          stroke={`hsl(var(--chart-${index + 1}))`}
-                          strokeWidth="12"
+                          stroke={colors[index % colors.length]}
+                          strokeWidth="10"
                           strokeDasharray={`${pillar.utilizationRate * 2.51} 251`}
                           strokeLinecap="round"
+                          className="transition-all duration-1000"
                         />
                       </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xl font-bold text-foreground">
+                          {pillar.utilizationRate}%
+                        </span>
+                      </div>
                     </div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xl font-bold text-foreground">
-                        {pillar.utilizationRate}%
-                      </span>
+                    <div className="flex-1 min-w-0">
+                      <dt className="text-lg font-semibold text-foreground flex items-center gap-2 mb-2">
+                        {getPillarIcon(pillar.pillar)}
+                        <span className="truncate">{pillar.pillar}</span>
+                      </dt>
+                      <dd className="text-base text-muted-foreground">
+                        <span className="font-semibold text-foreground">{pillar.sessionsUsed}</span> de {pillar.sessionsAvailable} utilizadas
+                      </dd>
+                      <dd className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        Top: {pillar.topSpecialists[0]?.name}
+                      </dd>
                     </div>
-                  </div>
-                  <div>
-                    <dt className="text-lg font-semibold text-foreground flex items-center gap-2">
-                      {getPillarIcon(pillar.pillar)}
-                      {pillar.pillar}
-                    </dt>
-                    <dd className="text-base text-muted-foreground mt-1">
-                      {pillar.sessionsUsed} de {pillar.sessionsAvailable} utilizadas
-                    </dd>
-                    <dd className="text-sm text-muted-foreground mt-2">
-                      Top: {pillar.topSpecialists[0]?.name}
-                    </dd>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </dl>
+              );
+            })}
+          </dl>
+        </div>
       </div>
 
 
