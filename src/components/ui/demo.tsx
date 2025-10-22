@@ -1,7 +1,14 @@
-import { InfoCard } from "@/components/ui/info-card";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 
-export default function DemoOne() {
-  return <InfoCard name="Demo User" variant="default" />;
+
+function InteractiveHoverButtonDemo() {
+  return (
+    <div className="relative justify-center">
+      <InteractiveHoverButton />
+    </div>
+  );
 }
+
+export { InteractiveHoverButtonDemo };
 
 

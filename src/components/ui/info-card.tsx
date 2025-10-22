@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { UserPlus, MessageCircle, Star, CheckCircle2, Calendar, Building2, Brain, Dumbbell, DollarSign, Scale, Eye } from 'lucide-react';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 
 interface InfoCardProps {
   name: string;
@@ -245,15 +246,11 @@ export function InfoCard({
         {/* Action Buttons - Minimal */}
         <div className="flex gap-2 mt-4">
           {onView && (
-            <Button
-              variant="outline"
-              size="sm"
+            <InteractiveHoverButton
+              text="Ver"
               onClick={onView}
-              className="flex-1 bg-white hover:bg-slate-50 border-slate-300 text-slate-700 hover:text-emerald-600 font-medium shadow-sm"
-            >
-              <Eye className="w-4 h-4 mr-1" />
-              Ver
-            </Button>
+              className="flex-1"
+            />
           )}
           {onContact && (
             <Button
