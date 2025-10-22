@@ -94,12 +94,7 @@ const CompanyCollaborators = () => {
       </div>
 
       {/* Features Grid Section */}
-      <FeaturesGrid 
-        onGenerateCode={generateInviteCode}
-        codesGenerated={generatedCodes.length}
-        seatsAvailable={company.seatAvailable}
-        canGenerateMore={generatedCodes.length < company.seatAvailable}
-      />
+      <FeaturesGrid />
 
       {/* Access Management Section */}
       <div className="max-w-7xl mx-auto px-6 py-8">
