@@ -44,12 +44,12 @@ const CompanySettings = () => {
   });
 
   useEffect(() => {
-    // Add admin-page class to body for gray background
-    document.body.classList.add('admin-page');
+    // Add company-page class to body for light blue background
+    document.body.classList.add('company-page');
     
     // Cleanup: remove class when component unmounts
     return () => {
-      document.body.classList.remove('admin-page');
+      document.body.classList.remove('company-page');
     };
   }, []);
 

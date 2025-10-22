@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Component as BlogPosts } from "@/components/ui/blog-posts";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -79,6 +79,16 @@ export default function CompanyResources() {
   const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const { user } = useAuth();
+  
+  useEffect(() => {
+    // Add company-page class to body for light blue background
+    document.body.classList.add('company-page');
+    
+    // Cleanup: remove class when component unmounts
+    return () => {
+      document.body.classList.remove('company-page');
+    };
+  }, []);
   
   const handleView = async (resource: UserResource) => {
     setSelectedResource(resource);
