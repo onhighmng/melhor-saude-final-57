@@ -218,15 +218,18 @@ const CompanyReportsImpact = () => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-2">
+            <div className="mt-4 grid grid-cols-2 gap-3">
               {mockPillarDistribution.map((pillar, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm">
+                <div key={index} className="flex items-center gap-2">
                   <div 
-                    className="w-3 h-3 rounded-full" 
+                    className="w-4 h-4 rounded-full" 
                     style={{ backgroundColor: pillar.color }}
                   ></div>
-                  <span className="font-medium">{pillar.pillar}</span>
-                  <span className="text-muted-foreground">({pillar.sessions} sessões)</span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{pillar.pillar}</span>
+                    <span className="text-5xl font-bold text-foreground">{pillar.sessions}</span>
+                    <span className="text-xs text-muted-foreground">sessões</span>
+                  </div>
                 </div>
               ))}
             </div>
