@@ -21,10 +21,28 @@ const EspecialistaSettings = () => {
   const [profileData, setProfileData] = useState({
     name: profile?.name || '',
     email: profile?.email || '',
-    phone: profile?.phone || ''
+    phone: profile?.phone || '',
+    avatar_url: profile?.avatar_url || ''
   });
+  
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>(profile?.avatar_url || '');
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSaveProfile = () => {
+    // TODO: Upload avatar file to Supabase Storage if avatarFile exists
+    // For now, just show success message
     toast({
       title: 'Perfil atualizado',
       description: 'As suas informações foram guardadas com sucesso.',
@@ -96,6 +114,34 @@ const EspecialistaSettings = () => {
               <DialogTitle>Editar Perfil</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
+              {/* Profile Picture Section */}
+              <div className="flex flex-col items-center gap-4 pb-4 border-b">
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                    {avatarPreview ? (
+                      <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-16 h-16 text-muted-foreground" />
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Label htmlFor="avatar" className="cursor-pointer">
+                    <Button variant="outline" size="sm" type="button" onClick={() => document.getElementById('avatar')?.click()}>
+                      Carregar Foto
+                    </Button>
+                  </Label>
+                  <Input 
+                    id="avatar" 
+                    type="file" 
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarChange}
+                  />
+                  <p className="text-xs text-muted-foreground">JPG, PNG ou WEBP (máx. 5MB)</p>
+                </div>
+              </div>
+
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nome</Label>
