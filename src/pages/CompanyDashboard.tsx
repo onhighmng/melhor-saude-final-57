@@ -156,7 +156,7 @@ const CompanyDashboard = () => {
                 href="#" 
                 cta="" 
                 className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
-                background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100" />}
+                background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
                 onClick={() => navigate('/company/relatorios')}
               >
                 <div className="relative z-30 flex flex-col h-full p-6">
