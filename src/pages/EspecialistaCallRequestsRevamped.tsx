@@ -4,7 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Phone, Clock, CheckCircle, ArrowUpDown } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Phone, Clock, CheckCircle, ArrowUpDown, User, Building2, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockCallRequests } from '@/data/especialistaGeralMockData';
 import { CallRequest } from '@/types/specialist';
@@ -17,6 +18,7 @@ const EspecialistaCallRequestsRevamped = () => {
   const { filterByCompanyAccess } = useCompanyFilter();
   const [selectedRequest, setSelectedRequest] = useState<CallRequest | null>(null);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Filter requests
@@ -32,6 +34,11 @@ const EspecialistaCallRequestsRevamped = () => {
   const handleCallClick = (request: CallRequest) => {
     setSelectedRequest(request);
     setIsCallModalOpen(true);
+  };
+
+  const handleViewUserInfo = (request: CallRequest) => {
+    setSelectedRequest(request);
+    setIsUserInfoModalOpen(true);
   };
 
   const handleMarkResolved = (requestId: string) => {
@@ -140,13 +147,25 @@ const EspecialistaCallRequestsRevamped = () => {
               </TableRow>
             ) : (
               sortedRequests.map((request) => (
-                <TableRow key={request.id}>
+                <TableRow key={request.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">{request.company_name}</TableCell>
                   <TableCell>
-                    <div>
-                      <div className="font-medium">{request.user_name}</div>
-                      <div className="text-xs text-muted-foreground">{request.user_email}</div>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      className="h-auto p-0 hover:bg-transparent"
+                      onClick={() => handleViewUserInfo(request)}
+                    >
+                      <div className="text-left">
+                        <div className="font-medium flex items-center gap-2 hover:text-primary">
+                          <User className="h-4 w-4" />
+                          {request.user_name}
+                        </div>
+                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                          <Mail className="h-3 w-3" />
+                          {request.user_email}
+                        </div>
+                      </div>
+                    </Button>
                   </TableCell>
                   <TableCell>
                     <Badge className={`text-xs ${getPillarColor(request.pillar)}`}>
@@ -154,7 +173,10 @@ const EspecialistaCallRequestsRevamped = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm">{request.user_phone}</div>
+                    <div className="flex items-center gap-1 text-sm">
+                      <Phone className="h-3 w-3 text-muted-foreground" />
+                      {request.user_phone}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className={`flex items-center gap-1 ${getWaitTimeColor(request.wait_time)}`}>
@@ -195,6 +217,106 @@ const EspecialistaCallRequestsRevamped = () => {
           </TableBody>
         </Table>
       </Card>
+
+      {/* User Info Modal */}
+      <Dialog open={isUserInfoModalOpen} onOpenChange={setIsUserInfoModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Informações do Colaborador
+            </DialogTitle>
+          </DialogHeader>
+          {selectedRequest && (
+            <div className="space-y-6">
+              {/* User Details Card */}
+              <Card className="border-2">
+                <div className="p-6 space-y-4">
+                  {/* Name and Company */}
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <h3 className="text-2xl font-bold">{selectedRequest.user_name}</h3>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Building2 className="h-4 w-4" />
+                        <span>{selectedRequest.company_name}</span>
+                      </div>
+                    </div>
+                    <Badge className={`text-xs ${getPillarColor(selectedRequest.pillar)}`}>
+                      {getPillarLabel(selectedRequest.pillar)}
+                    </Badge>
+                  </div>
+
+                  {/* Contact Information */}
+                  <div className="grid gap-4 pt-4 border-t">
+                    <div className="grid gap-2">
+                      <label className="text-sm font-medium text-muted-foreground">Email</label>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Mail className="h-4 w-4 text-primary" />
+                        <a href={`mailto:${selectedRequest.user_email}`} className="hover:underline">
+                          {selectedRequest.user_email}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <label className="text-sm font-medium text-muted-foreground">Telefone</label>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="h-4 w-4 text-primary" />
+                        <a href={`tel:${selectedRequest.user_phone}`} className="hover:underline">
+                          {selectedRequest.user_phone}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <label className="text-sm font-medium text-muted-foreground">Tempo de Espera</label>
+                      <div className={`flex items-center gap-2 text-sm ${getWaitTimeColor(selectedRequest.wait_time)}`}>
+                        <Clock className="h-4 w-4" />
+                        <span className="font-medium">{formatWaitTime(selectedRequest.wait_time)}</span>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <label className="text-sm font-medium text-muted-foreground">Estado</label>
+                      <div>
+                        <Badge className={`text-xs ${getStatusBadge(selectedRequest.status).variant}`}>
+                          {getStatusBadge(selectedRequest.status).label}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  {selectedRequest.notes && (
+                    <div className="pt-4 border-t">
+                      <label className="text-sm font-medium text-muted-foreground block mb-2">
+                        Notas do Pedido
+                      </label>
+                      <p className="text-sm bg-muted p-3 rounded-lg">{selectedRequest.notes}</p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsUserInfoModalOpen(false)}>
+                  Fechar
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setIsUserInfoModalOpen(false);
+                    handleCallClick(selectedRequest);
+                  }}
+                >
+                  <Phone className="h-4 w-4 mr-2" />
+                  Ligar Agora
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Call Modal */}
       {selectedRequest && (
