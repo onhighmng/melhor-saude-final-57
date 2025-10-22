@@ -94,7 +94,15 @@ const CompanyCollaborators = () => {
       </div>
 
       {/* Features Grid Section */}
-      <FeaturesGrid />
+      <FeaturesGrid 
+        onGenerateCode={generateInviteCode}
+        codesGenerated={generatedCodes.length}
+        seatsAvailable={company.seatAvailable}
+        canGenerateMore={company.seatAvailable > 0 && generatedCodes.length < company.seatAvailable}
+        generatedCodes={generatedCodes}
+        onCopyCode={copyToClipboard}
+        onDownloadCodes={downloadCodes}
+      />
 
       {/* Access Management Section */}
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -142,89 +150,13 @@ const CompanyCollaborators = () => {
                 </p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   Por motivos de privacidade, não é possível visualizar dados individuais dos colaboradores. 
-                  As funcionalidades abaixo permitem convidar e gerir acessos de forma anónima e segura, 
+                  As funcionalidades acima permitem convidar e gerir acessos de forma anónima e segura, 
                   em conformidade com o RGPD.
                 </p>
               </div>
             </CardContent>
           </Card>
         </div>
-
-        {/* Code Generation */}
-        <Card className="mt-6 hover-lift">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5 text-primary" />
-              Geração de Códigos de Acesso
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Crie códigos únicos para distribuição em massa aos colaboradores
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button 
-                onClick={generateInviteCode}
-                disabled={company.seatAvailable === 0 || generatedCodes.length >= company.seatAvailable}
-                size="lg"
-                className="gap-2"
-              >
-                <Key className="h-4 w-4" />
-                Gerar Código ({generatedCodes.length}/{company.seatAvailable})
-              </Button>
-
-              {generatedCodes.length > 0 && (
-                <Button 
-                  onClick={downloadCodes}
-                  variant="outline"
-                  size="lg"
-                  className="gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Exportar Códigos ({generatedCodes.length})
-                </Button>
-              )}
-            </div>
-
-            {generatedCodes.length >= company.seatAvailable && company.seatAvailable > 0 && (
-              <div className="flex items-start gap-2 p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950/20">
-                <XCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-amber-800 dark:text-amber-200">
-                  Limite de códigos atingido. Já foram gerados {company.seatAvailable} códigos disponíveis.
-                </p>
-              </div>
-            )}
-
-            {generatedCodes.length > 0 && (
-              <div className="border rounded-lg divide-y max-h-80 overflow-y-auto">
-                {generatedCodes.map((code, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                    <code className="text-base font-mono bg-muted px-3 py-2 rounded font-semibold">
-                      {code}
-                    </code>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => copyToClipboard(code)}
-                      className="gap-2"
-                    >
-                      <Copy className="h-4 w-4" />
-                      Copiar
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {generatedCodes.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                <Key className="h-16 w-16 mx-auto mb-4 opacity-20" />
-                <p className="text-base">Nenhum código gerado ainda</p>
-                <p className="text-sm mt-1">Clique no botão acima para gerar códigos de acesso</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

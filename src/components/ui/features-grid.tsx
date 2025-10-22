@@ -1,7 +1,26 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Brain, Heart, DollarSign, Scale, Users, TrendingUp, Key, CheckCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Brain, Heart, DollarSign, Scale, Users, TrendingUp, Key, CheckCircle, Copy, Download, XCircle } from 'lucide-react'
 
-export function FeaturesGrid() {
+interface FeaturesGridProps {
+    onGenerateCode?: () => void;
+    codesGenerated?: number;
+    seatsAvailable?: number;
+    canGenerateMore?: boolean;
+    generatedCodes?: string[];
+    onCopyCode?: (code: string) => void;
+    onDownloadCodes?: () => void;
+}
+
+export function FeaturesGrid({
+    onGenerateCode,
+    codesGenerated = 0,
+    seatsAvailable = 0,
+    canGenerateMore = true,
+    generatedCodes = [],
+    onCopyCode,
+    onDownloadCodes
+}: FeaturesGridProps) {
     return (
         <section className="bg-background py-16 md:py-24">
             <div className="mx-auto max-w-7xl px-6">
@@ -19,35 +38,68 @@ export function FeaturesGrid() {
                         <CardContent className="px-6 md:px-12 pb-6 md:pb-12">
                             <div className="space-y-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Clique no botão abaixo para gerar códigos de acesso únicos que podem ser distribuídos aos colaboradores.
+                                    Crie códigos únicos para distribuição em massa aos colaboradores
                                 </p>
                                 
-                                <div className="p-6 bg-muted/50 rounded-lg border">
-                                    <div className="text-center space-y-4">
-                                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
-                                            <Key className="h-8 w-8 text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="text-lg font-semibold text-foreground">Gerar Novos Códigos</p>
-                                            <p className="text-sm text-muted-foreground mt-1">
-                                                Códigos serão listados na secção abaixo para fácil distribuição
-                                            </p>
-                                        </div>
-                                    </div>
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <Button 
+                                        onClick={onGenerateCode}
+                                        disabled={!canGenerateMore}
+                                        size="lg"
+                                        className="gap-2"
+                                    >
+                                        <Key className="h-4 w-4" />
+                                        Gerar Código ({codesGenerated}/{seatsAvailable})
+                                    </Button>
+
+                                    {generatedCodes.length > 0 && (
+                                        <Button 
+                                            onClick={onDownloadCodes}
+                                            variant="outline"
+                                            size="lg"
+                                            className="gap-2"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                            Exportar Códigos ({generatedCodes.length})
+                                        </Button>
+                                    )}
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 pt-4">
-                                    <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800 text-center">
-                                        <Users className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-                                        <p className="text-sm text-muted-foreground">Contas Disponíveis</p>
-                                        <p className="text-2xl font-bold text-blue-600 mt-1">Ilimitado</p>
+                                {codesGenerated >= seatsAvailable && seatsAvailable > 0 && (
+                                    <div className="flex items-start gap-2 p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950/20">
+                                        <XCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                        <p className="text-sm text-amber-800 dark:text-amber-200">
+                                            Limite de códigos atingido. Já foram gerados {seatsAvailable} códigos disponíveis.
+                                        </p>
                                     </div>
-                                    <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800 text-center">
-                                        <CheckCircle className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
-                                        <p className="text-sm text-muted-foreground">Códigos Gerados</p>
-                                        <p className="text-2xl font-bold text-emerald-600 mt-1">Ver abaixo</p>
+                                )}
+
+                                {generatedCodes.length > 0 ? (
+                                    <div className="border rounded-lg divide-y max-h-80 overflow-y-auto">
+                                        {generatedCodes.map((code, index) => (
+                                            <div key={index} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+                                                <code className="text-base font-mono bg-muted px-3 py-2 rounded font-semibold">
+                                                    {code}
+                                                </code>
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    onClick={() => onCopyCode?.(code)}
+                                                    className="gap-2"
+                                                >
+                                                    <Copy className="h-4 w-4" />
+                                                    Copiar
+                                                </Button>
+                                            </div>
+                                        ))}
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className="text-center py-12 text-muted-foreground">
+                                        <Key className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                                        <p className="text-base">Nenhum código gerado ainda</p>
+                                        <p className="text-sm mt-1">Clique no botão acima para gerar códigos de acesso</p>
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
