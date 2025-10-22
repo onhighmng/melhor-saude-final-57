@@ -110,16 +110,6 @@ const CompanyCollaborators = () => {
       {/* Access Management Section */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Seat Usage Cards */}
-          <Card className="hover-lift">
-            <CardHeader className="p-8">
-              <CardTitle className="flex items-center gap-3 text-3xl">
-                <Users className="h-8 w-8 text-primary" />
-                Utilização de Contas
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
           {/* Privacy Notice */}
           <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800 hover-lift">
             <CardContent className="flex items-start gap-3 p-6">
