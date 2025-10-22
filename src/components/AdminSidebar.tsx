@@ -15,6 +15,8 @@ import {
   Shield,
   Phone,
   Calendar,
+  AlertTriangle,
+  BookOpen,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -45,6 +47,16 @@ const AdminSidebar = () => {
       label: "Sessões Agendadas",
       href: "/admin/operations",
       icon: <Calendar className="text-primary h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Alertas",
+      href: "/admin/alerts",
+      icon: <AlertTriangle className="text-primary h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Recursos",
+      href: "/admin/resources",
+      icon: <BookOpen className="text-primary h-5 w-5 flex-shrink-0" />,
     },
   ];
 

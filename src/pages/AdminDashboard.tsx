@@ -10,11 +10,13 @@ import {
   Phone,
   MessageSquare,
   AlertTriangle,
-  Activity
+  Activity,
+  BookOpen
 } from 'lucide-react';
 import { mockAdminAlerts } from '@/data/especialistaGeralMockData';
 import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import recursosWellness from '@/assets/recursos-wellness.jpg';
 
 const AdminDashboard = () => {
   const { profile } = useAuth();
@@ -111,28 +113,28 @@ const AdminDashboard = () => {
           >
           </BentoCard>
 
-          {/* Bottom Right - Utilization Rate */}
+          {/* Bottom Right - Recursos */}
           <BentoCard 
-            name="Taxa de Utilização" 
-            description="Eficiência da plataforma" 
-            Icon={Activity} 
-            onClick={() => navigate('/admin/operations')} 
+            name="Recursos" 
+            description="Conteúdos e materiais de apoio" 
+            Icon={BookOpen} 
+            onClick={() => navigate('/admin/resources')} 
             className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
             background={
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
-                  style={{
-                    backgroundImage: "url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
-                  }}
+              <div className="absolute inset-0">
+                <img 
+                  src={recursosWellness} 
+                  alt="" 
+                  className="w-full h-full object-cover opacity-40" 
                 />
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-teal-600/30" />
               </div>
             }
-            iconColor="text-slate-700"
-            textColor="text-slate-900"
-            descriptionColor="text-slate-600"
+            iconColor="text-white"
+            textColor="text-white"
+            descriptionColor="text-white/80"
             href="#"
-            cta="Ver Detalhes"
+            cta="Ver Recursos"
           >
           </BentoCard>
 
@@ -143,8 +145,8 @@ const AdminDashboard = () => {
             href="#" 
             cta="" 
             className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
-            background={<div className="absolute inset-0 bg-gradient-to-br from-red-100 to-red-200" />}
-            iconColor="text-red-800"
+            background={<div className="absolute inset-0 bg-white" />}
+            iconColor="text-red-600"
             textColor="text-slate-900"
             descriptionColor="text-slate-600"
             onClick={() => navigate('/admin/alerts')}
