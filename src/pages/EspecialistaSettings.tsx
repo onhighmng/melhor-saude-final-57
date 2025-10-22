@@ -127,7 +127,7 @@ const EspecialistaSettings = () => {
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <Label htmlFor="avatar" className="cursor-pointer">
-                    <Button variant="outline" size="sm" type="button" onClick={() => document.getElementById('avatar')?.click()}>
+                    <Button variant="outline" size="sm" type="button" onClick={() => document.getElementById('avatar')?.click()} className="text-lg font-bold">
                       Carregar Foto
                     </Button>
                   </Label>
@@ -144,7 +144,7 @@ const EspecialistaSettings = () => {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nome</Label>
+                  <Label htmlFor="name" className="text-lg font-bold">Nome</Label>
                   <Input 
                     id="name" 
                     value={profileData.name} 
@@ -152,7 +152,7 @@ const EspecialistaSettings = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-lg font-bold">Email</Label>
                   <Input id="email" value={profileData.email} readOnly />
                 </div>
               </div>
