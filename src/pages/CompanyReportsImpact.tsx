@@ -192,8 +192,8 @@ const CompanyReportsImpact = () => {
         {/* Distribution by Pillar */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <PieChart className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-3xl">
+              <PieChart className="h-6 w-6" />
               Distribuição por Pilar
             </CardTitle>
           </CardHeader>
@@ -239,8 +239,8 @@ const CompanyReportsImpact = () => {
         {/* Wellness Trend */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <TrendingUp className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-3xl">
+              <TrendingUp className="h-6 w-6" />
               Tendência de Melhoria
             </CardTitle>
           </CardHeader>
