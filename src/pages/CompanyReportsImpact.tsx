@@ -253,7 +253,12 @@ const CompanyReportsImpact = () => {
                       name === 'avgWellness' ? 'Bem-estar médio' : 'Sessões'
                     ]}
                   />
-                  <Legend />
+                  <Legend 
+                    formatter={(value) => 
+                      value === 'avgWellness' ? 'Bem-estar médio' : 
+                      value === 'sessions' ? 'Sessões realizadas' : value
+                    }
+                  />
                   <Line 
                     type="monotone" 
                     dataKey="avgWellness" 
