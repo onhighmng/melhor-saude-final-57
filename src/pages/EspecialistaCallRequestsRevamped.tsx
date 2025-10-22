@@ -152,7 +152,6 @@ const EspecialistaCallRequestsRevamped = () => {
                 <TableRow>
                   <TableHead>Colaborador</TableHead>
                   <TableHead>Pilar Sugerido</TableHead>
-                  <TableHead>Contacto</TableHead>
                   <TableHead className="cursor-pointer" onClick={toggleSortOrder}>
                     <div className="flex items-center gap-2">
                       Tempo de Espera
@@ -165,7 +164,7 @@ const EspecialistaCallRequestsRevamped = () => {
               <TableBody>
                 {sortedRequests.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                    <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
                       Sem pedidos pendentes
                     </TableCell>
                   </TableRow>
@@ -194,12 +193,6 @@ const EspecialistaCallRequestsRevamped = () => {
                         <Badge className={`text-xs ${getPillarColor(request.pillar)}`}>
                           {getPillarLabel(request.pillar)}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <Phone className="h-3 w-3 text-muted-foreground" />
-                          {request.user_phone}
-                        </div>
                       </TableCell>
                       <TableCell>
                         <div className={`flex items-center gap-1 ${getWaitTimeColor(request.wait_time)}`}>
@@ -242,7 +235,6 @@ const EspecialistaCallRequestsRevamped = () => {
                 <TableRow>
                   <TableHead>Colaborador</TableHead>
                   <TableHead>Pilar</TableHead>
-                  <TableHead>Contacto</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -250,7 +242,7 @@ const EspecialistaCallRequestsRevamped = () => {
               <TableBody>
                 {sortedRequests.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                    <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
                       Sem pedidos resolvidos
                     </TableCell>
                   </TableRow>
@@ -279,12 +271,6 @@ const EspecialistaCallRequestsRevamped = () => {
                         <Badge className={`text-xs ${getPillarColor(request.pillar)}`}>
                           {getPillarLabel(request.pillar)}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <Phone className="h-3 w-3 text-muted-foreground" />
-                          {request.user_phone}
-                        </div>
                       </TableCell>
                       <TableCell>
                         <Badge className={`text-xs ${getStatusBadge(request.status).variant}`}>
