@@ -42,6 +42,7 @@ interface FullScreenCalendarProps {
   data: CalendarData[]
   onAddEvent?: () => void
   onEventClick?: (event: Event) => void
+  onDayClick?: (date: Date) => void
 }
 
 const colStartClasses = [
@@ -54,7 +55,7 @@ const colStartClasses = [
   "col-start-7",
 ]
 
-export function FullScreenCalendar({ data, onAddEvent, onEventClick }: FullScreenCalendarProps) {
+export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick }: FullScreenCalendarProps) {
   const today = startOfToday()
   const [selectedDay, setSelectedDay] = React.useState(today)
   const [currentMonth, setCurrentMonth] = React.useState(
@@ -233,7 +234,10 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick }: FullScree
               ) : (
                 <div
                   key={dayIdx}
-                  onClick={() => setSelectedDay(day)}
+                  onClick={() => {
+                    setSelectedDay(day);
+                    onDayClick?.(day);
+                  }}
                   className={cn(
                     dayIdx === 0 && colStartClasses[getDay(day)],
                     !isEqual(day, selectedDay) &&

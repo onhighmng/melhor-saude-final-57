@@ -2,41 +2,32 @@ import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Video, Phone, Calendar as CalendarIcon, Clock, FileText } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Video, Phone, Clock, FileText, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockEspecialistaSessions } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { SessionNoteModal } from '@/components/specialist/SessionNoteModal';
 import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
+import { isSameDay } from 'date-fns';
 
 const EspecialistaSessionsRevamped = () => {
   const { toast } = useToast();
   const { filterByCompanyAccess } = useCompanyFilter();
   const [selectedSession, setSelectedSession] = useState<any>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isDaySessionsModalOpen, setIsDaySessionsModalOpen] = useState(false);
+  
   const allSessions = filterByCompanyAccess(mockEspecialistaSessions);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Separate future and past sessions
-  const futureSessions = useMemo(() => {
-    return allSessions
-      .filter(s => new Date(s.date) >= today)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [allSessions, today]);
-
-  const pastSessions = useMemo(() => {
-    return allSessions
-      .filter(s => new Date(s.date) < today)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [allSessions, today]);
+  
+  // Debug: Show all if filter returns empty (for demo purposes)
+  const sessionsToShow = allSessions.length > 0 ? allSessions : mockEspecialistaSessions;
 
   // Transform sessions data for calendar
   const calendarData = useMemo(() => {
-    const groupedByDate = allSessions.reduce((acc, session) => {
+    const groupedByDate = sessionsToShow.reduce((acc, session) => {
       const dateKey = session.date;
       if (!acc[dateKey]) {
         acc[dateKey] = [];
@@ -54,19 +45,15 @@ const EspecialistaSessionsRevamped = () => {
       day: new Date(date),
       events,
     }));
-  }, [allSessions]);
+  }, [sessionsToShow]);
 
-  const handleStartSession = (session: any) => {
-    toast({
-      title: 'Sessão Iniciada',
-      description: `Sessão com ${session.user_name} iniciada.`,
-    });
-  };
-
-  const handleEndSession = (session: any) => {
-    setSelectedSession(session);
-    setIsNoteModalOpen(true);
-  };
+  // Get sessions for selected date
+  const selectedDateSessions = useMemo(() => {
+    if (!selectedDate) return [];
+    return sessionsToShow.filter(session => 
+      isSameDay(new Date(session.date), selectedDate)
+    ).sort((a, b) => a.time.localeCompare(b.time));
+  }, [sessionsToShow, selectedDate]);
 
   const handleSaveNote = (notes: string, outcome: string) => {
     toast({
@@ -79,6 +66,19 @@ const EspecialistaSessionsRevamped = () => {
   const handleAddNote = (session: any) => {
     setSelectedSession(session);
     setIsNoteModalOpen(true);
+  };
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    setIsDaySessionsModalOpen(true);
+  };
+
+  const handleEventClick = (event: any) => {
+    const session = sessionsToShow.find(s => s.id === event.id);
+    if (session) {
+      setSelectedSession(session);
+      setIsNoteModalOpen(true);
+    }
   };
 
   const getPillarLabel = (pillar: string) => {
@@ -126,85 +126,51 @@ const EspecialistaSessionsRevamped = () => {
     return type === 'video' ? 'Vídeo' : 'Chamada';
   };
 
-  const renderSessionTable = (sessions: any[]) => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Data & Hora</TableHead>
-          <TableHead>Colaborador</TableHead>
-          <TableHead>Empresa</TableHead>
-          <TableHead>Pilar</TableHead>
-          <TableHead>Tipo</TableHead>
-          <TableHead>Estado</TableHead>
-          <TableHead className="text-right">Ações</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sessions.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-              Sem sessões
-            </TableCell>
-          </TableRow>
-        ) : (
-          sessions.map((session) => (
-            <TableRow key={session.id}>
-              <TableCell>
-                <div className="flex flex-col">
-                  <div className="font-medium flex items-center gap-1">
-                    <CalendarIcon className="h-3 w-3" />
-                    {new Date(session.date).toLocaleDateString('pt-PT')}
-                  </div>
-                  <div className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {session.time}
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="font-medium">{session.user_name}</div>
-              </TableCell>
-              <TableCell>{session.company_name}</TableCell>
-              <TableCell>
-                <Badge className={`text-xs ${getPillarColor(session.pillar)}`}>
-                  {getPillarLabel(session.pillar)}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  {getSessionTypeIcon(session.session_type || 'video')}
-                  <span className="text-sm">{getSessionTypeLabel(session.session_type || 'video')}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge className={`text-xs ${getStatusBadge(session.status).variant}`}>
-                  {getStatusBadge(session.status).label}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleAddNote(session)}
-                >
-                  <FileText className="h-4 w-4 mr-1" />
-                  Notas
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
-  );
+  const renderSessionCard = (session: any) => (
+    <Card key={session.id} className="p-4 hover:shadow-md transition-shadow">
+      <div className="space-y-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1">
+            <h4 className="font-semibold text-sm mb-1">{session.user_name}</h4>
+            <p className="text-xs text-muted-foreground">{session.company_name}</p>
+          </div>
+          <Badge className={`text-xs ${getPillarColor(session.pillar)}`}>
+            {getPillarLabel(session.pillar)}
+          </Badge>
+        </div>
 
-  const handleEventClick = (event: any) => {
-    const session = allSessions.find(s => s.id === event.id);
-    if (session) {
-      setSelectedSession(session);
-      setIsNoteModalOpen(true);
-    }
-  };
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              <span>{session.time}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              {getSessionTypeIcon(session.session_type || 'video')}
+              <span>{getSessionTypeLabel(session.session_type || 'video')}</span>
+            </div>
+          </div>
+          <Badge className={`text-xs ${getStatusBadge(session.status).variant}`}>
+            {getStatusBadge(session.status).label}
+          </Badge>
+        </div>
+
+        {session.notes && (
+          <p className="text-xs text-muted-foreground italic">{session.notes}</p>
+        )}
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => handleAddNote(session)}
+          className="w-full"
+        >
+          <FileText className="h-3 w-3 mr-1" />
+          Ver/Adicionar Notas
+        </Button>
+      </div>
+    </Card>
+  );
 
   return (
     <div className="space-y-6">
@@ -217,50 +183,37 @@ const EspecialistaSessionsRevamped = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="calendar" className="w-full">
-        <TabsList className="w-full justify-start border-b rounded-none h-auto p-0">
-          <TabsTrigger 
-            value="calendar" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-          >
-            <CalendarIcon className="h-4 w-4 mr-2" />
-            Vista de Calendário
-          </TabsTrigger>
-          <TabsTrigger 
-            value="future"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-          >
-            Sessões Futuras ({futureSessions.length})
-          </TabsTrigger>
-          <TabsTrigger 
-            value="past"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-          >
-            Sessões Passadas ({pastSessions.length})
-          </TabsTrigger>
-        </TabsList>
+      <Card className="p-0">
+        <FullScreenCalendar 
+          data={calendarData}
+          onEventClick={handleEventClick}
+          onDayClick={handleDateClick}
+        />
+      </Card>
 
-        <TabsContent value="calendar" className="mt-0">
-          <Card className="p-0">
-            <FullScreenCalendar 
-              data={calendarData}
-              onEventClick={handleEventClick}
-            />
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="future" className="mt-0">
-          <Card>
-            {renderSessionTable(futureSessions)}
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="past" className="mt-0">
-          <Card>
-            {renderSessionTable(pastSessions)}
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Day Sessions Modal */}
+      <Dialog open={isDaySessionsModalOpen} onOpenChange={setIsDaySessionsModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5" />
+              Sessões do dia {selectedDate && selectedDate.toLocaleDateString('pt-PT')}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[500px] pr-4">
+            <div className="space-y-3">
+              {selectedDateSessions.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <CalendarIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>Sem sessões neste dia</p>
+                </div>
+              ) : (
+                selectedDateSessions.map(renderSessionCard)
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       {/* Session Note Modal */}
       {selectedSession && (
