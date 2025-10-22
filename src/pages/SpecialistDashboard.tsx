@@ -74,255 +74,253 @@ export default function SpecialistDashboard() {
             </p>
           </div>
 
-          {/* Especialista Geral Bento Grid - Same Layout as Admin/Company */}
-          {isEspecialistaGeral && (
-            <div className="h-[calc(100vh-200px)]">
-              <BentoGrid className="h-full grid-rows-3 gap-4">
-                {/* Top Left - Call Requests */}
-                <BentoCard 
-                  name="Chamadas Pendentes" 
-                  description={`${filteredCallRequests.length} chamadas aguardam ligação`} 
-                  Icon={Phone} 
-                  onClick={() => navigate('/especialista/call-requests')} 
-                  className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
-                  background={<div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50" />}
-                  iconColor="text-orange-600"
-                  textColor="text-gray-900"
-                  descriptionColor="text-gray-600"
-                  href="#"
-                  cta="Ver Pedidos"
-                />
+          {/* Bento Grid Layout - Same as Admin/Company Dashboards */}
+          <div className="h-[calc(100vh-200px)]">
+            <BentoGrid className="h-full grid-rows-3 gap-4">
+              {/* Top Left - Call Requests */}
+              <BentoCard 
+                name="Chamadas Pendentes" 
+                description={`${filteredCallRequests.length} chamadas aguardam ligação`} 
+                Icon={Phone} 
+                onClick={() => navigate('/especialista/call-requests')} 
+                className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
+                background={<div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50" />}
+                iconColor="text-orange-600"
+                textColor="text-gray-900"
+                descriptionColor="text-gray-600"
+                href="#"
+                cta="Ver Pedidos"
+              />
 
-                {/* Top Right - Today's Sessions */}
-                <BentoCard 
-                  name="Sessões Hoje" 
-                  description={`${filteredSessions.length} sessões agendadas para hoje`} 
-                  Icon={Calendar} 
-                  onClick={() => navigate('/especialista/sessions')} 
-                  className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
-                  background={
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100">
+              {/* Top Right - Today's Sessions */}
+              <BentoCard 
+                name="Sessões Hoje" 
+                description={`${filteredSessions.length} sessões agendadas para hoje`} 
+                Icon={Calendar} 
+                onClick={() => navigate('/especialista/sessions')} 
+                className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
+                background={
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100">
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
+                      style={{
+                        backgroundImage: "url('https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
+                      }}
+                    />
+                  </div>
+                }
+                iconColor="text-blue-600"
+                textColor="text-gray-900"
+                descriptionColor="text-gray-600"
+                href="#"
+                cta="Ver Agenda"
+              />
+
+              {/* Bottom Left - Personal Stats */}
+              <BentoCard 
+                name="Desempenho Pessoal" 
+                description={`${mockSpecialistPersonalStats.monthly_cases} casos este mês`} 
+                Icon={TrendingUp} 
+                onClick={() => navigate('/especialista/stats')} 
+                className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
+                background={
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100">
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+                      style={{
+                        backgroundImage: "url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
+                      }}
+                    />
+                  </div>
+                }
+                iconColor="text-purple-600"
+                textColor="text-gray-900"
+                descriptionColor="text-gray-600"
+                href="#"
+                cta="Ver Estatísticas"
+              />
+
+              {/* Bottom Right - Recursos */}
+              <BentoCard 
+                name="Recursos" 
+                description="Materiais de apoio e guias" 
+                Icon={BookOpen} 
+                onClick={() => navigate('/admin/resources')} 
+                className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
+                background={
+                  <div className="absolute inset-0">
+                    <img 
+                      src={recursosWellness} 
+                      alt="" 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                }
+                iconColor="text-white"
+                textColor="text-white"
+                descriptionColor="text-white/80"
+                href="#"
+                cta="Ver Recursos"
+              />
+
+              {/* Center - Activity Overview */}
+              <BentoCard 
+                name="" 
+                description="" 
+                href="#" 
+                cta="" 
+                className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
+                background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
+                iconColor="text-green-600"
+                textColor="text-slate-900"
+                descriptionColor="text-slate-600"
+              >
+                <div className="relative z-30 flex flex-col h-full p-6">
+                  <div className="mb-4">
+                    <h3 className="text-3xl font-semibold text-gray-900 mb-2">Visão Geral</h3>
+                    <p className="text-gray-600">Atividade recente e métricas principais</p>
+                  </div>
+                  
+                  <div className="flex-1 space-y-3 overflow-y-auto pr-2">
+                    {/* Personal Metrics */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Star className="h-5 w-5 text-green-600" />
+                          <span className="font-semibold text-gray-900">Métricas Pessoais</span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <p className="text-xs text-gray-600">Avaliação Média</p>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-green-600">{mockSpecialistPersonalStats.avg_rating}</span>
+                            <span className="text-sm text-gray-500">/10</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600">Tempo Resposta</p>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-blue-600">{mockSpecialistPersonalStats.avg_response_time_minutes}</span>
+                            <span className="text-sm text-gray-500">min</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Resolution Rate */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="h-5 w-5 text-purple-600" />
+                          <span className="font-semibold text-gray-900">Taxa de Resolução</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-700">Resolução Interna</span>
+                          <span className="font-bold text-green-600">{mockSpecialistPersonalStats.internal_resolution_rate}%</span>
+                        </div>
+                        <Progress value={mockSpecialistPersonalStats.internal_resolution_rate} className="h-2" />
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-700">Encaminhamentos</span>
+                          <span className="font-bold text-purple-600">{mockSpecialistPersonalStats.referral_rate}%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Recent Activity */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="h-5 w-5 text-orange-600" />
+                          <span className="font-semibold text-gray-900">Atividade Recente</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {filteredCallRequests.slice(0, 3).map((request) => (
+                          <div 
+                            key={request.id} 
+                            className="flex items-center gap-3 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
+                            onClick={() => navigate('/especialista/call-requests')}
+                          >
+                            <div className="p-2 bg-orange-100 rounded-full">
+                              <Phone className="h-3 w-3 text-orange-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{request.user_name}</p>
+                              <p className="text-xs text-gray-600 truncate">{request.company_name}</p>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {Math.floor(request.wait_time / 60)}h
+                            </Badge>
+                          </div>
+                        ))}
+                        {filteredCallRequests.length === 0 && (
+                          <div className="text-center py-4 text-gray-500">
+                            <MessageSquare className="h-6 w-6 mx-auto mb-1 opacity-50" />
+                            <p className="text-xs">Sem atividade recente</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Companies Overview */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-5 w-5 text-indigo-600" />
+                          <span className="font-semibold text-gray-900">Empresas Atribuídas</span>
+                        </div>
+                        <Badge variant="secondary">{assignedCompanies.length}</Badge>
+                      </div>
+                      <div className="space-y-2">
+                        {assignedCompanies.slice(0, 2).map((company) => (
+                          <div key={company.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{company.name}</p>
+                              <p className="text-xs text-gray-600">
+                                {company.registered_employees}/{company.total_employees} utilizadores
+                              </p>
+                            </div>
+                            <Badge variant={company.status === 'active' ? 'default' : 'secondary'} className="text-xs">
+                              {company.status}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Referrals */}
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
                       <div 
-                        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
-                        style={{
-                          backgroundImage: "url('https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
-                        }}
-                      />
-                    </div>
-                  }
-                  iconColor="text-blue-600"
-                  textColor="text-gray-900"
-                  descriptionColor="text-gray-600"
-                  href="#"
-                  cta="Ver Agenda"
-                />
-
-                {/* Bottom Left - Personal Stats */}
-                <BentoCard 
-                  name="Desempenho Pessoal" 
-                  description={`${mockSpecialistPersonalStats.monthly_cases} casos este mês`} 
-                  Icon={TrendingUp} 
-                  onClick={() => navigate('/especialista/stats')} 
-                  className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
-                  background={
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100">
-                      <div 
-                        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-                        style={{
-                          backgroundImage: "url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
-                        }}
-                      />
-                    </div>
-                  }
-                  iconColor="text-purple-600"
-                  textColor="text-gray-900"
-                  descriptionColor="text-gray-600"
-                  href="#"
-                  cta="Ver Estatísticas"
-                />
-
-                {/* Bottom Right - Recursos */}
-                <BentoCard 
-                  name="Recursos" 
-                  description="Materiais de apoio e guias" 
-                  Icon={BookOpen} 
-                  onClick={() => navigate('/admin/resources')} 
-                  className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
-                  background={
-                    <div className="absolute inset-0">
-                      <img 
-                        src={recursosWellness} 
-                        alt="" 
-                        className="w-full h-full object-cover" 
-                      />
-                    </div>
-                  }
-                  iconColor="text-white"
-                  textColor="text-white"
-                  descriptionColor="text-white/80"
-                  href="#"
-                  cta="Ver Recursos"
-                />
-
-                {/* Center - Activity Overview */}
-                <BentoCard 
-                  name="" 
-                  description="" 
-                  href="#" 
-                  cta="" 
-                  className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
-                  background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
-                  iconColor="text-green-600"
-                  textColor="text-slate-900"
-                  descriptionColor="text-slate-600"
-                >
-                  <div className="relative z-30 flex flex-col h-full p-6">
-                    <div className="mb-4">
-                      <h3 className="text-3xl font-semibold text-gray-900 mb-2">Visão Geral</h3>
-                      <p className="text-gray-600">Atividade recente e métricas principais</p>
-                    </div>
-                    
-                    <div className="flex-1 space-y-3 overflow-y-auto pr-2">
-                      {/* Personal Metrics */}
-                      <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <Star className="h-5 w-5 text-green-600" />
-                            <span className="font-semibold text-gray-900">Métricas Pessoais</span>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <p className="text-xs text-gray-600">Avaliação Média</p>
-                            <div className="flex items-baseline gap-1">
-                              <span className="text-2xl font-bold text-green-600">{mockSpecialistPersonalStats.avg_rating}</span>
-                              <span className="text-sm text-gray-500">/10</span>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-xs text-gray-600">Tempo Resposta</p>
-                            <div className="flex items-baseline gap-1">
-                              <span className="text-2xl font-bold text-blue-600">{mockSpecialistPersonalStats.avg_response_time_minutes}</span>
-                              <span className="text-sm text-gray-500">min</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Resolution Rate */}
-                      <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <TrendingUp className="h-5 w-5 text-purple-600" />
-                            <span className="font-semibold text-gray-900">Taxa de Resolução</span>
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-700">Resolução Interna</span>
-                            <span className="font-bold text-green-600">{mockSpecialistPersonalStats.internal_resolution_rate}%</span>
-                          </div>
-                          <Progress value={mockSpecialistPersonalStats.internal_resolution_rate} className="h-2" />
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-700">Encaminhamentos</span>
-                            <span className="font-bold text-purple-600">{mockSpecialistPersonalStats.referral_rate}%</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Recent Activity */}
-                      <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <MessageSquare className="h-5 w-5 text-orange-600" />
-                            <span className="font-semibold text-gray-900">Atividade Recente</span>
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          {filteredCallRequests.slice(0, 3).map((request) => (
-                            <div 
-                              key={request.id} 
-                              className="flex items-center gap-3 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
-                              onClick={() => navigate('/especialista/call-requests')}
-                            >
-                              <div className="p-2 bg-orange-100 rounded-full">
-                                <Phone className="h-3 w-3 text-orange-600" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm truncate">{request.user_name}</p>
-                                <p className="text-xs text-gray-600 truncate">{request.company_name}</p>
-                              </div>
-                              <Badge variant="outline" className="text-xs">
-                                {Math.floor(request.wait_time / 60)}h
-                              </Badge>
-                            </div>
-                          ))}
-                          {filteredCallRequests.length === 0 && (
-                            <div className="text-center py-4 text-gray-500">
-                              <MessageSquare className="h-6 w-6 mx-auto mb-1 opacity-50" />
-                              <p className="text-xs">Sem atividade recente</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Companies Overview */}
-                      <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-5 w-5 text-indigo-600" />
-                            <span className="font-semibold text-gray-900">Empresas Atribuídas</span>
-                          </div>
-                          <Badge variant="secondary">{assignedCompanies.length}</Badge>
-                        </div>
-                        <div className="space-y-2">
-                          {assignedCompanies.slice(0, 2).map((company) => (
-                            <div key={company.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm truncate">{company.name}</p>
-                                <p className="text-xs text-gray-600">
-                                  {company.registered_employees}/{company.total_employees} utilizadores
-                                </p>
-                              </div>
-                              <Badge variant={company.status === 'active' ? 'default' : 'secondary'} className="text-xs">
-                                {company.status}
-                              </Badge>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Referrals */}
-                      <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                        <div 
-                          className="flex items-center justify-between cursor-pointer hover:bg-white/40 rounded p-2 -m-2 transition-colors"
-                          onClick={() => navigate('/especialista/referrals')}
-                        >
-                          <div className="flex items-center gap-2">
-                            <ArrowRight className="h-5 w-5 text-purple-600" />
-                            <span className="font-semibold text-gray-900">Encaminhamentos</span>
-                          </div>
-                          <span className="text-2xl font-bold text-purple-600">{filteredReferrals.length}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t">
-                      <button 
-                        onClick={() => navigate('/especialista/stats')}
-                        className="text-sm text-purple-600 hover:text-purple-700 font-medium hover:underline"
+                        className="flex items-center justify-between cursor-pointer hover:bg-white/40 rounded p-2 -m-2 transition-colors"
+                        onClick={() => navigate('/especialista/referrals')}
                       >
-                        Ver Estatísticas Completas →
-                      </button>
+                        <div className="flex items-center gap-2">
+                          <ArrowRight className="h-5 w-5 text-purple-600" />
+                          <span className="font-semibold text-gray-900">Encaminhamentos</span>
+                        </div>
+                        <span className="text-2xl font-bold text-purple-600">{filteredReferrals.length}</span>
+                      </div>
                     </div>
                   </div>
-                </BentoCard>
-              </BentoGrid>
-            </div>
-          )}
 
-          {/* Fallback for non-especialista users - show original content */}
-          {!isEspecialistaGeral && metrics && (
+                  <div className="mt-4 pt-4 border-t">
+                    <button 
+                      onClick={() => navigate('/especialista/stats')}
+                      className="text-sm text-purple-600 hover:text-purple-700 font-medium hover:underline"
+                    >
+                      Ver Estatísticas Completas →
+                    </button>
+                  </div>
+                </div>
+              </BentoCard>
+            </BentoGrid>
+          </div>
+
+          {/* Legacy view removed - now all specialists see Bento Grid */}
+          {false && metrics && (
             <>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <AnalyticsCard
