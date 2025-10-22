@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AnimatedSidebarProvider } from '@/components/ui/animated-sidebar';
@@ -13,6 +13,16 @@ export function EspecialistaLayout({ children }: EspecialistaLayoutProps) {
   const isFullScreenPage = location.pathname === '/especialista/chat';
   const isStaticPage = location.pathname === '/especialista/settings';
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    // Add admin-page class to body for gray background
+    document.body.classList.add('admin-page');
+    
+    // Cleanup: remove class when component unmounts
+    return () => {
+      document.body.classList.remove('admin-page');
+    };
+  }, []);
 
   return (
     <AnimatedSidebarProvider open={sidebarOpen} setOpen={setSidebarOpen}>
