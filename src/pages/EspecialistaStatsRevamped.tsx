@@ -154,8 +154,8 @@ const EspecialistaStatsRevamped = () => {
           description="Últimas avaliações dos utilizadores"
           Icon={Star}
           className="lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:row-end-3"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
-          iconColor="text-yellow-600"
+          background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
+          iconColor="text-blue-600"
           textColor="text-gray-900"
           descriptionColor="text-gray-600"
           href="#"
