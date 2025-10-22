@@ -37,12 +37,12 @@ const EspecialistaUserHistory = () => {
 
   const getPillarColor = (pillar: string) => {
     const colors = {
-      psychological: 'bg-blue-100 text-blue-700',
-      physical: 'bg-green-100 text-green-700',
-      financial: 'bg-purple-100 text-purple-700',
-      legal: 'bg-orange-100 text-orange-700'
+      psychological: { bg: 'hsl(210 80% 95%)', text: 'hsl(210 80% 40%)' },
+      physical: { bg: 'hsl(45 90% 90%)', text: 'hsl(45 90% 35%)' },
+      financial: { bg: 'hsl(140 60% 95%)', text: 'hsl(140 60% 35%)' },
+      legal: { bg: 'hsl(270 60% 95%)', text: 'hsl(270 60% 40%)' }
     };
-    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
+    return colors[pillar as keyof typeof colors] || { bg: 'hsl(0 0% 95%)', text: 'hsl(0 0% 40%)' };
   };
 
   return (
@@ -85,7 +85,13 @@ const EspecialistaUserHistory = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={`text-xs ${getPillarColor(user.pillar_attended)}`}>
+                    <Badge 
+                      className="text-xs border-transparent" 
+                      style={{ 
+                        backgroundColor: getPillarColor(user.pillar_attended).bg, 
+                        color: getPillarColor(user.pillar_attended).text 
+                      }}
+                    >
                       {getPillarLabel(user.pillar_attended)}
                     </Badge>
                   </TableCell>
@@ -157,7 +163,13 @@ const EspecialistaUserHistory = () => {
                     </div>
                     <div className="text-sm">
                       <p className="text-muted-foreground">Pilar</p>
-                      <Badge className={`text-xs ${getPillarColor(selectedUser.pillar_attended)}`}>
+                      <Badge 
+                        className="text-xs border-transparent" 
+                        style={{ 
+                          backgroundColor: getPillarColor(selectedUser.pillar_attended).bg, 
+                          color: getPillarColor(selectedUser.pillar_attended).text 
+                        }}
+                      >
                         {getPillarLabel(selectedUser.pillar_attended)}
                       </Badge>
                     </div>
