@@ -140,7 +140,7 @@ const CompanyDashboard = () => {
                 onClick={() => navigate('/company/relatorios')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
                 background={
-                  <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100" />
+                  <div className="absolute inset-0" style={{ backgroundColor: 'hsl(205, 43%, 88%)' }} />
                 }
                 iconColor="text-amber-700"
                 textColor="text-slate-900"
