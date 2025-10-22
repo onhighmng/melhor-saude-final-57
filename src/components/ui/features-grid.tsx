@@ -10,6 +10,9 @@ interface FeaturesGridProps {
     generatedCodes?: string[];
     onCopyCode?: (code: string) => void;
     onDownloadCodes?: () => void;
+    seatLimit?: number;
+    seatUsed?: number;
+    seatUsagePercent?: number;
 }
 
 export function FeaturesGrid({
@@ -19,7 +22,10 @@ export function FeaturesGrid({
     canGenerateMore = true,
     generatedCodes = [],
     onCopyCode,
-    onDownloadCodes
+    onDownloadCodes,
+    seatLimit = 0,
+    seatUsed = 0,
+    seatUsagePercent = 0
 }: FeaturesGridProps) {
     return (
         <section className="bg-background py-16 md:py-24">
@@ -106,7 +112,7 @@ export function FeaturesGrid({
 
                     <Card className="group overflow-hidden shadow-zinc-950/5 sm:col-span-2 sm:rounded-none sm:rounded-tr-xl hover-lift">
                         <p className="mx-auto my-6 max-w-md text-balance px-6 text-center text-lg font-semibold sm:text-2xl md:p-6">
-                            Monitorização em Tempo Real
+                            Taxa de Utilização
                         </p>
 
                         <CardContent className="mt-auto h-fit">
@@ -115,16 +121,20 @@ export function FeaturesGrid({
                                 <div className="overflow-hidden rounded-r-lg border bg-card p-6">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between pb-2 border-b">
-                                            <span className="text-sm text-muted-foreground">Taxa de Participação</span>
-                                            <span className="text-2xl font-bold text-primary">87%</span>
+                                            <span className="text-sm text-muted-foreground">Total de Contas</span>
+                                            <span className="text-2xl font-bold text-foreground">{seatLimit}</span>
                                         </div>
                                         <div className="flex items-center justify-between pb-2 border-b">
-                                            <span className="text-sm text-muted-foreground">Satisfação Média</span>
-                                            <span className="text-2xl font-bold text-emerald-600">4.8/5</span>
+                                            <span className="text-sm text-muted-foreground">Contas Ativas</span>
+                                            <span className="text-2xl font-bold text-emerald-600">{seatUsed}</span>
                                         </div>
                                         <div className="flex items-center justify-between pb-2 border-b">
-                                            <span className="text-sm text-muted-foreground">Colaboradores Ativos</span>
-                                            <span className="text-2xl font-bold text-amber-600">1,234</span>
+                                            <span className="text-sm text-muted-foreground">Contas Disponíveis</span>
+                                            <span className="text-2xl font-bold text-blue-600">{seatsAvailable}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between pt-2">
+                                            <span className="text-sm font-semibold text-muted-foreground">Taxa de Utilização</span>
+                                            <span className="text-3xl font-bold text-primary">{seatUsagePercent}%</span>
                                         </div>
                                     </div>
                                 </div>

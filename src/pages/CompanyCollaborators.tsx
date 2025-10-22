@@ -102,6 +102,9 @@ const CompanyCollaborators = () => {
         generatedCodes={generatedCodes}
         onCopyCode={copyToClipboard}
         onDownloadCodes={downloadCodes}
+        seatLimit={company.seatLimit}
+        seatUsed={company.seatUsed}
+        seatUsagePercent={seatUsagePercent}
       />
 
       {/* Access Management Section */}
