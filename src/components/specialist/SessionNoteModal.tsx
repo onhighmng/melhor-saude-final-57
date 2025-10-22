@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, ArrowRight, Clock, FileText } from 'lucide-react';
+import { CheckCircle, ArrowRight, Clock, FileText, MessageSquare } from 'lucide-react';
 import { ReferralBookingFlow } from './ReferralBookingFlow';
+import { PreDiagnosticModal } from './PreDiagnosticModal';
 import { useToast } from '@/hooks/use-toast';
 
 interface SessionNoteModalProps {
@@ -19,6 +20,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
   const [notes, setNotes] = useState('');
   const [outcome, setOutcome] = useState('');
   const [showReferralFlow, setShowReferralFlow] = useState(false);
+  const [showPreDiagnostic, setShowPreDiagnostic] = useState(false);
 
   const handleSave = () => {
     onSave(notes, outcome);
@@ -109,13 +111,13 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
               </Button>
               <Button
                 variant={outcome === 'follow_up' ? 'default' : 'outline'}
-                onClick={() => setOutcome('follow_up')}
+                onClick={() => setShowPreDiagnostic(true)}
                 className="h-auto py-4 flex flex-col gap-2"
               >
-                <Clock className="h-6 w-6" />
-                <span className="text-sm font-medium">Follow-up</span>
+                <MessageSquare className="h-6 w-6" />
+                <span className="text-sm font-medium">Ver Pré-Diagnóstico</span>
                 <span className="text-xs text-muted-foreground">
-                  Nova sessão
+                  Transcrição completa
                 </span>
               </Button>
             </div>
@@ -146,6 +148,21 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
             description: `Sessão agendada para ${date.toLocaleDateString('pt-PT')} às ${date.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`,
           });
           setShowReferralFlow(false);
+        }}
+      />
+
+      {/* Pre-Diagnostic Modal */}
+      <PreDiagnosticModal
+        open={showPreDiagnostic}
+        onOpenChange={setShowPreDiagnostic}
+        session={{
+          chat_session_id: session?.chat_session_id,
+          user_name: session?.user_name || '',
+          company_name: session?.company_name || '',
+          pillar: session?.pillar || '',
+          date: session?.date || '',
+          time: session?.time || '',
+          topic: session?.topic
         }}
       />
     </Dialog>
