@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone, Clock, CheckCircle, ArrowUpDown, User, Building2, Mail } from 'lucide-react';
@@ -20,6 +21,7 @@ const EspecialistaCallRequestsRevamped = () => {
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [activeTab, setActiveTab] = useState('pending');
 
   // Filter requests
   const allRequests = filterByCompanyAccess(mockCallRequests);
@@ -27,12 +29,22 @@ const EspecialistaCallRequestsRevamped = () => {
   // Debug: Show all if filter returns empty (for demo purposes)
   const requestsToShow = allRequests.length > 0 ? allRequests : mockCallRequests;
 
+  // Filter by status
+  const pendingRequests = useMemo(() => {
+    return requestsToShow.filter(r => r.status === 'pending');
+  }, [requestsToShow]);
+
+  const resolvedRequests = useMemo(() => {
+    return requestsToShow.filter(r => r.status === 'resolved' || r.status === 'escalated');
+  }, [requestsToShow]);
+
   // Sort by wait time (priority)
   const sortedRequests = useMemo(() => {
-    return [...requestsToShow].sort((a, b) => {
+    const requests = activeTab === 'pending' ? pendingRequests : resolvedRequests;
+    return [...requests].sort((a, b) => {
       return sortOrder === 'desc' ? b.wait_time - a.wait_time : a.wait_time - b.wait_time;
     });
-  }, [requestsToShow, sortOrder]);
+  }, [pendingRequests, resolvedRequests, sortOrder, activeTab]);
 
   const handleCallClick = (request: CallRequest) => {
     setSelectedRequest(request);
@@ -123,103 +135,180 @@ const EspecialistaCallRequestsRevamped = () => {
         </p>
       </div>
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Empresa</TableHead>
-              <TableHead>Colaborador</TableHead>
-              <TableHead>Pilar Sugerido</TableHead>
-              <TableHead>Contacto</TableHead>
-              <TableHead className="cursor-pointer" onClick={toggleSortOrder}>
-                <div className="flex items-center gap-2">
-                  Tempo de Espera
-                  <ArrowUpDown className="h-4 w-4" />
-                </div>
-              </TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedRequests.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                  Sem pedidos de chamada
-                </TableCell>
-              </TableRow>
-            ) : (
-              sortedRequests.map((request) => (
-                <TableRow key={request.id} className="hover:bg-muted/50">
-                  <TableCell className="font-medium">{request.company_name}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      className="h-auto p-0 hover:bg-transparent"
-                      onClick={() => handleViewUserInfo(request)}
-                    >
-                      <div className="text-left">
-                        <div className="font-medium flex items-center gap-2 hover:text-primary">
-                          <User className="h-4 w-4" />
-                          {request.user_name}
-                        </div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                          <Mail className="h-3 w-3" />
-                          {request.user_email}
-                        </div>
-                      </div>
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`text-xs ${getPillarColor(request.pillar)}`}>
-                      {getPillarLabel(request.pillar)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 text-sm">
-                      <Phone className="h-3 w-3 text-muted-foreground" />
-                      {request.user_phone}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="pending">
+            Pendentes ({pendingRequests.length})
+          </TabsTrigger>
+          <TabsTrigger value="resolved">
+            Resolvidos ({resolvedRequests.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="pending">
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Colaborador</TableHead>
+                  <TableHead>Pilar Sugerido</TableHead>
+                  <TableHead>Contacto</TableHead>
+                  <TableHead className="cursor-pointer" onClick={toggleSortOrder}>
+                    <div className="flex items-center gap-2">
+                      Tempo de Espera
+                      <ArrowUpDown className="h-4 w-4" />
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className={`flex items-center gap-1 ${getWaitTimeColor(request.wait_time)}`}>
-                      <Clock className="h-4 w-4" />
-                      <span>{formatWaitTime(request.wait_time)}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`text-xs ${getStatusBadge(request.status).variant}`}>
-                      {getStatusBadge(request.status).label}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleCallClick(request)}
-                      >
-                        <Phone className="h-4 w-4 mr-1" />
-                        Ligar agora
-                      </Button>
-                      {request.status === 'pending' && (
+                  </TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedRequests.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                      Sem pedidos pendentes
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  sortedRequests.map((request) => (
+                    <TableRow key={request.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          className="h-auto p-0 hover:bg-transparent"
+                          onClick={() => handleViewUserInfo(request)}
+                        >
+                          <div className="text-left">
+                            <div className="font-medium flex items-center gap-2 hover:text-primary">
+                              <User className="h-4 w-4" />
+                              {request.user_name}
+                            </div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                              <Mail className="h-3 w-3" />
+                              {request.user_email}
+                            </div>
+                          </div>
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`text-xs ${getPillarColor(request.pillar)}`}>
+                          {getPillarLabel(request.pillar)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1 text-sm">
+                          <Phone className="h-3 w-3 text-muted-foreground" />
+                          {request.user_phone}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className={`flex items-center gap-1 ${getWaitTimeColor(request.wait_time)}`}>
+                          <Clock className="h-4 w-4" />
+                          <span>{formatWaitTime(request.wait_time)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCallClick(request)}
+                          >
+                            <Phone className="h-4 w-4 mr-1" />
+                            Ligar agora
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleMarkResolved(request.id)}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Resolver
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="resolved">
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Colaborador</TableHead>
+                  <TableHead>Pilar</TableHead>
+                  <TableHead>Contacto</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedRequests.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                      Sem pedidos resolvidos
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  sortedRequests.map((request) => (
+                    <TableRow key={request.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          className="h-auto p-0 hover:bg-transparent"
+                          onClick={() => handleViewUserInfo(request)}
+                        >
+                          <div className="text-left">
+                            <div className="font-medium flex items-center gap-2 hover:text-primary">
+                              <User className="h-4 w-4" />
+                              {request.user_name}
+                            </div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                              <Mail className="h-3 w-3" />
+                              {request.user_email}
+                            </div>
+                          </div>
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`text-xs ${getPillarColor(request.pillar)}`}>
+                          {getPillarLabel(request.pillar)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1 text-sm">
+                          <Phone className="h-3 w-3 text-muted-foreground" />
+                          {request.user_phone}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`text-xs ${getStatusBadge(request.status).variant}`}>
+                          {getStatusBadge(request.status).label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
                         <Button
                           size="sm"
-                          variant="default"
-                          onClick={() => handleMarkResolved(request.id)}
+                          variant="outline"
+                          onClick={() => handleViewUserInfo(request)}
                         >
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          Resolver
+                          <User className="h-4 w-4 mr-1" />
+                          Ver Detalhes
                         </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* User Info Modal */}
       <Dialog open={isUserInfoModalOpen} onOpenChange={setIsUserInfoModalOpen}>
