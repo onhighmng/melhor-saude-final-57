@@ -39,6 +39,19 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
     return labels[pillar as keyof typeof labels] || pillar;
   };
 
+  const getSessionTypeLabel = (type: string) => {
+    const types = {
+      video: 'Virtual',
+      online: 'Virtual',
+      presencial: 'Presencial',
+      'in-person': 'Presencial',
+      phone: 'Chamada Telefónica',
+      'phone-call': 'Chamada Telefónica',
+      call: 'Chamada Telefónica'
+    };
+    return types[type?.toLowerCase() as keyof typeof types] || type;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -59,7 +72,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
             </div>
             <div className="text-sm text-muted-foreground">
               <p><strong>Data:</strong> {session.date} às {session.time}</p>
-              <p><strong>Tipo:</strong> {session.type}</p>
+              <p><strong>Tipo:</strong> {getSessionTypeLabel(session.type)}</p>
             </div>
           </div>
 
