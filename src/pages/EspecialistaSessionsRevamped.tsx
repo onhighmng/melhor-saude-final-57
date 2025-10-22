@@ -85,6 +85,8 @@ const EspecialistaSessionsRevamped = () => {
         name: `${session.user_name} - ${getPillarLabel(session.pillar)}`,
         time: session.time,
         datetime: `${session.date}T${session.time}`,
+        userName: session.user_name,
+        pillar: session.pillar,
       });
       return acc;
     }, {} as Record<string, any[]>);
@@ -178,10 +180,10 @@ const EspecialistaSessionsRevamped = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-heading font-bold">
+        <h1 className="text-4xl font-heading font-bold">
           Calendário Pessoal
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-1 text-base font-semibold">
           Sessões futuras e passadas com tipo e estado
         </p>
       </div>
