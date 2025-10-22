@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EscalatedChatCard } from '@/components/specialist/EscalatedChatCard';
 import { AnalyticsCard } from '@/components/specialist/AnalyticsCard';
 import LoadingSpinner from '@/components/ui/loading-spinner';
-import { Phone, TrendingUp, Users, Calendar, ThumbsUp, MessageSquare, ArrowRight, Clock, Building2, AlertTriangle, Star, BookOpen } from 'lucide-react';
+import { Phone, TrendingUp, Users, Calendar, ThumbsUp, MessageSquare, ArrowRight, Clock, Building2, AlertTriangle, Star, BookOpen, User, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -15,8 +15,6 @@ import { mockCallRequests, mockEspecialistaSessions, mockCompanies, mockReferral
 import { useNavigate } from 'react-router-dom';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { useEffect } from 'react';
-import recursosWellness from '@/assets/recursos-wellness.jpg';
-import { useResourceStats } from '@/hooks/useResourceStats';
 import { getPillarColors } from '@/utils/pillarColors';
 
 export default function SpecialistDashboard() {
@@ -26,7 +24,6 @@ export default function SpecialistDashboard() {
   const { filterByCompanyAccess } = useCompanyFilter();
   const navigate = useNavigate();
   const [pillarFilter, setPillarFilter] = useState<string>('all');
-  const resourceStats = useResourceStats();
 
   useEffect(() => {
     // Add admin-page class to body for gray background (same as admin/company)
@@ -143,49 +140,85 @@ export default function SpecialistDashboard() {
                 cta="Ver Estatísticas"
               />
 
-              {/* Bottom Right - Recursos with Pillar Distribution */}
+              {/* Bottom Right - Perfil Profissional */}
               <BentoCard 
                 name="" 
                 description="" 
-                Icon={BookOpen} 
-                onClick={() => navigate('/admin/resources')} 
+                Icon={User} 
+                onClick={() => navigate('/especialista/stats')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
                 background={
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-purple-100 to-indigo-100">
                     {/* Subtle pattern overlay */}
                     <div className="absolute inset-0 opacity-5" style={{
                       backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
                     }} />
                   </div>
                 }
-                iconColor="text-indigo-600"
+                iconColor="text-purple-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
-                cta="Ver Todos"
+                cta="Ver Estatísticas"
               >
                 <div className="relative z-30 flex flex-col h-full p-6">
                   {/* Header */}
                   <div className="mb-4">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 bg-indigo-100 rounded-lg">
-                        <BookOpen className="h-5 w-5 text-indigo-600" />
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <User className="h-5 w-5 text-purple-600" />
                       </div>
                       <div>
-                        <h3 className="text-2xl font-semibold text-gray-900">Recursos</h3>
-                        <p className="text-sm text-gray-600">{resourceStats.total} materiais disponíveis</p>
+                        <h3 className="text-2xl font-semibold text-gray-900">Perfil Profissional</h3>
+                        <p className="text-sm text-gray-600">Seu desempenho este mês</p>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Pillar Distribution Visualization */}
+                  {/* Key Metrics Grid */}
+                  <div className="grid grid-cols-3 gap-2 mb-4">
+                    <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Star className="h-3 w-3 text-amber-500" />
+                        <p className="text-xs text-gray-600">Avaliação</p>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900">{mockSpecialistPersonalStats.avg_rating}<span className="text-xs text-gray-500">/10</span></p>
+                    </div>
+                    <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Clock className="h-3 w-3 text-blue-500" />
+                        <p className="text-xs text-gray-600">Tempo Resp.</p>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900">{mockSpecialistPersonalStats.avg_response_time_minutes}<span className="text-xs text-gray-500">min</span></p>
+                    </div>
+                    <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3">
+                      <div className="flex items-center gap-1 mb-1">
+                        <ThumbsUp className="h-3 w-3 text-green-500" />
+                        <p className="text-xs text-gray-600">Satisfação</p>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900">{mockSpecialistPersonalStats.satisfaction_rate}<span className="text-xs text-gray-500">%</span></p>
+                    </div>
+                  </div>
+                  
+                  {/* Pillar Specialization Distribution */}
                   <div className="flex-1 space-y-3">
                     <div className="text-sm font-medium text-gray-700 mb-2">
-                      Distribuição por Pilar
+                      Distribuição por Especialidade
                     </div>
                     
-                    {resourceStats.distribution.map((pillar) => {
-                      const colors = getPillarColors(pillar.pillar);
+                    {mockSpecialistPersonalStats.top_pillars.map((pillar) => {
+                      // Map pillar names to keys used in pillarColors
+                      const pillarKeyMap: Record<string, string> = {
+                        'psychological': 'saude_mental',
+                        'physical': 'bem_estar_fisico',
+                        'financial': 'assistencia_financeira',
+                        'legal': 'assistencia_juridica'
+                      };
+                      
+                      const pillarKey = pillarKeyMap[pillar.pillar] || pillar.pillar;
+                      const colors = getPillarColors(pillarKey);
+                      const totalCases = mockSpecialistPersonalStats.top_pillars.reduce((sum, p) => sum + p.count, 0);
+                      const percentage = Math.round((pillar.count / totalCases) * 100);
                       
                       return (
                         <div 
@@ -193,7 +226,7 @@ export default function SpecialistDashboard() {
                           className="bg-white/70 backdrop-blur-sm rounded-lg p-3 hover:bg-white/90 transition-all cursor-pointer group"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate('/admin/resources', { state: { pillar: pillar.pillar } });
+                            navigate('/especialista/user-history', { state: { pillar: pillar.pillar } });
                           }}
                         >
                           <div className="flex items-center justify-between mb-2">
@@ -202,12 +235,12 @@ export default function SpecialistDashboard() {
                                 className="w-3 h-3 rounded-full"
                                 style={{ backgroundColor: colors.text }}
                               />
-                              <span className="text-sm font-medium text-gray-900 group-hover:text-indigo-600 transition-colors">
+                              <span className="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
                                 {pillar.label}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-gray-500">{pillar.percentage}%</span>
+                              <span className="text-xs text-gray-500">{percentage}%</span>
                               <span className="text-sm font-bold" style={{ color: colors.text }}>
                                 {pillar.count}
                               </span>
@@ -216,7 +249,7 @@ export default function SpecialistDashboard() {
                           
                           {/* Progress Bar */}
                           <Progress 
-                            value={pillar.percentage} 
+                            value={percentage} 
                             className="h-2"
                             style={{
                               backgroundColor: colors.bgLight,
@@ -230,20 +263,34 @@ export default function SpecialistDashboard() {
                     })}
                   </div>
                   
-                  {/* Footer Stats */}
+                  {/* Resolution Stats */}
                   <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
                       <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3">
-                        <p className="text-xs text-gray-600">Mais Popular</p>
-                        <p className="text-sm font-semibold text-gray-900 truncate">
-                          {resourceStats.mostPopular?.label || 'N/A'}
-                        </p>
+                        <p className="text-xs text-gray-600">Resolução Interna</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xl font-bold text-green-600">{mockSpecialistPersonalStats.internal_resolution_rate}%</p>
+                        </div>
                       </div>
                       <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3">
-                        <p className="text-xs text-gray-600">Tipos</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          PDF • Vídeo • Artigo
-                        </p>
+                        <p className="text-xs text-gray-600">Encaminhamentos</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xl font-bold text-purple-600">{mockSpecialistPersonalStats.referral_rate}%</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Activity Summary */}
+                    <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-green-600" />
+                          <span className="text-xs text-gray-600">Casos este mês:</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-lg font-bold text-gray-900">{mockSpecialistPersonalStats.monthly_cases}</span>
+                          <span className="text-xs text-green-600 font-medium">(+7%)</span>
+                        </div>
                       </div>
                     </div>
                   </div>
