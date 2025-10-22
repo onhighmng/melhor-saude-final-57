@@ -122,7 +122,7 @@ export const mockFinancialData: FinancialData[] = [
 export const mockPrestadorSessions: PrestadorSession[] = [
   {
     id: '1',
-    date: '2024-10-15',
+    date: '2025-10-15',
     clientName: 'João Silva',
     company: 'TechCorp Lda',
     type: 'Virtual',
@@ -132,7 +132,7 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   },
   {
     id: '2',
-    date: '2024-10-14',
+    date: '2025-10-14',
     clientName: 'Maria Oliveira',
     company: 'HealthPlus SA',
     type: 'Presencial',
@@ -141,7 +141,7 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   },
   {
     id: '3',
-    date: '2024-10-16',
+    date: '2025-10-16',
     clientName: 'Ana Costa',
     company: 'InnovateLab',
     type: 'Virtual',
@@ -149,7 +149,7 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   },
   {
     id: '4',
-    date: '2024-10-13',
+    date: '2025-10-13',
     clientName: 'Pedro Ferreira',
     company: 'ConsultPro',
     type: 'Presencial',
@@ -157,7 +157,7 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   },
   {
     id: '5',
-    date: '2024-10-12',
+    date: '2025-10-12',
     clientName: 'Carlos Santos',
     company: 'TechCorp Lda',
     type: 'Virtual',
@@ -167,7 +167,7 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   },
   {
     id: '6',
-    date: '2024-10-11',
+    date: '2025-10-11',
     clientName: 'Rita Mendes',
     company: 'MediaGroup SA',
     type: 'Virtual',
@@ -176,7 +176,7 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   },
   {
     id: '7',
-    date: '2024-10-10',
+    date: '2025-10-10',
     clientName: 'Tiago Pereira',
     company: 'StartupHub',
     type: 'Presencial',
@@ -186,7 +186,7 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   },
   {
     id: '8',
-    date: '2024-10-09',
+    date: '2025-10-09',
     clientName: 'Luísa Rodrigues',
     company: 'HealthPlus SA',
     type: 'Virtual',
@@ -195,12 +195,12 @@ export const mockPrestadorSessions: PrestadorSession[] = [
   }
 ];
 
-// Mock Calendar Events (October-November 2024)
+// Mock Calendar Events (October-November 2025)
 export const mockCalendarEvents: PrestadorCalendarEvent[] = [
-  // Week 1 - October 21-25, 2024
+  // Week 1 - October 21-25, 2025
   {
     id: 'session-w1-1',
-    date: '2024-10-21',
+    date: '2025-10-21',
     time: '09:00',
     type: 'session',
     status: 'confirmed',
@@ -211,7 +211,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w1-2',
-    date: '2024-10-21',
+    date: '2025-10-21',
     time: '11:00',
     type: 'session',
     status: 'confirmed',
@@ -222,7 +222,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w1-3',
-    date: '2024-10-21',
+    date: '2025-10-21',
     time: '14:00',
     type: 'session',
     status: 'confirmed',
@@ -231,11 +231,11 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'financial',
     sessionType: 'Virtual'
   },
-  { id: 'block-w1-1', date: '2024-10-21', time: '16:00', type: 'blocked' },
+  { id: 'block-w1-1', date: '2025-10-21', time: '16:00', type: 'blocked' },
 
   {
     id: 'session-w1-4',
-    date: '2024-10-22',
+    date: '2025-10-22',
     time: '10:00',
     type: 'session',
     status: 'confirmed',
@@ -246,7 +246,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w1-5',
-    date: '2024-10-22',
+    date: '2025-10-22',
     time: '13:00',
     type: 'session',
     status: 'confirmed',
@@ -257,7 +257,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w1-6',
-    date: '2024-10-22',
+    date: '2025-10-22',
     time: '15:30',
     type: 'session',
     status: 'confirmed',
@@ -269,7 +269,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w1-7',
-    date: '2024-10-23',
+    date: '2025-10-23',
     time: '09:30',
     type: 'session',
     status: 'confirmed',
@@ -280,7 +280,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w1-8',
-    date: '2024-10-23',
+    date: '2025-10-23',
     time: '11:30',
     type: 'session',
     status: 'cancelled',
@@ -289,12 +289,12 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'legal',
     sessionType: 'Presencial'
   },
-  { id: 'block-w1-2', date: '2024-10-23', time: '14:00', type: 'blocked' },
-  { id: 'block-w1-3', date: '2024-10-23', time: '15:00', type: 'blocked' },
+  { id: 'block-w1-2', date: '2025-10-23', time: '14:00', type: 'blocked' },
+  { id: 'block-w1-3', date: '2025-10-23', time: '15:00', type: 'blocked' },
 
   {
     id: 'session-w1-9',
-    date: '2024-10-24',
+    date: '2025-10-24',
     time: '10:00',
     type: 'session',
     status: 'confirmed',
@@ -305,7 +305,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w1-10',
-    date: '2024-10-24',
+    date: '2025-10-24',
     time: '13:30',
     type: 'session',
     status: 'confirmed',
@@ -316,7 +316,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w1-11',
-    date: '2024-10-24',
+    date: '2025-10-24',
     time: '16:00',
     type: 'session',
     status: 'confirmed',
@@ -328,7 +328,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w1-12',
-    date: '2024-10-25',
+    date: '2025-10-25',
     time: '09:00',
     type: 'session',
     status: 'confirmed',
@@ -339,7 +339,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w1-13',
-    date: '2024-10-25',
+    date: '2025-10-25',
     time: '11:00',
     type: 'session',
     status: 'confirmed',
@@ -348,12 +348,12 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'psychological',
     sessionType: 'Presencial'
   },
-  { id: 'avail-w1-1', date: '2024-10-25', time: '14:00', type: 'available' },
+  { id: 'avail-w1-1', date: '2025-10-25', time: '14:00', type: 'available' },
 
-  // Week 2 - October 28-31, 2024
+  // Week 2 - October 28-31, 2025
   {
     id: 'session-w2-1',
-    date: '2024-10-28',
+    date: '2025-10-28',
     time: '09:30',
     type: 'session',
     status: 'confirmed',
@@ -364,7 +364,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w2-2',
-    date: '2024-10-28',
+    date: '2025-10-28',
     time: '11:30',
     type: 'session',
     status: 'confirmed',
@@ -375,7 +375,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w2-3',
-    date: '2024-10-28',
+    date: '2025-10-28',
     time: '14:30',
     type: 'session',
     status: 'confirmed',
@@ -387,7 +387,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w2-4',
-    date: '2024-10-29',
+    date: '2025-10-29',
     time: '10:00',
     type: 'session',
     status: 'confirmed',
@@ -398,7 +398,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w2-5',
-    date: '2024-10-29',
+    date: '2025-10-29',
     time: '13:00',
     type: 'session',
     status: 'cancelled',
@@ -409,7 +409,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w2-6',
-    date: '2024-10-29',
+    date: '2025-10-29',
     time: '15:00',
     type: 'session',
     status: 'confirmed',
@@ -421,7 +421,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w2-7',
-    date: '2024-10-30',
+    date: '2025-10-30',
     time: '09:00',
     type: 'session',
     status: 'confirmed',
@@ -430,11 +430,11 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'legal',
     sessionType: 'Presencial'
   },
-  { id: 'block-w2-1', date: '2024-10-30', time: '11:00', type: 'blocked' },
-  { id: 'block-w2-2', date: '2024-10-30', time: '12:00', type: 'blocked' },
+  { id: 'block-w2-1', date: '2025-10-30', time: '11:00', type: 'blocked' },
+  { id: 'block-w2-2', date: '2025-10-30', time: '12:00', type: 'blocked' },
   {
     id: 'session-w2-8',
-    date: '2024-10-30',
+    date: '2025-10-30',
     time: '14:00',
     type: 'session',
     status: 'confirmed',
@@ -446,7 +446,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w2-9',
-    date: '2024-10-31',
+    date: '2025-10-31',
     time: '10:30',
     type: 'session',
     status: 'confirmed',
@@ -457,7 +457,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w2-10',
-    date: '2024-10-31',
+    date: '2025-10-31',
     time: '13:30',
     type: 'session',
     status: 'confirmed',
@@ -466,12 +466,12 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'financial',
     sessionType: 'Presencial'
   },
-  { id: 'avail-w2-1', date: '2024-10-31', time: '16:00', type: 'available' },
+  { id: 'avail-w2-1', date: '2025-10-31', time: '16:00', type: 'available' },
 
-  // Week 3 - November 1-8, 2024
+  // Week 3 - November 1-8, 2025
   {
     id: 'session-w3-1',
-    date: '2024-11-04',
+    date: '2025-11-04',
     time: '09:00',
     type: 'session',
     status: 'confirmed',
@@ -482,7 +482,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w3-2',
-    date: '2024-11-04',
+    date: '2025-11-04',
     time: '11:00',
     type: 'session',
     status: 'confirmed',
@@ -493,7 +493,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w3-3',
-    date: '2024-11-04',
+    date: '2025-11-04',
     time: '14:00',
     type: 'session',
     status: 'confirmed',
@@ -505,7 +505,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w3-4',
-    date: '2024-11-05',
+    date: '2025-11-05',
     time: '10:00',
     type: 'session',
     status: 'confirmed',
@@ -516,7 +516,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w3-5',
-    date: '2024-11-05',
+    date: '2025-11-05',
     time: '13:00',
     type: 'session',
     status: 'confirmed',
@@ -527,7 +527,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w3-6',
-    date: '2024-11-05',
+    date: '2025-11-05',
     time: '15:30',
     type: 'session',
     status: 'cancelled',
@@ -539,7 +539,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w3-7',
-    date: '2024-11-06',
+    date: '2025-11-06',
     time: '09:30',
     type: 'session',
     status: 'confirmed',
@@ -550,7 +550,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w3-8',
-    date: '2024-11-06',
+    date: '2025-11-06',
     time: '11:30',
     type: 'session',
     status: 'confirmed',
@@ -559,12 +559,12 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'financial',
     sessionType: 'Presencial'
   },
-  { id: 'block-w3-1', date: '2024-11-06', time: '14:00', type: 'blocked' },
-  { id: 'block-w3-2', date: '2024-11-06', time: '15:00', type: 'blocked' },
+  { id: 'block-w3-1', date: '2025-11-06', time: '14:00', type: 'blocked' },
+  { id: 'block-w3-2', date: '2025-11-06', time: '15:00', type: 'blocked' },
 
   {
     id: 'session-w3-9',
-    date: '2024-11-07',
+    date: '2025-11-07',
     time: '10:00',
     type: 'session',
     status: 'confirmed',
@@ -575,7 +575,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w3-10',
-    date: '2024-11-07',
+    date: '2025-11-07',
     time: '13:30',
     type: 'session',
     status: 'confirmed',
@@ -586,7 +586,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w3-11',
-    date: '2024-11-07',
+    date: '2025-11-07',
     time: '16:00',
     type: 'session',
     status: 'confirmed',
@@ -598,7 +598,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w3-12',
-    date: '2024-11-08',
+    date: '2025-11-08',
     time: '09:00',
     type: 'session',
     status: 'confirmed',
@@ -609,7 +609,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w3-13',
-    date: '2024-11-08',
+    date: '2025-11-08',
     time: '11:00',
     type: 'session',
     status: 'confirmed',
@@ -618,13 +618,13 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'legal',
     sessionType: 'Presencial'
   },
-  { id: 'avail-w3-1', date: '2024-11-08', time: '14:00', type: 'available' },
-  { id: 'avail-w3-2', date: '2024-11-08', time: '15:00', type: 'available' },
+  { id: 'avail-w3-1', date: '2025-11-08', time: '14:00', type: 'available' },
+  { id: 'avail-w3-2', date: '2025-11-08', time: '15:00', type: 'available' },
 
-  // Week 4 - November 11-15, 2024
+  // Week 4 - November 11-15, 2025
   {
     id: 'session-w4-1',
-    date: '2024-11-11',
+    date: '2025-11-11',
     time: '09:30',
     type: 'session',
     status: 'confirmed',
@@ -635,7 +635,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w4-2',
-    date: '2024-11-11',
+    date: '2025-11-11',
     time: '11:30',
     type: 'session',
     status: 'confirmed',
@@ -646,7 +646,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w4-3',
-    date: '2024-11-11',
+    date: '2025-11-11',
     time: '14:30',
     type: 'session',
     status: 'confirmed',
@@ -658,7 +658,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w4-4',
-    date: '2024-11-12',
+    date: '2025-11-12',
     time: '10:00',
     type: 'session',
     status: 'confirmed',
@@ -669,7 +669,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w4-5',
-    date: '2024-11-12',
+    date: '2025-11-12',
     time: '13:00',
     type: 'session',
     status: 'confirmed',
@@ -680,7 +680,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w4-6',
-    date: '2024-11-12',
+    date: '2025-11-12',
     time: '15:00',
     type: 'session',
     status: 'cancelled',
@@ -692,7 +692,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w4-7',
-    date: '2024-11-13',
+    date: '2025-11-13',
     time: '09:00',
     type: 'session',
     status: 'confirmed',
@@ -701,11 +701,11 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'financial',
     sessionType: 'Presencial'
   },
-  { id: 'block-w4-1', date: '2024-11-13', time: '11:00', type: 'blocked' },
-  { id: 'block-w4-2', date: '2024-11-13', time: '12:00', type: 'blocked' },
+  { id: 'block-w4-1', date: '2025-11-13', time: '11:00', type: 'blocked' },
+  { id: 'block-w4-2', date: '2025-11-13', time: '12:00', type: 'blocked' },
   {
     id: 'session-w4-8',
-    date: '2024-11-13',
+    date: '2025-11-13',
     time: '14:00',
     type: 'session',
     status: 'confirmed',
@@ -717,7 +717,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w4-9',
-    date: '2024-11-14',
+    date: '2025-11-14',
     time: '10:30',
     type: 'session',
     status: 'confirmed',
@@ -728,7 +728,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w4-10',
-    date: '2024-11-14',
+    date: '2025-11-14',
     time: '13:30',
     type: 'session',
     status: 'confirmed',
@@ -740,7 +740,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
 
   {
     id: 'session-w4-11',
-    date: '2024-11-15',
+    date: '2025-11-15',
     time: '09:00',
     type: 'session',
     status: 'confirmed',
@@ -751,7 +751,7 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
   },
   {
     id: 'session-w4-12',
-    date: '2024-11-15',
+    date: '2025-11-15',
     time: '11:00',
     type: 'session',
     status: 'confirmed',
@@ -760,9 +760,9 @@ export const mockCalendarEvents: PrestadorCalendarEvent[] = [
     pillar: 'legal',
     sessionType: 'Presencial'
   },
-  { id: 'avail-w4-1', date: '2024-11-15', time: '14:00', type: 'available' },
-  { id: 'avail-w4-2', date: '2024-11-15', time: '15:00', type: 'available' },
-  { id: 'avail-w4-3', date: '2024-11-15', time: '16:00', type: 'available' }
+  { id: 'avail-w4-1', date: '2025-11-15', time: '14:00', type: 'available' },
+  { id: 'avail-w4-2', date: '2025-11-15', time: '15:00', type: 'available' },
+  { id: 'avail-w4-3', date: '2025-11-15', time: '16:00', type: 'available' }
 ];
 
 // Mock Prestador Settings
