@@ -125,7 +125,7 @@ const AdminDashboard = () => {
                 <img 
                   src={recursosWellness} 
                   alt="" 
-                  className="w-full h-full object-cover opacity-60" 
+                  className="w-full h-full object-cover" 
                 />
               </div>
             }
