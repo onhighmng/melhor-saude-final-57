@@ -117,23 +117,23 @@ export function FeaturesGrid({
 
                         <CardContent className="mt-auto h-fit">
                             <div className="relative mb-6 sm:mb-0">
-                                <div className="overflow-hidden rounded-r-lg border bg-card p-6">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between pb-2 border-b">
-                                            <span className="text-sm text-muted-foreground">Total de Contas</span>
-                                            <span className="text-2xl font-bold text-foreground">{seatLimit}</span>
+                                <div className="overflow-hidden rounded-r-lg border bg-card p-8">
+                                    <div className="space-y-6">
+                                        <div className="flex items-center justify-between p-4 rounded-full bg-muted/50">
+                                            <span className="text-base font-medium text-muted-foreground">Total de Contas</span>
+                                            <span className="text-3xl font-bold text-foreground">{seatLimit}</span>
                                         </div>
-                                        <div className="flex items-center justify-between pb-2 border-b">
-                                            <span className="text-sm text-muted-foreground">Contas Ativas</span>
-                                            <span className="text-2xl font-bold text-emerald-600">{seatUsed}</span>
+                                        <div className="flex items-center justify-between p-4 rounded-full bg-emerald-50 dark:bg-emerald-950/30">
+                                            <span className="text-base font-medium text-muted-foreground">Contas Ativas</span>
+                                            <span className="text-3xl font-bold text-emerald-600">{seatUsed}</span>
                                         </div>
-                                        <div className="flex items-center justify-between pb-2 border-b">
-                                            <span className="text-sm text-muted-foreground">Contas Disponíveis</span>
-                                            <span className="text-2xl font-bold text-blue-600">{seatsAvailable}</span>
+                                        <div className="flex items-center justify-between p-4 rounded-full bg-blue-50 dark:bg-blue-950/30">
+                                            <span className="text-base font-medium text-muted-foreground">Contas Disponíveis</span>
+                                            <span className="text-3xl font-bold text-blue-600">{seatsAvailable}</span>
                                         </div>
-                                        <div className="flex items-center justify-between pt-2">
-                                            <span className="text-sm font-semibold text-muted-foreground">Taxa de Utilização</span>
-                                            <span className="text-3xl font-bold text-primary">{seatUsagePercent}%</span>
+                                        <div className="flex items-center justify-between p-4 rounded-full bg-primary/10">
+                                            <span className="text-base font-semibold text-muted-foreground">Taxa de Utilização</span>
+                                            <span className="text-4xl font-bold text-primary">{seatUsagePercent}%</span>
                                         </div>
                                     </div>
                                 </div>
