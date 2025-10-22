@@ -191,30 +191,30 @@ const CompanySessions = () => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     {getPillarIcon(pillar.pillar)}
-                    <h4 className="font-semibold text-lg">{pillar.pillar}</h4>
-                    <Badge className={getPillarColor(pillar.pillar)}>
+                    <h4 className="font-semibold text-xl">{pillar.pillar}</h4>
+                    <Badge className={`${getPillarColor(pillar.pillar)} text-base px-3 py-1`}>
                       {pillar.utilizationRate}% utilizado
                     </Badge>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold">{pillar.sessionsUsed}</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-3xl font-bold">{pillar.sessionsUsed}</div>
+                    <div className="text-base text-muted-foreground">
                       de {pillar.sessionsAvailable} sessões
                     </div>
                   </div>
                 </div>
                 
                 <div className="mb-3">
-                  <div className="flex justify-between text-sm mb-1">
+                  <div className="flex justify-between text-base mb-1">
                     <span>Progresso de utilização</span>
                     <span>{pillar.utilizationRate}%</span>
                   </div>
-                  <Progress value={pillar.utilizationRate} className="h-2" />
+                  <Progress value={pillar.utilizationRate} className="h-3" />
                 </div>
                 
                 <div>
-                  <h5 className="font-medium text-sm mb-2">Especialistas mais envolvidos:</h5>
-                  <div className="text-sm text-muted-foreground">
+                  <h5 className="font-medium text-base mb-2">Especialistas mais envolvidos:</h5>
+                  <div className="text-base text-muted-foreground">
                     {pillar.topSpecialists.slice(0, 2).map((specialist, specIndex) => (
                       <span key={specIndex}>
                         {specialist.name}
