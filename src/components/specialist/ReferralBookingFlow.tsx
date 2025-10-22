@@ -69,10 +69,10 @@ const mockPrestadores: Prestador[] = [
 ];
 
 const pillarOptions = [
-  { value: 'psychological', label: 'Saúde Mental', color: 'bg-purple-100 text-purple-700' },
-  { value: 'physical', label: 'Bem-Estar Físico', color: 'bg-green-100 text-green-700' },
-  { value: 'financial', label: 'Assistência Financeira', color: 'bg-blue-100 text-blue-700' },
-  { value: 'legal', label: 'Assistência Jurídica', color: 'bg-orange-100 text-orange-700' },
+  { value: 'psychological', label: 'Saúde Mental', bgColor: 'hsl(270 60% 95%)', textColor: 'hsl(270 60% 40%)' },
+  { value: 'physical', label: 'Bem-Estar Físico', bgColor: 'hsl(140 60% 95%)', textColor: 'hsl(140 60% 35%)' },
+  { value: 'financial', label: 'Assistência Financeira', bgColor: 'hsl(210 80% 95%)', textColor: 'hsl(210 80% 40%)' },
+  { value: 'legal', label: 'Assistência Jurídica', bgColor: 'hsl(25 85% 95%)', textColor: 'hsl(25 85% 45%)' },
 ];
 
 const generateTimeSlots = (date: Date) => {
@@ -183,7 +183,8 @@ export const ReferralBookingFlow = ({
                   <Button
                     key={pillar.value}
                     variant="outline"
-                    className={`h-24 flex flex-col gap-2 ${pillar.color} border-transparent hover:opacity-90`}
+                    className="h-24 flex flex-col gap-2 border-transparent hover:opacity-90"
+                    style={{ backgroundColor: pillar.bgColor, color: pillar.textColor }}
                     onClick={() => handlePillarSelect(pillar.value)}
                   >
                     <span className="text-lg font-semibold">{pillar.label}</span>
