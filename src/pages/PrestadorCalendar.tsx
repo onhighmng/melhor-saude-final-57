@@ -18,6 +18,9 @@ const PrestadorCalendar = () => {
 
   // Transform calendar events to FullScreenCalendar format
   const calendarData = useMemo(() => {
+    console.log('Mock Calendar Events:', mockCalendarEvents.length);
+    console.log('First 3 events:', mockCalendarEvents.slice(0, 3));
+    
     const groupedByDate = mockCalendarEvents.reduce((acc, event: PrestadorCalendarEvent) => {
       const dateKey = event.date;
       if (!acc[dateKey]) {
@@ -50,10 +53,15 @@ const PrestadorCalendar = () => {
       return acc;
     }, {} as Record<string, any[]>);
 
-    return Object.entries(groupedByDate).map(([date, events]) => ({
+    const result = Object.entries(groupedByDate).map(([date, events]) => ({
       day: new Date(date),
       events,
     }));
+    
+    console.log('Calendar Data:', result.length, 'days with events');
+    console.log('First day with events:', result[0]);
+    
+    return result;
   }, []);
 
   // Get events for selected date
