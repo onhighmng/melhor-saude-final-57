@@ -124,8 +124,8 @@ const PrestadorSettings = () => {
         </Button>
       </div>
 
-      <div className="h-[calc(100vh-200px)]">
-        <BentoGrid className="h-full grid-rows-2 gap-4">
+      <div className="w-full h-[calc(100vh-200px)]">
+        <BentoGrid className="h-full grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-4 w-full">
           {/* Personal Information - Minimal */}
           <BentoCard
             name="Informação Pessoal"
