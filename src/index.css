@@ -489,4 +489,50 @@ All colors MUST be HSL.
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Rainbow animation for feature section */
+  .animate-rainbow {
+    animation: rainbow 8s linear infinite;
+  }
+
+  @keyframes rainbow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes glow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Color variables for rainbow effect */
+  :root {
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
+  }
+
+  .dark {
+    --color-1: 0 100% 70%;
+    --color-2: 270 100% 70%;
+    --color-3: 210 100% 70%;
+    --color-4: 195 100% 70%;
+    --color-5: 90 100% 70%;
+  }
 }

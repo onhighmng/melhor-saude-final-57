@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { mockSessionAnalytics } from '@/data/companyMetrics';
 import { useToast } from "@/hooks/use-toast";
+import RuixenSection from '@/components/ui/ruixen-feature-section';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -296,6 +297,9 @@ const CompanySessions = () => {
         </div>
       </div>
 
+
+      {/* Feature Section */}
+      <RuixenSection />
 
       {/* Privacy Notice */}
       <Card className="border-amber-200 bg-amber-50/50">
