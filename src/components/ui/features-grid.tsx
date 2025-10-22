@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Brain, Heart, DollarSign, Scale, Users, TrendingUp, Key, CheckCircle } from 'lucide-react'
+import { Brain, Heart, DollarSign, Scale, Users, TrendingUp } from 'lucide-react'
 
 export function FeaturesGrid() {
     return (
@@ -9,47 +9,49 @@ export function FeaturesGrid() {
                     <Card className="group overflow-hidden shadow-black/5 sm:col-span-3 sm:rounded-none sm:rounded-tl-xl hover-lift">
                         <CardHeader>
                             <div className="md:p-6">
-                                <p className="font-semibold text-2xl text-foreground">Geração de Códigos de Acesso</p>
+                                <p className="font-semibold text-2xl text-foreground">Gestão Centralizada de Colaboradores</p>
                                 <p className="text-muted-foreground mt-3 max-w-sm text-base">
-                                    Crie códigos únicos de acesso para distribuir aos colaboradores de forma segura e anônima.
+                                    Plataforma completa para gerir todos os aspectos do bem-estar dos seus colaboradores em tempo real.
                                 </p>
                             </div>
                         </CardHeader>
 
-                        <CardContent className="px-6 md:px-12 pb-6 md:pb-12">
-                            <div className="space-y-4">
-                                <p className="text-sm text-muted-foreground">
-                                    Clique no botão abaixo para gerar códigos de acesso únicos que podem ser distribuídos aos colaboradores.
-                                </p>
-                                
-                                <div className="p-6 bg-muted/50 rounded-lg border">
-                                    <div className="text-center space-y-4">
-                                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
-                                            <Key className="h-8 w-8 text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="text-lg font-semibold text-foreground">Gerar Novos Códigos</p>
-                                            <p className="text-sm text-muted-foreground mt-1">
-                                                Códigos serão listados na secção abaixo para fácil distribuição
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="relative h-fit pl-6 md:pl-12">
+                            <div className="absolute -inset-6 [background:radial-gradient(75%_95%_at_50%_0%,transparent,hsl(var(--background))_100%)]"></div>
 
-                                <div className="grid grid-cols-2 gap-4 pt-4">
-                                    <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800 text-center">
-                                        <Users className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-                                        <p className="text-sm text-muted-foreground">Contas Disponíveis</p>
-                                        <p className="text-2xl font-bold text-blue-600 mt-1">Ilimitado</p>
+                            <div className="bg-card overflow-hidden rounded-tl-lg border-l border-t pl-2 pt-2">
+                                <div className="p-6 space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                                            <Brain className="h-8 w-8 text-blue-600 mb-2" />
+                                            <p className="font-semibold text-foreground">Saúde Mental</p>
+                                            <p className="text-2xl font-bold text-blue-600">456</p>
+                                            <p className="text-xs text-muted-foreground">Sessões ativas</p>
+                                        </div>
+                                        <div className="p-4 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                                            <Heart className="h-8 w-8 text-yellow-600 mb-2" />
+                                            <p className="font-semibold text-foreground">Bem-Estar Físico</p>
+                                            <p className="text-2xl font-bold text-yellow-600">328</p>
+                                            <p className="text-xs text-muted-foreground">Sessões ativas</p>
+                                        </div>
                                     </div>
-                                    <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800 text-center">
-                                        <CheckCircle className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
-                                        <p className="text-sm text-muted-foreground">Códigos Gerados</p>
-                                        <p className="text-2xl font-bold text-emerald-600 mt-1">Ver abaixo</p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
+                                            <DollarSign className="h-8 w-8 text-green-600 mb-2" />
+                                            <p className="font-semibold text-foreground">Assistência Financeira</p>
+                                            <p className="text-2xl font-bold text-green-600">189</p>
+                                            <p className="text-xs text-muted-foreground">Sessões ativas</p>
+                                        </div>
+                                        <div className="p-4 bg-purple-50 dark:bg-purple-950/30 rounded-lg border border-purple-200 dark:border-purple-800">
+                                            <Scale className="h-8 w-8 text-purple-600 mb-2" />
+                                            <p className="font-semibold text-foreground">Assistência Jurídica</p>
+                                            <p className="text-2xl font-bold text-purple-600">142</p>
+                                            <p className="text-xs text-muted-foreground">Sessões ativas</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </CardContent>
+                        </div>
                     </Card>
 
                     <Card className="group overflow-hidden shadow-zinc-950/5 sm:col-span-2 sm:rounded-none sm:rounded-tr-xl hover-lift">
