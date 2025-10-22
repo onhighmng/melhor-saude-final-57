@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
 import { 
@@ -28,6 +29,9 @@ const PrestadorSettings = () => {
   const [settings, setSettings] = useState(mockPrestadorSettings);
   const [isEditing, setIsEditing] = useState(false);
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
+  const [isPersonalInfoOpen, setIsPersonalInfoOpen] = useState(false);
+  const [isFinancialInfoOpen, setIsFinancialInfoOpen] = useState(false);
+  const [isSecurityOpen, setIsSecurityOpen] = useState(false);
   const [newPassword, setNewPassword] = useState({
     current: '',
     new: '',
@@ -122,138 +126,42 @@ const PrestadorSettings = () => {
 
       <div className="h-[calc(100vh-200px)]">
         <BentoGrid className="h-full grid-rows-2 gap-4">
-          {/* Personal Information */}
+          {/* Personal Information - Minimal */}
           <BentoCard
             name="Informação Pessoal"
-            description={`${settings.name} - ${settings.email}`}
+            description={`${settings.name}`}
             Icon={User}
+            onClick={() => setIsPersonalInfoOpen(true)}
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
             background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
             iconColor="text-blue-600"
             textColor="text-gray-900"
             descriptionColor="text-gray-600"
             href="#"
-            cta=""
-          >
-            <div className="relative z-30 flex flex-col h-full p-6 overflow-y-auto">
-              <div className="space-y-4">
-                {/* Profile Picture */}
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                      {settings.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                    </AvatarFallback>
-                  </Avatar>
-                  {isEditing && (
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <Camera className="h-3 w-3" />
-                      Alterar Foto
-                    </Button>
-                  )}
-                </div>
+            cta="Ver Detalhes"
+          />
 
-                {/* Basic Info */}
-                <div className="space-y-3">
-                  <div>
-                    <Label htmlFor="name" className="text-xs">Nome completo</Label>
-                    <Input
-                      id="name"
-                      value={settings.name}
-                      onChange={(e) => setSettings({ ...settings, name: e.target.value })}
-                      disabled={!isEditing}
-                      className="mt-1 h-8 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email" className="text-xs">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={settings.email}
-                      onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                      disabled={!isEditing}
-                      className="mt-1 h-8 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="pillar" className="text-xs">Pilar</Label>
-                    <div className="mt-1">
-                      <Badge className={`${getPillarBadgeColor(settings.pillar)} flex items-center gap-1 w-fit text-xs`}>
-                        {getPillarIcon(settings.pillar)}
-                        {settings.pillar}
-                      </Badge>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground mt-1">
-                      O pilar não pode ser alterado
-                    </p>
-                  </div>
-                </div>
-
-                {isEditing && (
-                  <Button onClick={handleSaveProfile} className="w-full gap-2 h-8 text-sm" size="sm">
-                    <Save className="h-3 w-3" />
-                    Guardar Alterações
-                  </Button>
-                )}
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Financial Information */}
+          {/* Financial Information - Minimal */}
           <BentoCard
             name="Informação Financeira"
-            description={`${settings.costPerSession} MZN por sessão`}
+            description={`${settings.costPerSession} MZN/sessão`}
             Icon={Euro}
+            onClick={() => setIsFinancialInfoOpen(true)}
             className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2"
             background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100" />}
             iconColor="text-green-600"
             textColor="text-gray-900"
             descriptionColor="text-gray-600"
             href="#"
-            cta=""
-          >
-            <div className="relative z-30 flex flex-col h-full p-6 overflow-y-auto">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="costPerSession" className="text-xs">Valor por sessão (MZN)</Label>
-                  <div className="relative mt-1">
-                    <Input
-                      id="costPerSession"
-                      value={settings.costPerSession}
-                      disabled
-                      className="pl-8 h-8 text-sm"
-                    />
-                    <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground mt-1">
-                    Este valor é apenas para visualização e não pode ser alterado
-                  </p>
-                </div>
+            cta="Ver Detalhes"
+          />
 
-                <div className="p-3 bg-white/80 rounded-lg">
-                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                    <Shield className="h-3 w-3" />
-                    Informação sobre Pagamentos
-                  </h4>
-                  <ul className="text-xs text-muted-foreground space-y-1">
-                    <li>• Recebe 75% do valor por sessão</li>
-                    <li>• 25% é retido como comissão da plataforma</li>
-                    <li>• Pagamentos são processados mensalmente</li>
-                    <li>• Consulte a secção "Desempenho" para detalhes financeiros</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Availability Settings */}
+          {/* Availability Settings - Minimal */}
           <BentoCard
             name="Disponibilidade"
-            description="Configure os seus horários disponíveis"
+            description={settings.preferredHours}
             Icon={Clock}
-            onClick={handleOpenAvailability}
+            onClick={() => setIsAvailabilityModalOpen(true)}
             className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3"
             background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100" />}
             iconColor="text-purple-600"
@@ -261,96 +169,206 @@ const PrestadorSettings = () => {
             descriptionColor="text-gray-600"
             href="#"
             cta="Gerir Horários"
-          >
-            <div className="relative z-30 flex flex-col h-full p-6 overflow-y-auto">
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-xs">Horários Preferidos</Label>
-                  <p className="text-sm font-medium mt-1">{settings.preferredHours}</p>
-                </div>
+          />
 
-                <div>
-                  <Label className="text-xs">Disponibilidade Semanal (Preview)</Label>
-                  <div className="mt-2 space-y-1">
-                    {settings.availability.slice(0, 3).map((day, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 bg-white/80 rounded text-xs">
-                        <div className="w-16 font-medium">{day.split(':')[0]}:</div>
-                        <div className="flex-1 text-muted-foreground">{day.split(':')[1]}</div>
-                      </div>
-                    ))}
-                    {settings.availability.length > 3 && (
-                      <p className="text-[10px] text-muted-foreground text-center pt-1">
-                        +{settings.availability.length - 3} mais dias
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Security Settings */}
+          {/* Security Settings - Minimal */}
           <BentoCard
             name="Segurança"
-            description="Alterar palavra-passe e configurações de segurança"
+            description="Alterar palavra-passe"
             Icon={Lock}
+            onClick={() => setIsSecurityOpen(true)}
             className="lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3"
             background={<div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100" />}
             iconColor="text-red-600"
             textColor="text-gray-900"
             descriptionColor="text-gray-600"
             href="#"
-            cta=""
-          >
-            <div className="relative z-30 flex flex-col h-full p-6 overflow-y-auto">
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="currentPassword" className="text-xs">Palavra-passe atual</Label>
-                  <Input
-                    id="currentPassword"
-                    type="password"
-                    value={newPassword.current}
-                    onChange={(e) => setNewPassword({ ...newPassword, current: e.target.value })}
-                    className="mt-1 h-8 text-sm"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="newPassword" className="text-xs">Nova palavra-passe</Label>
-                  <Input
-                    id="newPassword"
-                    type="password"
-                    value={newPassword.new}
-                    onChange={(e) => setNewPassword({ ...newPassword, new: e.target.value })}
-                    className="mt-1 h-8 text-sm"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="confirmPassword" className="text-xs">Confirmar nova palavra-passe</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={newPassword.confirm}
-                    onChange={(e) => setNewPassword({ ...newPassword, confirm: e.target.value })}
-                    className="mt-1 h-8 text-sm"
-                  />
-                </div>
-
-                <Button 
-                  onClick={handleChangePassword} 
-                  className="w-full gap-2 h-8 text-sm"
-                  size="sm"
-                  disabled={!newPassword.current || !newPassword.new || !newPassword.confirm}
-                >
-                  <Lock className="h-3 w-3" />
-                  Alterar Palavra-passe
-                </Button>
-              </div>
-            </div>
-          </BentoCard>
+            cta="Gerir Segurança"
+          />
         </BentoGrid>
       </div>
+
+      {/* Personal Information Modal */}
+      <Dialog open={isPersonalInfoOpen} onOpenChange={setIsPersonalInfoOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Informação Pessoal
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            {/* Profile Picture */}
+            <div className="flex items-center gap-4">
+              <Avatar className="h-20 w-20">
+                <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                  {settings.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                </AvatarFallback>
+              </Avatar>
+              {isEditing && (
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Camera className="h-4 w-4" />
+                  Alterar Foto
+                </Button>
+              )}
+            </div>
+
+            {/* Basic Info */}
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Nome completo</Label>
+                <Input
+                  id="name"
+                  value={settings.name}
+                  onChange={(e) => setSettings({ ...settings, name: e.target.value })}
+                  disabled={!isEditing}
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={settings.email}
+                  onChange={(e) => setSettings({ ...settings, email: e.target.value })}
+                  disabled={!isEditing}
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="pillar">Pilar</Label>
+                <div className="mt-1">
+                  <Badge className={`${getPillarBadgeColor(settings.pillar)} flex items-center gap-1 w-fit`}>
+                    {getPillarIcon(settings.pillar)}
+                    {settings.pillar}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  O pilar não pode ser alterado
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={() => setIsEditing(!isEditing)} variant="outline" className="flex-1">
+                {isEditing ? 'Cancelar' : 'Editar'}
+              </Button>
+              {isEditing && (
+                <Button onClick={() => {
+                  handleSaveProfile();
+                  setIsEditing(false);
+                }} className="flex-1 gap-2">
+                  <Save className="h-4 w-4" />
+                  Guardar Alterações
+                </Button>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Financial Information Modal */}
+      <Dialog open={isFinancialInfoOpen} onOpenChange={setIsFinancialInfoOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Euro className="h-5 w-5" />
+              Informação Financeira
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            <div>
+              <Label htmlFor="costPerSession">Valor por sessão (MZN)</Label>
+              <div className="relative mt-1">
+                <Input
+                  id="costPerSession"
+                  value={settings.costPerSession}
+                  disabled
+                  className="pl-8"
+                />
+                <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Este valor é apenas para visualização e não pode ser alterado
+              </p>
+            </div>
+
+            <div className="p-4 bg-muted/30 rounded-lg">
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Informação sobre Pagamentos
+              </h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Recebe 75% do valor por sessão</li>
+                <li>• 25% é retido como comissão da plataforma</li>
+                <li>• Pagamentos são processados mensalmente</li>
+                <li>• Consulte a secção "Desempenho" para detalhes financeiros</li>
+              </ul>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Security Settings Modal */}
+      <Dialog open={isSecurityOpen} onOpenChange={setIsSecurityOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              Segurança
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="currentPassword">Palavra-passe atual</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                value={newPassword.current}
+                onChange={(e) => setNewPassword({ ...newPassword, current: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="newPassword">Nova palavra-passe</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={newPassword.new}
+                onChange={(e) => setNewPassword({ ...newPassword, new: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="confirmPassword">Confirmar nova palavra-passe</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={newPassword.confirm}
+                onChange={(e) => setNewPassword({ ...newPassword, confirm: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+
+            <Button 
+              onClick={() => {
+                handleChangePassword();
+                setIsSecurityOpen(false);
+              }} 
+              className="w-full gap-2"
+              disabled={!newPassword.current || !newPassword.new || !newPassword.confirm}
+            >
+              <Lock className="h-4 w-4" />
+              Alterar Palavra-passe
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* GDPR Footer */}
       <Card className="border-0 shadow-sm bg-muted/20">
