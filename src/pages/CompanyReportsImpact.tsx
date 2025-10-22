@@ -284,45 +284,6 @@ const CompanyReportsImpact = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Aggregated Statistics - Anonymous Data Only */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Estatísticas Agregadas por Pilar
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {mockPillarDistribution.map((pillar, index) => (
-              <Card key={index} className="border">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    {getPillarIcon(pillar.pillar)}
-                    <h4 className="font-semibold text-sm">{pillar.pillar}</h4>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Sessões:</span>
-                      <span className="font-medium">{pillar.sessions}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Percentagem:</span>
-                      <span className="font-medium">{pillar.percentage}%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-            <p className="text-sm text-muted-foreground text-center">
-              📊 Todos os dados apresentados são agregados e anónimos para proteger a privacidade dos colaboradores
-            </p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
