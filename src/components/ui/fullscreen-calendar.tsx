@@ -86,22 +86,22 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick 
   return (
     <div className="flex flex-1 flex-col">
       {/* Calendar Header */}
-      <div className="flex flex-col space-y-4 p-4 md:flex-row md:items-center md:justify-between md:space-y-0 lg:flex-none">
+      <div className="flex flex-col space-y-2 p-3 md:flex-row md:items-center md:justify-between md:space-y-0 lg:flex-none">
         <div className="flex flex-auto">
-          <div className="flex items-center gap-4">
-            <div className="hidden w-20 flex-col items-center justify-center rounded-lg border bg-muted p-0.5 md:flex">
-              <h1 className="p-1 text-xs uppercase text-muted-foreground">
+          <div className="flex items-center gap-3">
+            <div className="hidden w-16 flex-col items-center justify-center rounded-lg border bg-muted p-0.5 md:flex">
+              <h1 className="p-0.5 text-xs uppercase text-muted-foreground">
                 {format(today, "MMM")}
               </h1>
-              <div className="flex w-full items-center justify-center rounded-lg border bg-background p-0.5 text-lg font-bold">
+              <div className="flex w-full items-center justify-center rounded-lg border bg-background p-0.5 text-base font-bold">
                 <span>{format(today, "d")}</span>
               </div>
             </div>
             <div className="flex flex-col">
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="text-base font-semibold text-foreground">
                 {format(firstDayCurrentMonth, "MMMM, yyyy")}
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 {format(firstDayCurrentMonth, "MMM d, yyyy")} -{" "}
                 {format(endOfMonth(firstDayCurrentMonth), "MMM d, yyyy")}
               </p>
@@ -109,50 +109,50 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick 
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 md:flex-row md:gap-6">
-          <Button variant="outline" size="icon" className="hidden lg:flex">
-            <SearchIcon size={16} strokeWidth={2} aria-hidden="true" />
+        <div className="flex flex-col items-center gap-3 md:flex-row md:gap-4">
+          <Button variant="outline" size="icon" className="hidden lg:flex h-8 w-8">
+            <SearchIcon size={14} strokeWidth={2} aria-hidden="true" />
           </Button>
 
-          <Separator orientation="vertical" className="hidden h-6 lg:block" />
+          <Separator orientation="vertical" className="hidden h-5 lg:block" />
 
           <div className="inline-flex w-full -space-x-px rounded-lg shadow-sm shadow-black/5 md:w-auto rtl:space-x-reverse">
             <Button
               onClick={previousMonth}
-              className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
+              className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10 h-8"
               variant="outline"
               size="icon"
               aria-label="Navigate to previous month"
             >
-              <ChevronLeftIcon size={16} strokeWidth={2} aria-hidden="true" />
+              <ChevronLeftIcon size={14} strokeWidth={2} aria-hidden="true" />
             </Button>
             <Button
               onClick={goToToday}
-              className="w-full rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10 md:w-auto"
+              className="w-full rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10 md:w-auto h-8 text-sm px-3"
               variant="outline"
             >
               Today
             </Button>
             <Button
               onClick={nextMonth}
-              className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
+              className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10 h-8"
               variant="outline"
               size="icon"
               aria-label="Navigate to next month"
             >
-              <ChevronRightIcon size={16} strokeWidth={2} aria-hidden="true" />
+              <ChevronRightIcon size={14} strokeWidth={2} aria-hidden="true" />
             </Button>
           </div>
 
-          <Separator orientation="vertical" className="hidden h-6 md:block" />
+          <Separator orientation="vertical" className="hidden h-5 md:block" />
           <Separator
             orientation="horizontal"
             className="block w-full md:hidden"
           />
 
           {onAddEvent && (
-            <Button onClick={onAddEvent} className="w-full gap-2 md:w-auto">
-              <PlusCircleIcon size={16} strokeWidth={2} aria-hidden="true" />
+            <Button onClick={onAddEvent} className="w-full gap-2 md:w-auto h-8 text-sm">
+              <PlusCircleIcon size={14} strokeWidth={2} aria-hidden="true" />
               <span>Nova Sessão</span>
             </Button>
           )}
@@ -163,18 +163,18 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick 
       <div className="lg:flex lg:flex-auto lg:flex-col">
         {/* Week Days Header */}
         <div className="grid grid-cols-7 border text-center text-xs font-semibold leading-6 lg:flex-none">
-          <div className="border-r py-2.5">Dom</div>
-          <div className="border-r py-2.5">Seg</div>
-          <div className="border-r py-2.5">Ter</div>
-          <div className="border-r py-2.5">Qua</div>
-          <div className="border-r py-2.5">Qui</div>
-          <div className="border-r py-2.5">Sex</div>
-          <div className="py-2.5">Sáb</div>
+          <div className="border-r py-2">Dom</div>
+          <div className="border-r py-2">Seg</div>
+          <div className="border-r py-2">Ter</div>
+          <div className="border-r py-2">Qua</div>
+          <div className="border-r py-2">Qui</div>
+          <div className="border-r py-2">Sex</div>
+          <div className="py-2">Sáb</div>
         </div>
 
         {/* Calendar Days */}
         <div className="flex text-xs leading-6 lg:flex-auto">
-          <div className="hidden w-full border-x lg:grid lg:grid-cols-7 lg:grid-rows-5">
+          <div className="hidden w-full border-x lg:grid lg:grid-cols-7 lg:grid-rows-5 lg:gap-0">
             {days.map((day, dayIdx) =>
               !isDesktop ? (
                 <button
@@ -244,11 +244,11 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick 
                       !isToday(day) &&
                       !isSameMonth(day, firstDayCurrentMonth) &&
                       "bg-accent/50 text-muted-foreground",
-                    "relative flex flex-col border-b border-r hover:bg-muted focus:z-10",
+                    "relative flex flex-col border-b border-r hover:bg-muted focus:z-10 h-20 cursor-pointer",
                     !isEqual(day, selectedDay) && "hover:bg-accent/75",
                   )}
                 >
-                  <header className="flex items-center justify-between p-2.5">
+                  <header className="flex items-center justify-between p-1.5">
                     <button
                       type="button"
                       className={cn(
@@ -269,7 +269,7 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick 
                           "bg-foreground",
                         (isEqual(day, selectedDay) || isToday(day)) &&
                           "font-semibold",
-                        "flex h-7 w-7 items-center justify-center rounded-full text-xs hover:border",
+                        "flex h-6 w-6 items-center justify-center rounded-full text-xs hover:border",
                       )}
                     >
                       <time dateTime={format(day, "yyyy-MM-dd")}>
@@ -277,11 +277,11 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick 
                       </time>
                     </button>
                   </header>
-                  <div className="flex-1 p-2.5">
+                  <div className="flex-1 p-1.5 overflow-hidden">
                     {data
                       .filter((event) => isSameDay(event.day, day))
                       .map((day) => (
-                        <div key={day.day.toString()} className="space-y-1.5">
+                        <div key={day.day.toString()} className="space-y-1">
                           {day.events.slice(0, 1).map((event) => (
                             <div
                               key={event.id}
@@ -289,19 +289,19 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick 
                                 e.stopPropagation();
                                 onEventClick?.(event);
                               }}
-                              className="flex flex-col items-start gap-1 rounded-lg border bg-muted/50 p-2 text-xs leading-tight cursor-pointer hover:bg-muted"
+                              className="flex flex-col items-start gap-0.5 rounded-md border bg-muted/50 p-1.5 text-xs leading-tight cursor-pointer hover:bg-muted"
                             >
-                              <p className="font-medium leading-none">
+                              <p className="font-medium leading-none truncate w-full text-[10px]">
                                 {event.name}
                               </p>
-                              <p className="leading-none text-muted-foreground">
+                              <p className="leading-none text-muted-foreground text-[10px]">
                                 {event.time}
                               </p>
                             </div>
                           ))}
                           {day.events.length > 1 && (
-                            <div className="text-xs text-muted-foreground">
-                              + {day.events.length - 1} mais
+                            <div className="text-[10px] text-muted-foreground">
+                              +{day.events.length - 1}
                             </div>
                           )}
                         </div>
