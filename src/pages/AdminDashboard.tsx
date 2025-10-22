@@ -157,20 +157,6 @@ const AdminDashboard = () => {
                 </div>
                 
               <div className="flex-1 space-y-3">
-                  <div 
-                    className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate('/admin/call-requests');
-                    }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Phone className="h-5 w-5 text-red-600" />
-                      <span className="font-medium">Chamadas Pendentes</span>
-                    </div>
-                    <span className="font-mono text-xl font-semibold text-red-700">{mockAdminAlerts.pending_calls}</span>
-                  </div>
-                
                 <div 
                   className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
                   onClick={(e) => {

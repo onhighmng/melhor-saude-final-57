@@ -40,7 +40,6 @@ const AdminControlCenter = lazy(() => import("./pages/AdminControlCenter"));
 const AdminSupport = lazy(() => import("./pages/AdminSupport"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const AdminCompanyDetail = lazy(() => import("./pages/AdminCompanyDetail"));
-const AdminCallRequests = lazy(() => import("./pages/AdminCallRequests"));
 
 // Specialist pages
 const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboard"));
@@ -155,7 +154,6 @@ const AppWithTracking = () => {
           {/* Admin routes */}
           <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
           <Route path="/admin/alerts" element={<AdminLayout><AdminAlerts /></AdminLayout>} />
-          <Route path="/admin/call-requests" element={<AdminLayout><AdminCallRequests /></AdminLayout>} />
           <Route path="/admin/users-management" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
           <Route path="/admin/gestao-utilizadores" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
           <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />

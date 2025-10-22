@@ -13,7 +13,6 @@ import {
   UsersIcon,
   Activity,
   Shield,
-  Phone,
   Calendar,
   AlertTriangle,
   BookOpen,
@@ -37,11 +36,6 @@ const AdminSidebar = () => {
       label: "Gestão",
       href: "/admin/users-management",
       icon: <UsersIcon className="text-primary h-5 w-5 flex-shrink-0" />,
-    },
-    {
-      label: "Solicitações de Chamada",
-      href: "/admin/call-requests",
-      icon: <Phone className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Sessões Agendadas",
