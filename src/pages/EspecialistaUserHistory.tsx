@@ -135,101 +135,105 @@ const EspecialistaUserHistory = () => {
 
       {/* Chat History Modal */}
       <Dialog open={isChatModalOpen} onOpenChange={setIsChatModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh]">
+        <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>
               Histórico de Triagem e Pré-Diagnóstico - {selectedUser?.user_name}
             </DialogTitle>
           </DialogHeader>
           {selectedUser && (
-            <div className="space-y-4">
-              {/* User Info */}
-              <div className="grid gap-4 md:grid-cols-3 p-4 bg-muted rounded-lg">
-                <div className="text-sm">
-                  <p className="text-muted-foreground">Email</p>
-                  <p className="font-medium">{selectedUser.user_email}</p>
-                </div>
-                <div className="text-sm">
-                  <p className="text-muted-foreground">Empresa</p>
-                  <p className="font-medium">{selectedUser.company_name}</p>
-                </div>
-                <div className="text-sm">
-                  <p className="text-muted-foreground">Pilar</p>
-                  <Badge className={`text-xs ${getPillarColor(selectedUser.pillar_attended)}`}>
-                    {getPillarLabel(selectedUser.pillar_attended)}
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Chat History */}
-              <div>
-                <h4 className="font-medium mb-3 flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  Histórico de Conversas
-                </h4>
-                <ScrollArea className="h-[300px] border rounded-lg p-4">
-                  <div className="space-y-4">
-                    {selectedUser.chat_history && selectedUser.chat_history.length > 0 ? (
-                      selectedUser.chat_history.map((message: any, index: number) => (
-                        <div
-                          key={index}
-                          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-[80%] rounded-lg p-3 ${
-                              message.role === 'user'
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted'
-                            }`}
-                          >
-                            <p className="text-sm">{message.content}</p>
-                            <p className="text-xs opacity-70 mt-1">
-                              {new Date(message.timestamp).toLocaleString('pt-PT')}
-                            </p>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground text-center py-8">
-                        Sem histórico de chat disponível
-                      </p>
-                    )}
+            <>
+              <ScrollArea className="flex-1 pr-4">
+                <div className="space-y-4">
+                  {/* User Info */}
+                  <div className="grid gap-4 md:grid-cols-3 p-4 bg-muted rounded-lg">
+                    <div className="text-sm">
+                      <p className="text-muted-foreground">Email</p>
+                      <p className="font-medium">{selectedUser.user_email}</p>
+                    </div>
+                    <div className="text-sm">
+                      <p className="text-muted-foreground">Empresa</p>
+                      <p className="font-medium">{selectedUser.company_name}</p>
+                    </div>
+                    <div className="text-sm">
+                      <p className="text-muted-foreground">Pilar</p>
+                      <Badge className={`text-xs ${getPillarColor(selectedUser.pillar_attended)}`}>
+                        {getPillarLabel(selectedUser.pillar_attended)}
+                      </Badge>
+                    </div>
                   </div>
-                </ScrollArea>
-              </div>
 
-              {/* Internal Notes */}
-              {selectedUser.internal_notes && selectedUser.internal_notes.length > 0 && (
-                <div>
-                  <h4 className="font-medium mb-3 flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Notas Internas do Especialista
-                  </h4>
-                  <div className="space-y-3">
-                    {selectedUser.internal_notes.map((note: any) => (
-                      <Card key={note.id}>
-                        <div className="p-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xs font-medium">{note.specialist_name}</span>
-                            <span className="text-xs text-muted-foreground">•</span>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(note.created_at).toLocaleDateString('pt-PT')}
-                            </span>
-                          </div>
-                          <p className="text-sm">{note.content}</p>
-                        </div>
-                      </Card>
-                    ))}
+                  {/* Chat History */}
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4" />
+                      Histórico de Conversas
+                    </h4>
+                    <div className="border rounded-lg p-4 max-h-[300px] overflow-y-auto">
+                      <div className="space-y-4">
+                        {selectedUser.chat_history && selectedUser.chat_history.length > 0 ? (
+                          selectedUser.chat_history.map((message: any, index: number) => (
+                            <div
+                              key={index}
+                              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                            >
+                              <div
+                                className={`max-w-[80%] rounded-lg p-3 ${
+                                  message.role === 'user'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted'
+                                }`}
+                              >
+                                <p className="text-sm">{message.content}</p>
+                                <p className="text-xs opacity-70 mt-1">
+                                  {new Date(message.timestamp).toLocaleString('pt-PT')}
+                                </p>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-muted-foreground text-center py-8">
+                            Sem histórico de chat disponível
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
 
-              <div className="flex justify-end">
+                  {/* Internal Notes */}
+                  {selectedUser.internal_notes && selectedUser.internal_notes.length > 0 && (
+                    <div className="pb-4">
+                      <h4 className="font-medium mb-3 flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        Notas Internas do Especialista
+                      </h4>
+                      <div className="space-y-3">
+                        {selectedUser.internal_notes.map((note: any) => (
+                          <Card key={note.id}>
+                            <div className="p-4">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xs font-medium">{note.specialist_name}</span>
+                                <span className="text-xs text-muted-foreground">•</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(note.created_at).toLocaleDateString('pt-PT')}
+                                </span>
+                              </div>
+                              <p className="text-sm">{note.content}</p>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+
+              <div className="flex justify-end pt-4 border-t">
                 <Button onClick={() => setIsChatModalOpen(false)}>
                   Fechar
                 </Button>
               </div>
-            </div>
+            </>
           )}
         </DialogContent>
       </Dialog>
