@@ -141,7 +141,7 @@ const EspecialistaUserHistory = () => {
 
       {/* Chat History Modal */}
       <Dialog open={isChatModalOpen} onOpenChange={setIsChatModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col">
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>
               Histórico de Triagem e Pré-Diagnóstico - {selectedUser?.user_name}
@@ -149,7 +149,7 @@ const EspecialistaUserHistory = () => {
           </DialogHeader>
           {selectedUser && (
             <>
-              <ScrollArea className="flex-1 pr-4">
+              <ScrollArea className="flex-1 pr-4 min-h-0">
                 <div className="space-y-4">
                   {/* User Info */}
                   <div className="grid gap-4 md:grid-cols-3 p-4 bg-muted rounded-lg">
@@ -181,7 +181,7 @@ const EspecialistaUserHistory = () => {
                       <MessageSquare className="h-4 w-4" />
                       Histórico de Conversas
                     </h4>
-                    <div className="border rounded-lg p-4 max-h-[300px] overflow-y-auto">
+                    <div className="border rounded-lg p-4 max-h-[200px] overflow-y-auto">
                       <div className="space-y-4">
                         {selectedUser.chat_history && selectedUser.chat_history.length > 0 ? (
                           selectedUser.chat_history.map((message: any, index: number) => (
