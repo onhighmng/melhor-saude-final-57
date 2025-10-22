@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, ArrowRight, Clock, FileText } from 'lucide-react';
+import { ReferralBookingFlow } from './ReferralBookingFlow';
+import { useToast } from '@/hooks/use-toast';
 
 interface SessionNoteModalProps {
   isOpen: boolean;
@@ -13,8 +15,10 @@ interface SessionNoteModalProps {
 }
 
 export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNoteModalProps) => {
+  const { toast } = useToast();
   const [notes, setNotes] = useState('');
   const [outcome, setOutcome] = useState('');
+  const [showReferralFlow, setShowReferralFlow] = useState(false);
 
   const handleSave = () => {
     onSave(notes, outcome);
@@ -88,7 +92,10 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
               </Button>
               <Button
                 variant={outcome === 'escalated' ? 'default' : 'outline'}
-                onClick={() => setOutcome('escalated')}
+                onClick={() => {
+                  setOutcome('escalated');
+                  setShowReferralFlow(true);
+                }}
                 className="h-auto py-4 flex flex-col gap-2"
               >
                 <ArrowRight className="h-6 w-6" />
@@ -122,6 +129,22 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
           </div>
         </div>
       </DialogContent>
+
+      {/* Referral Booking Flow */}
+      <ReferralBookingFlow
+        isOpen={showReferralFlow}
+        onClose={() => setShowReferralFlow(false)}
+        sessionPillar={session?.pillar}
+        userName={session?.user_name || ''}
+        userId={session?.user_id || ''}
+        onBookingComplete={(prestadorId, date, referralNotes) => {
+          toast({
+            title: 'Encaminhamento Confirmado',
+            description: `Sessão agendada para ${date.toLocaleDateString('pt-PT')} às ${date.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`,
+          });
+          setShowReferralFlow(false);
+        }}
+      />
     </Dialog>
   );
 };
