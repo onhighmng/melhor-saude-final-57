@@ -188,6 +188,11 @@ All colors MUST be HSL.
   body.admin-page {
     @apply bg-gray-50;
   }
+
+  /* Company pages background - light blue */
+  body.company-page {
+    background-color: hsl(205, 43%, 88%);
+  }
 }
 
 /* Typography System - Updated with specified requirements */
