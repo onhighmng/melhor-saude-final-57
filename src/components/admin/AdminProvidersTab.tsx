@@ -39,7 +39,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
 import providerPlaceholder from '@/assets/provider-placeholder.jpg';
-import { ProviderOptionsModal } from '@/components/admin/providers/ProviderOptionsModal';
 import { BookingModal } from '@/components/admin/providers/BookingModal';
 import { InfoCard } from '@/components/ui/info-card';
 import type { CalendarSlot } from '@/types/adminProvider';
@@ -56,7 +55,6 @@ const AdminProvidersTab = () => {
 
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | null>(null);
@@ -148,21 +146,7 @@ const AdminProvidersTab = () => {
   };
 
   const handleViewProvider = (provider: Provider) => {
-    setSelectedProvider(provider);
-    setShowOptionsModal(true);
-  };
-
-
-  const handleViewMetrics = () => {
-    if (selectedProvider) {
-      navigate(`/admin/provider-metrics/${selectedProvider.id}`);
-    }
-  };
-
-  const handleScheduleSession = () => {
-    if (selectedProvider) {
-      navigate(`/admin/provider-calendar/${selectedProvider.id}`);
-    }
+    navigate(`/admin/provider-metrics/${provider.id}`);
   };
 
 
@@ -509,15 +493,6 @@ const AdminProvidersTab = () => {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Provider Options Modal */}
-      <ProviderOptionsModal
-        open={showOptionsModal}
-        onOpenChange={setShowOptionsModal}
-        provider={selectedProvider}
-        onViewMetrics={handleViewMetrics}
-        onScheduleSession={handleScheduleSession}
-      />
 
       {/* Booking Modal */}
       {selectedSlot && (
