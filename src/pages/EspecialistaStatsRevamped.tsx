@@ -48,14 +48,14 @@ const EspecialistaStatsRevamped = () => {
           href="#"
           cta=""
         >
-          <div className="flex flex-col justify-center h-full p-8">
-            <div className="space-y-6">
+          <div className="flex flex-col justify-center h-full px-10 py-12">
+            <div className="space-y-10">
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-base font-medium">Resolução Interna</span>
-                  <span className="text-3xl font-bold text-green-600">{stats.internal_resolution_rate}%</span>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-lg font-medium">Resolução Interna</span>
+                  <span className="text-4xl font-bold text-green-600">{stats.internal_resolution_rate}%</span>
                 </div>
-                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-green-600 transition-all"
                     style={{ width: `${stats.internal_resolution_rate}%` }}
@@ -63,11 +63,11 @@ const EspecialistaStatsRevamped = () => {
                 </div>
               </div>
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-base font-medium">Encaminhamentos</span>
-                  <span className="text-3xl font-bold text-purple-600">{stats.referral_rate}%</span>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-lg font-medium">Encaminhamentos</span>
+                  <span className="text-4xl font-bold text-purple-600">{stats.referral_rate}%</span>
                 </div>
-                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-purple-600 transition-all"
                     style={{ width: `${stats.referral_rate}%` }}
