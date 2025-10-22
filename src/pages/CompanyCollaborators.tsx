@@ -118,29 +118,6 @@ const CompanyCollaborators = () => {
                 Utilização de Contas
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-primary/5 rounded-lg border">
-                  <div className="text-3xl font-bold text-foreground">{company.seatLimit}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Total</p>
-                </div>
-                <div className="text-center p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                  <div className="text-3xl font-bold text-emerald-600">{company.seatUsed}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Ativas</p>
-                </div>
-                <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <div className="text-3xl font-bold text-blue-600">{company.seatAvailable}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Disponíveis</p>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Taxa de Utilização</span>
-                  <span className="font-semibold">{seatUsagePercent}%</span>
-                </div>
-                <Progress value={seatUsagePercent} className="h-3" />
-              </div>
-            </CardContent>
           </Card>
 
           {/* Privacy Notice */}
