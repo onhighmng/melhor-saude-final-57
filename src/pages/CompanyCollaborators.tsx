@@ -112,9 +112,9 @@ const CompanyCollaborators = () => {
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Seat Usage Cards */}
           <Card className="hover-lift">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
+            <CardHeader className="p-8">
+              <CardTitle className="flex items-center gap-3 text-3xl">
+                <Users className="h-8 w-8 text-primary" />
                 Utilização de Contas
               </CardTitle>
             </CardHeader>
