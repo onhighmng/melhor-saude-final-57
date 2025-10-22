@@ -94,8 +94,8 @@ export function InfoCard({
   const getPillarColor = (pillar: string) => {
     switch (pillar) {
       case 'Saúde Mental': return 'text-blue-600 bg-blue-100';
-      case 'Bem-Estar Físico': return 'text-green-600 bg-green-100';
-      case 'Assistência Financeira': return 'text-yellow-600 bg-yellow-100';
+      case 'Bem-Estar Físico': return 'text-yellow-600 bg-yellow-100';
+      case 'Assistência Financeira': return 'text-green-600 bg-green-100';
       case 'Assistência Jurídica': return 'text-purple-600 bg-purple-100';
       default: return 'text-gray-600 bg-gray-100';
     }
@@ -121,15 +121,15 @@ export function InfoCard({
         {/* Avatar - Minimal */}
         <div className="flex justify-center mb-3">
           <div className="relative">
-            <Avatar className="w-16 h-16 ring-4 ring-white shadow-lg">
+            <Avatar className="w-20 h-20 ring-4 ring-white shadow-lg">
               <AvatarImage src={avatar} alt={name} />
-              <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-white font-semibold text-lg">
+              <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-white font-semibold text-xl">
                 {name.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
             </Avatar>
             {isPremium && (
               <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full p-1 shadow-lg">
-                <CheckCircle2 className="w-4 h-4 text-white" />
+                <CheckCircle2 className="w-5 h-5 text-white" />
       </div>
             )}
           </div>
@@ -137,11 +137,11 @@ export function InfoCard({
 
         {/* Name and Title - Minimal */}
         <div className="text-center mb-3">
-          <h3 className="font-bold text-slate-900 text-lg group-hover:text-emerald-600 transition-colors truncate">
+          <h3 className="font-bold text-slate-900 text-xl group-hover:text-emerald-600 transition-colors truncate">
             {name}
           </h3>
           {title && (
-            <p className="text-sm text-slate-600 mt-1 truncate font-medium">{title}</p>
+            <p className="text-base text-slate-600 mt-1 truncate font-medium">{title}</p>
           )}
         </div>
 
@@ -151,34 +151,34 @@ export function InfoCard({
             {/* Company - Minimal */}
             {company && (
               <div className="text-center mb-3">
-                <p className="text-xs text-gray-500 truncate">{company}</p>
+                <p className="text-sm text-gray-500 truncate">{company}</p>
       </div>
             )}
 
             {/* Sessions Count - Main info */}
             {completedSessions !== undefined && totalSessions !== undefined && (
               <div className="text-center mb-3">
-                <p className="text-lg font-semibold text-blue-600">
+                <p className="text-2xl font-semibold text-blue-600">
                   {completedSessions}/{totalSessions}
                 </p>
-                <p className="text-xs text-gray-500">sessões</p>
+                <p className="text-sm text-gray-500">sessões</p>
               </div>
             )}
 
             {/* Pillars - Minimal badges */}
             {pillars.length > 0 && (
-              <div className="flex justify-center gap-1 mb-3">
+              <div className="flex justify-center gap-2 mb-3">
                 {pillars.slice(0, 2).map((pillar) => {
                   const Icon = getPillarIcon(pillar);
                   return (
-                    <div key={pillar} className={cn("p-1 rounded-full", getPillarColor(pillar))}>
-                      <Icon className="w-3 h-3" />
+                    <div key={pillar} className={cn("p-2 rounded-full", getPillarColor(pillar))}>
+                      <Icon className="w-6 h-6" />
                     </div>
                   );
                 })}
                 {pillars.length > 2 && (
-                  <div className="p-1 rounded-full bg-gray-100">
-                    <span className="text-xs text-gray-500">+{pillars.length - 2}</span>
+                  <div className="p-2 rounded-full bg-gray-100">
+                    <span className="text-sm text-gray-500">+{pillars.length - 2}</span>
                   </div>
                 )}
               </div>
