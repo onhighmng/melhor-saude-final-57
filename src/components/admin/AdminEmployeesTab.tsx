@@ -172,7 +172,7 @@ export const AdminEmployeesTab = () => {
 
         {/* Profile Sheet */}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto bg-gray-100">
           {selectedEmployee && (
             <>
               <SheetHeader>
