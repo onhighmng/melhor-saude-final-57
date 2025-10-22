@@ -124,6 +124,66 @@ export const mockCallRequests: CallRequest[] = [
     chat_session_id: 'chat-6',
     created_at: new Date(Date.now() - 180 * 60 * 1000).toISOString(),
     notes: 'Planejamento financeiro pós-aumento salarial'
+  },
+  {
+    id: 'call-7',
+    user_id: 'user-7',
+    user_name: 'Ricardo Almeida',
+    user_email: 'ricardo.almeida@tech.co.mz',
+    user_phone: '+258 84 789 0123',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar: 'physical',
+    status: 'pending',
+    wait_time: 1500, // 25 hours - SLA breach
+    chat_session_id: 'chat-7',
+    created_at: new Date(Date.now() - 1500 * 60 * 1000).toISOString(),
+    notes: 'URGENTE: Dores severas que impedem trabalho'
+  },
+  {
+    id: 'call-8',
+    user_id: 'user-8',
+    user_name: 'Isabel Martins',
+    user_email: 'isabel.martins@empresa.co.mz',
+    user_phone: '+258 84 890 1234',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar: 'psychological',
+    status: 'pending',
+    wait_time: 300, // 5 hours
+    chat_session_id: 'chat-8',
+    created_at: new Date(Date.now() - 300 * 60 * 1000).toISOString(),
+    notes: 'Situação de crise emocional, necessita atenção'
+  },
+  {
+    id: 'call-9',
+    user_id: 'user-9',
+    user_name: 'Luís Pereira',
+    user_email: 'luis.pereira@tech.co.mz',
+    user_phone: '+258 84 901 2345',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar: 'legal',
+    status: 'pending',
+    wait_time: 60,
+    chat_session_id: 'chat-9',
+    created_at: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+    notes: 'Dúvida sobre direitos laborais'
+  },
+  {
+    id: 'call-10',
+    user_id: 'user-10',
+    user_name: 'Carla Fernandes',
+    user_email: 'carla.fernandes@empresa.co.mz',
+    user_phone: '+258 84 012 3456',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar: 'financial',
+    status: 'pending',
+    wait_time: 15,
+    chat_session_id: 'chat-10',
+    created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+    notes: 'Pedido de aconselhamento financeiro para investimentos'
   }
 ];
 

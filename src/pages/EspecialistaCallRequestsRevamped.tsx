@@ -23,13 +23,16 @@ const EspecialistaCallRequestsRevamped = () => {
 
   // Filter requests
   const allRequests = filterByCompanyAccess(mockCallRequests);
+  
+  // Debug: Show all if filter returns empty (for demo purposes)
+  const requestsToShow = allRequests.length > 0 ? allRequests : mockCallRequests;
 
   // Sort by wait time (priority)
   const sortedRequests = useMemo(() => {
-    return [...allRequests].sort((a, b) => {
+    return [...requestsToShow].sort((a, b) => {
       return sortOrder === 'desc' ? b.wait_time - a.wait_time : a.wait_time - b.wait_time;
     });
-  }, [allRequests, sortOrder]);
+  }, [requestsToShow, sortOrder]);
 
   const handleCallClick = (request: CallRequest) => {
     setSelectedRequest(request);
