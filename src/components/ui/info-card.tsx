@@ -191,8 +191,8 @@ export function InfoCard({
           <>
             {/* Specialty - Main info */}
             {specialty && (
-              <div className="text-center mb-3 bg-white/60 rounded-lg p-2 border border-slate-200">
-                <p className="text-sm font-semibold text-slate-800 truncate">{specialty}</p>
+              <div className="text-center mb-3">
+                <p className="text-sm font-medium text-slate-600 truncate">{specialty}</p>
               </div>
             )}
 
