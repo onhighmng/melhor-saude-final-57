@@ -199,15 +199,15 @@ const EspecialistaSessionsRevamped = () => {
 
       {/* Day Sessions Modal */}
       <Dialog open={isDaySessionsModalOpen} onOpenChange={setIsDaySessionsModalOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
+        <DialogContent className="max-w-5xl h-[85vh] flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
               Sessões do dia {selectedDate && selectedDate.toLocaleDateString('pt-PT')}
             </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="flex-1 max-h-[calc(80vh-120px)] pr-4">
-            <div className="space-y-3 pr-2">
+          <ScrollArea className="flex-1 overflow-auto">
+            <div className="space-y-3 pr-4">
               {selectedDateSessions.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <CalendarIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
