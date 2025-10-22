@@ -26,6 +26,7 @@ import {
   FileText,
   BarChart3
 } from 'lucide-react';
+import sessionsCardBg from '@/assets/sessions-card-bg.jpg';
 import { mockPrestadorSessions, mockPrestadorMetrics, mockPrestadorUser } from '@/data/mockData';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -245,18 +246,20 @@ export default function PrestadorDashboard() {
 
           {/* Bottom Left - Sessões (spanning 2 rows) */}
           <BentoCard 
-            name="Sessões" 
+            name="" 
             description="" 
             href="#" 
             cta="" 
-            Icon={Clock} 
             onClick={() => navigate('/prestador/sessoes')} 
-            className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
-            textColor="text-white" 
-            iconColor="text-white" 
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4 cursor-pointer" 
             background={
-              <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-green-700">
-                <div className="absolute inset-0 bg-black/10" />
+              <div className="absolute inset-0">
+                <img 
+                  src={sessionsCardBg} 
+                  alt="Sessions" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors" />
               </div>
             } 
           />
