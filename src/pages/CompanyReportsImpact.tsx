@@ -25,6 +25,7 @@ import {
 } from '@/data/companyMetrics';
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useToast } from "@/hooks/use-toast";
+import ResourceUsageCard from '@/components/ui/horizontal-bar-chart';
 
 const CompanyReportsImpact = () => {
   const [isExporting, setIsExporting] = useState(false);
@@ -288,6 +289,11 @@ const CompanyReportsImpact = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Resource Usage by Pillar */}
+      <div className="flex justify-center mt-8">
+        <ResourceUsageCard />
       </div>
     </div>
   );
