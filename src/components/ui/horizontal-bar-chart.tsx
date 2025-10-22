@@ -182,13 +182,13 @@ function ResourceUsageCard({}: ResourceUsageCardProps): JSX.Element {
             }}
             className="flex w-full pb-4 pt-4 items-center gap-2"
           >
-            <div className="flex flex-row gap-2 items-center text-base w-1/2 text-muted-foreground">
+            <div className="flex flex-row gap-2 items-center text-sm w-3/5 text-muted-foreground">
               {metric.iconSvg}
-              <span className="truncate" title={metric.label}>
+              <span className="break-words" title={metric.label}>
                 {metric.label}
               </span>
             </div>
-            <div className="flex gap-2 w-1/2 justify-end items-center">
+            <div className="flex gap-2 w-2/5 justify-end items-center">
               <span className="font-semibold text-xl text-foreground">{metric.value}</span>
               {metric.trendIconSvg}
             </div>
