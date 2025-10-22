@@ -1,106 +1,214 @@
-import React, { useState, useMemo } from 'react';
-import { EventManager, type Event } from "@/components/ui/event-manager";
+import { useState, useMemo } from 'react';
+import { Card } from '@/components/ui/card';
+import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
 import { mockCalendarEvents, type PrestadorCalendarEvent } from '@/data/prestadorMetrics';
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { isSameDay } from 'date-fns';
 
 const PrestadorCalendar = () => {
   const { toast } = useToast();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isDayEventsModalOpen, setIsDayEventsModalOpen] = useState(false);
+  const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
 
-  // Transform existing calendar events to Event format
-  const transformedEvents: Event[] = useMemo(() => {
-    return mockCalendarEvents.map((event: PrestadorCalendarEvent) => {
-      const [year, month, day] = event.date.split('-').map(Number);
+  // Transform calendar events to FullScreenCalendar format
+  const calendarData = useMemo(() => {
+    const groupedByDate = mockCalendarEvents.reduce((acc, event: PrestadorCalendarEvent) => {
+      const dateKey = event.date;
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      
       const [hours, minutes] = event.time.split(':').map(Number);
       
-      const startTime = new Date(year, month - 1, day, hours, minutes);
-      const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // 1 hour duration
-      
-      let title = '';
-      let color = '';
-      
+      let name = '';
       switch (event.type) {
         case 'available':
-          title = 'Disponível';
-          color = 'green';
+          name = 'Disponível';
           break;
         case 'session':
-          if (event.status === 'confirmed') {
-            title = event.clientName || 'Sessão';
-            color = 'blue';
-          } else if (event.status === 'cancelled') {
-            title = event.clientName || 'Sessão Cancelada';
-            color = 'red';
-          }
+          name = event.clientName || 'Sessão';
           break;
         case 'blocked':
-          title = 'Indisponível';
-          color = 'gray';
+          name = 'Indisponível';
           break;
       }
       
-      return {
+      acc[dateKey].push({
         id: event.id,
-        title,
-        description: event.clientName ? `${event.clientName} - ${event.company}` : '',
-        startTime,
-        endTime,
-        color,
-        category: event.type === 'session' ? 'Sessão' : event.type === 'available' ? 'Disponível' : 'Bloqueio',
-        tags: event.pillar ? [event.pillar] : undefined,
-      };
-    });
+        name: event.clientName ? `${event.clientName} - ${event.company}` : name,
+        time: event.time,
+        datetime: `${event.date}T${event.time}`,
+        userName: event.clientName,
+        pillar: event.pillar,
+      });
+      return acc;
+    }, {} as Record<string, any[]>);
+
+    return Object.entries(groupedByDate).map(([date, events]) => ({
+      day: new Date(date),
+      events,
+    }));
   }, []);
 
-  // Event handlers for the EventManager
-  const handleEventCreate = (event: Omit<Event, "id">) => {
-    toast({
-      title: "Evento criado",
-      description: `${event.title} foi adicionado ao calendário`
-    });
+  // Get events for selected date
+  const selectedDateEvents = useMemo(() => {
+    if (!selectedDate) return [];
+    return mockCalendarEvents.filter(event => 
+      isSameDay(new Date(event.date), selectedDate)
+    ).sort((a, b) => a.time.localeCompare(b.time));
+  }, [selectedDate]);
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    setIsDayEventsModalOpen(true);
   };
 
-  const handleEventUpdate = (id: string, updatedEvent: Partial<Event>) => {
-    toast({
-      title: "Evento atualizado",
-      description: "As alterações foram guardadas"
-    });
+  const handleEventClick = (event: any) => {
+    const calendarEvent = mockCalendarEvents.find(e => e.id === event.id);
+    if (calendarEvent) {
+      toast({
+        title: calendarEvent.clientName || 'Evento',
+        description: `${calendarEvent.time} - ${calendarEvent.type}`,
+      });
+    }
   };
 
-  const handleEventDelete = (id: string) => {
-    toast({
-      title: "Evento eliminado",
-      description: "O evento foi removido do calendário"
-    });
+  const getPillarLabel = (pillar: string) => {
+    const labels = {
+      psychological: 'Saúde Mental',
+      physical: 'Bem-Estar Físico',
+      financial: 'Assistência Financeira',
+      legal: 'Assistência Jurídica'
+    };
+    return labels[pillar as keyof typeof labels] || pillar;
+  };
+
+  const getPillarColor = (pillar: string) => {
+    const colors = {
+      psychological: 'bg-blue-100 text-blue-700',
+      physical: 'bg-yellow-100 text-yellow-700',
+      financial: 'bg-green-100 text-green-700',
+      legal: 'bg-purple-100 text-purple-700'
+    };
+    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
+  };
+
+  const getTypeLabel = (type: string) => {
+    const labels = {
+      available: 'Disponível',
+      session: 'Sessão',
+      blocked: 'Bloqueio'
+    };
+    return labels[type as keyof typeof labels] || type;
+  };
+
+  const getTypeColor = (type: string) => {
+    const colors = {
+      available: 'bg-green-100 text-green-700',
+      session: 'bg-blue-100 text-blue-700',
+      blocked: 'bg-gray-100 text-gray-700'
+    };
+    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-700';
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Calendário</h1>
-          <p className="text-muted-foreground mt-1">
-            Gerir sessões e disponibilidade
-          </p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-4xl font-heading font-bold">
+          Calendário
+        </h1>
+        <p className="text-muted-foreground mt-1 text-base font-semibold">
+          Gerir sessões e disponibilidade
+        </p>
       </div>
 
-      {/* EventManager */}
-      <EventManager
-        events={transformedEvents}
-        onEventCreate={handleEventCreate}
-        onEventUpdate={handleEventUpdate}
-        onEventDelete={handleEventDelete}
-        categories={["Sessão", "Bloqueio", "Disponível"]}
-        colors={[
-          { name: "Verde", value: "green", bg: "bg-green-500", text: "text-green-700" },
-          { name: "Azul", value: "blue", bg: "bg-blue-500", text: "text-blue-700" },
-          { name: "Vermelho", value: "red", bg: "bg-red-500", text: "text-red-700" },
-          { name: "Cinza", value: "gray", bg: "bg-gray-500", text: "text-gray-700" },
-        ]}
-        defaultView="week"
-        availableTags={["Saúde Mental", "Bem-Estar Físico", "Assistência Financeira", "Assistência Jurídica"]}
-      />
+      <Card className="p-0">
+        <FullScreenCalendar 
+          data={calendarData}
+          onEventClick={handleEventClick}
+          onDayClick={handleDateClick}
+          onSetAvailability={() => setIsAvailabilityModalOpen(true)}
+        />
+      </Card>
+
+      {/* Day Events Modal */}
+      <Dialog open={isDayEventsModalOpen} onOpenChange={setIsDayEventsModalOpen}>
+        <DialogContent className="max-w-5xl h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5" />
+              Eventos do dia {selectedDate && selectedDate.toLocaleDateString('pt-PT')}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="flex-1 overflow-auto">
+            <div className="space-y-3 pr-4">
+              {selectedDateEvents.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <CalendarIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>Sem eventos neste dia</p>
+                </div>
+              ) : (
+                selectedDateEvents.map((event) => (
+                  <Card key={event.id} className="p-4 hover:shadow-md transition-shadow">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-sm mb-1">
+                            {event.clientName || getTypeLabel(event.type)}
+                          </h4>
+                          {event.company && (
+                            <p className="text-xs text-muted-foreground">{event.company}</p>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <Badge className={`text-xs ${getTypeColor(event.type)}`}>
+                            {getTypeLabel(event.type)}
+                          </Badge>
+                          {event.pillar && (
+                            <Badge className={`text-xs ${getPillarColor(event.pillar)}`}>
+                              {getPillarLabel(event.pillar)}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>{event.time}</span>
+                        </div>
+                        {event.status && (
+                          <Badge variant="outline" className="text-xs">
+                            {event.status === 'confirmed' ? 'Confirmada' : event.status === 'cancelled' ? 'Cancelada' : event.status}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Availability Settings Modal - Placeholder */}
+      <Dialog open={isAvailabilityModalOpen} onOpenChange={setIsAvailabilityModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Definir Disponibilidade</DialogTitle>
+          </DialogHeader>
+          <div className="py-6 text-center text-muted-foreground">
+            <p>Funcionalidade de disponibilidade em breve</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
