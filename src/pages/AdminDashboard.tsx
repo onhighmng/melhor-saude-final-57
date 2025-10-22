@@ -84,6 +84,52 @@ const AdminDashboard = () => {
           >
           </BentoCard>
 
+          {/* Center - Activity Overview (spanning all 3 rows) */}
+          <BentoCard 
+            name="" 
+            description="" 
+            href="#"
+            cta=""
+            className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-4" 
+            background={
+              <div className="absolute inset-0 flex flex-col p-6 bg-gradient-to-br from-purple-50 to-purple-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center">
+                    <Activity className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-semibold">Atividade da Plataforma</h3>
+                </div>
+                <div className="flex-1 flex flex-col justify-center space-y-6">
+                  <div className="space-y-4">
+                    <div className="p-4 bg-white/70 rounded-xl border border-purple-100">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-muted-foreground">Taxa de Utilização</span>
+                        <span className="text-xl font-bold text-purple-700">78%</span>
+                      </div>
+                      <Progress value={78} className="h-2" />
+                    </div>
+                    
+                    <div className="p-4 bg-white/70 rounded-xl border border-purple-100">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-muted-foreground">Prestadores Ativos</span>
+                        <span className="text-xl font-bold text-purple-700">24</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">A fornecer serviços</p>
+                    </div>
+
+                    <div className="p-4 bg-white/70 rounded-xl border border-purple-100">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-muted-foreground">Satisfação Média</span>
+                        <span className="text-xl font-bold text-purple-700">4.6/5</span>
+                      </div>
+                      <Progress value={92} className="h-2" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          />
+
           {/* Bottom Left - Sessions */}
           <BentoCard 
             name="Sessões Este Mês" 
