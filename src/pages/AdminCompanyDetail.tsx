@@ -274,7 +274,7 @@ export default function AdminCompanyDetail() {
               <CardTitle className="text-2xl">{mockCompany.name}</CardTitle>
               <CardDescription>NUIT: {mockCompany.nuit}</CardDescription>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
               <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
                 <Edit className="h-4 w-4 mr-2" />
                 Editar Empresa
