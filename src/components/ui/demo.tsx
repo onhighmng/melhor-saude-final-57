@@ -1,7 +1,7 @@
-import AnimatedProfileCard from "@/components/ui/info-card";
+import { InfoCard } from "@/components/ui/info-card";
 
 export default function DemoOne() {
-  return <AnimatedProfileCard variant="fullscreen" />;
+  return <InfoCard name="Demo User" variant="default" />;
 }
 
 

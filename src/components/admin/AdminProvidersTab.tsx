@@ -398,8 +398,6 @@ const AdminProvidersTab = () => {
               title={provider.email}
               avatar={provider.avatar || providerPlaceholder}
               specialty={provider.specialty}
-              experience={`${provider.experience} anos`}
-              nextAvailable={provider.nextAvailable}
               rating={provider.satisfaction}
               isPremium={provider.satisfaction >= 8}
               variant="specialist"

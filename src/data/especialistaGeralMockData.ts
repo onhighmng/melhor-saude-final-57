@@ -4,6 +4,7 @@ import { CallRequest, EspecialistaGeral, EscalatedChat, ChatMessage } from '@/ty
 export const mockCompanies = [
   {
     id: 'comp-1',
+    company_id: 'comp-1',
     name: 'Empresa Exemplo Lda',
     status: 'active' as const,
     total_employees: 150,
@@ -11,7 +12,8 @@ export const mockCompanies = [
     adoption_rate: 80
   },
   {
-    id: 'comp-2', 
+    id: 'comp-2',
+    company_id: 'comp-2', 
     name: 'Tech Solutions MZ',
     status: 'active' as const,
     total_employees: 75,
@@ -20,6 +22,7 @@ export const mockCompanies = [
   },
   {
     id: 'comp-3',
+    company_id: 'comp-3',
     name: 'Consultoria Financeira Ltda',
     status: 'onboarding' as const,
     total_employees: 30,

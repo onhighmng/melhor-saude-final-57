@@ -63,6 +63,8 @@ export const useEscalatedChats = () => {
             pillar: session.pillar as 'legal' | 'psychological' | 'physical' | 'financial' | null,
             status: session.status as 'active' | 'escalated' | 'resolved',
             satisfaction_rating: session.satisfaction_rating as 'satisfied' | 'unsatisfied' | null,
+            type: 'triage' as const,
+            resolved: session.status === 'resolved',
             user_name: profile?.name || 'Utilizador Desconhecido',
             user_email: profile?.email || '',
             messages: sessionMessages.map(m => ({
