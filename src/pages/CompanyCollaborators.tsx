@@ -225,21 +225,6 @@ const CompanyCollaborators = () => {
             )}
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Upload em Massa</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Importe uma lista de colaboradores via ficheiro CSV
-            </p>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" disabled>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload CSV (Em breve)
-            </Button>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
