@@ -54,9 +54,9 @@ const AdminOperations = () => {
                 description="Gerir sessões e agendamentos" 
                 Icon={ClipboardList} 
                 onClick={() => handleTabChange('sessions')} 
-                className={`col-span-1 ${activeTab === 'sessions' ? 'ring-2 ring-blue-500' : ''}`}
-                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'sessions' ? 'from-blue-100 to-blue-200' : 'from-blue-50 to-blue-100'}`} />}
-                iconColor="text-blue-600"
+                className={`col-span-1 ${activeTab === 'sessions' ? 'ring-2 ring-yellow-500' : ''}`}
+                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'sessions' ? 'from-yellow-100 to-yellow-200' : 'from-yellow-50 to-yellow-100'}`} />}
+                iconColor="text-yellow-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
@@ -68,9 +68,9 @@ const AdminOperations = () => {
                 description="Gerir especialista geral" 
                 Icon={MessageSquare} 
                 onClick={() => handleTabChange('specialist')} 
-                className={`col-span-1 ${activeTab === 'specialist' ? 'ring-2 ring-green-500' : ''}`}
-                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'specialist' ? 'from-green-100 to-green-200' : 'from-green-50 to-green-100'}`} />}
-                iconColor="text-green-600"
+                className={`col-span-1 ${activeTab === 'specialist' ? 'ring-2 ring-blue-400' : ''}`}
+                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'specialist' ? 'from-blue-200 to-blue-300' : 'from-blue-100 to-blue-200'}`} />}
+                iconColor="text-blue-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"

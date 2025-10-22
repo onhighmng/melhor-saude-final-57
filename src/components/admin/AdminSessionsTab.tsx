@@ -75,6 +75,13 @@ const statusColors = {
   cancelled: 'bg-destructive/10 text-destructive',
 };
 
+const pillarColors = {
+  'Saúde Mental': 'bg-blue-100 text-blue-800',
+  'Bem-Estar Físico': 'bg-yellow-100 text-yellow-800',
+  'Assistência Financeira': 'bg-green-100 text-green-800',
+  'Assistência Jurídica': 'bg-purple-100 text-purple-800',
+};
+
 export default function AdminSessionsTab() {
   const { t } = useTranslation('admin');
   const [searchTerm, setSearchTerm] = useState('');
@@ -177,7 +184,11 @@ export default function AdminSessionsTab() {
                   <TableRow key={session.id}>
                     <TableCell className="font-medium">{session.collaborator}</TableCell>
                     <TableCell>{session.company}</TableCell>
-                    <TableCell>{session.pillar}</TableCell>
+                    <TableCell>
+                      <Badge className={`${pillarColors[session.pillar as keyof typeof pillarColors]} rounded-full px-3 py-1`}>
+                        {session.pillar}
+                      </Badge>
+                    </TableCell>
                     <TableCell>{session.specialist}</TableCell>
                     <TableCell>
                       {new Date(session.date).toLocaleDateString('pt-PT')} às {session.time}
