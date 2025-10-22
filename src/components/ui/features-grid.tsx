@@ -117,7 +117,6 @@ export function FeaturesGrid({
 
                         <CardContent className="mt-auto h-fit">
                             <div className="relative mb-6 sm:mb-0">
-                                <div className="absolute -inset-6 [background:radial-gradient(50%_75%_at_75%_50%,transparent,hsl(var(--background))_100%)]"></div>
                                 <div className="overflow-hidden rounded-r-lg border bg-card p-6">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between pb-2 border-b">
