@@ -175,13 +175,13 @@ export default function PrestadorDashboard() {
             cta=""
           />
 
-          {/* Middle - Desempenho (spanning 3 rows) */}
+          {/* Middle - Desempenho (spanning 2 rows) */}
           <BentoCard 
             name="" 
             description="" 
             href="#" 
             cta="" 
-            className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
+            className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4"
             background={
               <div className="absolute inset-0 flex flex-col p-8 overflow-y-auto bg-gradient-to-br from-purple-50 to-purple-100">
                 <div className="flex items-center gap-3 mb-2">
@@ -264,13 +264,13 @@ export default function PrestadorDashboard() {
             } 
           />
 
-          {/* Bottom Right - Próximas Sessões (spanning 2 rows) */}
+          {/* Middle - Próximas Sessões (spanning 3 rows) */}
           <BentoCard 
             name="" 
             description="" 
             href="#" 
             cta="" 
-            className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" 
+            className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
             background={
               <div className="absolute inset-0 p-5 flex flex-col justify-between bg-gradient-to-br from-slate-50 to-slate-100">
                 <div className="flex-shrink-0">
