@@ -209,6 +209,7 @@ const CompanyReportsImpact = () => {
                     fill="#8884d8"
                     dataKey="sessions"
                     label={({ pillar, percentage }) => `${pillar}: ${percentage}%`}
+                    isAnimationActive={false}
                   >
                     {mockPillarDistribution.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
