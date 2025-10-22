@@ -183,65 +183,55 @@ export default function PrestadorDashboard() {
             cta="" 
             className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4"
             background={
-              <div className="absolute inset-0 flex flex-col p-8 overflow-y-auto bg-gradient-to-br from-purple-50 to-purple-100">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center">
-                    <BarChart3 className="w-5 h-5 text-white" />
+              <div className="absolute inset-0 flex flex-col p-6 overflow-y-auto bg-gradient-to-br from-purple-50 to-purple-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center">
+                    <BarChart3 className="w-4 h-4 text-white" />
                   </div>
-                  <h3 className="text-2xl font-semibold">Desempenho</h3>
+                  <h3 className="text-xl font-semibold">Desempenho</h3>
                 </div>
-                <p className="text-base text-muted-foreground mb-6 italic">
-                  "Acompanhe o seu impacto e crescimento profissional"
-                </p>
-                <div className="flex-1 flex flex-col justify-start min-h-0">
-                  <div className="w-full space-y-6">
+                <div className="flex-1 flex flex-col justify-between min-h-0">
+                  <div className="w-full space-y-3">
                     {/* Week Metrics */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-4 bg-white/70 rounded-xl border border-purple-100">
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-3 bg-white/70 rounded-lg border border-purple-100">
+                        <div className="flex items-center gap-1 mb-1">
+                          <CheckCircle className="w-3 h-3 text-green-600" />
                           <span className="text-xs text-muted-foreground">Concluídas</span>
                         </div>
-                        <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
+                        <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
                       </div>
-                      <div className="p-4 bg-white/70 rounded-xl border border-purple-100">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Users className="w-4 h-4 text-blue-600" />
+                      <div className="p-3 bg-white/70 rounded-lg border border-purple-100">
+                        <div className="flex items-center gap-1 mb-1">
+                          <Users className="w-3 h-3 text-blue-600" />
                           <span className="text-xs text-muted-foreground">Utilizadores</span>
                         </div>
-                        <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
+                        <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
                       </div>
                     </div>
 
                     {/* Monthly Overview */}
-                    <div className="space-y-3 p-4 bg-white/70 rounded-xl border border-purple-100">
-                      <h4 className="font-semibold text-sm">Visão Geral do Mês</h4>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-gray-600">Total de Sessões</span>
-                          <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.totalSessoes}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-gray-600">Satisfação Média</span>
-                          <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.satisfacao}/5</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-gray-600">Tempo Médio</span>
-                          <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.tempoMedio}min</span>
-                        </div>
+                    <div className="space-y-2 p-3 bg-white/70 rounded-lg border border-purple-100">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600">Total Sessões</span>
+                        <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.totalSessoes}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600">Satisfação</span>
+                        <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.satisfacao}/5</span>
                       </div>
                     </div>
-
-                    <Button 
-                      onClick={() => navigate('/prestador/desempenho')} 
-                      className="w-full bg-purple-600 hover:bg-purple-700"
-                    >
-                      Ver Análise Completa
-                    </Button>
                   </div>
+
+                  <Button 
+                    onClick={() => navigate('/prestador/desempenho')} 
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-sm py-2 mt-3"
+                  >
+                    Ver Completo
+                  </Button>
                 </div>
               </div>
-            } 
+            }
           />
 
           {/* Bottom Left - Sessões (spanning 2 rows) */}
