@@ -87,12 +87,12 @@ const EspecialistaCallRequestsRevamped = () => {
 
   const getPillarColor = (pillar: string | null) => {
     const colors = {
-      psychological: 'bg-blue-100 text-blue-700',
-      physical: 'bg-green-100 text-green-700',
-      financial: 'bg-purple-100 text-purple-700',
-      legal: 'bg-orange-100 text-orange-700'
+      psychological: { bg: 'hsl(210 80% 95%)', text: 'hsl(210 80% 40%)' },
+      physical: { bg: 'hsl(45 90% 90%)', text: 'hsl(45 90% 35%)' },
+      financial: { bg: 'hsl(140 60% 95%)', text: 'hsl(140 60% 35%)' },
+      legal: { bg: 'hsl(270 60% 95%)', text: 'hsl(270 60% 40%)' }
     };
-    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
+    return colors[pillar as keyof typeof colors] || { bg: 'hsl(0 0% 95%)', text: 'hsl(0 0% 40%)' };
   };
 
   const getStatusBadge = (status: string) => {
@@ -190,7 +190,13 @@ const EspecialistaCallRequestsRevamped = () => {
                         </Button>
                       </TableCell>
                       <TableCell>
-                        <Badge className={`text-xs ${getPillarColor(request.pillar)}`}>
+                        <Badge 
+                          className="text-xs border-transparent" 
+                          style={{ 
+                            backgroundColor: getPillarColor(request.pillar).bg, 
+                            color: getPillarColor(request.pillar).text 
+                          }}
+                        >
                           {getPillarLabel(request.pillar)}
                         </Badge>
                       </TableCell>
@@ -268,7 +274,13 @@ const EspecialistaCallRequestsRevamped = () => {
                         </Button>
                       </TableCell>
                       <TableCell>
-                        <Badge className={`text-xs ${getPillarColor(request.pillar)}`}>
+                        <Badge 
+                          className="text-xs border-transparent" 
+                          style={{ 
+                            backgroundColor: getPillarColor(request.pillar).bg, 
+                            color: getPillarColor(request.pillar).text 
+                          }}
+                        >
                           {getPillarLabel(request.pillar)}
                         </Badge>
                       </TableCell>
@@ -319,7 +331,13 @@ const EspecialistaCallRequestsRevamped = () => {
                         <span>{selectedRequest.company_name}</span>
                       </div>
                     </div>
-                    <Badge className={`text-xs ${getPillarColor(selectedRequest.pillar)}`}>
+                    <Badge 
+                      className="text-xs border-transparent" 
+                      style={{ 
+                        backgroundColor: getPillarColor(selectedRequest.pillar).bg, 
+                        color: getPillarColor(selectedRequest.pillar).text 
+                      }}
+                    >
                       {getPillarLabel(selectedRequest.pillar)}
                     </Badge>
                   </div>
