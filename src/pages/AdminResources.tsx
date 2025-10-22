@@ -12,15 +12,6 @@ export default function AdminResources() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Gestão de Recursos e Resultados
-        </h1>
-        <p className="text-muted-foreground">
-          Gerir conteúdos, visualizar recomendações e analisar resultados da plataforma
-        </p>
-      </div>
-
       <Tabs value={defaultTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="recursos">Recursos</TabsTrigger>

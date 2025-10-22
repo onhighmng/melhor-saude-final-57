@@ -1,249 +1,284 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ResourceGrid } from "@/components/resources/ResourceGrid";
+import { ResourceModal } from "@/components/resources/ResourceModal";
+import { mockResources, UserResource } from "@/data/userResourcesData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, FileText, Video, Dumbbell, Brain, Heart, DollarSign, Scale } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-interface Resource {
-  id: string;
-  title: string;
-  pillar: string;
-  type: 'article' | 'video' | 'exercise';
-  image: string;
-  description: string;
-  views: number;
-  rating: number;
-}
-
-const mockResources: Resource[] = [
-  {
-    id: '1',
-    title: 'Gestão de Stress no Trabalho',
-    pillar: 'saude_mental',
-    type: 'article',
-    image: '/lovable-uploads/therapy-session.png',
-    description: 'Técnicas práticas para gerir o stress diário',
-    views: 245,
-    rating: 4.5
-  },
-  {
-    id: '2',
-    title: 'Exercícios de Respiração',
-    pillar: 'saude_mental',
-    type: 'video',
-    image: '/lovable-uploads/therapy-session.png',
-    description: 'Vídeo guiado de exercícios de respiração',
-    views: 189,
-    rating: 4.8
-  },
-  {
-    id: '3',
-    title: 'Planeamento Financeiro Básico',
-    pillar: 'assistencia_financeira',
-    type: 'article',
-    image: '/lovable-uploads/financial-planning.png',
-    description: 'Guia completo para organizar as suas finanças',
-    views: 156,
-    rating: 4.3
-  },
-  {
-    id: '4',
-    title: 'Rotina de Exercícios em Casa',
-    pillar: 'bem_estar_fisico',
-    type: 'exercise',
-    image: '/lovable-uploads/therapy-session.png',
-    description: 'Exercícios que pode fazer em casa sem equipamento',
-    views: 312,
-    rating: 4.7
-  }
-];
-
-const pillarIcons = {
-  saude_mental: Brain,
-  bem_estar_fisico: Heart,
-  assistencia_financeira: DollarSign,
-  assistencia_juridica: Scale
-};
-
-const pillarColors = {
-  saude_mental: 'bg-blue-500/10 text-blue-700',
-  bem_estar_fisico: 'bg-green-500/10 text-green-700',
-  assistencia_financeira: 'bg-orange-500/10 text-orange-700',
-  assistencia_juridica: 'bg-purple-500/10 text-purple-700'
-};
-
-const typeIcons = {
-  article: FileText,
-  video: Video,
-  exercise: Dumbbell
+// Category to pillar color mapping for blog posts
+const getCategoryColors = (category: string) => {
+  const categoryMap: Record<string, { bg: string; text: string; border: string }> = {
+    'Saúde Mental': {
+      bg: 'bg-blue-500/80',
+      text: 'text-white',
+      border: 'border-blue-400'
+    },
+    'Assistência Financeira': {
+      bg: 'bg-green-500/80',
+      text: 'text-white',
+      border: 'border-green-400'
+    },
+    'Assistência Jurídica': {
+      bg: 'bg-purple-500/80',
+      text: 'text-white',
+      border: 'border-purple-400'
+    },
+    'Bem-Estar Físico': {
+      bg: 'bg-yellow-500/80',
+      text: 'text-white',
+      border: 'border-yellow-400'
+    }
+  };
+  return categoryMap[category] || { bg: 'bg-gray-500/80', text: 'text-white', border: 'border-gray-400' };
 };
 
 export function AdminResourcesTab() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPillar, setSelectedPillar] = useState<string>("all");
-  const [selectedType, setSelectedType] = useState<string>("all");
+  const [resources] = useState(mockResources);
+  const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const filteredResources = mockResources.filter(resource => {
-    const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPillar = selectedPillar === "all" || resource.pillar === selectedPillar;
-    const matchesType = selectedType === "all" || resource.type === selectedType;
-    return matchesSearch && matchesPillar && matchesType;
-  });
+  const handleView = (resource: UserResource) => {
+    setSelectedResource(resource);
+    setModalOpen(true);
+  };
+
+  const handleDownload = (resource: UserResource) => {
+    toast.success(`${resource.title} será descarregado em breve`);
+  };
+
+  const filterByPillar = (pillar: string) => {
+    if (pillar === 'all') return resources;
+    return resources.filter(r => r.pillar === pillar);
+  };
+
+  const resourcePosts = [
+    {
+      id: 1,
+      title: "Guia Completo de Saúde Mental",
+      category: "Saúde Mental",
+      imageUrl: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070",
+      href: "#",
+      views: 2180,
+      readTime: 8,
+      rating: 5
+    },
+    {
+      id: 2,
+      title: "Planeamento Financeiro Pessoal",
+      category: "Assistência Financeira",
+      imageUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070",
+      href: "#",
+      views: 1456,
+      readTime: 12,
+      rating: 4
+    },
+    {
+      id: 3,
+      title: "Direitos do Trabalhador",
+      category: "Assistência Jurídica",
+      imageUrl: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070",
+      href: "#",
+      views: 987,
+      readTime: 6,
+      rating: 4
+    }
+  ];
 
   return (
-    <div className="space-y-6">
-      {/* Filters and Search */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar recursos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+    <div className="w-full space-y-6">
+      <Tabs defaultValue="all" className="w-full">
+        <div className="space-y-8">
+          {/* Title and Description */}
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center gap-4">
+              <h1 className="text-4xl font-semibold capitalize !leading-[1.4] md:text-5xl lg:text-6xl">
+                Recursos Mais Populares De 2025
+              </h1>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="icon" variant="outline" className="rounded-full">
+                    <Plus className="h-5 w-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Adicionar Novo Recurso</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Título</Label>
+                      <Input placeholder="Nome do recurso" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Pilar</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecionar pilar" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="saude_mental">Saúde Mental</SelectItem>
+                            <SelectItem value="bem_estar_fisico">Bem-Estar Físico</SelectItem>
+                            <SelectItem value="assistencia_financeira">Assistência Financeira</SelectItem>
+                            <SelectItem value="assistencia_juridica">Assistência Jurídica</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Tipo</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecionar tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="article">Artigo</SelectItem>
+                            <SelectItem value="video">Vídeo</SelectItem>
+                            <SelectItem value="guide">Guia</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Descrição</Label>
+                      <Textarea placeholder="Breve descrição do conteúdo" rows={3} />
+                    </div>
+                    <div>
+                      <Label>URL da Imagem</Label>
+                      <Input placeholder="https://..." />
+                    </div>
+                    <Button className="w-full">Guardar Recurso</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <p className="mx-auto max-w-[800px] text-xl !leading-[2] text-foreground/50 md:text-2xl">
+              Gerir e adicionar conteúdo para bem-estar físico, mental, financeiro e jurídico
+            </p>
+          </div>
+          
+          {/* Tabs Bar */}
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 bg-transparent p-0">
+            <TabsTrigger 
+              value="all" 
+              className={cn(
+                "w-full data-[state=active]:bg-gray-100 data-[state=active]:text-gray-800 data-[state=active]:border-gray-300",
+                "border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
+              )}
+            >
+              Todos
+            </TabsTrigger>
+            <TabsTrigger 
+              value="saude_mental" 
+              className={cn(
+                "w-full data-[state=active]:bg-blue-100 data-[state=active]:text-blue-800 data-[state=active]:border-blue-300",
+                "border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+              )}
+            >
+              Saúde Mental
+            </TabsTrigger>
+            <TabsTrigger 
+              value="bem_estar_fisico" 
+              className={cn(
+                "w-full data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-800 data-[state=active]:border-yellow-300",
+                "border border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
+              )}
+            >
+              Bem-Estar Físico
+            </TabsTrigger>
+            <TabsTrigger 
+              value="assistencia_financeira" 
+              className={cn(
+                "w-full data-[state=active]:bg-green-100 data-[state=active]:text-green-800 data-[state=active]:border-green-300",
+                "border border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
+              )}
+            >
+              Financeiro
+            </TabsTrigger>
+            <TabsTrigger 
+              value="assistencia_juridica" 
+              className={cn(
+                "w-full data-[state=active]:bg-purple-100 data-[state=active]:text-purple-800 data-[state=active]:border-purple-300",
+                "border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100"
+              )}
+            >
+              Jurídico
+            </TabsTrigger>
+          </TabsList>
         </div>
         
-        <Select value={selectedPillar} onValueChange={setSelectedPillar}>
-          <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Todos os Pilares" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os Pilares</SelectItem>
-            <SelectItem value="saude_mental">Saúde Mental</SelectItem>
-            <SelectItem value="bem_estar_fisico">Bem-Estar Físico</SelectItem>
-            <SelectItem value="assistencia_financeira">Assistência Financeira</SelectItem>
-            <SelectItem value="assistencia_juridica">Assistência Jurídica</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={selectedType} onValueChange={setSelectedType}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Todos os Tipos" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os Tipos</SelectItem>
-            <SelectItem value="article">Artigo</SelectItem>
-            <SelectItem value="video">Vídeo</SelectItem>
-            <SelectItem value="exercise">Exercício</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="w-full md:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
-              Adicionar Novo
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Adicionar Novo Recurso</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label>Título</Label>
-                <Input placeholder="Nome do recurso" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Pilar</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecionar pilar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="saude_mental">Saúde Mental</SelectItem>
-                      <SelectItem value="bem_estar_fisico">Bem-Estar Físico</SelectItem>
-                      <SelectItem value="assistencia_financeira">Assistência Financeira</SelectItem>
-                      <SelectItem value="assistencia_juridica">Assistência Jurídica</SelectItem>
-                    </SelectContent>
-                  </Select>
+        {/* Tab Contents */}
+        <TabsContent value="all" className="mt-6">
+          {/* Blog Cards - Only show in "Todos" tab */}
+          <div className="grid h-auto grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[1fr_0.5fr] mb-8">
+            {resourcePosts.map((post, index) => {
+              const isPrimary = index === 0;
+              const categoryColors = getCategoryColors(post.category);
+              return (
+                <div 
+                  key={post.id} 
+                  style={{ backgroundImage: `url(${post.imageUrl})` }}
+                  className={`group relative row-span-1 flex size-full cursor-pointer flex-col justify-end overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat p-5 text-white max-md:h-[300px] transition-all duration-300 hover:scale-[0.99] ${
+                    isPrimary ? 'col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-1' : ''
+                  }`}
+                  onClick={() => toast.success(`Editar: ${post.title}`)}
+                >
+                  <div className="absolute inset-0 -z-0 h-[130%] w-full bg-gradient-to-t from-black/80 to-transparent transition-all duration-300 group-hover:h-full" />
+                  <div className="absolute top-4 right-4 z-10">
+                    <Button size="icon" variant="secondary" className="rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <article className="relative z-0 flex items-end">
+                    <div className="flex flex-1 flex-col gap-3">
+                      <h1 className="text-3xl font-semibold md:text-4xl">{post.title}</h1>
+                      <div className="flex flex-col gap-3">
+                        <span className={cn(
+                          "text-base capitalize py-px px-2 rounded-md w-fit backdrop-blur-md border",
+                          categoryColors.bg,
+                          categoryColors.text,
+                          categoryColors.border
+                        )}>
+                          {post.category}
+                        </span>
+                        <div className="text-lg font-thin">({post.views} Views)</div>
+                        {post.readTime && <div className="text-xl font-semibold">{post.readTime} min read</div>}
+                      </div>
+                    </div>
+                  </article>
                 </div>
-                <div>
-                  <Label>Tipo</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecionar tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="article">Artigo</SelectItem>
-                      <SelectItem value="video">Vídeo</SelectItem>
-                      <SelectItem value="exercise">Exercício</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <Label>Descrição</Label>
-                <Textarea placeholder="Breve descrição do conteúdo" rows={3} />
-              </div>
-              <div>
-                <Label>URL da Imagem</Label>
-                <Input placeholder="https://..." />
-              </div>
-              <Button className="w-full">Guardar Recurso</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Resources Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredResources.map((resource) => {
-          const PillarIcon = pillarIcons[resource.pillar as keyof typeof pillarIcons];
-          const TypeIcon = typeIcons[resource.type];
-          const pillarColor = pillarColors[resource.pillar as keyof typeof pillarColors];
-
-          return (
-            <Card key={resource.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="aspect-video relative overflow-hidden bg-muted">
-                <img 
-                  src={resource.image} 
-                  alt={resource.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-2 right-2">
-                  <Badge className={pillarColor}>
-                    <PillarIcon className="h-3 w-3 mr-1" />
-                    {resource.pillar.replace('_', ' ')}
-                  </Badge>
-                </div>
-              </div>
-              <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="text-lg line-clamp-2">{resource.title}</CardTitle>
-                  <TypeIcon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                  {resource.description}
-                </p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {resource.views} visualizações
-                  </span>
-                  <span className="font-medium">
-                    ⭐ {resource.rating.toFixed(1)}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {filteredResources.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Nenhum recurso encontrado</p>
-        </div>
-      )}
+              );
+            })}
+          </div>
+          
+          <ResourceGrid resources={filterByPillar('all')} onView={handleView} onDownload={handleDownload} />
+        </TabsContent>
+        
+        <TabsContent value="saude_mental" className="mt-6">
+          <ResourceGrid resources={filterByPillar('saude_mental')} onView={handleView} onDownload={handleDownload} />
+        </TabsContent>
+        
+        <TabsContent value="bem_estar_fisico" className="mt-6">
+          <ResourceGrid resources={filterByPillar('bem_estar_fisico')} onView={handleView} onDownload={handleDownload} />
+        </TabsContent>
+        
+        <TabsContent value="assistencia_financeira" className="mt-6">
+          <ResourceGrid resources={filterByPillar('assistencia_financeira')} onView={handleView} onDownload={handleDownload} />
+        </TabsContent>
+        
+        <TabsContent value="assistencia_juridica" className="mt-6">
+          <ResourceGrid resources={filterByPillar('assistencia_juridica')} onView={handleView} onDownload={handleDownload} />
+        </TabsContent>
+      </Tabs>
+      
+      <ResourceModal resource={selectedResource} open={modalOpen} onClose={() => setModalOpen(false)} onDownload={handleDownload} />
     </div>
   );
 }
