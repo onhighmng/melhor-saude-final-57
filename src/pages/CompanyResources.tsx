@@ -43,25 +43,12 @@ export default function CompanyResources() {
     );
   }
 
-  // Pillar color mapping
-  const getPillarColor = (pillarKey: string) => {
-    const colorMap: Record<string, string> = {
-      'saude_mental': 'from-cyan-50 to-cyan-100',
-      'bem_estar_fisico': 'from-yellow-50 to-yellow-100',
-      'assistencia_financeira': 'from-emerald-50 to-emerald-100',
-      'assistencia_juridica': 'from-purple-50 to-purple-100',
-    };
-    return colorMap[pillarKey] || 'from-gray-50 to-gray-100';
-  };
-
-  const getPillarTextColor = (pillarKey: string) => {
-    const colorMap: Record<string, string> = {
-      'saude_mental': 'text-cyan-700',
-      'bem_estar_fisico': 'text-yellow-700',
-      'assistencia_financeira': 'text-emerald-700',
-      'assistencia_juridica': 'text-purple-700',
-    };
-    return colorMap[pillarKey] || 'text-gray-700';
+  // Pie chart colors for pillars
+  const PILLAR_COLORS: Record<string, string> = {
+    'saude_mental': '#06b6d4', // cyan-500
+    'bem_estar_fisico': '#eab308', // yellow-500
+    'assistencia_financeira': '#10b981', // emerald-500
+    'assistencia_juridica': '#a855f7', // purple-500
   };
 
   return (
@@ -222,17 +209,26 @@ export default function CompanyResources() {
                       data={metrics.pillarDistribution}
                       cx="50%"
                       cy="50%"
-                      labelLine={false}
-                      label={({ pillar, percentage }) => `${pillar.split(' ')[0]} ${percentage}%`}
-                      outerRadius={100}
+                      labelLine={true}
+                      label={({ pillar, percentage }) => `${percentage}%`}
+                      outerRadius={90}
+                      innerRadius={40}
                       fill="#8884d8"
                       dataKey="views"
+                      paddingAngle={2}
                     >
-                      {metrics.pillarDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      {metrics.pillarDistribution.map((entry) => (
+                        <Cell key={`cell-${entry.pillarKey}`} fill={PILLAR_COLORS[entry.pillarKey] || '#94a3b8'} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip 
+                      formatter={(value: number) => value.toLocaleString()}
+                      contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '8px' }}
+                    />
+                    <Legend 
+                      formatter={(value, entry: any) => entry.payload.pillar}
+                      wrapperStyle={{ paddingTop: '20px' }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -263,84 +259,6 @@ export default function CompanyResources() {
             </Card>
           </div>
         </div>
-
-        {/* Bottom Section - Pillar Engagement Summary Table */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-foreground">Resumo de Envolvimento por Pilar</CardTitle>
-            <p className="text-sm text-muted-foreground">Análise detalhada de cada área de bem-estar (dados anonimizados)</p>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">Pilar</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">Total Visualizações</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">Taxa Envolvimento</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">Recurso Mais Visto</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">Tendência</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {metrics.pillarEngagementSummary.map((pillar) => (
-                    <tr key={pillar.pillarKey} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className={cn(
-                          "inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium",
-                          `bg-gradient-to-r ${getPillarColor(pillar.pillarKey)}`,
-                          getPillarTextColor(pillar.pillarKey)
-                        )}>
-                          {pillar.pillar}
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-700">
-                        {pillar.totalViews.toLocaleString()}
-                        <span className="block text-xs text-gray-500">{pillar.uniqueViewers} utilizadores únicos</span>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-gray-900">{pillar.engagementRate}%</span>
-                          <div className="w-20 bg-gray-200 rounded-full h-1.5">
-                            <div 
-                              className="bg-blue-600 h-1.5 rounded-full"
-                              style={{ width: `${pillar.engagementRate}%` }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-700 max-w-xs truncate">
-                        {pillar.topResource}
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          {pillar.trend === 'up' && (
-                            <>
-                              <ArrowUp className="h-4 w-4 text-green-600" />
-                              <span className="text-sm font-medium text-green-600">+{pillar.trendPercentage}%</span>
-                            </>
-                          )}
-                          {pillar.trend === 'down' && (
-                            <>
-                              <ArrowDown className="h-4 w-4 text-red-600" />
-                              <span className="text-sm font-medium text-red-600">-{pillar.trendPercentage}%</span>
-                            </>
-                          )}
-                          {pillar.trend === 'stable' && (
-                            <>
-                              <Minus className="h-4 w-4 text-gray-600" />
-                              <span className="text-sm font-medium text-gray-600">{pillar.trendPercentage}%</span>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Privacy Notice */}
         <Card className="bg-blue-50 border-blue-200">
