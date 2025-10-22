@@ -92,37 +92,37 @@ const AdminDashboard = () => {
             cta=""
             className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-4" 
             background={
-              <div className="absolute inset-0 flex flex-col p-6 bg-white">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-9 h-9 rounded-lg bg-purple-600 flex items-center justify-center">
-                    <Activity className="w-4 h-4 text-white" />
+              <div className="absolute inset-0 flex flex-col p-8 bg-white">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-purple-600 flex items-center justify-center">
+                    <Activity className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold">Atividade da Plataforma</h3>
+                  <h3 className="text-3xl font-semibold">Atividade da Plataforma</h3>
                 </div>
-                <div className="flex-1 flex flex-col justify-between">
-                  <div className="space-y-2.5 flex-1 flex flex-col justify-center">
-                    <div className="p-3 bg-gray-100 rounded-lg border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
-                      <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-sm font-medium text-gray-700">Taxa de Utilização</span>
-                        <span className="text-lg font-bold text-purple-700">78%</span>
+                <div className="flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-4 flex-1 flex flex-col justify-center">
+                    <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-base font-medium text-gray-700">Taxa de Utilização</span>
+                        <span className="text-2xl font-bold text-purple-700">78%</span>
                       </div>
-                      <Progress value={78} className="h-1.5" />
+                      <Progress value={78} className="h-3" />
                     </div>
                     
-                    <div className="p-3 bg-gray-100 rounded-lg border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
-                      <div className="flex justify-between items-center mb-0.5">
-                        <span className="text-sm font-medium text-gray-700">Prestadores Ativos</span>
-                        <span className="text-lg font-bold text-purple-700">24</span>
+                    <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-base font-medium text-gray-700">Prestadores Ativos</span>
+                        <span className="text-2xl font-bold text-purple-700">24</span>
                       </div>
-                      <p className="text-xs text-muted-foreground">A fornecer serviços</p>
+                      <p className="text-sm text-muted-foreground">A fornecer serviços</p>
                     </div>
 
-                    <div className="p-3 bg-gray-100 rounded-lg border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
-                      <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-sm font-medium text-gray-700">Satisfação Média</span>
-                        <span className="text-lg font-bold text-purple-700">4.6/5</span>
+                    <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-base font-medium text-gray-700">Satisfação Média</span>
+                        <span className="text-2xl font-bold text-purple-700">4.6/5</span>
                       </div>
-                      <Progress value={92} className="h-1.5" />
+                      <Progress value={92} className="h-3" />
                     </div>
                   </div>
                 </div>
