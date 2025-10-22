@@ -186,39 +186,6 @@ const CompanyReportsImpact = () => {
         </Card>
       </div>
 
-      {/* Simple ROI and Absenteeism Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5" />
-              ROI Estimado
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center p-6">
-              <div className="text-4xl font-bold text-emerald-700 mb-2">{mockROIData.roiPercentage}%</div>
-              <p className="text-sm text-muted-foreground">Retorno do investimento</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Absenteísmo Estimado
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center p-6">
-              <div className="text-4xl font-bold text-green-700 mb-2">-{mockAbsenteeismData.estimatedReduction}%</div>
-              <p className="text-sm text-muted-foreground">Redução estimada</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Distribution by Pillar */}
