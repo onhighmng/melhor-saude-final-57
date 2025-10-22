@@ -122,8 +122,8 @@ const EspecialistaStatsRevamped = () => {
           description="Distribuição por especialidade"
           Icon={CheckCircle}
           className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
-          iconColor="text-green-600"
+          background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
+          iconColor="text-blue-600"
           textColor="text-gray-900"
           descriptionColor="text-gray-600"
           href="#"
@@ -134,8 +134,8 @@ const EspecialistaStatsRevamped = () => {
               const Icon = getPillarIcon(pillar.pillar);
               return (
                 <div key={pillar.pillar} className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
-                    <Icon className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100">
+                    <Icon className="h-4 w-4 text-blue-600" />
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-sm">{pillar.label}</p>
