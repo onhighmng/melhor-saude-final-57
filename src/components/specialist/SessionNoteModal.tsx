@@ -81,7 +81,10 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
             <div className="grid grid-cols-3 gap-3">
               <Button
                 variant={outcome === 'resolved' ? 'default' : 'outline'}
-                onClick={() => setOutcome('resolved')}
+                onClick={() => {
+                  setOutcome('resolved');
+                  handleSave();
+                }}
                 className="h-auto py-4 flex flex-col gap-2"
               >
                 <CheckCircle className="h-6 w-6" />
