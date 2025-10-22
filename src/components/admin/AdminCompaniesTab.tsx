@@ -143,17 +143,17 @@ export const AdminCompaniesTab = () => {
         {/* Companies Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Empresas Ativas</CardTitle>
+            <CardTitle className="text-2xl">Empresas Ativas</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-base">Empresa</TableHead>
-                  <TableHead className="text-base">NUIT</TableHead>
-                  <TableHead className="text-base">Colaboradores</TableHead>
-                  <TableHead className="text-base">Sessões</TableHead>
-                  <TableHead className="text-base">Estado</TableHead>
+                  <TableHead className="text-lg">Empresa</TableHead>
+                  <TableHead className="text-lg">NUIT</TableHead>
+                  <TableHead className="text-lg">Colaboradores</TableHead>
+                  <TableHead className="text-lg">Sessões</TableHead>
+                  <TableHead className="text-lg">Estado</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -165,23 +165,23 @@ export const AdminCompaniesTab = () => {
                       onClick={() => handleViewDetails(company)}
                       className="cursor-pointer hover:bg-muted/50"
                     >
-                      <TableCell className="font-medium text-base">{company.name}</TableCell>
-                      <TableCell className="text-muted-foreground text-base">{company.nuit}</TableCell>
-                      <TableCell className="text-base">
+                      <TableCell className="font-medium text-lg py-4">{company.name}</TableCell>
+                      <TableCell className="text-muted-foreground text-lg py-4">{company.nuit}</TableCell>
+                      <TableCell className="text-lg py-4">
                         <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <Users className="h-5 w-5 text-muted-foreground" />
                           {company.employees}
                         </div>
                       </TableCell>
-                      <TableCell className="text-base">
+                      <TableCell className="text-lg py-4">
                         <span>
                           {company.usedSessions}/{company.totalSessions}
                         </span>
                       </TableCell>
-                      <TableCell className="text-base">
+                      <TableCell className="text-lg py-4">
                         <Badge 
                           variant={company.status === 'Ativa' ? 'default' : 'secondary'}
-                          className={company.status === 'Ativa' ? 'bg-emerald-600 text-white hover:bg-emerald-600 hover:text-white border-0' : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary'}
+                          className={company.status === 'Ativa' ? 'bg-emerald-600 text-white hover:bg-emerald-600 hover:text-white border-0 text-base' : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary text-base'}
                         >
                           {company.status}
                         </Badge>
