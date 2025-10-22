@@ -13,6 +13,8 @@ import {
   HelpCircle,
   FileText,
   LogOut,
+  Calendar,
+  Settings,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -42,6 +44,11 @@ const CompanySidebar = () => {
       icon: <BarChart3 className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
+      label: "Sessões",
+      href: "/company/sessions",
+      icon: <Calendar className="text-primary h-5 w-5 flex-shrink-0" />,
+    },
+    {
       label: "Colaboradores",
       href: "/company/colaboradores",
       icon: <Users className="text-primary h-5 w-5 flex-shrink-0" />,
@@ -50,6 +57,11 @@ const CompanySidebar = () => {
   ];
 
   const footerLinks = [
+    {
+      label: "Configurações",
+      href: "/company/settings",
+      icon: <Settings className="text-muted-foreground h-5 w-5 flex-shrink-0" />,
+    },
     {
       label: "Suporte",
       href: "/support",
