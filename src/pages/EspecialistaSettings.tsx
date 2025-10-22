@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Settings, User, Bell, Shield } from 'lucide-react';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
@@ -23,6 +24,16 @@ const EspecialistaSettings = () => {
     email: profile?.email || '',
     phone: profile?.phone || '',
     avatar_url: profile?.avatar_url || ''
+  });
+
+  // Notification preferences
+  const [notificationSettings, setNotificationSettings] = useState({
+    newCallRequests: true,
+    sessionReminders: true,
+    sessionCancellations: true,
+    emailNotifications: true,
+    smsNotifications: false,
+    pushNotifications: true,
   });
   
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -185,21 +196,79 @@ const EspecialistaSettings = () => {
               <p className="text-sm text-muted-foreground">
                 Configure como deseja receber notificações sobre novos pedidos de chamada e sessões.
               </p>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-sm">Pedidos de Chamada</CardTitle>
+                    <CardTitle className="text-base font-semibold">Notificações de Eventos</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <Label className="text-sm">Receber notificações para novos pedidos</Label>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Novos Pedidos de Chamada</Label>
+                        <p className="text-xs text-muted-foreground">Receber notificações quando há novos pedidos</p>
+                      </div>
+                      <Switch 
+                        checked={notificationSettings.newCallRequests}
+                        onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, newCallRequests: checked})}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Lembretes de Sessões</Label>
+                        <p className="text-xs text-muted-foreground">Notificar 15 minutos antes das sessões</p>
+                      </div>
+                      <Switch 
+                        checked={notificationSettings.sessionReminders}
+                        onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, sessionReminders: checked})}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Cancelamentos de Sessões</Label>
+                        <p className="text-xs text-muted-foreground">Avisar quando uma sessão for cancelada</p>
+                      </div>
+                      <Switch 
+                        checked={notificationSettings.sessionCancellations}
+                        onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, sessionCancellations: checked})}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-sm">Sessões Agendadas</CardTitle>
+                    <CardTitle className="text-base font-semibold">Canais de Notificação</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <Label className="text-sm">Notificar 15 minutos antes das sessões</Label>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Notificações por Email</Label>
+                        <p className="text-xs text-muted-foreground">Receber notificações no seu email</p>
+                      </div>
+                      <Switch 
+                        checked={notificationSettings.emailNotifications}
+                        onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, emailNotifications: checked})}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Notificações por SMS</Label>
+                        <p className="text-xs text-muted-foreground">Receber notificações por mensagem de texto</p>
+                      </div>
+                      <Switch 
+                        checked={notificationSettings.smsNotifications}
+                        onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, smsNotifications: checked})}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-sm font-medium">Notificações Push</Label>
+                        <p className="text-xs text-muted-foreground">Receber notificações no navegador</p>
+                      </div>
+                      <Switch 
+                        checked={notificationSettings.pushNotifications}
+                        onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, pushNotifications: checked})}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               </div>
