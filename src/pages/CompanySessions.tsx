@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { mockSessionAnalytics } from '@/data/companyMetrics';
 import { useToast } from "@/hooks/use-toast";
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
   ResponsiveContainer, 
@@ -36,14 +36,95 @@ import {
   Cell
 } from 'recharts';
 
+const AnimatedInsights = () => {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
+  const insights = [
+    {
+      icon: <Brain className="h-8 w-8 text-blue-600" />,
+      title: "Saúde Mental em Foco",
+      text: "Acompanhamento psicológico especializado disponível 24/7 para todos os colaboradores, garantindo suporte emocional contínuo e confidencial."
+    },
+    {
+      icon: <Heart className="h-8 w-8 text-yellow-600" />,
+      title: "Bem-Estar Físico Integrado",
+      text: "Programas personalizados de fitness e nutrição que se adaptam ao estilo de vida de cada colaborador, promovendo hábitos saudáveis sustentáveis."
+    },
+    {
+      icon: <DollarSign className="h-8 w-8 text-green-600" />,
+      title: "Estabilidade Financeira",
+      text: "Consultoria financeira profissional para planeamento patrimonial, gestão de dívidas e construção de um futuro financeiro seguro."
+    },
+    {
+      icon: <Scale className="h-8 w-8 text-purple-600" />,
+      title: "Apoio Jurídico Completo",
+      text: "Assistência legal especializada em diversas áreas do direito, oferecendo orientação clara e suporte em questões jurídicas pessoais."
+    },
+    {
+      icon: <TrendingUp className="h-8 w-8 text-primary" />,
+      title: "Análise em Tempo Real",
+      text: "Dashboard intuitivo com métricas detalhadas de utilização, permitindo decisões estratégicas baseadas em dados concretos e atualizados."
+    },
+    {
+      icon: <Users className="h-8 w-8 text-emerald-600" />,
+      title: "Engagement Elevado",
+      text: "Plataforma que promove a participação ativa dos colaboradores, aumentando significativamente a satisfação e retenção de talentos."
+    }
+  ];
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % insights.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [insights.length]);
+
+  return (
+    <div className="relative h-64 flex items-center justify-center">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-0 flex flex-col items-start justify-center space-y-4"
+        >
+          <div className="flex items-center gap-3 mb-2">
+            {insights[currentIndex].icon}
+            <h3 className="text-2xl font-bold text-foreground">
+              {insights[currentIndex].title}
+            </h3>
+          </div>
+          <p className="text-base sm:text-lg lg:text-xl leading-relaxed text-muted-foreground">
+            {insights[currentIndex].text}
+          </p>
+          <div className="flex gap-2 mt-4">
+            {insights.map((_, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-300",
+                  index === currentIndex 
+                    ? "w-8 bg-primary" 
+                    : "w-1.5 bg-muted"
+                )}
+              />
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
+
 const CompanySessions = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Add company-page class to body for light blue background
     document.body.classList.add('company-page');
     
-    // Cleanup: remove class when component unmounts
     return () => {
       document.body.classList.remove('company-page');
     };
@@ -265,22 +346,8 @@ const CompanySessions = () => {
           </div>
         </div>
         
-        <div className="relative p-6 sm:p-8 bg-card border border-border rounded-xl">
-          <blockquote className="border-l-4 border-primary pl-6 sm:pl-8">
-            <p className="text-base sm:text-lg lg:text-xl leading-relaxed text-muted-foreground mb-6">
-              "A plataforma transformou completamente a forma como gerimos o bem-estar dos colaboradores. 
-              Os insights em tempo real e a facilidade de uso permitiram aumentar significativamente 
-              o engagement e a satisfação da equipa."
-            </p>
-            <div className="space-y-2">
-              <cite className="block font-semibold text-lg text-foreground not-italic">
-                Maria Santos, Diretora de RH
-              </cite>
-              <div className="text-sm text-muted-foreground">
-                Tech Solutions Portugal
-              </div>
-            </div>
-          </blockquote>
+        <div className="relative p-6 sm:p-8 bg-card border border-border rounded-xl overflow-hidden">
+          <AnimatedInsights />
         </div>
       </div>
 
