@@ -133,9 +133,8 @@ export default function SpecialistDashboard() {
 
               {/* Bottom Right - Recursos */}
               <BentoCard 
-                name="Recursos" 
-                description="Conteúdos e materiais de apoio" 
-                Icon={BookOpen} 
+                name="" 
+                description="" 
                 onClick={() => navigate('/especialista/resources')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
                 background={
@@ -147,11 +146,8 @@ export default function SpecialistDashboard() {
                     />
                   </div>
                 }
-                iconColor="text-white"
-                textColor="text-white"
-                descriptionColor="text-white/80"
                 href="#"
-                cta="Ver Recursos"
+                cta=""
               >
               </BentoCard>
 
