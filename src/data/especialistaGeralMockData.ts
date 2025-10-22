@@ -517,3 +517,110 @@ export const mockAdminAlerts = {
   negative_feedback: mockNegativeFeedback.length,
   inactive_users: mockInactiveUsers.length
 };
+
+// Estatísticas pessoais do Especialista Geral
+export const mockSpecialistPersonalStats = {
+  monthly_cases: 45,
+  weekly_cases: 12,
+  avg_response_time_minutes: 35,
+  avg_rating: 8.7,
+  internal_resolution_rate: 68,
+  referral_rate: 32,
+  satisfaction_rate: 91,
+  top_pillars: [
+    { pillar: 'psychological', count: 18, label: 'Saúde Mental' },
+    { pillar: 'financial', count: 14, label: 'Assistência Financeira' },
+    { pillar: 'legal', count: 8, label: 'Assistência Jurídica' },
+    { pillar: 'physical', count: 5, label: 'Bem-Estar Físico' }
+  ],
+  evolution_data: [
+    { month: 'Jan', cases: 38 },
+    { month: 'Fev', cases: 42 },
+    { month: 'Mar', cases: 45 },
+    { month: 'Abr', cases: 48 }
+  ]
+};
+
+// Resultados possíveis de chamadas
+export const mockCallOutcomes = [
+  { value: 'resolved_by_phone', label: 'Resolvido por Telefone', icon: 'CheckCircle', color: 'green' },
+  { value: 'session_booked', label: 'Sessão Agendada', icon: 'Calendar', color: 'blue' },
+  { value: 'escalated_to_specialist', label: 'Encaminhado para Prestador', icon: 'ArrowRight', color: 'purple' },
+  { value: 'follow_up_needed', label: 'Requer Follow-up', icon: 'Clock', color: 'orange' }
+];
+
+// Alertas urgentes (SLA ultrapassado)
+export const mockUrgentAlerts = [
+  {
+    id: 'alert-1',
+    type: 'sla_breach',
+    user_name: 'Ana Silva',
+    company_name: 'Empresa Exemplo Lda',
+    wait_time_hours: 26,
+    priority: 'critical',
+    pillar: 'psychological'
+  },
+  {
+    id: 'alert-2',
+    type: 'high_priority',
+    user_name: 'Pedro Mendes',
+    company_name: 'Empresa Exemplo Lda',
+    wait_time_hours: 3,
+    priority: 'high',
+    pillar: 'financial'
+  }
+];
+
+// Notas internas expandidas
+export const mockInternalNotes = [
+  {
+    id: 'note-1',
+    user_id: 'user-1',
+    specialist_id: 'spec-1',
+    specialist_name: 'Geral Especialista',
+    content: 'Utilizador demonstra sinais de burnout severo. Recomendo encaminhamento para psicólogo especializado em gestão de stress laboral.',
+    pillar: 'psychological',
+    action_taken: 'Encaminhado para Dra. Maria Costa',
+    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'note-2',
+    user_id: 'user-2',
+    specialist_id: 'spec-1',
+    specialist_name: 'Geral Especialista',
+    content: 'Situação financeira complexa. Utilizador precisa de apoio especializado para reestruturação de dívidas.',
+    pillar: 'financial',
+    action_taken: 'Encaminhado para consultor financeiro',
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'note-3',
+    user_id: 'user-3',
+    specialist_id: 'spec-1',
+    specialist_name: 'Geral Especialista',
+    content: 'Questão legal resolvida por telefone. Utilizador estava preocupado com direitos laborais mas situação esclarecida.',
+    pillar: 'legal',
+    action_taken: 'Resolvido internamente',
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'note-4',
+    user_id: 'user-4',
+    specialist_id: 'spec-1',
+    specialist_name: 'Geral Especialista',
+    content: 'Problema ergonómico relacionado com trabalho remoto. Recomendadas sessões de fisioterapia.',
+    pillar: 'physical',
+    action_taken: 'Encaminhado para fisioterapeuta',
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'note-5',
+    user_id: 'user-5',
+    specialist_id: 'spec-1',
+    specialist_name: 'Geral Especialista',
+    content: 'Utilizadora reporta ansiedade relacionada com prazos. Orientação básica fornecida, follow-up agendado.',
+    pillar: 'psychological',
+    action_taken: 'Sessão de follow-up marcada',
+    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  }
+];

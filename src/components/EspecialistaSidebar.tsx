@@ -14,6 +14,7 @@ import {
   ArrowRight,
   Settings,
   LogOut,
+  TrendingUp,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -49,6 +50,11 @@ const EspecialistaSidebar = () => {
       label: "Encaminhamentos",
       href: "/especialista/referrals",
       icon: <ArrowRight className="text-primary h-5 w-5 flex-shrink-0" />,
+    },
+    {
+      label: "Estatísticas",
+      href: "/especialista/stats",
+      icon: <TrendingUp className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Definições",
