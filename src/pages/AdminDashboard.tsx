@@ -2,9 +2,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Building2, 
   Users, 
@@ -12,13 +10,11 @@ import {
   Phone,
   MessageSquare,
   AlertTriangle,
-  BookOpen,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  BarChart3
+  Activity,
+  BookOpen
 } from 'lucide-react';
 import { mockAdminAlerts } from '@/data/especialistaGeralMockData';
+import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 
@@ -28,247 +24,102 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Add admin-page class to body for gray background
     document.body.classList.add('admin-page');
+    
+    // Cleanup: remove class when component unmounts
     return () => {
       document.body.classList.remove('admin-page');
     };
   }, []);
 
-  // Mock data para métricas
-  const weeklyGrowth = 12; // % crescimento semanal
-  const avgResponseTime = 35; // minutos
-  const satisfactionRate = 91; // %
+
 
   return (
-    <div className="h-screen flex flex-col p-6 overflow-hidden">
-      {/* Header */}
-      <div className="flex-shrink-0 mb-6">
-        <h1 className="text-3xl font-bold">Dashboard Geral</h1>
+    <div className="relative w-full min-h-screen h-full flex flex-col">
+      <div className="relative z-10 h-full flex flex-col">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
+          {/* Page Header - Like other admin pages */}
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Dashboard Geral
+        </h1>
         <p className="text-muted-foreground">
-          Visão geral da plataforma Melhor Saúde
+              Visão geral da plataforma Melhor Saúde
         </p>
       </div>
 
-      {/* Bento Grid */}
-      <div className="flex-1 min-h-0">
-        <BentoGrid className="h-full" style={{ gridAutoRows: '1fr' }}>
-          {/* Empresas Ativas */}
+          {/* Bento Grid Layout - Fixed height */}
+          <div className="h-[calc(100vh-200px)]">
+            <BentoGrid className="h-full grid-rows-3 gap-4">
+          {/* Top Left - Companies */}
           <BentoCard 
             name="Empresas Ativas" 
-            description={`${analytics?.total_companies || 12} empresas na plataforma`} 
+            description={`${analytics?.total_companies || 0} empresas ativas`} 
             Icon={Building2} 
             onClick={() => navigate('/admin/users-management?tab=companies')} 
-            className="col-span-3 lg:col-span-1 row-span-1" 
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
             background={
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50" />
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-cyan-100" />
             }
-            iconColor="text-cyan-600"
-            textColor="text-gray-900"
-            descriptionColor="text-gray-600"
+            iconColor="text-cyan-700"
+            textColor="text-slate-900"
+            descriptionColor="text-slate-600"
             href="#"
             cta="Gerir Empresas"
           >
-            <div className="p-6 space-y-2 relative z-20">
-              <div className="flex items-end gap-2">
-                <span className="text-5xl font-bold text-cyan-600">{analytics?.total_companies || 12}</span>
-                <span className="text-lg text-muted-foreground mb-2">empresas</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <TrendingUp className="h-4 w-4 text-green-600" />
-                <span className="text-green-600 font-medium">+{weeklyGrowth}%</span>
-                <span className="text-muted-foreground">vs mês anterior</span>
-              </div>
-            </div>
           </BentoCard>
 
-          {/* Colaboradores */}
+          {/* Top Right - Users */}
           <BentoCard 
-            name="Colaboradores" 
-            description={`${analytics?.total_users || 450} utilizadores registados`} 
+            name="Colaboradores Registados" 
+            description={`${analytics?.total_users || 0} utilizadores ativos`} 
             Icon={Users} 
             onClick={() => navigate('/admin/users-management?tab=employees')} 
-            className="col-span-3 lg:col-span-1 row-span-1" 
+            className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
             background={
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100" />
             }
-            iconColor="text-yellow-600"
-            textColor="text-gray-900"
-            descriptionColor="text-gray-600"
+            iconColor="text-yellow-700"
+            textColor="text-slate-900"
+            descriptionColor="text-slate-600"
             href="#"
             cta="Ver Utilizadores"
           >
-            <div className="p-6 space-y-2 relative z-20">
-              <div className="flex items-end gap-2">
-                <span className="text-5xl font-bold text-yellow-600">{analytics?.total_users || 450}</span>
-                <span className="text-lg text-muted-foreground mb-2">utilizadores</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
-                  {satisfactionRate}% Satisfação
-                </Badge>
-              </div>
-            </div>
           </BentoCard>
 
-          {/* Sessões */}
+          {/* Bottom Left - Sessions */}
           <BentoCard 
             name="Sessões Este Mês" 
-            description={`${analytics?.total_bookings || 234} sessões realizadas`} 
+            description={`${analytics?.total_bookings || 0} sessões realizadas`} 
             Icon={Calendar} 
             onClick={() => navigate('/admin/operations')} 
-            className="col-span-3 lg:col-span-1 row-span-1" 
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
             background={
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-50" />
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-emerald-100">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
+                  style={{
+                    backgroundImage: "url('https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
+                  }}
+                />
+              </div>
             }
-            iconColor="text-emerald-600"
-            textColor="text-gray-900"
-            descriptionColor="text-gray-600"
+            iconColor="text-emerald-700"
+            textColor="text-slate-900"
+            descriptionColor="text-slate-600"
             href="#"
-            cta="Ver Operações"
+            cta="Ver Sessões"
           >
-            <div className="p-6 space-y-2 relative z-20">
-              <div className="flex items-end gap-2">
-                <span className="text-5xl font-bold text-emerald-600">{analytics?.total_bookings || 234}</span>
-                <span className="text-lg text-muted-foreground mb-2">sessões</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Clock className="h-4 w-4 text-blue-600" />
-                <span className="text-blue-600 font-medium">{avgResponseTime} min</span>
-                <span className="text-muted-foreground">tempo médio</span>
-              </div>
-            </div>
           </BentoCard>
 
-          {/* Alertas Críticos - 2 rows tall */}
-          <BentoCard 
-            name="Alertas Críticos" 
-            description="Indicadores que precisam de ação imediata" 
-            Icon={AlertTriangle}
-            onClick={() => navigate('/admin/alerts')}
-            className="col-span-3 lg:col-span-2 row-span-2" 
-            background={
-              <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-orange-50" />
-            }
-            iconColor="text-red-600"
-            textColor="text-gray-900"
-            descriptionColor="text-red-600"
-            href="#"
-            cta="Ver Todos os Alertas"
-          >
-            <div className="p-6 relative z-20 h-full flex flex-col">
-              <ScrollArea className="flex-1">
-                <div className="space-y-3 pr-4">
-                  {/* Chamadas Pendentes */}
-                  <Card 
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate('/admin/call-requests');
-                    }}
-                  >
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                          <Phone className="h-5 w-5 text-red-600" />
-                        </div>
-                        <div>
-                          <p className="font-medium">Chamadas Pendentes</p>
-                          <p className="text-xs text-muted-foreground">Requer ação imediata</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold text-red-600">{mockAdminAlerts.pending_calls}</p>
-                        <p className="text-xs text-muted-foreground">casos</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Sessões Hoje */}
-                  <Card 
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate('/admin/operations');
-                    }}
-                  >
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                          <Calendar className="h-5 w-5 text-indigo-600" />
-                        </div>
-                        <div>
-                          <p className="font-medium">Sessões Hoje</p>
-                          <p className="text-xs text-muted-foreground">Especialista Geral</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold text-indigo-600">{mockAdminAlerts.scheduled_sessions}</p>
-                        <p className="text-xs text-muted-foreground">agendadas</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Feedback Negativo */}
-                  <Card 
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate('/admin/alerts?tab=feedback');
-                    }}
-                  >
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                          <MessageSquare className="h-5 w-5 text-orange-600" />
-                        </div>
-                        <div>
-                          <p className="font-medium">Feedback Negativo</p>
-                          <p className="text-xs text-muted-foreground">Última semana</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold text-orange-600">{mockAdminAlerts.negative_feedback}</p>
-                        <p className="text-xs text-muted-foreground">casos</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Utilizadores Inativos */}
-                  <Card 
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate('/admin/alerts?tab=inactive');
-                    }}
-                  >
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                          <Users className="h-5 w-5 text-amber-600" />
-                        </div>
-                        <div>
-                          <p className="font-medium">Utilizadores Inativos</p>
-                          <p className="text-xs text-muted-foreground">Mais de 30 dias</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold text-amber-600">{mockAdminAlerts.inactive_users}</p>
-                        <p className="text-xs text-muted-foreground">utilizadores</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </ScrollArea>
-            </div>
-          </BentoCard>
-
-          {/* Recursos - Image card */}
+          {/* Bottom Right - Recursos */}
           <BentoCard 
             name="Recursos" 
             description="Conteúdos e materiais de apoio" 
             Icon={BookOpen} 
             onClick={() => navigate('/admin/resources')} 
-            className="col-span-3 lg:col-span-1 row-span-2" 
+            className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
             background={
               <div className="absolute inset-0">
                 <img 
@@ -276,7 +127,6 @@ const AdminDashboard = () => {
                   alt="" 
                   className="w-full h-full object-cover" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               </div>
             }
             iconColor="text-white"
@@ -285,21 +135,102 @@ const AdminDashboard = () => {
             href="#"
             cta="Ver Recursos"
           >
-            <div className="absolute bottom-0 left-0 right-0 p-6 relative z-20">
-              <div className="space-y-2">
-                <p className="text-sm text-white/80">Biblioteca completa</p>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    45 Artigos
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    12 Vídeos
-                  </Badge>
+          </BentoCard>
+
+          {/* Center - Alerts */}
+          <BentoCard 
+            name="" 
+            description="" 
+            href="#" 
+            cta="" 
+            className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
+            iconColor="text-red-600"
+            textColor="text-slate-900"
+            descriptionColor="text-slate-600"
+            onClick={() => navigate('/admin/alerts')}
+          >
+            <div className="relative z-30 flex flex-col h-full p-6">
+              <div className="mb-4">
+                <h3 className="text-3xl font-semibold text-gray-900 mb-2">Alertas Críticos</h3>
+                <p className="text-gray-600">Indicadores que precisam de ação imediata</p>
                 </div>
+                
+              <div className="flex-1 space-y-3">
+                  <div 
+                    className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate('/admin/call-requests');
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-5 w-5 text-red-600" />
+                      <span className="font-medium">Chamadas Pendentes</span>
+                    </div>
+                    <span className="text-xl font-bold text-red-700">{mockAdminAlerts.pending_calls}</span>
+                  </div>
+                
+                <div 
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/admin/alerts?tab=feedback');
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <MessageSquare className="h-5 w-5 text-orange-600" />
+                    <span className="font-medium">Feedback Negativo</span>
+                  </div>
+                  <span className="text-xl font-bold text-orange-700">{mockAdminAlerts.negative_feedback}</span>
+                  </div>
+                
+                <div 
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/admin/alerts?tab=inactive');
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <Users className="h-5 w-5 text-amber-600" />
+                    <span className="font-medium">Utilizadores Inativos</span>
+              </div>
+                  <span className="text-xl font-bold text-amber-700">{mockAdminAlerts.inactive_users}</span>
+      </div>
+
+                <div 
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/admin/operations');
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-indigo-600" />
+                    <span className="font-medium">Sessões com Especialista Geral</span>
+                  </div>
+                  <span className="text-xl font-bold text-indigo-700">3</span>
+              </div>
+      </div>
+
+              <div className="mt-4">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/admin/alerts');
+                  }}
+                  className="text-sm text-red-600 hover:text-red-700 font-medium hover:underline"
+                >
+                  Ver Todos os Alertas →
+                </button>
               </div>
             </div>
           </BentoCard>
-        </BentoGrid>
+
+            </BentoGrid>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -14,7 +14,6 @@ import {
   ArrowRight,
   Settings,
   LogOut,
-  BarChart3,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -50,11 +49,6 @@ const EspecialistaSidebar = () => {
       label: "Encaminhamentos",
       href: "/especialista/referrals",
       icon: <ArrowRight className="text-primary h-5 w-5 flex-shrink-0" />,
-    },
-    {
-      label: "Estatísticas",
-      href: "/especialista/stats",
-      icon: <BarChart3 className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Definições",

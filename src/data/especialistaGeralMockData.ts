@@ -500,121 +500,6 @@ export const mockReferrals = [
   }
 ];
 
-// Mock de estatísticas pessoais do especialista
-export const mockSpecialistPersonalStats = {
-  monthly_cases: 45,
-  weekly_cases: 12,
-  avg_response_time_minutes: 35,
-  avg_rating: 8.7,
-  internal_resolution_rate: 68,
-  referral_rate: 32,
-  satisfaction_rate: 91,
-  top_pillars: [
-    { pillar: 'psychological', label: 'Psicológico', count: 18, percentage: 40 },
-    { pillar: 'financial', label: 'Financeiro', count: 14, percentage: 31 },
-    { pillar: 'legal', label: 'Jurídico', count: 8, percentage: 18 },
-    { pillar: 'physical', label: 'Físico', count: 5, percentage: 11 }
-  ],
-  monthly_evolution: [
-    { month: 'Jan', cases: 38, rating: 8.5, resolved: 26, referred: 12 },
-    { month: 'Fev', cases: 42, rating: 8.6, resolved: 29, referred: 13 },
-    { month: 'Mar', cases: 45, rating: 8.7, resolved: 31, referred: 14 }
-  ],
-  recent_feedback: [
-    { user: 'Ana Silva', rating: 9, comment: 'Muito atencioso e prestável. Ajudou bastante!', date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
-    { user: 'Carlos Santos', rating: 8, comment: 'Bom atendimento, resolveu a minha situação.', date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
-    { user: 'Maria Costa', rating: 10, comment: 'Excelente! Super recomendo.', date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() }
-  ]
-};
-
-// Mock de resultados de chamadas
-export const mockCallOutcomes = [
-  { value: 'resolved_by_phone', label: 'Resolvido por Telefone' },
-  { value: 'session_booked', label: 'Sessão Agendada' },
-  { value: 'escalated_to_specialist', label: 'Encaminhado para Prestador' },
-  { value: 'follow_up_needed', label: 'Requer Follow-up' }
-];
-
-// Mock de alertas urgentes
-export const mockUrgentAlerts = [
-  {
-    id: 'alert-1',
-    type: 'sla_breach',
-    user_name: 'Ana Silva',
-    user_id: 'user-1',
-    user_phone: '+258 84 123 4567',
-    company_name: 'Empresa Exemplo Lda',
-    company_id: 'comp-1',
-    wait_time: 1560,
-    priority: 'critical',
-    pillar: 'psychological' as const,
-    notes: 'Utilizadora relatou crise de ansiedade aguda',
-    created_at: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: 'alert-2',
-    type: 'sla_breach',
-    user_name: 'Carlos Mendes',
-    user_id: 'user-2',
-    user_phone: '+258 84 234 5678',
-    company_name: 'Tech Solutions MZ',
-    company_id: 'comp-2',
-    wait_time: 1680,
-    priority: 'critical',
-    pillar: 'financial' as const,
-    notes: 'Situação financeira urgente - risco de despejo',
-    created_at: new Date(Date.now() - 28 * 60 * 60 * 1000).toISOString()
-  }
-];
-
-// Mock de notas internas expandido
-export const mockInternalNotes = [
-  {
-    id: 'note-1',
-    user_id: 'user-1',
-    user_name: 'Ana Silva',
-    specialist_id: 'spec-1',
-    specialist_name: 'Dr. João Costa',
-    content: 'Utilizadora demonstra sinais de burnout severo. Relata insónia persistente há 3 semanas e dificuldade em concentração no trabalho. Situação agravada por pressão de prazos. Encaminhada para psicóloga especializada em saúde ocupacional com prioridade alta.',
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    pillar: 'psychological' as const,
-    action_taken: 'Encaminhado para prestador'
-  },
-  {
-    id: 'note-2',
-    user_id: 'user-3',
-    user_name: 'Maria Costa',
-    specialist_id: 'spec-1',
-    specialist_name: 'Dr. João Costa',
-    content: 'Situação financeira delicada devido a dívidas acumuladas de crédito pessoal e cartões. Fornecidas orientações iniciais sobre renegociação com credores e consolidação de dívidas. Utilizadora demonstrou interesse em sessão mais detalhada com consultor financeiro.',
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    pillar: 'financial' as const,
-    action_taken: 'Resolvido na chamada'
-  },
-  {
-    id: 'note-3',
-    user_id: 'user-5',
-    user_name: 'Pedro Alves',
-    specialist_id: 'spec-1',
-    specialist_name: 'Dr. João Costa',
-    content: 'Questão legal sobre alegado despedimento sem justa causa. Caso requer análise jurídica especializada urgente. Utilizador demonstra ansiedade elevada e receio de perder direitos. Agendada sessão urgente com advogado trabalhista para análise detalhada do contrato e documentação.',
-    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    pillar: 'legal' as const,
-    action_taken: 'Encaminhado para prestador'
-  },
-  {
-    id: 'note-4',
-    user_id: 'user-4',
-    user_name: 'João Ferreira',
-    specialist_id: 'spec-1',
-    specialist_name: 'Dr. João Costa',
-    content: 'Dores lombares crónicas relacionadas ao trabalho remoto. Postura inadequada durante longos períodos ao computador. Fornecidas dicas ergonómicas básicas. Recomendada avaliação com fisioterapeuta para plano de exercícios específicos.',
-    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    pillar: 'physical' as const,
-    action_taken: 'Encaminhado para prestador'
-  }
-];
-
 // Available users for referrals (from assigned companies)
 export const mockAvailableUsers = [
   { id: 'user-1', name: 'Ana Silva', email: 'ana.silva@empresa.co.mz', company_id: 'comp-1', company: 'Empresa Exemplo Lda' },
@@ -622,9 +507,7 @@ export const mockAvailableUsers = [
   { id: 'user-3', name: 'Maria Costa', email: 'maria.costa@empresa.co.mz', company_id: 'comp-1', company: 'Empresa Exemplo Lda' },
   { id: 'user-4', name: 'João Ferreira', email: 'joao.ferreira@empresa.co.mz', company_id: 'comp-1', company: 'Empresa Exemplo Lda' },
   { id: 'user-5', name: 'Sofia Rodrigues', email: 'sofia.rodrigues@tech.co.mz', company_id: 'comp-2', company: 'Tech Solutions MZ' },
-  { id: 'user-6', name: 'Pedro Mendes', email: 'pedro.mendes@empresa.co.mz', company_id: 'comp-1', company: 'Empresa Exemplo Lda' },
-  { id: 'user-7', name: 'Teresa Almeida', email: 'teresa.almeida@empresa.co.mz', company_id: 'comp-1', company: 'Empresa Exemplo Lda' },
-  { id: 'user-8', name: 'Ricardo Nunes', email: 'ricardo.nunes@tech.co.mz', company_id: 'comp-2', company: 'Tech Solutions MZ' }
+  { id: 'user-6', name: 'Pedro Mendes', email: 'pedro.mendes@empresa.co.mz', company_id: 'comp-1', company: 'Empresa Exemplo Lda' }
 ];
 
 // Mock admin alerts data
