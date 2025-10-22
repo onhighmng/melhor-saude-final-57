@@ -15,7 +15,6 @@ import {
   LogOut,
   Calendar,
   Settings,
-  BookOpen,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -43,11 +42,6 @@ const CompanySidebar = () => {
       label: "Relatórios e Impacto",
       href: "/company/relatorios",
       icon: <BarChart3 className="text-primary h-5 w-5 flex-shrink-0" />,
-    },
-    {
-      label: "Recursos",
-      href: "/company/recursos",
-      icon: <BookOpen className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Sessões",
