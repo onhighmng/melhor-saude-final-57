@@ -34,85 +34,13 @@ const EspecialistaStatsRevamped = () => {
         </p>
       </div>
 
-      <BentoGrid className="lg:grid-rows-3 gap-4">
-        {/* Casos Mensais - Top Left */}
-        <BentoCard
-          name="Casos Mensais"
-          description="Total de casos atendidos"
-          Icon={CheckCircle}
-          className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50" />}
-          iconColor="text-purple-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        >
-          <div className="p-6 flex flex-col items-center justify-center h-full">
-            <div className="text-5xl font-bold text-purple-600 mb-2">{stats.monthly_cases}</div>
-            <p className="text-sm text-gray-600">casos este mês</p>
-            <div className="flex items-center gap-1 mt-2 text-green-600">
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-sm font-medium">+{stats.weekly_cases} esta semana</span>
-            </div>
-          </div>
-        </BentoCard>
-
-        {/* Tempo Médio - Top Middle */}
-        <BentoCard
-          name="Tempo Médio de Resposta"
-          description="Velocidade de atendimento"
-          Icon={Clock}
-          className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
-          iconColor="text-blue-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        >
-          <div className="p-6 flex flex-col items-center justify-center h-full">
-            <div className="text-5xl font-bold text-blue-600 mb-2">{stats.avg_response_time_minutes}</div>
-            <p className="text-sm text-gray-600">minutos</p>
-            <Badge variant="secondary" className="mt-2">
-              Abaixo da meta (45min)
-            </Badge>
-          </div>
-        </BentoCard>
-
-        {/* Rating Médio - Top Right */}
-        <BentoCard
-          name="Avaliação Média"
-          description="Satisfação dos utilizadores"
-          Icon={Star}
-          className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
-          iconColor="text-green-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        >
-          <div className="p-6 flex flex-col items-center justify-center h-full">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="text-5xl font-bold text-green-600">{stats.avg_rating}</div>
-              <div className="text-2xl text-gray-400">/10</div>
-            </div>
-            <div className="flex gap-1 mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-              ))}
-            </div>
-            <p className="text-sm text-gray-600">{stats.satisfaction_rate}% satisfeitos</p>
-          </div>
-        </BentoCard>
-
-        {/* Taxa de Resolução - Middle Left */}
+      <BentoGrid className="lg:grid-rows-2 gap-4">
+        {/* Taxa de Resolução - Top Left */}
         <BentoCard
           name="Taxa de Resolução"
           description="Casos resolvidos internamente vs encaminhados"
           Icon={TrendingUp}
-          className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3"
+          className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
           background={<div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-amber-50" />}
           iconColor="text-orange-600"
           textColor="text-gray-900"
@@ -150,12 +78,12 @@ const EspecialistaStatsRevamped = () => {
           </div>
         </BentoCard>
 
-        {/* Evolução Mensal - Middle Right */}
+        {/* Evolução Mensal - Top Right */}
         <BentoCard
           name="Evolução Mensal"
           description="Crescimento de casos atendidos"
           Icon={TrendingUp}
-          className="lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:row-end-3"
+          className="lg:col-start-2 lg:col-end-4 lg:row-start-1 lg:row-end-2"
           background={<div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-blue-50" />}
           iconColor="text-indigo-600"
           textColor="text-gray-900"
@@ -193,7 +121,7 @@ const EspecialistaStatsRevamped = () => {
           name="Top Pilares Atendidos"
           description="Distribuição por especialidade"
           Icon={CheckCircle}
-          className="lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4"
+          className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3"
           background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
           iconColor="text-green-600"
           textColor="text-gray-900"
@@ -225,7 +153,7 @@ const EspecialistaStatsRevamped = () => {
           name="Feedback Recente"
           description="Últimas avaliações dos utilizadores"
           Icon={Star}
-          className="lg:col-start-2 lg:col-end-4 lg:row-start-3 lg:row-end-4"
+          className="lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:row-end-3"
           background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
           iconColor="text-yellow-600"
           textColor="text-gray-900"
