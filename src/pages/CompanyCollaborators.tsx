@@ -45,6 +45,16 @@ const CompanyCollaborators = () => {
   }, []);
 
   const generateInviteCode = () => {
+    // Check if we can still generate codes based on available seats
+    if (generatedCodes.length >= company.seatAvailable) {
+      toast({
+        title: "Limite atingido",
+        description: `Já foram gerados ${company.seatAvailable} códigos (limite disponível)`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     const code = `MS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     setGeneratedCodes([...generatedCodes, code]);
     toast({
@@ -216,11 +226,11 @@ const CompanyCollaborators = () => {
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   onClick={generateInviteCode}
-                  disabled={company.seatAvailable === 0}
+                  disabled={company.seatAvailable === 0 || generatedCodes.length >= company.seatAvailable}
                   variant="outline"
                 >
                   <Key className="h-4 w-4 mr-2" />
-                  Gerar Código
+                  Gerar Código ({generatedCodes.length}/{company.seatAvailable})
                 </Button>
 
                 {generatedCodes.length > 0 && (
@@ -235,6 +245,15 @@ const CompanyCollaborators = () => {
                   </>
                 )}
               </div>
+
+              {generatedCodes.length >= company.seatAvailable && company.seatAvailable > 0 && (
+                <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950/20">
+                  <XCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-amber-800 dark:text-amber-200">
+                    Limite de códigos atingido. Já foram gerados {company.seatAvailable} códigos disponíveis.
+                  </p>
+                </div>
+              )}
 
               {generatedCodes.length > 0 && (
                 <div className="border rounded-lg divide-y max-h-64 overflow-y-auto">
