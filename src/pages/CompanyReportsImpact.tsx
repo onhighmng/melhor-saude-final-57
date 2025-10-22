@@ -226,9 +226,9 @@ const CompanyReportsImpact = () => {
                     style={{ backgroundColor: pillar.color }}
                   ></div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium">{pillar.pillar}</span>
+                    <span className="text-base font-medium">{pillar.pillar}</span>
                     <span className="text-5xl font-extrabold text-foreground font-sans">{pillar.sessions}</span>
-                    <span className="text-xs text-muted-foreground">sessões</span>
+                    <span className="text-sm text-muted-foreground">sessões</span>
                   </div>
                 </div>
               ))}
