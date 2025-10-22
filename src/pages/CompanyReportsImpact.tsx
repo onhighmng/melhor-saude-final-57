@@ -89,8 +89,8 @@ const CompanyReportsImpact = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Relatórios e Impacto</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-4xl font-bold text-foreground">Relatórios e Impacto</h1>
+          <p className="text-muted-foreground mt-1 text-lg">
             Análise detalhada do bem-estar dos colaboradores e impacto dos programas
           </p>
         </div>
@@ -192,7 +192,7 @@ const CompanyReportsImpact = () => {
         {/* Distribution by Pillar */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-xl">
               <PieChart className="h-5 w-5" />
               Distribuição por Pilar
             </CardTitle>
@@ -236,7 +236,7 @@ const CompanyReportsImpact = () => {
         {/* Wellness Trend */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-xl">
               <TrendingUp className="h-5 w-5" />
               Tendência de Melhoria
             </CardTitle>
@@ -259,6 +259,7 @@ const CompanyReportsImpact = () => {
                       value === 'avgWellness' ? 'Bem-estar médio' : 
                       value === 'sessions' ? 'Sessões realizadas' : value
                     }
+                    wrapperStyle={{ fontSize: '16px' }}
                   />
                   <Line 
                     type="monotone" 
@@ -276,16 +277,6 @@ const CompanyReportsImpact = () => {
                   />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
-            <div className="mt-4 flex justify-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-                <span>Bem-estar médio</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-600 rounded-full"></div>
-                <span>Sessões realizadas</span>
-              </div>
             </div>
           </CardContent>
         </Card>
