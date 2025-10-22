@@ -320,13 +320,12 @@ export default function PrestadorSessions() {
                   <th className="text-left p-4 font-medium">Tipo</th>
                   <th className="text-left p-4 font-medium">Estado</th>
                   <th className="text-left p-4 font-medium">Avaliação</th>
-                  <th className="text-left p-4 font-medium">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredSessions.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-muted-foreground">
+                    <td colSpan={6} className="text-center py-12 text-muted-foreground">
                       Nenhuma sessão encontrada com os filtros aplicados
                     </td>
                   </tr>
@@ -367,30 +366,6 @@ export default function PrestadorSessions() {
                         ) : (
                           <span className="text-muted-foreground text-sm">Não avaliado</span>
                         )}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleViewSession(session)}
-                            className="gap-1"
-                          >
-                            <Eye className="h-4 w-4" />
-                            Ver Detalhes
-                          </Button>
-                          {session.status === 'Concluída' && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleAddNotes(session)}
-                              className="gap-1"
-                            >
-                              <Plus className="h-4 w-4" />
-                              Notas
-                            </Button>
-                          )}
-                        </div>
                       </td>
                     </tr>
                   ))
