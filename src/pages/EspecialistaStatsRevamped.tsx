@@ -52,24 +52,24 @@ const EspecialistaStatsRevamped = () => {
             <div className="space-y-14">
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <span className="text-xl font-semibold">Resolução Interna</span>
-                  <span className="text-5xl font-bold text-green-600">{stats.internal_resolution_rate}%</span>
+                  <span className="text-2xl font-semibold">Resolução Interna</span>
+                  <span className="text-5xl font-bold text-blue-900">{stats.internal_resolution_rate}%</span>
                 </div>
                 <div className="h-6 bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-green-600 transition-all"
+                    className="h-full bg-blue-900 transition-all"
                     style={{ width: `${stats.internal_resolution_rate}%` }}
                   />
                 </div>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <span className="text-xl font-semibold">Encaminhamentos</span>
-                  <span className="text-5xl font-bold text-purple-600">{stats.referral_rate}%</span>
+                  <span className="text-2xl font-semibold">Encaminhamentos</span>
+                  <span className="text-5xl font-bold text-blue-900">{stats.referral_rate}%</span>
                 </div>
                 <div className="h-6 bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-600 transition-all"
+                    className="h-full bg-blue-900 transition-all"
                     style={{ width: `${stats.referral_rate}%` }}
                   />
                 </div>
