@@ -47,7 +47,9 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
       'in-person': 'Presencial',
       phone: 'Chamada Telefónica',
       'phone-call': 'Chamada Telefónica',
-      call: 'Chamada Telefónica'
+      call: 'Chamada Telefónica',
+      individual: 'Sessão Individual',
+      group: 'Sessão em Grupo'
     };
     return types[type?.toLowerCase() as keyof typeof types] || type;
   };
