@@ -16,7 +16,6 @@ const EspecialistaSettings = () => {
   // Modal states
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false);
-  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   
   // Profile data
   const [profileData, setProfileData] = useState({
@@ -54,14 +53,14 @@ const EspecialistaSettings = () => {
 
       {/* Bento Grid Layout */}
       <div className="w-full flex-1">
-        <BentoGrid className="lg:grid-rows-2 h-full grid-cols-2" style={{ gridAutoRows: '1fr', gridTemplateColumns: '1fr 1fr' }}>
+        <BentoGrid className="h-full grid-cols-2" style={{ gridAutoRows: '1fr', gridTemplateColumns: '1fr 1fr' }}>
           <BentoCard
             name="Perfil"
             description={profile?.name || "Especialista"}
             Icon={User}
             href="#"
             cta="Editar"
-            className="lg:row-start-1 lg:row-end-2 col-span-1"
+            className="col-span-1"
             background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50" />}
             onClick={() => setIsProfileModalOpen(true)}
             iconColor="text-blue-600"
@@ -75,24 +74,10 @@ const EspecialistaSettings = () => {
             Icon={Bell}
             href="#"
             cta="Configurar"
-            className="lg:row-start-1 lg:row-end-2 col-span-1"
+            className="col-span-1"
             background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50" />}
             onClick={() => setIsNotificationsModalOpen(true)}
             iconColor="text-amber-600"
-            textColor="text-gray-900"
-            descriptionColor="text-gray-600"
-          />
-
-          <BentoCard
-            name="Acesso e Permissões"
-            description="Função e empresas atribuídas"
-            Icon={Shield}
-            href="#"
-            cta="Ver detalhes"
-            className="lg:row-start-2 lg:row-end-3 col-span-2"
-            background={<div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-50" />}
-            onClick={() => setIsAccessModalOpen(true)}
-            iconColor="text-emerald-600"
             textColor="text-gray-900"
             descriptionColor="text-gray-600"
           />
@@ -178,42 +163,6 @@ const EspecialistaSettings = () => {
           </DialogContent>
         </Dialog>
 
-        <Dialog open={isAccessModalOpen} onOpenChange={setIsAccessModalOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Acesso e Permissões</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Função</Label>
-                <Input value="Especialista Geral" readOnly />
-              </div>
-              <div className="space-y-2">
-                <Label>Empresas Atribuídas</Label>
-                <Input value="3 empresas" readOnly />
-              </div>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Permissões</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• Gerir pedidos de chamada dos colaboradores</li>
-                    <li>• Realizar sessões 1:1 com colaboradores</li>
-                    <li>• Ver chats de triagem e pré-diagnóstico</li>
-                    <li>• Encaminhar casos para prestadores externos</li>
-                    <li>• Adicionar notas internas nos perfis dos utilizadores</li>
-                  </ul>
-                </CardContent>
-              </Card>
-              <div className="flex justify-end">
-                <Button onClick={() => setIsAccessModalOpen(false)}>
-                  Fechar
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
