@@ -12,7 +12,7 @@ export default function AdminResources() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      <Tabs value={defaultTab} className="w-full">
+      <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="recursos">Recursos</TabsTrigger>
           <TabsTrigger value="recomendacoes">Recomendações</TabsTrigger>
