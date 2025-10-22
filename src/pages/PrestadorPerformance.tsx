@@ -213,26 +213,26 @@ const PrestadorPerformance = () => {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left p-4 font-medium">Mês</th>
-                  <th className="text-right p-4 font-medium">Sessões</th>
-                  <th className="text-right p-4 font-medium">Valor Bruto</th>
-                  <th className="text-right p-4 font-medium">Comissão (25%)</th>
-                  <th className="text-right p-4 font-medium">Total Líquido</th>
+                  <th className="text-left p-4 font-medium text-base">Mês</th>
+                  <th className="text-right p-4 font-medium text-base">Sessões</th>
+                  <th className="text-right p-4 font-medium text-base">Valor Bruto</th>
+                  <th className="text-right p-4 font-medium text-base">Comissão (25%)</th>
+                  <th className="text-right p-4 font-medium text-base">Total Líquido</th>
                 </tr>
               </thead>
               <tbody>
                 {mockFinancialData.map((item, index) => (
                   <tr key={index} className="border-b hover:bg-muted/30">
-                    <td className="p-4 font-medium">{item.month}</td>
-                    <td className="p-4 text-right">{item.sessions}</td>
-                    <td className="p-4 text-right">{item.grossValue.toLocaleString('pt-PT')} MZN</td>
-                    <td className="p-4 text-right text-orange-600">
+                    <td className="p-4 font-medium text-base">{item.month}</td>
+                    <td className="p-4 text-right text-base">{item.sessions}</td>
+                    <td className="p-4 text-right text-base">{item.grossValue.toLocaleString('pt-PT')} MZN</td>
+                    <td className="p-4 text-right text-orange-600 text-base">
                       {item.commission.toLocaleString('pt-PT')} MZN
                     </td>
-                    <td className="p-4 text-right text-green-600 font-semibold">
+                    <td className="p-4 text-right text-green-600 font-semibold text-base">
                       {item.netValue.toLocaleString('pt-PT')} MZN
                     </td>
                   </tr>
@@ -240,13 +240,13 @@ const PrestadorPerformance = () => {
               </tbody>
               <tfoot>
                 <tr className="border-t-2 bg-muted/30">
-                  <td className="p-4 font-bold">Total</td>
-                  <td className="p-4 text-right font-bold">{totalSessions}</td>
-                  <td className="p-4 text-right font-bold">{totalGrossValue.toLocaleString('pt-PT')} MZN</td>
-                  <td className="p-4 text-right font-bold text-orange-600">
+                  <td className="p-4 font-bold text-base">Total</td>
+                  <td className="p-4 text-right font-bold text-base">{totalSessions}</td>
+                  <td className="p-4 text-right font-bold text-base">{totalGrossValue.toLocaleString('pt-PT')} MZN</td>
+                  <td className="p-4 text-right font-bold text-orange-600 text-base">
                     {totalCommission.toLocaleString('pt-PT')} MZN
                   </td>
-                  <td className="p-4 text-right font-bold text-green-600">
+                  <td className="p-4 text-right font-bold text-green-600 text-base">
                     {totalNetValue.toLocaleString('pt-PT')} MZN
                   </td>
                 </tr>
