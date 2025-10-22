@@ -83,9 +83,9 @@ const AdminUsersManagement = () => {
                 description="Gerir especialistas" 
                 Icon={UserCog} 
                 onClick={() => handleTabChange('providers')} 
-                className={`col-span-1 ${activeTab === 'providers' ? 'ring-2 ring-purple-500' : ''}`}
+                className={`col-span-1 ${activeTab === 'providers' ? 'ring-2 ring-yellow-500' : ''}`}
                 background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'providers' ? 'from-yellow-100 to-yellow-200' : 'from-yellow-50 to-yellow-100'}`} />}
-                iconColor="text-purple-600"
+                iconColor="text-yellow-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
