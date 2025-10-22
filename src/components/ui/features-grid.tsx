@@ -28,7 +28,7 @@ export function FeaturesGrid({
     seatUsagePercent = 0
 }: FeaturesGridProps) {
     return (
-        <section className="bg-background py-16 md:py-24">
+        <section className="py-16 md:py-24">
             <div className="mx-auto max-w-7xl px-6">
                 <div className="mx-auto grid gap-2 sm:grid-cols-5">
                     <Card className="group overflow-hidden shadow-black/5 sm:col-span-3 sm:rounded-none sm:rounded-tl-xl hover-lift">
