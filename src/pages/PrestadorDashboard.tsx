@@ -128,13 +128,16 @@ export default function PrestadorDashboard() {
   const groupedSessions = groupSessionsByDate(filteredSessions);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="space-y-6">
       {/* Header */}
-      <PageHeader
-        title={`Bem-vindo, ${mockPrestadorUser.name.split(' ')[0]}`}
-        subtitle="Gerir as suas sessões e disponibilidade"
-        className="bg-white border-b"
-      />
+      <div>
+        <h1 className="text-3xl font-bold text-foreground">
+          Bem-vindo, {mockPrestadorUser.name.split(' ')[0]}
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Gerir as suas sessões e disponibilidade
+        </p>
+      </div>
 
       {/* Online Status & Filters Bar */}
       <div className="bg-white border-b px-4 py-3">
@@ -203,8 +206,7 @@ export default function PrestadorDashboard() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           
           {/* Main Sessions Column */}
           <div className="lg:col-span-3 space-y-6">
@@ -437,7 +439,6 @@ export default function PrestadorDashboard() {
             </Card>
           </div>
         </div>
-      </div>
     </div>
   );
 }

@@ -24,7 +24,7 @@ export function PrestadorLayout({ children }: PrestadorLayoutProps) {
           }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          <div className={`flex-1 overflow-y-auto ${isFullScreenPage ? '' : 'p-6'}`}>
+          <div className={`flex-1 overflow-y-auto bg-gray-100 ${isFullScreenPage ? '' : 'p-6'}`}>
             <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
               {children}
             </div>

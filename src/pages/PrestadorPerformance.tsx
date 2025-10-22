@@ -44,7 +44,7 @@ const PrestadorPerformance = () => {
   const totalSessions = mockFinancialData.reduce((sum, item) => sum + item.sessions, 0);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
