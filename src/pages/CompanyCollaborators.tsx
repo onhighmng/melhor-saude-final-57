@@ -4,10 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Users,
-  UserPlus,
   Key,
   Copy,
   Download,
@@ -21,13 +19,11 @@ import {
   BarChart3
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { InviteEmployeeModal } from '@/components/company/InviteEmployeeModal';
 import { mockCompanies } from '@/data/companyMockData';
 import { mockEmployeeMetrics } from '@/data/companyMetrics';
 
 const CompanyCollaborators = () => {
   const { toast } = useToast();
-  const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
   
   // Mock company data (in real app, fetch from context/API)
@@ -160,142 +156,91 @@ const CompanyCollaborators = () => {
         </CardContent>
       </Card>
 
-      {/* Main Functionality Tabs */}
-      <Tabs defaultValue="invite" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="invite">Convidar Colaborador</TabsTrigger>
-          <TabsTrigger value="codes">Códigos de Acesso</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="invite" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Convite Individual</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Envie um convite personalizado por e-mail para um colaborador
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  onClick={() => setInviteModalOpen(true)}
-                  disabled={company.seatAvailable === 0}
-                  className="w-full sm:w-auto"
-                >
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Convidar por E-mail
-                </Button>
-              </div>
-
-              {company.seatAvailable === 0 && (
-                <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                  <XCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-destructive">
-                    Todas as contas estão em uso. Contacte o administrador para aumentar o limite.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="codes" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Geração de Códigos</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Crie códigos de acesso únicos para distribuição em massa
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  onClick={generateInviteCode}
-                  disabled={company.seatAvailable === 0 || generatedCodes.length >= company.seatAvailable}
-                  variant="outline"
-                >
-                  <Key className="h-4 w-4 mr-2" />
-                  Gerar Código ({generatedCodes.length}/{company.seatAvailable})
-                </Button>
-
-                {generatedCodes.length > 0 && (
-                  <>
-                    <Button 
-                      onClick={downloadCodes}
-                      variant="outline"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Exportar Códigos ({generatedCodes.length})
-                    </Button>
-                  </>
-                )}
-              </div>
-
-              {generatedCodes.length >= company.seatAvailable && company.seatAvailable > 0 && (
-                <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950/20">
-                  <XCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-amber-800 dark:text-amber-200">
-                    Limite de códigos atingido. Já foram gerados {company.seatAvailable} códigos disponíveis.
-                  </p>
-                </div>
-              )}
+      {/* Code Generation Section */}
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Geração de Códigos</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Crie códigos de acesso únicos para distribuição em massa
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                onClick={generateInviteCode}
+                disabled={company.seatAvailable === 0 || generatedCodes.length >= company.seatAvailable}
+                variant="outline"
+              >
+                <Key className="h-4 w-4 mr-2" />
+                Gerar Código ({generatedCodes.length}/{company.seatAvailable})
+              </Button>
 
               {generatedCodes.length > 0 && (
-                <div className="border rounded-lg divide-y max-h-64 overflow-y-auto">
-                  {generatedCodes.map((code, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 hover:bg-muted/50">
-                      <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
-                        {code}
-                      </code>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(code)}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <Button 
+                    onClick={downloadCodes}
+                    variant="outline"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Exportar Códigos ({generatedCodes.length})
+                  </Button>
+                </>
               )}
+            </div>
 
-              {generatedCodes.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Key className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                  <p className="text-sm">Nenhum código gerado ainda</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            {generatedCodes.length >= company.seatAvailable && company.seatAvailable > 0 && (
+              <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950/20">
+                <XCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-amber-800 dark:text-amber-200">
+                  Limite de códigos atingido. Já foram gerados {company.seatAvailable} códigos disponíveis.
+                </p>
+              </div>
+            )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload em Massa</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Importe uma lista de colaboradores via ficheiro CSV
-              </p>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" disabled>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload CSV (Em breve)
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            {generatedCodes.length > 0 && (
+              <div className="border rounded-lg divide-y max-h-64 overflow-y-auto">
+                {generatedCodes.map((code, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 hover:bg-muted/50">
+                    <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                      {code}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(code)}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
 
-      <InviteEmployeeModal
-        isOpen={inviteModalOpen}
-        onClose={() => setInviteModalOpen(false)}
-        company={company}
-        onInviteSuccess={() => {
-          toast({
-            title: "Convite enviado",
-            description: "O colaborador receberá as credenciais por e-mail",
-          });
-        }}
-      />
+            {generatedCodes.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <Key className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                <p className="text-sm">Nenhum código gerado ainda</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Upload em Massa</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Importe uma lista de colaboradores via ficheiro CSV
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" disabled>
+              <Upload className="h-4 w-4 mr-2" />
+              Upload CSV (Em breve)
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
