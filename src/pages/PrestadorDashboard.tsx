@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PageHeader } from '@/components/ui/page-header';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { 
   Calendar, 
   Clock, 
@@ -19,11 +20,11 @@ import {
   MoreHorizontal,
   Wifi,
   WifiOff,
-  Filter,
   TrendingUp,
   CalendarDays,
   Settings,
-  FileText
+  FileText,
+  BarChart3
 } from 'lucide-react';
 import { mockPrestadorSessions, mockPrestadorMetrics, mockPrestadorUser } from '@/data/mockData';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
@@ -38,6 +39,7 @@ const pillarIcons = {
 };
 
 export default function PrestadorDashboard() {
+  const navigate = useNavigate();
   const [isOnline, setIsOnline] = useState(true);
   const [timeFilter, setTimeFilter] = useState<'hoje' | 'proximos7dias'>('hoje');
   const [sessions, setSessions] = useState(mockPrestadorSessions);
@@ -139,9 +141,68 @@ export default function PrestadorDashboard() {
         </p>
       </div>
 
+      {/* Quick Access Navigation - Bento Grid */}
+      <BentoGrid className="grid-rows-1 auto-rows-[100px]" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        <BentoCard 
+          name="Calendário" 
+          description="Gerir disponibilidade e horários" 
+          Icon={CalendarDays} 
+          onClick={() => navigate('/prestador/calendario')} 
+          className="col-span-1"
+          background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
+          iconColor="text-blue-600"
+          textColor="text-gray-900"
+          descriptionColor="text-gray-600"
+          href="#"
+          cta=""
+        />
+
+        <BentoCard 
+          name="Sessões" 
+          description="Histórico e gestão de sessões" 
+          Icon={Clock} 
+          onClick={() => navigate('/prestador/sessoes')} 
+          className="col-span-1"
+          background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100" />}
+          iconColor="text-green-600"
+          textColor="text-gray-900"
+          descriptionColor="text-gray-600"
+          href="#"
+          cta=""
+        />
+
+        <BentoCard 
+          name="Desempenho" 
+          description="Métricas e análise financeira" 
+          Icon={BarChart3} 
+          onClick={() => navigate('/prestador/desempenho')} 
+          className="col-span-1"
+          background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100" />}
+          iconColor="text-purple-600"
+          textColor="text-gray-900"
+          descriptionColor="text-gray-600"
+          href="#"
+          cta=""
+        />
+
+        <BentoCard 
+          name="Configurações" 
+          description="Perfil e definições" 
+          Icon={Settings} 
+          onClick={() => navigate('/prestador/configuracoes')} 
+          className="col-span-1"
+          background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100" />}
+          iconColor="text-amber-600"
+          textColor="text-gray-900"
+          descriptionColor="text-gray-600"
+          href="#"
+          cta=""
+        />
+      </BentoGrid>
+
       {/* Online Status & Filters Bar */}
-      <div className="bg-white border-b px-4 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="bg-white border rounded-lg px-4 py-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Online Status Toggle */}
             <div className="flex items-center gap-2">
@@ -179,30 +240,17 @@ export default function PrestadorDashboard() {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="hidden sm:flex">
-              <CalendarDays className="w-4 h-4 mr-2" />
-              Calendário
-            </Button>
-            <Button variant="outline" size="sm" className="hidden sm:flex">
-              <FileText className="w-4 h-4 mr-2" />
-              Notas
-            </Button>
-            <Button variant="outline" size="sm">
-              <Settings className="w-4 h-4 mr-2" />
-              Definições
-            </Button>
+          {/* Time Filter Label */}
+          <div className="text-sm text-muted-foreground">
+            {timeFilter === 'hoje' ? 'Sessões de Hoje' : 'Próximos 7 Dias'}
           </div>
         </div>
       </div>
 
       {/* Offline Banner */}
       {!isOnline && (
-        <div className="bg-red-500 text-white px-4 py-2 text-center text-sm">
-          <div className="max-w-7xl mx-auto">
-            Está atualmente offline. As marcações não serão atribuídas até ficar online novamente.
-          </div>
+        <div className="bg-red-500 text-white px-4 py-3 rounded-lg text-center text-sm">
+          Está atualmente offline. As marcações não serão atribuídas até ficar online novamente.
         </div>
       )}
 
