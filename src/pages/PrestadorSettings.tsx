@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
 import { 
   User, 
   Camera, 
@@ -16,7 +16,6 @@ import {
   Clock,
   Euro,
   Lock,
-  Globe,
   Brain,
   Heart,
   DollarSign,
@@ -28,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 const PrestadorSettings = () => {
   const [settings, setSettings] = useState(mockPrestadorSettings);
   const [isEditing, setIsEditing] = useState(false);
+  const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState({
     current: '',
     new: '',
@@ -73,11 +73,8 @@ const PrestadorSettings = () => {
     setIsEditing(false);
   };
 
-  const handleUpdateAvailability = () => {
-    toast({
-      title: "Disponibilidade atualizada",
-      description: "Os seus horários de disponibilidade foram atualizados"
-    });
+  const handleOpenAvailability = () => {
+    setIsAvailabilityModalOpen(true);
   };
 
   const handleChangePassword = () => {
@@ -123,212 +120,236 @@ const PrestadorSettings = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Personal Information */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Informação Pessoal
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Profile Picture */}
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
-                <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-                  {settings.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              {isEditing && (
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Camera className="h-4 w-4" />
-                  Alterar Foto
-                </Button>
-              )}
-            </div>
-
-            {/* Basic Info */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nome completo</Label>
-                <Input
-                  id="name"
-                  value={settings.name}
-                  onChange={(e) => setSettings({ ...settings, name: e.target.value })}
-                  disabled={!isEditing}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={settings.email}
-                  onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                  disabled={!isEditing}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="pillar">Pilar</Label>
-                <div className="mt-1">
-                  <Badge className={`${getPillarBadgeColor(settings.pillar)} flex items-center gap-1 w-fit`}>
-                    {getPillarIcon(settings.pillar)}
-                    {settings.pillar}
-                  </Badge>
+      <div className="h-[calc(100vh-200px)]">
+        <BentoGrid className="h-full grid-rows-2 gap-4">
+          {/* Personal Information */}
+          <BentoCard
+            name="Informação Pessoal"
+            description={`${settings.name} - ${settings.email}`}
+            Icon={User}
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
+            iconColor="text-blue-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta=""
+          >
+            <div className="relative z-30 flex flex-col h-full p-6 overflow-y-auto">
+              <div className="space-y-4">
+                {/* Profile Picture */}
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+                      {settings.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                  {isEditing && (
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Camera className="h-3 w-3" />
+                      Alterar Foto
+                    </Button>
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  O pilar não pode ser alterado
-                </p>
-              </div>
-            </div>
 
-            {isEditing && (
-              <Button onClick={handleSaveProfile} className="w-full gap-2">
-                <Save className="h-4 w-4" />
-                Guardar Alterações
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Financial Information */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Euro className="h-5 w-5" />
-              Informação Financeira
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <Label htmlFor="costPerSession">Valor por sessão (MZN)</Label>
-              <div className="relative mt-1">
-                <Input
-                  id="costPerSession"
-                  value={settings.costPerSession}
-                  disabled
-                  className="pl-8"
-                />
-                <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Este valor é apenas para visualização e não pode ser alterado
-              </p>
-            </div>
-
-            <div className="p-4 bg-muted/30 rounded-lg">
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Informação sobre Pagamentos
-              </h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Recebe 75% do valor por sessão</li>
-                <li>• 25% é retido como comissão da plataforma</li>
-                <li>• Pagamentos são processados mensalmente</li>
-                <li>• Consulte a secção "Desempenho" para detalhes financeiros</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Availability Settings */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Disponibilidade
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="preferredHours">Horários Preferidos</Label>
-              <Input
-                id="preferredHours"
-                value={settings.preferredHours}
-                onChange={(e) => setSettings({ ...settings, preferredHours: e.target.value })}
-                disabled={!isEditing}
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label>Disponibilidade Semanal</Label>
-              <div className="mt-2 space-y-2">
-                {settings.availability.map((day, index) => (
-                  <div key={index} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                    <div className="w-20 text-sm font-medium">{day.split(':')[0]}:</div>
-                    <div className="flex-1 text-sm text-muted-foreground">{day.split(':')[1]}</div>
+                {/* Basic Info */}
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="name" className="text-xs">Nome completo</Label>
+                    <Input
+                      id="name"
+                      value={settings.name}
+                      onChange={(e) => setSettings({ ...settings, name: e.target.value })}
+                      disabled={!isEditing}
+                      className="mt-1 h-8 text-sm"
+                    />
                   </div>
-                ))}
+
+                  <div>
+                    <Label htmlFor="email" className="text-xs">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={settings.email}
+                      onChange={(e) => setSettings({ ...settings, email: e.target.value })}
+                      disabled={!isEditing}
+                      className="mt-1 h-8 text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="pillar" className="text-xs">Pilar</Label>
+                    <div className="mt-1">
+                      <Badge className={`${getPillarBadgeColor(settings.pillar)} flex items-center gap-1 w-fit text-xs`}>
+                        {getPillarIcon(settings.pillar)}
+                        {settings.pillar}
+                      </Badge>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      O pilar não pode ser alterado
+                    </p>
+                  </div>
+                </div>
+
+                {isEditing && (
+                  <Button onClick={handleSaveProfile} className="w-full gap-2 h-8 text-sm" size="sm">
+                    <Save className="h-3 w-3" />
+                    Guardar Alterações
+                  </Button>
+                )}
               </div>
             </div>
+          </BentoCard>
 
-            {isEditing && (
-              <Button onClick={handleUpdateAvailability} className="w-full gap-2">
-                <Clock className="h-4 w-4" />
-                Atualizar Disponibilidade
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+          {/* Financial Information */}
+          <BentoCard
+            name="Informação Financeira"
+            description={`${settings.costPerSession} MZN por sessão`}
+            Icon={Euro}
+            className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100" />}
+            iconColor="text-green-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta=""
+          >
+            <div className="relative z-30 flex flex-col h-full p-6 overflow-y-auto">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="costPerSession" className="text-xs">Valor por sessão (MZN)</Label>
+                  <div className="relative mt-1">
+                    <Input
+                      id="costPerSession"
+                      value={settings.costPerSession}
+                      disabled
+                      className="pl-8 h-8 text-sm"
+                    />
+                    <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Este valor é apenas para visualização e não pode ser alterado
+                  </p>
+                </div>
 
-        {/* Security Settings */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5" />
-              Segurança
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="currentPassword">Palavra-passe atual</Label>
-              <Input
-                id="currentPassword"
-                type="password"
-                value={newPassword.current}
-                onChange={(e) => setNewPassword({ ...newPassword, current: e.target.value })}
-                className="mt-1"
-              />
+                <div className="p-3 bg-white/80 rounded-lg">
+                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <Shield className="h-3 w-3" />
+                    Informação sobre Pagamentos
+                  </h4>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• Recebe 75% do valor por sessão</li>
+                    <li>• 25% é retido como comissão da plataforma</li>
+                    <li>• Pagamentos são processados mensalmente</li>
+                    <li>• Consulte a secção "Desempenho" para detalhes financeiros</li>
+                  </ul>
+                </div>
+              </div>
             </div>
+          </BentoCard>
 
-            <div>
-              <Label htmlFor="newPassword">Nova palavra-passe</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                value={newPassword.new}
-                onChange={(e) => setNewPassword({ ...newPassword, new: e.target.value })}
-                className="mt-1"
-              />
+          {/* Availability Settings */}
+          <BentoCard
+            name="Disponibilidade"
+            description="Configure os seus horários disponíveis"
+            Icon={Clock}
+            onClick={handleOpenAvailability}
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100" />}
+            iconColor="text-purple-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta="Gerir Horários"
+          >
+            <div className="relative z-30 flex flex-col h-full p-6 overflow-y-auto">
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs">Horários Preferidos</Label>
+                  <p className="text-sm font-medium mt-1">{settings.preferredHours}</p>
+                </div>
+
+                <div>
+                  <Label className="text-xs">Disponibilidade Semanal (Preview)</Label>
+                  <div className="mt-2 space-y-1">
+                    {settings.availability.slice(0, 3).map((day, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-white/80 rounded text-xs">
+                        <div className="w-16 font-medium">{day.split(':')[0]}:</div>
+                        <div className="flex-1 text-muted-foreground">{day.split(':')[1]}</div>
+                      </div>
+                    ))}
+                    {settings.availability.length > 3 && (
+                      <p className="text-[10px] text-muted-foreground text-center pt-1">
+                        +{settings.availability.length - 3} mais dias
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
+          </BentoCard>
 
-            <div>
-              <Label htmlFor="confirmPassword">Confirmar nova palavra-passe</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={newPassword.confirm}
-                onChange={(e) => setNewPassword({ ...newPassword, confirm: e.target.value })}
-                className="mt-1"
-              />
+          {/* Security Settings */}
+          <BentoCard
+            name="Segurança"
+            description="Alterar palavra-passe e configurações de segurança"
+            Icon={Lock}
+            className="lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100" />}
+            iconColor="text-red-600"
+            textColor="text-gray-900"
+            descriptionColor="text-gray-600"
+            href="#"
+            cta=""
+          >
+            <div className="relative z-30 flex flex-col h-full p-6 overflow-y-auto">
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="currentPassword" className="text-xs">Palavra-passe atual</Label>
+                  <Input
+                    id="currentPassword"
+                    type="password"
+                    value={newPassword.current}
+                    onChange={(e) => setNewPassword({ ...newPassword, current: e.target.value })}
+                    className="mt-1 h-8 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="newPassword" className="text-xs">Nova palavra-passe</Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    value={newPassword.new}
+                    onChange={(e) => setNewPassword({ ...newPassword, new: e.target.value })}
+                    className="mt-1 h-8 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="confirmPassword" className="text-xs">Confirmar nova palavra-passe</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={newPassword.confirm}
+                    onChange={(e) => setNewPassword({ ...newPassword, confirm: e.target.value })}
+                    className="mt-1 h-8 text-sm"
+                  />
+                </div>
+
+                <Button 
+                  onClick={handleChangePassword} 
+                  className="w-full gap-2 h-8 text-sm"
+                  size="sm"
+                  disabled={!newPassword.current || !newPassword.new || !newPassword.confirm}
+                >
+                  <Lock className="h-3 w-3" />
+                  Alterar Palavra-passe
+                </Button>
+              </div>
             </div>
-
-            <Button 
-              onClick={handleChangePassword} 
-              className="w-full gap-2"
-              disabled={!newPassword.current || !newPassword.new || !newPassword.confirm}
-            >
-              <Lock className="h-4 w-4" />
-              Alterar Palavra-passe
-            </Button>
-          </CardContent>
-        </Card>
+          </BentoCard>
+        </BentoGrid>
       </div>
 
       {/* GDPR Footer */}
@@ -347,6 +368,12 @@ const PrestadorSettings = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Availability Settings Modal */}
+      <AvailabilitySettings 
+        open={isAvailabilityModalOpen}
+        onOpenChange={setIsAvailabilityModalOpen}
+      />
     </div>
   );
 };
