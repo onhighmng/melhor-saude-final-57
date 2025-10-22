@@ -1,7 +1,15 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Brain, Heart, DollarSign, Scale, Users, TrendingUp, Key, CheckCircle } from 'lucide-react'
 
-export function FeaturesGrid() {
+interface FeaturesGridProps {
+  onGenerateCode: () => void;
+  codesGenerated: number;
+  seatsAvailable: number;
+  canGenerateMore: boolean;
+}
+
+export function FeaturesGrid({ onGenerateCode, codesGenerated, seatsAvailable, canGenerateMore }: FeaturesGridProps) {
     return (
         <section className="bg-background py-16 md:py-24">
             <div className="mx-auto max-w-7xl px-6">
@@ -33,6 +41,15 @@ export function FeaturesGrid() {
                                                 Códigos serão listados na secção abaixo para fácil distribuição
                                             </p>
                                         </div>
+                                        <Button 
+                                            size="lg" 
+                                            onClick={onGenerateCode}
+                                            disabled={!canGenerateMore}
+                                            className="gap-2 mt-4"
+                                        >
+                                            <Key className="h-5 w-5" />
+                                            Gerar Código ({codesGenerated}/{seatsAvailable})
+                                        </Button>
                                     </div>
                                 </div>
 
@@ -40,12 +57,12 @@ export function FeaturesGrid() {
                                     <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800 text-center">
                                         <Users className="h-6 w-6 text-blue-600 mx-auto mb-2" />
                                         <p className="text-sm text-muted-foreground">Contas Disponíveis</p>
-                                        <p className="text-2xl font-bold text-blue-600 mt-1">Ilimitado</p>
+                                        <p className="text-2xl font-bold text-blue-600 mt-1">{seatsAvailable}</p>
                                     </div>
                                     <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800 text-center">
                                         <CheckCircle className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
                                         <p className="text-sm text-muted-foreground">Códigos Gerados</p>
-                                        <p className="text-2xl font-bold text-emerald-600 mt-1">Ver abaixo</p>
+                                        <p className="text-2xl font-bold text-emerald-600 mt-1">{codesGenerated}</p>
                                     </div>
                                 </div>
                             </div>
