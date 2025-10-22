@@ -140,14 +140,7 @@ const CompanyDashboard = () => {
                 onClick={() => navigate('/company/relatorios')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
                 background={
-                  <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100">
-                    <div 
-                      className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
-                      style={{
-                        backgroundImage: "url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
-                      }}
-                    />
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100" />
                 }
                 iconColor="text-amber-700"
                 textColor="text-slate-900"
