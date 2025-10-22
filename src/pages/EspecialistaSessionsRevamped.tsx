@@ -25,6 +25,52 @@ const EspecialistaSessionsRevamped = () => {
   // Debug: Show all if filter returns empty (for demo purposes)
   const sessionsToShow = allSessions.length > 0 ? allSessions : mockEspecialistaSessions;
 
+  // Helper functions (moved before useMemo to avoid hoisting issues)
+  const getPillarLabel = (pillar: string) => {
+    const labels = {
+      psychological: 'Saúde Mental',
+      physical: 'Bem-Estar Físico',
+      financial: 'Assistência Financeira',
+      legal: 'Assistência Jurídica'
+    };
+    return labels[pillar as keyof typeof labels] || pillar;
+  };
+
+  const getPillarColor = (pillar: string) => {
+    const colors = {
+      psychological: 'bg-blue-100 text-blue-700',
+      physical: 'bg-green-100 text-green-700',
+      financial: 'bg-purple-100 text-purple-700',
+      legal: 'bg-orange-100 text-orange-700'
+    };
+    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
+  };
+
+  const getStatusBadge = (status: string) => {
+    const variants = {
+      scheduled: 'bg-blue-100 text-blue-700',
+      completed: 'bg-green-100 text-green-700',
+      cancelled: 'bg-red-100 text-red-700'
+    };
+    const labels = {
+      scheduled: 'Agendada',
+      completed: 'Concluída',
+      cancelled: 'Cancelada'
+    };
+    return {
+      variant: variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-700',
+      label: labels[status as keyof typeof labels] || status
+    };
+  };
+
+  const getSessionTypeIcon = (type: string) => {
+    return type === 'video' ? <Video className="h-4 w-4" /> : <Phone className="h-4 w-4" />;
+  };
+
+  const getSessionTypeLabel = (type: string) => {
+    return type === 'video' ? 'Vídeo' : 'Chamada';
+  };
+
   // Transform sessions data for calendar
   const calendarData = useMemo(() => {
     const groupedByDate = sessionsToShow.reduce((acc, session) => {
@@ -79,51 +125,6 @@ const EspecialistaSessionsRevamped = () => {
       setSelectedSession(session);
       setIsNoteModalOpen(true);
     }
-  };
-
-  const getPillarLabel = (pillar: string) => {
-    const labels = {
-      psychological: 'Saúde Mental',
-      physical: 'Bem-Estar Físico',
-      financial: 'Assistência Financeira',
-      legal: 'Assistência Jurídica'
-    };
-    return labels[pillar as keyof typeof labels] || pillar;
-  };
-
-  const getPillarColor = (pillar: string) => {
-    const colors = {
-      psychological: 'bg-blue-100 text-blue-700',
-      physical: 'bg-green-100 text-green-700',
-      financial: 'bg-purple-100 text-purple-700',
-      legal: 'bg-orange-100 text-orange-700'
-    };
-    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      scheduled: 'bg-blue-100 text-blue-700',
-      completed: 'bg-green-100 text-green-700',
-      cancelled: 'bg-red-100 text-red-700'
-    };
-    const labels = {
-      scheduled: 'Agendada',
-      completed: 'Concluída',
-      cancelled: 'Cancelada'
-    };
-    return {
-      variant: variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-700',
-      label: labels[status as keyof typeof labels] || status
-    };
-  };
-
-  const getSessionTypeIcon = (type: string) => {
-    return type === 'video' ? <Video className="h-4 w-4" /> : <Phone className="h-4 w-4" />;
-  };
-
-  const getSessionTypeLabel = (type: string) => {
-    return type === 'video' ? 'Vídeo' : 'Chamada';
   };
 
   const renderSessionCard = (session: any) => (
