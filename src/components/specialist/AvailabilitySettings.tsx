@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Plus, Trash2, Copy, Info } from 'lucide-react';
+import { Clock, Plus, Trash2, Copy, Info, Calendar as CalendarIcon, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -9,6 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format, isFuture, startOfToday } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface TimeSlot {
   id: string;
@@ -51,6 +56,8 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
 
   const [meetingDuration, setMeetingDuration] = useState('50');
   const [durationUnit, setDurationUnit] = useState('minutes');
+  const [blockedDates, setBlockedDates] = useState<Date[]>([]);
+  const [selectedBlockDate, setSelectedBlockDate] = useState<Date | undefined>();
 
   const toggleDay = (dayKey: string) => {
     setAvailability(prev => ({
@@ -115,6 +122,22 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
         )
       }
     }));
+  };
+
+  const addBlockedDate = (date: Date | undefined) => {
+    if (date && isFuture(date)) {
+      const dateExists = blockedDates.some(d => 
+        d.toDateString() === date.toDateString()
+      );
+      if (!dateExists) {
+        setBlockedDates(prev => [...prev, date].sort((a, b) => a.getTime() - b.getTime()));
+      }
+      setSelectedBlockDate(undefined);
+    }
+  };
+
+  const removeBlockedDate = (date: Date) => {
+    setBlockedDates(prev => prev.filter(d => d.toDateString() !== date.toDateString()));
   };
 
   return (
@@ -267,6 +290,87 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
                 );
               })}
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Blocked Dates */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Label className="text-base font-semibold">Datas Bloqueadas</Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Bloqueie datas específicas em que não estará disponível</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !selectedBlockDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedBlockDate ? format(selectedBlockDate, "PPP") : "Selecionar data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedBlockDate}
+                    onSelect={setSelectedBlockDate}
+                    disabled={(date) => !isFuture(date)}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <Button 
+                onClick={() => addBlockedDate(selectedBlockDate)}
+                disabled={!selectedBlockDate}
+              >
+                Bloquear Data
+              </Button>
+            </div>
+
+            {blockedDates.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">
+                  Datas bloqueadas ({blockedDates.length})
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {blockedDates.map((date, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="gap-2 pr-1 py-1.5"
+                    >
+                      <CalendarIcon className="h-3 w-3" />
+                      {format(date, "dd/MM/yyyy")}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 hover:bg-destructive hover:text-destructive-foreground"
+                        onClick={() => removeBlockedDate(date)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
