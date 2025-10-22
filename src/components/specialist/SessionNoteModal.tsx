@@ -47,11 +47,9 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
       'in-person': 'Presencial',
       phone: 'Chamada Telefónica',
       'phone-call': 'Chamada Telefónica',
-      call: 'Chamada Telefónica',
-      individual: 'Sessão Individual',
-      group: 'Sessão em Grupo'
+      call: 'Chamada Telefónica'
     };
-    return types[type?.toLowerCase() as keyof typeof types] || type;
+    return types[type?.toLowerCase() as keyof typeof types] || 'Virtual';
   };
 
   return (
@@ -74,7 +72,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
             </div>
             <div className="text-sm text-muted-foreground">
               <p><strong>Data:</strong> {session.date} às {session.time}</p>
-              <p><strong>Tipo:</strong> {getSessionTypeLabel(session.type)}</p>
+              <p><strong>Tipo:</strong> {getSessionTypeLabel(session.session_type || session.type)}</p>
             </div>
           </div>
 
