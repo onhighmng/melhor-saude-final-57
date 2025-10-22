@@ -54,8 +54,8 @@ const AdminOperations = () => {
                 description="Gerir sessões e agendamentos" 
                 Icon={ClipboardList} 
                 onClick={() => handleTabChange('sessions')} 
-                className={`col-span-1 ${activeTab === 'sessions' ? 'ring-2 ring-yellow-500' : ''}`}
-                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'sessions' ? 'from-yellow-100 to-yellow-200' : 'from-yellow-50 to-yellow-100'}`} />}
+                className={`col-span-1 ${activeTab === 'sessions' ? 'ring-2 ring-yellow-400' : ''}`}
+                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'sessions' ? 'from-yellow-50 to-yellow-100' : 'from-yellow-50/50 to-yellow-50'}`} />}
                 iconColor="text-yellow-600"
                 textColor="text-gray-900"
                 descriptionColor="text-gray-600"
