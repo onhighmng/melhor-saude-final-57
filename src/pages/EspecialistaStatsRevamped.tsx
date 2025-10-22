@@ -91,7 +91,7 @@ const EspecialistaStatsRevamped = () => {
           href="#"
           cta=""
         >
-          <div className="p-4 h-full flex flex-col">
+          <div className="p-4 h-full flex flex-col relative z-20">
             <ResponsiveContainer width="100%" height="85%">
               <LineChart data={stats.evolution_data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
