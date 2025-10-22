@@ -12,6 +12,7 @@ import { mockCallRequests } from '@/data/especialistaGeralMockData';
 import { CallRequest } from '@/types/specialist';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { CallModal } from '@/components/specialist/CallModal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const EspecialistaCallRequestsRevamped = () => {
   const { toast } = useToast();
@@ -22,6 +23,8 @@ const EspecialistaCallRequestsRevamped = () => {
   const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [activeTab, setActiveTab] = useState('pending');
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [resolvedRequestId, setResolvedRequestId] = useState<string | null>(null);
 
   // Filter requests
   const allRequests = filterByCompanyAccess(mockCallRequests);
@@ -57,10 +60,17 @@ const EspecialistaCallRequestsRevamped = () => {
   };
 
   const handleMarkResolved = (requestId: string) => {
-    toast({
-      title: 'Pedido Resolvido',
-      description: 'O pedido foi marcado como resolvido com sucesso.',
-    });
+    setResolvedRequestId(requestId);
+    setShowSuccessAnimation(true);
+    
+    setTimeout(() => {
+      setShowSuccessAnimation(false);
+      setResolvedRequestId(null);
+      toast({
+        title: 'Pedido Resolvido',
+        description: 'O pedido foi marcado como resolvido com sucesso.',
+      });
+    }, 1500);
   };
 
   const handleCallComplete = (outcome: string, notes: string) => {
@@ -125,7 +135,48 @@ const EspecialistaCallRequestsRevamped = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Success Animation Overlay */}
+      <AnimatePresence>
+        {showSuccessAnimation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: 180 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 200, 
+                damping: 15 
+              }}
+              className="bg-white rounded-full p-8 shadow-2xl"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2 }}
+                className="relative"
+              >
+                <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center">
+                  <motion.div
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    <CheckCircle className="h-16 w-16 text-white" strokeWidth={3} />
+                  </motion.div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div>
         <h1 className="text-3xl font-heading font-bold">
           Chamada de Triagem
