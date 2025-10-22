@@ -152,10 +152,8 @@ export const AdminCompaniesTab = () => {
                   <TableHead>Empresa</TableHead>
                   <TableHead>NUIT</TableHead>
                   <TableHead>Colaboradores</TableHead>
-                  <TableHead>Plano</TableHead>
                   <TableHead>Sessões</TableHead>
                   <TableHead>Estado</TableHead>
-                  <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -175,19 +173,10 @@ export const AdminCompaniesTab = () => {
                           {company.employees}
                         </div>
                       </TableCell>
-                      <TableCell>{company.plan}</TableCell>
                       <TableCell>
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">
-                              {company.usedSessions}/{company.totalSessions}
-                            </span>
-                            <span className={`font-medium ${usagePercent > 80 ? 'text-destructive' : 'text-success'}`}>
-                              {company.totalSessions - company.usedSessions} restantes
-                            </span>
-                          </div>
-                          <Progress value={usagePercent} className="h-2" />
-                        </div>
+                        <span className="text-sm">
+                          {company.usedSessions}/{company.totalSessions}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <Badge 
@@ -196,19 +185,6 @@ export const AdminCompaniesTab = () => {
                         >
                           {company.status}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewDetails(company);
-                          }}
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          Ver Detalhes
-                        </Button>
                       </TableCell>
                     </TableRow>
                   );
