@@ -350,25 +350,6 @@ const CompanySessions = () => {
           <AnimatedInsights />
         </div>
       </div>
-
-      {/* Privacy Notice */}
-      <div className="mt-12 sm:mt-16">
-        <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800">
-          <CardContent className="flex items-start gap-3 p-6">
-            <Activity className="h-6 w-6 text-amber-600 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-base font-semibold text-foreground mb-2">
-                Dados Agregados e Anónimos
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Todas as informações apresentadas são agregadas e anónimas para proteger a privacidade dos colaboradores. 
-                Não são exibidos dados individuais ou conteúdo clínico. A plataforma segue rigorosamente as diretrizes 
-                de proteção de dados (RGPD).
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </section>
   );
 };
