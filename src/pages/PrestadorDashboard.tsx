@@ -131,7 +131,7 @@ export default function PrestadorDashboard() {
   const groupedSessions = groupSessionsByDate(filteredSessions);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">

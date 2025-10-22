@@ -196,7 +196,7 @@ export default function PrestadorSessionDetail() {
   const canComplete = session.status === 'in-progress';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-blue-50">
       <PageHeader
         title="Detalhes da Sessão"
         subtitle={`${session.userName} • ${pillarLabels[session.pillar]}`}

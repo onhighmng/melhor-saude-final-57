@@ -126,7 +126,7 @@ const PrestadorCalendar = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
       <div>
         <h1 className="text-4xl font-heading font-bold">
           Calendário
