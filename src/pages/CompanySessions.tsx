@@ -229,56 +229,6 @@ const CompanySessions = () => {
         </CardContent>
       </Card>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Monthly Trend Chart */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Tendência Mensal de Sessões
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mockSessionAnalytics.monthlyTrend}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="total" 
-                    stroke="#3B82F6" 
-                    strokeWidth={3}
-                    dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
-                    name="Total de Sessões"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="byPillar.mental" 
-                    stroke="#10B981" 
-                    strokeWidth={2}
-                    dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
-                    name="Saúde Mental"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="byPillar.physical" 
-                    stroke="#F59E0B" 
-                    strokeWidth={2}
-                    dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
-                    name="Bem-Estar Físico"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-      </div>
 
       {/* Privacy Notice */}
       <Card className="border-amber-200 bg-amber-50/50">
