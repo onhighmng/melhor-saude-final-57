@@ -32,7 +32,7 @@ const EspecialistaSidebar = () => {
       icon: <LayoutDashboard className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
-      label: "Pedidos de Chamada",
+      label: "Chamada de Triagem",
       href: "/especialista/call-requests",
       icon: <Phone className="text-primary h-5 w-5 flex-shrink-0" />,
     },

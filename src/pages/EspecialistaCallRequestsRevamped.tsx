@@ -128,7 +128,7 @@ const EspecialistaCallRequestsRevamped = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-heading font-bold">
-          Pedidos de Chamada
+          Chamada de Triagem
         </h1>
         <p className="text-muted-foreground mt-1">
           📌 Mostra todos os colaboradores que pediram "falar com alguém"
