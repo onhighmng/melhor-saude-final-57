@@ -227,7 +227,7 @@ const CompanyReportsImpact = () => {
                   ></div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{pillar.pillar}</span>
-                    <span className="text-5xl font-bold text-foreground">{pillar.sessions}</span>
+                    <span className="text-5xl font-extrabold text-foreground font-sans">{pillar.sessions}</span>
                     <span className="text-xs text-muted-foreground">sessões</span>
                   </div>
                 </div>
