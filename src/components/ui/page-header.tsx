@@ -49,14 +49,14 @@ export function PageHeader({
             
             <div className="flex items-center gap-3">
               {Icon && (
-                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <Icon className="h-5 w-5 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                  <Icon className="h-6 w-6 text-blue-600" />
                 </div>
               )}
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+                <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
                 {subtitle && (
-                  <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+                  <p className="text-base text-gray-500 mt-1">{subtitle}</p>
                 )}
               </div>
             </div>
