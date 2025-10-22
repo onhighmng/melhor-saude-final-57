@@ -143,7 +143,7 @@ const CompanyDashboard = () => {
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
                 background={
                   <div 
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60"
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: `url(${recursosWellness})` }}
                   />
                 }
