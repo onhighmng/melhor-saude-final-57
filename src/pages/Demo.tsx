@@ -101,7 +101,7 @@ const Demo = () => {
     {
       ...mockEspecialistaGeralUser,
       title: 'Especialista Geral',
-      description: 'Atendimento de chamadas, gestão de sessões e encaminhamentos',
+      description: 'Atendimento de chamadas, gestão de sessões e historial',
       icon: UserCog,
       role: 'especialista_geral' as const,
       dashboardPath: '/especialista/dashboard',
@@ -109,10 +109,9 @@ const Demo = () => {
         { label: 'Dashboard', path: '/especialista/dashboard', icon: BarChart3 },
         { label: 'Pedidos de Chamada', path: '/especialista/call-requests', icon: Calendar },
         { label: 'Sessões Agendadas', path: '/especialista/sessions', icon: CalendarCheck },
-        { label: 'Historial', path: '/especialista/user-history', icon: Users },
-        { label: 'Encaminhamentos', path: '/especialista/referrals', icon: ArrowRight }
+        { label: 'Historial', path: '/especialista/user-history', icon: Users }
       ],
-      features: ['Chamadas', 'Sessões', 'Historial', 'Encaminhamentos'],
+      features: ['Chamadas', 'Sessões', 'Historial'],
       color: 'bg-orange-500'
     }
   ];
