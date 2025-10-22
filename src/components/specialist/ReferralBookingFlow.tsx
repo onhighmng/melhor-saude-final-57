@@ -183,7 +183,7 @@ export const ReferralBookingFlow = ({
                   <Button
                     key={pillar.value}
                     variant="outline"
-                    className="h-24 flex flex-col gap-2"
+                    className={`h-24 flex flex-col gap-2 ${pillar.color} border-transparent hover:opacity-90`}
                     onClick={() => handlePillarSelect(pillar.value)}
                   >
                     <span className="text-lg font-semibold">{pillar.label}</span>
