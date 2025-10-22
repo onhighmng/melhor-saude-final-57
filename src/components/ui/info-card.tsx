@@ -73,11 +73,11 @@ export function InfoCard({
   const getVariantStyles = (variant: string) => {
     switch (variant) {
       case 'premium':
-        return 'bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200';
+        return 'bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50 border-slate-300 shadow-md';
       case 'specialist':
-        return 'bg-gradient-to-br from-emerald-50 to-green-100 border-emerald-200';
+        return 'bg-gradient-to-br from-slate-100 via-gray-50 to-slate-100 border-slate-300 shadow-md';
       default:
-        return 'bg-white border-gray-200';
+        return 'bg-gradient-to-br from-gray-50 to-slate-100 border-slate-300 shadow-md';
     }
   };
 
@@ -111,9 +111,9 @@ export function InfoCard({
         {/* Status Indicators - Minimal */}
         <div className="absolute top-3 right-3">
           {rating && (
-            <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1 shadow-sm">
-              <Star className="w-3 h-3 text-yellow-500 fill-current" />
-              <span className="text-xs font-medium">{rating}</span>
+            <div className="flex items-center gap-1 bg-white rounded-full px-3 py-1.5 shadow-lg border-2 border-slate-200">
+              <Star className="w-4 h-4 text-amber-500 fill-current" />
+              <span className="text-sm font-bold text-slate-800">{rating}</span>
             </div>
           )}
         </div>
@@ -121,15 +121,15 @@ export function InfoCard({
         {/* Avatar - Minimal */}
         <div className="flex justify-center mb-3">
           <div className="relative">
-            <Avatar className="w-12 h-12 ring-2 ring-white shadow-md">
+            <Avatar className="w-16 h-16 ring-4 ring-white shadow-lg">
               <AvatarImage src={avatar} alt={name} />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold text-sm">
+              <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-white font-semibold text-lg">
                 {name.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
             </Avatar>
             {isPremium && (
-              <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-0.5">
-                <CheckCircle2 className="w-3 h-3 text-white" />
+              <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full p-1 shadow-lg">
+                <CheckCircle2 className="w-4 h-4 text-white" />
       </div>
             )}
           </div>
@@ -137,11 +137,11 @@ export function InfoCard({
 
         {/* Name and Title - Minimal */}
         <div className="text-center mb-3">
-          <h3 className="font-semibold text-gray-900 text-base group-hover:text-blue-600 transition-colors truncate">
+          <h3 className="font-bold text-slate-900 text-lg group-hover:text-emerald-600 transition-colors truncate">
             {name}
           </h3>
           {title && (
-            <p className="text-xs text-gray-500 mt-1 truncate">{title}</p>
+            <p className="text-sm text-slate-600 mt-1 truncate font-medium">{title}</p>
           )}
         </div>
 
@@ -191,8 +191,8 @@ export function InfoCard({
           <>
             {/* Specialty - Main info */}
             {specialty && (
-              <div className="text-center mb-3">
-                <p className="text-sm font-medium text-gray-700 truncate">{specialty}</p>
+              <div className="text-center mb-3 bg-white/60 rounded-lg p-2 border border-slate-200">
+                <p className="text-sm font-semibold text-slate-800 truncate">{specialty}</p>
               </div>
             )}
 
@@ -243,26 +243,26 @@ export function InfoCard({
         )}
 
         {/* Action Buttons - Minimal */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-4">
           {onView && (
             <Button
               variant="outline"
               size="sm"
-              className="w-full bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 hover:text-blue-800 text-xs"
               onClick={onView}
+              className="flex-1 bg-white hover:bg-slate-50 border-slate-300 text-slate-700 hover:text-emerald-600 font-medium shadow-sm"
             >
-              <Eye className="w-3 h-3 mr-1" />
+              <Eye className="w-4 h-4 mr-1" />
               Ver
             </Button>
           )}
           {onContact && (
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
-              className="w-full bg-white hover:bg-gray-50 border-gray-200 text-gray-700 hover:text-gray-800 text-xs"
               onClick={onContact}
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium shadow-md"
             >
-              <MessageCircle className="w-3 h-3 mr-1" />
+              <MessageCircle className="w-4 h-4 mr-1" />
               Contactar
             </Button>
           )}
