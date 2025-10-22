@@ -60,9 +60,9 @@ const AdminDashboard = () => {
             onClick={() => navigate('/admin/users-management?tab=companies')} 
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
             background={
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-cyan-100" />
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />
             }
-            iconColor="text-cyan-700"
+            iconColor="text-blue-700"
             textColor="text-slate-900"
             descriptionColor="text-slate-600"
             href="#"
@@ -158,7 +158,7 @@ const AdminDashboard = () => {
                 
               <div className="flex-1 space-y-3">
                   <div 
-                    className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
+                    className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate('/admin/call-requests');
@@ -172,7 +172,7 @@ const AdminDashboard = () => {
                   </div>
                 
                 <div 
-                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate('/admin/alerts?tab=feedback');
@@ -186,7 +186,7 @@ const AdminDashboard = () => {
                   </div>
                 
                 <div 
-                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate('/admin/alerts?tab=inactive');
@@ -200,7 +200,7 @@ const AdminDashboard = () => {
       </div>
 
                 <div 
-                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate('/admin/operations');
