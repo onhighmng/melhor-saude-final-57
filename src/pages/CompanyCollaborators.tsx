@@ -143,21 +143,6 @@ const CompanyCollaborators = () => {
         </Card>
       </div>
 
-      {/* Usage Progress */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Utilização de Contas</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">
-              {company.seatUsed} de {company.seatLimit} contas ativas
-            </span>
-            <span className="font-medium">{seatUsagePercent}%</span>
-          </div>
-          <Progress value={seatUsagePercent} className="h-2" />
-        </CardContent>
-      </Card>
 
       {/* Privacy Notice */}
       <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20">
