@@ -90,8 +90,8 @@ const CompanyCollaborators = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Gestão de Acessos</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-4xl font-bold text-foreground mb-2">Gestão de Acessos</h1>
+        <p className="text-muted-foreground text-lg">
           Convide colaboradores e gere códigos de acesso de forma segura e anónima
         </p>
       </div>
