@@ -241,6 +241,7 @@ export const mockEspecialistaSessions = [
     date: new Date().toISOString().split('T')[0],
     time: '14:30',
     status: 'scheduled',
+    session_type: 'video',
     type: 'individual',
     notes: 'Sessão de acompanhamento - gestão de ansiedade'
   },
@@ -257,6 +258,7 @@ export const mockEspecialistaSessions = [
     date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     time: '10:00',
     status: 'scheduled',
+    session_type: 'call',
     type: 'individual',
     notes: 'Orientação financeira básica'
   },
@@ -273,6 +275,7 @@ export const mockEspecialistaSessions = [
     date: new Date().toISOString().split('T')[0],
     time: '16:00',
     status: 'scheduled',
+    session_type: 'video',
     type: 'individual',
     notes: 'Follow-up após call request resolvido - stress no trabalho'
   },
@@ -289,6 +292,7 @@ export const mockEspecialistaSessions = [
     date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     time: '11:30',
     status: 'scheduled',
+    session_type: 'video',
     type: 'individual',
     notes: 'Acompanhamento de problemas financeiros - após escalação'
   },
@@ -305,8 +309,96 @@ export const mockEspecialistaSessions = [
     date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     time: '09:00',
     status: 'scheduled',
+    session_type: 'call',
     type: 'individual',
     notes: 'Planejamento financeiro pós-aumento - sessão agendada após call request'
+  },
+  // Past sessions - completed
+  {
+    id: 'session-6',
+    user_id: 'user-7',
+    user_name: 'Maria Costa',
+    user_email: 'maria.costa@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar: 'legal',
+    specialist_type: 'Especialista Geral',
+    specialist_name: 'Geral Especialista',
+    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    time: '15:00',
+    status: 'completed',
+    session_type: 'video',
+    type: 'individual',
+    notes: 'Consulta jurídica sobre contrato de trabalho - resolvida com sucesso'
+  },
+  {
+    id: 'session-7',
+    user_id: 'user-8',
+    user_name: 'Ricardo Almeida',
+    user_email: 'ricardo.almeida@tech.co.mz',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar: 'physical',
+    specialist_type: 'Especialista Geral',
+    specialist_name: 'Geral Especialista',
+    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    time: '09:30',
+    status: 'completed',
+    session_type: 'call',
+    type: 'individual',
+    notes: 'Orientação sobre exercício físico e postura no trabalho'
+  },
+  {
+    id: 'session-8',
+    user_id: 'user-9',
+    user_name: 'Isabel Martins',
+    user_email: 'isabel.martins@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar: 'psychological',
+    specialist_type: 'Especialista Geral',
+    specialist_name: 'Geral Especialista',
+    date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    time: '14:00',
+    status: 'completed',
+    session_type: 'video',
+    type: 'individual',
+    notes: 'Sessão de follow-up - burnout em recuperação'
+  },
+  // Past sessions - cancelled
+  {
+    id: 'session-9',
+    user_id: 'user-10',
+    user_name: 'Luís Pereira',
+    user_email: 'luis.pereira@tech.co.mz',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar: 'financial',
+    specialist_type: 'Especialista Geral',
+    specialist_name: 'Geral Especialista',
+    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    time: '11:00',
+    status: 'cancelled',
+    session_type: 'video',
+    type: 'individual',
+    notes: 'Cancelada pelo colaborador - reagendar'
+  },
+  {
+    id: 'session-10',
+    user_id: 'user-11',
+    user_name: 'Carla Fernandes',
+    user_email: 'carla.fernandes@empresa.co.mz',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar: 'legal',
+    specialist_type: 'Especialista Geral',
+    specialist_name: 'Geral Especialista',
+    date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    time: '16:30',
+    status: 'cancelled',
+    session_type: 'call',
+    type: 'individual',
+    notes: 'Cancelada - problema resolvido antes da sessão'
   }
 ];
 

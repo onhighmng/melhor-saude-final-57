@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar as CalendarIcon, Play, CheckCircle, Clock, FileText } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Video, Phone, Calendar as CalendarIcon, Clock, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockEspecialistaSessions } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { SessionNoteModal } from '@/components/specialist/SessionNoteModal';
-import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 
 const EspecialistaSessionsRevamped = () => {
   const { toast } = useToast();
@@ -17,12 +17,21 @@ const EspecialistaSessionsRevamped = () => {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
   const allSessions = filterByCompanyAccess(mockEspecialistaSessions);
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  // Categorize sessions
-  const todaySessions = allSessions.filter(s => s.date === today && s.status === 'scheduled');
-  const upcomingSessions = allSessions.filter(s => s.date > today && s.status === 'scheduled').slice(0, 5);
-  const completedSessions = allSessions.filter(s => s.status === 'completed').slice(0, 3);
+  // Separate future and past sessions
+  const futureSessions = useMemo(() => {
+    return allSessions
+      .filter(s => new Date(s.date) >= today)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [allSessions, today]);
+
+  const pastSessions = useMemo(() => {
+    return allSessions
+      .filter(s => new Date(s.date) < today)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [allSessions, today]);
 
   const handleStartSession = (session: any) => {
     toast({
@@ -69,194 +78,140 @@ const EspecialistaSessionsRevamped = () => {
     return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
   };
 
-  const renderSessionCard = (session: any, showActions = true) => (
-    <Card key={session.id} className="p-4">
-      <div className="space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <h4 className="font-semibold text-sm mb-1">{session.user_name}</h4>
-            <p className="text-xs text-muted-foreground">{session.company_name}</p>
-          </div>
-          <Badge className={`text-xs ${getPillarColor(session.pillar)}`}>
-            {getPillarLabel(session.pillar)}
-          </Badge>
-        </div>
+  const getStatusBadge = (status: string) => {
+    const variants = {
+      scheduled: 'bg-blue-100 text-blue-700',
+      completed: 'bg-green-100 text-green-700',
+      cancelled: 'bg-red-100 text-red-700'
+    };
+    const labels = {
+      scheduled: 'Agendada',
+      completed: 'Concluída',
+      cancelled: 'Cancelada'
+    };
+    return {
+      variant: variants[status as keyof typeof variants] || 'bg-gray-100 text-gray-700',
+      label: labels[status as keyof typeof labels] || status
+    };
+  };
 
-        <div className="text-xs text-muted-foreground space-y-1">
-          <div className="flex items-center gap-1">
-            <CalendarIcon className="h-3 w-3" />
-            <span>{new Date(session.date).toLocaleDateString('pt-PT')}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            <span>{session.time}</span>
-          </div>
-        </div>
+  const getSessionTypeIcon = (type: string) => {
+    return type === 'video' ? <Video className="h-4 w-4" /> : <Phone className="h-4 w-4" />;
+  };
 
-        {session.notes && (
-          <p className="text-xs text-muted-foreground italic">{session.notes}</p>
+  const getSessionTypeLabel = (type: string) => {
+    return type === 'video' ? 'Vídeo' : 'Chamada';
+  };
+
+  const renderSessionTable = (sessions: any[]) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Data & Hora</TableHead>
+          <TableHead>Colaborador</TableHead>
+          <TableHead>Empresa</TableHead>
+          <TableHead>Pilar</TableHead>
+          <TableHead>Tipo</TableHead>
+          <TableHead>Estado</TableHead>
+          <TableHead className="text-right">Ações</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sessions.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+              Sem sessões
+            </TableCell>
+          </TableRow>
+        ) : (
+          sessions.map((session) => (
+            <TableRow key={session.id}>
+              <TableCell>
+                <div className="flex flex-col">
+                  <div className="font-medium flex items-center gap-1">
+                    <CalendarIcon className="h-3 w-3" />
+                    {new Date(session.date).toLocaleDateString('pt-PT')}
+                  </div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {session.time}
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="font-medium">{session.user_name}</div>
+              </TableCell>
+              <TableCell>{session.company_name}</TableCell>
+              <TableCell>
+                <Badge className={`text-xs ${getPillarColor(session.pillar)}`}>
+                  {getPillarLabel(session.pillar)}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  {getSessionTypeIcon(session.session_type || 'video')}
+                  <span className="text-sm">{getSessionTypeLabel(session.session_type || 'video')}</span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <Badge className={`text-xs ${getStatusBadge(session.status).variant}`}>
+                  {getStatusBadge(session.status).label}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-right">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleAddNote(session)}
+                >
+                  <FileText className="h-4 w-4 mr-1" />
+                  Notas
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))
         )}
-
-        {showActions && session.status === 'scheduled' && (
-          <div className="flex gap-2 pt-2">
-            <Button size="sm" onClick={() => handleStartSession(session)} className="flex-1">
-              <Play className="h-3 w-3 mr-1" />
-              Iniciar
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => handleEndSession(session)}>
-              <CheckCircle className="h-3 w-3 mr-1" />
-              Finalizar
-            </Button>
-          </div>
-        )}
-
-        {session.status === 'completed' && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleAddNote(session)}
-            className="w-full"
-          >
-            <FileText className="h-3 w-3 mr-1" />
-            Ver/Adicionar Nota
-          </Button>
-        )}
-      </div>
-    </Card>
+      </TableBody>
+    </Table>
   );
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-heading font-bold">
-          Sessões Agendadas
+          Calendário Pessoal
         </h1>
         <p className="text-muted-foreground mt-1">
-          Gerir sessões com timeline visual e notas internas
+          Sessões futuras e passadas com tipo e estado
         </p>
       </div>
 
-      <BentoGrid className="lg:grid-rows-2 gap-4">
-        {/* Calendar Visual - Top Left */}
-        <BentoCard
-          name="Calendário Visual"
-          description={`${allSessions.length} sessões no total`}
-          Icon={CalendarIcon}
-          className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50" />}
-          iconColor="text-green-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        >
-          <div className="p-6">
-            <div className="space-y-4">
-              <div className="text-center p-6 bg-white/60 rounded-lg">
-                <div className="text-4xl font-bold text-green-600 mb-2">
-                  {todaySessions.length}
-                </div>
-                <p className="text-sm text-gray-600">Sessões Hoje</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="text-center p-4 bg-white/40 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600 mb-1">
-                    {upcomingSessions.length}
-                  </div>
-                  <p className="text-xs text-gray-600">Próximas</p>
-                </div>
-                <div className="text-center p-4 bg-white/40 rounded-lg">
-                  <div className="text-2xl font-bold text-gray-600 mb-1">
-                    {completedSessions.length}
-                  </div>
-                  <p className="text-xs text-gray-600">Completas</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </BentoCard>
+      <Card>
+        <Tabs defaultValue="future" className="w-full">
+          <TabsList className="w-full justify-start border-b rounded-none h-auto p-0">
+            <TabsTrigger 
+              value="future" 
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+            >
+              Sessões Futuras ({futureSessions.length})
+            </TabsTrigger>
+            <TabsTrigger 
+              value="past"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+            >
+              Sessões Passadas ({pastSessions.length})
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Today's Sessions - Top Right */}
-        <BentoCard
-          name="Sessões de Hoje"
-          description={`${todaySessions.length} sessões agendadas para hoje`}
-          Icon={Clock}
-          className="lg:col-start-2 lg:col-end-4 lg:row-start-1 lg:row-end-2"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
-          iconColor="text-blue-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        >
-          <ScrollArea className="h-[320px] px-6 pb-6">
-            <div className="space-y-3">
-              {todaySessions.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <CalendarIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Sem sessões hoje</p>
-                </div>
-              ) : (
-                todaySessions.map(session => renderSessionCard(session, true))
-              )}
-            </div>
-          </ScrollArea>
-        </BentoCard>
+          <TabsContent value="future" className="mt-0">
+            {renderSessionTable(futureSessions)}
+          </TabsContent>
 
-        {/* Upcoming Sessions - Bottom Left */}
-        <BentoCard
-          name="Próximas Sessões"
-          description={`Próximos 7 dias`}
-          Icon={CalendarIcon}
-          className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
-          iconColor="text-yellow-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        >
-          <ScrollArea className="h-[320px] px-6 pb-6">
-            <div className="space-y-3">
-              {upcomingSessions.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <CalendarIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Sem sessões próximas</p>
-                </div>
-              ) : (
-                upcomingSessions.map(session => renderSessionCard(session, false))
-              )}
-            </div>
-          </ScrollArea>
-        </BentoCard>
-
-        {/* Completed Sessions - Bottom Right */}
-        <BentoCard
-          name="Sessões Completadas"
-          description="Histórico recente"
-          Icon={CheckCircle}
-          className="lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:row-end-3"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-slate-50" />}
-          iconColor="text-gray-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        >
-          <ScrollArea className="h-[320px] px-6 pb-6">
-            <div className="space-y-3">
-              {completedSessions.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <CheckCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Sem sessões completadas</p>
-                </div>
-              ) : (
-                completedSessions.map(session => renderSessionCard(session, false))
-              )}
-            </div>
-          </ScrollArea>
-        </BentoCard>
-      </BentoGrid>
+          <TabsContent value="past" className="mt-0">
+            {renderSessionTable(pastSessions)}
+          </TabsContent>
+        </Tabs>
+      </Card>
 
       {/* Session Note Modal */}
       {selectedSession && (
