@@ -7,13 +7,9 @@ import {
   Building2, 
   Users, 
   Calendar, 
-  Phone,
-  MessageSquare,
-  AlertTriangle,
   Activity,
   BookOpen
 } from 'lucide-react';
-import { mockAdminAlerts } from '@/data/especialistaGeralMockData';
 import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
@@ -137,82 +133,6 @@ const AdminDashboard = () => {
           >
           </BentoCard>
 
-          {/* Center - Alerts */}
-          <BentoCard 
-            name="" 
-            description="" 
-            href="#" 
-            cta="" 
-            className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
-            background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
-            iconColor="text-red-600"
-            textColor="text-slate-900"
-            descriptionColor="text-slate-600"
-            onClick={() => navigate('/admin/alerts')}
-          >
-            <div className="relative z-30 flex flex-col h-full p-6">
-              <div className="mb-4">
-                <h3 className="text-3xl font-semibold text-gray-900 mb-2">Alertas Críticos</h3>
-                <p className="text-gray-600">Indicadores que precisam de ação imediata</p>
-                </div>
-                
-              <div className="flex-1 space-y-3">
-                <div 
-                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate('/admin/alerts?tab=feedback');
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <MessageSquare className="h-5 w-5 text-orange-600" />
-                    <span className="font-medium">Feedback Negativo</span>
-                  </div>
-                  <span className="font-mono text-xl font-semibold text-orange-700">{mockAdminAlerts.negative_feedback}</span>
-                  </div>
-                
-                <div 
-                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate('/admin/alerts?tab=inactive');
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <Users className="h-5 w-5 text-amber-600" />
-                    <span className="font-medium">Utilizadores Inativos</span>
-              </div>
-                  <span className="font-mono text-xl font-semibold text-amber-700">{mockAdminAlerts.inactive_users}</span>
-      </div>
-
-                <div 
-                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/90 hover:shadow-md hover:scale-[1.02] transition-all duration-200 shadow-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate('/admin/operations');
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-indigo-600" />
-                    <span className="font-medium">Sessões com Especialista Geral</span>
-                  </div>
-                  <span className="font-mono text-xl font-semibold text-indigo-700">3</span>
-              </div>
-      </div>
-
-              <div className="mt-4">
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate('/admin/alerts');
-                  }}
-                  className="text-sm text-red-600 hover:text-red-700 font-medium hover:underline"
-                >
-                  Ver Todos os Alertas →
-                </button>
-              </div>
-            </div>
-          </BentoCard>
 
             </BentoGrid>
           </div>

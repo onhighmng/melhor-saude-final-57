@@ -14,7 +14,6 @@ import {
   Activity,
   Shield,
   Calendar,
-  AlertTriangle,
   BookOpen,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -41,11 +40,6 @@ const AdminSidebar = () => {
       label: "Sessões Agendadas",
       href: "/admin/operations",
       icon: <Calendar className="text-primary h-5 w-5 flex-shrink-0" />,
-    },
-    {
-      label: "Alertas",
-      href: "/admin/alerts",
-      icon: <AlertTriangle className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
       label: "Recursos",
