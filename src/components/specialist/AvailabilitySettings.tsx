@@ -49,6 +49,30 @@ const weekDays = [
   { key: 'saturday', label: 'Sat', fullLabel: 'Sábado' },
 ];
 
+// Generate time slots in 30-minute intervals
+const generateTimeSlots = (): string[] => {
+  const slots: string[] = [];
+  const periods = ['AM', 'PM'];
+  
+  periods.forEach(period => {
+    for (let hour = period === 'AM' ? 12 : 1; hour <= (period === 'AM' ? 12 : 11); hour++) {
+      if (period === 'AM' && hour === 12) {
+        slots.push('12:00 AM', '12:30 AM');
+      } else {
+        slots.push(`${hour.toString().padStart(2, '0')}:00 ${period}`);
+        slots.push(`${hour.toString().padStart(2, '0')}:30 ${period}`);
+      }
+    }
+  });
+  
+  // Add midnight at the end
+  slots.push('12:00 AM');
+  
+  return slots;
+};
+
+const timeSlots = generateTimeSlots();
+
 export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySettingsProps) {
   const { t } = useTranslation();
   
@@ -276,21 +300,37 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
 
                     {dayData.enabled && dayData.slots.map((slot) => (
                       <div key={slot.id} className="flex items-center gap-3 ml-36">
-                        <Input
-                          type="text"
+                        <Select
                           value={slot.startTime}
-                          onChange={(e) => updateSlotTime(day.key, slot.id, 'startTime', e.target.value)}
-                          className="w-36"
-                          placeholder="07:10 AM"
-                        />
+                          onValueChange={(value) => updateSlotTime(day.key, slot.id, 'startTime', value)}
+                        >
+                          <SelectTrigger className="w-36">
+                            <SelectValue placeholder="07:10 AM" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white z-50 max-h-[300px]">
+                            {timeSlots.map((time) => (
+                              <SelectItem key={time} value={time}>
+                                {time}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <span className="text-sm font-medium">Para</span>
-                        <Input
-                          type="text"
+                        <Select
                           value={slot.endTime}
-                          onChange={(e) => updateSlotTime(day.key, slot.id, 'endTime', e.target.value)}
-                          className="w-36"
-                          placeholder="08:00 PM"
-                        />
+                          onValueChange={(value) => updateSlotTime(day.key, slot.id, 'endTime', value)}
+                        >
+                          <SelectTrigger className="w-36">
+                            <SelectValue placeholder="08:00 PM" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white z-50 max-h-[300px]">
+                            {timeSlots.map((time) => (
+                              <SelectItem key={time} value={time}>
+                                {time}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <div className="flex gap-1">
                           <Button
                             variant="ghost"
@@ -457,21 +497,39 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-sm mb-2 block">Hora Início</Label>
-                    <Input
-                      type="text"
+                    <Select
                       value={timeBlockStart}
-                      onChange={(e) => setTimeBlockStart(e.target.value)}
-                      placeholder="09:00 AM"
-                    />
+                      onValueChange={setTimeBlockStart}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="09:00 AM" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white z-50 max-h-[300px]">
+                        {timeSlots.map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label className="text-sm mb-2 block">Hora Fim</Label>
-                    <Input
-                      type="text"
+                    <Select
                       value={timeBlockEnd}
-                      onChange={(e) => setTimeBlockEnd(e.target.value)}
-                      placeholder="10:00 AM"
-                    />
+                      onValueChange={setTimeBlockEnd}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="10:00 AM" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white z-50 max-h-[300px]">
+                        {timeSlots.map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
