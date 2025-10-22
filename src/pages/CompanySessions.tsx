@@ -234,67 +234,6 @@ const CompanySessions = () => {
         </div>
       </div>
 
-      {/* Detailed Pillar Analysis Section */}
-      <div className="mb-12 sm:mb-16 lg:mb-20">
-        <div className="flex items-center gap-3 mb-8">
-          <BarChart3 className="h-7 w-7 text-primary" />
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">Análise Detalhada por Pilar</h2>
-        </div>
-        
-        {/* Stats Cards with Usage */}
-        <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          {mockSessionAnalytics.pillarBreakdown.map((pillar, index) => (
-            <div 
-              key={index} 
-              className="rounded-xl border bg-card text-card-foreground shadow-sm flex flex-col overflow-hidden hover-lift transition-all animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="px-6 py-6">
-                <dd className="flex items-start justify-between space-x-2 mb-4">
-                  <div className="flex items-center gap-2">
-                    {getPillarIcon(pillar.pillar)}
-                    <span className="text-base font-semibold text-foreground">
-                      {pillar.pillar}
-                    </span>
-                  </div>
-                  <span className={`text-base font-bold px-3 py-1 rounded-full ${
-                    pillar.utilizationRate >= 75 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                    pillar.utilizationRate >= 50 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                  }`}>
-                    {pillar.utilizationRate}%
-                  </span>
-                </dd>
-                <dd className="mt-2 text-4xl font-bold text-foreground">
-                  {pillar.sessionsUsed}
-                </dd>
-                <dd className="mt-2 text-base text-muted-foreground">
-                  de {pillar.sessionsAvailable} sessões disponíveis
-                </dd>
-                <div className="mt-4 pt-4 border-t border-border">
-                  <dt className="text-sm font-medium text-muted-foreground mb-2">
-                    Top Especialistas
-                  </dt>
-                  <dd className="text-base text-foreground space-y-1">
-                    {pillar.topSpecialists.slice(0, 2).map((specialist, idx) => (
-                      <div key={idx} className="flex items-center justify-between">
-                        <span className="truncate">{specialist.name}</span>
-                        <span className="text-sm text-muted-foreground ml-2">{specialist.sessions}</span>
-                      </div>
-                    ))}
-                  </dd>
-                </div>
-              </div>
-              <div className="flex justify-end border-t border-border bg-muted/30">
-                <button className="px-6 py-4 text-base font-medium text-primary hover:text-primary/90 hover:bg-muted/50 transition-colors w-full text-right">
-                  Ver detalhes completos →
-                </button>
-              </div>
-            </div>
-          ))}
-        </dl>
-      </div>
-
       {/* Stats and Impact Section */}
       <div className="mt-12 sm:mt-16 lg:mt-20 grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
         <div className="flex justify-center items-center p-6 sm:p-8 bg-card border border-border rounded-xl">
