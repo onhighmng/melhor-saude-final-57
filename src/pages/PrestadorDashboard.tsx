@@ -142,351 +142,168 @@ export default function PrestadorDashboard() {
       </div>
 
       {/* Quick Access Navigation - Bento Grid */}
-      <BentoGrid className="grid-rows-1 auto-rows-[100px]" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        <BentoCard 
-          name="Calendário" 
-          description="Gerir disponibilidade e horários" 
-          Icon={CalendarDays} 
-          onClick={() => navigate('/prestador/calendario')} 
-          className="col-span-1"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
-          iconColor="text-blue-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        />
+      <div className="flex-1 min-h-0">
+        <BentoGrid className="lg:grid-rows-3 h-full grid-rows-[10rem] lg:auto-rows-[minmax(14rem,1fr)]">
+          {/* Top Left - Calendário */}
+          <BentoCard 
+            name="Calendário" 
+            description="Gerir disponibilidade e horários"
+            Icon={CalendarDays} 
+            onClick={() => navigate('/prestador/calendario')} 
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
+            iconColor="text-blue-600"
+            textColor="text-black"
+            descriptionColor="text-black/70"
+            href="#"
+            cta=""
+          />
 
-        <BentoCard 
-          name="Sessões" 
-          description="Histórico e gestão de sessões" 
-          Icon={Clock} 
-          onClick={() => navigate('/prestador/sessoes')} 
-          className="col-span-1"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100" />}
-          iconColor="text-green-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        />
+          {/* Top Right - Configurações */}
+          <BentoCard 
+            name="Configurações" 
+            description="Perfil e definições" 
+            Icon={Settings} 
+            onClick={() => navigate('/prestador/configuracoes')} 
+            className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100" />}
+            iconColor="text-amber-600"
+            textColor="text-black"
+            descriptionColor="text-black/70"
+            href="#"
+            cta=""
+          />
 
-        <BentoCard 
-          name="Desempenho" 
-          description="Métricas e análise financeira" 
-          Icon={BarChart3} 
-          onClick={() => navigate('/prestador/desempenho')} 
-          className="col-span-1"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100" />}
-          iconColor="text-purple-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        />
-
-        <BentoCard 
-          name="Configurações" 
-          description="Perfil e definições" 
-          Icon={Settings} 
-          onClick={() => navigate('/prestador/configuracoes')} 
-          className="col-span-1"
-          background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100" />}
-          iconColor="text-amber-600"
-          textColor="text-gray-900"
-          descriptionColor="text-gray-600"
-          href="#"
-          cta=""
-        />
-      </BentoGrid>
-
-      {/* Online Status & Filters Bar */}
-      <div className="bg-white border rounded-lg px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            {/* Online Status Toggle */}
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setIsOnline(!isOnline)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  isOnline 
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-                {isOnline ? 'Online' : 'Offline'}
-              </button>
-            </div>
-
-            {/* Time Filters */}
-            <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
-              <Button
-                variant={timeFilter === 'hoje' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setTimeFilter('hoje')}
-                className="h-8"
-              >
-                Hoje
-              </Button>
-              <Button
-                variant={timeFilter === 'proximos7dias' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setTimeFilter('proximos7dias')}
-                className="h-8"
-              >
-                Próximos 7 dias
-              </Button>
-            </div>
-          </div>
-
-          {/* Time Filter Label */}
-          <div className="text-sm text-muted-foreground">
-            {timeFilter === 'hoje' ? 'Sessões de Hoje' : 'Próximos 7 Dias'}
-          </div>
-        </div>
-      </div>
-
-      {/* Offline Banner */}
-      {!isOnline && (
-        <div className="bg-red-500 text-white px-4 py-3 rounded-lg text-center text-sm">
-          Está atualmente offline. As marcações não serão atribuídas até ficar online novamente.
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          
-          {/* Main Sessions Column */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Week Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
-                      <p className="text-sm text-gray-600">Concluídas</p>
-                    </div>
+          {/* Middle - Desempenho (spanning 3 rows) */}
+          <BentoCard 
+            name="" 
+            description="" 
+            href="#" 
+            cta="" 
+            className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
+            background={
+              <div className="absolute inset-0 flex flex-col p-8 overflow-y-auto bg-gradient-to-br from-purple-50 to-purple-100">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5 text-white" />
                   </div>
-                </CardContent>
-              </Card>
+                  <h3 className="text-2xl font-semibold">Desempenho</h3>
+                </div>
+                <p className="text-base text-muted-foreground mb-6 italic">
+                  "Acompanhe o seu impacto e crescimento profissional"
+                </p>
+                <div className="flex-1 flex flex-col justify-start min-h-0">
+                  <div className="w-full space-y-6">
+                    {/* Week Metrics */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-4 bg-white/70 rounded-xl border border-purple-100">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span className="text-xs text-muted-foreground">Concluídas</span>
+                        </div>
+                        <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
+                      </div>
+                      <div className="p-4 bg-white/70 rounded-xl border border-purple-100">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Users className="w-4 h-4 text-blue-600" />
+                          <span className="text-xs text-muted-foreground">Utilizadores</span>
+                        </div>
+                        <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
+                      </div>
+                    </div>
 
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <XCircle className="w-5 h-5 text-red-600" />
+                    {/* Monthly Overview */}
+                    <div className="space-y-3 p-4 bg-white/70 rounded-xl border border-purple-100">
+                      <h4 className="font-semibold text-sm">Visão Geral do Mês</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-600">Total de Sessões</span>
+                          <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.totalSessoes}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-600">Satisfação Média</span>
+                          <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.satisfacao}/5</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-gray-600">Tempo Médio</span>
+                          <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.tempoMedio}min</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesCanceladas}</p>
-                      <p className="text-sm text-gray-600">Canceladas</p>
-                    </div>
+
+                    <Button 
+                      onClick={() => navigate('/prestador/desempenho')} 
+                      className="w-full bg-purple-600 hover:bg-purple-700"
+                    >
+                      Ver Análise Completa
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-orange-100 rounded-lg">
-                      <UserX className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.faltasRegistadas}</p>
-                      <p className="text-sm text-gray-600">Faltas</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Users className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
-                      <p className="text-sm text-gray-600">Utilizadores</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Sessões */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Sessões</h2>
+                </div>
               </div>
-              {Object.keys(groupedSessions).length === 0 ? (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="p-4 bg-gray-100 rounded-full">
-                        <Calendar className="w-8 h-8 text-gray-400" />
+            } 
+          />
+
+          {/* Bottom Left - Sessões (spanning 2 rows) */}
+          <BentoCard 
+            name="Sessões" 
+            description="" 
+            href="#" 
+            cta="" 
+            Icon={Clock} 
+            onClick={() => navigate('/prestador/sessoes')} 
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
+            textColor="text-white" 
+            iconColor="text-white" 
+            background={
+              <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-green-700">
+                <div className="absolute inset-0 bg-black/10" />
+              </div>
+            } 
+          />
+
+          {/* Bottom Right - Próximas Sessões (spanning 2 rows) */}
+          <BentoCard 
+            name="" 
+            description="" 
+            href="#" 
+            cta="" 
+            className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" 
+            background={
+              <div className="absolute inset-0 p-5 flex flex-col justify-between bg-gradient-to-br from-slate-50 to-slate-100">
+                <div className="flex-shrink-0">
+                  <h3 className="text-2xl font-semibold mb-1">Próximas Sessões</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {filteredSessions.length > 0 ? `${filteredSessions.length} sessões agendadas` : 'Nenhuma sessão agendada'}
+                  </p>
+                </div>
+                <div className="flex-1 space-y-3 min-h-0 flex flex-col justify-start overflow-y-auto">
+                  {filteredSessions.length > 0 ? filteredSessions.slice(0, 3).map(session => {
+                    const PillarIcon = pillarIcons[session.pillar as keyof typeof pillarIcons];
+                    return (
+                      <div 
+                        key={session.id} 
+                        className="flex items-start gap-3 rounded-2xl p-2.5 border-l-[5px] border-blue-400 bg-blue-50 transition-all flex-shrink-0"
+                      >
+                        <div className="w-11 h-11 rounded-xl bg-blue-500 flex items-center justify-center flex-shrink-0">
+                          <PillarIcon className="w-5.5 h-5.5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-sm mb-0.5 text-blue-700">{session.user_name}</div>
+                          <div className="text-xs text-muted-foreground">{session.date} • {session.time}</div>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-1">
-                          {timeFilter === 'hoje' ? 'Sem sessões hoje' : 'Sem sessões nos próximos 7 dias'}
-                        </h3>
-                        <p className="text-gray-600">
-                          Aproveite o tempo livre!
-                        </p>
-                      </div>
+                    );
+                  }) : (
+                    <div className="text-center text-sm text-muted-foreground flex-shrink-0">
+                      Nenhuma sessão agendada
                     </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                Object.entries(groupedSessions).map(([date, sessions]) => (
-                  <Card key={date}>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg text-gray-900">
-                        {formatSessionDate(date)}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {sessions.map((session) => {
-                        const PillarIcon = pillarIcons[session.pillar as keyof typeof pillarIcons];
-                        
-                        return (
-                          <div key={session.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                            <div className="flex items-center gap-4">
-                              <div className="p-2 bg-white rounded-lg shadow-sm">
-                                <PillarIcon className="w-5 h-5 text-primary" />
-                              </div>
-                              
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-1">
-                                  <h4 className="font-medium text-gray-900">{session.user_name}</h4>
-                                  <Badge 
-                                    variant="outline" 
-                                    className={`text-xs ${statusColors[session.status as keyof typeof statusColors]}`}
-                                  >
-                                    {statusLabels[session.status as keyof typeof statusLabels]}
-                                  </Badge>
-                                </div>
-                                
-                                <div className="flex items-center gap-4 text-sm text-gray-600">
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="w-4 h-4" />
-                                    {session.time}
-                                  </span>
-                                  <span className="flex items-center gap-1">
-                                     {session.location === 'online' ? (
-                                       <>
-                                         <Video className="w-4 h-4" />
-                                         Online
-                                       </>
-                                    ) : (
-                                       <>
-                                         <MapPin className="w-4 h-4" />
-                                         Presencial
-                                       </>
-                                    )}
-                                  </span>
-                                  <span>{pillarNames[session.pillar as keyof typeof pillarNames]}</span>
-                                </div>
-                                
-                                {session.notes && (
-                                  <p className="text-sm text-gray-500 mt-1">{session.notes}</p>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Quick Actions */}
-                            <div className="flex items-center gap-2">
-                              {session.status === 'confirmada' && (
-                                <>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => handleSessionAction(session.id, 'concluir')}
-                                     className="text-green-600 border-green-200 hover:bg-green-50"
-                                   >
-                                     <CheckCircle className="w-4 h-4 mr-1" />
-                                     Concluir
-                                   </Button>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => handleSessionAction(session.id, 'falta')}
-                                     className="text-orange-600 border-orange-200 hover:bg-orange-50"
-                                   >
-                                     <UserX className="w-4 h-4 mr-1" />
-                                     Marcar Falta
-                                   </Button>
-                                </>
-                              )}
-                              
-                              <Button 
-                                size="sm" 
-                                variant="ghost"
-                                onClick={() => handleSessionAction(session.id, 'detalhes')}
-                              >
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar - Monthly Overview */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Visão Geral do Mês
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Total de Sessões</span>
-                  <span className="font-medium">{mockPrestadorMetrics.monthMetrics.totalSessoes}</span>
+                  )}
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Satisfação Média</span>
-                  <span className="font-medium">{mockPrestadorMetrics.monthMetrics.satisfacao}/5</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Tempo Médio</span>
-                  <span className="font-medium">{mockPrestadorMetrics.monthMetrics.tempoMedio}min</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Access */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Acesso Rápido</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="ghost" className="w-full justify-start text-left">
-                  <CalendarDays className="w-4 h-4 mr-2" />
-                  Ver Calendário Completo
-                </Button>
-                <Button variant="ghost" className="w-full justify-start text-left">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Notas de Sessões Passadas
-                </Button>
-                <Button variant="ghost" className="w-full justify-start text-left">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Definições do Prestador
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+            } 
+          />
+        </BentoGrid>
+      </div>
     </div>
   );
 }
