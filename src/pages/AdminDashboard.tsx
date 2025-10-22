@@ -125,9 +125,8 @@ const AdminDashboard = () => {
                 <img 
                   src={recursosWellness} 
                   alt="" 
-                  className="w-full h-full object-cover opacity-40" 
+                  className="w-full h-full object-cover opacity-60" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-teal-600/30" />
               </div>
             }
             iconColor="text-white"
@@ -145,7 +144,7 @@ const AdminDashboard = () => {
             href="#" 
             cta="" 
             className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
-            background={<div className="absolute inset-0 bg-white" />}
+            background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
             iconColor="text-red-600"
             textColor="text-slate-900"
             descriptionColor="text-slate-600"
@@ -159,7 +158,7 @@ const AdminDashboard = () => {
                 
               <div className="flex-1 space-y-3">
                   <div 
-                    className="flex items-center justify-between p-3 bg-white/70 rounded-lg cursor-pointer hover:bg-white/90 transition-colors"
+                    className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate('/admin/call-requests');
@@ -173,7 +172,7 @@ const AdminDashboard = () => {
                   </div>
                 
                 <div 
-                  className="flex items-center justify-between p-3 bg-white/70 rounded-lg cursor-pointer hover:bg-white/90 transition-colors"
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate('/admin/alerts?tab=feedback');
@@ -187,7 +186,7 @@ const AdminDashboard = () => {
                   </div>
                 
                 <div 
-                  className="flex items-center justify-between p-3 bg-white/70 rounded-lg cursor-pointer hover:bg-white/90 transition-colors"
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate('/admin/alerts?tab=inactive');
@@ -201,7 +200,7 @@ const AdminDashboard = () => {
       </div>
 
                 <div 
-                  className="flex items-center justify-between p-3 bg-white/70 rounded-lg cursor-pointer hover:bg-white/90 transition-colors"
+                  className="flex items-center justify-between p-3 bg-white rounded-lg cursor-pointer hover:bg-white/80 transition-colors shadow-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate('/admin/operations');
