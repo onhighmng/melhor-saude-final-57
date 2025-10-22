@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { mockEspecialistaSessions } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { SessionNoteModal } from '@/components/specialist/SessionNoteModal';
+import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
 
 const EspecialistaSessionsRevamped = () => {
   const { toast } = useToast();
@@ -32,6 +33,28 @@ const EspecialistaSessionsRevamped = () => {
       .filter(s => new Date(s.date) < today)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [allSessions, today]);
+
+  // Transform sessions data for calendar
+  const calendarData = useMemo(() => {
+    const groupedByDate = allSessions.reduce((acc, session) => {
+      const dateKey = session.date;
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push({
+        id: session.id,
+        name: `${session.user_name} - ${getPillarLabel(session.pillar)}`,
+        time: session.time,
+        datetime: `${session.date}T${session.time}`,
+      });
+      return acc;
+    }, {} as Record<string, any[]>);
+
+    return Object.entries(groupedByDate).map(([date, events]) => ({
+      day: new Date(date),
+      events,
+    }));
+  }, [allSessions]);
 
   const handleStartSession = (session: any) => {
     toast({
@@ -175,6 +198,14 @@ const EspecialistaSessionsRevamped = () => {
     </Table>
   );
 
+  const handleEventClick = (event: any) => {
+    const session = allSessions.find(s => s.id === event.id);
+    if (session) {
+      setSelectedSession(session);
+      setIsNoteModalOpen(true);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -186,32 +217,50 @@ const EspecialistaSessionsRevamped = () => {
         </p>
       </div>
 
-      <Card>
-        <Tabs defaultValue="future" className="w-full">
-          <TabsList className="w-full justify-start border-b rounded-none h-auto p-0">
-            <TabsTrigger 
-              value="future" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-            >
-              Sessões Futuras ({futureSessions.length})
-            </TabsTrigger>
-            <TabsTrigger 
-              value="past"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-            >
-              Sessões Passadas ({pastSessions.length})
-            </TabsTrigger>
-          </TabsList>
+      <Tabs defaultValue="calendar" className="w-full">
+        <TabsList className="w-full justify-start border-b rounded-none h-auto p-0">
+          <TabsTrigger 
+            value="calendar" 
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+          >
+            <CalendarIcon className="h-4 w-4 mr-2" />
+            Vista de Calendário
+          </TabsTrigger>
+          <TabsTrigger 
+            value="future"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+          >
+            Sessões Futuras ({futureSessions.length})
+          </TabsTrigger>
+          <TabsTrigger 
+            value="past"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+          >
+            Sessões Passadas ({pastSessions.length})
+          </TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="future" className="mt-0">
+        <TabsContent value="calendar" className="mt-0">
+          <Card className="p-0">
+            <FullScreenCalendar 
+              data={calendarData}
+              onEventClick={handleEventClick}
+            />
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="future" className="mt-0">
+          <Card>
             {renderSessionTable(futureSessions)}
-          </TabsContent>
+          </Card>
+        </TabsContent>
 
-          <TabsContent value="past" className="mt-0">
+        <TabsContent value="past" className="mt-0">
+          <Card>
             {renderSessionTable(pastSessions)}
-          </TabsContent>
-        </Tabs>
-      </Card>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Session Note Modal */}
       {selectedSession && (
