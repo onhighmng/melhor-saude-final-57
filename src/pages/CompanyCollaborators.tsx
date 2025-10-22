@@ -109,24 +109,6 @@ const CompanyCollaborators = () => {
 
       {/* Access Management Section */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Privacy Notice */}
-          <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800 hover-lift">
-            <CardContent className="flex items-start gap-3 p-6">
-              <Shield className="h-6 w-6 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-base font-semibold text-foreground mb-2">
-                  Privacidade e Proteção de Dados
-                </p>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Por motivos de privacidade, não é possível visualizar dados individuais dos colaboradores. 
-                  As funcionalidades acima permitem convidar e gerir acessos de forma anónima e segura, 
-                  em conformidade com o RGPD.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
