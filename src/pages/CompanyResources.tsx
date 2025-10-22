@@ -148,7 +148,7 @@ export default function CompanyResources() {
     readTime: 6,
     rating: 4
   }];
-  return <div className="w-full min-h-screen bg-white">
+  return <div className="w-full min-h-screen">
     <div className="space-y-6">
       <PageHeader title="Recursos de Bem-Estar" subtitle="Aceda a guias, vídeos e artigos sobre saúde e bem-estar" icon={BookOpen} sticky={false} />
       
