@@ -94,7 +94,7 @@ const AdminBillingTab = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{averageMargin.toFixed(1)}%</div>
+            <div className="font-mono text-xl font-semibold">{averageMargin.toFixed(1)}%</div>
             <p className="text-xs text-muted-foreground">+2.5% vs mês anterior</p>
           </CardContent>
         </Card>

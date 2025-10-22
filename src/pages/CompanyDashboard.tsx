@@ -72,7 +72,7 @@ const CompanyDashboard = () => {
               {/* Top Left - Satisfaction */}
               <BentoCard 
                 name="Satisfação Média" 
-                description={`${mockCompanyMetrics.avgSatisfaction}/10 - Avaliação dos colaboradores`} 
+                description={`${mockCompanyMetrics.avgSatisfaction}/10 - Avaliação dos colaboradores`}
                 Icon={Star} 
                 onClick={() => navigate('/company/relatorios')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
@@ -89,7 +89,7 @@ const CompanyDashboard = () => {
               {/* Top Right - Sessions */}
               <BentoCard 
                 name="Sessões Este Mês" 
-                description={`${mockCompanyMetrics.usedSessions} de ${mockCompanyMetrics.contractedSessions} utilizadas`} 
+                description={`${mockCompanyMetrics.usedSessions} de ${mockCompanyMetrics.contractedSessions} utilizadas`}
                 Icon={Calendar} 
                 onClick={() => navigate('/company/sessions')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
@@ -106,7 +106,7 @@ const CompanyDashboard = () => {
               {/* Bottom Left - Employee Registration Status */}
               <BentoCard 
                 name="Estado de Registo" 
-                description={`${mockCompanyMetrics.registeredEmployees} registados, ${mockCompanyMetrics.unregisteredEmployees} pendentes`} 
+                description={`${mockCompanyMetrics.registeredEmployees} registados, ${mockCompanyMetrics.unregisteredEmployees} pendentes`}
                 Icon={Users} 
                 onClick={() => navigate('/company/colaboradores')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
@@ -178,7 +178,7 @@ const CompanyDashboard = () => {
                             <UserCheck className="h-4 w-4 text-green-600" />
                             <span className="text-gray-700">Ativos</span>
                           </div>
-                          <span className="font-bold text-green-700">{mockCompanyMetrics.activePercentage}%</span>
+                          <span className="font-mono text-xl font-semibold text-green-700">{mockCompanyMetrics.activePercentage}%</span>
                         </div>
                         <Progress value={mockCompanyMetrics.activePercentage} className="h-2" />
                         <div className="flex items-center justify-between text-sm">
@@ -202,7 +202,7 @@ const CompanyDashboard = () => {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-lg font-medium text-gray-900">{mockCompanyMetrics.mostUsedPillar}</span>
-                          <span className="text-2xl font-bold text-purple-700">42%</span>
+                          <span className="font-mono text-xl font-semibold text-purple-700">42%</span>
                         </div>
                         <Progress value={42} className="h-2" />
                         <p className="text-sm text-gray-600">das sessões totais</p>
@@ -220,7 +220,7 @@ const CompanyDashboard = () => {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-700">Sessões utilizadas este mês</span>
-                          <span className="text-xl font-bold text-purple-700">
+                          <span className="font-mono text-xl font-semibold text-purple-700">
                             {Math.round((mockCompanyMetrics.usedSessions / mockCompanyMetrics.contractedSessions) * 100)}%
                           </span>
                         </div>

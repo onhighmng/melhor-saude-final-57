@@ -36,7 +36,7 @@ export function AdminResultsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Sessões Nota ≥ 8</p>
-                <p className="text-3xl font-bold mt-1">87%</p>
+                <p className="font-mono text-xl font-semibold mt-1">87%</p>
                 <p className="text-xs text-green-600 mt-1">↑ 5% vs mês anterior</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
@@ -51,7 +51,7 @@ export function AdminResultsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Objetivos Atingidos</p>
-                <p className="text-3xl font-bold mt-1">64%</p>
+                <p className="font-mono text-xl font-semibold mt-1">64%</p>
                 <p className="text-xs text-blue-600 mt-1">↑ 8% vs mês anterior</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
@@ -66,7 +66,7 @@ export function AdminResultsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total de Visualizações</p>
-                <p className="text-3xl font-bold mt-1">1.2k</p>
+                <p className="font-mono text-xl font-semibold mt-1">1.2k</p>
                 <p className="text-xs text-orange-600 mt-1">Este mês</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-orange-500/10 flex items-center justify-center">
@@ -81,7 +81,7 @@ export function AdminResultsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Taxa de Engagement</p>
-                <p className="text-3xl font-bold mt-1">76%</p>
+                <p className="font-mono text-xl font-semibold mt-1">76%</p>
                 <p className="text-xs text-purple-600 mt-1">↑ 3% vs mês anterior</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">

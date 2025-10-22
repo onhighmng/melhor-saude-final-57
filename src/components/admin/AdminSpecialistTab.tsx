@@ -77,7 +77,7 @@ export default function AdminSpecialistTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Casos Resolvidos</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                <p className="font-mono text-xl font-semibold text-emerald-600 dark:text-emerald-400">
                   {specialistStats.resolved}
                 </p>
               </div>
@@ -93,7 +93,7 @@ export default function AdminSpecialistTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Em Acompanhamento</p>
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                <p className="font-mono text-xl font-semibold text-amber-600 dark:text-amber-400">
                   {specialistStats.inProgress}
                 </p>
               </div>
@@ -109,7 +109,7 @@ export default function AdminSpecialistTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Encaminhados</p>
-                <p className="text-2xl font-bold text-vibrant-blue">
+                <p className="font-mono text-xl font-semibold text-vibrant-blue">
                   {specialistStats.forwarded}
                 </p>
               </div>
@@ -125,7 +125,7 @@ export default function AdminSpecialistTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Tempo Médio</p>
-                <p className="text-2xl font-bold">{specialistStats.avgResponseTime}</p>
+                <p className="font-mono text-xl font-semibold">{specialistStats.avgResponseTime}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-primary" />

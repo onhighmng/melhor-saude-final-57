@@ -55,7 +55,7 @@ const AdminDashboard = () => {
           {/* Top Left - Companies */}
           <BentoCard 
             name="Empresas Ativas" 
-            description={`${analytics?.total_companies || 0} empresas ativas`} 
+            description={`${analytics?.total_companies || 0} empresas ativas`}
             Icon={Building2} 
             onClick={() => navigate('/admin/users-management?tab=companies')} 
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
@@ -73,7 +73,7 @@ const AdminDashboard = () => {
           {/* Top Right - Users */}
           <BentoCard 
             name="Colaboradores Registados" 
-            description={`${analytics?.total_users || 0} utilizadores ativos`} 
+            description={`${analytics?.total_users || 0} utilizadores ativos`}
             Icon={Users} 
             onClick={() => navigate('/admin/users-management?tab=employees')} 
             className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
@@ -91,7 +91,7 @@ const AdminDashboard = () => {
           {/* Bottom Left - Sessions */}
           <BentoCard 
             name="Sessões Este Mês" 
-            description={`${analytics?.total_bookings || 0} sessões realizadas`} 
+            description={`${analytics?.total_bookings || 0} sessões realizadas`}
             Icon={Calendar} 
             onClick={() => navigate('/admin/operations')} 
             className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
@@ -168,7 +168,7 @@ const AdminDashboard = () => {
                       <Phone className="h-5 w-5 text-red-600" />
                       <span className="font-medium">Chamadas Pendentes</span>
                     </div>
-                    <span className="text-xl font-bold text-red-700">{mockAdminAlerts.pending_calls}</span>
+                    <span className="font-mono text-xl font-semibold text-red-700">{mockAdminAlerts.pending_calls}</span>
                   </div>
                 
                 <div 
@@ -182,7 +182,7 @@ const AdminDashboard = () => {
                     <MessageSquare className="h-5 w-5 text-orange-600" />
                     <span className="font-medium">Feedback Negativo</span>
                   </div>
-                  <span className="text-xl font-bold text-orange-700">{mockAdminAlerts.negative_feedback}</span>
+                  <span className="font-mono text-xl font-semibold text-orange-700">{mockAdminAlerts.negative_feedback}</span>
                   </div>
                 
                 <div 
@@ -196,7 +196,7 @@ const AdminDashboard = () => {
                     <Users className="h-5 w-5 text-amber-600" />
                     <span className="font-medium">Utilizadores Inativos</span>
               </div>
-                  <span className="text-xl font-bold text-amber-700">{mockAdminAlerts.inactive_users}</span>
+                  <span className="font-mono text-xl font-semibold text-amber-700">{mockAdminAlerts.inactive_users}</span>
       </div>
 
                 <div 
@@ -210,7 +210,7 @@ const AdminDashboard = () => {
                     <Calendar className="h-5 w-5 text-indigo-600" />
                     <span className="font-medium">Sessões com Especialista Geral</span>
                   </div>
-                  <span className="text-xl font-bold text-indigo-700">3</span>
+                  <span className="font-mono text-xl font-semibold text-indigo-700">3</span>
               </div>
       </div>
 

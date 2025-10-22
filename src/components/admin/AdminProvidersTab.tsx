@@ -277,7 +277,7 @@ const AdminProvidersTab = () => {
             <Brain className="h-12 w-12 mx-auto text-blue-600" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Saúde Mental</p>
-              <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">
+              <p className="font-mono text-xl font-semibold text-blue-700 dark:text-blue-300">
                 {providers.filter(p => p.pillar === 'mental-health').length}
               </p>
             </div>
@@ -296,7 +296,7 @@ const AdminProvidersTab = () => {
             <Heart className="h-12 w-12 mx-auto text-orange-600" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Bem-Estar Físico</p>
-              <p className="text-3xl font-bold text-orange-700 dark:text-orange-300">
+              <p className="font-mono text-xl font-semibold text-orange-700 dark:text-orange-300">
                 {providers.filter(p => p.pillar === 'physical-wellness').length}
               </p>
             </div>
@@ -315,7 +315,7 @@ const AdminProvidersTab = () => {
             <DollarSign className="h-12 w-12 mx-auto text-green-600" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Assistência Financeira</p>
-              <p className="text-3xl font-bold text-green-700 dark:text-green-300">
+              <p className="font-mono text-xl font-semibold text-green-700 dark:text-green-300">
                 {providers.filter(p => p.pillar === 'financial-assistance').length}
               </p>
             </div>
@@ -334,7 +334,7 @@ const AdminProvidersTab = () => {
             <Scale className="h-12 w-12 mx-auto text-purple-600" />
             <div>
               <p className="text-sm font-medium text-muted-foreground">Assistência Jurídica</p>
-              <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">
+              <p className="font-mono text-xl font-semibold text-purple-700 dark:text-purple-300">
                 {providers.filter(p => p.pillar === 'legal-assistance').length}
               </p>
             </div>

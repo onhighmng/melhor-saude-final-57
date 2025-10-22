@@ -27,7 +27,7 @@ export const AnalyticsCard: React.FC<AnalyticsCardProps> = ({
         <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="font-mono text-xl font-semibold">{value}</div>
         {description && (
           <p className="text-xs text-muted-foreground mt-1">{description}</p>
         )}

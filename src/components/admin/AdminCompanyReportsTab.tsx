@@ -111,7 +111,7 @@ const AdminCompanyReportsTab = () => {
                 <Star className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{selectedStats.satisfaction}/10</div>
+                <div className="font-mono text-xl font-semibold">{selectedStats.satisfaction}/10</div>
                 <p className="text-xs text-muted-foreground">Média geral</p>
               </CardContent>
             </Card>

@@ -263,13 +263,13 @@ const UserDashboard = () => {
               <div className="w-full max-w-md space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-50 font-bold">Progresso Pessoal</span>
-                  <span className="text-base font-bold text-zinc-50">{Math.round(animatedMilestoneProgress)}%</span>
+                  <span className="font-mono text-xl font-semibold text-zinc-50">{Math.round(animatedMilestoneProgress)}%</span>
                 </div>
                 <Progress value={animatedMilestoneProgress} className="h-2" />
               </div>
               
               <div className="space-y-1">
-                <div className="text-6xl font-bold text-white">{remainingSessions}</div>
+                <div className="font-mono text-6xl font-semibold text-white">{remainingSessions}</div>
                 <div className="text-lg font-serif text-white">Sessões</div>
               </div>
 
@@ -286,7 +286,7 @@ const UserDashboard = () => {
           {/* Top Left - Session History */}
           <BentoCard 
             name="Histórico de Sessões" 
-            description={`${completedSessions.length} sessões concluídas`} 
+            description={`${completedSessions.length} sessões concluídas`}
             Icon={Calendar} 
             onClick={() => navigate('/user/sessions')} 
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
@@ -322,7 +322,7 @@ const UserDashboard = () => {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-base font-medium">Progresso</span>
-                        <span className="text-2xl font-bold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
+                        <span className="font-mono text-xl font-semibold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
                       </div>
                       <Progress value={animatedMilestoneProgress} className="h-3" />
                     </div>

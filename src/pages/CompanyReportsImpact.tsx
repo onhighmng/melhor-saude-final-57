@@ -125,9 +125,9 @@ const CompanyReportsImpact = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">
-              {mockCompanyMetrics.activeEmployees}
-            </div>
+                <div className="font-mono text-xl font-semibold text-blue-700 dark:text-blue-300">
+                  {mockCompanyMetrics.activeEmployees}
+                </div>
             <p className="text-xs text-muted-foreground mt-1">
               Total de colaboradores
             </p>
@@ -142,7 +142,7 @@ const CompanyReportsImpact = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-700 dark:text-green-300">
+            <div className="font-mono text-xl font-semibold text-emerald-700 dark:text-emerald-300">
               {mockCompanyMetrics.totalSessions}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -159,7 +159,7 @@ const CompanyReportsImpact = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1">
+            <div className="font-mono text-xl font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1">
               <Star className="h-6 w-6 fill-amber-600 text-amber-600" />
               {mockCompanyMetrics.avgSatisfaction}/10
             </div>
@@ -177,9 +177,9 @@ const CompanyReportsImpact = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">
-              {mockCompanyMetrics.utilizationRate}%
-            </div>
+                <div className="font-mono text-xl font-semibold text-purple-700 dark:text-purple-300">
+                  {mockCompanyMetrics.utilizationRate}%
+                </div>
             <p className="text-xs text-muted-foreground mt-1">
               Colaboradores ativos
             </p>

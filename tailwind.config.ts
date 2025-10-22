@@ -27,6 +27,7 @@ export default {
         display: ["Noto Serif", "serif"],
         accent: ["Comfortaa", "sans-serif"],
         comfortaa: ["Comfortaa", "sans-serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",

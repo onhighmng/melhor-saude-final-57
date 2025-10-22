@@ -130,7 +130,7 @@ export const ProviderMetricsView = ({
                 <div className="text-center p-3 bg-muted/50 rounded-lg">
                   <TrendingUp className="h-5 w-5 mx-auto mb-2 text-mint-green" />
                   <p className="text-xs text-muted-foreground mb-1">{t('metricsView.avgSatisfaction')}</p>
-                  <p className="text-2xl font-bold">{metrics.avgSatisfaction}/10</p>
+                  <p className="font-mono text-xl font-semibold">{metrics.avgSatisfaction}/10</p>
                 </div>
                 <div className="text-center p-3 bg-muted/50 rounded-lg">
                   <Calendar className="h-5 w-5 mx-auto mb-2 text-peach-orange" />

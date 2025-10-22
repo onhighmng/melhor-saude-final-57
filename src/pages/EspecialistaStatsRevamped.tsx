@@ -53,7 +53,7 @@ const EspecialistaStatsRevamped = () => {
               <div>
                 <div className="flex items-center justify-between mb-5">
                   <span className="text-2xl font-semibold">Resolução Interna</span>
-                  <span className="text-5xl font-bold text-blue-900">{stats.internal_resolution_rate}%</span>
+                  <span className="font-mono text-xl font-semibold text-blue-900">{stats.internal_resolution_rate}%</span>
                 </div>
                 <div className="h-6 bg-gray-200 rounded-full overflow-hidden">
                   <div
@@ -65,7 +65,7 @@ const EspecialistaStatsRevamped = () => {
               <div>
                 <div className="flex items-center justify-between mb-5">
                   <span className="text-2xl font-semibold">Encaminhamentos</span>
-                  <span className="text-5xl font-bold text-blue-900">{stats.referral_rate}%</span>
+                  <span className="font-mono text-xl font-semibold text-blue-900">{stats.referral_rate}%</span>
                 </div>
                 <div className="h-6 bg-gray-200 rounded-full overflow-hidden">
                   <div

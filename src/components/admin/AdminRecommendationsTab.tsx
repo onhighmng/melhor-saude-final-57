@@ -110,7 +110,7 @@ export function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Recomendações Ativas</p>
-                <p className="text-3xl font-bold mt-1">24</p>
+                <p className="font-mono text-xl font-semibold mt-1">24</p>
               </div>
               <TrendingUp className="h-8 w-8 text-primary" />
             </div>
@@ -122,7 +122,7 @@ export function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Taxa de Visualização</p>
-                <p className="text-3xl font-bold mt-1">68%</p>
+                <p className="font-mono text-xl font-semibold mt-1">68%</p>
               </div>
               <div className="h-8 w-8 rounded-full bg-green-500/10 flex items-center justify-center">
                 <span className="text-green-700 text-sm font-semibold">↑</span>
@@ -136,7 +136,7 @@ export function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Confiança Média</p>
-                <p className="text-3xl font-bold mt-1">89%</p>
+                <p className="font-mono text-xl font-semibold mt-1">89%</p>
               </div>
               <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center">
                 <Brain className="h-4 w-4 text-blue-700" />
