@@ -213,12 +213,12 @@ const EspecialistaUserHistory = () => {
                   </div>
 
                   {/* Internal Notes */}
-                  {selectedUser.internal_notes && selectedUser.internal_notes.length > 0 && (
-                    <div className="pb-4">
-                      <h4 className="font-medium mb-3 flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
-                        Notas Internas do Especialista
-                      </h4>
+                  <div className="pb-4">
+                    <h4 className="font-medium mb-3 flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Notas Internas do Especialista
+                    </h4>
+                    {selectedUser.internal_notes && selectedUser.internal_notes.length > 0 ? (
                       <div className="space-y-3">
                         {selectedUser.internal_notes.map((note: any) => (
                           <Card key={note.id}>
@@ -235,8 +235,13 @@ const EspecialistaUserHistory = () => {
                           </Card>
                         ))}
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="border rounded-lg p-8 text-center text-muted-foreground">
+                        <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Sem notas internas disponíveis</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </ScrollArea>
 
