@@ -127,64 +127,6 @@ const AdminUsersManagement = () => {
             onEmployeeClick={handleEmployeeClick}
           />
 
-          {/* Bento Grid Layout - Tab Navigation */}
-          <div className="space-y-6">
-            <BentoGrid className="grid-rows-1 auto-rows-[80px]">
-              <BentoCard 
-                name="Empresas" 
-                description="Gerir empresas e códigos" 
-                Icon={Building2} 
-                onClick={() => handleTabChange('companies')} 
-                className={`col-span-1 ${activeTab === 'companies' ? 'ring-2 ring-blue-500' : ''}`}
-                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'companies' ? 'from-blue-100 to-blue-200' : 'from-blue-50 to-blue-100'}`} />}
-                iconColor="text-blue-600"
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                href="#"
-                cta="Gerir"
-              />
-
-              <BentoCard 
-                name="Colaboradores" 
-                description="Gerir utilizadores" 
-                Icon={Users} 
-                onClick={() => handleTabChange('employees')} 
-                className={`col-span-1 ${activeTab === 'employees' ? 'ring-2 ring-green-500' : ''}`}
-                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'employees' ? 'from-green-100 to-green-200' : 'from-green-50 to-green-100'}`} />}
-                iconColor="text-green-600"
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                href="#"
-                cta="Gerir"
-              />
-
-              <BentoCard 
-                name="Prestadores" 
-                description="Gerir especialistas" 
-                Icon={UserCog} 
-                onClick={() => handleTabChange('providers')} 
-                className={`col-span-1 ${activeTab === 'providers' ? 'ring-2 ring-yellow-500' : ''}`}
-                background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'providers' ? 'from-yellow-100 to-yellow-200' : 'from-yellow-50 to-yellow-100'}`} />}
-                iconColor="text-yellow-600"
-                textColor="text-gray-900"
-                descriptionColor="text-gray-600"
-                href="#"
-                cta="Gerir"
-              />
-            </BentoGrid>
-
-            {/* Content Area */}
-            <div className="mt-6" data-tab-content>
-              {activeTab === 'companies' && (
-                <AdminCompaniesTab 
-                  isAddCompanyModalOpen={isAddCompanyModalOpen}
-                  setIsAddCompanyModalOpen={setIsAddCompanyModalOpen}
-                />
-              )}
-              {activeTab === 'employees' && <AdminEmployeesTab />}
-              {activeTab === 'providers' && <AdminProvidersTab />}
-            </div>
-          </div>
         </div>
       </div>
 
