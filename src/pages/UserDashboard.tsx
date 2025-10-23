@@ -49,28 +49,50 @@ const UserDashboard = () => {
   const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
 
-  // Get milestone progress from sessionStorage (resets on logout)
-  const getMilestoneProgress = () => {
-    const stored = sessionStorage.getItem('journeyMilestones');
-    if (stored) {
-      const milestones = JSON.parse(stored);
-      return milestones.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
-    }
-    // Initialize from localStorage if not in session
-    const localStored = localStorage.getItem('journeyMilestones');
-    if (localStored) {
-      const milestones = JSON.parse(localStored);
-      // Reset all milestones except onboarding for new session
-      const sessionMilestones = milestones.map((m: any) => ({
-        ...m,
-        completed: m.id === 'onboarding' ? m.completed : false
-      }));
-      sessionStorage.setItem('journeyMilestones', JSON.stringify(sessionMilestones));
-      return sessionMilestones.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
-    }
-    return 0;
+  // Default milestones structure
+  const defaultMilestones = [{
+    id: 'onboarding',
+    label: 'Concluiu o onboarding',
+    points: 10,
+    completed: false
+  }, {
+    id: 'specialist',
+    label: 'Falou com um especialista',
+    points: 20,
+    completed: false
+  }, {
+    id: 'first_session',
+    label: 'Fez a primeira sessão',
+    points: 25,
+    completed: false
+  }, {
+    id: 'resources',
+    label: 'Usou recursos da plataforma',
+    points: 15,
+    completed: false
+  }, {
+    id: 'ratings',
+    label: 'Avaliou 3 sessões efetuadas',
+    points: 20,
+    completed: false
+  }, {
+    id: 'goal',
+    label: 'Atingiu 1 objetivo pessoal',
+    points: 10,
+    completed: false
+  }];
+
+  // Get milestone progress from localStorage (persistent)
+  const getMilestoneProgress = (milestonesData: any[]) => {
+    return milestonesData.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
   };
-  const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress());
+
+  // Initialize milestones from localStorage
+  const [milestones, setMilestones] = useState<any[]>(() => {
+    const stored = localStorage.getItem('journeyMilestones');
+    return stored ? JSON.parse(stored) : defaultMilestones;
+  });
+  const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress(milestones));
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
   const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
@@ -89,9 +111,9 @@ const UserDashboard = () => {
     const handleMilestoneCompleted = () => {
       const stored = localStorage.getItem('journeyMilestones');
       if (stored) {
-        // Update sessionStorage with the new milestone
-        sessionStorage.setItem('journeyMilestones', stored);
-        const progress = getMilestoneProgress();
+        const updatedMilestones = JSON.parse(stored);
+        setMilestones(updatedMilestones);
+        const progress = getMilestoneProgress(updatedMilestones);
         setMilestoneProgress(progress);
       }
     };
@@ -328,53 +350,23 @@ const UserDashboard = () => {
                     </div>
                     
                     <div className="space-y-3 overflow-y-auto pr-2">
-                      {(() => {
-                  const stored = localStorage.getItem('journeyMilestones');
-                  const milestones = stored ? JSON.parse(stored) : [{
-                    id: 'onboarding',
-                    label: 'Concluiu o onboarding',
-                    points: 10,
-                    completed: false
-                  }, {
-                    id: 'specialist',
-                    label: 'Falou com um especialista',
-                    points: 20,
-                    completed: false
-                  }, {
-                    id: 'first_session',
-                    label: 'Fez a primeira sessão',
-                    points: 25,
-                    completed: false
-                  }, {
-                    id: 'resources',
-                    label: 'Usou recursos da plataforma',
-                    points: 15,
-                    completed: false
-                  }, {
-                    id: 'ratings',
-                    label: 'Avaliou 3 sessões efetuadas',
-                    points: 20,
-                    completed: false
-                  }, {
-                    id: 'goal',
-                    label: 'Atingiu 1 objetivo pessoal',
-                    points: 10,
-                    completed: false
-                  }];
-                  return milestones.map((milestone: any) => <div key={milestone.id} className={`flex items-center gap-3 p-3.5 rounded-lg border text-sm ${milestone.completed ? 'bg-green-50 border-green-200' : 'bg-white/50 border-gray-200'}`}>
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300'}`}>
-                              {milestone.completed && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                </svg>}
-                            </div>
-                            <span className={`flex-1 ${milestone.completed ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
-                              {milestone.label}
-                            </span>
-                            <span className={`text-sm font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
-                              +{milestone.points}%
-                            </span>
-                          </div>);
-                })()}
+                      {milestones.map((milestone: any) => (
+                        <div key={milestone.id} className={`flex items-center gap-3 p-3.5 rounded-lg border text-sm ${milestone.completed ? 'bg-green-50 border-green-200' : 'bg-white/50 border-gray-200'}`}>
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300'}`}>
+                            {milestone.completed && (
+                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          <span className={`flex-1 ${milestone.completed ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
+                            {milestone.label}
+                          </span>
+                          <span className={`text-sm font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
+                            +{milestone.points}%
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
