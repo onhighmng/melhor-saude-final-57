@@ -6,6 +6,7 @@ import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
 import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import FeaturedSectionStats from '@/components/ui/featured-section-stats';
 
 const AdminUsersManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,19 +34,34 @@ const AdminUsersManagement = () => {
     setSearchParams({ tab: value });
   };
 
+  const userStats = [
+    { value: "150+", label: "Empresas Ativas" },
+    { value: "5,000+", label: "Colaboradores" },
+    { value: "200+", label: "Prestadores" },
+    { value: "98%", label: "Taxa de Satisfação" },
+  ];
+
+  const chartData = [
+    { name: "Jan", value: 850 },
+    { name: "Fev", value: 1200 },
+    { name: "Mar", value: 1800 },
+    { name: "Abr", value: 2400 },
+    { name: "Mai", value: 3200 },
+    { name: "Jun", value: 4100 },
+    { name: "Jul", value: 5000 },
+  ];
+
   return (
     <div className="relative w-full min-h-screen h-full flex flex-col">
       <div className="relative z-10 h-full flex flex-col">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
-          {/* Page Header */}
-          <div>
-            <h1 className="text-3xl font-heading font-bold text-foreground">
-              Gestão de Utilizadores
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Gerir empresas, colaboradores e prestadores da plataforma
-            </p>
-          </div>
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-6 h-full flex flex-col min-h-0">
+          {/* Stats Section */}
+          <FeaturedSectionStats
+            title="Gestão centralizada de toda a plataforma."
+            subtitle="Acompanhe métricas em tempo real, gerir utilizadores e tomar decisões baseadas em dados de forma eficiente."
+            stats={userStats}
+            chartData={chartData}
+          />
 
           {/* Bento Grid Layout - Tab Navigation */}
           <div className="space-y-6">
