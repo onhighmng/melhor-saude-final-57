@@ -446,13 +446,13 @@ const UserDashboard = () => {
                   <div className="flex-1 space-y-3 min-h-0 flex flex-col justify-start">
                     {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
                 const pillarColors = getPillarColors(booking.pillar);
-                return <div key={booking.id} onClick={(e) => { e.stopPropagation(); handleSessionClick(booking); }} className={cn('flex items-start gap-3 rounded-2xl p-2.5 border-l-[5px] transition-all flex-shrink-0 cursor-pointer hover:scale-[1.02]', `${pillarColors.bg} ${pillarColors.border}`)}>
-                            <div className={cn('w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
-                              <Calendar className="w-5.5 h-5.5 text-white" />
+                return <div key={booking.id} onClick={(e) => { e.stopPropagation(); handleSessionClick(booking); }} className={cn('flex items-center gap-3 rounded-xl p-3 transition-all flex-shrink-0 cursor-pointer hover:scale-[1.02] bg-white/80 backdrop-blur-sm border', pillarColors.border)}>
+                            <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
+                              <Calendar className="w-5 h-5 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className={cn('font-semibold text-sm mb-0.5', pillarColors.text)}>{formatPillarName(booking.pillar)}</div>
-                              <div className="text-xs text-muted-foreground">{booking.date} • {booking.time}</div>
+                              <div className="text-sm font-medium text-foreground">{booking.date}</div>
+                              <div className="text-xs text-muted-foreground">{booking.time}</div>
                             </div>
                           </div>;
               }) : <div className="text-center text-sm text-muted-foreground flex-shrink-0">
