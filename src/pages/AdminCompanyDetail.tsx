@@ -466,41 +466,37 @@ export default function AdminCompanyDetail() {
 
       <div className="border-t p-6">
         <div className="container mx-auto">
-          <Card className="bg-transparent border-none shadow-none">
-            <CardHeader className="pb-6">
-              <CardTitle className="text-3xl">Estatísticas Rápidas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-                <div>
-                  <p className="text-base text-muted-foreground mb-2">Total de colaboradores</p>
-                  <p className="text-4xl font-bold">{employees.length}</p>
-                </div>
-                <div>
-                  <p className="text-base text-muted-foreground mb-2">Com código enviado</p>
-                  <p className="text-4xl font-bold">{employeesWithCode}</p>
-                </div>
-                <div>
-                  <p className="text-base text-muted-foreground mb-2">Por enviar</p>
-                  <p className="text-4xl font-bold">{employeesPending}</p>
-                </div>
-                <div className="space-y-3">
-                  <p className="text-base text-muted-foreground">Taxa de envio de códigos</p>
-                  <p className="text-4xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
-                  <Progress 
-                    value={employees.length > 0 ? (employeesWithCode / employees.length) * 100 : 0} 
-                    className="h-3"
-                  />
-                </div>
-                <div>
-                  <p className="text-base text-muted-foreground mb-2">Último envio</p>
-                  <p className="text-base font-medium">
-                    {lastSendTimestamp || 'Nenhum envio realizado'}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="pb-6">
+            <h3 className="text-3xl font-semibold">Estatísticas Rápidas</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+            <div>
+              <p className="text-base text-muted-foreground mb-2">Total de colaboradores</p>
+              <p className="text-4xl font-bold">{employees.length}</p>
+            </div>
+            <div>
+              <p className="text-base text-muted-foreground mb-2">Com código enviado</p>
+              <p className="text-4xl font-bold">{employeesWithCode}</p>
+            </div>
+            <div>
+              <p className="text-base text-muted-foreground mb-2">Por enviar</p>
+              <p className="text-4xl font-bold">{employeesPending}</p>
+            </div>
+            <div className="space-y-3">
+              <p className="text-base text-muted-foreground">Taxa de envio de códigos</p>
+              <p className="text-4xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
+              <Progress 
+                value={employees.length > 0 ? (employeesWithCode / employees.length) * 100 : 0} 
+                className="h-3"
+              />
+            </div>
+            <div>
+              <p className="text-base text-muted-foreground mb-2">Último envio</p>
+              <p className="text-base font-medium">
+                {lastSendTimestamp || 'Nenhum envio realizado'}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
