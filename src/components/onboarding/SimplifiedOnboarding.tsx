@@ -367,7 +367,7 @@ export const SimplifiedOnboarding = ({
                 Voltar
               </Button>}
             <Button onClick={handleNext} className="flex-1 h-11 text-sm rounded-lg shadow-lg bg-sky-blue hover:bg-sky-blue/90 text-white" disabled={!canProceed()}>
-              {step === 0 ? 'Começar →' : step === 6 ? 'Continuar para Dashboard →' : step === 5 ? 'Concluir →' : 'Próximo →'}
+              {step === 0 ? 'Começar →' : step === 6 ? 'Continuar para Início →' : step === 5 ? 'Concluir →' : 'Próximo →'}
             </Button>
           </div>
 
