@@ -303,6 +303,18 @@ export default function RuixenSection({
                 Adicionar Empresa
               </Button>
             )}
+            {activeCardIndex === 1 && (
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/admin/users-management?tab=employees');
+                }}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Colaborador
+              </Button>
+            )}
           </div>
 
           {/* Table */}
