@@ -464,35 +464,35 @@ export default function AdminCompanyDetail() {
         </div>
       </div>
 
-      <div className="border-t p-4">
+      <div className="border-t py-3 px-4">
         <div className="container mx-auto">
           <div className="pb-2">
             <h3 className="text-3xl font-semibold">Estatísticas Rápidas</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            <div>
-              <p className="text-base text-muted-foreground">Total de colaboradores</p>
-              <p className="text-4xl font-bold">{employees.length}</p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
+            <div className="pr-2">
+              <p className="text-base text-muted-foreground leading-tight">Total de colaboradores</p>
+              <p className="text-4xl font-bold leading-tight">{employees.length}</p>
             </div>
-            <div>
-              <p className="text-base text-muted-foreground">Com código enviado</p>
-              <p className="text-4xl font-bold">{employeesWithCode}</p>
+            <div className="pr-2">
+              <p className="text-base text-muted-foreground leading-tight">Com código enviado</p>
+              <p className="text-4xl font-bold leading-tight">{employeesWithCode}</p>
             </div>
-            <div>
-              <p className="text-base text-muted-foreground">Por enviar</p>
-              <p className="text-4xl font-bold">{employeesPending}</p>
+            <div className="pr-2">
+              <p className="text-base text-muted-foreground leading-tight">Por enviar</p>
+              <p className="text-4xl font-bold leading-tight">{employeesPending}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-base text-muted-foreground">Taxa de envio de códigos</p>
-              <p className="text-4xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
+            <div className="pr-2">
+              <p className="text-base text-muted-foreground leading-tight">Taxa de envio de códigos</p>
+              <p className="text-4xl font-bold leading-tight">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
               <Progress 
                 value={employees.length > 0 ? (employeesWithCode / employees.length) * 100 : 0} 
-                className="h-3"
+                className="h-3 mt-1"
               />
             </div>
             <div>
-              <p className="text-base text-muted-foreground">Último envio</p>
-              <p className="text-base font-medium">
+              <p className="text-base text-muted-foreground leading-tight">Último envio</p>
+              <p className="text-base font-medium leading-tight">
                 {lastSendTimestamp || 'Nenhum envio realizado'}
               </p>
             </div>
