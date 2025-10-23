@@ -389,7 +389,7 @@ const UserDashboard = () => {
                   <div className="flex-1 space-y-3 min-h-0 flex flex-col justify-start">
                     {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
                 const pillarColors = getPillarColors(booking.pillar);
-                return <div key={booking.id} className={cn('flex items-start gap-3 rounded-2xl p-2.5 border-l-[5px] transition-all flex-shrink-0', `${pillarColors.bg} ${pillarColors.border}`)}>
+                return <div key={booking.id} onClick={() => navigate(`/user/sessions/${booking.id}`)} className={cn('flex items-start gap-3 rounded-2xl p-2.5 border-l-[5px] transition-all flex-shrink-0 cursor-pointer hover:scale-[1.02]', `${pillarColors.bg} ${pillarColors.border}`)}>
                             <div className={cn('w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
                               <Calendar className="w-5.5 h-5.5 text-white" />
                             </div>
