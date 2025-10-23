@@ -464,25 +464,25 @@ export default function AdminCompanyDetail() {
         </div>
       </div>
 
-      <div className="border-t p-6">
+      <div className="border-t p-4">
         <div className="container mx-auto">
-          <div className="pb-4">
+          <div className="pb-2">
             <h3 className="text-3xl font-semibold">Estatísticas Rápidas</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
             <div>
-              <p className="text-base text-muted-foreground mb-1">Total de colaboradores</p>
+              <p className="text-base text-muted-foreground">Total de colaboradores</p>
               <p className="text-4xl font-bold">{employees.length}</p>
             </div>
             <div>
-              <p className="text-base text-muted-foreground mb-1">Com código enviado</p>
+              <p className="text-base text-muted-foreground">Com código enviado</p>
               <p className="text-4xl font-bold">{employeesWithCode}</p>
             </div>
             <div>
-              <p className="text-base text-muted-foreground mb-1">Por enviar</p>
+              <p className="text-base text-muted-foreground">Por enviar</p>
               <p className="text-4xl font-bold">{employeesPending}</p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <p className="text-base text-muted-foreground">Taxa de envio de códigos</p>
               <p className="text-4xl font-bold">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
               <Progress 
@@ -491,7 +491,7 @@ export default function AdminCompanyDetail() {
               />
             </div>
             <div>
-              <p className="text-base text-muted-foreground mb-1">Último envio</p>
+              <p className="text-base text-muted-foreground">Último envio</p>
               <p className="text-base font-medium">
                 {lastSendTimestamp || 'Nenhum envio realizado'}
               </p>
