@@ -367,6 +367,7 @@ export default function RuixenSection({
                 {activeCardIndex === 1 && activeEmployees.map((employee) => (
                   <tr 
                     key={employee.id}
+                    onClick={() => navigate(`/admin/employees/${employee.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
                     <td colSpan={4} className="absolute inset-0 pointer-events-none">
@@ -396,6 +397,7 @@ export default function RuixenSection({
                 {activeCardIndex === 2 && activeProviders.map((provider) => (
                   <tr 
                     key={provider.id}
+                    onClick={() => navigate(`/admin/providers/${provider.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
                     <td colSpan={4} className="absolute inset-0 pointer-events-none">
