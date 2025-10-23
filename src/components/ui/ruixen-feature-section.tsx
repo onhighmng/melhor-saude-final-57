@@ -573,7 +573,7 @@ export const CardStack = ({
           <motion.div
             key={card.id}
             onClick={() => {
-              if (isTopCard) {
+              if (isTopCard && navigate) {
                 navigate(`/admin/users-management?tab=${card.tabValue}`);
               }
             }}
