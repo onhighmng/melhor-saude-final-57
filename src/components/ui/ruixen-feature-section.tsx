@@ -331,12 +331,12 @@ export default function RuixenSection({
                     onClick={() => navigate(`/admin/companies/${company.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
+                    <td className="py-4 px-4 text-foreground font-medium">
                       <div className={cn(
-                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none -z-10",
+                        "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none",
                         company.bgColor
-                      )} style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />
-                      {company.name}
+                      )} />
+                      <span className="relative z-10">{company.name}</span>
                     </td>
                     <td className="py-4 px-4 relative z-10">
                       <div className="flex items-center gap-2 text-foreground">
@@ -367,12 +367,12 @@ export default function RuixenSection({
                     onClick={() => navigate(`/admin/employees/${employee.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
+                    <td className="py-4 px-4 text-foreground font-medium">
                       <div className={cn(
-                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none -z-10",
+                        "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none",
                         employee.bgColor
-                      )} style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />
-                      {employee.name}
+                      )} />
+                      <span className="relative z-10">{employee.name}</span>
                     </td>
                     <td className="py-4 px-4 text-foreground relative z-10">
                       {employee.company}
@@ -394,12 +394,12 @@ export default function RuixenSection({
                     onClick={() => navigate(`/admin/providers/${provider.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
+                    <td className="py-4 px-4 text-foreground font-medium">
                       <div className={cn(
-                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none -z-10",
+                        "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none",
                         provider.bgColor
-                      )} style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />
-                      {provider.name}
+                      )} />
+                      <span className="relative z-10">{provider.name}</span>
                     </td>
                     <td className="py-4 px-4 text-foreground relative z-10">
                       {provider.specialty}
