@@ -268,47 +268,47 @@ export default function AdminCompanyDetail() {
       </div>
 
       <Card>
-        <CardHeader className="pb-10">
+        <CardHeader className="pb-6">
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-5xl mb-3">{mockCompany.name}</CardTitle>
-              <CardDescription className="text-xl">NUIT: {mockCompany.nuit}</CardDescription>
+              <CardTitle className="text-5xl mb-1 leading-tight">{mockCompany.name}</CardTitle>
+              <CardDescription className="text-xl leading-tight">NUIT: {mockCompany.nuit}</CardDescription>
             </div>
-            <div className="flex flex-col gap-4">
-              <Button variant="outline" size="lg" className="text-lg px-6 py-6" onClick={() => setIsEditDialogOpen(true)}>
+            <div className="flex flex-col gap-2">
+              <Button variant="outline" size="lg" className="text-lg px-6 py-4" onClick={() => setIsEditDialogOpen(true)}>
                 <Edit className="h-6 w-6 mr-3" />
                 Editar Empresa
               </Button>
-              <Button variant="outline" size="lg" className="text-lg px-6 py-6" onClick={() => navigate(`/admin/reports?company=${id}`)}>
+              <Button variant="outline" size="lg" className="text-lg px-6 py-4" onClick={() => navigate(`/admin/reports?company=${id}`)}>
                 <FileText className="h-6 w-6 mr-3" />
                 Ver Relatório Mensal
               </Button>
-              <Button variant="outline" size="lg" className="text-lg px-6 py-6 text-destructive" onClick={() => setIsDeactivateDialogOpen(true)}>
+              <Button variant="outline" size="lg" className="text-lg px-6 py-4 text-destructive" onClick={() => setIsDeactivateDialogOpen(true)}>
                 <Trash2 className="h-6 w-6 mr-3" />
                 Desativar Empresa
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <CardContent className="pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <p className="text-xl text-muted-foreground mb-3">Colaboradores</p>
-              <p className="text-5xl font-bold">{mockCompany.employees}</p>
+              <p className="text-xl text-muted-foreground mb-1 leading-tight">Colaboradores</p>
+              <p className="text-5xl font-bold leading-tight">{mockCompany.employees}</p>
             </div>
             <div>
-              <p className="text-xl text-muted-foreground mb-3">Plano</p>
-              <p className="text-5xl font-bold">{mockCompany.plan}</p>
-              <p className="text-base text-muted-foreground mt-2">{mockCompany.totalSessions} sessões/mês</p>
+              <p className="text-xl text-muted-foreground mb-1 leading-tight">Plano</p>
+              <p className="text-5xl font-bold leading-tight">{mockCompany.plan}</p>
+              <p className="text-base text-muted-foreground leading-tight">{mockCompany.totalSessions} sessões/mês</p>
             </div>
             <div>
-              <p className="text-xl text-muted-foreground mb-3">Sessões</p>
-              <Progress value={usagePercent} className="mt-4 h-4" />
-              <p className="text-base text-muted-foreground mt-3">{mockCompany.usedSessions} de {mockCompany.totalSessions}</p>
+              <p className="text-xl text-muted-foreground mb-1 leading-tight">Sessões</p>
+              <Progress value={usagePercent} className="mt-2 h-4" />
+              <p className="text-base text-muted-foreground mt-1 leading-tight">{mockCompany.usedSessions} de {mockCompany.totalSessions}</p>
             </div>
             <div>
-              <p className="text-xl text-muted-foreground mb-3">Estado</p>
-              <Badge variant="default" className="mt-3 text-lg px-6 py-2">Ativa</Badge>
+              <p className="text-xl text-muted-foreground mb-1 leading-tight">Estado</p>
+              <Badge variant="default" className="mt-1 text-lg px-6 py-2">Ativa</Badge>
             </div>
           </div>
         </CardContent>
