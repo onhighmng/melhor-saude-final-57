@@ -7,6 +7,7 @@ import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import FeaturedSectionStats from '@/components/ui/featured-section-stats';
+import RuixenSection from '@/components/ui/ruixen-feature-section';
 
 const AdminUsersManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,6 +63,9 @@ const AdminUsersManagement = () => {
             stats={userStats}
             chartData={chartData}
           />
+
+          {/* Feature Section */}
+          <RuixenSection />
 
           {/* Bento Grid Layout - Tab Navigation */}
           <div className="space-y-6">
