@@ -42,10 +42,10 @@ const DemoControlPanel = () => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   const demoUsers = [
-    { ...mockPrestadorUser, title: 'Prestador', icon: UserCheck, role: 'prestador' as const, color: 'bg-green-500' },
+    { ...mockPrestadorUser, title: 'Affiliate', icon: UserCheck, role: 'prestador' as const, color: 'bg-green-500' },
     { ...mockHRUser, title: 'RH', icon: Building2, role: 'hr' as const, color: 'bg-purple-500' },
     { ...mockAdminUser, title: 'Admin', icon: Shield, role: 'admin' as const, color: 'bg-red-500' },
-    { ...mockEspecialistaGeralUser, title: 'Especialista Geral', icon: Users, role: 'especialista_geral' as const, color: 'bg-orange-500' }
+    { ...mockEspecialistaGeralUser, title: 'Profissional de Permanencia', icon: Users, role: 'especialista_geral' as const, color: 'bg-orange-500' }
   ];
 
   const handleRoleSwitch = async (demoUser: typeof demoUsers[0]) => {

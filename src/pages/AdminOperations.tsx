@@ -42,7 +42,7 @@ const AdminOperations = () => {
               Operações
             </h1>
             <p className="text-muted-foreground mt-1">
-              Gerir sessões e especialista geral
+              Gerir sessões e profissional de permanencia
             </p>
           </div>
 
@@ -64,8 +64,8 @@ const AdminOperations = () => {
               />
 
               <BentoCard 
-                name="Especialista Geral" 
-                description="Gerir especialista geral" 
+                name="Profissional de Permanencia" 
+                description="Gerir profissional de permanencia" 
                 Icon={MessageSquare} 
                 onClick={() => handleTabChange('specialist')} 
                 className={`col-span-1 ${activeTab === 'specialist' ? 'ring-2 ring-blue-400' : ''}`}

@@ -221,15 +221,15 @@ const AdminProviders = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Prestadores</h1>
-            <p className="text-sm text-muted-foreground">Gerir prestadores e disponibilidade</p>
+            <h1 className="text-2xl font-bold text-foreground">Affiliates</h1>
+            <p className="text-sm text-muted-foreground">Gerir affiliates e disponibilidade</p>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Procurar prestadores..."
+                placeholder="Procurar affiliates..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 w-80"
@@ -268,7 +268,7 @@ const AdminProviders = () => {
             
             <Button onClick={() => navigate('/admin/prestadores/novo')}>
               <Plus className="h-4 w-4 mr-2" />
-              Adicionar Prestador
+              Adicionar Affiliate
             </Button>
           </div>
         </div>
@@ -281,7 +281,7 @@ const AdminProviders = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Users className="h-4 w-4 text-blue-600" />
-                Total de Prestadores
+                Total de Affiliates
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -297,7 +297,7 @@ const AdminProviders = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <UserCheck className="h-4 w-4 text-green-600" />
-                Prestadores Ativos
+                Affiliates Ativos
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -342,13 +342,13 @@ const AdminProviders = () => {
         {/* Providers Table */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-foreground">Prestadores</CardTitle>
+            <CardTitle className="text-foreground">Affiliates</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow className="border-muted">
-                  <TableHead>Prestador</TableHead>
+                  <TableHead>Affiliate</TableHead>
                   <TableHead>Pilar</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>Tipo de Sessão</TableHead>
@@ -362,8 +362,8 @@ const AdminProviders = () => {
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                       {searchQuery || pillarFilter !== 'all' || statusFilter !== 'all'
-                        ? 'Nenhum prestador encontrado com os filtros aplicados' 
-                        : 'Nenhum prestador encontrado'}
+                        ? 'Nenhum affiliate encontrado com os filtros aplicados' 
+                        : 'Nenhum affiliate encontrado'}
                     </TableCell>
                   </TableRow>
                 ) : (

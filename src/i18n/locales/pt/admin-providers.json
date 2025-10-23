@@ -1,9 +1,9 @@
 {
-  "pageTitle": "Gestão de Prestadores",
-  "pageDescription": "Gerir prestadores externos, visualizar métricas e agendar sessões",
-  "addProvider": "Adicionar Prestador",
-  "searchPlaceholder": "Pesquisar prestadores...",
-  "noResults": "Nenhum prestador encontrado",
+  "pageTitle": "Gestão de Affiliates",
+  "pageDescription": "Gerir affiliates externos, visualizar métricas e agendar sessões",
+  "addProvider": "Adicionar Affiliate",
+  "searchPlaceholder": "Pesquisar affiliates...",
+  "noResults": "Nenhum affiliate encontrado",
   
   "card": {
     "costPerSession": "Custo/Sessão",
@@ -15,11 +15,11 @@
   },
 
   "addModal": {
-    "title": "Adicionar Novo Prestador",
+    "title": "Adicionar Novo Affiliate",
     "fullName": "Nome completo",
     "fullNamePlaceholder": "Ex: Dr. João Silva",
     "email": "Email",
-    "emailPlaceholder": "prestador@exemplo.com",
+    "emailPlaceholder": "affiliate@exemplo.com",
     "pillar": "Pilar",
     "pillarPlaceholder": "Selecione um pilar",
     "costPerSession": "Custo por sessão (MZN)",
@@ -31,9 +31,9 @@
     "status": "Estado",
     "statusPlaceholder": "Selecione o estado",
     "cancel": "Cancelar",
-    "save": "Guardar Prestador",
-    "success": "Prestador adicionado com sucesso!",
-    "error": "Erro ao adicionar prestador"
+    "save": "Guardar Affiliate",
+    "success": "Affiliate adicionado com sucesso!",
+    "error": "Erro ao adicionar affiliate"
   },
 
   "pillars": {
@@ -56,7 +56,7 @@
   },
 
   "optionsModal": {
-    "title": "Opções do Prestador",
+    "title": "Opções do Affiliate",
     "viewMetrics": "Ver Métricas e Histórico",
     "viewMetricsDescription": "Ver desempenho e histórico detalhado",
     "scheduleSession": "Agendar Sessão no Calendário",
@@ -80,7 +80,7 @@
     "financial": "Financeiro",
     "costPerSession": "Custo por sessão",
     "platformMargin": "Margem Melhor Saúde (25%)",
-    "netToProvider": "Valor líquido ao prestador",
+    "netToProvider": "Valor líquido ao affiliate",
     "totalPaidThisMonth": "Total pago este mês",
     "history": "Histórico",
     "date": "Data",

@@ -93,7 +93,7 @@ const AdminAlertsTab = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{filteredSessions.length}</div>
-            <p className="text-xs text-muted-foreground">Com Especialista Geral</p>
+            <p className="text-xs text-muted-foreground">Com Profissional de Permanencia</p>
           </CardContent>
         </Card>
         <Card>

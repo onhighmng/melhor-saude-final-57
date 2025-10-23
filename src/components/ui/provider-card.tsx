@@ -116,7 +116,7 @@ export function ProviderCard({
                 variant="outline" 
                 className="text-xs bg-green-50 text-green-700 border-green-200"
               >
-                Prestador atribuído
+                Affiliate atribuído
               </Badge>
             </div>
 

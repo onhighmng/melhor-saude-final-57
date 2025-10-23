@@ -45,7 +45,7 @@ const mockPendingCases = [
     collaborator: 'Carlos Santos',
     company: 'Innovation Ltd',
     pillar: 'Bem-Estar Físico',
-    origin: 'Especialista Geral',
+    origin: 'Profissional de Permanencia',
     priority: 'medium',
     requestDate: '2025-10-13 10:15',
     symptoms: 'Dores nas costas',
