@@ -10,11 +10,13 @@ import FeaturedSectionStats from '@/components/ui/featured-section-stats';
 import RuixenSection from '@/components/ui/ruixen-feature-section';
 import { EmployeeDetailModal } from '@/components/admin/EmployeeDetailModal';
 import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
+import { AddProviderModal } from '@/components/admin/AddProviderModal';
 
 const AdminUsersManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('companies');
   const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
+  const [isAddProviderModalOpen, setIsAddProviderModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
 
@@ -124,6 +126,7 @@ const AdminUsersManagement = () => {
           {/* Feature Section */}
           <RuixenSection 
             onAddCompany={() => setIsAddCompanyModalOpen(true)}
+            onAddProvider={() => setIsAddProviderModalOpen(true)}
             onTabChange={handleTabChange}
             onEmployeeClick={handleEmployeeClick}
           />
@@ -142,6 +145,12 @@ const AdminUsersManagement = () => {
       <AddCompanyModal
         open={isAddCompanyModalOpen}
         onOpenChange={setIsAddCompanyModalOpen}
+      />
+
+      {/* Add Provider Modal */}
+      <AddProviderModal
+        open={isAddProviderModalOpen}
+        onOpenChange={setIsAddProviderModalOpen}
       />
     </div>
   );

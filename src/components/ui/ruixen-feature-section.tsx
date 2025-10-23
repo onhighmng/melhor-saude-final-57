@@ -234,10 +234,12 @@ const integrations = [
 
 export default function RuixenSection({ 
   onAddCompany,
+  onAddProvider,
   onTabChange,
   onEmployeeClick
 }: { 
   onAddCompany?: () => void;
+  onAddProvider?: () => void;
   onTabChange?: (tab: string) => void;
   onEmployeeClick?: (employeeId: number) => void;
 }) {
@@ -313,6 +315,20 @@ export default function RuixenSection({
               >
                 <Plus className="h-4 w-4" />
                 Adicionar Colaborador
+              </Button>
+            )}
+            {activeCardIndex === 2 && (
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onAddProvider) {
+                    onAddProvider();
+                  }
+                }}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Prestador
               </Button>
             )}
           </div>
