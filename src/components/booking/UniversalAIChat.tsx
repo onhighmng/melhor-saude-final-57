@@ -109,11 +109,14 @@ export const UniversalAIChat = ({
     setShowExitFeedback(true);
   };
   const handleFeedbackComplete = () => {
-    // Mark specialist milestone as completed
+    // Mark specialist milestone as completed - preserve all other data
     const milestones = JSON.parse(localStorage.getItem('journeyMilestones') || '[]');
-    const updatedMilestones = milestones.map((m: any) => 
-      m.id === 'specialist' && !m.completed ? { ...m, completed: true } : m
-    );
+    const updatedMilestones = milestones.map((m: any) => {
+      if (m.id === 'specialist' && !m.completed) {
+        return { ...m, completed: true, completedAt: new Date().toISOString() };
+      }
+      return m;
+    });
     localStorage.setItem('journeyMilestones', JSON.stringify(updatedMilestones));
     
     // Dispatch custom event to notify JourneyProgressBar
@@ -126,6 +129,7 @@ export const UniversalAIChat = ({
     toast({
       title: "Estamos disponíveis 24/7",
       description: "A nossa equipa entrará em contacto consigo o mais breve possível.",
+      duration: 10000,
     });
   };
   return <div className="min-h-screen flex flex-col">
@@ -211,8 +215,8 @@ export const UniversalAIChat = ({
           <p className="text-sm text-muted-foreground">
             Se precisar de conversar, o nosso especialista está sempre disponível para si, 24/7.
           </p>
-          <Button onClick={handleContactRequest} variant="outline" size="sm" className="w-full sm:w-auto">
-            <Phone className="h-4 w-4 mr-2" />
+          <Button onClick={handleContactRequest} variant="outline" size="lg" className="w-full sm:w-auto text-lg px-8 py-6">
+            <Phone className="h-5 w-5 mr-2" />
             Solicitar chamada
           </Button>
         </div>
