@@ -261,6 +261,7 @@ export default function RuixenSection({
               items={CARDS} 
               onTabChange={onTabChange}
               onCardChange={(index) => setActiveCardIndex(index)}
+              navigate={navigate}
             />
           </div>
 
@@ -496,13 +497,15 @@ export const CardStack = ({
   offset,
   scaleFactor,
   onTabChange,
-  onCardChange
+  onCardChange,
+  navigate
 }: {
   items: Card[];
   offset?: number;
   scaleFactor?: number;
   onTabChange?: (tab: string) => void;
   onCardChange?: (index: number) => void;
+  navigate?: (path: string) => void;
 }) => {
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
@@ -570,17 +573,8 @@ export const CardStack = ({
           <motion.div
             key={card.id}
             onClick={() => {
-              if (isTopCard && onTabChange) {
-                // Change tab like BentoCards
-                onTabChange(card.tabValue);
-                
-                // Scroll to content section
-                setTimeout(() => {
-                  const contentSection = document.querySelector('[data-tab-content]');
-                  if (contentSection) {
-                    contentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }, 100);
+              if (isTopCard) {
+                navigate(`/admin/users-management?tab=${card.tabValue}`);
               }
             }}
             className={cn(
