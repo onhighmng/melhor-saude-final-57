@@ -389,24 +389,30 @@ export const CardStack = ({
 
   return (
     <div className="relative mx-auto h-64 w-full md:h-64 md:w-96 my-4">
-      {/* Navigation Arrows */}
-      <div className="absolute -left-4 top-1/2 -translate-y-1/2 z-20">
+      {/* Navigation Arrows - Always visible */}
+      <div className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 z-30">
         <Button
-          onClick={prevCard}
+          onClick={(e) => {
+            e.stopPropagation();
+            prevCard();
+          }}
           size="icon"
           variant="outline"
-          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted"
+          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted border-2"
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
       </div>
       
-      <div className="absolute -right-4 top-1/2 -translate-y-1/2 z-20">
+      <div className="absolute -right-4 sm:-right-6 top-1/2 -translate-y-1/2 z-30">
         <Button
-          onClick={nextCard}
+          onClick={(e) => {
+            e.stopPropagation();
+            nextCard();
+          }}
           size="icon"
           variant="outline"
-          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted"
+          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted border-2"
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
