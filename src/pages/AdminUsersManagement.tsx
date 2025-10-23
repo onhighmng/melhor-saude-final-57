@@ -110,7 +110,7 @@ const AdminUsersManagement = () => {
             </BentoGrid>
 
             {/* Content Area */}
-            <div className="mt-6">
+            <div className="mt-6" data-tab-content>
               {activeTab === 'companies' && (
                 <AdminCompaniesTab 
                   isAddCompanyModalOpen={isAddCompanyModalOpen}

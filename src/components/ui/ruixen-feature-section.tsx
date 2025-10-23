@@ -428,18 +428,29 @@ export const CardStack = ({
 
       {cards.map((card, index) => {
         const CardIcon = card.Icon;
+        const isTopCard = index === 0;
+        
         return (
           <motion.div
             key={card.id}
             onClick={() => {
-              if (index === 0 && onTabChange) {
+              if (isTopCard && onTabChange) {
+                // Change tab like BentoCards
                 onTabChange(card.tabValue);
+                
+                // Scroll to content section
+                setTimeout(() => {
+                  const contentSection = document.querySelector('[data-tab-content]');
+                  if (contentSection) {
+                    contentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }, 100);
               }
             }}
             className={cn(
-              "absolute h-64 w-full md:h-64 md:w-96 rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between",
+              "absolute h-64 w-full md:h-64 md:w-96 rounded-3xl p-6 shadow-xl border-2 flex flex-col justify-between transition-all",
               card.bgColor,
-              index === 0 && "cursor-pointer hover:shadow-2xl"
+              isTopCard ? "cursor-pointer hover:shadow-2xl hover:scale-[1.02] border-primary/20" : "border-border"
             )}
             style={{
               transformOrigin: "top center",
