@@ -19,6 +19,7 @@ import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { SessionCard, SessionCardData } from '@/components/ui/session-card';
 import { getPillarColors, cn } from '@/lib/utils';
+import DisplayCards from '@/components/ui/display-cards';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import cardBackground from '@/assets/card-background.png';
 const UserDashboard = () => {
@@ -452,25 +453,31 @@ const UserDashboard = () => {
               </div>} />
 
           {/* Bottom Right - Upcoming Sessions */}
-          <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-5 flex flex-col">
+          <BentoCard name="" description="" href="#" cta="" className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-5 flex flex-col">
                   <h3 className="text-xl font-semibold mb-4">Próximas Sessões</h3>
-                  <div className="flex-1 min-h-0">
+                  <div className="flex-1 min-h-0 flex items-center justify-center">
                     {upcomingBookings && upcomingBookings.length > 0 ? (
-                      <div className="grid grid-cols-2 gap-3 h-full">
-                        {upcomingBookings.slice(0, 4).map(booking => {
-                          const pillarColors = getPillarColors(booking.pillar);
+                      <DisplayCards 
+                        cards={upcomingBookings.slice(0, 3).map((booking, index) => {
                           const PillarIcon = getPillarIcon(booking.pillar);
-                          return <div key={booking.id} onClick={(e) => { e.stopPropagation(); handleSessionClick(booking); }} className={cn('flex items-center gap-3 rounded-xl p-3 transition-all cursor-pointer hover:scale-[1.02] bg-white/80 backdrop-blur-sm border', pillarColors.border)}>
-                            <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
-                              <PillarIcon className="w-5 h-5 text-white" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium text-foreground">{booking.date}</div>
-                              <div className="text-xs text-muted-foreground">{booking.time}</div>
-                            </div>
-                          </div>;
+                          const pillarColors = getPillarColors(booking.pillar);
+                          
+                          const baseClassName = index === 0 
+                            ? "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0"
+                            : index === 1
+                            ? "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0"
+                            : "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10";
+
+                          return {
+                            icon: <PillarIcon className="size-4 text-white" />,
+                            title: formatPillarName(booking.pillar),
+                            description: booking.date,
+                            date: booking.time,
+                            className: baseClassName,
+                            onClick: () => handleSessionClick(booking),
+                          };
                         })}
-                      </div>
+                      />
                     ) : (
                       <div className="text-center text-sm text-muted-foreground">
                         Nenhuma sessão agendada
