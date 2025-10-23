@@ -375,23 +375,23 @@ export default function AdminCompanyDetail() {
             </CardHeader>
             <CardContent className="space-y-6">
 
-              <p className="text-lg text-muted-foreground">
-                <a href="#" onClick={(e) => { e.preventDefault(); downloadCSVTemplate(); }} className="text-vibrant-blue hover:underline text-lg">
+              <p className="text-xl text-muted-foreground">
+                <a href="#" onClick={(e) => { e.preventDefault(); downloadCSVTemplate(); }} className="text-vibrant-blue hover:underline text-xl">
                   📎 Descarregar modelo CSV
                 </a>
               </p>
 
               {isSending && (
                 <Alert className="border-blue-200 bg-blue-50">
-                  <Mail className="h-4 w-4 text-blue-600" />
-                  <AlertTitle className="text-blue-900">A enviar emails...</AlertTitle>
+                  <Mail className="h-6 w-6 text-blue-600" />
+                  <AlertTitle className="text-blue-900 text-lg">A enviar emails...</AlertTitle>
                   <AlertDescription className="space-y-2">
-                    <p className="text-sm text-blue-700">
+                    <p className="text-base text-blue-700">
                       {sendingProgress.current} de {sendingProgress.total} emails enviados
                     </p>
                     <Progress 
                       value={(sendingProgress.current / sendingProgress.total) * 100} 
-                      className="h-2"
+                      className="h-3"
                     />
                   </AlertDescription>
                 </Alert>
@@ -399,8 +399,8 @@ export default function AdminCompanyDetail() {
 
               {csvErrors.length > 0 && (
                 <Alert variant="destructive">
-                  <AlertTitle>Erros de Validação</AlertTitle>
-                  <AlertDescription>
+                  <AlertTitle className="text-lg">Erros de Validação</AlertTitle>
+                  <AlertDescription className="text-base">
                     <ul className="list-disc list-inside space-y-1">
                       {csvErrors.slice(0, 5).map((error, idx) => (
                         <li key={idx}>Linha {error.line}: {error.field} - {error.message}</li>
@@ -411,12 +411,12 @@ export default function AdminCompanyDetail() {
               )}
 
               {employees.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Users className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Nenhum colaborador importado</h3>
-                  <p className="text-muted-foreground mb-4">Comece por importar colaboradores através de um ficheiro CSV</p>
-                  <Button onClick={handleImportCSV}>
-                    <Upload className="h-4 w-4 mr-2" />
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <Users className="h-20 w-20 text-muted-foreground mb-6" />
+                  <h3 className="text-2xl font-semibold mb-3">Nenhum colaborador importado</h3>
+                  <p className="text-lg text-muted-foreground mb-6">Comece por importar colaboradores através de um ficheiro CSV</p>
+                  <Button onClick={handleImportCSV} size="lg" className="text-lg px-6 py-4">
+                    <Upload className="h-6 w-6 mr-2" />
                     Importar Colaboradores
                   </Button>
                 </div>
@@ -424,31 +424,31 @@ export default function AdminCompanyDetail() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Nome</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Código</TableHead>
-                      <TableHead>Data de Envio</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Ações</TableHead>
+                      <TableHead className="text-lg">Nome</TableHead>
+                      <TableHead className="text-lg">Email</TableHead>
+                      <TableHead className="text-lg">Código</TableHead>
+                      <TableHead className="text-lg">Data de Envio</TableHead>
+                      <TableHead className="text-lg">Estado</TableHead>
+                      <TableHead className="text-lg">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {employees.map(emp => (
                       <TableRow key={emp.id}>
-                        <TableCell className="font-medium">{emp.name}</TableCell>
-                        <TableCell>{emp.email}</TableCell>
-                        <TableCell className="font-mono">{emp.code || '-'}</TableCell>
-                        <TableCell>{emp.sentDate || '-'}</TableCell>
-                        <TableCell>{getStatusBadge(emp.status)}</TableCell>
-                        <TableCell>
+                        <TableCell className="font-medium text-lg py-4">{emp.name}</TableCell>
+                        <TableCell className="text-lg py-4">{emp.email}</TableCell>
+                        <TableCell className="font-mono text-lg py-4">{emp.code || '-'}</TableCell>
+                        <TableCell className="text-lg py-4">{emp.sentDate || '-'}</TableCell>
+                        <TableCell className="py-4">{getStatusBadge(emp.status)}</TableCell>
+                        <TableCell className="py-4">
                           <div className="flex gap-2">
                             {emp.code && (
                               <Button variant="ghost" size="icon" onClick={() => setEmailToResend({ id: emp.id, email: emp.email })}>
-                                <RotateCcw className="h-4 w-4" />
+                                <RotateCcw className="h-5 w-5" />
                               </Button>
                             )}
                             <Button variant="ghost" size="icon" onClick={() => setEmployeeToRemove(emp.id)}>
-                              <X className="h-4 w-4" />
+                              <X className="h-5 w-5" />
                             </Button>
                           </div>
                         </TableCell>
