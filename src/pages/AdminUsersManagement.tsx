@@ -8,11 +8,14 @@ import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import FeaturedSectionStats from '@/components/ui/featured-section-stats';
 import RuixenSection from '@/components/ui/ruixen-feature-section';
+import { EmployeeDetailModal } from '@/components/admin/EmployeeDetailModal';
 
 const AdminUsersManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('companies');
   const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -34,6 +37,66 @@ const AdminUsersManagement = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     setSearchParams({ tab: value });
+  };
+
+  const handleEmployeeClick = (employeeId: number) => {
+    // Mock employee data - in real app would fetch from API
+    const mockEmployees = [
+      {
+        id: 1,
+        name: "João Silva",
+        email: "joao@techcorp.pt",
+        company: "TechCorp Lda",
+        sessions: { used: 5, total: 10 },
+        rating: 4.8,
+        objectives: ["Gestão de ansiedade", "Questões contratuais"],
+        sessionHistory: [
+          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
+        ]
+      },
+      {
+        id: 2,
+        name: "Maria Santos",
+        email: "maria@healthplus.pt",
+        company: "HealthPlus SA",
+        sessions: { used: 3, total: 8 },
+        rating: 4.5,
+        objectives: ["Gestão de ansiedade", "Questões contratuais"],
+        sessionHistory: [
+          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
+        ]
+      },
+      {
+        id: 3,
+        name: "Pedro Costa",
+        email: "pedro@startup.pt",
+        company: "StartupHub",
+        sessions: { used: 2, total: 5 },
+        rating: 4.7,
+        objectives: ["Gestão de ansiedade", "Questões contratuais"],
+        sessionHistory: [
+          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
+        ]
+      },
+      {
+        id: 4,
+        name: "Ana Pereira",
+        email: "ana@consultpro.pt",
+        company: "ConsultPro",
+        sessions: { used: 7, total: 12 },
+        rating: 4.9,
+        objectives: ["Gestão de ansiedade", "Questões contratuais"],
+        sessionHistory: [
+          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
+        ]
+      }
+    ];
+
+    const employee = mockEmployees.find(emp => emp.id === employeeId);
+    if (employee) {
+      setSelectedEmployee(employee);
+      setIsEmployeeModalOpen(true);
+    }
   };
 
   const userStats = [
@@ -61,6 +124,7 @@ const AdminUsersManagement = () => {
           <RuixenSection 
             onAddCompany={() => setIsAddCompanyModalOpen(true)}
             onTabChange={handleTabChange}
+            onEmployeeClick={handleEmployeeClick}
           />
 
           {/* Bento Grid Layout - Tab Navigation */}
@@ -123,6 +187,13 @@ const AdminUsersManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* Employee Detail Modal */}
+      <EmployeeDetailModal
+        employee={selectedEmployee}
+        open={isEmployeeModalOpen}
+        onOpenChange={setIsEmployeeModalOpen}
+      />
     </div>
   );
 };

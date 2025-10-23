@@ -234,10 +234,12 @@ const integrations = [
 
 export default function RuixenSection({ 
   onAddCompany,
-  onTabChange
+  onTabChange,
+  onEmployeeClick
 }: { 
   onAddCompany?: () => void;
   onTabChange?: (tab: string) => void;
+  onEmployeeClick?: (employeeId: number) => void;
 }) {
   const navigate = useNavigate();
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
@@ -262,6 +264,7 @@ export default function RuixenSection({
               onTabChange={onTabChange}
               onCardChange={(index) => setActiveCardIndex(index)}
               navigate={navigate}
+              onEmployeeClick={onEmployeeClick}
             />
           </div>
 
@@ -365,7 +368,7 @@ export default function RuixenSection({
                 {activeCardIndex === 1 && activeEmployees.map((employee) => (
                   <tr 
                     key={employee.id}
-                    onClick={() => navigate(`/admin/employees/${employee.id}`)}
+                    onClick={() => onEmployeeClick?.(employee.id)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
                     <td className="py-4 px-4 text-foreground font-medium relative z-10">
@@ -392,7 +395,7 @@ export default function RuixenSection({
                 {activeCardIndex === 2 && activeProviders.map((provider) => (
                   <tr 
                     key={provider.id}
-                    onClick={() => navigate(`/admin/providers/${provider.id}`)}
+                    onClick={() => navigate(`/admin/provider-metrics/${provider.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
                     <td className="py-4 px-4 text-foreground font-medium relative z-10">
@@ -498,7 +501,8 @@ export const CardStack = ({
   scaleFactor,
   onTabChange,
   onCardChange,
-  navigate
+  navigate,
+  onEmployeeClick
 }: {
   items: Card[];
   offset?: number;
@@ -506,6 +510,7 @@ export const CardStack = ({
   onTabChange?: (tab: string) => void;
   onCardChange?: (index: number) => void;
   navigate?: (path: string) => void;
+  onEmployeeClick?: (employeeId: number) => void;
 }) => {
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
