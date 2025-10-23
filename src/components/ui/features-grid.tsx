@@ -111,7 +111,7 @@ export function FeaturesGrid({
                     </Card>
 
                     <Card className="group overflow-hidden shadow-zinc-950/5 sm:col-span-2 sm:rounded-none sm:rounded-tr-xl hover-lift">
-                        <p className="mx-auto my-6 max-w-md text-balance px-6 text-center text-lg font-semibold sm:text-2xl md:p-6">
+                        <p className="mx-auto my-6 max-w-md text-balance px-6 text-center text-2xl font-semibold md:text-3xl md:p-6">
                             Taxa de Utilização
                         </p>
 
