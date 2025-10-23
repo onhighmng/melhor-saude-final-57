@@ -303,23 +303,23 @@ export default function RuixenSection({
 
           {/* Table */}
           <div className="w-full">
-            <table className="w-full table-fixed">
+            <table className="w-full">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground w-[30%]">
+                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     {activeCardIndex === 0 && "Empresa"}
                     {activeCardIndex === 1 && "Nome"}
                     {activeCardIndex === 2 && "Prestador"}
                   </th>
-                  <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground w-[30%]">
+                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     {activeCardIndex === 0 && "Colaboradores"}
                     {activeCardIndex === 1 && "Empresa"}
                     {activeCardIndex === 2 && "Especialidade"}
                   </th>
-                  <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground w-[25%]">
+                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     Sessões
                   </th>
-                  <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground w-[15%]">
+                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     Estado
                   </th>
                 </tr>
@@ -338,19 +338,19 @@ export default function RuixenSection({
                       )} />
                     </td>
                     
-                    <td className="py-4 px-2 text-foreground font-medium relative z-10 w-[30%]">
+                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
                       {company.name}
                     </td>
-                    <td className="py-4 px-2 relative z-10 w-[30%]">
+                    <td className="py-4 px-4 relative z-10">
                       <div className="flex items-center gap-2 text-foreground">
                         <Users className="h-4 w-4 text-muted-foreground" />
                         <span>{company.employees}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-2 text-foreground relative z-10 w-[25%]">
+                    <td className="py-4 px-4 text-foreground relative z-10">
                       {company.sessions.used}/{company.sessions.total}
                     </td>
-                    <td className="py-4 px-2 relative z-10 w-[15%]">
+                    <td className="py-4 px-4 relative z-10">
                       {company.status === "active" ? (
                         <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                           Ativa
@@ -377,16 +377,16 @@ export default function RuixenSection({
                       )} />
                     </td>
                     
-                    <td className="py-4 px-2 text-foreground font-medium relative z-10 w-[30%]">
+                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
                       {employee.name}
                     </td>
-                    <td className="py-4 px-2 text-foreground relative z-10 w-[30%]">
+                    <td className="py-4 px-4 text-foreground relative z-10">
                       {employee.company}
                     </td>
-                    <td className="py-4 px-2 text-foreground relative z-10 w-[25%]">
+                    <td className="py-4 px-4 text-foreground relative z-10">
                       {employee.sessions.used}/{employee.sessions.total}
                     </td>
-                    <td className="py-4 px-2 relative z-10 w-[15%]">
+                    <td className="py-4 px-4 relative z-10">
                       <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                         Ativo
                       </Badge>
@@ -407,16 +407,16 @@ export default function RuixenSection({
                       )} />
                     </td>
                     
-                    <td className="py-4 px-2 text-foreground font-medium relative z-10 w-[30%]">
+                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
                       {provider.name}
                     </td>
-                    <td className="py-4 px-2 text-foreground relative z-10 w-[30%]">
+                    <td className="py-4 px-4 text-foreground relative z-10">
                       {provider.specialty}
                     </td>
-                    <td className="py-4 px-2 text-foreground relative z-10 w-[25%]">
+                    <td className="py-4 px-4 text-foreground relative z-10">
                       {provider.sessions.completed} / {provider.sessions.scheduled} agendadas
                     </td>
-                    <td className="py-4 px-2 relative z-10 w-[15%]">
+                    <td className="py-4 px-4 relative z-10">
                       <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                         Ativo
                       </Badge>
