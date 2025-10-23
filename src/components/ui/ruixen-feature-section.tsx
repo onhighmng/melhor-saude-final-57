@@ -191,8 +191,8 @@ export default function RuixenSection() {
                   <tr 
                     key={company.id} 
                     onClick={() => {
-                      // Navigate to company details page
-                      navigate(`/company/dashboard?companyId=${company.id}`);
+                      // Navigate to admin company details page
+                      navigate(`/admin/companies/${company.id}`);
                     }}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
