@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils"
 import { CardContent } from "@/components/ui/card";
 import { TbHeartPlus } from "react-icons/tb";
+import { Building2, Users, UserCog, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-
+import { Button } from "@/components/ui/button";
 export const Highlight = ({
   children,
   className,
@@ -23,37 +24,47 @@ export const Highlight = ({
   );
 };
 
+
 const CARDS = [
   {
     id: 0,
-    name: "Maria Silva",
-    designation: "HR Manager",
+    name: "Empresas",
+    designation: "Gerir empresas e códigos",
+    Icon: Building2,
+    bgColor: "bg-gradient-to-br from-blue-100 to-blue-200",
+    iconColor: "text-blue-600",
     content: (
-      <p>
-        A <Highlight>plataforma de wellness</Highlight> transformou completamente a gestão de bem-estar dos nossos colaboradores. A interface é{" "}
-        <Highlight>intuitiva e eficiente</Highlight>, facilitando o acesso aos serviços.
+      <p className="text-sm text-muted-foreground">
+        Gestão completa de empresas cadastradas, geração de códigos de acesso únicos
+        e monitoramento de utilizações em tempo real.
       </p>
     ),
   },
   {
     id: 1,
-    name: "João Santos",
-    designation: "Administrador de Sistema",
+    name: "Colaboradores",
+    designation: "Gerir utilizadores",
+    Icon: Users,
+    bgColor: "bg-gradient-to-br from-green-100 to-green-200",
+    iconColor: "text-green-600",
     content: (
-      <p>
-        O <Highlight>sistema de gestão centralizada</Highlight> permite controlar empresas, colaboradores e prestadores de forma integrada. As métricas em tempo real{" "}
-        <Highlight>facilitam a tomada de decisões</Highlight> estratégicas.
+      <p className="text-sm text-muted-foreground">
+        Controle total sobre colaboradores, acompanhamento de sessões utilizadas
+        e gestão de perfis de forma centralizada.
       </p>
     ),
   },
   {
     id: 2,
-    name: "Ana Costa",
-    designation: "Diretora de RH",
+    name: "Prestadores",
+    designation: "Gerir especialistas",
+    Icon: UserCog,
+    bgColor: "bg-gradient-to-br from-yellow-100 to-yellow-200",
+    iconColor: "text-yellow-600",
     content: (
-      <p>
-        Após implementar a plataforma, a <Highlight>taxa de utilização</Highlight> dos serviços aumentou 60%. A geração de códigos de acesso e{" "}
-        <Highlight>gestão de sessões</Highlight> tornou-se simples e segura.
+      <p className="text-sm text-muted-foreground">
+        Administração de prestadores de serviços, atribuição de especialidades
+        e controle de disponibilidade para agendamentos.
       </p>
     ),
   },
@@ -85,10 +96,10 @@ const integrations = [
 export default function RuixenSection() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-      <div className="grid grid-cols-1 lg:grid-cols-2 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-2 relative gap-4">
         {/* Left Block */}
-        <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8">
-          {/* Card */}
+        <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8 relative">
+          {/* Card Stack with Navigation */}
           <div className="relative w-full mb-4 sm:mb-6">
             <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-background to-transparent z-10"></div>
             <CardStack items={CARDS} />
@@ -96,12 +107,12 @@ export default function RuixenSection() {
 
           {/* Content */}
           <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-foreground leading-relaxed">
-            Experiência de Gestão Intuitiva{" "}
+            Gestão Centralizada de Utilizadores{" "}
             <span className="text-primary">Wellness Platform</span>{" "}
             <span className="text-muted-foreground text-sm sm:text-base lg:text-lg">
               {" "}
-              Simplifique a gestão de bem-estar com dashboards intuitivos que fornecem
-              insights acionáveis em tempo real.
+              Controle completo sobre empresas, colaboradores e prestadores numa única
+              plataforma integrada.
             </span>
           </h3>
         </div>
@@ -216,6 +227,9 @@ type Card = {
   name: string;
   designation: string;
   content: React.ReactNode;
+  Icon: any;
+  bgColor: string;
+  iconColor: string;
 };
 
 export const CardStack = ({
@@ -231,29 +245,57 @@ export const CardStack = ({
   const SCALE_FACTOR = scaleFactor || 0.06;
   const [cards, setCards] = useState<Card[]>(items);
 
-  useEffect(() => {
-    startFlipping();
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const startFlipping = () => {
-    interval = setInterval(() => {
-      setCards((prevCards: Card[]) => {
-        const newArray = [...prevCards];
-        newArray.unshift(newArray.pop()!);
-        return newArray;
-      });
-    }, 5000);
+  const nextCard = () => {
+    setCards((prevCards: Card[]) => {
+      const newArray = [...prevCards];
+      newArray.unshift(newArray.pop()!);
+      return newArray;
+    });
   };
 
+  const prevCard = () => {
+    setCards((prevCards: Card[]) => {
+      const newArray = [...prevCards];
+      newArray.push(newArray.shift()!);
+      return newArray;
+    });
+  };
+
+
   return (
-    <div className="relative mx-auto h-48 w-full md:h-48 md:w-96 my-4">
+    <div className="relative mx-auto h-64 w-full md:h-64 md:w-96 my-4">
+      {/* Navigation Arrows */}
+      <div className="absolute -left-4 top-1/2 -translate-y-1/2 z-20">
+        <Button
+          onClick={prevCard}
+          size="icon"
+          variant="outline"
+          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+      </div>
+      
+      <div className="absolute -right-4 top-1/2 -translate-y-1/2 z-20">
+        <Button
+          onClick={nextCard}
+          size="icon"
+          variant="outline"
+          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
+
       {cards.map((card, index) => {
+        const CardIcon = card.Icon;
         return (
           <motion.div
             key={card.id}
-            className="absolute bg-card h-48 w-full md:h-48 md:w-96 rounded-3xl p-4 shadow-xl border border-border flex flex-col justify-between"
+            className={cn(
+              "absolute h-64 w-full md:h-64 md:w-96 rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between",
+              card.bgColor
+            )}
             style={{
               transformOrigin: "top center",
             }}
@@ -262,11 +304,22 @@ export const CardStack = ({
               scale: 1 - index * SCALE_FACTOR,
               zIndex: cards.length - index,
             }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut"
+            }}
           >
-            <div className="font-normal text-muted-foreground">{card.content}</div>
-            <div>
-              <p className="text-foreground font-medium">{card.name}</p>
-              <p className="text-muted-foreground font-normal">{card.designation}</p>
+            <div className="flex items-start gap-4">
+              <div className={cn("p-3 rounded-xl bg-white/50", card.iconColor)}>
+                <CardIcon className="h-8 w-8" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-2xl font-semibold text-foreground mb-1">{card.name}</h4>
+                <p className="text-sm text-muted-foreground font-medium">{card.designation}</p>
+              </div>
+            </div>
+            <div className="mt-4">
+              {card.content}
             </div>
           </motion.div>
         );
