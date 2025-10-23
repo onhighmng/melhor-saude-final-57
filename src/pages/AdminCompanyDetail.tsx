@@ -319,8 +319,8 @@ export default function AdminCompanyDetail() {
             <CardHeader className="pb-8">
               <div className="flex justify-between items-start gap-4">
                 <div>
-                  <CardTitle className="text-3xl">Gestão de Colaboradores</CardTitle>
-                  <CardDescription className="text-lg mt-2">Importe, gere e distribua códigos de acesso</CardDescription>
+                  <CardTitle className="text-4xl">Gestão de Colaboradores</CardTitle>
+                  <CardDescription className="text-xl mt-2">Importe, gere e distribua códigos de acesso</CardDescription>
                 </div>
                 <div className="flex gap-4">
                   <div className="flex flex-col gap-3">
