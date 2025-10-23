@@ -79,28 +79,32 @@ const activeCompanies = [
     name: "TechCorp Lda",
     employees: 45,
     sessions: { used: 287, total: 400 },
-    status: "active"
+    status: "active",
+    bgColor: "bg-blue-100"
   },
   {
     id: 2,
     name: "HealthPlus SA",
     employees: 120,
     sessions: { used: 823, total: 1000 },
-    status: "active"
+    status: "active",
+    bgColor: "bg-green-100"
   },
   {
     id: 3,
     name: "StartupHub",
     employees: 15,
     sessions: { used: 45, total: 150 },
-    status: "onboarding"
+    status: "onboarding",
+    bgColor: "bg-yellow-100"
   },
   {
     id: 4,
     name: "ConsultPro",
     employees: 80,
     sessions: { used: 512, total: 600 },
-    status: "active"
+    status: "active",
+    bgColor: "bg-purple-100"
   }
 ];
 
@@ -196,9 +200,12 @@ export default function RuixenSection() {
                     }}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
-                    {/* Pill-shaped background overlay using ::before */}
+                    {/* Always visible pill-shaped overlay with different colors */}
                     <td className="py-4 px-2 text-foreground font-medium relative">
-                      <div className="absolute inset-y-1 -inset-x-2 left-0 right-0 rounded-full bg-primary/0 group-hover:bg-primary/10 transition-all duration-300 -z-10" style={{ width: 'calc(400% + 2rem)' }} />
+                      <div className={cn(
+                        "absolute inset-y-1 -inset-x-2 left-0 right-0 rounded-full transition-all duration-300 -z-10 group-hover:shadow-md",
+                        company.bgColor
+                      )} style={{ width: 'calc(400% + 2rem)' }} />
                       {company.name}
                     </td>
                     <td className="py-4 px-2 relative">
