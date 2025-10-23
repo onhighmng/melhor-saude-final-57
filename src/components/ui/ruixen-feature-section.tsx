@@ -331,12 +331,10 @@ export default function RuixenSection({
                     onClick={() => navigate(`/admin/companies/${company.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
-                    <td colSpan={4} className="absolute inset-0 pointer-events-none">
-                      <div className={cn(
-                        "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md",
-                        company.bgColor
-                      )} />
-                    </td>
+                    <div className={cn(
+                      "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none",
+                      company.bgColor
+                    )} />
                     
                     <td className="py-4 px-4 text-foreground font-medium relative z-10">
                       {company.name}
@@ -370,12 +368,10 @@ export default function RuixenSection({
                     onClick={() => navigate(`/admin/employees/${employee.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
-                    <td colSpan={4} className="absolute inset-0 pointer-events-none">
-                      <div className={cn(
-                        "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md",
-                        employee.bgColor
-                      )} />
-                    </td>
+                    <div className={cn(
+                      "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none",
+                      employee.bgColor
+                    )} />
                     
                     <td className="py-4 px-4 text-foreground font-medium relative z-10">
                       {employee.name}
@@ -400,12 +396,10 @@ export default function RuixenSection({
                     onClick={() => navigate(`/admin/providers/${provider.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
-                    <td colSpan={4} className="absolute inset-0 pointer-events-none">
-                      <div className={cn(
-                        "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md",
-                        provider.bgColor
-                      )} />
-                    </td>
+                    <div className={cn(
+                      "absolute inset-y-1 inset-x-4 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none",
+                      provider.bgColor
+                    )} />
                     
                     <td className="py-4 px-4 text-foreground font-medium relative z-10">
                       {provider.name}
