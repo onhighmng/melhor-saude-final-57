@@ -333,12 +333,12 @@ export default function RuixenSection({
                   >
                     <td colSpan={4} className="absolute inset-0 pointer-events-none">
                       <div className={cn(
-                        "absolute inset-y-1 inset-x-2 rounded-full transition-all duration-300 group-hover:shadow-md",
+                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md",
                         company.bgColor
                       )} />
                     </td>
                     
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
+                    <td className="py-4 pl-6 pr-4 text-foreground font-medium relative z-10">
                       {company.name}
                     </td>
                     <td className="py-4 px-4 relative z-10">
@@ -350,7 +350,7 @@ export default function RuixenSection({
                     <td className="py-4 px-4 text-foreground relative z-10">
                       {company.sessions.used}/{company.sessions.total}
                     </td>
-                    <td className="py-4 px-4 relative z-10">
+                    <td className="py-4 pl-4 pr-6 relative z-10">
                       {company.status === "active" ? (
                         <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                           Ativa
@@ -372,12 +372,12 @@ export default function RuixenSection({
                   >
                     <td colSpan={4} className="absolute inset-0 pointer-events-none">
                       <div className={cn(
-                        "absolute inset-y-1 inset-x-2 rounded-full transition-all duration-300 group-hover:shadow-md",
+                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md",
                         employee.bgColor
                       )} />
                     </td>
                     
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
+                    <td className="py-4 pl-6 pr-4 text-foreground font-medium relative z-10">
                       {employee.name}
                     </td>
                     <td className="py-4 px-4 text-foreground relative z-10">
@@ -386,7 +386,7 @@ export default function RuixenSection({
                     <td className="py-4 px-4 text-foreground relative z-10">
                       {employee.sessions.used}/{employee.sessions.total}
                     </td>
-                    <td className="py-4 px-4 relative z-10">
+                    <td className="py-4 pl-4 pr-6 relative z-10">
                       <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                         Ativo
                       </Badge>
@@ -402,12 +402,12 @@ export default function RuixenSection({
                   >
                     <td colSpan={4} className="absolute inset-0 pointer-events-none">
                       <div className={cn(
-                        "absolute inset-y-1 inset-x-2 rounded-full transition-all duration-300 group-hover:shadow-md",
+                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md",
                         provider.bgColor
                       )} />
                     </td>
                     
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
+                    <td className="py-4 pl-6 pr-4 text-foreground font-medium relative z-10">
                       {provider.name}
                     </td>
                     <td className="py-4 px-4 text-foreground relative z-10">
@@ -416,7 +416,7 @@ export default function RuixenSection({
                     <td className="py-4 px-4 text-foreground relative z-10">
                       {provider.sessions.completed} / {provider.sessions.scheduled} agendadas
                     </td>
-                    <td className="py-4 px-4 relative z-10">
+                    <td className="py-4 pl-4 pr-6 relative z-10">
                       <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                         Ativo
                       </Badge>
