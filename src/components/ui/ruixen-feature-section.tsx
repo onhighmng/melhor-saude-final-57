@@ -201,23 +201,26 @@ export default function RuixenSection() {
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
                     {/* Always visible pill-shaped overlay with different colors */}
-                    <td className="py-4 px-2 text-foreground font-medium relative">
+                    <td colSpan={4} className="absolute inset-0 pointer-events-none">
                       <div className={cn(
-                        "absolute inset-y-1 -inset-x-2 left-0 right-0 rounded-full transition-all duration-300 -z-10 group-hover:shadow-md",
+                        "absolute inset-y-1 inset-x-2 rounded-full transition-all duration-300 group-hover:shadow-md",
                         company.bgColor
-                      )} style={{ width: 'calc(400% + 2rem)' }} />
+                      )} />
+                    </td>
+                    
+                    <td className="py-4 px-2 text-foreground font-medium relative z-10">
                       {company.name}
                     </td>
-                    <td className="py-4 px-2 relative">
+                    <td className="py-4 px-2 relative z-10">
                       <div className="flex items-center gap-2 text-foreground">
                         <Users className="h-4 w-4 text-muted-foreground" />
                         <span>{company.employees}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-2 text-foreground relative">
+                    <td className="py-4 px-2 text-foreground relative z-10">
                       {company.sessions.used}/{company.sessions.total}
                     </td>
-                    <td className="py-4 px-2 relative">
+                    <td className="py-4 px-2 relative z-10">
                       {company.status === "active" ? (
                         <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                           Ativa
