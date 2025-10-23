@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare, BookOpen, Bell } from 'lucide-react';
+import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare, BookOpen, Bell, Brain, Heart, DollarSign, Scale } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -199,6 +199,16 @@ const UserDashboard = () => {
 
     // Session starts within 5 minutes (but not passed)
     return diffMinutes <= 5 && diffMinutes >= -60; // Can join up to 1 hour after start
+  };
+
+  const getPillarIcon = (pillar: string) => {
+    const iconMap: Record<string, any> = {
+      'saude_mental': Brain,
+      'bem_estar_fisico': Heart,
+      'assistencia_financeira': DollarSign,
+      'assistencia_juridica': Scale
+    };
+    return iconMap[pillar] || Calendar;
   };
 
   // Transform booking to session card data
@@ -446,9 +456,10 @@ const UserDashboard = () => {
                   <div className="flex-1 space-y-3 min-h-0 flex flex-col justify-start">
                     {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
                 const pillarColors = getPillarColors(booking.pillar);
+                const PillarIcon = getPillarIcon(booking.pillar);
                 return <div key={booking.id} onClick={(e) => { e.stopPropagation(); handleSessionClick(booking); }} className={cn('flex items-center gap-3 rounded-xl p-3 transition-all flex-shrink-0 cursor-pointer hover:scale-[1.02] bg-white/80 backdrop-blur-sm border', pillarColors.border)}>
                             <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
-                              <Calendar className="w-5 h-5 text-white" />
+                              <PillarIcon className="w-5 h-5 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium text-foreground">{booking.date}</div>
