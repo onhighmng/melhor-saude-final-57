@@ -179,21 +179,27 @@ export default function RuixenSection() {
                 {activeCompanies.map((company) => (
                   <tr 
                     key={company.id} 
-                    className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => console.log('Clicked company:', company.name)}
+                    className="group relative border-b border-border cursor-pointer transition-all"
                   >
-                    <td className="py-4 px-2 text-foreground font-medium">
+                    {/* Pill-shaped overlay */}
+                    <td colSpan={4} className="absolute inset-0 -z-10">
+                      <div className="absolute inset-0 mx-2 my-1 rounded-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:shadow-md" />
+                    </td>
+                    
+                    <td className="py-4 px-2 text-foreground font-medium relative z-10">
                       {company.name}
                     </td>
-                    <td className="py-4 px-2">
+                    <td className="py-4 px-2 relative z-10">
                       <div className="flex items-center gap-2 text-foreground">
                         <Users className="h-4 w-4 text-muted-foreground" />
                         <span>{company.employees}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-2 text-foreground">
+                    <td className="py-4 px-2 text-foreground relative z-10">
                       {company.sessions.used}/{company.sessions.total}
                     </td>
-                    <td className="py-4 px-2">
+                    <td className="py-4 px-2 relative z-10">
                       {company.status === "active" ? (
                         <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
                           Ativa
