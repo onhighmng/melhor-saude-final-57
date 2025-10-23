@@ -453,6 +453,7 @@ const UserDashboard = () => {
 
           {/* Bottom Right - Upcoming Sessions */}
           <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-5 flex flex-col">
+                  <h3 className="text-xl font-semibold mb-4">Próximas Sessões</h3>
                   <div className="flex-1 min-h-0">
                     {upcomingBookings && upcomingBookings.length > 0 ? (
                       <div className="grid grid-cols-2 gap-3 h-full">
