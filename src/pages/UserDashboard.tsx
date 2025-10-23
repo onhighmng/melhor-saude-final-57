@@ -379,13 +379,7 @@ const UserDashboard = () => {
               </div>} />
 
           {/* Bottom Right - Upcoming Sessions */}
-          <BentoCard name="Próximas Sessões" description="" href="#" cta="" Icon={Calendar} onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-5 flex flex-col justify-between">
-                  <div className="flex-shrink-0">
-                    <h3 className="text-2xl font-semibold mb-1 transition-transform duration-200 group-hover:scale-105">Próximas Sessões</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {upcomingBookings && upcomingBookings.length > 0 ? `${upcomingBookings.length} sessões agendadas` : 'Nenhuma sessão agendada'}
-                    </p>
-                  </div>
+          <BentoCard name="Próximas Sessões" description="" href="#" cta="" Icon={Calendar} onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-5 flex flex-col">
                   <div className="flex-1 space-y-3 min-h-0 flex flex-col justify-start">
                     {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
                 const pillarColors = getPillarColors(booking.pillar);
