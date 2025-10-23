@@ -34,8 +34,8 @@ export function FeaturesGrid({
                     <Card className="group overflow-hidden shadow-black/5 sm:col-span-3 sm:rounded-none sm:rounded-tl-xl hover-lift">
                         <CardHeader>
                             <div className="md:p-6">
-                                <p className="font-semibold text-2xl text-foreground">Geração de Códigos de Acesso</p>
-                                <p className="text-muted-foreground mt-3 max-w-sm text-base">
+                                <p className="font-semibold text-3xl md:text-4xl text-foreground">Geração de Códigos de Acesso</p>
+                                <p className="text-muted-foreground mt-3 max-w-sm text-lg md:text-xl">
                                     Crie códigos únicos de acesso para distribuir aos colaboradores de forma segura e anônima.
                                 </p>
                             </div>
@@ -43,7 +43,7 @@ export function FeaturesGrid({
 
                         <CardContent className="px-6 md:px-12 pb-6 md:pb-12">
                             <div className="space-y-4">
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-base md:text-lg text-muted-foreground">
                                     Crie códigos únicos para distribuição em massa aos colaboradores
                                 </p>
                                 
@@ -142,7 +142,7 @@ export function FeaturesGrid({
                     </Card>
 
                     <Card className="group p-6 shadow-black/5 sm:col-span-2 sm:rounded-none sm:rounded-bl-xl md:p-12 hover-lift">
-                        <p className="mx-auto mb-12 max-w-md text-balance text-center text-lg font-semibold sm:text-2xl">
+                        <p className="mx-auto mb-12 max-w-md text-balance text-center text-2xl font-semibold md:text-3xl">
                             Acesso Rápido e Intuitivo
                         </p>
 
@@ -154,15 +154,15 @@ export function FeaturesGrid({
                                 <TrendingUp className="size-8 text-emerald-600" />
                             </div>
                         </div>
-                        <p className="text-center text-sm text-muted-foreground mt-6">
+                        <p className="text-center text-base md:text-lg text-muted-foreground mt-6">
                             Interface otimizada para gestão eficiente
                         </p>
                     </Card>
 
                     <Card className="group relative shadow-black/5 sm:col-span-3 sm:rounded-none sm:rounded-br-xl hover-lift">
                         <CardHeader className="p-6 md:p-12">
-                            <p className="font-semibold text-xl text-foreground">Pilares de Bem-Estar Integrados</p>
-                            <p className="text-muted-foreground mt-2 max-w-sm text-base">
+                            <p className="font-semibold text-2xl md:text-3xl text-foreground">Pilares de Bem-Estar Integrados</p>
+                            <p className="text-muted-foreground mt-2 max-w-sm text-lg md:text-xl">
                                 Todos os serviços disponíveis numa única plataforma centralizada.
                             </p>
                         </CardHeader>
