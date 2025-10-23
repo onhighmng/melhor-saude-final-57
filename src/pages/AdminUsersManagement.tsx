@@ -12,6 +12,7 @@ import RuixenSection from '@/components/ui/ruixen-feature-section';
 const AdminUsersManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('companies');
+  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -57,7 +58,7 @@ const AdminUsersManagement = () => {
       <div className="relative z-10 h-full flex flex-col">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-6 h-full flex flex-col min-h-0">
           {/* Feature Section */}
-          <RuixenSection />
+          <RuixenSection onAddCompany={() => setIsAddCompanyModalOpen(true)} />
 
           {/* Bento Grid Layout - Tab Navigation */}
           <div className="space-y-6">
@@ -107,7 +108,12 @@ const AdminUsersManagement = () => {
 
             {/* Content Area */}
             <div className="mt-6">
-              {activeTab === 'companies' && <AdminCompaniesTab />}
+              {activeTab === 'companies' && (
+                <AdminCompaniesTab 
+                  isAddCompanyModalOpen={isAddCompanyModalOpen}
+                  setIsAddCompanyModalOpen={setIsAddCompanyModalOpen}
+                />
+              )}
               {activeTab === 'employees' && <AdminEmployeesTab />}
               {activeTab === 'providers' && <AdminProvidersTab />}
             </div>

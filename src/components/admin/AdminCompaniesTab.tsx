@@ -86,9 +86,19 @@ const mockCompanies: Company[] = [
   },
 ];
 
-export const AdminCompaniesTab = () => {
+export const AdminCompaniesTab = ({ 
+  isAddCompanyModalOpen: externalIsOpen,
+  setIsAddCompanyModalOpen: externalSetIsOpen
+}: {
+  isAddCompanyModalOpen?: boolean;
+  setIsAddCompanyModalOpen?: (open: boolean) => void;
+} = {}) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  
+  // Use external state if provided, otherwise use internal state
+  const isAddCompanyModalOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const setIsAddCompanyModalOpen = externalSetIsOpen || setInternalIsOpen;
 
   const filteredCompanies = mockCompanies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

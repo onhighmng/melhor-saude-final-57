@@ -131,7 +131,11 @@ const integrations = [
   },
 ];
 
-export default function RuixenSection() {
+export default function RuixenSection({ 
+  onAddCompany 
+}: { 
+  onAddCompany?: () => void 
+}) {
   const navigate = useNavigate();
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
@@ -165,10 +169,10 @@ export default function RuixenSection() {
             <Button 
               onClick={(e) => {
                 e.stopPropagation();
-                // Navigate to admin users management with companies tab
-                navigate('/admin/users-management?tab=companies');
-                // Show a toast or modal for adding company
-                console.log('Add company clicked');
+                // Trigger the add company modal if callback provided
+                if (onAddCompany) {
+                  onAddCompany();
+                }
               }}
               className="flex items-center gap-2"
             >
