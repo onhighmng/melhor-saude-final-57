@@ -268,47 +268,47 @@ export default function AdminCompanyDetail() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-8">
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-2xl">{mockCompany.name}</CardTitle>
-              <CardDescription>NUIT: {mockCompany.nuit}</CardDescription>
+              <CardTitle className="text-4xl mb-2">{mockCompany.name}</CardTitle>
+              <CardDescription className="text-lg">NUIT: {mockCompany.nuit}</CardDescription>
             </div>
-            <div className="flex flex-col gap-2">
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
-                <Edit className="h-4 w-4 mr-2" />
+            <div className="flex flex-col gap-3">
+              <Button variant="outline" size="lg" onClick={() => setIsEditDialogOpen(true)}>
+                <Edit className="h-5 w-5 mr-2" />
                 Editar Empresa
               </Button>
-              <Button variant="outline" onClick={() => navigate(`/admin/reports?company=${id}`)}>
-                <FileText className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="lg" onClick={() => navigate(`/admin/reports?company=${id}`)}>
+                <FileText className="h-5 w-5 mr-2" />
                 Ver Relatório Mensal
               </Button>
-              <Button variant="outline" className="text-destructive" onClick={() => setIsDeactivateDialogOpen(true)}>
-                <Trash2 className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="lg" className="text-destructive" onClick={() => setIsDeactivateDialogOpen(true)}>
+                <Trash2 className="h-5 w-5 mr-2" />
                 Desativar Empresa
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-              <p className="text-sm text-muted-foreground">Colaboradores</p>
-              <p className="text-2xl font-bold">{mockCompany.employees}</p>
+              <p className="text-base text-muted-foreground mb-2">Colaboradores</p>
+              <p className="text-4xl font-bold">{mockCompany.employees}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Plano</p>
-              <p className="text-2xl font-bold">{mockCompany.plan}</p>
-              <p className="text-xs text-muted-foreground">{mockCompany.totalSessions} sessões/mês</p>
+              <p className="text-base text-muted-foreground mb-2">Plano</p>
+              <p className="text-4xl font-bold">{mockCompany.plan}</p>
+              <p className="text-sm text-muted-foreground mt-1">{mockCompany.totalSessions} sessões/mês</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Sessões</p>
-              <Progress value={usagePercent} className="mt-2" />
-              <p className="text-xs text-muted-foreground mt-1">{mockCompany.usedSessions} de {mockCompany.totalSessions}</p>
+              <p className="text-base text-muted-foreground mb-2">Sessões</p>
+              <Progress value={usagePercent} className="mt-3 h-3" />
+              <p className="text-sm text-muted-foreground mt-2">{mockCompany.usedSessions} de {mockCompany.totalSessions}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Estado</p>
-              <Badge variant="default" className="mt-2">Ativa</Badge>
+              <p className="text-base text-muted-foreground mb-2">Estado</p>
+              <Badge variant="default" className="mt-2 text-base px-4 py-1">Ativa</Badge>
             </div>
           </div>
         </CardContent>
