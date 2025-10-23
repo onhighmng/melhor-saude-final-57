@@ -101,7 +101,6 @@ export default function RuixenSection() {
         <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8 relative">
           {/* Card Stack with Navigation */}
           <div className="relative w-full mb-4 sm:mb-6">
-            <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-background to-transparent z-10"></div>
             <CardStack items={CARDS} />
           </div>
 
