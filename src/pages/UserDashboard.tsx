@@ -88,16 +88,23 @@ const UserDashboard = () => {
     completed: false
   }];
 
+  // Initialize default milestones if none exist
+  const initializeMilestones = () => {
+    const stored = localStorage.getItem('journeyMilestones');
+    if (!stored) {
+      localStorage.setItem('journeyMilestones', JSON.stringify(defaultMilestones));
+      return defaultMilestones;
+    }
+    return JSON.parse(stored);
+  };
+
   // Get milestone progress from localStorage (persistent)
   const getMilestoneProgress = (milestonesData: any[]) => {
     return milestonesData.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
   };
 
   // Initialize milestones from localStorage
-  const [milestones, setMilestones] = useState<any[]>(() => {
-    const stored = localStorage.getItem('journeyMilestones');
-    return stored ? JSON.parse(stored) : defaultMilestones;
-  });
+  const [milestones, setMilestones] = useState<any[]>(() => initializeMilestones());
   const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress(milestones));
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
