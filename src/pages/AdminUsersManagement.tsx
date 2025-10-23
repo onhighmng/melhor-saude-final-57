@@ -56,14 +56,6 @@ const AdminUsersManagement = () => {
     <div className="relative w-full min-h-screen h-full flex flex-col">
       <div className="relative z-10 h-full flex flex-col">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-6 h-full flex flex-col min-h-0">
-          {/* Stats Section */}
-          <FeaturedSectionStats
-            title="Gestão centralizada de toda a plataforma."
-            subtitle="Acompanhe métricas em tempo real, gerir utilizadores e tomar decisões baseadas em dados de forma eficiente."
-            stats={userStats}
-            chartData={chartData}
-          />
-
           {/* Feature Section */}
           <RuixenSection />
 
