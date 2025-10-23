@@ -5,6 +5,7 @@ import { Building2, Users, UserCog, ChevronLeft, ChevronRight } from "lucide-rea
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 export const Highlight = ({
   children,
   className,
@@ -70,6 +71,38 @@ const CARDS = [
   },
 ];
 
+
+const activeCompanies = [
+  {
+    id: 1,
+    name: "TechCorp Lda",
+    employees: 45,
+    sessions: { used: 287, total: 400 },
+    status: "active"
+  },
+  {
+    id: 2,
+    name: "HealthPlus SA",
+    employees: 120,
+    sessions: { used: 823, total: 1000 },
+    status: "active"
+  },
+  {
+    id: 3,
+    name: "StartupHub",
+    employees: 15,
+    sessions: { used: 45, total: 150 },
+    status: "onboarding"
+  },
+  {
+    id: 4,
+    name: "ConsultPro",
+    employees: 80,
+    sessions: { used: 512, total: 600 },
+    status: "active"
+  }
+];
+
 const integrations = [
   {
     name: "Saúde Mental",
@@ -116,51 +149,65 @@ export default function RuixenSection() {
           </h3>
         </div>
 
-        {/* Right Block */}
-        <div className="flex flex-col items-center justify-start border border-border p-4 sm:p-6 lg:p-8">
-          {/* Content */}
-          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-foreground mb-4 sm:mb-6 leading-relaxed">
-            Pilares de Bem-Estar Integrados{" "}
-            <span className="text-primary">All-in-One</span>{" "}
-            <span className="text-muted-foreground text-sm sm:text-base lg:text-lg">
-              {" "}
-              Acesse todos os serviços de bem-estar numa única plataforma centralizada,
-              eliminando silos e facilitando a gestão.
-            </span>
-          </h3>
-          <div
-            className={cn(
-              "group relative mt-auto w-full inline-flex animate-rainbow cursor-pointer items-center justify-center rounded-xl border-0 bg-background px-4 sm:px-6 lg:px-8 py-2 font-medium text-primary-foreground transition-colors [background-clip:padding-box,border-box,border-box] [background-origin:border-box] [border:calc(0.08*1rem)_solid_transparent] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-              // before styles
-              "before:absolute before:bottom-[8%] before:left-1/2 before:z-0 before:h-1/5 before:w-3/5 before:-translate-x-1/2 before:animate-rainbow before:bg-[linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))] before:bg-[length:200%] before:[filter:blur(calc(0.8*1rem))]"
-            )}
-          >
-            {/* Integration List */}
-            <CardContent className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 bg-background border border-border rounded-2xl sm:rounded-3xl z-10 w-full">
-              {integrations.map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-2 sm:p-3 border border-border rounded-xl sm:rounded-2xl hover:bg-muted/50 transition"
-                >
-                  <div className="flex items-center gap-2 sm:gap-3 flex-1">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-muted flex items-center justify-center text-sm sm:text-lg flex-shrink-0">
-                      {item.icon}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs sm:text-sm font-medium text-foreground truncate">
-                        {item.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground line-clamp-1 sm:line-clamp-2">
-                        {item.desc}
-                      </p>
-                    </div>
-                  </div>
-                  <button className="rounded-full border border-border p-1.5 sm:p-2 text-xs font-semibold flex-shrink-0 ml-2">
-                    <TbHeartPlus className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </button>
-                </div>
-              ))}
-            </CardContent>
+
+        {/* Right Block - Active Companies Table */}
+        <div className="flex flex-col border border-border p-4 sm:p-6 lg:p-8">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-6">
+            Empresas Ativas
+          </h2>
+
+          {/* Table */}
+          <div className="w-full overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground">
+                    Empresa
+                  </th>
+                  <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground">
+                    Colaboradores
+                  </th>
+                  <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground">
+                    Sessões
+                  </th>
+                  <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground">
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {activeCompanies.map((company) => (
+                  <tr 
+                    key={company.id} 
+                    className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                  >
+                    <td className="py-4 px-2 text-foreground font-medium">
+                      {company.name}
+                    </td>
+                    <td className="py-4 px-2">
+                      <div className="flex items-center gap-2 text-foreground">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span>{company.employees}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-2 text-foreground">
+                      {company.sessions.used}/{company.sessions.total}
+                    </td>
+                    <td className="py-4 px-2">
+                      {company.status === "active" ? (
+                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
+                          Ativa
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-blue-500 text-blue-500">
+                          Em Onboarding
+                        </Badge>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
