@@ -7,15 +7,17 @@ import { Button } from '@/components/ui/button';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
-import { useBookings } from '@/hooks/useBookings';
+import { useBookings, Booking } from '@/hooks/useBookings';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
 import { useToast } from '@/hooks/use-toast';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import { SessionCard, SessionCardData } from '@/components/ui/session-card';
 import { getPillarColors, cn } from '@/lib/utils';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import cardBackground from '@/assets/card-background.png';
@@ -48,6 +50,10 @@ const UserDashboard = () => {
   const shouldShowOnboarding = profile?.role === 'user' && !hasCompletedOnboarding;
   const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
+  
+  // Session modal state
+  const [selectedSession, setSelectedSession] = useState<Booking | null>(null);
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
 
   // Default milestones structure
   const defaultMilestones = [{
@@ -186,6 +192,56 @@ const UserDashboard = () => {
 
     // Session starts within 5 minutes (but not passed)
     return diffMinutes <= 5 && diffMinutes >= -60; // Can join up to 1 hour after start
+  };
+
+  // Transform booking to session card data
+  const transformBookingToSession = (booking: Booking): SessionCardData => {
+    return {
+      id: booking.id,
+      pillar: booking.pillar,
+      date: booking.date,
+      time: booking.time,
+      duration: 60,
+      prestador: booking.provider_name,
+      meetingType: booking.session_type === 'presencial' ? 'presencial' : 'virtual',
+      meetingPlatform: booking.session_type === 'presencial' ? undefined : 'zoom',
+      meetingLink: booking.session_type === 'presencial' ? undefined : '#',
+      status: booking.status === 'confirmed' ? 'confirmed' : 'pending',
+      quota: 'Quota Empresa'
+    };
+  };
+
+  // Session modal handlers
+  const handleSessionClick = (booking: Booking) => {
+    setSelectedSession(booking);
+    setIsSessionModalOpen(true);
+  };
+
+  const handleReschedule = (sessionId: string) => {
+    console.log('Reschedule session:', sessionId);
+    toast({
+      title: 'Reagendar Sessão',
+      description: 'Funcionalidade de reagendamento em desenvolvimento'
+    });
+    setIsSessionModalOpen(false);
+  };
+
+  const handleJoinSession = (sessionId: string) => {
+    console.log('Join session:', sessionId);
+    toast({
+      title: 'Entrar na Sessão',
+      description: 'A abrir link da sessão...'
+    });
+    // In production, this would open the actual meeting link
+  };
+
+  const handleCancelSession = (sessionId: string) => {
+    console.log('Cancel session:', sessionId);
+    toast({
+      title: 'Cancelar Sessão',
+      description: 'Tem a certeza que deseja cancelar esta sessão?'
+    });
+    setIsSessionModalOpen(false);
   };
 
 
@@ -383,7 +439,7 @@ const UserDashboard = () => {
                   <div className="flex-1 space-y-3 min-h-0 flex flex-col justify-start">
                     {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
                 const pillarColors = getPillarColors(booking.pillar);
-                return <div key={booking.id} onClick={() => navigate(`/user/sessions/${booking.id}`)} className={cn('flex items-start gap-3 rounded-2xl p-2.5 border-l-[5px] transition-all flex-shrink-0 cursor-pointer hover:scale-[1.02]', `${pillarColors.bg} ${pillarColors.border}`)}>
+                return <div key={booking.id} onClick={(e) => { e.stopPropagation(); handleSessionClick(booking); }} className={cn('flex items-start gap-3 rounded-2xl p-2.5 border-l-[5px] transition-all flex-shrink-0 cursor-pointer hover:scale-[1.02]', `${pillarColors.bg} ${pillarColors.border}`)}>
                             <div className={cn('w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
                               <Calendar className="w-5.5 h-5.5 text-white" />
                             </div>
@@ -401,6 +457,21 @@ const UserDashboard = () => {
         </div>
       </div>
     </div>
+
+    {/* Session Details Modal */}
+    <Dialog open={isSessionModalOpen} onOpenChange={setIsSessionModalOpen}>
+      <DialogContent className="max-w-md p-0 overflow-hidden border-none bg-transparent shadow-none">
+        {selectedSession && (
+          <SessionCard
+            session={transformBookingToSession(selectedSession)}
+            onReschedule={handleReschedule}
+            onJoin={handleJoinSession}
+            onCancel={handleCancelSession}
+            className="w-full"
+          />
+        )}
+      </DialogContent>
+    </Dialog>
     </div>;
 };
 export default UserDashboard;
