@@ -127,7 +127,7 @@ const Logo = ({ open, user }: { open: boolean; user: any }) => {
         <span className="text-sm font-medium text-foreground truncate">
           {user?.name || user?.email}
         </span>
-        <span className="text-xs text-muted-foreground">Especialista Geral</span>
+        <span className="text-xs text-muted-foreground">Profissional de Permanencia</span>
       </motion.div>
     </div>
   );

@@ -64,7 +64,7 @@ export default function SpecialistDashboard() {
           {/* Page Header */}
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              {isEspecialistaGeral ? 'Dashboard - Especialista Geral' : 'Dashboard Especialista'}
+              {isEspecialistaGeral ? 'Dashboard - Profissional de Permanencia' : 'Dashboard Especialista'}
             </h1>
             <p className="text-muted-foreground">
               {isEspecialistaGeral 

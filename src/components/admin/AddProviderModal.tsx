@@ -70,16 +70,16 @@ export const AddProviderModal = ({ open, onOpenChange }: AddProviderModalProps) 
       console.log('Provider data:', data);
 
       toast({
-        title: 'Prestador adicionado com sucesso',
-        description: 'O prestador foi registado e já pode receber agendamentos',
+        title: 'Affiliate adicionado com sucesso',
+        description: 'O affiliate foi registado e já pode receber agendamentos',
       });
 
       reset();
       onOpenChange(false);
     } catch (error) {
       toast({
-        title: 'Erro ao adicionar prestador',
-        description: 'Ocorreu um erro ao tentar adicionar o prestador. Por favor, tente novamente.',
+        title: 'Erro ao adicionar affiliate',
+        description: 'Ocorreu um erro ao tentar adicionar o affiliate. Por favor, tente novamente.',
         variant: 'destructive',
       });
     }
@@ -91,10 +91,10 @@ export const AddProviderModal = ({ open, onOpenChange }: AddProviderModalProps) 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <UserCog className="h-6 w-6" />
-            Adicionar Prestador
+            Adicionar Affiliate
           </DialogTitle>
           <DialogDescription>
-            Preencha os dados para registar um novo prestador no programa
+            Preencha os dados para registar um novo affiliate no programa
           </DialogDescription>
         </DialogHeader>
 

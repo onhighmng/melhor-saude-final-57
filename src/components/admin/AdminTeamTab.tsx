@@ -306,9 +306,9 @@ const AdminTeamTab = () => {
                               </div>
                               <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                  <Label>Gestão de Prestadores</Label>
+                                  <Label>Gestão de Affiliates</Label>
                                   <p className="text-sm text-muted-foreground">
-                                    Ver e editar prestadores
+                                    Ver e editar affiliates
                                   </p>
                                 </div>
                                 <Switch

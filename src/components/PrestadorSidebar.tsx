@@ -79,7 +79,7 @@ export function PrestadorSidebar() {
     <AnimatedSidebar>
       <AnimatedSidebarBody className="justify-between gap-10 h-full">
         <div className="flex flex-col flex-1 overflow-hidden">
-          <Logo open={open} user={user} role="Prestador" />
+          <Logo open={open} user={user} role="Affiliate" />
           <div className="mt-8 flex flex-col gap-2">
             {mainLinks.map((link, idx) => (
               <AnimatedSidebarLink key={idx} link={link} />

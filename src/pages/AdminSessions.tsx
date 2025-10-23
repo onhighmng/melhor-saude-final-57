@@ -28,7 +28,7 @@ export default function AdminSessions() {
           </TabsTrigger>
           <TabsTrigger value="specialist" className="gap-2">
             <UserCog className="h-4 w-4" />
-            <span className="hidden sm:inline">Especialista Geral</span>
+            <span className="hidden sm:inline">Profissional de Permanencia</span>
           </TabsTrigger>
         </TabsList>
 

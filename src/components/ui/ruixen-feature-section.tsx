@@ -60,7 +60,7 @@ const CARDS = [
   },
   {
     id: 2,
-    name: "Prestadores",
+    name: "Affiliates",
     designation: "Gerir especialistas",
     Icon: UserCog,
     bgColor: "bg-gradient-to-br from-yellow-100 to-yellow-200",
@@ -276,7 +276,7 @@ export default function RuixenSection({
             <span className="text-primary">Wellness Platform</span>{" "}
             <span className="text-muted-foreground text-sm sm:text-base lg:text-lg">
               {" "}
-              Controle completo sobre empresas, colaboradores e prestadores numa única
+              Controle completo sobre empresas, colaboradores e affiliates numa única
               plataforma integrada.
             </span>
           </h3>
@@ -289,7 +289,7 @@ export default function RuixenSection({
             <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
               {activeCardIndex === 0 && "Empresas Ativas"}
               {activeCardIndex === 1 && "Colaboradores Ativos"}
-              {activeCardIndex === 2 && "Prestadores Ativos"}
+              {activeCardIndex === 2 && "Affiliates Ativos"}
             </h2>
             {activeCardIndex === 0 && (
               <Button 
@@ -328,7 +328,7 @@ export default function RuixenSection({
                 className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                Adicionar Prestador
+                Adicionar Affiliate
               </Button>
             )}
           </div>
@@ -341,7 +341,7 @@ export default function RuixenSection({
                   <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     {activeCardIndex === 0 && "Empresa"}
                     {activeCardIndex === 1 && "Nome"}
-                    {activeCardIndex === 2 && "Prestador"}
+                    {activeCardIndex === 2 && "Affiliate"}
                   </th>
                   <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     {activeCardIndex === 0 && "Colaboradores"}
@@ -477,7 +477,7 @@ export default function RuixenSection({
                 200+
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">
-                Prestadores
+                Affiliates
               </p>
             </div>
           </div>

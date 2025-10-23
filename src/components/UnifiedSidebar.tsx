@@ -71,7 +71,7 @@ const getMenuItemsByRole = (role: string): MenuItem[] => {
         { title: 'Dashboard', url: "/admin/dashboard", icon: LayoutDashboard },
         { title: 'Empresas', url: "/admin/companies", icon: Building2 },
         { title: 'Utilizadores', url: "/admin/usuarios", icon: Users },
-        { title: 'Prestadores', url: "/admin/prestadores", icon: UserCheck },
+        { title: 'Affiliates', url: "/admin/prestadores", icon: UserCheck },
         { title: 'Suporte', url: "/admin/support", icon: HelpCircle },
         { title: 'Matching', url: "/admin/matching", icon: GitBranch },
         { title: 'Agendamentos', url: "/admin/agendamentos", icon: Calendar },
@@ -122,7 +122,7 @@ export function UnifiedSidebar() {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case 'user': return 'Utilizador';
-      case 'prestador': return 'Prestador';
+      case 'prestador': return 'Affiliate';
       case 'admin': return 'Administrador';
       case 'hr': return 'RH';
       default: return 'Sistema';
