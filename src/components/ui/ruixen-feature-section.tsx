@@ -112,28 +112,28 @@ const activeCompanies = [
 const platformTips = [
   {
     id: 1,
-    tip: "Regular audits of inactive companies help maintain accurate metrics",
-    category: "Best Practice"
+    tip: "Auditorias regulares de empresas inativas ajudam a manter métricas precisas",
+    category: "Boa Prática"
   },
   {
     id: 2,
-    tip: "Review provider availability weekly to ensure optimal booking capacity",
-    category: "Scheduling"
+    tip: "Reveja a disponibilidade dos prestadores semanalmente para garantir capacidade ideal de agendamento",
+    category: "Agendamento"
   },
   {
     id: 3,
-    tip: "Monitor session usage patterns to identify companies needing support",
-    category: "Analytics"
+    tip: "Monitorize padrões de uso de sessões para identificar empresas que necessitam de apoio",
+    category: "Análise"
   },
   {
     id: 4,
-    tip: "Set up automated alerts for companies approaching their session limits",
-    category: "Automation"
+    tip: "Configure alertas automáticos para empresas que se aproximam dos seus limites de sessões",
+    category: "Automação"
   },
   {
     id: 5,
-    tip: "Regular communication with HR contacts improves platform adoption rates",
-    category: "Engagement"
+    tip: "Comunicação regular com contactos de RH melhora as taxas de adoção da plataforma",
+    category: "Envolvimento"
   }
 ];
 
