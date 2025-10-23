@@ -436,7 +436,11 @@ export default function AdminCompanyDetail() {
                     {employees.map(emp => (
                       <TableRow key={emp.id}>
                         <TableCell className="font-medium text-lg py-4">{emp.name}</TableCell>
-                        <TableCell className="text-lg py-4">{emp.email}</TableCell>
+                        <TableCell className="py-4">
+                          <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-lg font-medium">
+                            {emp.email}
+                          </span>
+                        </TableCell>
                         <TableCell className="font-mono text-lg py-4">{emp.code || '-'}</TableCell>
                         <TableCell className="text-lg py-4">{emp.sentDate || '-'}</TableCell>
                         <TableCell className="py-4">{getStatusBadge(emp.status)}</TableCell>
