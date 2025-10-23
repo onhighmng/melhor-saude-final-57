@@ -51,7 +51,7 @@ const getMenuItemsByRole = (role: string): MenuItem[] => {
   switch (role) {
     case 'user':
       return [
-        { title: 'Dashboard', url: "/user/dashboard", icon: LayoutDashboard },
+        { title: 'Início', url: "/user/dashboard", icon: LayoutDashboard },
         { title: 'Agendar Sessão', url: "/user/book", icon: Calendar },
         { title: 'Minhas Sessões', url: "/user/sessions", icon: ClipboardList },
         { title: 'Ajuda', url: "/user/help", icon: HelpCircle },

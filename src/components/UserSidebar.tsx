@@ -29,7 +29,7 @@ export function UserSidebar() {
 
   const mainLinks = [
     {
-      label: "Dashboard",
+      label: "Início",
       href: "/user/dashboard",
       icon: <LayoutDashboard className="text-primary h-5 w-5 flex-shrink-0" />,
     },

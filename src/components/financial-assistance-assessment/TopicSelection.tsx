@@ -28,10 +28,46 @@ const financialAssistanceTopicsData = [
     description: 'Como poupar, opções de investimento'
   },
   {
+    id: 'retirement',
+    emoji: '👴',
+    title: 'Planeamento de Reforma',
+    description: 'Reforma, pensões, planos de previdência'
+  },
+  {
+    id: 'insurance',
+    emoji: '🛡️',
+    title: 'Seguros',
+    description: 'Seguros de vida, saúde, habitação, automóvel'
+  },
+  {
+    id: 'financial-education',
+    emoji: '📚',
+    title: 'Educação Financeira',
+    description: 'Literacia financeira, gestão básica'
+  },
+  {
+    id: 'estate-planning',
+    emoji: '📋',
+    title: 'Planeamento Sucessório',
+    description: 'Heranças, testamentos, sucessão'
+  },
+  {
     id: 'housing',
     emoji: '🏠',
-    title: 'Financiamento Imobiliário',
-    description: 'Compra de casa, crédito habitação'
+    title: 'Crédito Habitação',
+    description: 'Compra de casa, renegociação de crédito'
+  },
+  {
+    id: 'taxes',
+    emoji: '🧾',
+    title: 'Impostos e Declarações',
+    description: 'IRS, impostos, declarações fiscais'
+  },
+  {
+    id: 'debt-negotiation',
+    emoji: '🤝',
+    title: 'Negociação de Dívidas',
+    description: 'Renegociação, consolidação, planos de pagamento'
   },
   {
     id: 'education',

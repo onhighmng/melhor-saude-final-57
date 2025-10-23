@@ -34,15 +34,57 @@ const physicalWellnessTopicsData = [
     description: 'Dores persistentes, lesões, reabilitação'
   },
   {
-    id: 'preventive-health',
+    id: 'chronic-diseases',
+    emoji: '💊',
+    title: 'Gestão de Doenças Crónicas',
+    description: 'Diabetes, hipertensão, outras condições crónicas'
+  },
+  {
+    id: 'post-surgery',
     emoji: '🏥',
-    title: 'Saúde Preventiva',
+    title: 'Reabilitação Pós-Cirúrgica',
+    description: 'Recuperação após cirurgias, fisioterapia'
+  },
+  {
+    id: 'reproductive-health',
+    emoji: '🤰',
+    title: 'Saúde Reprodutiva',
+    description: 'Saúde sexual, fertilidade, menopausa'
+  },
+  {
+    id: 'physiotherapy',
+    emoji: '🦴',
+    title: 'Fisioterapia e Recuperação',
+    description: 'Lesões, mobilidade, reabilitação física'
+  },
+  {
+    id: 'preventive-health',
+    emoji: '🔬',
+    title: 'Medicina Preventiva',
     description: 'Check-ups, exames, prevenção de doenças'
+  },
+  {
+    id: 'posture',
+    emoji: '🪑',
+    title: 'Saúde Postural e Ergonomia',
+    description: 'Postura, ergonomia no trabalho, dores posturais'
+  },
+  {
+    id: 'allergies',
+    emoji: '🤧',
+    title: 'Alergias e Imunidade',
+    description: 'Alergias, sistema imunitário, intolerâncias'
+  },
+  {
+    id: 'digestive-health',
+    emoji: '🫃',
+    title: 'Saúde Digestiva',
+    description: 'Problemas digestivos, nutrição intestinal'
   },
   {
     id: 'lifestyle',
     emoji: '🌱',
-    title: 'Estilo de Vida',
+    title: 'Estilo de Vida Saudável',
     description: 'Hábitos saudáveis, tabagismo, álcool'
   }
 ];

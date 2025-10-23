@@ -44,6 +44,42 @@ const legalTopicsData = [
     emoji: '📜',
     title: 'Direito Civil',
     description: 'Contratos, danos morais, responsabilidade civil'
+  },
+  {
+    id: 'digital',
+    emoji: '💻',
+    title: 'Direito Digital e RGPD',
+    description: 'Proteção de dados, privacidade, crimes digitais'
+  },
+  {
+    id: 'business',
+    emoji: '🏢',
+    title: 'Direito Empresarial',
+    description: 'Contratos comerciais, sociedades, questões societárias'
+  },
+  {
+    id: 'tax',
+    emoji: '💰',
+    title: 'Direito Tributário',
+    description: 'Impostos, IRS, IRC, questões fiscais'
+  },
+  {
+    id: 'inheritance',
+    emoji: '📋',
+    title: 'Sucessões e Heranças',
+    description: 'Testamentos, partilhas, inventários'
+  },
+  {
+    id: 'intellectual-property',
+    emoji: '©️',
+    title: 'Propriedade Intelectual',
+    description: 'Marcas, patentes, direitos de autor'
+  },
+  {
+    id: 'traffic',
+    emoji: '🚗',
+    title: 'Direito de Trânsito',
+    description: 'Multas, acidentes, contra-ordenações'
   }
 ];
 

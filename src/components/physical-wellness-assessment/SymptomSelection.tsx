@@ -21,7 +21,19 @@ const physicalWellnessSymptoms = [
   { id: 'muscle-pain', text: 'Dores musculares ou articulares' },
   { id: 'poor-sleep-quality', text: 'Má qualidade de sono' },
   { id: 'stress-physical', text: 'Sintomas físicos de estresse' },
-  { id: 'lack-motivation', text: 'Falta de motivação para exercício' }
+  { id: 'lack-motivation', text: 'Falta de motivação para exercício' },
+  { id: 'joint-pain', text: 'Dores articulares persistentes' },
+  { id: 'mobility-issues', text: 'Problemas de mobilidade' },
+  { id: 'chronic-tension', text: 'Tensão muscular crónica' },
+  { id: 'frequent-headaches', text: 'Cefaleias frequentes' },
+  { id: 'digestive-problems', text: 'Problemas gastrointestinais recorrentes' },
+  { id: 'breathing-difficulty', text: 'Dificuldade respiratória' },
+  { id: 'skin-issues', text: 'Alterações na pele' },
+  { id: 'dizziness', text: 'Vertigens ou tonturas' },
+  { id: 'muscle-weakness', text: 'Fraqueza muscular' },
+  { id: 'vision-problems', text: 'Problemas de visão' },
+  { id: 'chronic-fatigue', text: 'Fadiga crónica severa' },
+  { id: 'inflammation', text: 'Inflamação persistente' }
 ];
 
 const SymptomSelection: React.FC<SymptomSelectionProps> = ({

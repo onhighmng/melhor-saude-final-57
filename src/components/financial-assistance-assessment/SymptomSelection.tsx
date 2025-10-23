@@ -21,7 +21,19 @@ const financialAssistanceSymptoms = [
   { id: 'financial-worry', text: 'Preocupação com o futuro financeiro' },
   { id: 'bad-credit', text: 'Problemas com negativação ou score baixo' },
   { id: 'investment-desire', text: 'Desejo de investir mas não sei por onde começar' },
-  { id: 'impulsive-spending', text: 'Gastos impulsivos frequentes' }
+  { id: 'impulsive-spending', text: 'Gastos impulsivos frequentes' },
+  { id: 'no-emergency-fund', text: 'Não tenho fundo de emergência' },
+  { id: 'paycheck-to-paycheck', text: 'Vivo de ordenado em ordenado' },
+  { id: 'multiple-debts', text: 'Tenho múltiplas dívidas ativas' },
+  { id: 'cannot-save', text: 'Não consigo poupar mensalmente' },
+  { id: 'job-loss-fear', text: 'Receio perder o emprego' },
+  { id: 'money-tracking', text: 'Não sei onde vai o meu dinheiro' },
+  { id: 'family-conflicts', text: 'Tenho conflitos financeiros na família' },
+  { id: 'bill-anxiety', text: 'Sinto ansiedade ao pagar contas' },
+  { id: 'bank-statements', text: 'Não entendo extratos bancários' },
+  { id: 'no-financial-goals', text: 'Não tenho objetivos financeiros claros' },
+  { id: 'late-payments', text: 'Atrasos frequentes em pagamentos' },
+  { id: 'credit-card-maxed', text: 'Cartões de crédito no limite' }
 ];
 
 const SymptomSelection: React.FC<SymptomSelectionProps> = ({

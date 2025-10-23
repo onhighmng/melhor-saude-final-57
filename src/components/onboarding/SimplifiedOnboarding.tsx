@@ -42,6 +42,15 @@ export const SimplifiedOnboarding = ({
   }, {
     value: 'equilibrio',
     label: 'Equilíbrio entre vida pessoal e trabalho'
+  }, {
+    value: 'relacionamentos',
+    label: 'Relacionamentos interpessoais'
+  }, {
+    value: 'gestao-tempo',
+    label: 'Gestão do tempo'
+  }, {
+    value: 'carreira',
+    label: 'Objetivos de carreira'
   }];
   const goals = [{
     value: 'stress',
@@ -70,6 +79,24 @@ export const SimplifiedOnboarding = ({
   }, {
     value: 'alimentacao',
     label: 'Comer de forma mais saudável'
+  }, {
+    value: 'comunicacao',
+    label: 'Melhorar comunicação com outros'
+  }, {
+    value: 'competencias',
+    label: 'Desenvolver novas competências'
+  }, {
+    value: 'gestao-tempo',
+    label: 'Gerir melhor o meu tempo'
+  }, {
+    value: 'resolver-legal',
+    label: 'Resolver questões legais pendentes'
+  }, {
+    value: 'limites',
+    label: 'Estabelecer limites saudáveis'
+  }, {
+    value: 'autoconfianca',
+    label: 'Melhorar autoconfiança'
   }];
   const improvementSignsOptions = [{
     value: 'menos-stress',
@@ -89,6 +116,24 @@ export const SimplifiedOnboarding = ({
   }, {
     value: 'juridico',
     label: 'Resolver um problema jurídico pendente'
+  }, {
+    value: 'dizer-nao',
+    label: 'Conseguir dizer não sem culpa'
+  }, {
+    value: 'confiante',
+    label: 'Sentir-me mais confiante'
+  }, {
+    value: 'relacoes-saudaveis',
+    label: 'Ter relações mais saudáveis'
+  }, {
+    value: 'resolver-conflitos',
+    label: 'Resolver conflitos com calma'
+  }, {
+    value: 'escolhas-financeiras',
+    label: 'Fazer escolhas financeiras informadas'
+  }, {
+    value: 'juridicamente-seguro',
+    label: 'Sentir-me juridicamente seguro'
   }];
   const frequencies = [{
     value: '1-2',
@@ -107,18 +152,14 @@ export const SimplifiedOnboarding = ({
     if (mainGoals.includes(goalValue)) {
       setMainGoals(mainGoals.filter(g => g !== goalValue));
     } else {
-      if (mainGoals.length < 3) {
-        setMainGoals([...mainGoals, goalValue]);
-      }
+      setMainGoals([...mainGoals, goalValue]);
     }
   };
   const handleDifficultyToggle = (value: string) => {
     if (difficultyAreas.includes(value)) {
       setDifficultyAreas(difficultyAreas.filter(d => d !== value));
     } else {
-      if (difficultyAreas.length < 2) {
-        setDifficultyAreas([...difficultyAreas, value]);
-      }
+      setDifficultyAreas([...difficultyAreas, value]);
     }
   };
   const handleImprovementSignToggle = (value: string) => {
@@ -148,8 +189,8 @@ export const SimplifiedOnboarding = ({
   const canProceed = () => {
     if (step === 0) return true;
     if (step === 1) return wellbeingScore !== null && wellbeingScore >= 1 && wellbeingScore <= 10;
-    if (step === 2) return difficultyAreas.length >= 1 && difficultyAreas.length <= 2;
-    if (step === 3) return mainGoals.length > 0 && mainGoals.length <= 3;
+    if (step === 2) return difficultyAreas.length > 0;
+    if (step === 3) return mainGoals.length > 0;
     if (step === 4) return improvementSigns.length > 0;
     if (step === 5) return frequency !== '';
     if (step === 6) return true; // Completion screen
@@ -179,10 +220,10 @@ export const SimplifiedOnboarding = ({
     subtitle: 'Criar uma linha de base para medir a sua evolução'
   }, {
     title: 'Em quais destas áreas sente atualmente mais dificuldade?',
-    subtitle: 'Escolha até 2 áreas'
+    subtitle: 'Selecione todas as que se aplicam'
   }, {
     title: 'Quais são as suas principais metas neste momento?',
-    subtitle: 'Escolha até 3 metas'
+    subtitle: 'Selecione todas as que se aplicam'
   }, {
     title: 'O que seria um sinal claro de que está a melhorar?',
     subtitle: 'Selecione todas as que se aplicam'
@@ -230,40 +271,38 @@ export const SimplifiedOnboarding = ({
               </div>
             </div>}
 
-          {/* Step 2: Difficulty Areas (max 2) */}
+          {/* Step 2: Difficulty Areas (unlimited) */}
           {step === 2 && <div className="space-y-6">
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                   <span className="text-sm font-medium text-primary">
-                    {difficultyAreas.length}/2 selecionados
+                    {difficultyAreas.length} selecionados
                   </span>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {difficultyOptions.map(option => {
               const isSelected = difficultyAreas.includes(option.value);
-              const isDisabled = !isSelected && difficultyAreas.length >= 2;
-              return <button key={option.value} type="button" onClick={() => !isDisabled && handleDifficultyToggle(option.value)} disabled={isDisabled} className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : isDisabled ? 'border-gray-200 bg-white text-muted-foreground opacity-40 cursor-not-allowed' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
+              return <button key={option.value} type="button" onClick={() => handleDifficultyToggle(option.value)} className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
                       {option.label}
                     </button>;
             })}
               </div>
             </div>}
 
-          {/* Step 3: Main Goals (up to 3) */}
+          {/* Step 3: Main Goals (unlimited) */}
           {step === 3 && <div className="space-y-6">
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                   <span className="text-sm font-medium text-primary">
-                    {mainGoals.length}/3 selecionados
+                    {mainGoals.length} selecionados
                   </span>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {goals.map(goal => {
               const isSelected = mainGoals.includes(goal.value);
-              const isDisabled = !isSelected && mainGoals.length >= 3;
-              return <button key={goal.value} type="button" onClick={() => !isDisabled && handleGoalToggle(goal.value)} disabled={isDisabled} className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : isDisabled ? 'border-gray-200 bg-white text-muted-foreground opacity-40 cursor-not-allowed' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
+              return <button key={goal.value} type="button" onClick={() => handleGoalToggle(goal.value)} className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
                       {goal.label}
                     </button>;
             })}

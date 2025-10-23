@@ -18,7 +18,22 @@ const civilSymptoms = [
   { id: 'moral-damage', text: 'Dano moral ou material sofrido' },
   { id: 'judicial-debt', text: 'Dívidas ou cobrança judicial' },
   { id: 'defamation', text: 'Nome sujo ou negativado indevidamente' },
-  { id: 'civil-liability', text: 'Questões de responsabilidade civil' }
+  { id: 'civil-liability', text: 'Questões de responsabilidade civil' },
+  { id: 'judicial-citation', text: 'Recebi uma citação judicial' },
+  { id: 'fraud-victim', text: 'Fui vítima de fraude ou burla' },
+  { id: 'contract-understanding', text: 'Tenho um contrato que não entendo' },
+  { id: 'neighbor-conflict', text: 'Estou em conflito com vizinhos' },
+  { id: 'will-needed', text: 'Preciso de elaborar testamento' },
+  { id: 'intellectual-property-issue', text: 'Tenho problemas com propriedade intelectual' },
+  { id: 'traffic-accident', text: 'Sofri acidente de viação' },
+  { id: 'fines-contestable', text: 'Tenho multas ou infrações contestáveis' },
+  { id: 'legal-documents', text: 'Preciso de procuração ou documentos legais' },
+  { id: 'asset-separation', text: 'Estou em processo de separação patrimonial' },
+  { id: 'labor-rights', text: 'Questões de direitos laborais' },
+  { id: 'consumer-complaint', text: 'Problemas com produto ou serviço adquirido' },
+  { id: 'rental-issues', text: 'Problemas com arrendamento' },
+  { id: 'inheritance-dispute', text: 'Disputa de herança ou partilha' },
+  { id: 'data-breach', text: 'Violação de dados pessoais' }
 ];
 
 const SymptomSelection: React.FC<SymptomSelectionProps> = ({

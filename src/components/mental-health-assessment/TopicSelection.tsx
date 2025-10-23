@@ -29,22 +29,58 @@ const mentalHealthTopicsData = [
     description: 'Pressão no trabalho, sobrecarga, esgotamento'
   },
   {
+    id: 'burnout',
+    emoji: '🔥',
+    title: 'Burnout / Esgotamento',
+    description: 'Esgotamento profissional, exaustão emocional'
+  },
+  {
+    id: 'social-anxiety',
+    emoji: '😶',
+    title: 'Ansiedade Social / Fobias',
+    description: 'Medo de situações sociais, fobias específicas'
+  },
+  {
+    id: 'eating-disorders',
+    emoji: '🍽️',
+    title: 'Transtornos Alimentares',
+    description: 'Relação problemática com comida e imagem corporal'
+  },
+  {
     id: 'relationships',
     emoji: '💔',
-    title: 'Relacionamentos',
+    title: 'Dificuldades de Relacionamento',
     description: 'Conflitos familiares, problemas amorosos, isolamento social'
   },
   {
     id: 'self-esteem',
     emoji: '🪞',
-    title: 'Autoestima',
+    title: 'Autoestima e Autoconfiança',
     description: 'Insegurança, baixa confiança, autocrítica'
+  },
+  {
+    id: 'grief',
+    emoji: '🕊️',
+    title: 'Luto e Perda',
+    description: 'Processar perdas, lidar com o luto'
   },
   {
     id: 'trauma',
     emoji: '🌪️',
-    title: 'Trauma',
-    description: 'Experiências difíceis do passado, luto, perdas'
+    title: 'Traumas e PTSD',
+    description: 'Experiências traumáticas, stress pós-traumático'
+  },
+  {
+    id: 'identity',
+    emoji: '🌈',
+    title: 'Questões de Identidade',
+    description: 'Orientação sexual, identidade de género, autoconhecimento'
+  },
+  {
+    id: 'anger',
+    emoji: '😤',
+    title: 'Gestão da Raiva',
+    description: 'Controlar impulsos, gerir emoções intensas'
   }
 ];
 

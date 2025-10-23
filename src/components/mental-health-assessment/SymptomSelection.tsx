@@ -16,12 +16,24 @@ interface SymptomSelectionProps {
 const mentalHealthSymptoms = [
   { id: 'sleep-problems', text: 'Dificuldade para dormir ou sono excessivo' },
   { id: 'lack-energy', text: 'Falta de energia ou cansaço constante' },
-  { id: 'concentration', text: 'Dificuldade de concentração' },
+  { id: 'concentration', text: 'Dificuldade de concentração persistente' },
   { id: 'mood-swings', text: 'Mudanças repentinas de humor' },
   { id: 'loss-interest', text: 'Perda de interesse em atividades que gostava' },
-  { id: 'social-withdrawal', text: 'Evitar contato social' },
+  { id: 'social-withdrawal', text: 'Isolamento social frequente' },
   { id: 'physical-symptoms', text: 'Sintomas físicos (dor de cabeça, tensão muscular)' },
-  { id: 'negative-thoughts', text: 'Pensamentos negativos recorrentes' }
+  { id: 'negative-thoughts', text: 'Pensamentos negativos recorrentes' },
+  { id: 'intrusive-thoughts', text: 'Pensamentos intrusivos recorrentes' },
+  { id: 'appetite-changes', text: 'Mudanças significativas no apetite' },
+  { id: 'mental-fatigue', text: 'Fadiga mental constante' },
+  { id: 'irritability', text: 'Irritabilidade aumentada' },
+  { id: 'decision-difficulty', text: 'Dificuldade em tomar decisões' },
+  { id: 'emptiness', text: 'Sentimento de vazio ou desesperança' },
+  { id: 'sleep-pattern-changes', text: 'Alterações nos padrões de sono' },
+  { id: 'panic-attacks', text: 'Palpitações ou ataques de pânico' },
+  { id: 'excessive-worry', text: 'Preocupação excessiva com o futuro' },
+  { id: 'guilt-feelings', text: 'Sentimentos de culpa constantes' },
+  { id: 'emotional-numbness', text: 'Sensação de anestesia emocional' },
+  { id: 'crying-spells', text: 'Crises de choro frequentes' }
 ];
 
 const SymptomSelection: React.FC<SymptomSelectionProps> = ({
