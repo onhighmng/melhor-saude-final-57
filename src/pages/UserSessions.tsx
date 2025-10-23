@@ -1,16 +1,9 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { History, CalendarDays } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/sessionMockData";
-import { mockBookings, getMockBookings } from "@/data/mockData";
-import { BentoCard } from "@/components/ui/bento-grid";
+import { getMockBookings } from "@/data/mockData";
 import { SessionModal } from "@/components/sessions/SessionModal";
-import { GoalsDisplay } from "@/components/ui/goals-display";
-import { QuotaDisplay } from "@/components/ui/quota-display";
-import { cn } from "@/lib/utils";
+import UserJourneySection from "@/components/ui/user-journey-section";
 
 export default function UserSessions() {
   const navigate = useNavigate();
@@ -122,88 +115,16 @@ export default function UserSessions() {
           </div>
         </div>
 
-        {/* Bento Grid Layout */}
-        <div className="container mx-auto p-6">
-          <div className="space-y-4">
-            {/* Top row - Goals (Full Width) */}
-            <BentoCard
-              name=""
-              description=""
-              href="#"
-              cta=""
-              className="w-full"
-              background={<div className="absolute inset-0 bg-white" />}
-              textColor="text-gray-900"
-              descriptionColor="text-gray-600"
-              onClick={() => {}}
-            >
-              <div className="p-4">
-                <GoalsDisplay goals={userGoals} />
-              </div>
-            </BentoCard>
-
-            {/* Middle row - Three equal square cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="aspect-square">
-                <BentoCard
-                  name="Suas Quotas de Sessões"
-                  description="Acompanhe o uso das suas quotas"
-                  href="#"
-                  cta="Ver detalhes"
-                  className="w-full h-full"
-                  background={<div className="absolute inset-0 bg-white" />}
-                  textColor="text-gray-900"
-                  descriptionColor="text-gray-600"
-                  onClick={() => {}}
-                >
-                  <div className="p-4">
-                    <QuotaDisplay balance={userBalance} />
-                  </div>
-                </BentoCard>
-              </div>
-
-              <div className="aspect-square">
-                <BentoCard
-                  name="Histórico de Sessões"
-                  description={`${completedSessionsCount} sessões concluídas`}
-                  href="#"
-                  cta="Ver histórico"
-                  className="w-full h-full"
-                  Icon={History}
-                  background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50" />}
-                  iconColor="text-orange-600"
-                  textColor="text-gray-900"
-                  descriptionColor="text-gray-600"
-                  onClick={() => setIsPastSessionsModalOpen(true)}
-                />
-              </div>
-
-              <div className="aspect-square">
-                <BentoCard
-                  name="Próximas Sessões"
-                  description={`${futureSessionsCount} sessões agendadas`}
-                  href="#"
-                  cta="Ver sessões"
-                  className="w-full h-full"
-                  Icon={CalendarDays}
-                  background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
-                  iconColor="text-blue-600"
-                  textColor="text-gray-900"
-                  descriptionColor="text-gray-600"
-                  onClick={() => setIsFutureSessionsModalOpen(true)}
-                />
-              </div>
-            </div>
-
-            {/* Bottom - Quote Card */}
-            <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
-              <CardContent className="pt-6">
-                <p className="text-center text-gray-700 italic">
-                  Pequenos passos, grandes resultados. O seu bem-estar cresce com cada conquista 💙
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+        {/* User Journey Section */}
+        <div className="container mx-auto px-6">
+          <UserJourneySection
+            goals={userGoals}
+            balance={userBalance}
+            completedSessionsCount={completedSessionsCount}
+            futureSessionsCount={futureSessionsCount}
+            onHistoryClick={() => setIsPastSessionsModalOpen(true)}
+            onFutureSessionsClick={() => setIsFutureSessionsModalOpen(true)}
+          />
         </div>
 
         {/* Session Modals */}
