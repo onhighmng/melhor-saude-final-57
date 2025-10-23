@@ -9,6 +9,7 @@ import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import FeaturedSectionStats from '@/components/ui/featured-section-stats';
 import RuixenSection from '@/components/ui/ruixen-feature-section';
 import { EmployeeDetailModal } from '@/components/admin/EmployeeDetailModal';
+import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
 
 const AdminUsersManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -135,6 +136,12 @@ const AdminUsersManagement = () => {
         employee={selectedEmployee}
         open={isEmployeeModalOpen}
         onOpenChange={setIsEmployeeModalOpen}
+      />
+
+      {/* Add Company Modal */}
+      <AddCompanyModal
+        open={isAddCompanyModalOpen}
+        onOpenChange={setIsAddCompanyModalOpen}
       />
     </div>
   );
