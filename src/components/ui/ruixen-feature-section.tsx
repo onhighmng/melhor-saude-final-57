@@ -35,6 +35,7 @@ const CARDS = [
     Icon: Building2,
     bgColor: "bg-gradient-to-br from-blue-100 to-blue-200",
     iconColor: "text-blue-600",
+    tabValue: "companies",
     content: (
       <p className="text-sm text-muted-foreground">
         Gestão completa de empresas cadastradas, geração de códigos de acesso únicos
@@ -49,6 +50,7 @@ const CARDS = [
     Icon: Users,
     bgColor: "bg-gradient-to-br from-green-100 to-green-200",
     iconColor: "text-green-600",
+    tabValue: "employees",
     content: (
       <p className="text-sm text-muted-foreground">
         Controle total sobre colaboradores, acompanhamento de sessões utilizadas
@@ -63,6 +65,7 @@ const CARDS = [
     Icon: UserCog,
     bgColor: "bg-gradient-to-br from-yellow-100 to-yellow-200",
     iconColor: "text-yellow-600",
+    tabValue: "providers",
     content: (
       <p className="text-sm text-muted-foreground">
         Administração de prestadores de serviços, atribuição de especialidades
@@ -161,9 +164,11 @@ const integrations = [
 ];
 
 export default function RuixenSection({ 
-  onAddCompany 
+  onAddCompany,
+  onTabChange
 }: { 
-  onAddCompany?: () => void 
+  onAddCompany?: () => void;
+  onTabChange?: (tab: string) => void;
 }) {
   const navigate = useNavigate();
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
@@ -182,7 +187,7 @@ export default function RuixenSection({
         <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8 relative">
           {/* Card Stack with Navigation */}
           <div className="relative w-full mb-4 sm:mb-6">
-            <CardStack items={CARDS} />
+            <CardStack items={CARDS} onTabChange={onTabChange} />
           </div>
 
           {/* Content */}
@@ -355,16 +360,19 @@ type Card = {
   Icon: any;
   bgColor: string;
   iconColor: string;
+  tabValue: string;
 };
 
 export const CardStack = ({
   items,
   offset,
   scaleFactor,
+  onTabChange
 }: {
   items: Card[];
   offset?: number;
   scaleFactor?: number;
+  onTabChange?: (tab: string) => void;
 }) => {
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
@@ -423,9 +431,15 @@ export const CardStack = ({
         return (
           <motion.div
             key={card.id}
+            onClick={() => {
+              if (index === 0 && onTabChange) {
+                onTabChange(card.tabValue);
+              }
+            }}
             className={cn(
               "absolute h-64 w-full md:h-64 md:w-96 rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between",
-              card.bgColor
+              card.bgColor,
+              index === 0 && "cursor-pointer hover:shadow-2xl"
             )}
             style={{
               transformOrigin: "top center",

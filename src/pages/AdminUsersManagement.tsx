@@ -58,7 +58,10 @@ const AdminUsersManagement = () => {
       <div className="relative z-10 h-full flex flex-col">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-6 h-full flex flex-col min-h-0">
           {/* Feature Section */}
-          <RuixenSection onAddCompany={() => setIsAddCompanyModalOpen(true)} />
+          <RuixenSection 
+            onAddCompany={() => setIsAddCompanyModalOpen(true)}
+            onTabChange={handleTabChange}
+          />
 
           {/* Bento Grid Layout - Tab Navigation */}
           <div className="space-y-6">
