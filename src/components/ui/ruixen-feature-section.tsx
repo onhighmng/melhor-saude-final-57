@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { CardContent } from "@/components/ui/card";
 import { TbHeartPlus } from "react-icons/tb";
-import { Building2, Users, UserCog, ChevronLeft, ChevronRight } from "lucide-react";
+import { Building2, Users, UserCog, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -154,9 +154,18 @@ export default function RuixenSection() {
 
         {/* Right Block - Active Companies Table */}
         <div className="flex flex-col border border-border p-4 sm:p-6 lg:p-8">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-foreground mb-6">
-            Empresas Ativas
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
+              Empresas Ativas
+            </h2>
+            <Button 
+              onClick={() => navigate('/admin/companies/new')}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Adicionar Empresa
+            </Button>
+          </div>
 
           {/* Table */}
           <div className="w-full overflow-x-auto">
