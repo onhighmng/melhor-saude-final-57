@@ -165,7 +165,7 @@ export function SessionModal({
             <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-6">
+          <div className={cn(type === 'past' ? 'grid grid-cols-2 gap-4' : 'space-y-6')}>
             {sessions.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
