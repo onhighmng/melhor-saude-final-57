@@ -108,6 +108,35 @@ const activeCompanies = [
   }
 ];
 
+
+const platformTips = [
+  {
+    id: 1,
+    tip: "Regular audits of inactive companies help maintain accurate metrics",
+    category: "Best Practice"
+  },
+  {
+    id: 2,
+    tip: "Review provider availability weekly to ensure optimal booking capacity",
+    category: "Scheduling"
+  },
+  {
+    id: 3,
+    tip: "Monitor session usage patterns to identify companies needing support",
+    category: "Analytics"
+  },
+  {
+    id: 4,
+    tip: "Set up automated alerts for companies approaching their session limits",
+    category: "Automation"
+  },
+  {
+    id: 5,
+    tip: "Regular communication with HR contacts improves platform adoption rates",
+    category: "Engagement"
+  }
+];
+
 const integrations = [
   {
     name: "Saúde Mental",
@@ -137,6 +166,15 @@ export default function RuixenSection({
   onAddCompany?: () => void 
 }) {
   const navigate = useNavigate();
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+
+  // Rotate tips every 8 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTipIndex((prev) => (prev + 1) % platformTips.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
       <div className="grid grid-cols-1 lg:grid-cols-2 relative gap-4">
@@ -280,23 +318,27 @@ export default function RuixenSection({
           </div>
         </div>
         <div className="relative">
-          <blockquote className="border-l-2 border-border pl-4 sm:pl-6 lg:pl-8 text-muted-foreground">
-            <p className="text-sm sm:text-base lg:text-lg leading-relaxed">
-              A plataforma de wellness revolucionou a forma como gerimos o bem-estar dos
-              nossos colaboradores. É a fusão perfeita de simplicidade e versatilidade,
-              permitindo-nos criar experiências de saúde únicas.
-            </p>
-            <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
-              <cite className="block font-medium text-sm sm:text-base text-foreground not-italic">
-                Ricardo Pereira, CEO
-              </cite>
-              <div className="h-8 sm:h-10 flex items-center">
-                <span className="text-xl sm:text-2xl font-bold text-primary">
-                  Wellness Corp
+          <div className="border-l-4 border-primary pl-4 sm:pl-6 lg:pl-8">
+            <motion.div
+              key={currentTipIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Badge variant="outline" className="text-xs">
+                  {platformTips[currentTipIndex].category}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  Dica {currentTipIndex + 1} de {platformTips.length}
                 </span>
               </div>
-            </div>
-          </blockquote>
+              <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-foreground font-medium">
+                💡 {platformTips[currentTipIndex].tip}
+              </p>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>
