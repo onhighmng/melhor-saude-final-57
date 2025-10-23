@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 export const Highlight = ({
   children,
   className,
@@ -127,6 +128,7 @@ const integrations = [
 ];
 
 export default function RuixenSection() {
+  const navigate = useNavigate();
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
       <div className="grid grid-cols-1 lg:grid-cols-2 relative gap-4">
@@ -180,8 +182,8 @@ export default function RuixenSection() {
                   <tr 
                     key={company.id} 
                     onClick={() => {
-                      console.log('Clicked company:', company.name);
-                      alert(`Clicked on ${company.name}`);
+                      // Navigate to company details page
+                      navigate(`/company/dashboard?companyId=${company.id}`);
                     }}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
