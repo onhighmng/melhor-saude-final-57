@@ -453,11 +453,13 @@ const UserDashboard = () => {
 
           {/* Bottom Right - Upcoming Sessions */}
           <BentoCard name="" description="" href="#" cta="" onClick={() => navigate('/user/sessions')} className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-5 flex flex-col">
-                  <div className="flex-1 space-y-3 min-h-0 flex flex-col justify-start">
-                    {upcomingBookings && upcomingBookings.length > 0 ? upcomingBookings.slice(0, 3).map(booking => {
-                const pillarColors = getPillarColors(booking.pillar);
-                const PillarIcon = getPillarIcon(booking.pillar);
-                return <div key={booking.id} onClick={(e) => { e.stopPropagation(); handleSessionClick(booking); }} className={cn('flex items-center gap-3 rounded-xl p-3 transition-all flex-shrink-0 cursor-pointer hover:scale-[1.02] bg-white/80 backdrop-blur-sm border', pillarColors.border)}>
+                  <div className="flex-1 min-h-0">
+                    {upcomingBookings && upcomingBookings.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-3 h-full">
+                        {upcomingBookings.slice(0, 4).map(booking => {
+                          const pillarColors = getPillarColors(booking.pillar);
+                          const PillarIcon = getPillarIcon(booking.pillar);
+                          return <div key={booking.id} onClick={(e) => { e.stopPropagation(); handleSessionClick(booking); }} className={cn('flex items-center gap-3 rounded-xl p-3 transition-all cursor-pointer hover:scale-[1.02] bg-white/80 backdrop-blur-sm border', pillarColors.border)}>
                             <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0', pillarColors.bgSolid)}>
                               <PillarIcon className="w-5 h-5 text-white" />
                             </div>
@@ -466,9 +468,13 @@ const UserDashboard = () => {
                               <div className="text-xs text-muted-foreground">{booking.time}</div>
                             </div>
                           </div>;
-              }) : <div className="text-center text-sm text-muted-foreground flex-shrink-0">
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center text-sm text-muted-foreground">
                         Nenhuma sessão agendada
-                      </div>}
+                      </div>
+                    )}
                   </div>
                 </div>} />
           </BentoGrid>
