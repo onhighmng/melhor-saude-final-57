@@ -163,7 +163,13 @@ export default function RuixenSection() {
               Empresas Ativas
             </h2>
             <Button 
-              onClick={() => navigate('/admin/companies/new')}
+              onClick={(e) => {
+                e.stopPropagation();
+                // Navigate to admin users management with companies tab
+                navigate('/admin/users-management?tab=companies');
+                // Show a toast or modal for adding company
+                console.log('Add company clicked');
+              }}
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
