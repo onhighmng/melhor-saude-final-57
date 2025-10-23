@@ -168,7 +168,7 @@ export default function RuixenSection() {
           </div>
 
           {/* Table */}
-          <div className="w-full overflow-x-auto">
+          <div className="w-full">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">
