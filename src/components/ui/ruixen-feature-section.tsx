@@ -111,6 +111,75 @@ const activeCompanies = [
   }
 ];
 
+const activeEmployees = [
+  {
+    id: 1,
+    name: "João Silva",
+    company: "TechCorp Lda",
+    sessions: { used: 5, total: 10 },
+    status: "active",
+    bgColor: "bg-green-100"
+  },
+  {
+    id: 2,
+    name: "Maria Santos",
+    company: "HealthPlus SA",
+    sessions: { used: 3, total: 8 },
+    status: "active",
+    bgColor: "bg-blue-100"
+  },
+  {
+    id: 3,
+    name: "Pedro Costa",
+    company: "StartupHub",
+    sessions: { used: 2, total: 5 },
+    status: "active",
+    bgColor: "bg-purple-100"
+  },
+  {
+    id: 4,
+    name: "Ana Pereira",
+    company: "ConsultPro",
+    sessions: { used: 7, total: 12 },
+    status: "active",
+    bgColor: "bg-yellow-100"
+  }
+];
+
+const activeProviders = [
+  {
+    id: 1,
+    name: "Dr. Carlos Mendes",
+    specialty: "Psicologia",
+    sessions: { completed: 145, scheduled: 12 },
+    status: "active",
+    bgColor: "bg-blue-100"
+  },
+  {
+    id: 2,
+    name: "Dra. Sofia Rodrigues",
+    specialty: "Nutrição",
+    sessions: { completed: 98, scheduled: 8 },
+    status: "active",
+    bgColor: "bg-green-100"
+  },
+  {
+    id: 3,
+    name: "Dr. Miguel Ferreira",
+    specialty: "Consultoria Financeira",
+    sessions: { completed: 67, scheduled: 5 },
+    status: "active",
+    bgColor: "bg-yellow-100"
+  },
+  {
+    id: 4,
+    name: "Dra. Beatriz Alves",
+    specialty: "Assistência Legal",
+    sessions: { completed: 52, scheduled: 3 },
+    status: "active",
+    bgColor: "bg-purple-100"
+  }
+];
 
 const platformTips = [
   {
@@ -172,6 +241,7 @@ export default function RuixenSection({
 }) {
   const navigate = useNavigate();
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
 
   // Rotate tips every 8 seconds
   useEffect(() => {
@@ -187,7 +257,11 @@ export default function RuixenSection({
         <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8 relative">
           {/* Card Stack with Navigation */}
           <div className="relative w-full mb-4 sm:mb-6">
-            <CardStack items={CARDS} onTabChange={onTabChange} />
+            <CardStack 
+              items={CARDS} 
+              onTabChange={onTabChange}
+              onCardChange={(index) => setActiveCardIndex(index)}
+            />
           </div>
 
           {/* Content */}
@@ -203,25 +277,28 @@ export default function RuixenSection({
         </div>
 
 
-        {/* Right Block - Active Companies Table */}
+        {/* Right Block - Dynamic Content Based on Active Card */}
         <div className="flex flex-col border border-border p-4 sm:p-6 lg:p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
-              Empresas Ativas
+              {activeCardIndex === 0 && "Empresas Ativas"}
+              {activeCardIndex === 1 && "Colaboradores Ativos"}
+              {activeCardIndex === 2 && "Prestadores Ativos"}
             </h2>
-            <Button 
-              onClick={(e) => {
-                e.stopPropagation();
-                // Trigger the add company modal if callback provided
-                if (onAddCompany) {
-                  onAddCompany();
-                }
-              }}
-              className="flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Adicionar Empresa
-            </Button>
+            {activeCardIndex === 0 && (
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onAddCompany) {
+                    onAddCompany();
+                  }
+                }}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Empresa
+              </Button>
+            )}
           </div>
 
           {/* Table */}
@@ -230,10 +307,14 @@ export default function RuixenSection({
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground">
-                    Empresa
+                    {activeCardIndex === 0 && "Empresa"}
+                    {activeCardIndex === 1 && "Nome"}
+                    {activeCardIndex === 2 && "Prestador"}
                   </th>
                   <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground">
-                    Colaboradores
+                    {activeCardIndex === 0 && "Colaboradores"}
+                    {activeCardIndex === 1 && "Empresa"}
+                    {activeCardIndex === 2 && "Especialidade"}
                   </th>
                   <th className="text-left py-4 px-2 text-sm font-medium text-muted-foreground">
                     Sessões
@@ -244,16 +325,12 @@ export default function RuixenSection({
                 </tr>
               </thead>
               <tbody>
-                {activeCompanies.map((company) => (
+                {activeCardIndex === 0 && activeCompanies.map((company) => (
                   <tr 
                     key={company.id} 
-                    onClick={() => {
-                      // Navigate to admin company details page
-                      navigate(`/admin/companies/${company.id}`);
-                    }}
+                    onClick={() => navigate(`/admin/companies/${company.id}`)}
                     className="group border-b border-border cursor-pointer transition-all relative"
                   >
-                    {/* Always visible pill-shaped overlay with different colors */}
                     <td colSpan={4} className="absolute inset-0 pointer-events-none">
                       <div className={cn(
                         "absolute inset-y-1 inset-x-2 rounded-full transition-all duration-300 group-hover:shadow-md",
@@ -283,6 +360,64 @@ export default function RuixenSection({
                           Em Onboarding
                         </Badge>
                       )}
+                    </td>
+                  </tr>
+                ))}
+                
+                {activeCardIndex === 1 && activeEmployees.map((employee) => (
+                  <tr 
+                    key={employee.id}
+                    className="group border-b border-border cursor-pointer transition-all relative"
+                  >
+                    <td colSpan={4} className="absolute inset-0 pointer-events-none">
+                      <div className={cn(
+                        "absolute inset-y-1 inset-x-2 rounded-full transition-all duration-300 group-hover:shadow-md",
+                        employee.bgColor
+                      )} />
+                    </td>
+                    
+                    <td className="py-4 px-2 text-foreground font-medium relative z-10">
+                      {employee.name}
+                    </td>
+                    <td className="py-4 px-2 text-foreground relative z-10">
+                      {employee.company}
+                    </td>
+                    <td className="py-4 px-2 text-foreground relative z-10">
+                      {employee.sessions.used}/{employee.sessions.total}
+                    </td>
+                    <td className="py-4 px-2 relative z-10">
+                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
+                        Ativo
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+                
+                {activeCardIndex === 2 && activeProviders.map((provider) => (
+                  <tr 
+                    key={provider.id}
+                    className="group border-b border-border cursor-pointer transition-all relative"
+                  >
+                    <td colSpan={4} className="absolute inset-0 pointer-events-none">
+                      <div className={cn(
+                        "absolute inset-y-1 inset-x-2 rounded-full transition-all duration-300 group-hover:shadow-md",
+                        provider.bgColor
+                      )} />
+                    </td>
+                    
+                    <td className="py-4 px-2 text-foreground font-medium relative z-10">
+                      {provider.name}
+                    </td>
+                    <td className="py-4 px-2 text-foreground relative z-10">
+                      {provider.specialty}
+                    </td>
+                    <td className="py-4 px-2 text-foreground relative z-10">
+                      {provider.sessions.completed} / {provider.sessions.scheduled} agendadas
+                    </td>
+                    <td className="py-4 px-2 relative z-10">
+                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
+                        Ativo
+                      </Badge>
                     </td>
                   </tr>
                 ))}
@@ -367,16 +502,24 @@ export const CardStack = ({
   items,
   offset,
   scaleFactor,
-  onTabChange
+  onTabChange,
+  onCardChange
 }: {
   items: Card[];
   offset?: number;
   scaleFactor?: number;
   onTabChange?: (tab: string) => void;
+  onCardChange?: (index: number) => void;
 }) => {
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
   const [cards, setCards] = useState<Card[]>(items);
+
+  // Notify parent of card change
+  useEffect(() => {
+    const topCardIndex = items.findIndex(item => item.id === cards[0].id);
+    onCardChange?.(topCardIndex);
+  }, [cards, items, onCardChange]);
 
   const nextCard = () => {
     setCards((prevCards: Card[]) => {
