@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Send, Loader2, User, Phone, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { ChatInput, ChatInputTextArea, ChatInputSubmit } from '@/components/ui/chat-input';
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -120,12 +121,24 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
             </div>
 
             <div className="p-4 border-t space-y-3">
-              <div className="flex gap-2">
-                <Textarea value={input} onChange={e => setInput(e.target.value)} onKeyPress={handleKeyPress} placeholder="Digite sua pergunta..." className="resize-none" rows={2} disabled={isLoading} />
-                <Button onClick={sendMessage} disabled={!input.trim() || isLoading} size="icon" className="h-full">
+              <ChatInput
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onSubmit={sendMessage}
+                loading={isLoading}
+              >
+                <ChatInputTextArea
+                  placeholder="Digite sua pergunta..."
+                  disabled={isLoading}
+                  className="resize-none"
+                  rows={2}
+                />
+                <ChatInputSubmit
+                  disabled={!input.trim() || isLoading}
+                >
                   <Send className="h-4 w-4" />
-                </Button>
-              </div>
+                </ChatInputSubmit>
+              </ChatInput>
             </div>
           </Card>
 

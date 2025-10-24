@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { BookingPillar } from './BookingFlow';
 import { getTopicPillarId } from '@/utils/pillarMapping';
+import { ChatInput, ChatInputTextArea, ChatInputSubmit } from '@/components/ui/chat-input';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -321,24 +322,23 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
           </ScrollArea>
 
           <div className="border-t p-4">
-            <div className="flex gap-2">
-              <Textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+            <ChatInput
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onSubmit={handleSend}
+              loading={isLoading}
+            >
+              <ChatInputTextArea
                 placeholder="Escreva aqui os detalhes da sua situação..."
-                className="min-h-[60px] resize-none"
                 disabled={isLoading || isInitializing}
+                className="min-h-[60px]"
               />
-              <Button
-                onClick={handleSend}
+              <ChatInputSubmit
                 disabled={!input.trim() || isLoading || isInitializing}
-                size="icon"
-                className="h-[60px] w-[60px]"
               >
                 {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-              </Button>
-            </div>
+              </ChatInputSubmit>
+            </ChatInput>
           </div>
 
           <BookingBanner onBookSession={handleBookSession} />

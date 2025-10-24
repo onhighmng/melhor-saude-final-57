@@ -11,6 +11,7 @@ import { SpecialistContactCard } from './SpecialistContactCard';
 import { ChatExitFeedbackButtons } from './ChatExitFeedbackButtons';
 import { ChatIntroSection } from './ChatIntroSection';
 import { BookingBanner } from './BookingBanner';
+import { ChatInput, ChatInputTextArea, ChatInputSubmit } from '@/components/ui/chat-input';
 interface UniversalAIChatProps {
   onClose: () => void;
   initialPillar?: string;
@@ -187,25 +188,24 @@ export const UniversalAIChat = ({
       {/* Input Area */}
       <div className="border-t bg-card/80 backdrop-blur-sm px-8 py-6">
         <div className="max-w-5xl mx-auto">
-          <div className="relative flex items-center gap-2 border rounded-3xl bg-white/90 px-6 py-3 shadow-sm">
-            <Textarea 
-              value={input} 
-              onChange={e => setInput(e.target.value)} 
-              onKeyPress={handleKeyPress} 
-              placeholder="Escreva a sua mensagem..." 
-              className="resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[60px] pr-14" 
-              rows={1} 
-              disabled={isLoading || showPhoneCard} 
+          <ChatInput
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onSubmit={handleSend}
+            loading={isLoading}
+            className="bg-white/90 shadow-sm"
+          >
+            <ChatInputTextArea
+              placeholder="Escreva a sua mensagem..."
+              disabled={isLoading || showPhoneCard}
+              className="min-h-[60px]"
             />
-            <Button 
-              onClick={handleSend} 
+            <ChatInputSubmit
               disabled={isLoading || !input.trim() || showPhoneCard}
-              size="icon"
-              className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full shrink-0"
             >
               {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-            </Button>
-          </div>
+            </ChatInputSubmit>
+          </ChatInput>
         </div>
       </div>
 

@@ -82,7 +82,7 @@ const AssessmentResult: React.FC<AssessmentResultProps> = ({
 
       <Card className="p-8 border-2">
         <h2 className="text-xl font-serif font-semibold mb-6 text-foreground">
-          Sintomas Identificados
+          Sintomas Apresentados
         </h2>
         <ul className="space-y-3">
           {selectedSymptoms.map((symptomId) => {
