@@ -8,7 +8,11 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "speckit": "node .speckit/scripts/implement-feature.js",
+    "speckit:list": "node .speckit/scripts/implement-feature.js list",
+    "speckit:info": "node .speckit/scripts/implement-feature.js info",
+    "speckit:task": "node .speckit/scripts/implement-feature.js task"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

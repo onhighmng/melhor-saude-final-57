@@ -78,7 +78,7 @@ const UserBooking = () => {
 
           {/* Instructions */}
           <div className="text-center pb-12">
-            <p className="text-white text-base md:text-lg lg:text-xl font-medium">
+            <p className="text-white text-lg md:text-xl lg:text-2xl font-medium">
               Clique na área que precisa de apoio
             </p>
           </div>

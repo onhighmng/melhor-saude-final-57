@@ -43,10 +43,10 @@ export const SpecialistContactCard = ({ pillar, context, sessionId }: Specialist
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg mb-2">Consulta Telefónica Detalhada</h3>
-            <p className="text-sm text-muted-foreground mb-4">{context}</p>
+            <p className="text-base text-muted-foreground mb-4">{context}</p>
             
             <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 border-2 border-primary/20 mb-4">
-              <p className="text-xs font-medium text-muted-foreground mb-2">
+              <p className="text-sm font-medium text-muted-foreground mb-2">
                 Contacto Direto dos Especialistas
               </p>
               <div className="flex items-center justify-between">
@@ -58,12 +58,12 @@ export const SpecialistContactCard = ({ pillar, context, sessionId }: Specialist
               </div>
             </div>
             
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-base text-muted-foreground">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
               <span className="font-medium">Disponível 24 horas por dia, 7 dias por semana</span>
             </div>
             
-            <p className="text-xs text-muted-foreground mt-3 italic">
+            <p className="text-sm text-muted-foreground mt-3 italic">
               Os nossos especialistas irão avaliar a sua situação e, se necessário, agendar uma sessão de vídeo personalizada.
             </p>
           </div>

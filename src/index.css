@@ -189,10 +189,30 @@ All colors MUST be HSL.
     @apply bg-gray-50;
   }
 
+  /* Physical Wellness pages background */
+  body.physical-wellness-page {
+    @apply bg-blue-50;
+  }
+
   /* Company pages background - light blue */
   body.company-page {
     background-color: hsl(205, 43%, 88%);
   }
+
+/* Mental Health chat pages background */
+body.mental-health-chat-page {
+  @apply bg-blue-50;
+}
+
+/* Financial Assistance chat pages background */
+body.financial-assistance-page {
+  @apply bg-blue-50;
+}
+
+/* Legal Assessment chat pages background */
+body.legal-assessment-page {
+  @apply bg-blue-50;
+}
 }
 
 :root {

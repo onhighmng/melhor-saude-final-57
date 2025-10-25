@@ -339,7 +339,7 @@ const UserDashboard = () => {
           <h1 className="text-2xl font-normal tracking-tight">
             Olá, {profile?.name || 'ana.silva'}! 👋
           </h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-lg">
             Bem-vinda de volta ao seu espaço de saúde e bem-estar.
           </p>
         </div>
@@ -473,7 +473,9 @@ const UserDashboard = () => {
                             title: formatPillarName(booking.pillar),
                             description: booking.date,
                             date: booking.time,
-                            className: baseClassName,
+                            className: `${baseClassName} ${pillarColors.bg}`,
+                            iconClassName: pillarColors.text,
+                            titleClassName: pillarColors.text,
                             onClick: () => handleSessionClick(booking),
                           };
                         })}

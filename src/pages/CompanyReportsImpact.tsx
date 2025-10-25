@@ -12,7 +12,8 @@ import {
   Brain,
   Heart,
   DollarSign,
-  Scale
+  Scale,
+  Activity
 } from 'lucide-react';
 import { 
   mockCompanyMetrics, 
@@ -25,6 +26,7 @@ import {
 } from '@/data/companyMetrics';
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useToast } from "@/hooks/use-toast";
+import { motion } from 'framer-motion';
 import ResourceUsageCard from '@/components/ui/horizontal-bar-chart';
 
 const CompanyReportsImpact = () => {
@@ -85,21 +87,20 @@ const CompanyReportsImpact = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold text-foreground">Relatórios e Impacto</h1>
-          <p className="text-muted-foreground mt-1 text-lg">
-            Análise detalhada do bem-estar dos colaboradores e impacto dos programas
-          </p>
-        </div>
-        
+      <div className="text-center mb-12 sm:mb-16">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4">
+          Relatórios e Impacto
+        </h1>
+        <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
+          Análise detalhada do bem-estar dos colaboradores e impacto dos programas
+        </p>
         <Button 
           onClick={handleExportReport}
           disabled={isExporting}
           size="lg"
-          className="gap-2"
+          className="gap-2 mt-6"
         >
           {isExporting ? (
             <>
@@ -115,76 +116,111 @@ const CompanyReportsImpact = () => {
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Users className="h-4 w-4 text-blue-600" />
-              Colaboradores Ativos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-                <div className="font-mono text-xl font-semibold text-blue-700 dark:text-blue-300">
-                  {mockCompanyMetrics.activeEmployees}
+      {/* Top Section - Stacked Cards and Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 relative mb-12 sm:mb-16 lg:mb-20">
+        {/* Left Block - Metric Cards Stack */}
+        <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8 bg-card rounded-l-xl">
+          <div className="relative w-full mb-4 sm:mb-6">
+            <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-background to-transparent z-10"></div>
+            
+            {/* Metric Stats Cards Stack */}
+            <div className="relative mx-auto h-64 w-full my-4">
+              <motion.div
+                className="absolute bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 h-64 w-full rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between"
+                animate={{
+                  top: 0,
+                  scale: 1,
+                  zIndex: 4,
+                }}
+              >
+                <div>
+                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 mb-2">
+                    <Users className="h-5 w-5" />
+                    <span className="text-sm font-medium">Colaboradores Ativos</span>
+                  </div>
+                  <div className="text-5xl font-bold text-blue-700 dark:text-blue-300 mb-2">
+                    {mockCompanyMetrics.activeEmployees}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Total de colaboradores
+                  </p>
                 </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Total de colaboradores
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-green-600" />
-              Sessões Realizadas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="font-mono text-xl font-semibold text-emerald-700 dark:text-emerald-300">
-              {mockCompanyMetrics.totalSessions}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Este mês
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Star className="h-4 w-4 text-amber-600" />
-              Satisfação Média
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="font-mono text-xl font-semibold text-amber-700 dark:text-amber-300 flex items-center gap-1">
-              <Star className="h-6 w-6 fill-amber-600 text-amber-600" />
-              {mockCompanyMetrics.avgSatisfaction}/10
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Avaliação dos colaboradores
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover-lift border-0 shadow-sm bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-purple-600" />
-              Taxa de Utilização
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-                <div className="font-mono text-xl font-semibold text-purple-700 dark:text-purple-300">
-                  {mockCompanyMetrics.utilizationRate}%
+              </motion.div>
+              
+              <motion.div
+                className="absolute bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 h-64 w-full rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between"
+                animate={{
+                  top: -10,
+                  scale: 0.94,
+                  zIndex: 3,
+                }}
+              >
+                <div>
+                  <div className="flex items-center gap-2 text-green-700 dark:text-green-300 mb-2">
+                    <Calendar className="h-5 w-5" />
+                    <span className="text-sm font-medium">Sessões Realizadas</span>
+                  </div>
+                  <div className="text-5xl font-bold text-green-700 dark:text-green-300 mb-2">
+                    {mockCompanyMetrics.totalSessions}
+                  </div>
+                  <p className="text-sm text-muted-foreground">Este mês</p>
                 </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Colaboradores ativos
-            </p>
-          </CardContent>
-        </Card>
+              </motion.div>
+              
+              <motion.div
+                className="absolute bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 h-64 w-full rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between"
+                animate={{
+                  top: -20,
+                  scale: 0.88,
+                  zIndex: 2,
+                }}
+              >
+                <div>
+                  <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300 mb-2">
+                    <Star className="h-5 w-5" />
+                    <span className="text-sm font-medium">Satisfação Média</span>
+                  </div>
+                  <div className="text-5xl font-bold text-amber-700 dark:text-amber-300 mb-2">
+                    {mockCompanyMetrics.avgSatisfaction}/10
+                  </div>
+                  <p className="text-sm text-muted-foreground">Avaliação dos colaboradores</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="absolute bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 h-64 w-full rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between"
+                animate={{
+                  top: -30,
+                  scale: 0.82,
+                  zIndex: 1,
+                }}
+              >
+                <div>
+                  <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 mb-2">
+                    <TrendingUp className="h-5 w-5" />
+                    <span className="text-sm font-medium">Taxa de Utilização</span>
+                  </div>
+                  <div className="text-5xl font-bold text-purple-700 dark:text-purple-300 mb-2">
+                    {mockCompanyMetrics.utilizationRate}%
+                  </div>
+                  <p className="text-sm text-muted-foreground">Colaboradores ativos</p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-foreground leading-relaxed">
+            Métricas de <span className="text-primary">Impacto</span>{" "}
+            <span className="text-muted-foreground text-sm sm:text-base lg:text-lg">
+              Visualize as principais métricas de desempenho do programa de bem-estar em tempo real.
+            </span>
+          </h3>
+        </div>
+
+        {/* Right Block - Resource Usage Chart */}
+        <div className="flex flex-col items-center justify-center border border-border p-4 sm:p-6 lg:p-8 bg-card rounded-r-xl">
+          <ResourceUsageCard />
+        </div>
       </div>
 
       {/* Charts Section */}
@@ -192,8 +228,7 @@ const CompanyReportsImpact = () => {
         {/* Distribution by Pillar */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <PieChart className="h-6 w-6" />
+            <CardTitle className="text-3xl">
               Distribuição por Pilar
             </CardTitle>
           </CardHeader>
@@ -292,12 +327,7 @@ const CompanyReportsImpact = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Resource Usage by Pillar */}
-      <div className="flex justify-center mt-8">
-        <ResourceUsageCard />
-      </div>
-    </div>
+    </section>
   );
 };
 

@@ -110,14 +110,14 @@ export function BookingCalendar({
                 {/* Time Slots */}
                 <div className="flex-1">
                   <ScrollArea className="h-[400px] pr-4">
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-4 gap-2">
                       {slots.map(({ time: timeSlot, available }) => (
                         <button
                           key={timeSlot}
                           onClick={() => available && onTimeSelect?.(timeSlot)}
                           disabled={!available}
                           className={cn(
-                            "w-full text-left px-4 py-3 rounded-lg border transition-all duration-200",
+                            "text-center px-3 py-3 rounded-lg border transition-all duration-200",
                             "text-sm font-medium",
                             available
                               ? selectedTime === timeSlot

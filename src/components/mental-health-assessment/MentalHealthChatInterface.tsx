@@ -6,6 +6,7 @@ import { Send, Loader2, User, Phone, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ChatInput, ChatInputTextArea, ChatInputSubmit } from '@/components/ui/chat-input';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -30,6 +31,7 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const {
     toast
@@ -42,6 +44,16 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    // Add body class for fullscreen background
+    document.body.classList.add('mental-health-chat-page');
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('mental-health-chat-page');
+    };
+  }, []);
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
     const userMessage: Message = {
@@ -50,6 +62,7 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
     };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setHasInteracted(true);
     setIsLoading(true);
     try {
       const {
@@ -84,81 +97,135 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
       sendMessage();
     }
   };
-  return <div className="min-h-screen bg-soft-white">
-      <div className="pt-16 pb-4 px-4">
-        <div className="w-full max-w-6xl mx-auto h-[calc(100vh-120px)] flex flex-col">
-          <div className="flex items-center justify-between mb-6">
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Header - Always show in top-left */}
+      <div className="absolute top-0 left-0 flex items-center gap-4 px-8 py-6 z-10">
             <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-white">
               <ArrowLeft className="h-4 w-4" />
               Voltar
             </Button>
+        <div>
+          <h2 className="text-3xl font-semibold">Assistente de Saúde Mental</h2>
+        </div>
+        <InteractiveHoverButton 
+          onClick={onChooseHuman}
+          text="Solicitar Sessão 1-on-1"
+          icon={<Phone className="h-4 w-4" />}
+          className="text-sm px-10 py-4 min-w-[280px]"
+        />
           </div>
 
-          <Card className="flex-1 flex flex-col overflow-hidden">
-            <div className="p-6 border-b bg-primary/5">
-              <h2 className="font-semibold text-lg">Assistente de Saúde Mental</h2>
-            </div>
+          {/* Centered Interface - Only show when user hasn't interacted */}
+          {!hasInteracted && (
+            <div className="flex-1 flex items-center justify-center px-8 py-8">
+              <div className="w-full max-w-6xl text-center space-y-8">
+            {/* Title */}
+            <h1 className="text-2xl font-semibold">Conversa comigo, com privacidade e atenção.</h1>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {messages.length === 0 && <div className="text-center text-muted-foreground py-8">
-                  
-                  <p className="text-base mt-2">Contcacte no nosso especialista por mensagem para uma repsosta imediata.</p>
-                </div>}
-              
-              {messages.map((message, index) => <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-lg p-4 ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  </div>
-                </div>)}
-              
-              {isLoading && <div className="flex justify-start">
-                  <div className="bg-muted rounded-lg p-4">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  </div>
-                </div>}
-              
-              <div ref={messagesEndRef} />
-            </div>
-
-            <div className="p-4 border-t space-y-3">
+            {/* Input Area */}
+            <div className="w-full">
               <ChatInput
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onSubmit={sendMessage}
                 loading={isLoading}
+                variant="unstyled"
+                className="flex items-end gap-2 !rounded-full"
               >
                 <ChatInputTextArea
                   placeholder="Digite sua pergunta..."
                   disabled={isLoading}
-                  className="resize-none"
-                  rows={2}
+                  className="min-h-[60px] text-lg !rounded-full"
                 />
                 <ChatInputSubmit
                   disabled={!input.trim() || isLoading}
+                  className="!rounded-full"
                 >
-                  <Send className="h-4 w-4" />
+                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                 </ChatInputSubmit>
               </ChatInput>
             </div>
-          </Card>
 
-          <div className="bg-muted/50 border rounded-lg p-4 mt-4">
-            <div className="text-center space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Se as suas questões são complexas, solicite uma sessão 1-on-1 com um especialista.
-              </p>
-              <Button 
-                variant="outline" 
-                onClick={onChooseHuman} 
-                className="gap-2"
-              >
-                <Phone className="h-4 w-4" />
-                Solicitar Sessão 1-on-1
-              </Button>
+            {/* Prompt Suggestions */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              {[
+                "Gostaria de partilhar o que \"sinto\"",
+                "Já percebi o que preciso",
+                "Estou um pouco indeciso sobre o que preciso"
+              ].map((prompt, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setInput(prompt);
+                    setHasInteracted(true);
+                  }}
+                  className="px-6 py-3 h-12 whitespace-nowrap text-center bg-white hover:bg-green-600 hover:text-white border border-gray-300 hover:border-green-600 transition-colors rounded-full text-base font-medium"
+                >
+                  {prompt}
+                </button>
+              ))}
             </div>
           </div>
         </div>
+      )}
+
+      {/* Messages - Only show when user has interacted */}
+      {hasInteracted && (
+        <div className="flex-1 px-8 py-8 overflow-y-auto">
+          <div className="max-w-5xl mx-auto space-y-6">
+            {messages.map((message, index) => (
+              <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[80%] rounded-lg p-3 ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                  <p className="text-base whitespace-pre-wrap">{message.content}</p>
+                </div>
+              </div>
+            ))}
+            
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-muted rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-base">A escrever...</span>
+                  </div>
+                </div>
+                  </div>
+            )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+              </div>
+      )}
+
+      {/* Input Area - Only show when user has interacted */}
+      {hasInteracted && (
+        <div className="bg-transparent backdrop-blur-sm px-8 py-6">
+          <div className="max-w-5xl mx-auto">
+            <ChatInput
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onSubmit={sendMessage}
+              loading={isLoading}
+              variant="unstyled"
+              className="flex items-end gap-2 !rounded-full"
+            >
+              <ChatInputTextArea
+                placeholder="Digite sua pergunta..."
+                disabled={isLoading}
+                className="min-h-[60px] text-lg !rounded-full"
+              />
+              <ChatInputSubmit
+                disabled={!input.trim() || isLoading}
+                className="!rounded-full"
+              >
+                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+              </ChatInputSubmit>
+            </ChatInput>
+          </div>
+        </div>
+      )}
       </div>
-    </div>;
+  );
 };
 export default MentalHealthChatInterface;

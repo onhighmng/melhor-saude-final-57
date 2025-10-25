@@ -66,7 +66,7 @@ const PreferencesAndExpectations: React.FC<PreferencesAndExpectationsProps> = ({
     onPreferencesChange({ ...preferencesData, successDescription: description });
   };
 
-  const canProceed = preferencesData.sessionFormat && preferencesData.schedulePreference && preferencesData.providerCharacteristics.length > 0;
+  const canProceed = preferencesData.schedulePreference && preferencesData.providerCharacteristics.length > 0;
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -86,27 +86,6 @@ const PreferencesAndExpectations: React.FC<PreferencesAndExpectationsProps> = ({
       </div>
 
       <Card className="p-6 space-y-6">
-        {/* Session Format */}
-        <div className="space-y-4">
-          <label className="text-base font-semibold text-foreground">
-            Como prefere ter as suas sessões?
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {sessionFormatOptions.map(option => (
-              <button
-                key={option.value}
-                onClick={() => handleFormatChange(option.value)}
-                className={`px-6 py-4 rounded-lg border-2 transition-all text-sm font-medium ${
-                  preferencesData.sessionFormat === option.value
-                    ? 'border-primary bg-primary/5 text-foreground'
-                    : 'border-border hover:border-primary/50 text-foreground'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Schedule Preference */}
         <div className="space-y-4">

@@ -5,7 +5,6 @@ import { mockProviders } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
-import { MeetingTypeSelection } from './MeetingTypeSelection';
 import { useToast } from '@/hooks/use-toast';
 import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
 import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/MentalHealthAssessmentFlow';
@@ -29,7 +28,7 @@ interface MockProvider {
 const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'meetingType' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
+  const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -90,7 +89,7 @@ const BookingFlow = () => {
     if (availableProviders.length > 0) {
       const assignedProvider = availableProviders[0];
       setSelectedProvider(assignedProvider);
-      setCurrentStep('meetingType');
+      setCurrentStep('datetime');
       
       toast({
         title: 'Especialista Atribuído',
@@ -105,10 +104,6 @@ const BookingFlow = () => {
     }
   };
 
-  const handleMeetingTypeNext = (type: 'virtual' | 'phone') => {
-    setMeetingType(type);
-    setCurrentStep('datetime');
-  };
 
   const handleDateTimeConfirm = () => {
     if (!selectedDate || !selectedTime) {
@@ -182,14 +177,6 @@ const BookingFlow = () => {
           );
         }
         return null;
-      
-      case 'meetingType':
-        return (
-          <MeetingTypeSelection
-            onNext={handleMeetingTypeNext}
-            onBack={() => setCurrentStep('topic-selection')}
-          />
-        );
       
       case 'prediagnostic-cta':
         return (

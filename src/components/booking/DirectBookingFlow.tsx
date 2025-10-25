@@ -4,11 +4,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-import PillarSelection from './PillarSelection';
+import { PillarsFrameLayout } from '@/components/ui/pillars-frame-layout';
 import { ProviderAssignmentStep } from './ProviderAssignmentStep';
 import CalendarStep from './CalendarStep';
 import { ConfirmationStep } from './ConfirmationStep';
-import { MeetingTypeSelection } from './MeetingTypeSelection';
 import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/MentalHealthAssessmentFlow';
 import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-assessment/PhysicalWellnessAssessmentFlow';
 import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
@@ -16,7 +15,7 @@ import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFl
 import { BookingPillar } from './BookingFlow';
 import { mockProviders } from '@/data/mockData';
 
-type BookingStep = 'pillar' | 'assessment' | 'provider' | 'meetingType' | 'datetime' | 'confirmation';
+type BookingStep = 'pillar' | 'assessment' | 'provider' | 'datetime' | 'confirmation';
 
 interface Provider {
   id: string;
@@ -57,7 +56,6 @@ export const DirectBookingFlow = () => {
   const [assignedProvider, setAssignedProvider] = useState<Provider | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string>('');
-  const [meetingType, setMeetingType] = useState<'virtual' | 'phone'>('virtual');
   const [isConfirming, setIsConfirming] = useState(false);
 
   // Update state when URL parameters change - only handle initial load
@@ -90,9 +88,20 @@ export const DirectBookingFlow = () => {
     return pillarNames[pillar] || '';
   };
 
-  const handlePillarSelect = (pillar: BookingPillar) => {
-    setSelectedPillar(pillar);
-    setCurrentStep('assessment'); // ALL pillars go to assessment
+  const handlePillarSelect = (pillarTitle: string) => {
+    // Map Portuguese pillar titles to BookingPillar type
+    const pillarMapping: Record<string, BookingPillar> = {
+      'Saúde Mental': 'psicologica',
+      'Bem-estar Físico': 'fisica',
+      'Assistência Financeira': 'financeira',
+      'Assistência Jurídica': 'juridica'
+    };
+    
+    const mappedPillar = pillarMapping[pillarTitle];
+    if (mappedPillar) {
+      setSelectedPillar(mappedPillar);
+      setCurrentStep('assessment'); // ALL pillars go to assessment
+    }
   };
 
   const handleChooseHuman = () => {
@@ -136,13 +145,9 @@ export const DirectBookingFlow = () => {
 
 
   const handleProviderNext = () => {
-    setCurrentStep('meetingType');
-  };
-
-  const handleMeetingTypeNext = (type: 'virtual' | 'phone') => {
-    setMeetingType(type);
     setCurrentStep('datetime');
   };
+
 
   const handleDateTimeNext = () => {
     if (!selectedDate || !selectedTime) {
@@ -184,11 +189,8 @@ export const DirectBookingFlow = () => {
       case 'provider':
         setCurrentStep('assessment');
         break;
-      case 'meetingType':
-        setCurrentStep('provider');
-        break;
       case 'datetime':
-        setCurrentStep('meetingType');
+        setCurrentStep('provider');
         break;
       case 'confirmation':
         setCurrentStep('datetime');
@@ -199,12 +201,43 @@ export const DirectBookingFlow = () => {
   return (
     <div className="container max-w-6xl mx-auto py-8">
       {currentStep === 'pillar' && (
-        <PillarSelection onPillarSelect={handlePillarSelect} />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+          <div className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+              {/* Header Section */}
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4">
+                  Como podemos ajudar?
+                </h2>
+                <p className="text-lg md:text-xl lg:text-2xl text-black max-w-3xl mx-auto">
+                  Selecione a área em que precisa de apoio
+                </p>
+              </div>
+              
+              {/* Interactive Frame Layout */}
+              <div className="h-[500px] w-full mb-8">
+                <PillarsFrameLayout 
+                  className="w-full h-full"
+                  hoverSize={8}
+                  gapSize={6}
+                  onPillarSelect={handlePillarSelect}
+                />
+              </div>
+
+              {/* Instructions */}
+              <div className="text-center pb-12">
+                <p className="text-black text-lg md:text-xl lg:text-2xl font-medium">
+                  Clique na área que precisa de apoio
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {currentStep === 'assessment' && selectedPillar === 'psicologica' && (
         <MentalHealthAssessmentFlow
-          onBack={() => setCurrentStep('pillar')}
+          onBack={() => window.location.replace('/user/book')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -212,7 +245,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'fisica' && (
         <PhysicalWellnessAssessmentFlow
-          onBack={() => setCurrentStep('pillar')}
+          onBack={() => window.location.replace('/user/book')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -220,7 +253,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'financeira' && (
         <FinancialAssistanceAssessmentFlow
-          onBack={() => setCurrentStep('pillar')}
+          onBack={() => window.location.replace('/user/book')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -228,7 +261,7 @@ export const DirectBookingFlow = () => {
 
       {currentStep === 'assessment' && selectedPillar === 'juridica' && (
         <LegalAssessmentFlow
-          onBack={() => setCurrentStep('pillar')}
+          onBack={() => window.location.replace('/user/book')}
           onComplete={() => navigate('/user/dashboard')}
           onChooseHuman={handleChooseHuman}
         />
@@ -243,12 +276,6 @@ export const DirectBookingFlow = () => {
         />
       )}
 
-      {currentStep === 'meetingType' && (
-        <MeetingTypeSelection
-          onNext={handleMeetingTypeNext}
-          onBack={handleBack}
-        />
-      )}
 
       {currentStep === 'datetime' && selectedPillar && (
         <CalendarStep
@@ -269,7 +296,6 @@ export const DirectBookingFlow = () => {
           provider={assignedProvider}
           selectedDate={selectedDate}
           selectedTime={selectedTime}
-          meetingType={meetingType}
           onBack={handleBack}
           onConfirm={handleConfirmBooking}
           isConfirming={isConfirming}

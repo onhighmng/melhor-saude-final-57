@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
 import { Sparkles, Target, Clock, CheckCircle2 } from 'lucide-react';
 import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 interface SimplifiedOnboardingProps {
   onComplete: (data: OnboardingData) => void;
 }
@@ -26,7 +26,6 @@ export const SimplifiedOnboarding = ({
   const [mainGoals, setMainGoals] = useState<string[]>([]);
   const [improvementSigns, setImprovementSigns] = useState<string[]>([]);
   const [frequency, setFrequency] = useState('');
-  const [progressValue, setProgressValue] = useState(0);
   const difficultyOptions = [{
     value: 'mental',
     label: 'Saúde mental / stress / ansiedade'
@@ -54,86 +53,41 @@ export const SimplifiedOnboarding = ({
   }];
   const goals = [{
     value: 'stress',
-    label: 'Reduzir o stress e sentir-me mais calmo(a)'
+    label: 'Reduzir o stress e ansiedade'
   }, {
     value: 'fisica',
-    label: 'Melhorar a minha forma física'
-  }, {
-    value: 'energia',
-    label: 'Ter mais energia no dia a dia'
+    label: 'Melhorar a forma física'
   }, {
     value: 'financas',
-    label: 'Organizar melhor as minhas finanças'
+    label: 'Organizar melhor as finanças'
   }, {
     value: 'juridico',
-    label: 'Sentir-me mais seguro(a) juridicamente'
-  }, {
-    value: 'sono',
-    label: 'Dormir melhor e descansar mais'
+    label: 'Resolver questões legais'
   }, {
     value: 'equilibrio',
-    label: 'Melhorar o equilíbrio entre vida pessoal e trabalho'
-  }, {
-    value: 'produtividade',
-    label: 'Aumentar a produtividade'
-  }, {
-    value: 'alimentacao',
-    label: 'Comer de forma mais saudável'
-  }, {
-    value: 'comunicacao',
-    label: 'Melhorar comunicação com outros'
-  }, {
-    value: 'competencias',
-    label: 'Desenvolver novas competências'
-  }, {
-    value: 'gestao-tempo',
-    label: 'Gerir melhor o meu tempo'
-  }, {
-    value: 'resolver-legal',
-    label: 'Resolver questões legais pendentes'
-  }, {
-    value: 'limites',
-    label: 'Estabelecer limites saudáveis'
+    label: 'Melhorar equilíbrio vida-trabalho'
   }, {
     value: 'autoconfianca',
     label: 'Melhorar autoconfiança'
   }];
   const improvementSignsOptions = [{
     value: 'menos-stress',
-    label: 'Sentir menos stress ou ansiedade'
-  }, {
-    value: 'dormir',
-    label: 'Dormir melhor'
+    label: 'Sentir menos stress'
   }, {
     value: 'poupar',
-    label: 'Poupar ou gerir melhor o dinheiro'
+    label: 'Gerir melhor o dinheiro'
   }, {
     value: 'energia',
-    label: 'Ter mais energia no trabalho'
-  }, {
-    value: 'motivado',
-    label: 'Sentir-me mais motivado(a)'
-  }, {
-    value: 'juridico',
-    label: 'Resolver um problema jurídico pendente'
-  }, {
-    value: 'dizer-nao',
-    label: 'Conseguir dizer não sem culpa'
+    label: 'Ter mais energia'
   }, {
     value: 'confiante',
     label: 'Sentir-me mais confiante'
   }, {
     value: 'relacoes-saudaveis',
-    label: 'Ter relações mais saudáveis'
+    label: 'Melhorar relações'
   }, {
-    value: 'resolver-conflitos',
-    label: 'Resolver conflitos com calma'
-  }, {
-    value: 'escolhas-financeiras',
-    label: 'Fazer escolhas financeiras informadas'
-  }, {
-    value: 'juridicamente-seguro',
-    label: 'Sentir-me juridicamente seguro'
+    value: 'juridico',
+    label: 'Resolver questões legais'
   }];
   const frequencies = [{
     value: '1-2',
@@ -197,21 +151,6 @@ export const SimplifiedOnboarding = ({
     return false;
   };
 
-  useEffect(() => {
-    console.log('[SimplifiedOnboarding] Step changed:', step);
-    if (step === 6) {
-      console.log('[SimplifiedOnboarding] Step 6 reached, starting animation');
-      // Reset progress to 0 first
-      setProgressValue(0);
-      console.log('[SimplifiedOnboarding] Progress reset to 0');
-      // Animate to 10% after a longer delay to ensure the 0 value renders first
-      const timer = setTimeout(() => {
-        console.log('[SimplifiedOnboarding] Setting progress to 10');
-        setProgressValue(10);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [step]);
   const stepHeaders = [{
     title: '',
     subtitle: ''
@@ -235,16 +174,16 @@ export const SimplifiedOnboarding = ({
     subtitle: ''
   } // Completion screen
   ];
-  return <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 z-50 flex items-center justify-center p-3 overflow-y-auto">
-      <div className="w-full max-w-2xl my-2">
+  return <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 z-50 flex items-center justify-center p-2 overflow-hidden">
+      <div className="w-full max-w-6xl my-1 scale-105 origin-center">
         {/* Header Section */}
-        <div className="text-center mb-6 flex flex-col items-center justify-center">
+        <div className="text-center mb-3 flex flex-col items-center justify-center">
           {step === 0 && <>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight text-center whitespace-nowrap mx-auto">Bem-vindo à Melhor Saúde!</h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto">Queremos ajudá-lo a alcançar o seu melhor bem-estar — físico, mental, financeiro e jurídico. </p>
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mx-auto">Queremos ajudá-lo a alcançar o seu melhor bem-estar <span className="text-sky-blue font-semibold">físico, mental, financeiro e jurídico</span>.</p>
             </>}
           {step > 0 && step < 6 && <>
-              <h2 className="text-2xl md:text-3xl font-bold mb-2 max-w-2xl">
+              <h2 className="text-2xl md:text-3xl font-bold mb-2 max-w-4xl whitespace-nowrap">
                 {stepHeaders[step].title}
               </h2>
               
@@ -252,13 +191,13 @@ export const SimplifiedOnboarding = ({
         </div>
 
         {/* Content Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-4 md:p-6">
+        <div className="p-3 md:p-4">
           {/* Step 0: Welcome Screen */}
           {step === 0 && <div className="text-center py-4">
-              <div className="mx-auto mb-4 w-20 h-20 flex items-center justify-center">
+              <div className="mx-auto mb-4 w-28 h-28 flex items-center justify-center">
                 <img src={melhorSaudeLogo} alt="Melhor Saúde" className="w-full h-full object-contain" />
               </div>
-              <p className="text-base text-muted-foreground max-w-lg mx-auto">Para começarmos, diga-nos um pouco mais sobre si e sobre o que gostaria de melhorar.</p>
+              <p className="text-lg text-muted-foreground max-w-lg mx-auto">Para começarmos, diga-nos um pouco mais sobre si e sobre o que gostaria de melhorar.</p>
             </div>}
 
           {/* Step 1: Wellbeing Score (1-10) */}
@@ -280,10 +219,10 @@ export const SimplifiedOnboarding = ({
                   </span>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="flex flex-wrap gap-3 justify-center">
                 {difficultyOptions.map(option => {
               const isSelected = difficultyAreas.includes(option.value);
-              return <button key={option.value} type="button" onClick={() => handleDifficultyToggle(option.value)} className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
+              return <button key={option.value} type="button" onClick={() => handleDifficultyToggle(option.value)} className={`px-4 py-4 rounded-full border-2 transition-all duration-200 text-base font-medium whitespace-nowrap ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
                       {option.label}
                     </button>;
             })}
@@ -291,7 +230,7 @@ export const SimplifiedOnboarding = ({
             </div>}
 
           {/* Step 3: Main Goals (unlimited) */}
-          {step === 3 && <div className="space-y-6">
+          {step === 3 && <div className="space-y-4">
               <div className="text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
                   <span className="text-sm font-medium text-primary">
@@ -299,10 +238,10 @@ export const SimplifiedOnboarding = ({
                   </span>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="flex flex-wrap gap-3 justify-center">
                 {goals.map(goal => {
               const isSelected = mainGoals.includes(goal.value);
-              return <button key={goal.value} type="button" onClick={() => handleGoalToggle(goal.value)} className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
+              return <button key={goal.value} type="button" onClick={() => handleGoalToggle(goal.value)} className={`px-4 py-4 rounded-full border-2 transition-all duration-200 text-base font-medium whitespace-nowrap ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
                       {goal.label}
                     </button>;
             })}
@@ -311,10 +250,10 @@ export const SimplifiedOnboarding = ({
 
           {/* Step 4: Improvement Signs (multiple choice) */}
           {step === 4 && <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="flex flex-wrap gap-3 justify-center">
                 {improvementSignsOptions.map(option => {
               const isSelected = improvementSigns.includes(option.value);
-              return <button key={option.value} type="button" onClick={() => handleImprovementSignToggle(option.value)} className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
+              return <button key={option.value} type="button" onClick={() => handleImprovementSignToggle(option.value)} className={`px-4 py-4 rounded-full border-2 transition-all duration-200 text-base font-medium whitespace-nowrap ${isSelected ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
                       {option.label}
                     </button>;
             })}
@@ -323,8 +262,8 @@ export const SimplifiedOnboarding = ({
 
           {/* Step 5: Frequency */}
           {step === 5 && <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {frequencies.map(option => <button key={option.value} type="button" onClick={() => setFrequency(option.value)} className={`px-6 py-4 rounded-full border-2 transition-all duration-200 text-sm md:text-base font-medium ${frequency === option.value ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
+              <div className="flex flex-wrap gap-3 justify-center">
+                {frequencies.map(option => <button key={option.value} type="button" onClick={() => setFrequency(option.value)} className={`px-4 py-4 rounded-full border-2 transition-all duration-200 text-base font-medium whitespace-nowrap ${frequency === option.value ? 'border-primary bg-amber-50 text-foreground shadow-md scale-[1.02]' : 'border-gray-200 bg-white text-foreground hover:border-primary/50 hover:shadow-sm cursor-pointer'}`}>
                     {option.label}
                   </button>)}
               </div>
@@ -338,37 +277,37 @@ export const SimplifiedOnboarding = ({
                 </div>
               </div>
               
-              <div className="space-y-3">
-                <h2 className="text-4xl font-bold">Perfeito!</h2>
-                <p className="text-xl text-muted-foreground max-w-md mx-auto">
-                  Criámos um plano inicial com base nas suas respostas.
-                </p>
-                <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                  Pode atualizá-las a qualquer momento nas suas definições.
-                </p>
-                <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                  O seu progresso será acompanhado automaticamente — cada passo conta 💚
-                </p>
-              </div>
-              
-              <div className="mt-6 max-w-md mx-auto">
-                <Progress value={progressValue} className="h-3" />
-                <p className="text-sm text-sky-blue font-medium mt-2">Progresso: {progressValue}%</p>
-              </div>
-              
-              <p className="text-xl font-medium text-sky-blue mt-4">
+              <p className="text-6xl font-medium text-sky-blue mt-4">
                 O seu bem-estar começa aqui ✨
               </p>
             </div>}
 
           {/* Navigation */}
-          <div className="flex gap-2 mt-4">
-            {step > 0 && step < 6 && <Button variant="outline" onClick={handleBack} className="flex-1 h-11 text-sm rounded-lg border-2">
-                Voltar
-              </Button>}
-            <Button onClick={handleNext} className="flex-1 h-11 text-sm rounded-lg shadow-lg bg-sky-blue hover:bg-sky-blue/90 text-white" disabled={!canProceed()}>
-              {step === 0 ? 'Começar →' : step === 6 ? 'Continuar para Início →' : step === 5 ? 'Concluir →' : 'Próximo →'}
-            </Button>
+          <div className="flex gap-2 mt-4 justify-center">
+            {step > 0 && step < 6 && (
+              <InteractiveHoverButton 
+                onClick={handleBack} 
+                text="Voltar"
+                dotColor="bg-green-600"
+                className="w-32 h-11 text-sm rounded-lg shadow-lg bg-white text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
+              />
+            )}
+            {step === 0 ? (
+              <InteractiveHoverButton 
+                onClick={handleNext} 
+                text="Começar"
+                className="w-32 h-11 text-sm rounded-lg shadow-lg bg-white text-sky-blue border-sky-blue hover:bg-sky-blue hover:text-white"
+                disabled={!canProceed()}
+              />
+            ) : (
+              <InteractiveHoverButton 
+                onClick={handleNext} 
+                text={step === 6 ? 'Continuar para Início' : step === 5 ? 'Concluir' : 'Próximo'}
+                width={step === 6 ? 'w-48' : 'w-32'}
+                className="h-11 text-sm rounded-lg shadow-lg bg-white text-sky-blue border-sky-blue hover:bg-sky-blue hover:text-white"
+                disabled={!canProceed()}
+              />
+            )}
           </div>
 
           {/* Progress indicator */}

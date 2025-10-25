@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,6 +22,18 @@ interface ProviderAssignmentStepProps {
 }
 
 export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext, onBack }: ProviderAssignmentStepProps) => {
+  const [selectedFormat, setSelectedFormat] = useState<string>('');
+
+  const sessionFormatOptions = [
+    { value: 'virtual', label: 'Online (vídeo)' },
+    { value: 'phone', label: 'Telefone' }
+  ];
+
+  const handleFormatSelect = (format: string) => {
+    setSelectedFormat(format);
+    // Automatically proceed to next step when format is selected
+    onNext();
+  };
 
   return (
     <div className="space-y-6">
@@ -84,11 +97,28 @@ export const ProviderAssignmentStep = ({ pillar, assignedProvider, onNext, onBac
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button onClick={onNext} size="lg" className="px-8">
-          Escolher formato da sessão
-        </Button>
+      {/* Session Format Selection */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-center">
+          Como prefere ter a sua sessão?
+        </h3>
+        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+          {sessionFormatOptions.map(option => (
+            <button
+              key={option.value}
+              onClick={() => handleFormatSelect(option.value)}
+              className={`px-6 py-4 rounded-lg border-2 transition-all text-sm font-medium ${
+                selectedFormat === option.value
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border hover:border-primary/50 text-foreground'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
+
     </div>
   );
 };

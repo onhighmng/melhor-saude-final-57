@@ -12,17 +12,18 @@ import { ChatExitFeedbackButtons } from './ChatExitFeedbackButtons';
 import { ChatIntroSection } from './ChatIntroSection';
 import { BookingBanner } from './BookingBanner';
 import { ChatInput, ChatInputTextArea, ChatInputSubmit } from '@/components/ui/chat-input';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
+
 interface UniversalAIChatProps {
   onClose: () => void;
   initialPillar?: string;
 }
+
 export const UniversalAIChat = ({
   onClose,
   initialPillar
 }: UniversalAIChatProps) => {
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [input, setInput] = useState('');
   const [showPhoneCard, setShowPhoneCard] = useState(false);
@@ -31,6 +32,7 @@ export const UniversalAIChat = ({
   const [showBookingBanner, setShowBookingBanner] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [showFallbackMessage, setShowFallbackMessage] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inactivityTimerRef = useRef<NodeJS.Timeout>();
   const {
@@ -42,90 +44,56 @@ export const UniversalAIChat = ({
     sendMessage,
     addMessage
   } = useChatSession(user?.id);
+
   useEffect(() => {
-    if (user && !sessionId) {
-      createSession();
+    if (initialPillar) {
+      createSession(initialPillar);
     }
-  }, [user, sessionId, createSession]);
+  }, [initialPillar, createSession]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setHasInteracted(true);
+    }
+  }, [messages]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
-  useEffect(() => {
-    // Show banner after 3+ exchanges
-    if (messages.length >= 6) {
-      setShowBookingBanner(true);
-    }
-  }, [messages]);
 
-  // Inactivity timer for fallback message
-  useEffect(() => {
-    if (messages.length === 0 && showIntro) {
-      // Start 20s timer for fallback message
-      inactivityTimerRef.current = setTimeout(() => {
-        setShowFallbackMessage(true);
-      }, 20000);
-    }
-    return () => {
-      if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-      }
-    };
-  }, [messages.length, showIntro]);
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-
-    // Hide intro once user sends first message
-    if (showIntro) {
-      setShowIntro(false);
-      setShowFallbackMessage(false);
-    }
-    const message = input;
+    
+    const userMessage = {
+      role: 'user' as const,
+      content: input
+    };
+    
+    addMessage(userMessage);
     setInput('');
-    const response = await sendMessage(message);
-    if (response?.action === 'provide_phone') {
-      setShowPhoneCard(true);
-      setPhoneContext(response.phone_context || '');
+    setHasInteracted(true);
+    
+    try {
+      await sendMessage(input);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível enviar a mensagem. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
-  const handleSelectPrompt = async (prompt: string) => {
-    setShowIntro(false);
-    setShowFallbackMessage(false);
 
-    // Automatically send the prompt instead of just setting it
-    const response = await sendMessage(prompt);
-    if (response?.action === 'provide_phone') {
-      setShowPhoneCard(true);
-      setPhoneContext(response.phone_context || '');
-    }
-  };
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
-  const handleClose = () => {
-    setShowExitFeedback(true);
-  };
-  const handleFeedbackComplete = () => {
-    // Mark specialist milestone as completed - preserve all other data
-    const milestones = JSON.parse(localStorage.getItem('journeyMilestones') || '[]');
-    const updatedMilestones = milestones.map((m: any) => {
-      if (m.id === 'specialist' && !m.completed) {
-        return { ...m, completed: true, completedAt: new Date().toISOString() };
-      }
-      return m;
-    });
-    localStorage.setItem('journeyMilestones', JSON.stringify(updatedMilestones));
-    
-    // Dispatch custom event to notify JourneyProgressBar
-    window.dispatchEvent(new CustomEvent('milestoneCompleted', { detail: { id: 'specialist' } }));
-    
-    setShowExitFeedback(false);
-    onClose();
-  };
+
   const handleContactRequest = () => {
     toast({
       title: "Estamos disponíveis 24/7",
@@ -133,95 +101,175 @@ export const UniversalAIChat = ({
       duration: 10000,
     });
   };
-  return <div className="min-h-screen flex flex-col">
+
+  const handleFeedbackComplete = () => {
+    // Dispatch custom event to notify JourneyProgressBar
+    window.dispatchEvent(new CustomEvent('milestoneCompleted', { detail: { id: 'specialist' } }));
+    
+    setShowExitFeedback(false);
+    onClose();
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-blue-50">
       {/* Header */}
-      <div className="flex items-center justify-between px-8 py-6 border-b bg-card/80 backdrop-blur-sm">
-        <div>
-          <h2 className="text-2xl font-semibold">Fale com um Especialista da Melhor Saúde</h2>
-          {pillar && <p className="text-sm text-muted-foreground capitalize mt-1">
-              {pillar === 'saude_mental' ? 'Saúde Mental' : pillar === 'bem_estar_fisico' ? 'Bem-estar Físico' : pillar === 'assistencia_financeira' ? 'Assistência Financeira' : 'Assistência Jurídica'}
+      <div className="flex items-center justify-between px-8 py-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={onClose} className="flex items-center gap-2 text-gray-600 hover:text-white">
+            <X className="h-4 w-4" />
+            Fechar
+          </Button>
+          <div>
+            <h2 className="text-3xl font-semibold">Fale com um Especialista da Melhor Saúde</h2>
+            {pillar && <p className="text-base text-muted-foreground capitalize mt-1">
+              {pillar === 'saude_mental' ? 'Saúde Mental' : 
+               pillar === 'bem_estar_fisico' ? 'Bem-estar Físico' : 
+               pillar === 'assistencia_financeira' ? 'Assistência Financeira' : 
+               'Assistência Jurídica'}
             </p>}
+          </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={handleClose}>
-          <X className="h-5 w-5" />
-        </Button>
+        <InteractiveHoverButton 
+          onClick={handleContactRequest}
+          text="Solicitar chamada 24/7"
+          icon={<Phone className="h-4 w-4" />}
+          className="text-sm px-10 py-4 min-w-[280px]"
+        />
       </div>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 px-8 py-8" ref={scrollRef}>
-        <div className="max-w-5xl mx-auto space-y-6">
-          {/* Show fallback message after 20s inactivity */}
-          {showFallbackMessage && messages.length === 0 && !showIntro && <div className="flex justify-start">
-              <div className="bg-muted rounded-lg p-3">
-                <p className="text-sm">Se preferir falar com um especialista humano, pode agendar uma sessão</p>
-              </div>
-            </div>}
+      {/* Centered Interface - Only show when user hasn't interacted */}
+      {!hasInteracted && (
+        <div className="flex-1 flex items-center justify-center px-8 py-8">
+          <div className="w-full max-w-6xl text-center space-y-8">
+            {/* Title */}
+            <h1 className="text-2xl font-semibold">Conversa comigo, com privacidade e atenção.</h1>
 
-          {messages.map((message, index) => <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] rounded-lg p-3 ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-              </div>
-            </div>)}
+            {/* Input Area */}
+            <div className="w-full">
+              <ChatInput
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onSubmit={handleSend}
+                loading={isLoading}
+                variant="unstyled"
+                className="flex items-end gap-2 !rounded-full"
+              >
+                <ChatInputTextArea
+                  placeholder="Digite sua pergunta..."
+                  disabled={isLoading}
+                  className="min-h-[60px] text-lg !rounded-full"
+                />
+                <ChatInputSubmit
+                  disabled={!input.trim() || isLoading}
+                  className="!rounded-full"
+                >
+                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                </ChatInputSubmit>
+              </ChatInput>
+            </div>
 
-          {isLoading && <div className="flex justify-start">
-              <div className="bg-muted rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-sm">A escrever...</span>
-                </div>
-              </div>
-            </div>}
-
-          {showPhoneCard && <SpecialistContactCard pillar={pillar || 'general'} context={phoneContext} sessionId={sessionId || ''} />}
-        </div>
-      </ScrollArea>
-
-      {/* Prompt Suggestions - Above Input */}
-      {showIntro && messages.length === 0 && (
-        <div className="px-8 -mt-8 pb-4">
-          <div className="max-w-5xl mx-auto">
-            <ChatIntroSection onSelectPrompt={handleSelectPrompt} />
+            {/* Prompt Suggestions */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              {[
+                "Gostaria de partilhar o que \"sinto\"",
+                "Já percebi o que preciso",
+                "Estou um pouco indeciso sobre o que preciso"
+              ].map((prompt, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setInput(prompt);
+                    setHasInteracted(true);
+                  }}
+                  className="px-6 py-3 h-12 whitespace-nowrap text-center bg-white hover:bg-green-600 hover:text-white border border-gray-300 hover:border-green-600 transition-colors rounded-full text-base font-medium"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Input Area */}
-      <div className="border-t bg-card/80 backdrop-blur-sm px-8 py-6">
-        <div className="max-w-5xl mx-auto">
-          <ChatInput
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onSubmit={handleSend}
-            loading={isLoading}
-            className="bg-white/90 shadow-sm"
-          >
-            <ChatInputTextArea
-              placeholder="Escreva a sua mensagem..."
-              disabled={isLoading || showPhoneCard}
-              className="min-h-[60px]"
-            />
-            <ChatInputSubmit
-              disabled={isLoading || !input.trim() || showPhoneCard}
+      {/* Messages - Only show when user has interacted */}
+      {hasInteracted && (
+        <div className="flex-1 px-8 py-8 overflow-y-auto">
+          <div className="max-w-5xl mx-auto space-y-6">
+            {messages.map((message, index) => (
+              <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[80%] rounded-lg p-3 ${message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                  <p className="text-base whitespace-pre-wrap">{message.content}</p>
+                </div>
+              </div>
+            ))}
+            
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-muted rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-base">A escrever...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Input Area - Only show when user has interacted */}
+      {hasInteracted && (
+        <div className="bg-transparent backdrop-blur-sm px-8 py-6">
+          <div className="max-w-7xl mx-auto">
+            <ChatInput
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onSubmit={handleSend}
+              loading={isLoading}
+              variant="unstyled"
+              className="flex items-end gap-2 !rounded-full"
             >
-              {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-            </ChatInputSubmit>
-          </ChatInput>
+              <ChatInputTextArea
+                placeholder="Digite sua pergunta..."
+                disabled={isLoading}
+                className="min-h-[60px] text-lg !rounded-full"
+              />
+              <ChatInputSubmit
+                disabled={!input.trim() || isLoading}
+                className="!rounded-full"
+              >
+                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+              </ChatInputSubmit>
+            </ChatInput>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Permanent 1-on-1 Booking Section */}
-      <div className="bg-muted/50 border-t px-8 py-4">
-        <div className="max-w-5xl mx-auto text-center space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Se precisar de conversar, o nosso especialista está sempre disponível para si, 24/7.
-          </p>
-          <Button onClick={handleContactRequest} variant="outline" size="lg" className="w-full sm:w-auto text-lg px-8 py-6">
-            <Phone className="h-5 w-5 mr-2" />
-            Solicitar chamada
-          </Button>
-        </div>
-      </div>
+      {/* Modals */}
+      {showPhoneCard && (
+        <SpecialistContactCard
+          context={phoneContext}
+          onClose={() => setShowPhoneCard(false)}
+          onContactRequest={handleContactRequest}
+        />
+      )}
 
-      {showExitFeedback && <ChatExitFeedbackButtons sessionId={sessionId || ''} pillar={pillar} onClose={handleFeedbackComplete} />}
-    </div>;
+      {showExitFeedback && (
+        <ChatExitFeedbackButtons
+          onComplete={handleFeedbackComplete}
+          onClose={() => setShowExitFeedback(false)}
+        />
+      )}
+
+      {showBookingBanner && (
+        <BookingBanner
+          onClose={() => setShowBookingBanner(false)}
+          onBookSession={() => {
+            setShowBookingBanner(false);
+            navigate('/user/book');
+          }}
+        />
+      )}
+    </div>
+  );
 };

@@ -109,10 +109,10 @@ function ResourceUsageCard({}: ResourceUsageCardProps): JSX.Element {
       <h3 className="text-3xl text-left p-7 pt-6 pb-8 font-bold text-foreground">
         Uso de Recursos por Pilar
       </h3>
-      <div className="flex-grow px-4 h-[200px]">
+      <div className="flex-grow px-4 h-[300px]">
         <BarChart
           id="horizontal-resource-usage-chart"
-          height={200}
+          height={300}
           data={validatedCategoryData}
           yAxis={
             <LinearYAxis
@@ -164,36 +164,6 @@ function ResourceUsageCard({}: ResourceUsageCardProps): JSX.Element {
             />
           }
         />
-      </div>
-      <div className="flex flex-col pl-8 pr-8 pt-8 font-mono divide-y divide-border">
-        {metrics.map(metric => (
-          <motion.div
-            key={metric.id}
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              delay: metric.delay,
-            }}
-            className="flex w-full pb-4 pt-4 items-center gap-2"
-          >
-            <div className="flex flex-row gap-2 items-center text-sm w-3/5 text-muted-foreground">
-              {metric.iconSvg}
-              <span className="break-words" title={metric.label}>
-                {metric.label}
-              </span>
-            </div>
-            <div className="flex gap-2 w-2/5 justify-end items-center">
-              <span className="font-semibold text-xl text-foreground">{metric.value}</span>
-              {metric.trendIconSvg}
-            </div>
-          </motion.div>
-        ))}
       </div>
     </div>
   );
