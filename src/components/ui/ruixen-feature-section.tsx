@@ -183,10 +183,10 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
         </div>
       </div>
       
-      {/* Stats and Testimonial Section */}
-      <div className="mt-12 sm:mt-16 lg:mt-20 grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+      {/* Stats Section */}
+      <div className="mt-12 sm:mt-16 lg:mt-20">
         <div className="flex justify-center items-center p-4 sm:p-6">
-          <div className="grid grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left">
+          <div className="grid grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left max-w-3xl">
             <div className="space-y-2 sm:space-y-3">
               <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">+150</div>
               <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Prestadores Ativos</p>
@@ -200,16 +200,6 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
               <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Avaliação Média</p>
             </div>
           </div>
-        </div>
-        <div className="relative">
-          <blockquote className="border-l-2 border-gray-200 dark:border-gray-700 pl-4 sm:pl-6 lg:pl-8 text-gray-700 dark:text-gray-400">
-            <p className="text-sm sm:text-base lg:text-lg leading-relaxed">
-              Usar esta plataforma foi como desbloquear um novo nível de produtividade. É a fusão perfeita de simplicidade e versatilidade, permitindo-nos criar experiências de bem-estar excepcionais.
-            </p>
-            <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
-              <cite className="block font-medium text-sm sm:text-base text-gray-900 dark:text-white">Dr. Ricardo Mendes, Diretor Clínico</cite>
-            </div>
-          </blockquote>
         </div>
       </div>
     </section>
