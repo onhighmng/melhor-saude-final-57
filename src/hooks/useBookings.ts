@@ -36,9 +36,8 @@ export const useBookings = () => {
           .select(`
             *,
             prestadores (
-              id,
-              user_id,
-              profiles (name, avatar_url)
+              name,
+              photo_url
             )
           `)
           .eq('user_id', user.id)
@@ -49,8 +48,8 @@ export const useBookings = () => {
         if (data) {
           const bookings = data.map(b => ({
             ...b,
-            provider_name: b.prestadores?.profiles?.name || '',
-            provider_avatar: b.prestadores?.profiles?.avatar_url || ''
+            provider_name: b.prestadores?.name || '',
+            provider_avatar: b.prestadores?.photo_url || ''
           }));
           
           setAllBookings(bookings);

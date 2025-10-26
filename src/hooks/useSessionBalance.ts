@@ -17,7 +17,7 @@ export const useSessionBalance = () => {
       setLoading(true);
       const { data: employee, error: fetchError } = await supabase
         .from('company_employees')
-        .select('sessions_quota, sessions_used')
+        .select('sessions_allocated, sessions_used')
         .eq('user_id', user.id)
         .single();
 
@@ -25,10 +25,10 @@ export const useSessionBalance = () => {
 
       if (employee) {
         setSessionBalance({
-          totalRemaining: employee.sessions_quota - employee.sessions_used,
-          employerRemaining: employee.sessions_quota - employee.sessions_used,
+          totalRemaining: employee.sessions_allocated - employee.sessions_used,
+          employerRemaining: employee.sessions_allocated - employee.sessions_used,
           personalRemaining: 0,
-          hasActiveSessions: (employee.sessions_quota - employee.sessions_used) > 0
+          hasActiveSessions: (employee.sessions_allocated - employee.sessions_used) > 0
         });
       }
     } catch (err: any) {
