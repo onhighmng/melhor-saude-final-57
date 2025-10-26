@@ -17,6 +17,7 @@ interface Case {
   phone?: string;
   notes?: string;
   priority?: string;
+  company?: string;
 }
 
 interface SpecialistLayoutProps {
@@ -142,29 +143,23 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
                   <div
                     key={case_.id}
                     onClick={() => handleCaseClick(case_)}
-                    className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-4 rounded-lg border bg-card transition-colors cursor-pointer"
                   >
                     <div className="flex items-start gap-4 flex-1">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <StatusIcon className="h-5 w-5 text-primary" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-sm">{case_.collaborator}</h4>
-                          <Badge variant="outline" className="text-xs">
-                            {case_.pillar}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{case_.resolution}</p>
-                        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                          <span>{new Date(case_.date).toLocaleDateString('pt-PT')}</span>
-                          {case_.responseTime !== '-' && (
-                            <>
-                              <span>•</span>
-                              <span>Resposta em {case_.responseTime}</span>
-                            </>
-                          )}
-                        </div>
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <h4 className="font-medium text-sm">{case_.collaborator}</h4>
+                        {case_.phone && (
+                          <p className="text-sm text-muted-foreground">{case_.phone}</p>
+                        )}
+                        {case_.email && (
+                          <p className="text-sm text-muted-foreground">{case_.email}</p>
+                        )}
+                        {case_.company && (
+                          <p className="text-sm text-muted-foreground">{case_.company}</p>
+                        )}
                       </div>
                     </div>
                     <Badge className={status.className}>{status.label}</Badge>
@@ -178,91 +173,23 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
 
       {/* Fullscreen Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl">
           {selectedCase && (
             <div className="space-y-6">
               {/* Header */}
               <div className="flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                  <div className={`h-16 w-16 rounded-full ${statusConfig[selectedCase.status].iconBg} flex items-center justify-center`}>
-                    {(() => {
-                      const Icon = statusConfig[selectedCase.status].icon;
-                      return <Icon className="h-8 w-8 text-white" />;
-                    })()}
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-bold">{selectedCase.collaborator}</h2>
-                    <p className="text-lg text-muted-foreground">{selectedCase.pillar}</p>
-                  </div>
-                </div>
-                <Badge className={statusConfig[selectedCase.status].className + ' text-lg px-4 py-2'}>
-                  {statusConfig[selectedCase.status].label}
-                </Badge>
-              </div>
-
-              {/* Case Details Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Left Column */}
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Data do Caso</h3>
-                    <p className="text-lg">{new Date(selectedCase.date).toLocaleDateString('pt-PT', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}</p>
-                  </div>
-
-                  {selectedCase.responseTime !== '-' && (
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Tempo de Resposta</h3>
-                      <p className="text-lg">{selectedCase.responseTime}</p>
-                    </div>
-                  )}
-
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Status</h3>
-                    <p className="text-lg">{selectedCase.resolution}</p>
-                  </div>
-
-                  {selectedCase.email && (
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Email</h3>
-                      <p className="text-lg">{selectedCase.email}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right Column */}
-                <div className="space-y-6">
-                  {selectedCase.phone && (
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Telefone</h3>
-                      <p className="text-lg">{selectedCase.phone}</p>
-                    </div>
-                  )}
-
-                  {selectedCase.priority && (
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Prioridade</h3>
-                      <Badge variant="outline" className="text-lg px-4 py-2">
-                        {selectedCase.priority}
-                      </Badge>
-                    </div>
-                  )}
-
-                  {selectedCase.notes && (
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Notas</h3>
-                      <p className="text-lg leading-relaxed">{selectedCase.notes}</p>
-                    </div>
-                  )}
+                <div>
+                  <h2 className="text-2xl font-bold">{selectedCase.collaborator}</h2>
+                  <p className="text-muted-foreground mt-1">Notas do Caso</p>
                 </div>
               </div>
 
-              {/* Background Color based on status */}
-              <div className={`absolute inset-0 ${statusConfig[selectedCase.status].bgColor} opacity-20 -z-10 rounded-lg`} />
+              {/* Notes */}
+              {selectedCase.notes && (
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-base leading-relaxed">{selectedCase.notes}</p>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>

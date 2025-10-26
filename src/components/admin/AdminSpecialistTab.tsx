@@ -13,6 +13,7 @@ const mockCases = [
     email: 'ana.silva@company.com',
     phone: '+258 82 123 4567',
     priority: 'Alta',
+    company: 'Tech Corp',
     notes: 'Cliente relatou ansiedade no trabalho. Agendada sessão de terapia para próxima semana. Medicação prescrita conforme protocolo.',
   },
   {
@@ -26,6 +27,7 @@ const mockCases = [
     email: 'carlos.santos@company.com',
     phone: '+258 84 987 6543',
     priority: 'Média',
+    company: 'Innovation Labs',
     notes: 'Cliente com dores nas costas relacionadas ao trabalho remoto. Agendada consulta com fisioterapeuta. Acompanhamento semanal.',
   },
   {
@@ -39,6 +41,7 @@ const mockCases = [
     email: 'beatriz.ferreira@company.com',
     phone: '+258 85 555 1234',
     priority: 'Alta',
+    company: 'Global Solutions',
     notes: 'Solicitação de empréstimo consignado. Encaminhado para análise financeira. Documentação em análise.',
   },
   {
@@ -52,6 +55,7 @@ const mockCases = [
     email: 'daniel.rocha@company.com',
     phone: '+258 83 777 8888',
     priority: 'Baixa',
+    company: 'Digital Ventures',
     notes: 'Consulta sobre direitos trabalhistas. Orientação fornecida por telefone. Caso resolvido completamente.',
   },
 ];
