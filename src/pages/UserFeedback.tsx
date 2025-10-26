@@ -41,6 +41,21 @@ export default function UserFeedback() {
         message: feedback.comment,
         rating: feedback.rating
       });
+
+      // Track feedback in user_progress
+      if (user?.id && session?.pillar) {
+        await supabase.from('user_progress').insert({
+          user_id: user.id,
+          pillar: session.pillar,
+          action_type: 'feedback_given',
+          action_date: new Date().toISOString(),
+          metadata: {
+            booking_id: sessionId,
+            rating: feedback.rating,
+            category: feedback.category
+          }
+        });
+      }
       
       toast.success(userToastMessages.success.feedbackSubmitted);
       

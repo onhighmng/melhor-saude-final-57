@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings, Booking } from '@/hooks/useBookings';
 import { useSessionCompletion } from '@/hooks/useSessionCompletion';
+import { useMilestoneChecker } from '@/hooks/useMilestoneChecker';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
@@ -28,6 +29,8 @@ import { supabase } from '@/integrations/supabase/client';
 const UserDashboard = () => {
   // Enable session auto-completion
   useSessionCompletion();
+  // Enable milestone auto-checking
+  useMilestoneChecker();
   const navigate = useNavigate();
   const {
     profile
