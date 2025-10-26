@@ -46,7 +46,7 @@ export default function RegisterEmployee() {
     try {
       const { data: invite, error } = await supabase
         .from('invites')
-        .select('*, companies(name)')
+        .select('*, companies(company_name)')
         .eq('invite_code', code.toUpperCase())
         .single();
       

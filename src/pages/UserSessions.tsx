@@ -23,15 +23,15 @@ export default function UserSessions() {
       
       const { data } = await supabase
         .from('onboarding_data')
-        .select('main_goals, difficulty_areas')
+        .select('health_goals, pillar_preferences')
         .eq('user_id', profile.id)
-        .single();
+        .maybeSingle();
       
-      if (data?.main_goals) {
-        setUserGoals(data.main_goals.map((goal: string, index: number) => ({
+      if (data?.health_goals) {
+        setUserGoals(data.health_goals.map((goal: string, index: number) => ({
           id: `${index}`,
           title: goal,
-          pillar: data.difficulty_areas?.[index] || 'saude_mental',
+          pillar: data.pillar_preferences?.[index] || 'saude_mental',
           targetSessions: 6,
           completedSessions: allBookings.filter(b => b.status === 'completed').length,
           progressPercentage: 70,
@@ -46,20 +46,20 @@ export default function UserSessions() {
   // Convert bookings to sessions format
   const sessions = allBookings.map(booking => ({
     id: booking.id,
-    userId: booking.user_id,
+    userId: booking.user_id || '',
     prestadorId: booking.prestador_id || '',
-    date: booking.date,
-    time: booking.start_time,
-    prestadorName: booking.provider_name || 'Provider',
-    pillar: booking.pillar as 'saude_mental' | 'assistencia_juridica' | 'assistencia_financeira' | 'bem_estar_fisico',
+    date: booking.booking_date,
+    time: booking.start_time || '',
+    prestadorName: 'Provider',
+    pillar: 'saude_mental' as const,
     status: booking.status as any,
     minutes: 60,
     wasDeducted: booking.status === 'completed',
     payerSource: 'company' as const,
-    deductedAt: booking.status === 'completed' ? booking.created_at : undefined,
-    createdAt: booking.created_at,
-    updatedAt: booking.updated_at,
-    sessionType: 'individual' as const,
+    deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
+    createdAt: booking.booking_date,
+    updatedAt: booking.booking_date,
+    sessionType: booking.session_type || 'individual' as const,
     meetingPlatform: (booking.meeting_link?.includes('zoom') ? 'zoom' : booking.meeting_link?.includes('teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
     meetingLink: booking.meeting_link || ''
   }));
@@ -107,14 +107,14 @@ export default function UserSessions() {
 
         {/* User Journey Section */}
         <div className="container mx-auto px-6">
-          <UserJourneySection
-            goals={userGoals}
-            balance={userBalance}
-            completedSessionsCount={completedSessionsCount}
-            futureSessionsCount={futureSessionsCount}
-            onHistoryClick={() => setIsPastSessionsModalOpen(true)}
-            onFutureSessionsClick={() => setIsFutureSessionsModalOpen(true)}
-          />
+        <UserJourneySection
+          goals={userGoals}
+          balance={sessionBalance}
+          completedSessionsCount={completedSessionsCount}
+          futureSessionsCount={futureSessionsCount}
+          onHistoryClick={() => setIsPastSessionsModalOpen(true)}
+          onFutureSessionsClick={() => setIsFutureSessionsModalOpen(true)}
+        />
         </div>
 
         {/* Session Modals */}
