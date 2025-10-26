@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SessionModal } from "@/components/sessions/SessionModal";
+import { SessionRatingDialog } from "@/components/sessions/SessionRatingDialog";
 import UserJourneySection from "@/components/ui/user-journey-section";
 import { useBookings } from "@/hooks/useBookings";
 import { useSessionBalance } from "@/hooks/useSessionBalance";
@@ -18,6 +19,8 @@ export default function UserSessions() {
   const [userGoals, setUserGoals] = useState<any[]>([]);
   const [isPastSessionsModalOpen, setIsPastSessionsModalOpen] = useState(false);
   const [isFutureSessionsModalOpen, setIsFutureSessionsModalOpen] = useState(false);
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
+  const [selectedSessionForRating, setSelectedSessionForRating] = useState<string | null>(null);
   
   // Load user goals from onboarding data
   useEffect(() => {
@@ -92,6 +95,11 @@ export default function UserSessions() {
     // Store booking ID in sessionStorage for booking flow
     sessionStorage.setItem('reschedule_booking_id', sessionId);
     navigate('/user/book?mode=reschedule');
+  };
+
+  const handleRateSession = (sessionId: string) => {
+    setSelectedSessionForRating(sessionId);
+    setShowRatingDialog(true);
   };
 
   const handleCancel = async (sessionId: string) => {
@@ -240,6 +248,7 @@ export default function UserSessions() {
           title="Histórico de Sessões Passadas"
           type="past"
           onViewDetails={handleViewDetails}
+          onRate={handleRateSession}
         />
         <SessionModal
           isOpen={isFutureSessionsModalOpen}
@@ -251,6 +260,16 @@ export default function UserSessions() {
           onReschedule={handleReschedule}
           onCancel={handleCancel}
         />
+
+        {/* Rating Dialog */}
+        {selectedSessionForRating && (
+          <SessionRatingDialog
+            open={showRatingDialog}
+            onOpenChange={setShowRatingDialog}
+            sessionId={selectedSessionForRating}
+            pillarName={sessions.find(s => s.id === selectedSessionForRating)?.pillar || ''}
+          />
+        )}
       </div>
     </div>
   );

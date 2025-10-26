@@ -221,6 +221,9 @@ const UserDashboard = () => {
         localStorage.setItem('onboardingData', JSON.stringify(data));
         const userOnboardingKey = `onboarding_completed_${profile.email || 'demo'}`;
         localStorage.setItem(userOnboardingKey, 'true');
+
+        // Complete onboarding milestone
+        await completeMilestone('onboarding');
       }
       
       setOnboardingData(data);

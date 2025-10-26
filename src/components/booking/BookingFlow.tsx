@@ -312,6 +312,19 @@ const BookingFlow = () => {
 
       if (error) throw error;
 
+      // Track booking in user_progress
+      await supabase.from('user_progress').insert({
+        user_id: profile.id,
+        pillar: pillar,
+        action_type: 'session_scheduled',
+        action_date: new Date().toISOString(),
+        metadata: {
+          booking_id: booking.id,
+          prestador_id: selectedProvider.id,
+          booking_date: booking.booking_date
+        }
+      });
+
       // Get current sessions_used for user and increment
       const { data: employeeData } = await supabase
         .from('company_employees')

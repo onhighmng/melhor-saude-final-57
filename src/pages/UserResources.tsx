@@ -79,6 +79,7 @@ export default function UserResources() {
   const [loading, setLoading] = useState(true);
   const [selectedResource, setSelectedResource] = useState<any | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewStartTime, setViewStartTime] = useState<number | null>(null);
   const { user, profile } = useAuth();
 
   useEffect(() => {
@@ -123,6 +124,7 @@ export default function UserResources() {
   const handleView = async (resource: any) => {
     setSelectedResource(resource);
     setModalOpen(true);
+    setViewStartTime(Date.now());
     
     // Track resource view in user_progress table
     if (user?.id) {
@@ -149,6 +151,27 @@ export default function UserResources() {
       }
     }
   };
+
+  // Track duration when modal closes
+  useEffect(() => {
+    return () => {
+      if (viewStartTime && selectedResource && user?.id) {
+        const durationSeconds = Math.floor((Date.now() - viewStartTime) / 1000);
+        
+        if (durationSeconds > 3) {
+          // Update resource_access_log with duration
+          supabase
+            .from('resource_access_log')
+            .update({ duration_seconds: durationSeconds })
+            .eq('user_id', user.id)
+            .eq('resource_id', selectedResource.id)
+            .order('accessed_at', { ascending: false })
+            .limit(1)
+            .then(() => {});
+        }
+      }
+    };
+  }, [modalOpen]);
   
   const handleDownload = async (resource: any) => {
     if (resource.file_url) {

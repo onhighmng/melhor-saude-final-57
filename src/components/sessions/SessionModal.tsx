@@ -19,6 +19,7 @@ interface SessionModalProps {
   onViewDetails?: (sessionId: string) => void;
   onReschedule?: (sessionId: string) => void;
   onCancel?: (sessionId: string) => void;
+  onRate?: (sessionId: string) => void;
 }
 
 export function SessionModal({ 
@@ -29,7 +30,8 @@ export function SessionModal({
   type,
   onViewDetails,
   onReschedule,
-  onCancel
+  onCancel,
+  onRate
 }: SessionModalProps) {
   const [showRatingDialog, setShowRatingDialog] = useState(false);
   const [selectedSessionForRating, setSelectedSessionForRating] = useState<Session | null>(null);
@@ -102,8 +104,12 @@ export function SessionModal({
   };
 
   const handleRatingClick = (session: Session) => {
-    setSelectedSessionForRating(session);
-    setShowRatingDialog(true);
+    if (onRate) {
+      onRate(session.id);
+    } else {
+      setSelectedSessionForRating(session);
+      setShowRatingDialog(true);
+    }
   };
 
   // Handler functions for the three action buttons
