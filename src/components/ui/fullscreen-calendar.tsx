@@ -94,12 +94,6 @@ export function FullScreenCalendar({
         </div>
 
         <div className="flex flex-col items-center gap-3 md:flex-row md:gap-4">
-          {onAddEvent && (
-            <Button onClick={onAddEvent} className="h-8 text-sm gap-2" variant="default">
-              <PlusCircleIcon size={14} strokeWidth={2} aria-hidden="true" />
-              Adicionar Evento
-            </Button>
-          )}
 
           <Separator orientation="vertical" className="hidden h-5 lg:block" />
 
