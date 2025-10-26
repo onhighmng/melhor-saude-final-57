@@ -116,13 +116,6 @@ export function PrestadorPerformanceFeatures({
                         <p className="text-3xl font-bold">{performance.totalClients}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <TrendingUp className="h-8 w-8 text-purple-600" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Taxa de Retenção</p>
-                        <p className="text-3xl font-bold">{performance.retentionRate}%</p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
