@@ -64,9 +64,9 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
 
         <div className="space-y-6">
           {/* Session Info and Notes - Side by Side */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             {/* Session Info - Left */}
-            <div className="p-4 bg-muted rounded-lg space-y-2">
+            <div className="col-span-1 p-4 bg-muted rounded-lg space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-semibold">{session.user_name}</span>
                 <Badge variant="outline">{session.company_name}</Badge>
@@ -79,7 +79,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
             </div>
 
             {/* Notes - Right */}
-            <div className="space-y-2">
+            <div className="col-span-2 space-y-2">
               <label className="text-sm font-medium">Notas Internas</label>
               <Textarea
                 placeholder="Descreva o que foi discutido na sessão, observações importantes, próximos passos..."
