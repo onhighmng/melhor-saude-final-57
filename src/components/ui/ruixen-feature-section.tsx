@@ -1,12 +1,9 @@
 import { cn } from "@/lib/utils"
 import { CardContent } from "@/components/ui/card";
 import { TbHeartPlus } from "react-icons/tb";
-import { Building2, Users, UserCog, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+
 export const Highlight = ({
   children,
   className,
@@ -26,496 +23,216 @@ export const Highlight = ({
   );
 };
 
-
-const CARDS = [
-  {
-    id: 0,
-    name: "Empresas",
-    designation: "Gerir empresas e códigos",
-    Icon: Building2,
-    bgColor: "bg-gradient-to-br from-blue-100 to-blue-200",
-    iconColor: "text-blue-600",
-    tabValue: "companies",
-    content: (
-      <p className="text-sm text-muted-foreground">
-        Gestão completa de empresas cadastradas, geração de códigos de acesso únicos
-        e monitoramento de utilizações em tempo real.
-      </p>
-    ),
-  },
-  {
-    id: 1,
-    name: "Affiliates",
-    designation: "Gerir especialistas",
-    Icon: UserCog,
-    bgColor: "bg-gradient-to-br from-yellow-100 to-yellow-200",
-    iconColor: "text-yellow-600",
-    tabValue: "providers",
-    content: (
-      <p className="text-sm text-muted-foreground">
-        Administração de prestadores de serviços, atribuição de especialidades
-        e controle de disponibilidade para agendamentos.
-      </p>
-    ),
-  },
-];
-
-
-const activeCompanies = [
-  {
-    id: 1,
-    name: "TechCorp Lda",
-    employees: 45,
-    sessions: { used: 287, total: 400 },
-    status: "active",
-    bgColor: "bg-blue-100"
-  },
-  {
-    id: 2,
-    name: "HealthPlus SA",
-    employees: 120,
-    sessions: { used: 823, total: 1000 },
-    status: "active",
-    bgColor: "bg-green-100"
-  },
-  {
-    id: 3,
-    name: "StartupHub",
-    employees: 15,
-    sessions: { used: 45, total: 150 },
-    status: "onboarding",
-    bgColor: "bg-yellow-100"
-  },
-  {
-    id: 4,
-    name: "ConsultPro",
-    employees: 80,
-    sessions: { used: 512, total: 600 },
-    status: "active",
-    bgColor: "bg-purple-100"
-  }
-];
-
-
-const activeProviders = [
-  {
-    id: 1,
-    name: "Dr. Carlos Mendes",
-    specialty: "Psicologia",
-    sessions: { completed: 145, scheduled: 12 },
-    status: "active",
-    bgColor: "bg-blue-100"
-  },
-  {
-    id: 2,
-    name: "Dra. Sofia Rodrigues",
-    specialty: "Nutrição",
-    sessions: { completed: 98, scheduled: 8 },
-    status: "active",
-    bgColor: "bg-green-100"
-  },
-  {
-    id: 3,
-    name: "Dr. Miguel Ferreira",
-    specialty: "Consultoria Financeira",
-    sessions: { completed: 67, scheduled: 5 },
-    status: "active",
-    bgColor: "bg-yellow-100"
-  },
-  {
-    id: 4,
-    name: "Dra. Beatriz Alves",
-    specialty: "Assistência Legal",
-    sessions: { completed: 52, scheduled: 3 },
-    status: "active",
-    bgColor: "bg-purple-100"
-  }
-];
-
-const platformTips = [
-  {
-    id: 1,
-    tip: "Auditorias regulares de empresas inativas ajudam a manter métricas precisas",
-    category: "Boa Prática"
-  },
-  {
-    id: 2,
-    tip: "Reveja a disponibilidade dos prestadores semanalmente para garantir capacidade ideal de agendamento",
-    category: "Agendamento"
-  },
-  {
-    id: 3,
-    tip: "Monitorize padrões de uso de sessões para identificar empresas que necessitam de apoio",
-    category: "Análise"
-  },
-  {
-    id: 4,
-    tip: "Configure alertas automáticos para empresas que se aproximam dos seus limites de sessões",
-    category: "Automação"
-  },
-  {
-    id: 5,
-    tip: "Comunicação regular com contactos de RH melhora as taxas de adoção da plataforma",
-    category: "Envolvimento"
-  }
-];
-
-const integrations = [
-  {
-    name: "Saúde Mental",
-    desc: "Sessões de psicologia e apoio emocional",
-    icon: "🧠",
-  },
-  {
-    name: "Bem-Estar Físico",
-    desc: "Consultas de nutrição e fisioterapia",
-    icon: "💪",
-  },
-  {
-    name: "Apoio Financeiro",
-    desc: "Consultoria financeira personalizada",
-    icon: "💰",
-  },
-  {
-    name: "Assistência Legal",
-    desc: "Suporte jurídico especializado",
-    icon: "⚖️",
-  },
-];
-
-export default function RuixenSection({ 
-  onAddCompany,
-  onAddProvider,
-  onTabChange,
-  onEmployeeClick
-}: { 
-  onAddCompany?: () => void;
-  onAddProvider?: () => void;
-  onTabChange?: (tab: string) => void;
-  onEmployeeClick?: (employeeId: number) => void;
-}) {
-  const navigate = useNavigate();
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
-  const [activeCardIndex, setActiveCardIndex] = useState(0);
-
-  // Rotate tips every 8 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTipIndex((prev) => (prev + 1) % platformTips.length);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, []);
-  return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-      <div className="grid grid-cols-1 lg:grid-cols-2 relative gap-4">
-        {/* Left Block */}
-        <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8 relative">
-          {/* Card Stack with Navigation */}
-          <div className="relative w-full mb-4 sm:mb-6">
-            <CardStack 
-              items={CARDS} 
-              onTabChange={onTabChange}
-              onCardChange={(index) => setActiveCardIndex(index)}
-              navigate={navigate}
-              onEmployeeClick={onEmployeeClick}
-            />
-          </div>
-
-          {/* Content */}
-          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-foreground leading-relaxed">
-            Gestão Centralizada de Utilizadores{" "}
-            <span className="text-primary">Wellness Platform</span>{" "}
-            <span className="text-muted-foreground text-sm sm:text-base lg:text-lg">
-              {" "}
-              Controle completo sobre empresas e affiliates numa única
-              plataforma integrada.
-            </span>
-          </h3>
-        </div>
-
-
-        {/* Right Block - Dynamic Content Based on Active Card */}
-        <div className="flex flex-col border border-border p-4 sm:p-6 lg:p-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
-              {activeCardIndex === 0 && "Empresas Ativas"}
-              {activeCardIndex === 1 && "Affiliates Ativos"}
-            </h2>
-            {activeCardIndex === 0 && (
-              <Button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (onAddCompany) {
-                    onAddCompany();
-                  }
-                }}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Adicionar Empresa
-              </Button>
-            )}
-            {activeCardIndex === 1 && (
-              <Button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (onAddProvider) {
-                    onAddProvider();
-                  }
-                }}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Adicionar Affiliate
-              </Button>
-            )}
-          </div>
-
-          {/* Table */}
-          <div className="w-full">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
-                    {activeCardIndex === 0 && "Empresa"}
-                    {activeCardIndex === 1 && "Affiliate"}
-                  </th>
-                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
-                    {activeCardIndex === 0 && "Colaboradores"}
-                    {activeCardIndex === 1 && "Especialidade"}
-                  </th>
-                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
-                    Sessões
-                  </th>
-                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
-                    Estado
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {activeCardIndex === 0 && activeCompanies.map((company) => (
-                  <tr 
-                    key={company.id} 
-                    onClick={() => navigate(`/admin/companies/${company.id}`)}
-                    className="group border-b border-border cursor-pointer transition-all relative"
-                  >
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
-                      <div className={cn(
-                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none -z-10",
-                        company.bgColor
-                      )} style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />
-                      {company.name}
-                    </td>
-                    <td className="py-4 px-4 relative z-10">
-                      <div className="flex items-center gap-2 text-foreground">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        <span>{company.employees}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-foreground relative z-10">
-                      {company.sessions.used}/{company.sessions.total}
-                    </td>
-                    <td className="py-4 px-4 relative z-10">
-                      {company.status === "active" ? (
-                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
-                          Ativa
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="border-blue-500 text-blue-500">
-                          Em Onboarding
-                        </Badge>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                
-                {activeCardIndex === 1 && activeProviders.map((provider) => (
-                  <tr 
-                    key={provider.id}
-                    onClick={() => navigate(`/admin/provider-metrics/${provider.id}`)}
-                    className="group border-b border-border cursor-pointer transition-all relative"
-                  >
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
-                      <div className={cn(
-                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none -z-10",
-                        provider.bgColor
-                      )} style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />
-                      {provider.name}
-                    </td>
-                    <td className="py-4 px-4 text-foreground relative z-10">
-                      {provider.specialty}
-                    </td>
-                    <td className="py-4 px-4 text-foreground relative z-10">
-                      {provider.sessions.completed} / {provider.sessions.scheduled} agendadas
-                    </td>
-                    <td className="py-4 px-4 relative z-10">
-                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
-                        Ativo
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats and Testimonial Section */}
-      <div className="mt-12 sm:mt-16 lg:mt-20 grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
-        <div className="flex justify-center items-center p-4 sm:p-6">
-          <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left">
-            <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-foreground">
-                150+
-              </div>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Empresas Ativas
-              </p>
-            </div>
-            <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-foreground">
-                200+
-              </div>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Affiliates
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="relative">
-          <div className="border-l-4 border-primary pl-4 sm:pl-6 lg:pl-8">
-            <motion.div
-              key={currentTipIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <Badge variant="outline" className="text-xs">
-                  {platformTips[currentTipIndex].category}
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  Dica {currentTipIndex + 1} de {platformTips.length}
-                </span>
-              </div>
-              <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-foreground font-medium">
-                💡 {platformTips[currentTipIndex].tip}
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-let interval: any;
-
 type Card = {
   id: number;
   name: string;
   designation: string;
   content: React.ReactNode;
-  Icon: any;
-  bgColor: string;
-  iconColor: string;
-  tabValue: string;
 };
+
+const CARDS: Card[] = [
+  {
+    id: 0,
+    name: "Ana Silva",
+    designation: "Psicóloga Clínica",
+    content: (
+      <p>
+        <Highlight>Sessões transformadoras</Highlight> que realmente fazem a diferença na vida dos colaboradores. A plataforma facilita{" "}
+        <Highlight>conexões genuínas</Highlight> e permite um acompanhamento eficaz.
+      </p>
+    ),
+  },
+  {
+    id: 1,
+    name: "João Santos",
+    designation: "Fisioterapeuta",
+    content: (
+      <p>
+        O <Highlight>sistema de agendamento</Highlight> é intuitivo e eficiente. Consigo gerir todas as minhas sessões com{" "}
+        <Highlight>total controlo e flexibilidade</Highlight> para melhor servir os colaboradores.
+      </p>
+    ),
+  },
+  {
+    id: 2,
+    name: "Maria Costa",
+    designation: "Consultora Financeira",
+    content: (
+      <p>
+        Após adoptar esta <Highlight>plataforma de bem-estar</Highlight>, a minha produtividade aumentou 40%. As{" "}
+        <Highlight>ferramentas integradas</Highlight> tornaram o meu trabalho muito mais eficiente.
+      </p>
+    ),
+  },
+  {
+    id: 3,
+    name: "Pedro Oliveira",
+    designation: "Advogado",
+    content: (
+      <p>
+        A plataforma permite <Highlight>gestão profissional</Highlight> de todas as consultas jurídicas. O sistema de notas e{" "}
+        <Highlight>histórico completo</Highlight> facilita o acompanhamento de cada caso.
+      </p>
+    ),
+  },
+];
+
+const integrations = [
+  {
+    name: "Gestão de Horários",
+    desc: "Organize a sua disponibilidade e sessões em tempo real",
+    icon: "📅",
+  },
+  {
+    name: "Videochamadas",
+    desc: "Realize sessões virtuais com qualidade profissional",
+    icon: "🎥",
+  },
+  {
+    name: "Notas de Sessão",
+    desc: "Documente e acompanhe o progresso dos colaboradores",
+    icon: "📝",
+  },
+  {
+    name: "Avaliações",
+    desc: "Receba feedback e melhore continuamente o seu serviço",
+    icon: "⭐",
+  },
+];
+
+export default function RuixenSection() {
+  return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+      <div className="grid grid-cols-1 lg:grid-cols-2 relative">
+        {/* Left Block */}
+        <div className="flex flex-col items-start justify-center border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
+          {/* Card */}
+          <div className="relative w-full mb-4 sm:mb-6">
+            <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-10"></div>
+            <CardStack items={CARDS} />
+          </div>
+
+          {/* Content */}
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white leading-relaxed">
+            Experiência Profissional Intuitiva com <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
+            <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
+              Simplifique a gestão das suas sessões com ferramentas profissionais que fornecem insights e controlo total.
+            </span>
+          </h3>
+        </div>
+
+        {/* Right Block */}
+        <div className="flex flex-col items-center justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
+          {/* Content */}
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white mb-4 sm:mb-6 leading-relaxed">
+            Ecossistema de Ferramentas Integradas <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
+            <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
+              Integre-se perfeitamente com todas as funcionalidades essenciais para prestar o melhor serviço.
+            </span>
+          </h3>
+          <div
+            className={cn(
+              "group relative mt-auto w-full inline-flex animate-rainbow cursor-pointer items-center justify-center rounded-xl border-0 bg-white dark:bg-black px-4 sm:px-6 lg:px-8 py-2 font-medium text-primary-foreground transition-colors [background-clip:padding-box,border-box,border-box] [background-origin:border-box] [border:calc(0.08*1rem)_solid_transparent] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+              "before:absolute before:bottom-[8%] before:left-1/2 before:z-0 before:h-1/5 before:w-3/5 before:-translate-x-1/2 before:animate-rainbow before:bg-[linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))] before:bg-[length:200%] before:[filter:blur(calc(0.8*1rem))]",
+            )}
+          >
+            {/* Integration List */}
+            <CardContent className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-2xl sm:rounded-3xl z-10 w-full">
+              {integrations.map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-2 sm:p-3 border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl hover:bg-muted/50 transition"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3 flex-1">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-muted flex items-center justify-center text-sm sm:text-lg flex-shrink-0">
+                      {item.icon}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs sm:text-sm font-medium text-foreground truncate">{item.name}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-1 sm:line-clamp-2">{item.desc}</p>
+                    </div>
+                  </div>
+                  <button className="rounded-full border border-gray-200 dark:border-gray-700 p-1.5 sm:p-2 text-xs font-semibold flex-shrink-0 ml-2">
+                    <TbHeartPlus className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </button>
+                </div>
+              ))}
+            </CardContent>
+          </div>
+        </div>
+      </div>
+      
+      {/* Stats and Testimonial Section */}
+      <div className="mt-12 sm:mt-16 lg:mt-20 grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+        <div className="flex justify-center items-center p-4 sm:p-6">
+          <div className="grid grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left">
+            <div className="space-y-2 sm:space-y-3">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">+150</div>
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Prestadores Ativos</p>
+            </div>
+            <div className="space-y-2 sm:space-y-3">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">5K+</div>
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Sessões Realizadas</p>
+            </div>
+            <div className="space-y-2 sm:space-y-3">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">4.9</div>
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Avaliação Média</p>
+            </div>
+          </div>
+        </div>
+        <div className="relative">
+          <blockquote className="border-l-2 border-gray-200 dark:border-gray-700 pl-4 sm:pl-6 lg:pl-8 text-gray-700 dark:text-gray-400">
+            <p className="text-sm sm:text-base lg:text-lg leading-relaxed">
+              Usar esta plataforma foi como desbloquear um novo nível de produtividade. É a fusão perfeita de simplicidade e versatilidade, permitindo-nos criar experiências de bem-estar excepcionais.
+            </p>
+            <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
+              <cite className="block font-medium text-sm sm:text-base text-gray-900 dark:text-white">Dr. Ricardo Mendes, Diretor Clínico</cite>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+let interval: any;
 
 export const CardStack = ({
   items,
   offset,
   scaleFactor,
-  onTabChange,
-  onCardChange,
-  navigate,
-  onEmployeeClick
 }: {
   items: Card[];
   offset?: number;
   scaleFactor?: number;
-  onTabChange?: (tab: string) => void;
-  onCardChange?: (index: number) => void;
-  navigate?: (path: string) => void;
-  onEmployeeClick?: (employeeId: number) => void;
 }) => {
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
   const [cards, setCards] = useState<Card[]>(items);
 
-  // Notify parent of card change
   useEffect(() => {
-    const topCardIndex = items.findIndex(item => item.id === cards[0].id);
-    onCardChange?.(topCardIndex);
-  }, [cards, items, onCardChange]);
+    startFlipping();
 
-  const nextCard = () => {
-    setCards((prevCards: Card[]) => {
-      const newArray = [...prevCards];
-      newArray.unshift(newArray.pop()!);
-      return newArray;
-    });
+    return () => clearInterval(interval);
+  }, []);
+  
+  const startFlipping = () => {
+    interval = setInterval(() => {
+      setCards((prevCards: Card[]) => {
+        const newArray = [...prevCards];
+        newArray.unshift(newArray.pop()!);
+        return newArray;
+      });
+    }, 5000);
   };
-
-  const prevCard = () => {
-    setCards((prevCards: Card[]) => {
-      const newArray = [...prevCards];
-      newArray.push(newArray.shift()!);
-      return newArray;
-    });
-  };
-
 
   return (
-    <div className="relative mx-auto h-64 w-full md:h-64 md:w-96 my-4">
-      {/* Navigation Arrows - Always visible */}
-      <div className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 z-30">
-        <Button
-          onClick={(e) => {
-            e.stopPropagation();
-            prevCard();
-          }}
-          size="icon"
-          variant="outline"
-          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted border-2"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-      </div>
-      
-      <div className="absolute -right-4 sm:-right-6 top-1/2 -translate-y-1/2 z-30">
-        <Button
-          onClick={(e) => {
-            e.stopPropagation();
-            nextCard();
-          }}
-          size="icon"
-          variant="outline"
-          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted border-2"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
-      </div>
-
+    <div className="relative mx-auto h-48 w-full md:h-48 md:w-96 my-4">
       {cards.map((card, index) => {
-        const CardIcon = card.Icon;
-        const isTopCard = index === 0;
-        
         return (
           <motion.div
             key={card.id}
-            onClick={() => {
-              if (isTopCard && navigate) {
-                navigate(`/admin/users-management?tab=${card.tabValue}`);
-              }
-            }}
-            className={cn(
-              "absolute h-64 w-full md:h-64 md:w-96 rounded-3xl p-6 shadow-xl border-2 flex flex-col justify-between transition-all",
-              card.bgColor,
-              isTopCard ? "cursor-pointer hover:shadow-2xl hover:scale-[1.02] border-primary/20" : "border-border"
-            )}
+            className="absolute dark:bg-black bg-white h-48 w-full md:h-48 md:w-96 rounded-3xl p-4 shadow-xl border border-neutral-200 dark:border-white/[0.1] flex flex-col justify-between"
             style={{
               transformOrigin: "top center",
             }}
@@ -524,26 +241,21 @@ export const CardStack = ({
               scale: 1 - index * SCALE_FACTOR,
               zIndex: cards.length - index,
             }}
-            transition={{
-              duration: 0.3,
-              ease: "easeInOut"
-            }}
           >
-            <div className="flex items-start gap-4">
-              <div className={cn("p-3 rounded-xl bg-white/50", card.iconColor)}>
-                <CardIcon className="h-8 w-8" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-2xl font-semibold text-foreground mb-1">{card.name}</h4>
-                <p className="text-sm text-muted-foreground font-medium">{card.designation}</p>
-              </div>
-            </div>
-            <div className="mt-4">
+            <div className="font-normal text-neutral-700 dark:text-neutral-200">
               {card.content}
+            </div>
+            <div>
+              <p className="text-neutral-500 font-medium dark:text-white">
+                {card.name}
+              </p>
+              <p className="text-neutral-400 font-normal dark:text-neutral-200">
+                {card.designation}
+              </p>
             </div>
           </motion.div>
         );
       })}
     </div>
   );
-}
+};

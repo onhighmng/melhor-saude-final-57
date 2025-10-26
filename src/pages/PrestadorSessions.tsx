@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockPrestadorSessions } from '@/data/prestadorMetrics';
+import RuixenSection from '@/components/ui/ruixen-feature-section';
 
 export default function PrestadorSessions() {
   const { toast } = useToast();
@@ -175,10 +176,13 @@ export default function PrestadorSessions() {
 
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
+      {/* Feature Section with Cards */}
+      <RuixenSection />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Sessões</h1>
+          <h1 className="text-3xl font-bold text-foreground">Histórico de Sessões</h1>
           <p className="text-muted-foreground mt-1">
             Gerir todas as sessões associadas ao seu perfil
           </p>

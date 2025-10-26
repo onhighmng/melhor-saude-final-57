@@ -1,12 +1,5 @@
-import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import RuixenSection from "@/components/ui/ruixen-feature-section";
 
-
-function InteractiveHoverButtonDemo() {
-  return (
-    <div className="relative justify-center">
-      <InteractiveHoverButton />
-    </div>
-  );
+export default function DemoOne() {
+  return <RuixenSection />;
 }
-
-export { InteractiveHoverButtonDemo };
