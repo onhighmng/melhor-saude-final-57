@@ -1,6 +1,6 @@
-// Mock useBookings hook to replace Supabase calls
 import { useState, useEffect } from 'react';
-import { getMockBookings } from '@/data/mockData';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Booking {
   id: string;
@@ -21,25 +21,70 @@ export interface Booking {
 }
 
 export const useBookings = () => {
+  const { user } = useAuth();
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Update bookings to get fresh time calculation
   useEffect(() => {
-    const updateBookings = () => {
-      const bookings = getMockBookings();
-      setAllBookings(bookings);
-      setUpcomingBookings(bookings.slice(0, 3));
+    if (!user) return;
+
+    const fetchBookings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            prestadores (
+              id,
+              user_id,
+              profiles (name, avatar_url)
+            )
+          `)
+          .eq('user_id', user.id)
+          .order('date', { ascending: true });
+
+        if (error) throw error;
+
+        if (data) {
+          const bookings = data.map(b => ({
+            ...b,
+            provider_name: b.prestadores?.profiles?.name || '',
+            provider_avatar: b.prestadores?.profiles?.avatar_url || ''
+          }));
+          
+          setAllBookings(bookings);
+          setUpcomingBookings(bookings.filter(b => 
+            b.status === 'confirmed' && new Date(b.date) >= new Date()
+          ));
+        }
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching bookings:', err);
+        setLoading(false);
+      }
     };
 
-    updateBookings();
-    
-    // Refresh every 30 seconds to keep time accurate
-    const interval = setInterval(updateBookings, 30000);
-    
-    return () => clearInterval(interval);
-  }, []);
+    fetchBookings();
+
+    // Real-time subscription
+    const subscription = supabase
+      .channel('booking-updates')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'bookings',
+        filter: `user_id=eq.${user.id}`
+      }, () => {
+        fetchBookings();
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
 
   const bookingStats = {
     totalBookings: 15,

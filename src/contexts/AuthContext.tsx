@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
-import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser, mockEspecialistaGeralUser } from '@/data/mockData';
-import { generateUUID } from '@/utils/uuid';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UserProfile {
   id: string;
@@ -41,42 +40,39 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // Mock authentication state - starting with no user signed in
-  const mockUserWithUserId = { ...mockUser, user_id: mockUser.id };
-  const mockAdminUserWithUserId = { ...mockAdminUser, user_id: mockAdminUser.id };
-  const mockHRUserWithUserId = { ...mockHRUser, user_id: mockHRUser.id };
-  const mockPrestadorUserWithUserId = { ...mockPrestadorUser, user_id: mockPrestadorUser.id };
-  const mockEspecialistaGeralUserWithUserId = { ...mockEspecialistaGeralUser, user_id: mockEspecialistaGeralUser.id };
-
   const [user, setUser] = useState<any>(null);
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock authentication methods
+  // Real authentication methods
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       
-      // Mock login logic based on email
-      let mockUserData: UserProfile = mockUserWithUserId;
-      if (email.includes('admin')) {
-        mockUserData = mockAdminUserWithUserId;
-      } else if (email.includes('rh')) {
-        mockUserData = mockHRUserWithUserId;
-      } else if (email.includes('prestador')) {
-        mockUserData = mockPrestadorUserWithUserId;
-      } else if (email.includes('especialista')) {
-        mockUserData = mockEspecialistaGeralUserWithUserId;
-      }
+      if (error) throw error;
       
-      setUser({ id: mockUserData.id, email: mockUserData.email });
-      setSession({ access_token: 'mock-token' });
-      setProfile(mockUserData);
+      // Get profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (profileError) throw profileError;
+      
+      setUser(data.user);
+      setSession(data.session);
+      setProfile({
+        ...profileData,
+        user_id: profileData.id,
+        is_active: profileData.is_active ?? true
+      });
       
       return {};
-    } catch (error) {
-      return { error: 'Credenciais inválidas' };
+    } catch (error: any) {
+      return { error: error.message || 'Credenciais inválidas' };
     } finally {
       setIsLoading(false);
     }
@@ -85,23 +81,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signup = async (email: string, password: string, name: string) => {
     try {
       setIsLoading(true);
+      const { data, error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: { data: { name } }
+      });
       
-      const newUserId = generateUUID();
-      const newUser = {
-        ...mockUserWithUserId,
-        email,
-        name,
-        id: newUserId,
-        user_id: newUserId
-      };
+      if (error) throw error;
       
-      setUser({ id: newUser.id, email: newUser.email });
-      setSession({ access_token: 'mock-token' });
-      setProfile(newUser);
+      // Create profile if not exists
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: data.user!.id,
+          email,
+          name,
+          role: 'user'
+        });
+      
+      if (profileError && profileError.code !== '23505') throw profileError;
       
       return {};
-    } catch (error) {
-      return { error: 'Erro ao criar conta' };
+    } catch (error: any) {
+      return { error: error.message || 'Erro ao criar conta' };
     } finally {
       setIsLoading(false);
     }
@@ -109,34 +111,80 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resetPassword = async (email: string) => {
     try {
-      // Mock password reset - just return success
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+      if (error) throw error;
       return {};
-    } catch (error) {
-      return { error: 'Erro ao redefinir palavra-passe' };
+    } catch (error: any) {
+      return { error: error.message || 'Erro ao redefinir palavra-passe' };
     }
   };
 
   const logout = async () => {
     try {
-      // Clear all state first
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
       setUser(null);
       setSession(null);
       setProfile(null);
-      
-      // Clear any stored redirect intentions
       localStorage.removeItem('auth_redirect_intent');
       localStorage.removeItem('navigation_history');
-      
-      // Small delay to ensure state is cleared before navigation
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
-      // Don't navigate here - let the component handle navigation
-      // window.location.href = '/';
-      
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
+
+  // Listen for auth state changes
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        // Load profile
+        supabase.from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data }) => {
+            if (data) {
+              setProfile({
+                ...data,
+                user_id: data.id,
+                is_active: data.is_active ?? true
+              });
+            }
+          });
+      }
+      setIsLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        supabase.from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data }) => {
+            if (data) {
+              setProfile({
+                ...data,
+                user_id: data.id,
+                is_active: data.is_active ?? true
+              });
+            }
+          });
+      } else {
+        setProfile(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Computed values
   const isAuthenticated = !!user && !!profile;

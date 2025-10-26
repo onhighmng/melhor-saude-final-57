@@ -1,16 +1,47 @@
 
-import { useState } from 'react';
-import { mockSessionBalance } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { SessionBalance } from '@/types/session';
 
 export const useSessionBalance = () => {
-  const [sessionBalance] = useState<SessionBalance | null>(mockSessionBalance);
-  const [loading] = useState(false);
-  const [error] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [sessionBalance, setSessionBalance] = useState<SessionBalance | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const refetch = () => {
-    // Mock refetch - do nothing since it's static data
+  const refetch = async () => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      const { data: employee, error: fetchError } = await supabase
+        .from('company_employees')
+        .select('sessions_quota, sessions_used')
+        .eq('user_id', user.id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      if (employee) {
+        setSessionBalance({
+          totalRemaining: employee.sessions_quota - employee.sessions_used,
+          employerRemaining: employee.sessions_quota - employee.sessions_used,
+          personalRemaining: 0,
+          hasActiveSessions: (employee.sessions_quota - employee.sessions_used) > 0
+        });
+      }
+    } catch (err: any) {
+      setError(err.message);
+      console.error('Error fetching session balance:', err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    refetch();
+  }, [user]);
 
   return {
     sessionBalance,

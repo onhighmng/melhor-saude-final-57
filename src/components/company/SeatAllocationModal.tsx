@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Company } from "@/data/companyMockData";
 import { Users, AlertCircle } from "lucide-react";
-import { companyToasts } from "@/data/companyToastMessages";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from 'react-i18next';
 
 interface SeatAllocationModalProps {
@@ -29,16 +30,41 @@ export function SeatAllocationModal({
   onUpdate 
 }: SeatAllocationModalProps) {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [newLimit, setNewLimit] = useState(company.seatLimit);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (newLimit < company.seatUsed) {
-      companyToasts.actionFailed(t('company:errors.seatLimitTooLow'));
+      toast({
+        title: 'Erro',
+        description: t('company:errors.seatLimitTooLow'),
+        variant: 'destructive'
+      });
       return;
     }
-    onUpdate(newLimit);
-    companyToasts.settingsSaved();
-    onOpenChange(false);
+
+    try {
+      // Update company sessions_allocated
+      await supabase
+        .from('companies')
+        .update({ sessions_allocated: newLimit })
+        .eq('id', company.id);
+
+      onUpdate(newLimit);
+      
+      toast({
+        title: 'Limite atualizado',
+        description: 'As alterações foram guardadas com sucesso.',
+      });
+      
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao atualizar limite',
+        variant: 'destructive'
+      });
+    }
   };
 
   return (

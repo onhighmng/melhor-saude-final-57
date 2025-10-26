@@ -13,6 +13,7 @@ import { RatingScaleGroup, RatingScaleItem } from "@/components/ui/rating-scale-
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { userToastMessages } from "@/data/userToastMessages";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SessionRatingDialogProps {
   open: boolean;
@@ -43,26 +44,49 @@ export function SessionRatingDialog({
 
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    console.log('Session rating submitted:', {
-      sessionId,
-      rating,
-      comments
-    });
+    try {
+      // Update booking with rating and feedback
+      const { error } = await supabase
+        .from('bookings')
+        .update({
+          rating: parseInt(rating),
+          feedback: comments || null
+        })
+        .eq('id', sessionId);
 
-    toast({
-      title: userToastMessages.success.feedbackSubmitted,
-      description: `Classificação: ${rating}/10`
-    });
+      if (error) throw error;
 
-    setIsSubmitting(false);
-    onOpenChange(false);
-    
-    // Reset form
-    setRating("");
-    setComments("");
+      // Also insert feedback record for tracking
+      const { error: feedbackError } = await supabase
+        .from('feedback')
+        .insert({
+          user_id: sessionId, // This will be replaced with actual user_id in real usage
+          booking_id: sessionId,
+          rating: parseInt(rating),
+          message: comments,
+          status: 'new'
+        });
+
+      toast({
+        title: userToastMessages.success.feedbackSubmitted,
+        description: `Classificação: ${rating}/10`
+      });
+
+      onOpenChange(false);
+      
+      // Reset form
+      setRating("");
+      setComments("");
+    } catch (error: any) {
+      console.error('Error submitting rating:', error);
+      toast({
+        title: "Erro ao enviar avaliação",
+        description: error.message || "Ocorreu um erro. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

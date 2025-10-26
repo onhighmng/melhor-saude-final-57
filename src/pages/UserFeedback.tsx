@@ -1,31 +1,55 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
 import { PageHeader } from "@/components/ui/page-header";
 import { FeedbackForm, FeedbackData } from "@/components/feedback/FeedbackForm";
 import { useTranslation } from 'react-i18next';
 import { userToastMessages } from "@/data/userToastMessages";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
-import { mockSessions } from "@/data/sessionMockData";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function UserFeedback() {
   const { t } = useTranslation('user');
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
-  // Find the session
-  const session = mockSessions.find(s => s.id === sessionId);
+  // Find the session from real bookings
+  const [session, setSession] = useState<any>(null);
   
-  const handleSubmit = (feedback: FeedbackData) => {
-    console.log('Feedback submitted:', feedback);
-    toast.success(userToastMessages.success.feedbackSubmitted);
-    
-    // Show success screen
-    setTimeout(() => {
-      navigate('/user/sessions');
-    }, 2000);
+  useEffect(() => {
+    if (sessionId && user) {
+      supabase.from('bookings')
+        .select('*')
+        .eq('id', sessionId)
+        .eq('user_id', user.id)
+        .single()
+        .then(({ data }) => setSession(data));
+    }
+  }, [sessionId, user]);
+  
+  const handleSubmit = async (feedback: FeedbackData) => {
+    try {
+      await supabase.from('feedback').insert({
+        user_id: user?.id,
+        booking_id: sessionId,
+        category: feedback.category,
+        message: feedback.comment,
+        rating: feedback.rating
+      });
+      
+      toast.success(userToastMessages.success.feedbackSubmitted);
+      
+      setTimeout(() => {
+        navigate('/user/sessions');
+      }, 2000);
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao submeter feedback');
+    }
   };
   
   const handleSkip = () => {

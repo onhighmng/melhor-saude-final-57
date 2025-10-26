@@ -27,7 +27,8 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { generateUUID } from '@/utils/uuid';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { RefreshCw, Send } from 'lucide-react';
 
 const formSchema = z.object({
@@ -109,12 +110,58 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
     });
   };
 
+  const { profile } = useAuth();
+
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
 
     try {
-      // In production, this would create the employee in the database
-      console.log('Creating employee:', data);
+      // Get company ID
+      const { data: company, error: companyError } = await supabase
+        .from('companies')
+        .select('id')
+        .eq('name', data.company)
+        .single();
+
+      if (companyError) throw companyError;
+
+      // Create user and employee record
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: data.email,
+        password: generateAccessCode(),
+        email_confirm: true
+      });
+
+      if (authError) throw authError;
+
+      // Create profile
+      await supabase.from('profiles').insert({
+        id: authData.user.id,
+        email: data.email,
+        name: data.fullName,
+        phone: data.phone,
+        role: 'user',
+        company_id: company.id,
+        position: data.position
+      });
+
+      // Create company_employee link
+      await supabase.from('company_employees').insert({
+        company_id: company.id,
+        user_id: authData.user.id,
+        position: data.position,
+        sessions_quota: 6 // Default quota
+      });
+
+      // Create invite record
+      await supabase.from('invites').insert({
+        invite_code: data.accessCode,
+        invited_by: profile?.id,
+        company_id: company.id,
+        email: data.email,
+        role: 'user',
+        status: 'accepted'
+      });
 
       toast({
         title: 'Colaborador adicionado com sucesso',
@@ -131,10 +178,10 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       });
 
       onOpenChange(false);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Erro ao adicionar colaborador',
-        description: 'Ocorreu um erro. Por favor, tente novamente.',
+        description: error.message || 'Ocorreu um erro. Por favor, tente novamente.',
         variant: 'destructive',
       });
     } finally {

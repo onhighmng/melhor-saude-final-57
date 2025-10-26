@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Dialog,
   DialogContent,
@@ -42,17 +45,60 @@ export function EditCompanyDialog({
   company,
   onSave,
 }: EditCompanyDialogProps) {
+  const { toast } = useToast();
+  const { profile } = useAuth();
   const [formData, setFormData] = useState<Company>(company);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     setIsSaving(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
     
-    onSave(formData);
-    setIsSaving(false);
-    onOpenChange(false);
+    try {
+      // Update company in database
+      const { error } = await supabase
+        .from('companies')
+        .update({
+          name: formData.name,
+          nuit: formData.nuit,
+          email: formData.contactEmail,
+          phone: formData.contactPhone,
+          sessions_allocated: formData.sessionsAllocated,
+          metadata: {
+            plan_type: formData.planType,
+            notes: formData.finalNotes
+          }
+        })
+        .eq('id', company.id);
+
+      if (error) throw error;
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'company_updated',
+          entity_type: 'company',
+          entity_id: company.id,
+          changes: formData
+        });
+      }
+
+      toast({
+        title: 'Empresa atualizada',
+        description: 'As alterações foram guardadas com sucesso.',
+      });
+
+      onSave(formData);
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao atualizar',
+        description: error.message || 'Ocorreu um erro ao atualizar a empresa',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

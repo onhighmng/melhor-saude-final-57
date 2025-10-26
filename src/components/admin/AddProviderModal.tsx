@@ -21,6 +21,17 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { UserCog } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+
+const generateRandomPassword = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let password = '';
+  for (let i = 0; i < 16; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+};
 
 const addProviderSchema = z.object({
   name: z.string().min(1, 'Campo obrigatório'),
@@ -43,6 +54,7 @@ interface AddProviderModalProps {
 
 export const AddProviderModal = ({ open, onOpenChange }: AddProviderModalProps) => {
   const { toast } = useToast();
+  const { profile } = useAuth();
 
   const {
     register,
@@ -66,20 +78,58 @@ export const AddProviderModal = ({ open, onOpenChange }: AddProviderModalProps) 
 
   const onSubmit = async (data: AddProviderFormData) => {
     try {
-      // TODO: Implement API call to create provider
-      console.log('Provider data:', data);
+      // Create auth user
+      const password = generateRandomPassword();
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: data.email,
+        password: password,
+        email_confirm: true
+      });
+
+      if (authError) throw authError;
+
+      // Create profile
+      await supabase.from('profiles').insert({
+        id: authData.user.id,
+        email: data.email,
+        name: data.name,
+        phone: data.phone,
+        role: 'prestador'
+      });
+
+      // Create prestador record
+      await supabase.from('prestadores').insert({
+        user_id: authData.user.id,
+        specialty: data.specialty,
+        pillars: [data.pillar],
+        session_type: data.sessionType,
+        cost_per_session: data.costPerSession,
+        credentials: data.credentials,
+        experience_years: data.experience,
+        is_approved: false
+      });
+
+      // Log action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'provider_created',
+          entity_type: 'prestador',
+          changes: { provider_data: data }
+        });
+      }
 
       toast({
-        title: 'Affiliate adicionado com sucesso',
-        description: 'O affiliate foi registado e já pode receber agendamentos',
+        title: 'Prestador adicionado com sucesso',
+        description: `Email: ${data.email}, Password: ${password}`,
       });
 
       reset();
       onOpenChange(false);
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Erro ao adicionar affiliate',
-        description: 'Ocorreu um erro ao tentar adicionar o affiliate. Por favor, tente novamente.',
+        title: 'Erro ao adicionar prestador',
+        description: error.message || 'Ocorreu um erro ao tentar adicionar o prestador. Por favor, tente novamente.',
         variant: 'destructive',
       });
     }

@@ -22,6 +22,7 @@ import { getPillarColors, cn } from '@/lib/utils';
 import DisplayCards from '@/components/ui/display-cards';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import cardBackground from '@/assets/card-background.png';
+import { supabase } from '@/integrations/supabase/client';
 const UserDashboard = () => {
   const navigate = useNavigate();
   const {
@@ -111,13 +112,36 @@ const UserDashboard = () => {
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
   const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
   const [hasAnimated, setHasAnimated] = useState(false);
-  const handleOnboardingComplete = (data: OnboardingData) => {
-    const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
-    localStorage.setItem('onboardingData', JSON.stringify(data));
-    localStorage.setItem(userOnboardingKey, 'true');
-    setOnboardingData(data);
-    setShowOnboarding(false);
-    setJustCompletedOnboarding(true);
+  const handleOnboardingComplete = async (data: OnboardingData) => {
+    try {
+      if (profile?.id) {
+        // Save to database
+        await supabase.from('onboarding_data').upsert({
+          user_id: profile.id,
+          wellbeing_score: data.wellbeingScore,
+          difficulty_areas: data.difficultyAreas,
+          main_goals: data.mainGoals,
+          improvement_signs: data.improvementSigns,
+          frequency: data.frequency
+        });
+
+        // Also save to localStorage for backward compatibility
+        localStorage.setItem('onboardingData', JSON.stringify(data));
+        const userOnboardingKey = `onboarding_completed_${profile.email || 'demo'}`;
+        localStorage.setItem(userOnboardingKey, 'true');
+      }
+      
+      setOnboardingData(data);
+      setShowOnboarding(false);
+      setJustCompletedOnboarding(true);
+    } catch (error) {
+      console.error('Error saving onboarding data:', error);
+      // Fallback to localStorage on error
+      localStorage.setItem('onboardingData', JSON.stringify(data));
+      setOnboardingData(data);
+      setShowOnboarding(false);
+      setJustCompletedOnboarding(true);
+    }
   };
 
   // Listen for milestone completion events

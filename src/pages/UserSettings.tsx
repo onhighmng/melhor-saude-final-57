@@ -23,6 +23,7 @@ import { NotificationPrefsModal } from "@/components/settings/NotificationPrefsM
 import { SecurityModal } from "@/components/settings/SecurityModal";
 import { ConsentsModal } from "@/components/settings/ConsentsModal";
 import { NotificationHistoryModal } from "@/components/settings/NotificationHistoryModal";
+import { supabase } from '@/integrations/supabase/client';
 
 const UserSettings = () => {
   const { profile, user } = useAuth();
@@ -141,25 +142,71 @@ const UserSettings = () => {
   const unreadNotifications = notifications.filter(n => !n.read);
   const readNotifications = notifications.filter(n => n.read);
 
-  const handleSaveProfile = () => {
-    toast({
-      title: 'Perfil atualizado',
-      description: 'As suas alterações foram guardadas com sucesso.'
-    });
+  const handleSaveProfile = async (profileData: any) => {
+    try {
+      if (!profile?.id) return;
+      
+      await supabase.from('profiles').update({
+        name: profileData.name,
+        phone: profileData.phone,
+        bio: profileData.bio,
+        avatar_url: profileData.avatar_url
+      }).eq('id', profile.id);
+
+      toast({
+        title: 'Perfil atualizado',
+        description: 'As suas alterações foram guardadas com sucesso.'
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao atualizar perfil',
+        variant: 'destructive'
+      });
+    }
   };
 
-  const handleSaveNotifications = () => {
-    toast({
-      title: 'Preferências atualizadas',
-      description: 'As suas preferências de notificação foram guardadas.'
-    });
+  const handleSaveNotifications = async (preferences: any) => {
+    try {
+      if (!profile?.id) return;
+      
+      // Save to metadata or separate table
+      await supabase.from('profiles').update({
+        metadata: { notification_preferences: preferences }
+      }).eq('id', profile.id);
+
+      toast({
+        title: 'Preferências atualizadas',
+        description: 'As suas preferências de notificação foram guardadas.'
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao salvar preferências',
+        variant: 'destructive'
+      });
+    }
   };
 
-  const handleSaveConsents = () => {
-    toast({
-      title: 'Consentimentos atualizados',
-      description: 'Os seus consentimentos foram guardados com sucesso.'
-    });
+  const handleSaveConsents = async (consents: any) => {
+    try {
+      if (!profile?.id) return;
+      
+      await supabase.from('profiles').update({
+        metadata: { consents: consents }
+      }).eq('id', profile.id);
+
+      toast({
+        title: 'Consentimentos atualizados',
+        description: 'Os seus consentimentos foram guardados com sucesso.'
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao salvar consentimentos',
+        variant: 'destructive'
+      });
+    }
   };
 
   const handleRequestProviderChange = (pillar: string) => {

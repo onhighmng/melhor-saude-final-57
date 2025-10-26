@@ -37,13 +37,27 @@ import {
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
-import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import providerPlaceholder from '@/assets/provider-placeholder.jpg';
 import { BookingModal } from '@/components/admin/providers/BookingModal';
 import { InfoCard } from '@/components/ui/info-card';
 import type { CalendarSlot } from '@/types/adminProvider';
 
+interface Provider {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  specialty: string;
+  pillar: string;
+  status: string;
+  satisfaction: number;
+  sessionsThisMonth: number;
+}
+
 const AdminProvidersTab = () => {
+  const { profile } = useAuth();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,16 +94,61 @@ const AdminProvidersTab = () => {
   const loadProviders = async () => {
     setIsLoading(true);
     try {
-      setTimeout(() => {
-        setProviders(mockProviders);
-        setIsLoading(false);
-      }, 1000);
-    } catch (error) {
+      // Load prestadores with profiles
+      const { data, error } = await supabase
+        .from('prestadores')
+        .select(`
+          *,
+          profiles (name, email, avatar_url)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        // Get bookings for metrics
+        const { data: bookingsData } = await supabase
+          .from('bookings')
+          .select('prestador_id, rating')
+          .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+
+        const bookingStats = bookingsData?.reduce((acc: any, b: any) => {
+          if (!acc[b.prestador_id]) {
+            acc[b.prestador_id] = { count: 0, ratings: [] };
+          }
+          acc[b.prestador_id].count++;
+          if (b.rating) acc[b.prestador_id].ratings.push(b.rating);
+          return acc;
+        }, {});
+
+        const formattedProviders = data.map((p: any) => {
+          const stats = bookingStats?.[p.id] || { count: 0, ratings: [] };
+          const avgSatisfaction = stats.ratings.length > 0
+            ? stats.ratings.reduce((sum: number, r: number) => sum + r, 0) / stats.ratings.length
+            : p.rating || 0;
+
+          return {
+            id: p.id,
+            name: p.profiles?.name || '',
+            email: p.profiles?.email || '',
+            avatar: p.profiles?.avatar_url || '',
+            specialty: p.specialty || '',
+            pillar: p.pillars?.[0] || '',
+            status: p.is_approved ? 'Ativo' : 'Inativo',
+            satisfaction: Math.round(avgSatisfaction * 10) / 10,
+            sessionsThisMonth: stats.count
+          };
+        });
+
+        setProviders(formattedProviders);
+      }
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Erro ao carregar prestadores",
+        description: error.message || "Erro ao carregar prestadores",
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
     }
   };

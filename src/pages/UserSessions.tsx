@@ -1,78 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/sessionMockData";
-import { getMockBookings } from "@/data/mockData";
 import { SessionModal } from "@/components/sessions/SessionModal";
 import UserJourneySection from "@/components/ui/user-journey-section";
+import { useBookings } from "@/hooks/useBookings";
+import { useSessionBalance } from "@/hooks/useSessionBalance";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function UserSessions() {
   const navigate = useNavigate();
-  const [userBalance] = useState(mockUserBalance);
+  const { profile } = useAuth();
+  const { allBookings, upcomingBookings, loading: bookingsLoading } = useBookings();
+  const { sessionBalance, loading: balanceLoading } = useSessionBalance();
+  const [userGoals, setUserGoals] = useState<any[]>([]);
   const [isPastSessionsModalOpen, setIsPastSessionsModalOpen] = useState(false);
   const [isFutureSessionsModalOpen, setIsFutureSessionsModalOpen] = useState(false);
   
-  // Mock user goals data - based on onboarding choices
-  const [userGoals] = useState([
-    {
-      id: '1',
-      title: 'Gerir melhor o stress e a ansiedade',
-      pillar: 'saude_mental',
-      targetSessions: 6,
-      completedSessions: 4,
-      progressPercentage: 70,
-      progressEmojis: ['😟', '🙂', '😄']
-    },
-    {
-      id: '2',
-      title: 'Sentir-me mais seguro juridicamente',
-      pillar: 'assistencia_juridica',
-      targetSessions: 4,
-      completedSessions: 2,
-      progressPercentage: 45,
-      progressEmojis: ['⚪', '⚪', '🔵', '⚪']
-    },
-    {
-      id: '3',
-      title: 'Organizar melhor as minhas finanças',
-      pillar: 'assistencia_financeira',
-      targetSessions: 3,
-      completedSessions: 1,
-      progressPercentage: 30,
-      progressEmojis: ['💸', '💸', '⚪', '⚪']
-    },
-    {
-      id: '4',
-      title: 'Melhorar o meu bem-estar físico',
-      pillar: 'bem_estar_fisico',
-      targetSessions: 5,
-      completedSessions: 0,
-      progressPercentage: 0,
-      progressEmojis: ['⚪', '⚪', '⚪', '⚪', '⚪']
-    }
-  ]);
+  // Load user goals from onboarding data
+  useEffect(() => {
+    const loadGoals = async () => {
+      if (!profile?.id) return;
+      
+      const { data } = await supabase
+        .from('onboarding_data')
+        .select('main_goals, difficulty_areas')
+        .eq('user_id', profile.id)
+        .single();
+      
+      if (data?.main_goals) {
+        setUserGoals(data.main_goals.map((goal: string, index: number) => ({
+          id: `${index}`,
+          title: goal,
+          pillar: data.difficulty_areas?.[index] || 'saude_mental',
+          targetSessions: 6,
+          completedSessions: allBookings.filter(b => b.status === 'completed').length,
+          progressPercentage: 70,
+          progressEmojis: ['😟', '🙂', '😄']
+        })));
+      }
+    };
+    
+    loadGoals();
+  }, [profile?.id, allBookings]);
   
-  // Convert mockBookings to Session format
-  const [sessions] = useState<Session[]>(
-    getMockBookings().map(booking => ({
-      id: booking.id,
-      userId: 'user123',
-      prestadorId: 'prest123',
-      date: booking.date,
-      time: booking.time,
-      prestadorName: booking.provider_name,
-      pillar: booking.pillar as 'saude_mental' | 'assistencia_juridica' | 'assistencia_financeira' | 'bem_estar_fisico',
-      status: booking.status as SessionStatus,
-      minutes: 60,
-      wasDeducted: booking.status === 'completed',
-      payerSource: 'company' as const,
-      deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
-      createdAt: booking.booking_date,
-      updatedAt: booking.booking_date,
-      sessionType: 'individual' as const,
-      meetingPlatform: (booking.meeting_platform?.includes('Zoom') ? 'zoom' : booking.meeting_platform?.includes('Teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
-      meetingLink: booking.meeting_link
-    }))
-  );
+  // Convert bookings to sessions format
+  const sessions = allBookings.map(booking => ({
+    id: booking.id,
+    userId: booking.user_id,
+    prestadorId: booking.prestador_id || '',
+    date: booking.date,
+    time: booking.start_time,
+    prestadorName: booking.provider_name || 'Provider',
+    pillar: booking.pillar as 'saude_mental' | 'assistencia_juridica' | 'assistencia_financeira' | 'bem_estar_fisico',
+    status: booking.status as any,
+    minutes: 60,
+    wasDeducted: booking.status === 'completed',
+    payerSource: 'company' as const,
+    deductedAt: booking.status === 'completed' ? booking.created_at : undefined,
+    createdAt: booking.created_at,
+    updatedAt: booking.updated_at,
+    sessionType: 'individual' as const,
+    meetingPlatform: (booking.meeting_link?.includes('zoom') ? 'zoom' : booking.meeting_link?.includes('teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
+    meetingLink: booking.meeting_link || ''
+  }));
 
   // Separate past and future sessions
   const now = new Date();

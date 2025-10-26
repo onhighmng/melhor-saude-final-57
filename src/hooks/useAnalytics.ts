@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { mockAnalytics } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AnalyticsData {
   total_users: number;
@@ -21,9 +21,29 @@ interface AnalyticsData {
 }
 
 export const useAnalytics = () => {
-  const [data] = useState<AnalyticsData | null>(mockAnalytics);
-  const [isLoading] = useState(false);
-  const [error] = useState<string | null>(null);
+  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  return { data, isLoading, error, refetch: () => {} };
+  const fetchAnalytics = async () => {
+    try {
+      setLoading(true);
+      const { data: analytics, error: analyticsError } = await supabase
+        .rpc('get_platform_analytics');
+      
+      if (analyticsError) throw analyticsError;
+      setData(analytics);
+    } catch (err: any) {
+      setError(err.message);
+      console.error('Error fetching analytics:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
+
+  return { data, isLoading: loading, error, refetch: fetchAnalytics };
 };

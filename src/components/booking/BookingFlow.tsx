@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PillarSelection from './PillarSelection';
-import { mockProviders } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
@@ -11,6 +10,8 @@ import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/Me
 import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-assessment/PhysicalWellnessAssessmentFlow';
 import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
 import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -28,6 +29,7 @@ interface MockProvider {
 const BookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile } = useAuth();
   const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
@@ -117,22 +119,76 @@ const BookingFlow = () => {
     setCurrentStep('confirmation');
   };
 
-  const handleBookingConfirm = () => {
-    toast({
-      title: 'Sessão Agendada',
-      description: `A sua sessão com ${selectedProvider?.name} foi agendada para ${selectedDate?.toLocaleDateString()} às ${selectedTime}`,
-    });
-    
-    // If juridica pillar, show pre-diagnostic CTA
-    if (selectedPillar === 'juridica') {
-      setTimeout(() => {
-        setCurrentStep('prediagnostic-cta');
-      }, 1500);
-    } else {
-      // Navigate back to dashboard after booking
-      setTimeout(() => {
-        navigate('/user/dashboard');
-      }, 2000);
+  const handleBookingConfirm = async () => {
+    try {
+      if (!profile?.id || !selectedProvider || !selectedDate || !selectedTime) {
+        toast({
+          title: 'Erro',
+          description: 'Informação em falta para criar agendamento',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Map pillar to database format
+      const pillarMap: Record<string, string> = {
+        'psicologica': 'saude_mental',
+        'fisica': 'bem_estar_fisico',
+        'financeira': 'assistencia_financeira',
+        'juridica': 'assistencia_juridica'
+      };
+
+      // Get company_id from profile
+      const companyId = profile.company_id;
+
+      // Calculate end time (assuming 1 hour session)
+      const [hour, minute] = selectedTime.split(':');
+      const endTime = `${String((parseInt(hour) + 1)).padStart(2, '0')}:${minute}`;
+
+      // Create booking
+      const { data: booking, error } = await supabase
+        .from('bookings')
+        .insert({
+          user_id: profile.id,
+          company_id: companyId,
+          prestador_id: selectedProvider.id,
+          pillar: pillarMap[selectedPillar || ''] || 'saude_mental',
+          date: selectedDate.toISOString().split('T')[0],
+          start_time: selectedTime,
+          end_time: endTime,
+          status: 'pending',
+          session_type: meetingType === 'virtual' ? 'virtual' : meetingType === 'phone' ? 'phone' : 'presencial',
+          meeting_type: meetingType,
+          quota_type: 'employer',
+          booking_source: 'direct'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: 'Sessão Agendada',
+        description: `A sua sessão com ${selectedProvider.name} foi agendada para ${selectedDate.toLocaleDateString()} às ${selectedTime}`,
+      });
+      
+      // If juridica pillar, show pre-diagnostic CTA
+      if (selectedPillar === 'juridica') {
+        setTimeout(() => {
+          setCurrentStep('prediagnostic-cta');
+        }, 1500);
+      } else {
+        // Navigate back to dashboard after booking
+        setTimeout(() => {
+          navigate('/user/dashboard');
+        }, 2000);
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao agendar',
+        description: error.message || 'Ocorreu um erro ao agendar a sessão',
+        variant: 'destructive'
+      });
     }
   };
 

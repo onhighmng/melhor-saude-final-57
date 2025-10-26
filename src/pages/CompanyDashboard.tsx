@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Building2, 
@@ -16,14 +16,83 @@ import {
   Scale,
   BookOpen
 } from 'lucide-react';
-import { mockCompanyMetrics } from '@/data/companyMetrics';
 import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
+import { supabase } from '@/integrations/supabase/client';
 
 const CompanyDashboard = () => {
   const { profile } = useAuth();
   const navigate = useNavigate();
+  const [metrics, setMetrics] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCompanyData = async () => {
+      if (!profile?.company_id) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Load company
+        const { data: company } = await supabase
+          .from('companies')
+          .select('*')
+          .eq('id', profile.company_id)
+          .single();
+
+        if (!company) return;
+
+        // Load employees
+        const { data: employees } = await supabase
+          .from('company_employees')
+          .select(`
+            *,
+            profiles (name, email, avatar_url)
+          `)
+          .eq('company_id', profile.company_id);
+
+        // Load bookings for stats
+        const { data: bookings } = await supabase
+          .from('bookings')
+          .select('pillar, status, rating')
+          .eq('company_id', profile.company_id);
+
+        // Calculate metrics
+        const activeEmployees = employees?.filter(e => e.status === 'active').length || 0;
+        const usedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
+        const totalSessions = company.sessions_allocated || 0;
+        const avgRating = bookings?.filter(b => b.rating)
+          .reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length || 0;
+
+        // Count bookings by pillar
+        const pillarCounts = bookings?.reduce((acc: any, b: any) => {
+          acc[b.pillar] = (acc[b.pillar] || 0) + 1;
+          return acc;
+        }, {}) || {};
+
+        const mostUsedPillar = Object.entries(pillarCounts).reduce((a, b) => 
+          (pillarCounts[a[0] as keyof typeof pillarCounts] || 0) > (pillarCounts[b[0] as keyof typeof pillarCounts] || 0) ? a : b, 
+          ['', 0])[0];
+
+        setMetrics({
+          avgSatisfaction: avgRating.toFixed(1),
+          activeEmployees,
+          totalEmployees: employees?.length || 0,
+          sessionsUsed: usedSessions,
+          sessionsAllocated: totalSessions,
+          mostUsedPillar: mostUsedPillar || 'Saúde Mental'
+        });
+      } catch (error: any) {
+        console.error('Error loading company data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCompanyData();
+  }, [profile?.company_id]);
 
   useEffect(() => {
     // Add company-page class to body for light blue background
@@ -50,7 +119,7 @@ const CompanyDashboard = () => {
     }
   };
 
-  const PillarIcon = getPillarIcon(mockCompanyMetrics.mostUsedPillar);
+  const PillarIcon = getPillarIcon(metrics?.mostUsedPillar || 'Saúde Mental');
 
   return (
     <div className="relative w-full min-h-screen h-full flex flex-col">
@@ -72,7 +141,7 @@ const CompanyDashboard = () => {
               {/* Top Left - Satisfaction */}
               <BentoCard 
                 name="Satisfação Média" 
-                description={`${mockCompanyMetrics.avgSatisfaction}/10 - Avaliação dos colaboradores`}
+                description={`${metrics?.avgSatisfaction || 0}/10 - Avaliação dos colaboradores`}
                 Icon={Star} 
                 onClick={() => navigate('/company/relatorios')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 

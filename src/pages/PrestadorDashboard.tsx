@@ -27,10 +27,12 @@ import {
   BarChart3
 } from 'lucide-react';
 import sessionsCardBg from '@/assets/sessions-card-bg.jpg';
-import { mockPrestadorSessions, mockPrestadorMetrics, mockPrestadorUser } from '@/data/mockData';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 
 const pillarIcons = {
   'saude_mental': Brain,
@@ -41,9 +43,77 @@ const pillarIcons = {
 
 export default function PrestadorDashboard() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [isOnline, setIsOnline] = useState(true);
   const [timeFilter, setTimeFilter] = useState<'hoje' | 'proximos7dias'>('hoje');
-  const [sessions, setSessions] = useState(mockPrestadorSessions);
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (!profile?.id) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Get prestador ID
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
+
+        if (!prestador) {
+          setLoading(false);
+          return;
+        }
+
+        // Load bookings for this prestador
+        const { data: bookings } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles (name, email, avatar_url),
+            companies (name)
+          `)
+          .eq('prestador_id', prestador.id)
+          .order('date', { ascending: true });
+
+        if (bookings) {
+          setSessions(bookings.map(b => ({
+            ...b,
+            userName: b.profiles?.name || '',
+            userEmail: b.profiles?.email || '',
+            userAvatar: b.profiles?.avatar_url || '',
+            companyName: b.companies?.name || ''
+          })));
+        }
+
+        // Calculate metrics
+        const totalSessions = bookings?.length || 0;
+        const todaySessions = bookings?.filter(b => b.date === new Date().toISOString().split('T')[0]).length || 0;
+        const completedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
+        const avgRating = bookings?.filter(b => b.rating)
+          .reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length || 0;
+
+        setMetrics({
+          todaySessions,
+          totalSessions,
+          completedSessions,
+          avgRating: avgRating.toFixed(1)
+        });
+      } catch (error: any) {
+        console.error('Error loading prestador data:', error);
+        toast.error('Erro ao carregar dados');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [profile?.id]);
 
   const pillarNames = {
     'saude_mental': 'Saúde Mental',

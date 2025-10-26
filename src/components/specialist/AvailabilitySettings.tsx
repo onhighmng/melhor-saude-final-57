@@ -9,6 +9,8 @@ import { format } from 'date-fns';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface UnavailableSlot {
   id: string;
@@ -23,6 +25,7 @@ interface AvailabilitySettingsProps {
 
 export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySettingsProps) {
   const { toast } = useToast();
+  const { profile } = useAuth();
   
   // Unavailable time slots
   const [unavailableSlots, setUnavailableSlots] = useState<UnavailableSlot[]>([]);
@@ -91,7 +94,31 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
     }
   };
 
-  const removeUnavailableSlot = (id: string) => {
+  const removeUnavailableSlot = async (id: string) => {
+    const slot = unavailableSlots.find(s => s.id === id);
+    if (slot && profile) {
+      try {
+        // Get prestador_id
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
+
+        if (prestador) {
+          // Delete from database
+          await supabase
+            .from('prestador_schedule')
+            .delete()
+            .eq('prestador_id', prestador.id)
+            .eq('date', slot.date.toISOString().split('T')[0])
+            .eq('start_time', slot.time);
+        }
+      } catch (error) {
+        console.error('Error removing slot:', error);
+      }
+    }
+
     setUnavailableSlots(prev => prev.filter(slot => slot.id !== id));
     toast({
       title: "Horário removido",
@@ -209,12 +236,39 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={() => {
-            if (unavailableSlots.length > 0) {
-              toast({
-                title: "Indisponibilidade guardada",
-                description: `${unavailableSlots.length} horário(s) marcado(s) como indisponível`,
-              });
+          <Button onClick={async () => {
+            if (unavailableSlots.length > 0 && profile) {
+              try {
+                // Get prestador_id
+                const { data: prestador } = await supabase
+                  .from('prestadores')
+                  .select('id')
+                  .eq('user_id', profile.id)
+                  .single();
+
+                if (prestador) {
+                  // Save all unavailable slots to prestador_schedule
+                  const slotsToSave = unavailableSlots.map(slot => ({
+                    prestador_id: prestador.id,
+                    date: slot.date.toISOString().split('T')[0],
+                    start_time: slot.time,
+                    is_available: false
+                  }));
+
+                  await supabase.from('prestador_schedule').insert(slotsToSave);
+                }
+
+                toast({
+                  title: "Indisponibilidade guardada",
+                  description: `${unavailableSlots.length} horário(s) marcado(s) como indisponível`,
+                });
+              } catch (error: any) {
+                toast({
+                  title: "Erro",
+                  description: error.message || "Erro ao guardar indisponibilidade",
+                  variant: 'destructive'
+                });
+              }
             }
             onOpenChange(false);
           }}>

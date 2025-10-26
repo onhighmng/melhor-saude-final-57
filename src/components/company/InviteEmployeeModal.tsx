@@ -10,6 +10,9 @@ import { Mail, User, Key, Eye, EyeOff, Building, Users } from 'lucide-react';
 import { Company } from "@/data/companyMockData";
 import { companyToasts } from "@/data/companyToastMessages";
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface InviteEmployeeModalProps {
   isOpen: boolean;
@@ -28,6 +31,8 @@ interface InviteFormData {
 
 export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess }: InviteEmployeeModalProps) {
   const { t } = useTranslation('company');
+  const { profile } = useAuth();
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<InviteFormData>({
@@ -62,12 +67,64 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
     setIsSubmitting(true);
 
     try {
-      // Simulate API call to create company user
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Create auth user
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: formData.email,
+        password: formData.password,
+        email_confirm: true
+      });
+
+      if (authError) throw authError;
+
+      // Get company ID from database (assuming company object has the real ID)
+      const { data: companyData, error: companyError } = await supabase
+        .from('companies')
+        .select('id')
+        .eq('name', company.name)
+        .single();
+
+      if (companyError) throw companyError;
+
+      // Create profile
+      await supabase.from('profiles').insert({
+        id: authData.user.id,
+        email: formData.email,
+        name: formData.name,
+        role: formData.role,
+        company_id: companyData.id
+      });
+
+      // Create company_employee link
+      await supabase.from('company_employees').insert({
+        company_id: companyData.id,
+        user_id: authData.user.id,
+        sessions_quota: formData.companySessions
+      });
+
+      // Create invite record
+      if (profile?.id) {
+        await supabase.from('invites').insert({
+          invite_code: `inv_${Date.now()}`,
+          invited_by: profile.id,
+          company_id: companyData.id,
+          email: formData.email,
+          role: formData.role,
+          status: 'accepted',
+          accepted_at: new Date().toISOString(),
+          accepted_by: authData.user.id
+        });
+      }
+
+      // Copy credentials to clipboard
+      navigator.clipboard.writeText(`Email: ${formData.email}\nPassword: ${formData.password}`);
       
-      // Create new user object
-      const newUser = {
-        id: `user_${Date.now()}`,
+      toast({
+        title: 'Colaborador convidado com sucesso',
+        description: `Credenciais copiadas para a área de transferência`,
+      });
+      
+      onInviteSuccess({
+        id: authData.user.id,
         name: formData.name,
         email: formData.email,
         role: formData.role,
@@ -75,18 +132,16 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
         companyQuota: formData.companySessions,
         usedQuota: 0,
         joinedAt: new Date().toISOString()
-      };
-
-      onInviteSuccess(newUser);
-      
-      // Copy credentials to clipboard
-      navigator.clipboard.writeText(`Email: ${formData.email}\nPassword: ${formData.password}`);
-      companyToasts.employeeInvited();
+      });
       
       resetForm();
       onClose();
-    } catch (error) {
-      companyToasts.actionFailed(t('company:errors.inviteFailed'));
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao convidar colaborador',
+        description: error.message || t('company:errors.inviteFailed'),
+        variant: 'destructive',
+      });
     } finally {
       setIsSubmitting(false);
     }

@@ -29,10 +29,28 @@ import {
   Star
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface Provider {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  specialty?: string;
+  pillars: string[];
+  status: string;
+  rating?: number;
+  totalSessions?: number;
+  avatar?: string;
+  bio?: string;
+  isApproved?: boolean;
+  createdAt?: string;
+}
 
 const AdminProviders = () => {
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,17 +70,43 @@ const AdminProviders = () => {
   const loadProviders = async () => {
     setIsLoading(true);
     try {
-      // Replace with actual API call
-      setTimeout(() => {
-        setProviders(mockProviders);
-        setIsLoading(false);
-      }, 1000);
-    } catch (error) {
+      // Load prestadores with profiles
+      const { data, error } = await supabase
+        .from('prestadores')
+        .select(`
+          *,
+          profiles (name, email, phone, avatar_url, bio)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        const formattedProviders = data.map((p: any) => ({
+          id: p.id,
+          name: p.profiles?.name || '',
+          email: p.profiles?.email || '',
+          phone: p.profiles?.phone || '',
+          specialty: p.specialty || '',
+          pillars: p.pillars || [],
+          status: p.is_approved ? 'approved' : (p.is_active ? 'active' : 'inactive'),
+          rating: p.rating || 0,
+          totalSessions: p.total_sessions || 0,
+          avatar: p.profiles?.avatar_url || '',
+          bio: p.profiles?.bio || p.bio || '',
+          isApproved: p.is_approved,
+          createdAt: p.created_at
+        }));
+
+        setProviders(formattedProviders);
+      }
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Erro ao carregar prestadores",
+        description: error.message || "Erro ao carregar prestadores",
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
     }
   };

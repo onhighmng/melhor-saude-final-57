@@ -8,37 +8,88 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Copy, Download, Plus, Search, Trash2, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  InviteCode, 
-  getCompanyById, 
-  getInviteCodesByCompany, 
-  getSeatsStats,
-  generateInviteCode,
-  canGenerateMoreCodes,
-  mockInviteCodes
-} from '@/data/inviteCodesMockData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface InviteCode {
+  id: string;
+  company_id: string;
+  invite_code: string;
+  status: 'pending' | 'accepted' | 'revoked' | 'expired';
+  created_at: string;
+  expires_at?: string;
+  accepted_at?: string;
+  accepted_by?: string;
+  invited_by?: string;
+  metadata?: any;
+}
+
+function generateInviteCode(companyId: string): string {
+  const prefix = companyId.slice(0, 4).toUpperCase();
+  const timestamp = Date.now().toString(36).toUpperCase();
+  return `${prefix}-${timestamp}`;
+}
 
 export default function AdminCompanyInvites() {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
+  const { profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const company = id ? getCompanyById(id) : null;
-  const seatsStats = id ? getSeatsStats(id) : null;
+  const [company, setCompany] = useState<any>(null);
+  const [seatsStats, setSeatsStats] = useState<any>(null);
 
   useEffect(() => {
     if (id) {
-      setInviteCodes(getInviteCodesByCompany(id));
+      loadData();
     }
   }, [id]);
 
+  const loadData = async () => {
+    if (!id) return;
+
+    try {
+      // Load company
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      setCompany(companyData);
+
+      // Load seats stats from company
+      if (companyData) {
+        setSeatsStats({
+          purchased: companyData.sessions_allocated || 0,
+          used: 0,
+          available: 0
+        });
+      }
+
+      // Load invite codes
+      const { data: codes, error } = await supabase
+        .from('invites')
+        .select('*')
+        .eq('company_id', id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setInviteCodes(codes || []);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao carregar dados",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
   const filteredCodes = inviteCodes.filter(code => {
-    const matchesSearch = code.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (code.issuedToUserEmail && code.issuedToUserEmail.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                         (code.issuedToUserName && code.issuedToUserName.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = code.invite_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (code.email && code.email.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesStatus = statusFilter === 'all' || code.status === statusFilter;
     
@@ -53,105 +104,142 @@ export default function AdminCompanyInvites() {
     });
   };
 
-  const handleGenerateMissingCodes = () => {
-    if (!id || !company || !canGenerateMoreCodes(id)) return;
+  const canGenerateMoreCodes = () => {
+    if (!company || !seatsStats) return false;
+    const currentCodes = inviteCodes.filter(c => c.status === 'pending' || c.status === 'accepted').length;
+    return currentCodes < company.sessions_allocated;
+  };
+
+  const handleGenerateMissingCodes = async () => {
+    if (!id || !company || !canGenerateMoreCodes() || !profile) return;
 
     setLoading(true);
     
-    // Simulate API delay
-    setTimeout(() => {
-      const stats = getSeatsStats(id);
-      if (!stats) return;
+    try {
+      const codesNeeded = Math.max(0, (company.sessions_allocated || 0) - inviteCodes.length);
       
-      const codesNeeded = stats.purchased - stats.total;
-      const newCodes: InviteCode[] = [];
+      if (codesNeeded <= 0) {
+        toast({
+          title: "Sem necessidade",
+          description: "Já existem códigos suficientes.",
+        });
+        setLoading(false);
+        return;
+      }
+
+      const newCodes = [];
       
       for (let i = 0; i < codesNeeded; i++) {
-        const newCode: InviteCode = {
-          id: `invite-new-${Date.now()}-${i}`,
-          companyId: id,
-          code: generateInviteCode(id),
-          status: 'active',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
+        const inviteCode = generateInviteCode(id);
         
-        newCodes.push(newCode);
-        mockInviteCodes.push(newCode);
+        const { data, error } = await supabase
+          .from('invites')
+          .insert({
+            invite_code: inviteCode,
+            company_id: id,
+            invited_by: profile.id,
+            role: 'user',
+            status: 'pending',
+            expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        newCodes.push(data);
       }
       
       setInviteCodes(prev => [...prev, ...newCodes]);
-      setLoading(false);
       
       toast({
         title: "Códigos gerados",
         description: `${codesNeeded} novo${codesNeeded > 1 ? 's' : ''} código${codesNeeded > 1 ? 's' : ''} de convite gerado${codesNeeded > 1 ? 's' : ''}.`,
       });
-    }, 1000);
-  };
-
-  const handleRevokeCode = (codeId: string) => {
-    setInviteCodes(prev => prev.map(code => 
-      code.id === codeId 
-        ? { ...code, status: 'revoked' as const, revokedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
-        : code
-    ));
-    
-    // Update mock data
-    const codeIndex = mockInviteCodes.findIndex(code => code.id === codeId);
-    if (codeIndex !== -1) {
-      mockInviteCodes[codeIndex] = {
-        ...mockInviteCodes[codeIndex],
-        status: 'revoked',
-        revokedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
+    } catch (error: any) {
+      toast({
+        title: "Erro ao gerar códigos",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-    
-    toast({
-      title: "Código revogado",
-      description: "O código de convite foi revogado com sucesso.",
-    });
   };
 
-  const handleRegenerateCode = (codeId: string) => {
-    if (!id) return;
-    
-    const newCode: InviteCode = {
-      id: `invite-regen-${Date.now()}`,
-      companyId: id,
-      code: generateInviteCode(id),
-      status: 'active',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    // Revoke old code and add new one
-    setInviteCodes(prev => [
-      ...prev.map(code => 
+  const handleRevokeCode = async (codeId: string) => {
+    try {
+      const { error } = await supabase
+        .from('invites')
+        .update({ status: 'revoked' })
+        .eq('id', codeId);
+
+      if (error) throw error;
+
+      setInviteCodes(prev => prev.map(code => 
         code.id === codeId 
-          ? { ...code, status: 'revoked' as const, revokedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+          ? { ...code, status: 'revoked' as const }
           : code
-      ),
-      newCode
-    ]);
-    
-    // Update mock data
-    const codeIndex = mockInviteCodes.findIndex(code => code.id === codeId);
-    if (codeIndex !== -1) {
-      mockInviteCodes[codeIndex] = {
-        ...mockInviteCodes[codeIndex],
-        status: 'revoked',
-        revokedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
+      ));
+      
+      toast({
+        title: "Código revogado",
+        description: "O código de convite foi revogado com sucesso.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao revogar código",
+        description: error.message,
+        variant: "destructive"
+      });
     }
-    mockInviteCodes.push(newCode);
+  };
+
+  const handleRegenerateCode = async (codeId: string) => {
+    if (!id || !profile) return;
     
-    toast({
-      title: "Código regenerado",
-      description: "Novo código de convite gerado com sucesso.",
-    });
+    try {
+      // Revoke old code
+      await supabase
+        .from('invites')
+        .update({ status: 'revoked' })
+        .eq('id', codeId);
+
+      // Create new code
+      const inviteCode = generateInviteCode(id);
+      const { data: newCode, error } = await supabase
+        .from('invites')
+        .insert({
+          invite_code: inviteCode,
+          company_id: id,
+          invited_by: profile.id,
+          role: 'user',
+          status: 'pending',
+          expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Update local state
+      setInviteCodes(prev => [
+        ...prev.map(code => 
+          code.id === codeId ? { ...code, status: 'revoked' as const } : code
+        ),
+        newCode
+      ]);
+      
+      toast({
+        title: "Código regenerado",
+        description: "Novo código de convite gerado com sucesso.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao regenerar código",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
   const getStatusBadge = (status: InviteCode['status']) => {
@@ -282,12 +370,12 @@ export default function AdminCompanyInvites() {
           
           <Button variant="outline" onClick={() => {
             const csvData = filteredCodes.map(code => ({
-              Código: code.code,
+              Código: code.invite_code,
               Estado: code.status,
-              'Utilizado Por': code.issuedToUserName || '—',
-              Email: code.issuedToUserEmail || '—',
-              'Data de Utilização': code.redeemedAt || '—',
-              'Data de Criação': code.createdAt
+              'Utilizado Por': code.accepted_by || '—',
+              Email: code.email || '—',
+              'Data de Utilização': code.accepted_at || '—',
+              'Data de Criação': code.created_at
             }));
 
             const csvContent = [
@@ -342,12 +430,12 @@ export default function AdminCompanyInvites() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <code className="bg-muted px-2 py-1 rounded text-sm font-mono">
-                          {code.code}
+                          {code.invite_code}
                         </code>
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => handleCopyCode(code.code)}
+                          onClick={() => handleCopyCode(code.invite_code)}
                           className="h-6 w-6 p-0"
                         >
                           <Copy className="h-3 w-3" />
@@ -356,17 +444,17 @@ export default function AdminCompanyInvites() {
                     </TableCell>
                     <TableCell>{getStatusBadge(code.status)}</TableCell>
                     <TableCell>
-                      {code.issuedToUserName ? (
+                      {code.accepted_by ? (
                         <div>
-                          <div className="font-medium">{code.issuedToUserName}</div>
-                          <div className="text-sm text-muted-foreground">{code.issuedToUserEmail}</div>
+                          <div className="font-medium">{code.accepted_by}</div>
+                          <div className="text-sm text-muted-foreground">{code.email || '—'}</div>
                         </div>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </TableCell>
-                    <TableCell>{formatDate(code.redeemedAt)}</TableCell>
-                    <TableCell>{formatDate(code.createdAt)}</TableCell>
+                    <TableCell>{formatDate(code.accepted_at)}</TableCell>
+                    <TableCell>{formatDate(code.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
                         {code.status === 'active' && (
