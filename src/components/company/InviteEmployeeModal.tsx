@@ -80,8 +80,8 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
       const { data: companyData, error: companyError } = await supabase
         .from('companies')
         .select('id')
-        .eq('name', company.name)
-        .single();
+        .eq('company_name', company.name)
+        .maybeSingle();
 
       if (companyError) throw companyError;
 

@@ -558,7 +558,7 @@ const AdminProvidersTab = () => {
         <BookingModal
           open={showBookingModal}
           onOpenChange={setShowBookingModal}
-          provider={selectedProvider}
+          provider={selectedProvider as any}
           slot={selectedSlot}
         />
       )}

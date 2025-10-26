@@ -33,6 +33,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
+import { mockPrestadorUser, mockPrestadorSessions, mockPrestadorMetrics } from '@/data/mockData';
 
 const pillarIcons = {
   'saude_mental': Brain,
@@ -76,18 +77,18 @@ export default function PrestadorDashboard() {
           .select(`
             *,
             profiles (name, email, avatar_url),
-            companies (name)
+            companies (company_name)
           `)
           .eq('prestador_id', prestador.id)
           .order('date', { ascending: true });
 
         if (bookings) {
-          setSessions(bookings.map(b => ({
+          setSessions(bookings.map((b: any) => ({
             ...b,
             userName: b.profiles?.name || '',
             userEmail: b.profiles?.email || '',
             userAvatar: b.profiles?.avatar_url || '',
-            companyName: b.companies?.name || ''
+            companyName: b.companies?.company_name || ''
           })));
         }
 

@@ -20,6 +20,7 @@ import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import { supabase } from '@/integrations/supabase/client';
+import { mockCompanyMetrics } from '@/data/companyMetrics';
 
 const CompanyDashboard = () => {
   const { profile } = useAuth();
@@ -60,7 +61,7 @@ const CompanyDashboard = () => {
           .eq('company_id', profile.company_id);
 
         // Calculate metrics
-        const activeEmployees = employees?.filter(e => e.status === 'active').length || 0;
+        const activeEmployees = employees?.filter(e => e.is_active).length || 0;
         const usedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
         const totalSessions = company.sessions_allocated || 0;
         const avgRating = bookings?.filter(b => b.rating)
