@@ -46,10 +46,10 @@ const EspecialistaCallRequests = () => {
 
   const getPillarColor = (pillar: string | null) => {
     const colors = {
-      'psychological': 'bg-purple-100 text-purple-700 border-purple-300',
-      'physical': 'bg-green-100 text-green-700 border-green-300',
-      'financial': 'bg-blue-100 text-blue-700 border-blue-300',
-      'legal': 'bg-orange-100 text-orange-700 border-orange-300'
+      'psychological': 'bg-blue-100 text-blue-700 border-blue-300',
+      'physical': 'bg-yellow-100 text-yellow-700 border-yellow-300',
+      'financial': 'bg-green-100 text-green-700 border-green-300',
+      'legal': 'bg-purple-100 text-purple-700 border-purple-300'
     };
     return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
   };
@@ -102,23 +102,25 @@ const EspecialistaCallRequests = () => {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 items-end">
-                    <Button 
-                      size="sm" 
-                      onClick={() => handleCallRequest(request)}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      <Phone className="h-4 w-4 mr-1" />
-                      Ligar
-                    </Button>
-                    <Button 
-                      size="default"
-                      variant="outline"
-                      onClick={() => handleMarkResolved(request.id)}
-                    >
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      Resolver
-                    </Button>
-                    <div className={`text-sm font-medium ${getWaitTimeColor(request.wait_time)} flex items-center gap-1 mt-2`}>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleCallRequest(request)}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <Phone className="h-4 w-4 mr-1" />
+                        Ligar
+                      </Button>
+                      <Button 
+                        size="default"
+                        variant="outline"
+                        onClick={() => handleMarkResolved(request.id)}
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Resolver
+                      </Button>
+                    </div>
+                    <div className={`text-sm font-medium ${getWaitTimeColor(request.wait_time)} flex items-center gap-1`}>
                       <Clock className="h-4 w-4" />
                       <span>{Math.floor(request.wait_time / 60)}h {request.wait_time % 60}min</span>
                     </div>
