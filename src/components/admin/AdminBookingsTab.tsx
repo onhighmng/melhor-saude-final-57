@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
@@ -6,25 +6,83 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { format, addMonths, subMonths, isSameDay, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
-// Mock bookings data
-const mockBookings = [
-  { date: '2025-10-15', collaborator: 'Ana Silva', specialist: 'Dr. João Costa', type: 'virtual', time: '10:00' },
-  { date: '2025-10-16', collaborator: 'Carlos Santos', specialist: 'Dra. Maria Oliveira', type: 'presencial', time: '14:30' },
-  { date: '2025-10-17', collaborator: 'Daniel Rocha', specialist: 'Dra. Sofia Martins', type: 'virtual', time: '09:00' },
-  { date: '2025-10-18', collaborator: 'Eva Pereira', specialist: 'Dr. Pedro Alves', type: 'presencial', time: '16:00' },
-  { date: '2025-10-20', collaborator: 'Fernando Lima', specialist: 'Dra. Clara Nunes', type: 'virtual', time: '11:30' },
-];
+interface Booking {
+  id: string;
+  date: string;
+  collaborator: string;
+  specialist: string;
+  type: string;
+  time: string;
+}
 
 export default function AdminBookingsTab() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  const bookingsForSelectedDate = mockBookings.filter(booking =>
+  const loadBookings = async (monthStart: string, monthEnd: string) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          prestador:prestador_id(
+            profiles:user_id(name)
+          ),
+          user:profiles!user_id(name)
+        `)
+        .gte('date', monthStart)
+        .lte('date', monthEnd)
+        .order('date', { ascending: true });
+
+      if (error) throw error;
+
+      const formatted: Booking[] = (data || []).map(booking => ({
+        id: booking.id,
+        date: booking.date,
+        time: booking.start_time || '00:00',
+        collaborator: booking.user?.name || 'N/A',
+        specialist: booking.prestador?.profiles?.name || 'N/A',
+        type: booking.meeting_type === 'virtual' || booking.meeting_type === 'phone' ? 'virtual' : 'presencial',
+      }));
+
+      setBookings(formatted);
+    } catch (error: any) {
+      console.error('Error loading bookings:', error);
+      toast({
+        title: 'Erro',
+        description: 'Erro ao carregar marcações',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+    loadBookings(monthStart, monthEnd);
+  }, []);
+
+  useEffect(() => {
+    const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).toISOString();
+    const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).toISOString();
+    loadBookings(monthStart, monthEnd);
+  }, [currentMonth]);
+
+  const bookingsForSelectedDate = bookings.filter(booking =>
     isSameDay(parseISO(booking.date), selectedDate)
   );
 
-  const datesWithBookings = mockBookings.map(b => parseISO(b.date));
+  const datesWithBookings = bookings.map(b => parseISO(b.date));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
