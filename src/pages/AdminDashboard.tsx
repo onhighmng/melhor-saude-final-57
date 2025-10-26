@@ -52,14 +52,16 @@ const AdminDashboard = () => {
       const { data: utilData, error: utilError } = await (supabase.rpc as any)('get_platform_utilization');
 
       // Get active prestadores count
-      const { count: activePrestadores, error: prestadoresError } = await supabase
+      const prestadoresResult = await supabase
         .from('prestadores')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('is_active', true)
         .eq('is_approved', true);
+      
+      const activePrestadoresCount = (prestadoresResult as any)?.count || 0;
 
       // Get average satisfaction
-      const { data: ratings, error: ratingsError } = await supabase
+      const { data: ratings } = await supabase
         .from('bookings')
         .select('rating')
         .not('rating', 'is', null);
@@ -70,7 +72,7 @@ const AdminDashboard = () => {
 
       setActivityMetrics({
         utilizationRate: utilData?.[0]?.utilization_rate || 0,
-        activePrestadores: activePrestadores || 0,
+        activePrestadores: activePrestadoresCount,
         avgSatisfaction: avgRating
       });
     } catch (error) {

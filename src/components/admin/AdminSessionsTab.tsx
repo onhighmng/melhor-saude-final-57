@@ -66,21 +66,21 @@ export default function AdminSessionsTab() {
               .from('profiles')
               .select('name')
               .eq('id', booking.user_id)
-              .single();
+              .maybeSingle();
             
             // Get company
             const { data: company } = await supabase
               .from('companies')
               .select('company_name')
               .eq('id', booking.company_id)
-              .single();
+              .maybeSingle();
             
             // Get prestador
             const { data: prestador } = await supabase
               .from('prestadores')
               .select('name')
               .eq('id', booking.prestador_id)
-              .single();
+              .maybeSingle();
 
             return {
               id: booking.id,
@@ -119,7 +119,9 @@ export default function AdminSessionsTab() {
       })
       .subscribe();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const filteredSessions = sessions.filter(session => {

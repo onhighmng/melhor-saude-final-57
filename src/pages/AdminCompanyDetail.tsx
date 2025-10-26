@@ -54,6 +54,7 @@ import { AdminCompanyFeatures } from '@/components/ui/admin-company-features';
 
 interface Employee {
   id: string;
+  userId?: string;
   name: string;
   email: string;
   code: string;
@@ -89,39 +90,43 @@ export default function AdminCompanyDetail() {
 
         if (companyError) throw companyError;
 
-        // Load employees
-        const { data: employeesData, error: employeesError } = await supabase
+        // Load employees (without invalid joins)
+        const { data: employeesDataRaw, error: employeesError } = await supabase
           .from('company_employees')
-          .select(`
-            *,
-            profiles:user_id (
-              name,
-              email,
-              avatar_url
-            )
-          `)
-          .eq('company_id', id);
+          .select('*')
+          .eq('company_id', id)
+          .order('joined_at', { ascending: false });
 
-        if (employeesError) throw employeesError;
-
-        // Load invites
         const { data: invitesData, error: invitesError } = await supabase
           .from('invites')
           .select('*')
           .eq('company_id', id)
           .order('created_at', { ascending: false });
 
+        if (employeesError) throw employeesError;
         if (invitesError) throw invitesError;
 
         setCompany(companyData);
-        setEmployees(employeesData?.map(emp => ({
-          id: emp.id,
-          name: emp.profiles?.name || '',
-          email: emp.profiles?.email || '',
-          code: invitesData?.find(inv => inv.user_id === emp.user_id)?.code || '',
-          sentDate: invitesData?.find(inv => inv.user_id === emp.user_id)?.sent_at || '',
-          status: 'enviado' as const
-        })) || []);
+        
+        // Get employee profiles separately
+        const employeesWithProfiles = await Promise.all((employeesDataRaw || []).map(async (emp) => {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('name, email')
+            .eq('id', emp.user_id)
+            .maybeSingle();
+          
+          return {
+            id: emp.id,
+            name: profile?.name || '',
+            email: profile?.email || '',
+            code: invitesData?.find(inv => inv.email === profile?.email)?.invite_code || '',
+            sentDate: invitesData?.find(inv => inv.email === profile?.email)?.created_at || '',
+            status: 'enviado' as const
+          };
+        }));
+        
+        setEmployees(employeesWithProfiles);
         setInvites(invitesData || []);
       } catch (error) {
         console.error('Error loading company details:', error);
@@ -415,11 +420,11 @@ export default function AdminCompanyDetail() {
                     if (deleteError) throw deleteError;
 
                     // Optionally deactivate profile
-                    if (employee.user_id) {
+                    if (employee.userId) {
                       await supabase
                         .from('profiles')
                         .update({ is_active: false })
-                        .eq('id', employee.user_id);
+                        .eq('id', employee.userId);
                     }
 
                     // Update local state

@@ -108,44 +108,23 @@ const AdminProviderDetail = () => {
     setIsLoading(true);
     
     try {
-      // Load prestador with profile
+      // Load prestador without joins
       const { data: prestador, error: prestadorError } = await supabase
         .from('prestadores')
-        .select(`
-          *,
-          profiles:user_id (
-            name,
-            email,
-            avatar_url,
-            phone
-          )
-        `)
+        .select('*')
         .eq('id', id)
         .single();
 
       if (prestadorError) throw prestadorError;
 
-      // Load sessions
+      // Get sessions for this provider
       const { data: sessions, error: sessionsError } = await supabase
         .from('bookings')
-        .select(`
-          *,
-          profiles:user_id (name)
-        `)
-        .eq('prestador_id', id)
-        .order('date', { ascending: false });
-
-      if (sessionsError) throw sessionsError;
-
-      // Load availability
-      const { data: availability, error: availabilityError } = await supabase
-        .from('prestador_availability')
         .select('*')
         .eq('prestador_id', id);
 
-      if (availabilityError) throw availabilityError;
+      if (sessionsError) throw sessionsError;
 
-      // Calculate metrics
       const completedSessions = sessions?.filter(s => s.status === 'completed') || [];
       const ratings = completedSessions.map(s => s.rating).filter(r => r !== null) as number[];
       const avgRating = ratings.length > 0 
@@ -154,20 +133,20 @@ const AdminProviderDetail = () => {
 
       setProvider({
         id: prestador.id,
-        name: prestador.profiles?.name || '',
-        email: prestador.profiles?.email || '',
-        phone: prestador.profiles?.phone,
-        avatar: prestador.profiles?.avatar_url,
-        bio: prestador.bio,
-        pillars: prestador.pillars as any,
+        name: prestador.name || '',
+        email: prestador.email || '',
+        phone: '',
+        avatar: prestador.photo_url,
+        bio: prestador.biography,
+        pillars: (prestador.pillar_specialties || []) as any,
         availability: prestador.is_active ? 'active' : 'inactive',
         licenseStatus: 'valid' as const,
         capacity: 20,
         defaultSlot: 60,
         languages: prestador.languages || [],
-        specialties: prestador.specialization || [],
+        specialties: (prestador as any).specialization || [],
         education: [],
-        experience: prestador.experience_years || 0,
+        experience: (prestador as any).experience_years || 0,
         rating: avgRating,
         totalSessions: sessions?.length || 0,
         completedSessions: completedSessions.length,
@@ -175,14 +154,14 @@ const AdminProviderDetail = () => {
           id: s.id,
           date: s.date,
           time: s.start_time || '',
-          patient: s.profiles?.name || '',
+          patient: '',
           pillar: s.pillar,
           status: 'scheduled' as const
         })) || [],
         sessionHistory: sessions?.slice(0, 10).map(s => ({
           id: s.id,
           date: s.date,
-          patient: s.profiles?.name || '',
+          patient: '',
           pillar: s.pillar,
           duration: 60,
           status: s.status as any

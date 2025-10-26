@@ -138,8 +138,8 @@ const AdminUserDetail = () => {
       if (progressError) throw progressError;
 
       setUser({
-        ...profile,
-        company: employee?.companies?.name,
+        ...(profile as any),
+        company: (employee as any)?.companies?.company_name || '',
         sessionsAllocated: employee?.sessions_allocated || 0,
         sessionsUsed: employee?.sessions_used || 0,
         companySessions: employee?.sessions_allocated || 0,
@@ -154,7 +154,7 @@ const AdminUserDetail = () => {
           id: b.id,
           date: b.date,
           pillar: b.pillar,
-          provider: b.prestadores?.profiles?.name || '',
+          provider: '',
           status: b.status as any,
           type: 'company' as const
         })) || [],

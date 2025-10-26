@@ -61,14 +61,7 @@ const AdminUsers = () => {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select(`
-          *,
-          company_employees!left (
-            sessions_allocated,
-            sessions_used,
-            companies:company_id (name)
-          )
-        `)
+        .select('*')
         .eq('role', 'user')
         .order('created_at', { ascending: false });
 
@@ -78,9 +71,9 @@ const AdminUsers = () => {
         id: p.id,
         name: p.name,
         email: p.email,
-        company: p.company_employees?.[0]?.companies?.name || 'N/A',
+        company: p.company_name || 'N/A',
         department: p.department || '',
-        companySessions: p.company_employees?.[0]?.sessions_used || 0,
+        companySessions: 0,
         personalSessions: 0,
         status: p.is_active ? 'active' : 'inactive',
         createdAt: p.created_at
@@ -141,8 +134,8 @@ const AdminUsers = () => {
         await supabase.from('admin_logs').insert({
           admin_id: profile.id,
           action: newStatus === 'active' ? 'user_activated' : 'user_deactivated',
-          target_id: userId,
-          target_type: 'user'
+          entity_id: userId,
+          entity_type: 'user'
         });
       }
 
@@ -198,7 +191,7 @@ const AdminUsers = () => {
   // Calculate summary metrics
   const totalUsers = users.length;
   const activeUsers = users.filter(u => u.status === 'active').length;
-  const totalSessionsMTD = users.reduce((sum, u) => sum + u.usedCompanySessions + u.usedPersonalSessions, 0);
+  const totalSessionsMTD = users.reduce((sum, u) => sum + u.companySessions + u.personalSessions, 0);
   const pendingChangeRequests = 3; // Mock value
 
   const getStatusBadge = (status: string) => {
@@ -212,7 +205,8 @@ const AdminUsers = () => {
     }
   };
 
-  const formatProviders = (providers: User['fixedProviders']) => {
+  const formatProviders = (providers: any) => {
+    if (!providers || typeof providers !== 'object') return 'N/A';
     const providerList = Object.entries(providers)
       .filter(([_, name]) => name)
       .map(([pillar, name]) => {
@@ -418,27 +412,27 @@ const AdminUsers = () => {
                        <TableCell>
                          <p className="text-sm text-muted-foreground">{user.department || '—'}</p>
                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground">Empresa:</span>
+                              <Badge variant="outline" className="text-xs">
+                                {user.companySessions}/{user.companySessions}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground">Pessoal:</span>
+                              <Badge variant="outline" className="text-xs">
+                                {user.personalSessions}/{user.personalSessions}
+                              </Badge>
+                            </div>
+                          </div>
+                       </TableCell>
                        <TableCell>
-                         <div className="space-y-1">
-                           <div className="flex items-center gap-2">
-                             <span className="text-xs text-muted-foreground">Empresa:</span>
-                             <Badge variant="outline" className="text-xs">
-                               {user.companySessions - user.usedCompanySessions}/{user.companySessions}
-                             </Badge>
-                           </div>
-                           <div className="flex items-center gap-2">
-                             <span className="text-xs text-muted-foreground">Pessoal:</span>
-                             <Badge variant="outline" className="text-xs">
-                               {user.personalSessions - user.usedPersonalSessions}/{user.personalSessions}
-                             </Badge>
-                           </div>
+                         <div className="max-w-48 truncate text-sm text-muted-foreground">
+                           {formatProviders({})}
                          </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="max-w-48 truncate text-sm text-muted-foreground">
-                          {formatProviders(user.fixedProviders)}
-                        </div>
-                      </TableCell>
+                       </TableCell>
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
