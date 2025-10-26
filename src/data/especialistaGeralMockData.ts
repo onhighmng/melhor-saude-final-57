@@ -43,7 +43,7 @@ export const mockCallRequests: CallRequest[] = [
     company_name: 'Empresa Exemplo Lda',
     pillar: 'psychological',
     status: 'pending',
-    wait_time: 45, // 45 minutes
+    wait_time: 45,
     chat_session_id: 'chat-1',
     created_at: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
     notes: 'Solicitação de ajuda com stress no trabalho'
@@ -58,7 +58,7 @@ export const mockCallRequests: CallRequest[] = [
     company_name: 'Tech Solutions MZ',
     pillar: 'financial',
     status: 'pending',
-    wait_time: 120, // 2 hours
+    wait_time: 120,
     chat_session_id: 'chat-2',
     created_at: new Date(Date.now() - 120 * 60 * 1000).toISOString(),
     notes: 'Problemas financeiros pessoais, precisa de orientação'
@@ -72,13 +72,11 @@ export const mockCallRequests: CallRequest[] = [
     company_id: 'comp-1',
     company_name: 'Empresa Exemplo Lda',
     pillar: 'legal',
-    status: 'resolved',
+    status: 'pending',
     wait_time: 30,
     chat_session_id: 'chat-3',
-    assigned_specialist_id: 'spec-1',
-    created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    resolved_at: new Date(Date.now() - 3.5 * 60 * 60 * 1000).toISOString(),
-    notes: 'Questão sobre contrato de trabalho - resolvida por telefone'
+    created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    notes: 'Questão sobre contrato de trabalho'
   },
   {
     id: 'call-4',
@@ -135,7 +133,7 @@ export const mockCallRequests: CallRequest[] = [
     company_name: 'Tech Solutions MZ',
     pillar: 'physical',
     status: 'pending',
-    wait_time: 1500, // 25 hours - SLA breach
+    wait_time: 1500,
     chat_session_id: 'chat-7',
     created_at: new Date(Date.now() - 1500 * 60 * 1000).toISOString(),
     notes: 'URGENTE: Dores severas que impedem trabalho'
@@ -150,7 +148,7 @@ export const mockCallRequests: CallRequest[] = [
     company_name: 'Empresa Exemplo Lda',
     pillar: 'psychological',
     status: 'pending',
-    wait_time: 300, // 5 hours
+    wait_time: 300,
     chat_session_id: 'chat-8',
     created_at: new Date(Date.now() - 300 * 60 * 1000).toISOString(),
     notes: 'Situação de crise emocional, necessita atenção'
@@ -184,6 +182,81 @@ export const mockCallRequests: CallRequest[] = [
     chat_session_id: 'chat-10',
     created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
     notes: 'Pedido de aconselhamento financeiro para investimentos'
+  },
+  {
+    id: 'call-11',
+    user_id: 'user-11',
+    user_name: 'Bruno Oliveira',
+    user_email: 'bruno.oliveira@empresa.co.mz',
+    user_phone: '+258 84 111 2222',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar: 'psychological',
+    status: 'pending',
+    wait_time: 75,
+    chat_session_id: 'chat-11',
+    created_at: new Date(Date.now() - 75 * 60 * 1000).toISOString(),
+    notes: 'Burnout profissional, necessita apoio imediato'
+  },
+  {
+    id: 'call-12',
+    user_id: 'user-12',
+    user_name: 'Fernanda Lima',
+    user_email: 'fernanda.lima@tech.co.mz',
+    user_phone: '+258 84 222 3333',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar: 'legal',
+    status: 'pending',
+    wait_time: 105,
+    chat_session_id: 'chat-12',
+    created_at: new Date(Date.now() - 105 * 60 * 1000).toISOString(),
+    notes: 'Questões relacionadas a rescisão de contrato'
+  },
+  {
+    id: 'call-13',
+    user_id: 'user-13',
+    user_name: 'Gabriel Pinto',
+    user_email: 'gabriel.pinto@empresa.co.mz',
+    user_phone: '+258 84 333 4444',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar: 'physical',
+    status: 'pending',
+    wait_time: 50,
+    chat_session_id: 'chat-13',
+    created_at: new Date(Date.now() - 50 * 60 * 1000).toISOString(),
+    notes: 'Problemas de visão devido ao uso excessivo de computador'
+  },
+  {
+    id: 'call-14',
+    user_id: 'user-14',
+    user_name: 'Helena Moura',
+    user_email: 'helena.moura@tech.co.mz',
+    user_phone: '+258 84 444 5555',
+    company_id: 'comp-2',
+    company_name: 'Tech Solutions MZ',
+    pillar: 'financial',
+    status: 'pending',
+    wait_time: 200,
+    chat_session_id: 'chat-14',
+    created_at: new Date(Date.now() - 200 * 60 * 1000).toISOString(),
+    notes: 'Gestão de dívidas e planejamento de emergência'
+  },
+  {
+    id: 'call-15',
+    user_id: 'user-15',
+    user_name: 'Igor Tavares',
+    user_email: 'igor.tavares@empresa.co.mz',
+    user_phone: '+258 84 555 6666',
+    company_id: 'comp-1',
+    company_name: 'Empresa Exemplo Lda',
+    pillar: 'psychological',
+    status: 'pending',
+    wait_time: 35,
+    chat_session_id: 'chat-15',
+    created_at: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
+    notes: 'Conflitos interpessoais no ambiente de trabalho'
   }
 ];
 
