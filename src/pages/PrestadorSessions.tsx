@@ -176,168 +176,49 @@ export default function PrestadorSessions() {
 
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
-      {/* Feature Section with Stats Cards and Sessions List */}
+      {/* Feature Section with Stats Cards, Filters, and Sessions List */}
       <RuixenSection 
         stats={stats} 
         sessions={filteredSessions}
         getStatusBadge={getStatusBadge}
+        dateFilter={dateFilter}
+        statusFilter={statusFilter}
+        onDateFilterChange={setDateFilter}
+        onStatusFilterChange={setStatusFilter}
+        onClearFilters={() => {
+          setDateFilter('all');
+          setStatusFilter('all');
+        }}
+        onExport={handleExportSessions}
+        onSessionClick={handleViewSession}
       />
-      
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Histórico de Sessões</h1>
-          <p className="text-muted-foreground mt-1">
-            Gerir todas as sessões associadas ao seu perfil
-          </p>
-        </div>
-        
-        <Button onClick={handleExportSessions} variant="outline" className="gap-2">
-          <Download className="h-4 w-4" />
-          Exportar
-        </Button>
-      </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap items-center gap-4">
-        <Select value={dateFilter} onValueChange={setDateFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtrar por Data" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas as Datas</SelectItem>
-            <SelectItem value="today">Hoje</SelectItem>
-            <SelectItem value="week">Última Semana</SelectItem>
-            <SelectItem value="month">Último Mês</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtrar por Estado" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os Estados</SelectItem>
-            <SelectItem value="Agendada">Agendada</SelectItem>
-            <SelectItem value="Concluída">Concluída</SelectItem>
-            <SelectItem value="Cancelada">Cancelada</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Button 
-          variant="outline" 
-          onClick={() => {
-            setDateFilter('all');
-            setStatusFilter('all');
-          }}
-          className="gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Limpar Filtros
-        </Button>
-      </div>
-
-      {/* Full Sessions Table - Detailed View */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Histórico Completo de Sessões
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4 font-medium">Data</th>
-                  <th className="text-left p-4 font-medium">Colaborador</th>
-                  <th className="text-left p-4 font-medium">Empresa</th>
-                  <th className="text-left p-4 font-medium">Tipo</th>
-                  <th className="text-left p-4 font-medium">Estado</th>
-                  <th className="text-left p-4 font-medium">Avaliação</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredSessions.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center py-12 text-muted-foreground">
-                      Nenhuma sessão encontrada com os filtros aplicados
-                    </td>
-                  </tr>
-                ) : (
-                  filteredSessions.map((session) => (
-                    <tr key={session.id} className="border-b hover:bg-muted/30">
-                      <td className="p-4">
-                        <div className="font-medium">{new Date(session.date).toLocaleDateString('pt-PT')}</div>
-                      </td>
-                      <td className="p-4">
-                        <div className="font-medium">{session.clientName}</div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <Building className="h-4 w-4 text-muted-foreground" />
-                          {session.company}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <Badge variant="outline" className="flex items-center gap-1 w-fit">
-                          {session.type === 'Virtual' ? (
-                            <Video className="h-3 w-3" />
-                          ) : (
-                            <MapPin className="h-3 w-3" />
-                          )}
-                          {session.type}
-                        </Badge>
-                      </td>
-                      <td className="p-4">
-                        {getStatusBadge(session.status)}
-                      </td>
-                      <td className="p-4">
-                        {session.rating ? (
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                            <span className="font-medium">{session.rating}/10</span>
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">Não avaliado</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Session Detail Modal */}
+      {/* Session Detail Modal - Full Screen */}
       <Dialog open={!!selectedSession} onOpenChange={() => setSelectedSession(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detalhes da Sessão</DialogTitle>
+            <DialogTitle className="text-2xl">Detalhes da Sessão</DialogTitle>
           </DialogHeader>
           
           {selectedSession && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Colaborador</label>
-                  <p className="text-lg font-semibold">{selectedSession.clientName}</p>
+                  <p className="text-xl font-semibold mt-1">{selectedSession.clientName}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Empresa</label>
-                  <p className="text-lg font-semibold">{selectedSession.company}</p>
+                  <p className="text-xl font-semibold mt-1">{selectedSession.company}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Tipo</label>
-                  <div className="mt-1">
-                    <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                  <div className="mt-2">
+                    <Badge variant="outline" className="flex items-center gap-2 w-fit text-base py-2 px-3">
                       {selectedSession.type === 'Virtual' ? (
-                        <Video className="h-3 w-3" />
+                        <Video className="h-4 w-4" />
                       ) : (
-                        <MapPin className="h-3 w-3" />
+                        <MapPin className="h-4 w-4" />
                       )}
                       {selectedSession.type}
                     </Badge>
@@ -345,23 +226,28 @@ export default function PrestadorSessions() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Estado</label>
-                  <div className="mt-1">
+                  <div className="mt-2">
                     {getStatusBadge(selectedSession.status)}
                   </div>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Data</label>
-                  <p className="text-lg">{new Date(selectedSession.date).toLocaleDateString('pt-PT')}</p>
+                  <p className="text-lg mt-1">{new Date(selectedSession.date).toLocaleDateString('pt-PT', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Avaliação</label>
                   {selectedSession.rating ? (
-                    <div className="flex items-center gap-1 mt-1">
-                      <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                      <span className="font-medium">{selectedSession.rating}/10</span>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Star className="h-6 w-6 fill-amber-400 text-amber-400" />
+                      <span className="text-xl font-medium">{selectedSession.rating}/10</span>
                     </div>
                   ) : (
-                    <p className="text-muted-foreground">Não avaliado</p>
+                    <p className="text-muted-foreground mt-1">Não avaliado</p>
                   )}
                 </div>
               </div>
@@ -369,8 +255,8 @@ export default function PrestadorSessions() {
               {selectedSession.notes && (
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Notas</label>
-                  <div className="mt-1 p-3 bg-muted/30 rounded-lg">
-                    <p className="text-sm">{selectedSession.notes}</p>
+                  <div className="mt-2 p-4 bg-muted/30 rounded-lg">
+                    <p className="text-base">{selectedSession.notes}</p>
                   </div>
                 </div>
               )}

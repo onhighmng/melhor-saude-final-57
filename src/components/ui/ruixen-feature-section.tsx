@@ -3,8 +3,10 @@ import { CardContent, Card as UICard, CardHeader, CardTitle } from "@/components
 import { TbHeartPlus } from "react-icons/tb";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, CheckCircle, Clock, Star, Building, Video, MapPin } from "lucide-react";
+import { Calendar, CheckCircle, Clock, Star, Building, Video, MapPin, Download, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Highlight = ({
   children,
@@ -53,10 +55,28 @@ interface RuixenSectionProps {
   };
   sessions?: Session[];
   getStatusBadge?: (status: string) => React.ReactNode;
+  dateFilter?: string;
+  statusFilter?: string;
+  onDateFilterChange?: (value: string) => void;
+  onStatusFilterChange?: (value: string) => void;
+  onClearFilters?: () => void;
+  onExport?: () => void;
+  onSessionClick?: (session: Session) => void;
 }
 
 
-export default function RuixenSection({ stats, sessions = [], getStatusBadge }: RuixenSectionProps) {
+export default function RuixenSection({ 
+  stats, 
+  sessions = [], 
+  getStatusBadge,
+  dateFilter = 'all',
+  statusFilter = 'all',
+  onDateFilterChange,
+  onStatusFilterChange,
+  onClearFilters,
+  onExport,
+  onSessionClick
+}: RuixenSectionProps) {
   // Sort sessions by date (most recent first) and take top 5
   const displaySessions = [...sessions]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -118,12 +138,59 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
 
         {/* Right Block - Sessions List */}
         <div className="flex flex-col items-start justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
-          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white mb-4 sm:mb-6 leading-relaxed">
-            Sessões Recentes <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
-            <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
-              Acompanhe as suas últimas sessões com colaboradores e empresas.
-            </span>
-          </h3>
+          <div className="w-full mb-4 sm:mb-6">
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white leading-relaxed">
+              Sessões Recentes <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
+              <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
+                Acompanhe as suas últimas sessões com colaboradores e empresas.
+              </span>
+            </h3>
+          </div>
+
+          {/* Filters and Export */}
+          <div className="w-full flex flex-wrap items-center gap-3 mb-4">
+            <Select value={dateFilter} onValueChange={onDateFilterChange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filtrar por Data" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as Datas</SelectItem>
+                <SelectItem value="today">Hoje</SelectItem>
+                <SelectItem value="week">Última Semana</SelectItem>
+                <SelectItem value="month">Último Mês</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={statusFilter} onValueChange={onStatusFilterChange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filtrar por Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os Estados</SelectItem>
+                <SelectItem value="Agendada">Agendada</SelectItem>
+                <SelectItem value="Concluída">Concluída</SelectItem>
+                <SelectItem value="Cancelada">Cancelada</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button 
+              variant="outline" 
+              onClick={onClearFilters}
+              className="gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Limpar Filtros
+            </Button>
+
+            <Button 
+              onClick={onExport} 
+              variant="outline" 
+              className="gap-2 ml-auto"
+            >
+              <Download className="h-4 w-4" />
+              Exportar
+            </Button>
+          </div>
           
           <div className="w-full overflow-y-auto max-h-[400px] pr-2 space-y-3 no-scrollbar">
             {displaySessions.length === 0 ? (
@@ -134,7 +201,8 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
               displaySessions.map((session) => (
                 <div
                   key={session.id}
-                  className="flex flex-col gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all shadow-sm"
+                  onClick={() => onSessionClick?.(session)}
+                  className="flex flex-col gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all shadow-sm cursor-pointer"
                 >
                   {/* Row 1: Name, Type Badge, and Status */}
                   <div className="flex items-center justify-between gap-3">
