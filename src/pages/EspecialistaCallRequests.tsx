@@ -105,7 +105,7 @@ const EspecialistaCallRequests = () => {
                       Ligar
                     </Button>
                     <Button 
-                      size="sm" 
+                      size="default"
                       variant="outline"
                       onClick={() => handleMarkResolved(request.id)}
                     >
