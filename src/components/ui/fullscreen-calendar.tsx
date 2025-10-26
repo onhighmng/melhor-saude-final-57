@@ -133,9 +133,11 @@ export function FullScreenCalendar({ data, onAddEvent, onEventClick, onDayClick,
         </div>
 
         <div className="flex flex-col items-center gap-3 md:flex-row md:gap-4">
-          <Button variant="outline" size="icon" className="hidden lg:flex h-8 w-8">
-            <SearchIcon size={14} strokeWidth={2} aria-hidden="true" />
-          </Button>
+          {onAddEvent && (
+            <Button onClick={onAddEvent} variant="outline" size="icon" className="h-8 w-8">
+              <PlusCircleIcon size={14} strokeWidth={2} aria-hidden="true" />
+            </Button>
+          )}
 
           <Separator orientation="vertical" className="hidden h-5 lg:block" />
 

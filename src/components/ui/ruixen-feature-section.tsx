@@ -45,21 +45,6 @@ const CARDS = [
   },
   {
     id: 1,
-    name: "Colaboradores",
-    designation: "Gerir utilizadores",
-    Icon: Users,
-    bgColor: "bg-gradient-to-br from-green-100 to-green-200",
-    iconColor: "text-green-600",
-    tabValue: "employees",
-    content: (
-      <p className="text-sm text-muted-foreground">
-        Controle total sobre colaboradores, acompanhamento de sessões utilizadas
-        e gestão de perfis de forma centralizada.
-      </p>
-    ),
-  },
-  {
-    id: 2,
     name: "Affiliates",
     designation: "Gerir especialistas",
     Icon: UserCog,
@@ -111,40 +96,6 @@ const activeCompanies = [
   }
 ];
 
-const activeEmployees = [
-  {
-    id: 1,
-    name: "João Silva",
-    company: "TechCorp Lda",
-    sessions: { used: 5, total: 10 },
-    status: "active",
-    bgColor: "bg-green-100"
-  },
-  {
-    id: 2,
-    name: "Maria Santos",
-    company: "HealthPlus SA",
-    sessions: { used: 3, total: 8 },
-    status: "active",
-    bgColor: "bg-blue-100"
-  },
-  {
-    id: 3,
-    name: "Pedro Costa",
-    company: "StartupHub",
-    sessions: { used: 2, total: 5 },
-    status: "active",
-    bgColor: "bg-purple-100"
-  },
-  {
-    id: 4,
-    name: "Ana Pereira",
-    company: "ConsultPro",
-    sessions: { used: 7, total: 12 },
-    status: "active",
-    bgColor: "bg-yellow-100"
-  }
-];
 
 const activeProviders = [
   {
@@ -276,7 +227,7 @@ export default function RuixenSection({
             <span className="text-primary">Wellness Platform</span>{" "}
             <span className="text-muted-foreground text-sm sm:text-base lg:text-lg">
               {" "}
-              Controle completo sobre empresas, colaboradores e affiliates numa única
+              Controle completo sobre empresas e affiliates numa única
               plataforma integrada.
             </span>
           </h3>
@@ -288,8 +239,7 @@ export default function RuixenSection({
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
               {activeCardIndex === 0 && "Empresas Ativas"}
-              {activeCardIndex === 1 && "Colaboradores Ativos"}
-              {activeCardIndex === 2 && "Affiliates Ativos"}
+              {activeCardIndex === 1 && "Affiliates Ativos"}
             </h2>
             {activeCardIndex === 0 && (
               <Button 
@@ -306,18 +256,6 @@ export default function RuixenSection({
               </Button>
             )}
             {activeCardIndex === 1 && (
-              <Button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate('/admin/users-management?tab=employees');
-                }}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Adicionar Colaborador
-              </Button>
-            )}
-            {activeCardIndex === 2 && (
               <Button 
                 onClick={(e) => {
                   e.stopPropagation();
@@ -340,13 +278,11 @@ export default function RuixenSection({
                 <tr className="border-b border-border">
                   <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     {activeCardIndex === 0 && "Empresa"}
-                    {activeCardIndex === 1 && "Nome"}
-                    {activeCardIndex === 2 && "Affiliate"}
+                    {activeCardIndex === 1 && "Affiliate"}
                   </th>
                   <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     {activeCardIndex === 0 && "Colaboradores"}
-                    {activeCardIndex === 1 && "Empresa"}
-                    {activeCardIndex === 2 && "Especialidade"}
+                    {activeCardIndex === 1 && "Especialidade"}
                   </th>
                   <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
                     Sessões
@@ -393,34 +329,7 @@ export default function RuixenSection({
                   </tr>
                 ))}
                 
-                {activeCardIndex === 1 && activeEmployees.map((employee) => (
-                  <tr 
-                    key={employee.id}
-                    onClick={() => onEmployeeClick?.(employee.id)}
-                    className="group border-b border-border cursor-pointer transition-all relative"
-                  >
-                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
-                      <div className={cn(
-                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none -z-10",
-                        employee.bgColor
-                      )} style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />
-                      {employee.name}
-                    </td>
-                    <td className="py-4 px-4 text-foreground relative z-10">
-                      {employee.company}
-                    </td>
-                    <td className="py-4 px-4 text-foreground relative z-10">
-                      {employee.sessions.used}/{employee.sessions.total}
-                    </td>
-                    <td className="py-4 px-4 relative z-10">
-                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
-                        Ativo
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-                
-                {activeCardIndex === 2 && activeProviders.map((provider) => (
+                {activeCardIndex === 1 && activeProviders.map((provider) => (
                   <tr 
                     key={provider.id}
                     onClick={() => navigate(`/admin/provider-metrics/${provider.id}`)}
@@ -455,21 +364,13 @@ export default function RuixenSection({
       {/* Stats and Testimonial Section */}
       <div className="mt-12 sm:mt-16 lg:mt-20 grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
         <div className="flex justify-center items-center p-4 sm:p-6">
-          <div className="grid grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left">
+          <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left">
             <div className="space-y-2 sm:space-y-3">
               <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-foreground">
                 150+
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">
                 Empresas Ativas
-              </p>
-            </div>
-            <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-foreground">
-                5,000+
-              </div>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Colaboradores
               </p>
             </div>
             <div className="space-y-2 sm:space-y-3">

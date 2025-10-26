@@ -42,10 +42,9 @@ const AdminCompanyDetail = lazy(() => import("./pages/AdminCompanyDetail"));
 
 // Specialist pages
 const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboard"));
-const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequestsRevamped"));
+const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequests"));
 const EspecialistaSessions = lazy(() => import("./pages/EspecialistaSessionsRevamped"));
 const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistory"));
-const EspecialistaStats = lazy(() => import("./pages/EspecialistaStatsRevamped"));
 const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettings"));
 
 // Company pages
@@ -54,7 +53,6 @@ const CompanyReportsImpact = lazy(() => import("./pages/CompanyReportsImpact"));
 const CompanyResources = lazy(() => import("./pages/CompanyResources"));
 const CompanySessions = lazy(() => import("./pages/CompanySessions"));
 const CompanyCollaborators = lazy(() => import("./pages/CompanyCollaborators"));
-const CompanySettings = lazy(() => import("./pages/CompanySettings"));
 const UserSessions = lazy(() => import("./pages/UserSessions"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const UserResources = lazy(() => import("./pages/UserResources"));
@@ -178,7 +176,7 @@ const AppWithTracking = () => {
           <Route path="/especialista/call-requests" element={<EspecialistaLayout><EspecialistaCallRequests /></EspecialistaLayout>} />
           <Route path="/especialista/sessions" element={<EspecialistaLayout><EspecialistaSessions /></EspecialistaLayout>} />
           <Route path="/especialista/user-history" element={<EspecialistaLayout><EspecialistaUserHistory /></EspecialistaLayout>} />
-          <Route path="/especialista/stats" element={<EspecialistaLayout><EspecialistaStats /></EspecialistaLayout>} />
+
           <Route path="/especialista/settings" element={<EspecialistaLayout><EspecialistaSettings /></EspecialistaLayout>} />
           
           {/* Company HR routes */}
@@ -187,7 +185,6 @@ const AppWithTracking = () => {
           <Route path="/company/recursos" element={<CompanyLayout><CompanyResources /></CompanyLayout>} />
           <Route path="/company/sessions" element={<CompanyLayout><CompanySessions /></CompanyLayout>} />
           <Route path="/company/colaboradores" element={<CompanyLayout><CompanyCollaborators /></CompanyLayout>} />
-          <Route path="/company/settings" element={<CompanyLayout><CompanySettings /></CompanyLayout>} />
           
           {/* Catch-all route - redirect to home */}
           <Route path="*" element={<Index />} />

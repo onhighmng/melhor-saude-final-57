@@ -40,9 +40,10 @@ const CompanySidebar = () => {
       icon: <LayoutDashboard className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
-      label: "Relatórios e Impacto",
-      href: "/company/relatorios",
-      icon: <BarChart3 className="text-primary h-5 w-5 flex-shrink-0" />,
+      label: "Colaboradores",
+      href: "/company/colaboradores",
+      icon: <Users className="text-primary h-5 w-5 flex-shrink-0" />,
+      badge: `${mockSeatData.used}/${mockSeatData.limit}`,
     },
     {
       label: "Recursos",
@@ -50,24 +51,18 @@ const CompanySidebar = () => {
       icon: <BookOpen className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
+      label: "Relatórios e Impacto",
+      href: "/company/relatorios",
+      icon: <BarChart3 className="text-primary h-5 w-5 flex-shrink-0" />,
+    },
+    {
       label: "Sessões",
       href: "/company/sessions",
       icon: <Calendar className="text-primary h-5 w-5 flex-shrink-0" />,
     },
-    {
-      label: "Colaboradores",
-      href: "/company/colaboradores",
-      icon: <Users className="text-primary h-5 w-5 flex-shrink-0" />,
-      badge: `${mockSeatData.used}/${mockSeatData.limit}`,
-    },
   ];
 
   const footerLinks = [
-    {
-      label: "Configurações",
-      href: "/company/settings",
-      icon: <Settings className="text-muted-foreground h-5 w-5 flex-shrink-0" />,
-    },
     {
       label: "Suporte",
       href: "/support",

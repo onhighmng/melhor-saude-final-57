@@ -49,6 +49,7 @@ import {
   type CSVEmployee,
   type CSVValidationError,
 } from '@/utils/csvHelpers';
+import { Features } from '@/components/ui/features-11';
 
 interface Employee {
   id: string;
@@ -258,7 +259,7 @@ export default function AdminCompanyDetail() {
       <div className="flex-1 overflow-auto">
         <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/admin/operations')}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
@@ -267,240 +268,15 @@ export default function AdminCompanyDetail() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader className="pb-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-5xl mb-1 leading-tight">{mockCompany.name}</CardTitle>
-              <CardDescription className="text-xl leading-tight">NUIT: {mockCompany.nuit}</CardDescription>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Button variant="outline" size="lg" className="text-lg px-6 py-4" onClick={() => setIsEditDialogOpen(true)}>
-                <Edit className="h-6 w-6 mr-3" />
-                Editar Empresa
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-6 py-4" onClick={() => navigate(`/admin/reports?company=${id}`)}>
-                <FileText className="h-6 w-6 mr-3" />
-                Ver Relatório Mensal
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-6 py-4 text-destructive" onClick={() => setIsDeactivateDialogOpen(true)}>
-                <Trash2 className="h-6 w-6 mr-3" />
-                Desativar Empresa
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <p className="text-xl text-muted-foreground mb-1 leading-tight">Colaboradores</p>
-              <p className="text-5xl font-bold leading-tight">{mockCompany.employees}</p>
-            </div>
-            <div>
-              <p className="text-xl text-muted-foreground mb-1 leading-tight">Plano</p>
-              <p className="text-5xl font-bold leading-tight">{mockCompany.plan}</p>
-              <p className="text-base text-muted-foreground leading-tight">{mockCompany.totalSessions} sessões/mês</p>
-            </div>
-            <div>
-              <p className="text-xl text-muted-foreground mb-1 leading-tight">Sessões</p>
-              <Progress value={usagePercent} className="mt-2 h-4" />
-              <p className="text-base text-muted-foreground mt-1 leading-tight">{mockCompany.usedSessions} de {mockCompany.totalSessions}</p>
-            </div>
-            <div>
-              <p className="text-xl text-muted-foreground mb-1 leading-tight">Estado</p>
-              <Badge variant="default" className="mt-1 text-lg px-6 py-2">Ativa</Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <Features company={{
+        name: mockCompany.name,
+        employees: mockCompany.employees,
+        totalSessions: mockCompany.totalSessions,
+        usedSessions: mockCompany.usedSessions,
+        plan: mockCompany.plan,
+        status: mockCompany.status
+      }} />
 
-      <div className="space-y-4">
-          <Card>
-            <CardHeader className="pb-8">
-              <div className="flex justify-between items-start gap-4">
-                <div>
-                  <CardTitle className="text-4xl">Gestão de Colaboradores</CardTitle>
-                  <CardDescription className="text-xl mt-2">Importe, gere e distribua códigos de acesso</CardDescription>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex flex-col gap-3">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="outline" size="lg" onClick={handleImportCSV} disabled={isUploading} className="justify-start">
-                            <Upload className="h-5 w-5 mr-2" />
-                            {isUploading ? 'A carregar ficheiro...' : 'Importar Colaboradores'}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="text-base"><p>Faça upload de um ficheiro .csv com nome e email dos colaboradores</p></TooltipContent>
-                      </Tooltip>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="outline" size="lg" onClick={handleGenerateCodes} disabled={isGenerating} className="justify-start">
-                            <RefreshCw className="h-5 w-5 mr-2" />
-                            {isGenerating ? 'A gerar códigos...' : 'Gerar Códigos'}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="text-base"><p>Cria códigos únicos para todos os colaboradores importados</p></TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  
-                  <div className="flex flex-col gap-3">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="outline" size="lg" onClick={handleSendEmails} disabled={isSending} className="justify-start">
-                            <Mail className="h-5 w-5 mr-2" />
-                            {isSending ? `A enviar emails (${sendingProgress.current}/${sendingProgress.total})` : 'Enviar por Email'}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="text-base"><p>Envia automaticamente os códigos para o email de cada colaborador</p></TooltipContent>
-                      </Tooltip>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="outline" size="lg" onClick={handleExportCSV} className="justify-start">
-                            <Download className="h-5 w-5 mr-2" />
-                            Exportar CSV
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="text-base"><p>Descarregue um ficheiro com nomes e códigos para enviar à empresa</p></TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-
-              <p className="text-xl text-muted-foreground">
-                <a href="#" onClick={(e) => { e.preventDefault(); downloadCSVTemplate(); }} className="text-vibrant-blue hover:underline text-xl">
-                  📎 Descarregar modelo CSV
-                </a>
-              </p>
-
-              {isSending && (
-                <Alert className="border-blue-200 bg-blue-50">
-                  <Mail className="h-6 w-6 text-blue-600" />
-                  <AlertTitle className="text-blue-900 text-lg">A enviar emails...</AlertTitle>
-                  <AlertDescription className="space-y-2">
-                    <p className="text-base text-blue-700">
-                      {sendingProgress.current} de {sendingProgress.total} emails enviados
-                    </p>
-                    <Progress 
-                      value={(sendingProgress.current / sendingProgress.total) * 100} 
-                      className="h-3"
-                    />
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {csvErrors.length > 0 && (
-                <Alert variant="destructive">
-                  <AlertTitle className="text-lg">Erros de Validação</AlertTitle>
-                  <AlertDescription className="text-base">
-                    <ul className="list-disc list-inside space-y-1">
-                      {csvErrors.slice(0, 5).map((error, idx) => (
-                        <li key={idx}>Linha {error.line}: {error.field} - {error.message}</li>
-                      ))}
-                    </ul>
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {employees.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Users className="h-20 w-20 text-muted-foreground mb-6" />
-                  <h3 className="text-2xl font-semibold mb-3">Nenhum colaborador importado</h3>
-                  <p className="text-lg text-muted-foreground mb-6">Comece por importar colaboradores através de um ficheiro CSV</p>
-                  <Button onClick={handleImportCSV} size="lg" className="text-lg px-6 py-4">
-                    <Upload className="h-6 w-6 mr-2" />
-                    Importar Colaboradores
-                  </Button>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-lg">Nome</TableHead>
-                      <TableHead className="text-lg">Email</TableHead>
-                      <TableHead className="text-lg">Código</TableHead>
-                      <TableHead className="text-lg">Data de Envio</TableHead>
-                      <TableHead className="text-lg">Estado</TableHead>
-                      <TableHead className="text-lg">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {employees.map(emp => (
-                      <TableRow key={emp.id}>
-                        <TableCell className="font-medium text-lg py-4">{emp.name}</TableCell>
-                        <TableCell className="py-4">
-                          <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-lg font-medium">
-                            {emp.email}
-                          </span>
-                        </TableCell>
-                        <TableCell className="font-mono text-lg py-4">{emp.code || '-'}</TableCell>
-                        <TableCell className="text-lg py-4">{emp.sentDate || '-'}</TableCell>
-                        <TableCell className="py-4">{getStatusBadge(emp.status)}</TableCell>
-                        <TableCell className="py-4">
-                          <div className="flex gap-2">
-                            {emp.code && (
-                              <Button variant="ghost" size="icon" onClick={() => setEmailToResend({ id: emp.id, email: emp.email })}>
-                                <RotateCcw className="h-5 w-5" />
-                              </Button>
-                            )}
-                            <Button variant="ghost" size="icon" onClick={() => setEmployeeToRemove(emp.id)}>
-                              <X className="h-5 w-5" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        </div>
-      </div>
-
-      <div className="border-t py-3 px-4">
-        <div className="container mx-auto">
-          <div className="pb-2">
-            <h3 className="text-3xl font-semibold">Estatísticas Rápidas</h3>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
-            <div className="pr-2">
-              <p className="text-base text-muted-foreground leading-tight">Total de colaboradores</p>
-              <p className="text-4xl font-bold leading-tight">{employees.length}</p>
-            </div>
-            <div className="pr-2">
-              <p className="text-base text-muted-foreground leading-tight">Com código enviado</p>
-              <p className="text-4xl font-bold leading-tight">{employeesWithCode}</p>
-            </div>
-            <div className="pr-2">
-              <p className="text-base text-muted-foreground leading-tight">Por enviar</p>
-              <p className="text-4xl font-bold leading-tight">{employeesPending}</p>
-            </div>
-            <div className="pr-2">
-              <p className="text-base text-muted-foreground leading-tight">Taxa de envio de códigos</p>
-              <p className="text-4xl font-bold leading-tight">{employees.length > 0 ? Math.round((employeesWithCode / employees.length) * 100) : 0}%</p>
-              <Progress 
-                value={employees.length > 0 ? (employeesWithCode / employees.length) * 100 : 0} 
-                className="h-3 mt-1"
-              />
-            </div>
-            <div>
-              <p className="text-base text-muted-foreground leading-tight">Último envio</p>
-              <p className="text-base font-medium leading-tight">
-                {lastSendTimestamp || 'Nenhum envio realizado'}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
 

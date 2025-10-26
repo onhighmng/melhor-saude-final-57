@@ -13,7 +13,11 @@ import {
   Heart,
   DollarSign,
   Scale,
-  Activity
+  Activity,
+  CheckCircle,
+  Clock,
+  ArrowRight,
+  BarChart3
 } from 'lucide-react';
 import { 
   mockCompanyMetrics, 
@@ -31,7 +35,39 @@ import ResourceUsageCard from '@/components/ui/horizontal-bar-chart';
 
 const CompanyReportsImpact = () => {
   const [isExporting, setIsExporting] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const { toast } = useToast();
+
+  const metricCards = [
+    {
+      title: "Colaboradores Ativos",
+      value: mockCompanyMetrics.activeEmployees,
+      icon: <Users className="h-6 w-6" />,
+      bgColor: "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900",
+      textColor: "text-blue-700 dark:text-blue-300"
+    },
+    {
+      title: "Sessões Realizadas",
+      value: mockCompanyMetrics.totalSessions,
+      icon: <Calendar className="h-6 w-6" />,
+      bgColor: "bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900",
+      textColor: "text-green-700 dark:text-green-300"
+    },
+    {
+      title: "Satisfação Média",
+      value: `${mockCompanyMetrics.avgSatisfaction}/10`,
+      icon: <Star className="h-6 w-6" />,
+      bgColor: "bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900",
+      textColor: "text-yellow-700 dark:text-yellow-300"
+    },
+    {
+      title: "Taxa de Utilização",
+      value: `${mockCompanyMetrics.utilizationRate}%`,
+      icon: <TrendingUp className="h-6 w-6" />,
+      bgColor: "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900",
+      textColor: "text-purple-700 dark:text-purple-300"
+    }
+  ];
 
   useEffect(() => {
     // Add company-page class to body for light blue background
@@ -41,6 +77,14 @@ const CompanyReportsImpact = () => {
     return () => {
       document.body.classList.remove('company-page');
     };
+  }, []);
+
+  // Cycle through cards every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentCardIndex((prev) => (prev + 1) % 4);
+    }, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleExportReport = async () => {
@@ -87,7 +131,7 @@ const CompanyReportsImpact = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 space-y-8">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
       <div className="text-center mb-12 sm:mb-16">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4">
@@ -116,117 +160,48 @@ const CompanyReportsImpact = () => {
         </Button>
       </div>
 
-      {/* Top Section - Stacked Cards and Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 relative mb-12 sm:mb-16 lg:mb-20">
-        {/* Left Block - Metric Cards Stack */}
-        <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8 bg-card rounded-l-xl">
-          <div className="relative w-full mb-4 sm:mb-6">
-            <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-background to-transparent z-10"></div>
-            
-            {/* Metric Stats Cards Stack */}
-            <div className="relative mx-auto h-64 w-full my-4">
-              <motion.div
-                className="absolute bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 h-64 w-full rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between"
-                animate={{
-                  top: 0,
-                  scale: 1,
-                  zIndex: 4,
-                }}
-              >
-                <div>
-                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 mb-2">
-                    <Users className="h-5 w-5" />
-                    <span className="text-sm font-medium">Colaboradores Ativos</span>
-                  </div>
-                  <div className="text-5xl font-bold text-blue-700 dark:text-blue-300 mb-2">
-                    {mockCompanyMetrics.activeEmployees}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Total de colaboradores
-                  </p>
-                </div>
-              </motion.div>
-              
-              <motion.div
-                className="absolute bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 h-64 w-full rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between"
-                animate={{
-                  top: -10,
-                  scale: 0.94,
-                  zIndex: 3,
-                }}
-              >
-                <div>
-                  <div className="flex items-center gap-2 text-green-700 dark:text-green-300 mb-2">
-                    <Calendar className="h-5 w-5" />
-                    <span className="text-sm font-medium">Sessões Realizadas</span>
-                  </div>
-                  <div className="text-5xl font-bold text-green-700 dark:text-green-300 mb-2">
-                    {mockCompanyMetrics.totalSessions}
-                  </div>
-                  <p className="text-sm text-muted-foreground">Este mês</p>
-                </div>
-              </motion.div>
-              
-              <motion.div
-                className="absolute bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 h-64 w-full rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between"
-                animate={{
-                  top: -20,
-                  scale: 0.88,
-                  zIndex: 2,
-                }}
-              >
-                <div>
-                  <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300 mb-2">
-                    <Star className="h-5 w-5" />
-                    <span className="text-sm font-medium">Satisfação Média</span>
-                  </div>
-                  <div className="text-5xl font-bold text-amber-700 dark:text-amber-300 mb-2">
-                    {mockCompanyMetrics.avgSatisfaction}/10
-                  </div>
-                  <p className="text-sm text-muted-foreground">Avaliação dos colaboradores</p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="absolute bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 h-64 w-full rounded-3xl p-6 shadow-xl border border-border flex flex-col justify-between"
-                animate={{
-                  top: -30,
-                  scale: 0.82,
-                  zIndex: 1,
-                }}
-              >
-                <div>
-                  <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 mb-2">
-                    <TrendingUp className="h-5 w-5" />
-                    <span className="text-sm font-medium">Taxa de Utilização</span>
-                  </div>
-                  <div className="text-5xl font-bold text-purple-700 dark:text-purple-300 mb-2">
-                    {mockCompanyMetrics.utilizationRate}%
-                  </div>
-                  <p className="text-sm text-muted-foreground">Colaboradores ativos</p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-
-          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-foreground leading-relaxed">
-            Métricas de <span className="text-primary">Impacto</span>{" "}
-            <span className="text-muted-foreground text-sm sm:text-base lg:text-lg">
-              Visualize as principais métricas de desempenho do programa de bem-estar em tempo real.
-            </span>
-          </h3>
-        </div>
-
-        {/* Right Block - Resource Usage Chart */}
-        <div className="flex flex-col items-center justify-center border border-border p-4 sm:p-6 lg:p-8 bg-card rounded-r-xl">
-          <ResourceUsageCard />
-        </div>
-      </div>
-
-      {/* Charts Section */}
+      {/* Main Content - Metrics Stack on Left, Charts on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Distribution by Pillar */}
-        <Card className="border-0 shadow-sm">
+        {/* Left Half - Stacked Animated Cards */}
+        <div className="relative h-96 flex items-center justify-center">
+          {metricCards.map((card, index) => {
+            const isActive = index === currentCardIndex;
+            const stackIndex = (index - currentCardIndex + 4) % 4;
+            
+            return (
+              <motion.div
+                key={card.title}
+                className={`absolute ${card.bgColor} rounded-2xl p-8 shadow-lg border border-border w-full max-w-sm`}
+                style={{
+                  top: `${stackIndex * 20}px`,
+                  scale: 1 - stackIndex * 0.08,
+                  zIndex: 4 - stackIndex,
+                }}
+                animate={{
+                  opacity: isActive ? 1 : 0.7,
+                  y: isActive ? 0 : stackIndex * 10,
+                }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-muted-foreground">{card.title}</h3>
+                  <div className={`${card.bgColor.replace('bg-gradient-to-br', 'bg')} p-2 rounded-lg`}>
+                    {card.icon}
+                  </div>
+                </div>
+                <p className={`text-5xl font-bold ${card.textColor}`}>{card.value}</p>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Right Half - All Charts */}
+        <div className="space-y-8">
+          {/* Resource Usage Chart */}
+          <ResourceUsageCard />
+
+          {/* Distribution by Pillar */}
+          <Card className="border-0 shadow-sm">
           <CardHeader>
             <CardTitle className="text-3xl">
               Distribuição por Pilar
@@ -273,17 +248,16 @@ const CompanyReportsImpact = () => {
         </Card>
 
         {/* Wellness Trend */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <TrendingUp className="h-6 w-6" />
+        <Card className="border-0 shadow-sm" style={{ height: '400px' }}>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <TrendingUp className="h-5 w-5" />
               Tendência de Melhoria
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mockWellnessTrends}>
+          <CardContent className="pb-0" style={{ height: 'calc(100% - 80px)' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={mockWellnessTrends} margin={{ top: 5, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 
@@ -300,13 +274,7 @@ const CompanyReportsImpact = () => {
                     ]}
                     contentStyle={{ fontSize: '16px' }}
                   />
-                  <Legend 
-                    formatter={(value) => 
-                      value === 'avgWellness' ? 'Bem-estar médio' : 
-                      value === 'sessions' ? 'Sessões realizadas' : value
-                    }
-                    wrapperStyle={{ fontSize: '18px' }}
-                  />
+
                   <Line 
                     type="monotone" 
                     dataKey="avgWellness" 
@@ -323,9 +291,9 @@ const CompanyReportsImpact = () => {
                   />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </section>
   );
