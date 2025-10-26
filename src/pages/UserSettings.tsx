@@ -249,7 +249,7 @@ const UserSettings = () => {
   const [isConsentsModalOpen, setIsConsentsModalOpen] = useState(false);
   const [isNotificationHistoryModalOpen, setIsNotificationHistoryModalOpen] = useState(false);
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (passwordData.new !== passwordData.confirm) {
       toast({
         title: "Erro",
@@ -268,19 +268,37 @@ const UserSettings = () => {
       return;
     }
     
-    setShowPasswordDialog(false);
-    setPasswordData({ current: '', new: '', confirm: '' });
-    toast({
-      title: 'Palavra-passe alterada',
-      description: 'A sua palavra-passe foi atualizada com sucesso.'
-    });
+    try {
+      // Actually update password in Supabase
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.new
+      });
+
+      if (error) throw error;
+
+      setShowPasswordDialog(false);
+      setPasswordData({ current: '', new: '', confirm: '' });
+      toast({
+        title: 'Palavra-passe alterada',
+        description: 'A sua palavra-passe foi atualizada com sucesso.'
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao alterar senha',
+        description: error.message || 'Tente novamente',
+        variant: 'destructive'
+      });
+    }
   };
 
   const handleEnable2FA = () => {
+    // Note: Supabase 2FA requires more complex setup with TOTP
+    // For now, inform user this feature needs additional configuration
     setShow2FADialog(false);
     toast({
-      title: 'Autenticação de dois fatores ativada',
-      description: '2FA foi ativado com sucesso na sua conta.'
+      title: 'Funcionalidade em desenvolvimento',
+      description: 'A autenticação de dois fatores estará disponível em breve.',
+      variant: 'default'
     });
   };
 
