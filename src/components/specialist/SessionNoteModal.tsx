@@ -113,7 +113,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
                   setOutcome('resolved');
                   handleSave();
                 }}
-                className="h-auto py-4 flex flex-col gap-2 bg-green-50 hover:bg-green-100 border-green-200"
+                className="h-auto py-4 flex flex-col gap-2 bg-green-50 hover:bg-green-100 border-green-200 hover:text-foreground"
               >
                 <CheckCircle className="h-6 w-6" />
                 <span className="text-sm font-medium">Resolvido</span>
@@ -127,7 +127,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
                   setOutcome('escalated');
                   setShowReferralFlow(true);
                 }}
-                className="h-auto py-4 flex flex-col gap-2 bg-blue-50 hover:bg-blue-100 border-blue-200"
+                className="h-auto py-4 flex flex-col gap-2 bg-blue-50 hover:bg-blue-100 border-blue-200 hover:text-foreground"
               >
                 <ArrowRight className="h-6 w-6" />
                 <span className="text-sm font-medium">Encaminhar</span>
@@ -138,7 +138,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
               <Button
                 variant={outcome === 'follow_up' ? 'default' : 'outline'}
                 onClick={() => setShowPreDiagnostic(true)}
-                className="h-auto py-4 flex flex-col gap-2 bg-yellow-50 hover:bg-yellow-100 border-yellow-200"
+                className="h-auto py-4 flex flex-col gap-2 bg-yellow-50 hover:bg-yellow-100 border-yellow-200 hover:text-foreground"
               >
                 <MessageSquare className="h-6 w-6" />
                 <span className="text-sm font-medium">Ver Pré-Diagnóstico</span>
