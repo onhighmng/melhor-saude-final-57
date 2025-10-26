@@ -51,32 +51,48 @@ export default function AdminSessionsTab() {
     const loadSessions = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data, error} = await supabase
           .from('bookings')
-          .select(`
-            *,
-            profiles:user_id (name, email),
-            prestadores:prestador_id (
-              profiles:user_id (name)
-            ),
-            companies:company_id (name)
-          `)
+          .select('*')
           .gte('date', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
           .order('date', { ascending: false });
 
         if (error) throw error;
 
         if (data) {
-          const formattedSessions = data.map(booking => ({
-            id: booking.id,
-            collaborator: booking.profiles?.name || '',
-            company: booking.companies?.name || '',
-            pillar: booking.pillar,
-            specialist: booking.prestadores?.profiles?.name || '',
-            date: booking.date,
-            time: booking.start_time,
-            status: booking.status,
-            rating: booking.rating
+          const formattedSessions = await Promise.all(data.map(async (booking) => {
+            // Get user profile
+            const { data: userProfile } = await supabase
+              .from('profiles')
+              .select('name')
+              .eq('id', booking.user_id)
+              .single();
+            
+            // Get company
+            const { data: company } = await supabase
+              .from('companies')
+              .select('company_name')
+              .eq('id', booking.company_id)
+              .single();
+            
+            // Get prestador
+            const { data: prestador } = await supabase
+              .from('prestadores')
+              .select('name')
+              .eq('id', booking.prestador_id)
+              .single();
+
+            return {
+              id: booking.id,
+              collaborator: userProfile?.name || '',
+              company: company?.company_name || '',
+              pillar: booking.pillar,
+              specialist: prestador?.name || '',
+              date: booking.date,
+              time: booking.start_time,
+              status: booking.status,
+              rating: booking.rating
+            };
           }));
 
           setSessions(formattedSessions);

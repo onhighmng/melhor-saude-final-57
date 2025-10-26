@@ -32,12 +32,7 @@ const SessionHistoryCard = ({ employeeId }: { employeeId: string }) => {
       try {
         const { data, error } = await supabase
           .from('bookings')
-          .select(`
-            *,
-            prestadores:prestador_id (
-              profiles:user_id (name)
-            )
-          `)
+          .select('*')
           .eq('user_id', employeeId)
           .eq('status', 'completed')
           .order('date', { ascending: false })
@@ -48,7 +43,7 @@ const SessionHistoryCard = ({ employeeId }: { employeeId: string }) => {
         const formattedSessions = (data || []).map(booking => ({
           date: booking.date,
           pillar: booking.pillar,
-          provider: booking.prestadores?.profiles?.name || 'N/A'
+          provider: 'N/A'
         }));
 
         setSessions(formattedSessions);
@@ -137,25 +132,27 @@ export const AdminEmployeesTab = () => {
         setLoading(true);
         const { data, error } = await supabase
           .from('company_employees')
-          .select(`
-            *,
-            profiles:user_id (
-              id,
-              name,
-              email,
-              avatar_url,
-              role
-            ),
-            companies:company_id (
-              name
-            )
-          `)
+          .select('*')
           .order('joined_at', { ascending: false });
 
         if (error) throw error;
 
         const formattedEmployees = await Promise.all(
           data.map(async (emp) => {
+            // Get user profile
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('name, email, avatar_url')
+              .eq('id', emp.user_id)
+              .single();
+            
+            // Get company info
+            const { data: company } = await supabase
+              .from('companies')
+              .select('company_name')
+              .eq('id', emp.company_id)
+              .single();
+
             // Get pillar preferences from onboarding
             const { data: onboarding } = await supabase
               .from('onboarding_data')
@@ -183,9 +180,9 @@ export const AdminEmployeesTab = () => {
 
             return {
               id: emp.id,
-              name: emp.profiles?.name || '',
-              email: emp.profiles?.email || '',
-              company: emp.companies?.name || '',
+              name: profile?.name || '',
+              email: profile?.email || '',
+              company: company?.company_name || '',
               pillars: onboarding?.pillar_preferences || [],
               sessionsUsed: emp.sessions_used,
               sessionsAllocated: emp.sessions_allocated,
