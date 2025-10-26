@@ -56,8 +56,12 @@ export const useSessionBalance = () => {
         })
         .subscribe();
 
-      return () => subscription.unsubscribe();
+      return () => {
+        subscription.unsubscribe();
+      };
     }
+    
+    return undefined;
   }, [user]);
 
   return {

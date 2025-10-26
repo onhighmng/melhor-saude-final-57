@@ -78,7 +78,7 @@ export function UserSidebar() {
   ];
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) return undefined;
 
     const fetchUnreadCount = async () => {
       try {
@@ -110,7 +110,9 @@ export function UserSidebar() {
       })
       .subscribe();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [user?.id]);
 
   const handleLogout = async () => {
