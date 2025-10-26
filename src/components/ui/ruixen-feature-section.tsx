@@ -136,32 +136,13 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
                   key={session.id}
                   className="flex flex-col gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all shadow-sm"
                 >
-                  {/* Row 1: Name and Status */}
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="text-base font-semibold text-foreground truncate flex-1">
-                      {session.clientName}
-                    </p>
-                    <div className="flex-shrink-0">
-                      {getStatusBadge ? getStatusBadge(session.status) : (
-                        <Badge variant="outline" className="text-xs">
-                          {session.status}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Row 2: Company */}
-                  <div className="flex items-center gap-2">
-                    <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <p className="text-sm text-muted-foreground truncate">
-                      {session.company}
-                    </p>
-                  </div>
-                  
-                  {/* Row 3: Type, Date, and Rating */}
+                  {/* Row 1: Name, Type Badge, and Status */}
                   <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="flex items-center gap-1.5 text-sm">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <p className="text-lg font-semibold text-foreground truncate">
+                        {session.clientName}
+                      </p>
+                      <Badge variant="outline" className="flex items-center gap-1.5 text-sm flex-shrink-0">
                         {session.type === 'Virtual' ? (
                           <Video className="h-3.5 w-3.5" />
                         ) : (
@@ -169,14 +150,33 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
                         )}
                         {session.type}
                       </Badge>
-                      <span className="text-sm text-muted-foreground">
+                    </div>
+                    <div className="flex-shrink-0">
+                      {getStatusBadge ? getStatusBadge(session.status) : (
+                        <Badge variant="outline" className="text-sm">
+                          {session.status}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Row 2: Company, Date, and Rating */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <p className="text-base text-muted-foreground truncate">
+                          {session.company}
+                        </p>
+                      </div>
+                      <span className="text-base text-muted-foreground flex-shrink-0">
                         {new Date(session.date).toLocaleDateString('pt-PT')}
                       </span>
                     </div>
                     {session.rating && (
-                      <div className="flex items-center gap-1 flex-shrink-0">
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
                         <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                        <span className="text-sm font-medium">{session.rating}/10</span>
+                        <span className="text-base font-medium">{session.rating}/10</span>
                       </div>
                     )}
                   </div>
