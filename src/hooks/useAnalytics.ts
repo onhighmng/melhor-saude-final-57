@@ -30,12 +30,19 @@ export const useAnalytics = () => {
       setLoading(true);
       
       // Fetch basic counts directly from tables
-      const [usersResult, providersResult, companiesResult, bookingsResult] = await Promise.all([
+      const [usersResult, providersResult, companiesResult, bookingsResult, companiesData] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
         supabase.from('prestadores').select('id', { count: 'exact', head: true }),
         supabase.from('companies').select('id', { count: 'exact', head: true }),
-        supabase.from('bookings').select('id', { count: 'exact', head: true })
+        supabase.from('bookings').select('id', { count: 'exact', head: true }),
+        supabase.from('companies').select('sessions_allocated, sessions_used')
       ]);
+      
+      // Calculate session totals
+      const sessionTotals = (companiesData.data || []).reduce((acc, company) => ({
+        allocated: acc.allocated + (company.sessions_allocated || 0),
+        used: acc.used + (company.sessions_used || 0)
+      }), { allocated: 0, used: 0 });
       
       setData({
         total_users: usersResult.count || 0,
@@ -45,8 +52,8 @@ export const useAnalytics = () => {
         total_companies: companiesResult.count || 0,
         total_bookings: bookingsResult.count || 0,
         pending_change_requests: 0,
-        sessions_allocated: 0,
-        sessions_used: 0
+        sessions_allocated: sessionTotals.allocated,
+        sessions_used: sessionTotals.used
       });
     } catch (err: any) {
       setError(err.message);

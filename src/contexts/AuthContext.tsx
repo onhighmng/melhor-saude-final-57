@@ -65,13 +65,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (profileError) throw profileError;
       
+      // Query user_roles table for secure role checking
+      const { data: userRoles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', data.user.id);
+      
+      if (rolesError) throw rolesError;
+      
+      // Determine primary role (admin takes precedence)
+      const roles = userRoles?.map(r => r.role) || [];
+      const primaryRole = roles.includes('admin') ? 'admin' 
+        : roles.includes('hr') ? 'hr'
+        : roles.includes('prestador') ? 'prestador'
+        : roles.includes('especialista_geral') ? 'especialista_geral'
+        : 'user';
+      
       setUser(data.user);
       setSession(data.session);
       setProfile({
         ...profileData,
         user_id: profileData.id,
         is_active: profileData.is_active ?? true,
-        role: (profileData.role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
+        role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
       });
       
       return {};

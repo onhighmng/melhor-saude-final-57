@@ -159,6 +159,20 @@ export function AdminResourcesTab() {
 
       if (error) throw error;
 
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'resource_updated',
+          entity_type: 'resource',
+          entity_id: selectedResource.id,
+          details: { 
+            title: editFormData.title,
+            pillar: editFormData.pillar
+          }
+        });
+      }
+
       toast.success('Recurso atualizado com sucesso');
       setShowEditDialog(false);
       setSelectedResource(null);
@@ -179,6 +193,20 @@ export function AdminResourcesTab() {
         .eq('id', resourceToDelete.id);
 
       if (error) throw error;
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'resource_deleted',
+          entity_type: 'resource',
+          entity_id: resourceToDelete.id,
+          details: { 
+            title: resourceToDelete.title,
+            pillar: resourceToDelete.pillar
+          }
+        });
+      }
 
       toast.success('Recurso eliminado com sucesso');
       setResourceToDelete(null);
@@ -301,13 +329,42 @@ export function AdminResourcesTab() {
                         onChange={(e) => setAddFormData({ ...addFormData, description: e.target.value })}
                       />
                     </div>
-                    <div>
-                      <Label>URL da Imagem</Label>
-                      <Input 
-                        placeholder="https://..." 
-                        value={addFormData.thumbnail}
-                        onChange={(e) => setAddFormData({ ...addFormData, thumbnail: e.target.value })}
+                    <div className="space-y-2">
+                      <Label htmlFor="thumbnail-upload">Imagem</Label>
+                      <Input
+                        id="thumbnail-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          
+                          try {
+                            const fileExt = file.name.split('.').pop();
+                            const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+                            const filePath = `thumbnails/${fileName}`;
+                            
+                            const { error: uploadError } = await supabase.storage
+                              .from('resources')
+                              .upload(filePath, file);
+                            
+                            if (uploadError) throw uploadError;
+                            
+                            const { data: { publicUrl } } = supabase.storage
+                              .from('resources')
+                              .getPublicUrl(filePath);
+                            
+                            setAddFormData(prev => ({ ...prev, thumbnail: publicUrl }));
+                            toast.success('Imagem carregada com sucesso');
+                          } catch (error) {
+                            console.error('Error uploading thumbnail:', error);
+                            toast.error('Erro ao carregar imagem');
+                          }
+                        }}
                       />
+                      {addFormData.thumbnail && (
+                        <img src={addFormData.thumbnail} alt="Preview" className="w-32 h-32 object-cover rounded" />
+                      )}
                     </div>
                     <Button 
                       className="w-full" 

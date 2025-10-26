@@ -15,6 +15,7 @@ import { Users, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from 'react-i18next';
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SeatAllocationModalProps {
   open: boolean;
@@ -31,6 +32,7 @@ export function SeatAllocationModal({
 }: SeatAllocationModalProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const { profile } = useAuth();
   const [newLimit, setNewLimit] = useState(company.seatLimit);
 
   const handleSubmit = async () => {
@@ -49,6 +51,21 @@ export function SeatAllocationModal({
         .from('companies')
         .update({ sessions_allocated: newLimit })
         .eq('id', company.id);
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'sessions_allocated',
+          entity_type: 'company',
+          entity_id: company.id,
+          details: { 
+            previous_allocation: company.seatLimit,
+            new_allocation: newLimit,
+            change: newLimit - company.seatLimit
+          }
+        });
+      }
 
       onUpdate(newLimit);
       
