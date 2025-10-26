@@ -143,26 +143,28 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
                   <div
                     key={case_.id}
                     onClick={() => handleCaseClick(case_)}
-                    className="flex items-center justify-between p-4 rounded-lg border bg-card transition-colors cursor-pointer"
+                    className="flex items-start justify-between p-6 rounded-lg border bg-card transition-colors cursor-pointer"
                   >
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <StatusIcon className="h-5 w-5 text-primary" />
+                    <div className="flex items-start gap-5 flex-1">
+                      <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <StatusIcon className="h-7 w-7 text-primary" />
                       </div>
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <h4 className="font-medium text-sm">{case_.collaborator}</h4>
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <h4 className="font-semibold text-lg">{case_.collaborator}</h4>
                         {case_.phone && (
-                          <p className="text-sm text-muted-foreground">{case_.phone}</p>
+                          <p className="text-base text-muted-foreground">{case_.phone}</p>
                         )}
                         {case_.email && (
-                          <p className="text-sm text-muted-foreground">{case_.email}</p>
-                        )}
-                        {case_.company && (
-                          <p className="text-sm text-muted-foreground">{case_.company}</p>
+                          <p className="text-base text-muted-foreground">{case_.email}</p>
                         )}
                       </div>
                     </div>
-                    <Badge className={status.className}>{status.label}</Badge>
+                    <div className="flex flex-col items-end gap-2">
+                      {case_.company && (
+                        <p className="text-base font-medium text-muted-foreground">{case_.company}</p>
+                      )}
+                      <Badge className={status.className + ' text-sm px-3 py-1'}>{status.label}</Badge>
+                    </div>
                   </div>
                 );
               })}
