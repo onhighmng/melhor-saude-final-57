@@ -300,14 +300,14 @@ const EspecialistaSessionsRevamped = () => {
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <h4 className="font-semibold text-base mb-2">{session.user_name}</h4>
-            <p className="text-sm text-muted-foreground">{session.company_name}</p>
+            <p className="text-sm text-foreground">{session.company_name}</p>
           </div>
           <Badge className={`text-sm px-3 py-1 ${getPillarColor(session.pillar)}`}>
             {getPillarLabel(session.pillar)}
           </Badge>
         </div>
 
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex items-center justify-between text-sm text-foreground">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
@@ -324,7 +324,7 @@ const EspecialistaSessionsRevamped = () => {
         </div>
 
         {session.notes && (
-          <p className="text-sm text-muted-foreground italic">{session.notes}</p>
+          <p className="text-sm text-foreground italic">{session.notes}</p>
         )}
 
         <Button
