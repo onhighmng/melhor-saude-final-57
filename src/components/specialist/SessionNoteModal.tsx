@@ -63,31 +63,34 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Session Info */}
-          <div className="p-4 bg-muted rounded-lg space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold">{session.user_name}</span>
-              <Badge variant="outline">{session.company_name}</Badge>
-              <Badge variant="secondary">{getPillarLabel(session.pillar)}</Badge>
+          {/* Session Info and Notes - Side by Side */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Session Info - Left */}
+            <div className="p-4 bg-muted rounded-lg space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-semibold">{session.user_name}</span>
+                <Badge variant="outline">{session.company_name}</Badge>
+                <Badge variant="secondary">{getPillarLabel(session.pillar)}</Badge>
+              </div>
+              <div className="text-sm text-foreground">
+                <p><strong>Data:</strong> {session.date} às {session.time}</p>
+                <p><strong>Tipo:</strong> {getSessionTypeLabel(session.session_type || session.type)}</p>
+              </div>
             </div>
-            <div className="text-sm text-muted-foreground">
-              <p><strong>Data:</strong> {session.date} às {session.time}</p>
-              <p><strong>Tipo:</strong> {getSessionTypeLabel(session.session_type || session.type)}</p>
-            </div>
-          </div>
 
-          {/* Notes */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Notas Internas</label>
-            <Textarea
-              placeholder="Descreva o que foi discutido na sessão, observações importantes, próximos passos..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={6}
-            />
-            <p className="text-xs text-muted-foreground">
-              Estas notas são confidenciais e apenas visíveis para especialistas
-            </p>
+            {/* Notes - Right */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Notas Internas</label>
+              <Textarea
+                placeholder="Descreva o que foi discutido na sessão, observações importantes, próximos passos..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={6}
+              />
+              <p className="text-xs text-foreground">
+                Estas notas são confidenciais e apenas visíveis para especialistas
+              </p>
+            </div>
           </div>
 
           {/* Outcome Selection */}
