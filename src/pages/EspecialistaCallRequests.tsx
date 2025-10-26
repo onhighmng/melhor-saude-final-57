@@ -138,30 +138,6 @@ const EspecialistaCallRequests = () => {
                   <p className="text-2xl font-mono text-primary font-bold">{selectedRequest.user_phone}</p>
                 </div>
               </div>
-              <div className="flex gap-3">
-                <Button 
-                  onClick={() => {
-                    toast({
-                      title: 'Ligação iniciada',
-                      description: `Ligando para ${selectedRequest.user_phone}`,
-                    });
-                    setIsCallModalOpen(false);
-                  }}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                  size="lg"
-                >
-                  <Phone className="h-5 w-5 mr-2" />
-                  Ligar Agora
-                </Button>
-                <Button 
-                  onClick={() => setIsCallModalOpen(false)}
-                  variant="outline"
-                  size="lg"
-                >
-                  <X className="h-5 w-5 mr-2" />
-                  Cancelar
-                </Button>
-              </div>
             </div>
           )}
         </DialogContent>
