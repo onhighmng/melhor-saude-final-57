@@ -29,6 +29,16 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
     onClose();
   };
 
+  const getPillarColor = (pillar: string) => {
+    const colors = {
+      psychological: 'bg-blue-100 text-blue-700 border-blue-300',
+      physical: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+      financial: 'bg-green-100 text-green-700 border-green-300',
+      legal: 'bg-purple-100 text-purple-700 border-purple-300'
+    };
+    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
+  };
+
   const getPillarLabel = (pillar: string) => {
     const labels = {
       psychological: 'Saúde Mental',
@@ -66,11 +76,11 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
           {/* Session Info and Notes - Side by Side */}
           <div className="grid grid-cols-3 gap-4">
             {/* Session Info - Left */}
-            <div className="col-span-1 p-4 bg-muted rounded-lg space-y-2">
+            <div className="col-span-1 p-4 bg-blue-50 rounded-lg space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-semibold">{session.user_name}</span>
                 <Badge variant="outline">{session.company_name}</Badge>
-                <Badge variant="secondary">{getPillarLabel(session.pillar)}</Badge>
+                <Badge className={getPillarColor(session.pillar)}>{getPillarLabel(session.pillar)}</Badge>
               </div>
               <div className="text-sm text-foreground">
                 <p><strong>Data:</strong> {session.date} às {session.time}</p>
