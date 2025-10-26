@@ -116,11 +116,6 @@ export function FullScreenCalendar({
               <Clock size={14} strokeWidth={2} aria-hidden="true" />
               <span>Disponibilidade</span>
             </Button>}
-
-          {onAddEvent && <Button onClick={onAddEvent} className="w-full gap-2 md:w-auto h-8 text-sm">
-              <PlusCircleIcon size={14} strokeWidth={2} aria-hidden="true" />
-              <span>Nova Sessão</span>
-            </Button>}
         </div>
       </div>
 
