@@ -15,6 +15,7 @@ import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFl
 import { BookingPillar } from './BookingFlow';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { mockProviders } from '@/data/mockData';
 
 type BookingStep = 'pillar' | 'assessment' | 'provider' | 'datetime' | 'confirmation';
 
@@ -188,20 +189,26 @@ export const DirectBookingFlow = () => {
       const [hour, minute] = selectedTime.split(':');
       const endTime = `${String((parseInt(hour) + 1)).padStart(2, '0')}:${minute}`;
 
+      // Get company_id from company_employees table
+      const { data: employee } = await supabase
+        .from('company_employees')
+        .select('company_id')
+        .eq('user_id', profile.id)
+        .maybeSingle();
+
       // Create booking
       const { error } = await supabase
         .from('bookings')
         .insert({
           user_id: profile.id,
-          company_id: profile.company_id,
+          booking_date: new Date().toISOString(),
+          company_id: employee?.company_id || null,
           prestador_id: assignedProvider.id,
-          pillar: pillarMap[selectedPillar || ''] || 'saude_mental',
           date: selectedDate.toISOString().split('T')[0],
           start_time: selectedTime,
           end_time: endTime,
           status: 'pending',
           session_type: 'virtual',
-          quota_type: 'employer',
           booking_source: 'direct'
         });
 

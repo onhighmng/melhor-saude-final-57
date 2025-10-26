@@ -12,6 +12,7 @@ import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance
 import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { mockProviders } from '@/data/mockData';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -138,8 +139,14 @@ const BookingFlow = () => {
         'juridica': 'assistencia_juridica'
       };
 
-      // Get company_id from profile
-      const companyId = profile.company_id;
+      // Get company_id from company_employees table
+      const { data: employee } = await supabase
+        .from('company_employees')
+        .select('company_id')
+        .eq('user_id', profile.id)
+        .maybeSingle();
+      
+      const companyId = employee?.company_id || null;
 
       // Calculate end time (assuming 1 hour session)
       const [hour, minute] = selectedTime.split(':');
@@ -150,16 +157,15 @@ const BookingFlow = () => {
         .from('bookings')
         .insert({
           user_id: profile.id,
+          booking_date: new Date().toISOString(),
           company_id: companyId,
           prestador_id: selectedProvider.id,
-          pillar: pillarMap[selectedPillar || ''] || 'saude_mental',
           date: selectedDate.toISOString().split('T')[0],
           start_time: selectedTime,
           end_time: endTime,
           status: 'pending',
           session_type: meetingType === 'virtual' ? 'virtual' : meetingType === 'phone' ? 'phone' : 'presencial',
           meeting_type: meetingType,
-          quota_type: 'employer',
           booking_source: 'direct'
         })
         .select()

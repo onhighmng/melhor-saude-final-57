@@ -67,7 +67,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setProfile({
         ...profileData,
         user_id: profileData.id,
-        is_active: profileData.is_active ?? true
+        is_active: profileData.is_active ?? true,
+        role: (profileData.role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
       });
       
       return {};
@@ -152,7 +153,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               setProfile({
                 ...data,
                 user_id: data.id,
-                is_active: data.is_active ?? true
+                is_active: data.is_active ?? true,
+                role: (data.role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
               });
             }
           });
@@ -173,7 +175,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               setProfile({
                 ...data,
                 user_id: data.id,
-                is_active: data.is_active ?? true
+                is_active: data.is_active ?? true,
+                role: (data.role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
               });
             }
           });

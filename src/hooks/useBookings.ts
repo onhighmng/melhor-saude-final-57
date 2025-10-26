@@ -6,18 +6,19 @@ export interface Booking {
   id: string;
   provider_name: string;
   provider_avatar: string;
-  pillar: string;
-  date: string;
-  time: string;
-  status: string;
-  session_type: string;
-  notes: string;
-  booking_date?: string;
+  pillar?: string;
+  date: string | null;
+  time?: string;
+  status: string | null;
+  session_type: string | null;
+  notes: string | null;
+  start_time?: string | null;
+  end_time?: string | null;
+  booking_date: string;
   prestadores?: {
     name: string;
-    pillar: string;
-    avatar_url: string;
-  };
+    photo_url: string;
+  } | null;
 }
 
 export const useBookings = () => {
@@ -46,15 +47,17 @@ export const useBookings = () => {
         if (error) throw error;
 
         if (data) {
-          const bookings = data.map(b => ({
+          const bookings: Booking[] = data.map(b => ({
             ...b,
             provider_name: b.prestadores?.name || '',
-            provider_avatar: b.prestadores?.photo_url || ''
+            provider_avatar: b.prestadores?.photo_url || '',
+            time: b.start_time || '',
+            pillar: b.pillar_specialties?.[0] || ''
           }));
           
           setAllBookings(bookings);
           setUpcomingBookings(bookings.filter(b => 
-            b.status === 'confirmed' && new Date(b.date) >= new Date()
+            b.status === 'confirmed' && b.date && new Date(b.date) >= new Date()
           ));
         }
         
