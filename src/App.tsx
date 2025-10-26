@@ -45,6 +45,7 @@ const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboard"));
 const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequests"));
 const EspecialistaSessions = lazy(() => import("./pages/EspecialistaSessionsRevamped"));
 const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistory"));
+const EspecialistaStatsRevamped = lazy(() => import("./pages/EspecialistaStatsRevamped"));
 const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettings"));
 
 // Company pages
@@ -176,7 +177,7 @@ const AppWithTracking = () => {
           <Route path="/especialista/call-requests" element={<EspecialistaLayout><EspecialistaCallRequests /></EspecialistaLayout>} />
           <Route path="/especialista/sessions" element={<EspecialistaLayout><EspecialistaSessions /></EspecialistaLayout>} />
           <Route path="/especialista/user-history" element={<EspecialistaLayout><EspecialistaUserHistory /></EspecialistaLayout>} />
-
+          <Route path="/especialista/stats" element={<EspecialistaLayout><EspecialistaStatsRevamped /></EspecialistaLayout>} />
           <Route path="/especialista/settings" element={<EspecialistaLayout><EspecialistaSettings /></EspecialistaLayout>} />
           
           {/* Company HR routes */}

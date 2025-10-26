@@ -21,6 +21,7 @@ const pageNames: Record<string, string> = {
   '/prestador/sessoes': 'Sessões do Prestador',
   '/prestador/sessoes/:id': 'Detalhe da Sessão',
   '/prestador/profile': 'Perfil do Prestador',
+  '/especialista/stats': 'Estatísticas do Especialista',
   '/admin/dashboard': 'Dashboard Admin',
   '/admin/companies': 'Empresas Admin',
   '/admin/usuarios': 'Utilizadores Admin',
