@@ -101,8 +101,8 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
           company_name: data.companyName,
           contact_email: data.corporateEmail,
           contact_phone: data.phone,
-          sessions_allocated: parseInt(data.seats) * 12,
-          plan_type: data.plan
+          sessions_allocated: data.numberOfEmployees * data.sessionsPerEmployee,
+          plan_type: data.sessionModel
         })
         .select()
         .single();

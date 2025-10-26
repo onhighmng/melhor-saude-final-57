@@ -220,16 +220,11 @@ const AdminProviderNew = () => {
       const { error: prestadorError } = await supabase
         .from('prestadores')
         .insert({
-          user_id: authData.user.id,
-          specialty: '',
-          pillars: selectedPillars,
-          bio: formData.bio,
-          qualifications: [],
-          languages: formData.languages,
-          credentials: formData.licenseNumber,
-          hourly_rate: formData.defaultSlot || 50,
-          cost_per_session: formData.defaultSlot || 50,
-          is_approved: formData.initialStatus === 'active'
+          name: formData.fullName,
+          email: formData.email,
+          pillar_specialties: selectedPillars,
+          biography: formData.bio,
+          languages: formData.languages
         });
 
       if (prestadorError) throw prestadorError;

@@ -14,14 +14,14 @@ import { useAuth } from '@/contexts/AuthContext';
 interface InviteCode {
   id: string;
   company_id: string;
+  email: string;
   invite_code: string;
   status: 'pending' | 'accepted' | 'revoked' | 'expired';
+  sessions_allocated: number;
   created_at: string;
-  expires_at?: string;
-  accepted_at?: string;
-  accepted_by?: string;
-  invited_by?: string;
-  metadata?: any;
+  expires_at: string | null;
+  accepted_at: string | null;
+  invited_by: string | null;
 }
 
 function generateInviteCode(companyId: string): string {
@@ -77,7 +77,10 @@ export default function AdminCompanyInvites() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setInviteCodes(codes || []);
+      setInviteCodes((codes || []).map(code => ({
+        ...code,
+        status: code.status as 'pending' | 'accepted' | 'revoked' | 'expired'
+      })));
     } catch (error: any) {
       toast({
         title: "Erro ao carregar dados",
@@ -135,10 +138,9 @@ export default function AdminCompanyInvites() {
         const { data, error } = await supabase
           .from('invites')
           .insert({
-            invite_code: inviteCode,
             company_id: id,
+            email: `temp_${i}@company.com`,
             invited_by: profile.id,
-            role: 'user',
             status: 'pending',
             expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
           })
@@ -205,14 +207,12 @@ export default function AdminCompanyInvites() {
         .eq('id', codeId);
 
       // Create new code
-      const inviteCode = generateInviteCode(id);
       const { data: newCode, error } = await supabase
         .from('invites')
         .insert({
-          invite_code: inviteCode,
           company_id: id,
+          email: `temp_${Date.now()}@company.com`,
           invited_by: profile.id,
-          role: 'user',
           status: 'pending',
           expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
         })
@@ -226,7 +226,7 @@ export default function AdminCompanyInvites() {
         ...prev.map(code => 
           code.id === codeId ? { ...code, status: 'revoked' as const } : code
         ),
-        newCode
+        { ...newCode, status: newCode.status as 'pending' | 'accepted' | 'revoked' | 'expired' }
       ]);
       
       toast({

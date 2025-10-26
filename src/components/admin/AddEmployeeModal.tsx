@@ -120,10 +120,11 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .select('id')
-        .eq('name', data.company)
-        .single();
+        .eq('company_name', data.company)
+        .maybeSingle();
 
       if (companyError) throw companyError;
+      if (!company) throw new Error('Company not found');
 
       // Create user and employee record
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
@@ -139,18 +140,15 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
         id: authData.user.id,
         email: data.email,
         name: data.fullName,
-        phone: data.phone,
         role: 'user',
-        company_id: company.id,
-        position: data.position
+        company_id: company.id
       });
 
       // Create company_employee link
       await supabase.from('company_employees').insert({
         company_id: company.id,
         user_id: authData.user.id,
-        position: data.position,
-        sessions_quota: 6 // Default quota
+        sessions_allocated: 6 // Default quota
       });
 
       // Create invite record
