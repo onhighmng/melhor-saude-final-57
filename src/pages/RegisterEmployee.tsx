@@ -56,8 +56,8 @@ export default function RegisterEmployee() {
         setCodeStatus('used');
       } else if (invite.status === 'revoked') {
         setCodeStatus('revoked');
-      } else if (invite.status === 'active' || invite.status === 'pending') {
-        setCompanyName(invite.companies?.name || 'Empresa');
+      } else if (invite.status === 'accepted' || invite.status === 'pending') {
+        setCompanyName(invite.companies?.company_name || 'Empresa');
         setCodeStatus('valid');
       }
     } catch (err) {
@@ -127,11 +127,11 @@ export default function RegisterEmployee() {
       // Validate invite code one more time
       const { data: invite } = await supabase
         .from('invites')
-        .select('*, companies(id, name)')
+        .select('*, companies(id, company_name)')
         .eq('invite_code', inviteCode.toUpperCase())
         .single();
 
-      if (!invite || invite.status !== 'active' && invite.status !== 'pending') {
+      if (!invite || invite.status !== 'accepted' && invite.status !== 'pending') {
         throw new Error('Código de convite inválido ou expirado');
       }
 
@@ -154,7 +154,7 @@ export default function RegisterEmployee() {
           id: authData.user.id,
           email,
           name: email.split('@')[0],
-          role: invite.role || 'user',
+          role: 'user',
           company_id: invite.companies?.id
         });
 
@@ -167,7 +167,7 @@ export default function RegisterEmployee() {
           .insert({
             company_id: invite.companies.id,
             user_id: authData.user.id,
-            sessions_quota: 10
+            sessions_allocated: 10
           });
 
         if (employeeError) throw employeeError;

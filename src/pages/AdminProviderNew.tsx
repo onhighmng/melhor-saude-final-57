@@ -220,7 +220,7 @@ const AdminProviderNew = () => {
       const { error: prestadorError } = await supabase
         .from('prestadores')
         .insert({
-          name: formData.fullName,
+          name: formData.name,
           email: formData.email,
           pillar_specialties: selectedPillars,
           biography: formData.bio,

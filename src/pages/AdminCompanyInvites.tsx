@@ -108,7 +108,7 @@ export default function AdminCompanyInvites() {
   };
 
   const canGenerateMoreCodes = () => {
-    if (!company || !seatsStats) return false;
+    if (!company) return false;
     const currentCodes = inviteCodes.filter(c => c.status === 'pending' || c.status === 'accepted').length;
     return currentCodes < company.sessions_allocated;
   };
@@ -140,6 +140,7 @@ export default function AdminCompanyInvites() {
           .insert({
             company_id: id,
             email: `temp_${i}@company.com`,
+            invite_code: inviteCode,
             invited_by: profile.id,
             status: 'pending',
             expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
@@ -207,11 +208,13 @@ export default function AdminCompanyInvites() {
         .eq('id', codeId);
 
       // Create new code
+      const inviteCode = generateInviteCode(id);
       const { data: newCode, error } = await supabase
         .from('invites')
         .insert({
           company_id: id,
           email: `temp_${Date.now()}@company.com`,
+          invite_code: inviteCode,
           invited_by: profile.id,
           status: 'pending',
           expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
@@ -244,12 +247,14 @@ export default function AdminCompanyInvites() {
 
   const getStatusBadge = (status: InviteCode['status']) => {
     switch (status) {
-      case 'active':
-        return <Badge variant="secondary">Ativo</Badge>;
-      case 'used':
-        return <Badge variant="default">Utilizado</Badge>;
+      case 'pending':
+        return <Badge variant="secondary">Pendente</Badge>;
+      case 'accepted':
+        return <Badge variant="default">Aceito</Badge>;
       case 'revoked':
         return <Badge variant="destructive">Revogado</Badge>;
+      case 'expired':
+        return <Badge variant="outline">Expirado</Badge>;
       default:
         return <Badge variant="outline">Desconhecido</Badge>;
     }
@@ -351,9 +356,10 @@ export default function AdminCompanyInvites() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os estados</SelectItem>
-              <SelectItem value="active">Ativo</SelectItem>
-              <SelectItem value="used">Utilizado</SelectItem>
+              <SelectItem value="pending">Pendente</SelectItem>
+              <SelectItem value="accepted">Aceito</SelectItem>
               <SelectItem value="revoked">Revogado</SelectItem>
+              <SelectItem value="expired">Expirado</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -361,7 +367,7 @@ export default function AdminCompanyInvites() {
         <div className="flex gap-2">
           <Button
             onClick={handleGenerateMissingCodes}
-            disabled={!canGenerateMoreCodes(id!) || loading}
+            disabled={!canGenerateMoreCodes() || loading}
             variant="outline"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -372,7 +378,6 @@ export default function AdminCompanyInvites() {
             const csvData = filteredCodes.map(code => ({
               Código: code.invite_code,
               Estado: code.status,
-              'Utilizado Por': code.accepted_by || '—',
               Email: code.email || '—',
               'Data de Utilização': code.accepted_at || '—',
               'Data de Criação': code.created_at
@@ -418,7 +423,7 @@ export default function AdminCompanyInvites() {
                 <TableRow>
                   <TableHead>Código</TableHead>
                   <TableHead>Estado</TableHead>
-                  <TableHead>Utilizado por</TableHead>
+                  <TableHead>Email</TableHead>
                   <TableHead>Data de Utilização</TableHead>
                   <TableHead>Data de Criação</TableHead>
                   <TableHead>Ações</TableHead>
@@ -444,20 +449,13 @@ export default function AdminCompanyInvites() {
                     </TableCell>
                     <TableCell>{getStatusBadge(code.status)}</TableCell>
                     <TableCell>
-                      {code.accepted_by ? (
-                        <div>
-                          <div className="font-medium">{code.accepted_by}</div>
-                          <div className="text-sm text-muted-foreground">{code.email || '—'}</div>
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
+                      <div className="text-sm text-muted-foreground">{code.email || '—'}</div>
                     </TableCell>
                     <TableCell>{formatDate(code.accepted_at)}</TableCell>
                     <TableCell>{formatDate(code.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        {code.status === 'active' && (
+                        {code.status === 'pending' && (
                           <Button
                             size="sm"
                             variant="ghost"
@@ -467,7 +465,7 @@ export default function AdminCompanyInvites() {
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         )}
-                        {(code.status === 'active' || code.status === 'revoked') && (
+                        {(code.status === 'pending' || code.status === 'revoked') && (
                           <Button
                             size="sm"
                             variant="ghost"

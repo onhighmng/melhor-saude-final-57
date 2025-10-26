@@ -91,12 +91,10 @@ export default function RegisterCompany() {
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .insert({
-          name: formData.companyName,
-          email: formData.contactEmail,
-          phone: formData.contactPhone,
-          industry: formData.sector,
-          size: 'medium',
-          number_of_employees: 0,
+          company_name: formData.companyName,
+          contact_email: formData.contactEmail,
+          contact_phone: formData.contactPhone,
+          plan_type: 'basic',
           sessions_allocated: formData.totalSessions,
           sessions_per_employee: Math.floor(formData.totalSessions / 10),
           hr_contact_person: formData.contactName,
