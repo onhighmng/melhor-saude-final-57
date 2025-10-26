@@ -27,42 +27,67 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
   // Unavailable time slots
   const [unavailableSlots, setUnavailableSlots] = useState<UnavailableSlot[]>([]);
   const [calendarDate, setCalendarDate] = useState<Date | undefined>();
-  const [calendarTime, setCalendarTime] = useState<string | null>(null);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   
   // Get dates that already have unavailable slots (for visual marking)
   const unavailableDates = Array.from(
     new Set(unavailableSlots.map(slot => slot.date.toDateString()))
   ).map(dateString => new Date(dateString));
 
-  const addUnavailableSlot = () => {
-    if (calendarDate && calendarTime) {
-      // Check if this exact slot already exists
-      const exists = unavailableSlots.some(
-        slot => slot.date.toDateString() === calendarDate.toDateString() && slot.time === calendarTime
-      );
+  const handleTimeSelect = (time: string) => {
+    setSelectedTimes(prev => {
+      if (prev.includes(time)) {
+        return prev.filter(t => t !== time);
+      } else {
+        return [...prev, time].sort();
+      }
+    });
+  };
+
+  const addUnavailableSlots = () => {
+    if (calendarDate && selectedTimes.length > 0) {
+      const newSlots: UnavailableSlot[] = [];
+      const duplicates: string[] = [];
       
-      if (exists) {
+      selectedTimes.forEach(time => {
+        const exists = unavailableSlots.some(
+          slot => slot.date.toDateString() === calendarDate.toDateString() && slot.time === time
+        );
+        
+        if (!exists) {
+          newSlots.push({
+            id: `${Date.now()}-${time}`,
+            date: calendarDate,
+            time: time,
+          });
+        } else {
+          duplicates.push(time);
+        }
+      });
+      
+      if (newSlots.length > 0) {
+        setUnavailableSlots(prev => [...prev, ...newSlots].sort((a, b) => {
+          const dateCompare = a.date.getTime() - b.date.getTime();
+          if (dateCompare !== 0) return dateCompare;
+          return a.time.localeCompare(b.time);
+        }));
+        
         toast({
-          title: "Horário já marcado",
-          description: "Este horário já está marcado como indisponível",
-          variant: "destructive",
+          title: "Horários marcados como indisponíveis",
+          description: `${newSlots.length} horário(s) adicionado(s) para ${format(calendarDate, "dd/MM/yyyy")}`,
         });
-        return;
       }
       
-      const newSlot: UnavailableSlot = {
-        id: Date.now().toString(),
-        date: calendarDate,
-        time: calendarTime,
-      };
-      setUnavailableSlots(prev => [...prev, newSlot].sort((a, b) => a.date.getTime() - b.date.getTime()));
-      setCalendarDate(undefined);
-      setCalendarTime(null);
+      if (duplicates.length > 0) {
+        toast({
+          title: "Alguns horários já existem",
+          description: `${duplicates.length} horário(s) já estava(m) marcado(s) como indisponível`,
+          variant: "destructive",
+        });
+      }
       
-      toast({
-        title: "Horário marcado como indisponível",
-        description: `${format(calendarDate, "dd/MM/yyyy")} às ${calendarTime}`,
-      });
+      setCalendarDate(undefined);
+      setSelectedTimes([]);
     }
   };
 
@@ -103,18 +128,22 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
             
             <CalendarWithTimePresets
               selectedDate={calendarDate}
-              onDateSelect={setCalendarDate}
-              selectedTime={calendarTime}
-              onTimeSelect={setCalendarTime}
+              onDateSelect={(date) => {
+                setCalendarDate(date);
+                setSelectedTimes([]);
+              }}
+              selectedTimes={selectedTimes}
+              onTimeSelect={handleTimeSelect}
+              multiSelect={true}
               bookedDates={[]}
               showFooter={true}
               footerText={
-                calendarDate && calendarTime
-                  ? `Marcar como indisponível: ${format(calendarDate, "dd/MM/yyyy")} às ${calendarTime}`
-                  : "Selecione uma data e horário para marcar como indisponível"
+                calendarDate && selectedTimes.length > 0
+                  ? `Marcar ${selectedTimes.length} horário(s) como indisponível em ${format(calendarDate, "dd/MM/yyyy")}`
+                  : "Selecione uma data e horários (clique em múltiplos) para marcar como indisponíveis"
               }
-              continueButtonText="Marcar Indisponível"
-              onContinue={addUnavailableSlot}
+              continueButtonText={`Marcar ${selectedTimes.length || ''} Indisponível${selectedTimes.length !== 1 ? 'is' : ''}`}
+              onContinue={addUnavailableSlots}
             />
           </div>
 
@@ -181,10 +210,12 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
             Cancelar
           </Button>
           <Button onClick={() => {
-            toast({
-              title: "Indisponibilidade guardada",
-              description: `${unavailableSlots.length} horário(s) marcado(s) como indisponível`,
-            });
+            if (unavailableSlots.length > 0) {
+              toast({
+                title: "Indisponibilidade guardada",
+                description: `${unavailableSlots.length} horário(s) marcado(s) como indisponível`,
+              });
+            }
             onOpenChange(false);
           }}>
             Guardar Indisponibilidade

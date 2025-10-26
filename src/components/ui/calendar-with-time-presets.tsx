@@ -10,7 +10,9 @@ interface CalendarWithTimePresetsProps {
   selectedDate?: Date
   onDateSelect?: (date: Date | undefined) => void
   selectedTime?: string | null
+  selectedTimes?: string[]
   onTimeSelect?: (time: string) => void
+  multiSelect?: boolean
   bookedDates?: Date[]
   timeSlots?: string[]
   showFooter?: boolean
@@ -24,7 +26,9 @@ export function CalendarWithTimePresets({
   selectedDate,
   onDateSelect,
   selectedTime,
+  selectedTimes = [],
   onTimeSelect,
+  multiSelect = false,
   bookedDates = [],
   timeSlots: customTimeSlots,
   showFooter = true,
@@ -49,6 +53,13 @@ export function CalendarWithTimePresets({
     if (!disabled && onTimeSelect) {
       onTimeSelect(time)
     }
+  }
+
+  const isTimeSelected = (time: string) => {
+    if (multiSelect) {
+      return selectedTimes.includes(time)
+    }
+    return selectedTime === time
   }
 
   return (
@@ -81,7 +92,7 @@ export function CalendarWithTimePresets({
             {timeSlots.map((time) => (
               <Button
                 key={time}
-                variant={selectedTime === time ? "default" : "outline"}
+                variant={isTimeSelected(time) ? "default" : "outline"}
                 onClick={() => handleTimeClick(time)}
                 disabled={disabled}
                 className="w-full shadow-none"
@@ -94,28 +105,55 @@ export function CalendarWithTimePresets({
       </CardContent>
       {showFooter && (
         <CardFooter className="flex flex-col gap-4 border-t px-6 !py-5 md:flex-row">
-          <div className="text-sm">
-            {selectedDate && selectedTime ? (
-              footerText || (
-                <>
-                  Selecionado:{" "}
-                  <span className="font-medium">
-                    {selectedDate?.toLocaleDateString("pt-PT", {
-                      weekday: "long",
-                      day: "numeric",
-                      month: "long",
-                    })}{" "}
-                  </span>
-                  às <span className="font-medium">{selectedTime}</span>
-                </>
-              )
+          <div className="text-sm flex-1">
+            {multiSelect ? (
+              <>
+                {selectedDate && selectedTimes.length > 0 ? (
+                  footerText || (
+                    <>
+                      Selecionado:{" "}
+                      <span className="font-medium">
+                        {selectedDate?.toLocaleDateString("pt-PT", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                        })}{" "}
+                      </span>
+                      - <span className="font-medium">{selectedTimes.length} horário(s)</span>
+                    </>
+                  )
+                ) : (
+                  <>Selecione uma data e horários (múltiplos)</>
+                )}
+              </>
             ) : (
-              <>Selecione uma data e horário</>
+              <>
+                {selectedDate && selectedTime ? (
+                  footerText || (
+                    <>
+                      Selecionado:{" "}
+                      <span className="font-medium">
+                        {selectedDate?.toLocaleDateString("pt-PT", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                        })}{" "}
+                      </span>
+                      às <span className="font-medium">{selectedTime}</span>
+                    </>
+                  )
+                ) : (
+                  <>Selecione uma data e horário</>
+                )}
+              </>
             )}
           </div>
           {onContinue && (
             <Button
-              disabled={!selectedDate || !selectedTime}
+              disabled={
+                !selectedDate || 
+                (multiSelect ? selectedTimes.length === 0 : !selectedTime)
+              }
               className="w-full md:ml-auto md:w-auto"
               variant="outline"
               onClick={onContinue}
