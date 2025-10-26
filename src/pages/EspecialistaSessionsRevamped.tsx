@@ -295,45 +295,45 @@ const EspecialistaSessionsRevamped = () => {
   };
 
   const renderSessionCard = (session: any) => (
-    <Card key={session.id} className="p-4 hover:shadow-md transition-shadow">
-      <div className="space-y-3">
-        <div className="flex items-start justify-between gap-2">
+    <Card key={session.id} className="p-6 hover:shadow-md transition-shadow">
+      <div className="space-y-4">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
-            <h4 className="font-semibold text-sm mb-1">{session.user_name}</h4>
-            <p className="text-xs text-muted-foreground">{session.company_name}</p>
+            <h4 className="font-semibold text-base mb-2">{session.user_name}</h4>
+            <p className="text-sm text-muted-foreground">{session.company_name}</p>
           </div>
-          <Badge className={`text-xs ${getPillarColor(session.pillar)}`}>
+          <Badge className={`text-sm px-3 py-1 ${getPillarColor(session.pillar)}`}>
             {getPillarLabel(session.pillar)}
           </Badge>
         </div>
 
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
               <span>{session.time}</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               {getSessionTypeIcon(session.session_type || 'video')}
               <span>{getSessionTypeLabel(session.session_type || 'video')}</span>
             </div>
           </div>
-          <Badge className={`text-xs ${getStatusBadge(session.status).variant}`}>
+          <Badge className={`text-sm px-3 py-1 ${getStatusBadge(session.status).variant}`}>
             {getStatusBadge(session.status).label}
           </Badge>
         </div>
 
         {session.notes && (
-          <p className="text-xs text-muted-foreground italic">{session.notes}</p>
+          <p className="text-sm text-muted-foreground italic">{session.notes}</p>
         )}
 
         <Button
-          size="sm"
+          size="default"
           variant="outline"
           onClick={() => handleAddNote(session)}
           className="w-full"
         >
-          <FileText className="h-3 w-3 mr-1" />
+          <FileText className="h-4 w-4 mr-2" />
           Ver/Adicionar Notas
         </Button>
       </div>
