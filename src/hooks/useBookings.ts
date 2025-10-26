@@ -16,8 +16,11 @@ export interface Booking {
   end_time?: string | null;
   booking_date: string;
   prestadores?: {
-    name: string;
-    photo_url: string;
+    user_id: string;
+    profiles?: {
+      name: string;
+      avatar_url: string;
+    } | null;
   } | null;
 }
 
@@ -36,9 +39,12 @@ export const useBookings = () => {
           .from('bookings')
           .select(`
             *,
-            prestadores (
-              name,
-              photo_url
+            prestadores!prestador_id (
+              user_id,
+              profiles:user_id (
+                name,
+                avatar_url
+              )
             )
           `)
           .eq('user_id', user.id)
@@ -49,10 +55,10 @@ export const useBookings = () => {
         if (data) {
           const bookings: Booking[] = data.map(b => ({
             ...b,
-            provider_name: b.prestadores?.name || '',
-            provider_avatar: b.prestadores?.photo_url || '',
+            provider_name: b.prestadores?.profiles?.name || '',
+            provider_avatar: b.prestadores?.profiles?.avatar_url || '',
             time: b.start_time || '',
-            pillar: b.pillar_specialties?.[0] || ''
+            pillar: b.pillar || ''
           }));
           
           setAllBookings(bookings);

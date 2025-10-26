@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PillarSelection from './PillarSelection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +29,7 @@ interface MockProvider {
 
 const BookingFlow = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { profile } = useAuth();
   const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
@@ -40,11 +41,85 @@ const BookingFlow = () => {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState('');
+  
+  // Reschedule mode state
+  const [rescheduleBookingId, setRescheduleBookingId] = useState<string | null>(null);
+  const [originalBooking, setOriginalBooking] = useState<any>(null);
+  const isRescheduleMode = searchParams.get('mode') === 'reschedule';
 
   const timeSlots = [
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
     '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
   ];
+
+  // Load reschedule data on mount
+  useEffect(() => {
+    const loadRescheduleData = async () => {
+      const bookingId = sessionStorage.getItem('reschedule_booking_id');
+      if (bookingId && isRescheduleMode) {
+        setRescheduleBookingId(bookingId);
+        
+        // Load original booking
+        const { data: booking, error } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            prestadores!bookings_prestador_id_fkey (
+              id,
+              user_id,
+              profiles:user_id (name, avatar_url)
+            )
+          `)
+          .eq('id', bookingId)
+          .single();
+
+        if (booking && !error) {
+          setOriginalBooking(booking);
+          
+          // Reverse pillar mapping
+          const reversePillarMap: Record<string, BookingPillar> = {
+            'saude_mental': 'psicologica',
+            'bem_estar_fisico': 'fisica',
+            'assistencia_financeira': 'financeira',
+            'assistencia_juridica': 'juridica'
+          };
+          
+          setSelectedPillar(reversePillarMap[booking.pillar] || null);
+          
+          if (booking.prestadores) {
+            setSelectedProvider({
+              id: booking.prestadores.id,
+              name: booking.prestadores.profiles?.name || '',
+              specialty: 'Especialista',
+              pillar: booking.pillar,
+              avatar_url: booking.prestadores.profiles?.avatar_url || '',
+              rating: 5,
+              experience: 'Anos de experiência',
+              availability: 'Disponível'
+            });
+          }
+          
+          // Pre-fill date and time
+          if (booking.date) {
+            setSelectedDate(new Date(booking.date));
+          }
+          if (booking.start_time) {
+            setSelectedTime(booking.start_time);
+          }
+          
+          // Show reschedule banner and go to datetime step
+          setCurrentStep('datetime');
+          
+          toast({
+            title: 'Reagendar Sessão',
+            description: 'Modifique a data, hora ou prestador conforme necessário.'
+          });
+        }
+      }
+    };
+
+    loadRescheduleData();
+  }, [isRescheduleMode]);
 
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
@@ -139,6 +214,64 @@ const BookingFlow = () => {
         'juridica': 'assistencia_juridica'
       };
 
+      // RESCHEDULE FLOW
+      if (isRescheduleMode && rescheduleBookingId) {
+        // Calculate end time
+        const [hour, minute] = selectedTime.split(':');
+        const endTime = `${String((parseInt(hour) + 1)).padStart(2, '0')}:${minute}`;
+
+        // Update existing booking
+        const { error: updateError } = await supabase
+          .from('bookings')
+          .update({
+            date: selectedDate.toISOString().split('T')[0],
+            start_time: selectedTime,
+            end_time: endTime,
+            prestador_id: selectedProvider.id,
+            status: 'pending_confirmation',
+            rescheduled_from: originalBooking.date,
+            rescheduled_at: new Date().toISOString()
+          })
+          .eq('id', rescheduleBookingId);
+
+        if (updateError) throw updateError;
+
+        // Notify original provider if changed
+        if (selectedProvider.id !== originalBooking.prestador_id) {
+          await supabase.from('notifications').insert({
+            user_id: originalBooking.prestadores.user_id,
+            type: 'booking_reassigned',
+            title: 'Sessão Reagendada',
+            message: `A sessão foi transferida para outro prestador.`,
+            related_booking_id: rescheduleBookingId,
+            priority: 'normal'
+          });
+        }
+
+        // Notify new provider
+        const prestadorUserId = originalBooking.prestadores?.user_id;
+        if (prestadorUserId) {
+          await supabase.from('notifications').insert({
+            user_id: prestadorUserId,
+            type: 'booking_rescheduled',
+            title: isRescheduleMode ? 'Sessão Reagendada' : 'Nova Sessão',
+            message: `Nova sessão para ${selectedDate.toLocaleDateString('pt-PT')} às ${selectedTime}. Aguarda confirmação.`,
+            related_booking_id: rescheduleBookingId,
+            priority: 'high'
+          });
+        }
+
+        toast({
+          title: 'Sessão reagendada',
+          description: 'Aguarda confirmação do prestador.'
+        });
+
+        sessionStorage.removeItem('reschedule_booking_id');
+        navigate('/user/sessions');
+        return;
+      }
+
+      // NORMAL BOOKING FLOW
       // Get company_id from company_employees table
       const { data: employee } = await supabase
         .from('company_employees')
@@ -153,6 +286,7 @@ const BookingFlow = () => {
       const endTime = `${String((parseInt(hour) + 1)).padStart(2, '0')}:${minute}`;
 
       // Create booking
+      const pillar = selectedPillar ? pillarMap[selectedPillar] : null;
       const { data: booking, error } = await supabase
         .from('bookings')
         .insert({
@@ -160,12 +294,17 @@ const BookingFlow = () => {
           booking_date: new Date().toISOString(),
           company_id: companyId,
           prestador_id: selectedProvider.id,
+          pillar: pillar,
+          topic: selectedTopics.join(', '),
           date: selectedDate.toISOString().split('T')[0],
           start_time: selectedTime,
           end_time: endTime,
           status: 'pending',
           session_type: meetingType === 'virtual' ? 'virtual' : meetingType === 'phone' ? 'phone' : 'presencial',
           meeting_type: meetingType,
+          quota_type: 'employer',
+          meeting_link: meetingType === 'virtual' ? `https://meet.example.com/${profile.id}-${new Date().getTime()}` : null,
+          notes: additionalNotes || null,
           booking_source: 'direct'
         })
         .select()
@@ -173,21 +312,51 @@ const BookingFlow = () => {
 
       if (error) throw error;
 
-      toast({
-        title: 'Sessão Agendada',
+      // Get current sessions_used for user and increment
+      const { data: employeeData } = await supabase
+        .from('company_employees')
+        .select('sessions_used')
+        .eq('user_id', profile.id)
+        .single();
+
+      if (employeeData) {
+        await supabase
+          .from('company_employees')
+          .update({ sessions_used: employeeData.sessions_used + 1 })
+          .eq('user_id', profile.id);
+      }
+
+      // Get current sessions_used for company and increment
+      if (companyId) {
+        const { data: companyData } = await supabase
+          .from('companies')
+          .select('sessions_used')
+          .eq('id', companyId)
+          .single();
+
+        if (companyData) {
+          await supabase
+            .from('companies')
+            .update({ sessions_used: companyData.sessions_used + 1 })
+            .eq('id', companyId);
+        }
+      }
+
+    toast({
+      title: 'Sessão Agendada',
         description: `A sua sessão com ${selectedProvider.name} foi agendada para ${selectedDate.toLocaleDateString()} às ${selectedTime}`,
-      });
-      
-      // If juridica pillar, show pre-diagnostic CTA
-      if (selectedPillar === 'juridica') {
-        setTimeout(() => {
-          setCurrentStep('prediagnostic-cta');
-        }, 1500);
-      } else {
-        // Navigate back to dashboard after booking
-        setTimeout(() => {
-          navigate('/user/dashboard');
-        }, 2000);
+    });
+    
+    // If juridica pillar, show pre-diagnostic CTA
+    if (selectedPillar === 'juridica') {
+      setTimeout(() => {
+        setCurrentStep('prediagnostic-cta');
+      }, 1500);
+    } else {
+      // Navigate back to dashboard after booking
+      setTimeout(() => {
+        navigate('/user/dashboard');
+      }, 2000);
       }
     } catch (error: any) {
       toast({

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Component as BlogPosts } from "@/components/ui/blog-posts";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResourceGrid } from "@/components/resources/ResourceGrid";
 import { ResourceModal } from "@/components/resources/ResourceModal";
-import { mockResources, UserResource, pillarNames } from "@/data/userResourcesData";
+import { pillarNames } from "@/data/userResourcesData";
 import { BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -75,36 +75,95 @@ const getCategoryColors = (category: string) => {
 };
 
 export default function UserResources() {
-  const [resources] = useState(mockResources);
-  const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
+  const [resources, setResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedResource, setSelectedResource] = useState<any | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+
+  useEffect(() => {
+    const loadResources = async () => {
+      try {
+        if (!user?.id) {
+          setLoading(false);
+          return;
+        }
+
+        // Get employee's company to check premium access
+        const { data: employee } = await supabase
+          .from('company_employees')
+          .select('company_id, companies(subscription_tier)')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        const hasPremiumAccess = employee?.companies?.subscription_tier === 'premium';
+
+        // Load resources based on access level
+        let query = supabase
+          .from('resources')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!hasPremiumAccess) {
+          query = query.eq('is_public', true);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        setResources(data || []);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading resources:', error);
+        setLoading(false);
+      }
+    };
+
+    loadResources();
+  }, [user?.id]);
   
-  const handleView = async (resource: UserResource) => {
+  const handleView = async (resource: any) => {
     setSelectedResource(resource);
     setModalOpen(true);
     
-    // Track resource view in user_progress table
+    // Track resource view
     if (user?.id) {
       try {
-        await supabase.from('user_progress').insert({
+        await supabase.from('resource_access_log').insert({
           user_id: user.id,
-          action_type: 'resource_viewed',
-          pillar: resource.pillar,
-          metadata: {
-            resource_id: resource.id,
-            resource_type: resource.type,
-            resource_title: resource.title
-          }
+          resource_id: resource.id,
+          accessed_at: new Date().toISOString()
         });
+
+        // Increment view count
+        await supabase
+          .from('resources')
+          .update({ view_count: resource.view_count + 1 })
+          .eq('id', resource.id);
       } catch (error) {
         console.error('Error tracking resource view:', error);
       }
     }
   };
-  const handleDownload = (resource: UserResource) => {
-    toast.success(`${resource.title} será descarregado em breve`);
-    // In a real app, trigger download
+  
+  const handleDownload = async (resource: any) => {
+    if (resource.file_url) {
+      window.open(resource.file_url, '_blank');
+      
+      // Log download
+      try {
+        await supabase.from('resource_access_log').insert({
+          user_id: user?.id,
+          resource_id: resource.id,
+          completed: true
+        });
+      } catch (error) {
+        console.error('Error tracking download:', error);
+      }
+
+      toast.success(`${resource.title} será descarregado`);
+    }
   };
   const filterByPillar = (pillar: string) => {
     if (pillar === 'all') return resources;
@@ -138,6 +197,15 @@ export default function UserResources() {
     readTime: 6,
     rating: 4
   }];
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return <div className="w-full min-h-screen bg-white">
     <div className="space-y-6">
       <PageHeader title="Recursos de Bem-Estar" subtitle="Aceda a guias, vídeos e artigos sobre saúde e bem-estar" icon={BookOpen} sticky={false} />

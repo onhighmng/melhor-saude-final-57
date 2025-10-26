@@ -45,6 +45,15 @@ export function SessionRatingDialog({
     setIsSubmitting(true);
     
     try {
+      // Get booking to get user_id
+      const { data: booking, error: bookingFetchError } = await supabase
+        .from('bookings')
+        .select('user_id')
+        .eq('id', sessionId)
+        .single();
+
+      if (bookingFetchError || !booking) throw bookingFetchError;
+
       // Update booking with rating and feedback
       const { error } = await supabase
         .from('bookings')
@@ -60,12 +69,15 @@ export function SessionRatingDialog({
       const { error: feedbackError } = await supabase
         .from('feedback')
         .insert({
-          user_id: sessionId, // This will be replaced with actual user_id in real usage
+          user_id: booking.user_id,
           booking_id: sessionId,
           rating: parseInt(rating),
           message: comments,
-          status: 'new'
+          status: 'new',
+          category: 'session_rating'
         });
+
+      if (feedbackError) throw feedbackError;
 
       toast({
         title: userToastMessages.success.feedbackSubmitted,

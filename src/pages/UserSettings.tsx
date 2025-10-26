@@ -170,8 +170,21 @@ const UserSettings = () => {
     try {
       if (!profile?.id) return;
       
-      // TODO: Create a separate table for notification preferences if needed
-      // For now, just show success message
+      // Get existing metadata or initialize as empty object
+      const existingMetadata = profile.metadata || {};
+      
+      await supabase.from('profiles').update({
+        metadata: {
+          ...existingMetadata,
+          notifications: {
+            email: preferences.emailConfirmation,
+            push: preferences.pushNotification,
+            reminder24h: preferences.reminder24h,
+            feedback: preferences.feedbackReminder
+          }
+        }
+      }).eq('id', profile.id);
+
       toast({
         title: 'Preferências atualizadas',
         description: 'As suas preferências de notificação foram guardadas.'
@@ -189,8 +202,20 @@ const UserSettings = () => {
     try {
       if (!profile?.id) return;
       
-      // TODO: Create a separate table for consents if needed
-      // For now, just show success message
+      // Get existing metadata or initialize as empty object
+      const existingMetadata = profile.metadata || {};
+      
+      await supabase.from('profiles').update({
+        metadata: {
+          ...existingMetadata,
+          consents: {
+            data_processing: consents.dataProcessing,
+            marketing: consents.wellnessCommunications,
+            analytics: consents.anonymousReports
+          }
+        }
+      }).eq('id', profile.id);
+
       toast({
         title: 'Consentimentos atualizados',
         description: 'Os seus consentimentos foram guardados com sucesso.'
