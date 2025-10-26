@@ -98,16 +98,12 @@ export default function UserResources() {
 
         const hasPremiumAccess = !!employee?.company_id;
 
-        // Load resources - all active resources for now
-        let query = supabase
+        // Load all active resources for company employees
+        const query = supabase
           .from('resources')
           .select('*')
           .eq('is_active', true)
           .order('created_at', { ascending: false });
-
-        if (!hasPremiumAccess) {
-          query = query.eq('is_public', true);
-        }
 
         const { data, error } = await query;
 
