@@ -55,7 +55,10 @@ export type Database = {
           booking_date: string
           booking_source: string | null
           chat_session_id: string | null
+          company_id: string | null
           created_at: string | null
+          date: string | null
+          end_time: string | null
           id: string
           meeting_link: string | null
           meeting_platform: string | null
@@ -65,7 +68,9 @@ export type Database = {
           prediagnostic_completed: boolean | null
           prediagnostic_summary: Json | null
           prestador_id: string | null
+          rating: number | null
           session_type: string | null
+          start_time: string | null
           status: string | null
           topic: string | null
           updated_at: string | null
@@ -75,7 +80,10 @@ export type Database = {
           booking_date: string
           booking_source?: string | null
           chat_session_id?: string | null
+          company_id?: string | null
           created_at?: string | null
+          date?: string | null
+          end_time?: string | null
           id?: string
           meeting_link?: string | null
           meeting_platform?: string | null
@@ -85,7 +93,9 @@ export type Database = {
           prediagnostic_completed?: boolean | null
           prediagnostic_summary?: Json | null
           prestador_id?: string | null
+          rating?: number | null
           session_type?: string | null
+          start_time?: string | null
           status?: string | null
           topic?: string | null
           updated_at?: string | null
@@ -95,7 +105,10 @@ export type Database = {
           booking_date?: string
           booking_source?: string | null
           chat_session_id?: string | null
+          company_id?: string | null
           created_at?: string | null
+          date?: string | null
+          end_time?: string | null
           id?: string
           meeting_link?: string | null
           meeting_platform?: string | null
@@ -105,7 +118,9 @@ export type Database = {
           prediagnostic_completed?: boolean | null
           prediagnostic_summary?: Json | null
           prestador_id?: string | null
+          rating?: number | null
           session_type?: string | null
+          start_time?: string | null
           status?: string | null
           topic?: string | null
           updated_at?: string | null
@@ -117,6 +132,13 @@ export type Database = {
             columns: ["chat_session_id"]
             isOneToOne: false
             referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
           {
@@ -590,6 +612,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          company_id: string | null
           company_name: string | null
           created_at: string | null
           department: string | null
@@ -601,6 +624,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          company_id?: string | null
           company_name?: string | null
           created_at?: string | null
           department?: string | null
@@ -612,6 +636,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          company_id?: string | null
           company_name?: string | null
           created_at?: string | null
           department?: string | null
@@ -622,7 +647,15 @@ export type Database = {
           role?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resources: {
         Row: {
