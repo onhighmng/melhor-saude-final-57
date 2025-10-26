@@ -2,22 +2,23 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Phone, CheckCircle, Clock } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Phone, CheckCircle, Clock, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockCallRequests } from '@/data/especialistaGeralMockData';
 import { CallRequest } from '@/types/specialist';
 
 const EspecialistaCallRequests = () => {
   const { toast } = useToast();
+  const [selectedRequest, setSelectedRequest] = useState<CallRequest | null>(null);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   
   // Show all pending requests (no company filtering for demo purposes)
   const filteredRequests = mockCallRequests.filter(req => req.status === 'pending');
 
   const handleCallRequest = (request: CallRequest) => {
-    toast({
-      title: 'Ligação iniciada',
-      description: `Ligando para ${request.user_phone}`,
-    });
+    setSelectedRequest(request);
+    setIsCallModalOpen(true);
   };
 
   const handleMarkResolved = (requestId: string) => {
@@ -44,15 +45,16 @@ const EspecialistaCallRequests = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-heading font-bold text-foreground">
-          Pedidos de Chamada
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Gerir solicitações de chamada dos utilizadores das empresas atribuídas
-        </p>
-      </div>
+    <>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-heading font-bold text-foreground">
+            Pedidos de Chamada
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Gerir solicitações de chamada dos utilizadores das empresas atribuídas
+          </p>
+        </div>
 
       {/* Call Requests List */}
       <Card>
@@ -117,7 +119,54 @@ const EspecialistaCallRequests = () => {
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+
+      {/* Call Modal */}
+      <Dialog open={isCallModalOpen} onOpenChange={setIsCallModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-heading">Iniciar Chamada</DialogTitle>
+          </DialogHeader>
+          {selectedRequest && (
+            <div className="space-y-6 py-4">
+              <div className="text-center space-y-4">
+                <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Phone className="h-10 w-10 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">{selectedRequest.user_name}</h3>
+                  <p className="text-2xl font-mono text-primary font-bold">{selectedRequest.user_phone}</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => {
+                    toast({
+                      title: 'Ligação iniciada',
+                      description: `Ligando para ${selectedRequest.user_phone}`,
+                    });
+                    setIsCallModalOpen(false);
+                  }}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  size="lg"
+                >
+                  <Phone className="h-5 w-5 mr-2" />
+                  Ligar Agora
+                </Button>
+                <Button 
+                  onClick={() => setIsCallModalOpen(false)}
+                  variant="outline"
+                  size="lg"
+                >
+                  <X className="h-5 w-5 mr-2" />
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
