@@ -3,7 +3,8 @@ import { CardContent, Card as UICard, CardHeader, CardTitle } from "@/components
 import { TbHeartPlus } from "react-icons/tb";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, CheckCircle, Clock, Star } from "lucide-react";
+import { Calendar, CheckCircle, Clock, Star, Building, Video, MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const Highlight = ({
   children,
@@ -33,6 +34,16 @@ type StatsCard = {
   gradient: string;
 };
 
+type Session = {
+  id: number | string;
+  date: string;
+  clientName: string;
+  company: string;
+  type: string;
+  status: string;
+  rating?: number;
+};
+
 interface RuixenSectionProps {
   stats?: {
     total: number;
@@ -40,32 +51,13 @@ interface RuixenSectionProps {
     scheduled: number;
     avgRating: number;
   };
+  sessions?: Session[];
+  getStatusBadge?: (status: string) => React.ReactNode;
 }
 
-const integrations = [
-  {
-    name: "Gestão de Horários",
-    desc: "Organize a sua disponibilidade e sessões em tempo real",
-    icon: "📅",
-  },
-  {
-    name: "Videochamadas",
-    desc: "Realize sessões virtuais com qualidade profissional",
-    icon: "🎥",
-  },
-  {
-    name: "Notas de Sessão",
-    desc: "Documente e acompanhe o progresso dos colaboradores",
-    icon: "📝",
-  },
-  {
-    name: "Avaliações",
-    desc: "Receba feedback e melhore continuamente o seu serviço",
-    icon: "⭐",
-  },
-];
 
-export default function RuixenSection({ stats }: RuixenSectionProps) {
+export default function RuixenSection({ stats, sessions = [], getStatusBadge }: RuixenSectionProps) {
+  const displaySessions = sessions.slice(0, 5);
   const statsCards: StatsCard[] = stats ? [
     {
       id: 0,
@@ -121,43 +113,69 @@ export default function RuixenSection({ stats }: RuixenSectionProps) {
           </h3>
         </div>
 
-        {/* Right Block */}
-        <div className="flex flex-col items-center justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
-          {/* Content */}
+        {/* Right Block - Sessions List */}
+        <div className="flex flex-col items-start justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
           <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white mb-4 sm:mb-6 leading-relaxed">
-            Ecossistema de Ferramentas Integradas <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
+            Sessões Recentes <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
             <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
-              Integre-se perfeitamente com todas as funcionalidades essenciais para prestar o melhor serviço.
+              Acompanhe as suas últimas sessões com colaboradores e empresas.
             </span>
           </h3>
-          <div
-            className={cn(
-              "group relative mt-auto w-full inline-flex animate-rainbow cursor-pointer items-center justify-center rounded-xl border-0 bg-white dark:bg-black px-4 sm:px-6 lg:px-8 py-2 font-medium text-primary-foreground transition-colors [background-clip:padding-box,border-box,border-box] [background-origin:border-box] [border:calc(0.08*1rem)_solid_transparent] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-              "before:absolute before:bottom-[8%] before:left-1/2 before:z-0 before:h-1/5 before:w-3/5 before:-translate-x-1/2 before:animate-rainbow before:bg-[linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))] before:bg-[length:200%] before:[filter:blur(calc(0.8*1rem))]",
-            )}
-          >
-            {/* Integration List */}
-            <CardContent className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 rounded-2xl sm:rounded-3xl z-10 w-full">
-              {integrations.map((item, i) => (
+          
+          <div className="w-full space-y-3">
+            {displaySessions.length === 0 ? (
+              <p className="text-center py-8 text-muted-foreground">
+                Nenhuma sessão encontrada
+              </p>
+            ) : (
+              displaySessions.map((session) => (
                 <div
-                  key={i}
-                  className="flex items-center justify-between p-2 sm:p-3 border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl hover:bg-muted/50 transition"
+                  key={session.id}
+                  className="flex flex-col gap-2 p-3 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-muted/50 transition"
                 >
-                  <div className="flex items-center gap-2 sm:gap-3 flex-1">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-muted flex items-center justify-center text-sm sm:text-lg flex-shrink-0">
-                      {item.icon}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {session.clientName}
+                      </p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <Building className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                        <p className="text-xs text-muted-foreground truncate">
+                          {session.company}
+                        </p>
+                      </div>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs sm:text-sm font-medium text-foreground truncate">{item.name}</p>
-                      <p className="text-xs text-muted-foreground line-clamp-1 sm:line-clamp-2">{item.desc}</p>
+                    <div className="flex-shrink-0">
+                      {getStatusBadge ? getStatusBadge(session.status) : (
+                        <Badge variant="outline" className="text-xs">
+                          {session.status}
+                        </Badge>
+                      )}
                     </div>
                   </div>
-                  <button className="rounded-full border border-gray-200 dark:border-gray-700 p-1.5 sm:p-2 text-xs font-semibold flex-shrink-0 ml-2">
-                    <TbHeartPlus className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </button>
+                  
+                  <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        {session.type === 'Virtual' ? (
+                          <Video className="h-3 w-3" />
+                        ) : (
+                          <MapPin className="h-3 w-3" />
+                        )}
+                        {session.type}
+                      </Badge>
+                      <span>{new Date(session.date).toLocaleDateString('pt-PT')}</span>
+                    </div>
+                    {session.rating && (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                        <span className="font-medium">{session.rating}/10</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ))}
-            </CardContent>
+              ))
+            )}
           </div>
         </div>
       </div>

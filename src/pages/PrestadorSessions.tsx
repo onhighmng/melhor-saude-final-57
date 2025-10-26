@@ -176,8 +176,12 @@ export default function PrestadorSessions() {
 
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
-      {/* Feature Section with Stats Cards */}
-      <RuixenSection stats={stats} />
+      {/* Feature Section with Stats Cards and Sessions List */}
+      <RuixenSection 
+        stats={stats} 
+        sessions={filteredSessions}
+        getStatusBadge={getStatusBadge}
+      />
       
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -233,12 +237,12 @@ export default function PrestadorSessions() {
         </Button>
       </div>
 
-      {/* Sessions Table */}
+      {/* Full Sessions Table - Detailed View */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Histórico de Sessões
+            Histórico Completo de Sessões
           </CardTitle>
         </CardHeader>
         <CardContent>
