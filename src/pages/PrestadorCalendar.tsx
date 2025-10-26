@@ -9,6 +9,7 @@ import { Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { isSameDay } from 'date-fns';
+import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
 
 const PrestadorCalendar = () => {
   const { toast } = useToast();
@@ -214,17 +215,11 @@ const PrestadorCalendar = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Availability Settings Modal - Placeholder */}
-      <Dialog open={isAvailabilityModalOpen} onOpenChange={setIsAvailabilityModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Definir Disponibilidade</DialogTitle>
-          </DialogHeader>
-          <div className="py-6 text-center text-muted-foreground">
-            <p>Funcionalidade de disponibilidade em breve</p>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Availability Settings Modal */}
+      <AvailabilitySettings 
+        open={isAvailabilityModalOpen}
+        onOpenChange={setIsAvailabilityModalOpen}
+      />
 
       {/* Add Session Modal - Placeholder */}
       <Dialog open={isAddSessionModalOpen} onOpenChange={setIsAddSessionModalOpen}>
