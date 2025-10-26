@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const primaryRole = roles.includes('admin') ? 'admin' 
         : roles.includes('hr') ? 'hr'
         : roles.includes('prestador') ? 'prestador'
-        : roles.includes('especialista_geral') ? 'especialista_geral'
+        : roles.includes('specialist') ? 'specialist'
         : 'user';
       
       setUser(data.user);

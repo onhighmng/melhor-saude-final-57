@@ -48,9 +48,8 @@ const AdminDashboard = () => {
 
   const loadActivityMetrics = async () => {
     try {
-      // Get utilization rate
-      const { data: utilData, error: utilError } = await supabase
-        .rpc('get_platform_utilization');
+      // Get utilization rate (type will regenerate after migration)
+      const { data: utilData, error: utilError } = await (supabase.rpc as any)('get_platform_utilization');
 
       // Get active prestadores count
       const { count: activePrestadores, error: prestadoresError } = await supabase

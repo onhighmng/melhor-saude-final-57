@@ -96,12 +96,13 @@ export function AdminResourcesTab() {
         title: resource.title,
         description: resource.description || '',
         thumbnail: resource.thumbnail_url || '',
-        pillar: resource.pillar || 'saude_mental',
+        pillar: (resource.pillar || 'saude_mental') as 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica',
         category: pillarToCategoryMap[resource.pillar || 'saude_mental'] || 'Saúde Mental',
-        type: resource.type || 'article',
-        viewCount: resource.view_count || 0,
-        rating: resource.rating || 0,
-        isPremium: resource.is_premium || false
+        type: (resource.resource_type || 'article') as 'pdf' | 'video' | 'article',
+        viewCount: 0,
+        rating: 0,
+        isPremium: false,
+        createdAt: resource.created_at
       }));
       
       setResources(formattedResources);

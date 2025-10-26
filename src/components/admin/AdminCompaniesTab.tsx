@@ -81,14 +81,14 @@ export const AdminCompaniesTab = ({
             
             return {
               id: company.id,
-              name: company.name,
-              nuit: company.nuit || '',
+              name: company.company_name,
+              nuit: '',
               employees: employeeCount,
               plan: `${company.sessions_allocated} sessões`,
               totalSessions: company.sessions_allocated,
               usedSessions: company.sessions_used,
               status: company.is_active ? 'Ativa' : 'Em Onboarding',
-              monthlyFee: company.price_per_session ? company.price_per_session * company.sessions_allocated / 12 : 0
+              monthlyFee: 0
             };
           });
 

@@ -11,6 +11,10 @@ export interface UserResource {
   duration?: string;
   thumbnail?: string;
   createdAt: string;
+  category?: string;
+  viewCount?: number;
+  rating?: number;
+  isPremium?: boolean;
 }
 
 export const mockResources: UserResource[] = [
