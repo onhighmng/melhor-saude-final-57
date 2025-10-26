@@ -124,13 +124,25 @@ export default function UserResources() {
     setSelectedResource(resource);
     setModalOpen(true);
     
-    // Track resource view
+    // Track resource view in user_progress table
     if (user?.id) {
       try {
+        await supabase.from('user_progress').insert({
+          user_id: user.id,
+          pillar: resource.pillar,
+          action_type: 'resource_viewed',
+          action_date: new Date().toISOString(),
+          metadata: {
+            resource_id: resource.id,
+            resource_type: resource.type,
+            resource_title: resource.title
+          }
+        });
+
+        // Also log to resource_access_log
         await supabase.from('resource_access_log').insert({
           user_id: user.id,
-          resource_id: resource.id,
-          access_type: 'view'
+          resource_id: resource.id
         });
       } catch (error) {
         console.error('Error tracking resource view:', error);

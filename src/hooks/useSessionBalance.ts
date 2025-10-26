@@ -41,6 +41,23 @@ export const useSessionBalance = () => {
 
   useEffect(() => {
     refetch();
+
+    // Add real-time subscription
+    if (user?.id) {
+      const subscription = supabase
+        .channel('session-balance-updates')
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'company_employees',
+          filter: `user_id=eq.${user.id}`
+        }, () => {
+          refetch();
+        })
+        .subscribe();
+
+      return () => subscription.unsubscribe();
+    }
   }, [user]);
 
   return {

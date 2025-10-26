@@ -60,6 +60,7 @@ const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const UserResources = lazy(() => import("./pages/UserResources"));
 const UserFeedback = lazy(() => import("./pages/UserFeedback"));
 const UserChat = lazy(() => import("./pages/UserChat"));
+const UserNotifications = lazy(() => import("./pages/UserNotifications"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const BookingRouter = lazy(() => import("./components/booking/BookingRouter"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -138,6 +139,7 @@ const AppWithTracking = () => {
           <Route path="/user/settings" element={<ProtectedRoute requiredRole="user"><UserLayout><UserSettings /></UserLayout></ProtectedRoute>} />
           <Route path="/user/resources" element={<ProtectedRoute requiredRole="user"><UserLayout><UserResources /></UserLayout></ProtectedRoute>} />
           <Route path="/user/feedback" element={<ProtectedRoute requiredRole="user"><UserLayout><UserFeedback /></UserLayout></ProtectedRoute>} />
+          <Route path="/user/notifications" element={<ProtectedRoute requiredRole="user"><UserLayout><UserNotifications /></UserLayout></ProtectedRoute>} />
           <Route path="/user/chat" element={<ProtectedRoute requiredRole="user"><UserLayout><UserChat /></UserLayout></ProtectedRoute>} />
           <Route path="/user/book" element={<ProtectedRoute requiredRole="user"><UserLayout><BookingRouter /></UserLayout></ProtectedRoute>} />
           <Route path="/user/booking/:step" element={<ProtectedRoute requiredRole="user"><UserLayout><BookingFlow /></UserLayout></ProtectedRoute>} />

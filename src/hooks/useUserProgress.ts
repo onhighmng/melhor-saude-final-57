@@ -7,6 +7,7 @@ interface ProgressMetrics {
   resourcesViewed: number;
   activeDays: number;
   pillars: string[];
+  lastActive: string | null;
 }
 
 export const useUserProgress = (userId: string | undefined) => {
@@ -15,7 +16,8 @@ export const useUserProgress = (userId: string | undefined) => {
     chatInteractions: 0,
     resourcesViewed: 0,
     activeDays: 0,
-    pillars: []
+    pillars: [],
+    lastActive: null
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,7 +36,7 @@ export const useUserProgress = (userId: string | undefined) => {
 
         if (error) throw error;
 
-        if (data) {
+        if (data && data.length > 0) {
           const sessions = data.filter(p => p.action_type === 'session_completed').length;
           const chats = data.filter(p => p.action_type === 'chat_interaction').length;
           const resources = data.filter(p => p.action_type === 'resource_viewed').length;
@@ -45,12 +47,18 @@ export const useUserProgress = (userId: string | undefined) => {
           
           const uniquePillars = [...new Set(data.map(p => p.pillar).filter(Boolean))] as string[];
 
+          const sortedByDate = [...data].sort((a, b) => 
+            new Date(b.action_date).getTime() - new Date(a.action_date).getTime()
+          );
+          const lastActive = sortedByDate.length > 0 ? sortedByDate[0].action_date : null;
+
           setMetrics({
             totalSessions: sessions,
             chatInteractions: chats,
             resourcesViewed: resources,
             activeDays: uniqueDays,
-            pillars: uniquePillars
+            pillars: uniquePillars,
+            lastActive
           });
         }
       } catch (error) {
@@ -61,6 +69,23 @@ export const useUserProgress = (userId: string | undefined) => {
     };
 
     fetchProgress();
+
+    // Real-time subscription for progress updates
+    const subscription = supabase
+      .channel('user-progress-updates')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'user_progress',
+        filter: `user_id=eq.${userId}`
+      }, () => {
+        fetchProgress();
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [userId]);
 
   return { metrics, isLoading };

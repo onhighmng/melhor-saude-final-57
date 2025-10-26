@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings, Booking } from '@/hooks/useBookings';
+import { useSessionCompletion } from '@/hooks/useSessionCompletion';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
@@ -23,7 +24,10 @@ import DisplayCards from '@/components/ui/display-cards';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import cardBackground from '@/assets/card-background.png';
 import { supabase } from '@/integrations/supabase/client';
+
 const UserDashboard = () => {
+  // Enable session auto-completion
+  useSessionCompletion();
   const navigate = useNavigate();
   const {
     profile
@@ -105,13 +109,101 @@ const UserDashboard = () => {
     return milestonesData.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
   };
 
-  // Initialize milestones from localStorage
-  const [milestones, setMilestones] = useState<any[]>(() => initializeMilestones());
-  const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress(milestones));
+  // Initialize milestones from database, fallback to localStorage
+  const [milestones, setMilestones] = useState<any[]>([]);
+  const [milestoneProgress, setMilestoneProgress] = useState(0);
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
   const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
   const [hasAnimated, setHasAnimated] = useState(false);
+
+  // Load milestones from database
+  useEffect(() => {
+    const loadMilestones = async () => {
+      if (!profile?.id) return;
+
+      try {
+        const { data: existingMilestones, error } = await supabase
+          .from('user_milestones')
+          .select('*')
+          .eq('user_id', profile.id)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        if (existingMilestones && existingMilestones.length > 0) {
+          setMilestones(existingMilestones);
+          setMilestoneProgress(getMilestoneProgress(existingMilestones));
+        } else {
+          // Initialize default milestones in database
+          const defaults = [
+            { milestone_id: 'onboarding', milestone_label: 'Concluiu o onboarding', points: 10, completed: false },
+            { milestone_id: 'specialist', milestone_label: 'Falou com um especialista', points: 20, completed: false },
+            { milestone_id: 'first_session', milestone_label: 'Fez a primeira sessão', points: 25, completed: false },
+            { milestone_id: 'resources', milestone_label: 'Usou recursos da plataforma', points: 15, completed: false },
+            { milestone_id: 'ratings', milestone_label: 'Avaliou 3 sessões efetuadas', points: 20, completed: false },
+            { milestone_id: 'goal', milestone_label: 'Atingiu 1 objetivo pessoal', points: 10, completed: false }
+          ];
+
+          const { data: inserted, error: insertError } = await supabase
+            .from('user_milestones')
+            .insert(defaults.map(m => ({ ...m, user_id: profile.id })))
+            .select();
+
+          if (insertError) throw insertError;
+
+          if (inserted) {
+            setMilestones(inserted);
+            setMilestoneProgress(0);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading milestones from database:', error);
+        // Fallback to localStorage
+        const fallback = initializeMilestones();
+        setMilestones(fallback);
+        setMilestoneProgress(getMilestoneProgress(fallback));
+      }
+    };
+
+    loadMilestones();
+  }, [profile?.id]);
+
+  // Helper function to complete a milestone
+  const completeMilestone = async (milestoneId: string) => {
+    if (!profile?.id) return;
+
+    try {
+      await supabase
+        .from('user_milestones')
+        .update({
+          completed: true,
+          completed_at: new Date().toISOString()
+        })
+        .eq('user_id', profile.id)
+        .eq('milestone_id', milestoneId);
+
+      // Track in user_progress
+      await supabase.from('user_progress').insert({
+        user_id: profile.id,
+        action_type: 'milestone_achieved',
+        action_date: new Date().toISOString(),
+        metadata: { milestone_id: milestoneId }
+      });
+
+      // Update local state
+      setMilestones(prev =>
+        prev.map(m => m.milestone_id === milestoneId ? { ...m, completed: true } : m)
+      );
+
+      // Recalculate progress
+      const updated = milestones.map(m => m.milestone_id === milestoneId ? { ...m, completed: true } : m);
+      setMilestoneProgress(getMilestoneProgress(updated));
+    } catch (error) {
+      console.error('Error completing milestone:', error);
+    }
+  };
+
   const handleOnboardingComplete = async (data: OnboardingData) => {
     try {
       if (profile?.id) {
@@ -144,22 +236,33 @@ const UserDashboard = () => {
     }
   };
 
-  // Listen for milestone completion events
+  // Listen for milestone completion events (now database-driven)
   useEffect(() => {
-    const handleMilestoneCompleted = () => {
-      const stored = localStorage.getItem('journeyMilestones');
-      if (stored) {
-        const updatedMilestones = JSON.parse(stored);
-        setMilestones(updatedMilestones);
-        const progress = getMilestoneProgress(updatedMilestones);
-        setMilestoneProgress(progress);
+    const handleMilestoneCompleted = async () => {
+      if (!profile?.id) return;
+      
+      try {
+        const { data: updatedMilestones } = await supabase
+          .from('user_milestones')
+          .select('*')
+          .eq('user_id', profile.id)
+          .order('created_at', { ascending: true });
+
+        if (updatedMilestones) {
+          setMilestones(updatedMilestones);
+          const progress = getMilestoneProgress(updatedMilestones);
+          setMilestoneProgress(progress);
+        }
+      } catch (error) {
+        console.error('Error refreshing milestones:', error);
       }
     };
+    
     window.addEventListener('milestoneCompleted', handleMilestoneCompleted);
     return () => {
       window.removeEventListener('milestoneCompleted', handleMilestoneCompleted);
     };
-  }, []);
+  }, [profile?.id]);
 
   // Animate progress bar when scrolled into view with smooth 4-second animation
   useEffect(() => {
