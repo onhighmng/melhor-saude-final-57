@@ -134,20 +134,13 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
               displaySessions.map((session) => (
                 <div
                   key={session.id}
-                  className="flex flex-col gap-2 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all shadow-sm"
+                  className="flex flex-col gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all shadow-sm"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {session.clientName}
-                      </p>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <Building className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                        <p className="text-xs text-muted-foreground truncate">
-                          {session.company}
-                        </p>
-                      </div>
-                    </div>
+                  {/* Row 1: Name and Status */}
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-base font-semibold text-foreground truncate flex-1">
+                      {session.clientName}
+                    </p>
                     <div className="flex-shrink-0">
                       {getStatusBadge ? getStatusBadge(session.status) : (
                         <Badge variant="outline" className="text-xs">
@@ -157,22 +150,33 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                  {/* Row 2: Company */}
+                  <div className="flex items-center gap-2">
+                    <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <p className="text-sm text-muted-foreground truncate">
+                      {session.company}
+                    </p>
+                  </div>
+                  
+                  {/* Row 3: Type, Date, and Rating */}
+                  <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="flex items-center gap-1">
+                      <Badge variant="outline" className="flex items-center gap-1.5 text-sm">
                         {session.type === 'Virtual' ? (
-                          <Video className="h-3 w-3" />
+                          <Video className="h-3.5 w-3.5" />
                         ) : (
-                          <MapPin className="h-3 w-3" />
+                          <MapPin className="h-3.5 w-3.5" />
                         )}
                         {session.type}
                       </Badge>
-                      <span>{new Date(session.date).toLocaleDateString('pt-PT')}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(session.date).toLocaleDateString('pt-PT')}
+                      </span>
                     </div>
                     {session.rating && (
-                      <div className="flex items-center gap-1">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        <span className="font-medium">{session.rating}/10</span>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                        <span className="text-sm font-medium">{session.rating}/10</span>
                       </div>
                     )}
                   </div>
@@ -264,16 +268,16 @@ export const StatsCardStack = ({
             }}
           >
             <CardHeader className="p-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <CardTitle className="text-base font-medium text-muted-foreground flex items-center gap-2">
                 {card.icon}
                 {card.title}
               </CardTitle>
             </CardHeader>
             <div>
-              <div className="text-4xl font-bold text-foreground mb-1">
+              <div className="text-5xl font-bold text-foreground mb-2">
                 {card.value}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {card.description}
               </p>
             </div>
