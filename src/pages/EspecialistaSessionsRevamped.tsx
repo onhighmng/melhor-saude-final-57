@@ -127,12 +127,12 @@ const EspecialistaSessionsRevamped = () => {
 
   const getPillarColor = (pillar: string) => {
     const colors = {
-      psychological: 'bg-blue-100 text-blue-700',
-      physical: 'bg-green-100 text-green-700',
-      financial: 'bg-purple-100 text-purple-700',
-      legal: 'bg-orange-100 text-orange-700'
+      psychological: 'bg-blue-100 text-blue-700 border-blue-300',
+      physical: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+      financial: 'bg-green-100 text-green-700 border-green-300',
+      legal: 'bg-purple-100 text-purple-700 border-purple-300'
     };
-    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
+    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
   };
 
   const getStatusBadge = (status: string) => {
@@ -371,9 +371,9 @@ const EspecialistaSessionsRevamped = () => {
             </DialogTitle>
           </DialogHeader>
           <ScrollArea className="flex-1 overflow-auto">
-            <div className="space-y-3 pr-4">
+            <div className="grid grid-cols-2 gap-4 pr-4">
               {selectedDateSessions.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="col-span-2 text-center py-12 text-muted-foreground">
                   <CalendarIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p>Sem sessões neste dia</p>
                 </div>
