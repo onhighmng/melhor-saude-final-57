@@ -52,13 +52,10 @@ const AdminDashboard = () => {
       const { data: utilData, error: utilError } = await (supabase.rpc as any)('get_platform_utilization');
 
       // Get active prestadores count
-      const prestadoresResult = await supabase
+      const { count: activePrestadoresCount } = (await supabase
         .from('prestadores')
-        .select('id', { count: 'exact', head: true })
-        .eq('is_active', true)
-        .eq('is_approved', true);
-      
-      const activePrestadoresCount = (prestadoresResult as any)?.count || 0;
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true)) as { count: number };
 
       // Get average satisfaction
       const { data: ratings } = await supabase
