@@ -288,7 +288,6 @@ export const SimplifiedOnboarding = ({
               <InteractiveHoverButton 
                 onClick={handleBack} 
                 text="Voltar"
-                dotColor="bg-green-600"
                 className="w-32 h-11 text-sm rounded-lg shadow-lg bg-white text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
               />
             )}
@@ -303,8 +302,7 @@ export const SimplifiedOnboarding = ({
               <InteractiveHoverButton 
                 onClick={handleNext} 
                 text={step === 6 ? 'Continuar para Início' : step === 5 ? 'Concluir' : 'Próximo'}
-                width={step === 6 ? 'w-48' : 'w-32'}
-                className="h-11 text-sm rounded-lg shadow-lg bg-white text-sky-blue border-sky-blue hover:bg-sky-blue hover:text-white"
+                className={`${step === 6 ? 'w-48' : 'w-32'} h-11 text-sm rounded-lg shadow-lg bg-white text-sky-blue border-sky-blue hover:bg-sky-blue hover:text-white`}
                 disabled={!canProceed()}
               />
             )}

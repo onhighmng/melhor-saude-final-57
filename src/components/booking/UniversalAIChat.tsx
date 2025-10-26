@@ -47,7 +47,7 @@ export const UniversalAIChat = ({
 
   useEffect(() => {
     if (initialPillar) {
-      createSession(initialPillar);
+      createSession();
     }
   }, [initialPillar, createSession]);
 
@@ -246,24 +246,24 @@ export const UniversalAIChat = ({
       )}
 
       {/* Modals */}
-      {showPhoneCard && (
+      {showPhoneCard && sessionId && (
         <SpecialistContactCard
+          pillar={pillar || ''}
           context={phoneContext}
-          onClose={() => setShowPhoneCard(false)}
-          onContactRequest={handleContactRequest}
+          sessionId={sessionId}
         />
       )}
 
-      {showExitFeedback && (
+      {showExitFeedback && sessionId && (
         <ChatExitFeedbackButtons
-          onComplete={handleFeedbackComplete}
+          sessionId={sessionId}
+          pillar={pillar}
           onClose={() => setShowExitFeedback(false)}
         />
       )}
 
       {showBookingBanner && (
         <BookingBanner
-          onClose={() => setShowBookingBanner(false)}
           onBookSession={() => {
             setShowBookingBanner(false);
             navigate('/user/book');
