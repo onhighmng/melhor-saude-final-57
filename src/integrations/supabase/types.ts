@@ -64,6 +64,7 @@ export type Database = {
           meeting_platform: string | null
           meeting_type: string | null
           notes: string | null
+          pillar: string | null
           pillar_specialties: string[] | null
           prediagnostic_completed: boolean | null
           prediagnostic_summary: Json | null
@@ -89,6 +90,7 @@ export type Database = {
           meeting_platform?: string | null
           meeting_type?: string | null
           notes?: string | null
+          pillar?: string | null
           pillar_specialties?: string[] | null
           prediagnostic_completed?: boolean | null
           prediagnostic_summary?: Json | null
@@ -114,6 +116,7 @@ export type Database = {
           meeting_platform?: string | null
           meeting_type?: string | null
           notes?: string | null
+          pillar?: string | null
           pillar_specialties?: string[] | null
           prediagnostic_completed?: boolean | null
           prediagnostic_summary?: Json | null
@@ -868,6 +871,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
+          bio: string | null
           company_id: string | null
           company_name: string | null
           created_at: string | null
@@ -875,11 +880,15 @@ export type Database = {
           email: string | null
           id: string
           is_active: boolean | null
+          metadata: Json | null
           name: string | null
+          phone: string | null
           role: string | null
           updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
+          bio?: string | null
           company_id?: string | null
           company_name?: string | null
           created_at?: string | null
@@ -887,11 +896,15 @@ export type Database = {
           email?: string | null
           id: string
           is_active?: boolean | null
+          metadata?: Json | null
           name?: string | null
+          phone?: string | null
           role?: string | null
           updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
+          bio?: string | null
           company_id?: string | null
           company_name?: string | null
           created_at?: string | null
@@ -899,7 +912,9 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean | null
+          metadata?: Json | null
           name?: string | null
+          phone?: string | null
           role?: string | null
           updated_at?: string | null
         }

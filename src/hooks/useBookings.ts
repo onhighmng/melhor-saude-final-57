@@ -4,6 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface Booking {
   id: string;
+  user_id: string;
+  prestador_id: string;
   provider_name: string;
   provider_avatar: string;
   pillar?: string;
@@ -15,12 +17,11 @@ export interface Booking {
   start_time?: string | null;
   end_time?: string | null;
   booking_date: string;
+  meeting_link?: string | null;
   prestadores?: {
-    user_id: string;
-    profiles?: {
-      name: string;
-      avatar_url: string;
-    } | null;
+    id: string;
+    name: string;
+    photo_url: string;
   } | null;
 }
 
@@ -39,12 +40,10 @@ export const useBookings = () => {
           .from('bookings')
           .select(`
             *,
-            prestadores!prestador_id (
-              user_id,
-              profiles:user_id (
-                name,
-                avatar_url
-              )
+            prestadores!bookings_prestador_id_fkey (
+              id,
+              name,
+              photo_url
             )
           `)
           .eq('user_id', user.id)
@@ -55,8 +54,8 @@ export const useBookings = () => {
         if (data) {
           const bookings: Booking[] = data.map(b => ({
             ...b,
-            provider_name: b.prestadores?.profiles?.name || '',
-            provider_avatar: b.prestadores?.profiles?.avatar_url || '',
+            provider_name: b.prestadores?.name || '',
+            provider_avatar: b.prestadores?.photo_url || '',
             time: b.start_time || '',
             pillar: b.pillar || ''
           }));

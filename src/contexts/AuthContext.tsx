@@ -11,6 +11,8 @@ interface UserProfile {
   company_id?: string | null;
   phone?: string;
   avatar_url?: string;
+  bio?: string;
+  metadata?: any;
   is_active: boolean;
 }
 

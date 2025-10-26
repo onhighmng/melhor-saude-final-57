@@ -440,7 +440,7 @@ const UserSettings = () => {
           profile={profile}
           onSave={(data) => {
             setProfileData({ ...profileData, ...data });
-            handleSaveProfile();
+            handleSaveProfile(data);
           }}
         />
 
@@ -450,7 +450,7 @@ const UserSettings = () => {
           preferences={notificationPreferences}
           onSave={(prefs) => {
             setNotificationPreferences(prefs);
-            handleSaveNotifications();
+            handleSaveNotifications(prefs);
           }}
         />
 
@@ -467,7 +467,7 @@ const UserSettings = () => {
           consents={consents}
           onSave={(newConsents) => {
             setConsents(newConsents);
-            handleSaveConsents();
+            handleSaveConsents(newConsents);
           }}
         />
 

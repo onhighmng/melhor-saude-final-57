@@ -48,21 +48,21 @@ export default function UserSessions() {
   
   // Convert bookings to sessions format
   const sessions = allBookings.map(booking => ({
-      id: booking.id,
-    userId: booking.user_id || '',
-    prestadorId: booking.prestador_id || '',
+    id: booking.id,
+    userId: booking.user_id,
+    prestadorId: booking.prestador_id,
     date: booking.booking_date,
     time: booking.start_time || '',
-    prestadorName: 'Provider',
-    pillar: 'saude_mental' as const,
+    prestadorName: booking.provider_name || 'Provider',
+    pillar: (booking.pillar || 'saude_mental') as 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica',
     status: booking.status as any,
-      minutes: 60,
-      wasDeducted: booking.status === 'completed',
-      payerSource: 'company' as const,
-      deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
-      createdAt: booking.booking_date,
-      updatedAt: booking.booking_date,
-    sessionType: booking.session_type || 'individual' as const,
+    minutes: 60,
+    wasDeducted: booking.status === 'completed',
+    payerSource: 'company' as const,
+    deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
+    createdAt: booking.booking_date,
+    updatedAt: booking.booking_date,
+    sessionType: 'individual' as const,
     meetingPlatform: (booking.meeting_link?.includes('zoom') ? 'zoom' : booking.meeting_link?.includes('teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
     meetingLink: booking.meeting_link || ''
   }));
@@ -216,7 +216,15 @@ export default function UserSessions() {
         <div className="container mx-auto px-6">
           <UserJourneySection
             goals={userGoals}
-          balance={sessionBalance}
+            balance={{
+              userId: profile?.id || '',
+              companyQuota: sessionBalance?.employerRemaining || 0,
+              personalQuota: sessionBalance?.personalRemaining || 0,
+              usedCompany: 0,
+              usedPersonal: 0,
+              availableCompany: sessionBalance?.employerRemaining || 0,
+              availablePersonal: sessionBalance?.personalRemaining || 0
+            }}
             completedSessionsCount={completedSessionsCount}
             futureSessionsCount={futureSessionsCount}
             onHistoryClick={() => setIsPastSessionsModalOpen(true)}

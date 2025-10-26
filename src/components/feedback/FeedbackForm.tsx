@@ -17,6 +17,7 @@ export interface FeedbackData {
   rating: number;
   comment: string;
   tags: string[];
+  category?: string;
 }
 
 export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
