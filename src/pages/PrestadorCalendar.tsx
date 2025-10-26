@@ -15,6 +15,7 @@ const PrestadorCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDayEventsModalOpen, setIsDayEventsModalOpen] = useState(false);
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
+  const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState(false);
 
   // Transform calendar events to FullScreenCalendar format
   const calendarData = useMemo(() => {
@@ -81,6 +82,18 @@ const PrestadorCalendar = () => {
     }
   };
 
+  const handleAddSession = () => {
+    setIsAddSessionModalOpen(true);
+  };
+
+  const handleConfirmAddSession = () => {
+    toast({
+      title: 'Sessão Adicionada',
+      description: 'Nova sessão adicionada ao calendário com sucesso.',
+    });
+    setIsAddSessionModalOpen(false);
+  };
+
   const getPillarLabel = (pillar: string) => {
     const labels = {
       psychological: 'Saúde Mental',
@@ -136,6 +149,7 @@ const PrestadorCalendar = () => {
           onEventClick={handleEventClick}
           onDayClick={handleDateClick}
           onSetAvailability={() => setIsAvailabilityModalOpen(true)}
+          onAddEvent={handleAddSession}
         />
       </Card>
 
@@ -208,6 +222,23 @@ const PrestadorCalendar = () => {
           </DialogHeader>
           <div className="py-6 text-center text-muted-foreground">
             <p>Funcionalidade de disponibilidade em breve</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Session Modal - Placeholder */}
+      <Dialog open={isAddSessionModalOpen} onOpenChange={setIsAddSessionModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adicionar Nova Sessão</DialogTitle>
+          </DialogHeader>
+          <div className="py-6 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Funcionalidade para adicionar nova sessão em breve.
+            </p>
+            <Button onClick={handleConfirmAddSession} className="w-full">
+              Confirmar
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
