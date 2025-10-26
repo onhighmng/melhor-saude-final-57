@@ -840,10 +840,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "specialist_call_logs_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile_with_roles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "specialist_call_logs_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specialist_call_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile_with_roles"
             referencedColumns: ["id"]
           },
         ]
@@ -879,6 +893,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile_with_roles"
             referencedColumns: ["id"]
           },
         ]
@@ -921,6 +942,35 @@ export type Database = {
           unsatisfied_users: number | null
         }
         Relationships: []
+      }
+      user_profile_with_roles: {
+        Row: {
+          company_id: string | null
+          company_name: string | null
+          created_at: string | null
+          department: string | null
+          email: string | null
+          id: string | null
+          is_active: boolean | null
+          is_admin: boolean | null
+          is_hr: boolean | null
+          is_prestador: boolean | null
+          is_specialist: boolean | null
+          is_user: boolean | null
+          name: string | null
+          role: string | null
+          roles: Database["public"]["Enums"]["app_role"][] | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
