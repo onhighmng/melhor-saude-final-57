@@ -1,5 +1,5 @@
-import RuixenSection from "@/components/ui/ruixen-feature-section";
+import { Features } from "@/components/ui/features-11";
 
 export default function DemoOne() {
-  return <RuixenSection />;
+  return <Features />;
 }

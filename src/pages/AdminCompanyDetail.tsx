@@ -49,7 +49,7 @@ import {
   type CSVEmployee,
   type CSVValidationError,
 } from '@/utils/csvHelpers';
-import { Features } from '@/components/ui/features-11';
+import { AdminCompanyFeatures } from '@/components/ui/admin-company-features';
 
 interface Employee {
   id: string;
@@ -268,7 +268,7 @@ export default function AdminCompanyDetail() {
         </div>
       </div>
 
-      <Features company={{
+      <AdminCompanyFeatures company={{
         name: mockCompany.name,
         employees: mockCompany.employees,
         totalSessions: mockCompany.totalSessions,
