@@ -160,23 +160,14 @@ export function ProviderSessionManagementModal({
             <Label htmlFor="meeting-link" className="text-xl font-medium">
               Link da Reunião
             </Label>
-            <div className="flex gap-4">
-              <Input
-                id="meeting-link"
-                type="url"
-                placeholder="Cole o link da reunião aqui..."
-                value={meetingLink}
-                onChange={(e) => setMeetingLink(e.target.value)}
-                className="flex-1 h-14 text-lg"
-              />
-              <Button 
-                onClick={handleSaveMeetingLink}
-                size="lg"
-                className="px-8 text-lg"
-              >
-                Guardar Link
-              </Button>
-            </div>
+            <Input
+              id="meeting-link"
+              type="url"
+              placeholder="Cole o link da reunião aqui..."
+              value={meetingLink}
+              onChange={(e) => setMeetingLink(e.target.value)}
+              className="h-14 text-lg"
+            />
           </div>
 
           {/* Action Buttons */}
