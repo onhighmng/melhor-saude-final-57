@@ -89,19 +89,20 @@ export default function UserResources() {
           return;
         }
 
-        // Get employee's company to check premium access
+        // Get employee's company to check premium access (simplified)
         const { data: employee } = await supabase
           .from('company_employees')
-          .select('company_id, companies(subscription_tier)')
+          .select('company_id')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        const hasPremiumAccess = employee?.companies?.subscription_tier === 'premium';
+        const hasPremiumAccess = !!employee?.company_id;
 
-        // Load resources based on access level
+        // Load resources - all active resources for now
         let query = supabase
           .from('resources')
           .select('*')
+          .eq('is_active', true)
           .order('created_at', { ascending: false });
 
         if (!hasPremiumAccess) {
@@ -133,14 +134,8 @@ export default function UserResources() {
         await supabase.from('resource_access_log').insert({
           user_id: user.id,
           resource_id: resource.id,
-          accessed_at: new Date().toISOString()
+          access_type: 'view'
         });
-
-        // Increment view count
-        await supabase
-          .from('resources')
-          .update({ view_count: resource.view_count + 1 })
-          .eq('id', resource.id);
       } catch (error) {
         console.error('Error tracking resource view:', error);
       }

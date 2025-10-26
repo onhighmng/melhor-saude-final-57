@@ -66,8 +66,8 @@ const BookingFlow = () => {
             *,
             prestadores!bookings_prestador_id_fkey (
               id,
-              user_id,
-              profiles:user_id (name, avatar_url)
+              name,
+              photo_url
             )
           `)
           .eq('id', bookingId)
@@ -89,10 +89,10 @@ const BookingFlow = () => {
           if (booking.prestadores) {
             setSelectedProvider({
               id: booking.prestadores.id,
-              name: booking.prestadores.profiles?.name || '',
+              name: booking.prestadores.name || '',
               specialty: 'Especialista',
               pillar: booking.pillar,
-              avatar_url: booking.prestadores.profiles?.avatar_url || '',
+              avatar_url: booking.prestadores.photo_url || '',
               rating: 5,
               experience: 'Anos de experiência',
               availability: 'Disponível'
