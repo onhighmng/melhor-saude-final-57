@@ -57,7 +57,10 @@ interface RuixenSectionProps {
 
 
 export default function RuixenSection({ stats, sessions = [], getStatusBadge }: RuixenSectionProps) {
-  const displaySessions = sessions.slice(0, 5);
+  // Sort sessions by date (most recent first) and take top 5
+  const displaySessions = [...sessions]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
   const statsCards: StatsCard[] = stats ? [
     {
       id: 0,
@@ -114,7 +117,7 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
         </div>
 
         {/* Right Block - Sessions List */}
-        <div className="flex flex-col items-start justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col items-start justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-900">
           <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white mb-4 sm:mb-6 leading-relaxed">
             Sessões Recentes <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
             <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
@@ -122,7 +125,7 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
             </span>
           </h3>
           
-          <div className="w-full space-y-3">
+          <div className="w-full overflow-y-auto max-h-[400px] pr-2 space-y-3 no-scrollbar">
             {displaySessions.length === 0 ? (
               <p className="text-center py-8 text-muted-foreground">
                 Nenhuma sessão encontrada
@@ -131,7 +134,7 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
               displaySessions.map((session) => (
                 <div
                   key={session.id}
-                  className="flex flex-col gap-2 p-3 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-muted/50 transition"
+                  className="flex flex-col gap-2 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
