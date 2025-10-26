@@ -28,11 +28,26 @@ export const useAnalytics = () => {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const { data: analytics, error: analyticsError } = await supabase
-        .rpc('get_platform_analytics');
       
-      if (analyticsError) throw analyticsError;
-      setData(analytics);
+      // Fetch basic counts directly from tables
+      const [usersResult, providersResult, companiesResult, bookingsResult] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('prestadores').select('id', { count: 'exact', head: true }),
+        supabase.from('companies').select('id', { count: 'exact', head: true }),
+        supabase.from('bookings').select('id', { count: 'exact', head: true })
+      ]);
+      
+      setData({
+        total_users: usersResult.count || 0,
+        active_users: usersResult.count || 0,
+        total_prestadores: providersResult.count || 0,
+        active_prestadores: providersResult.count || 0,
+        total_companies: companiesResult.count || 0,
+        total_bookings: bookingsResult.count || 0,
+        pending_change_requests: 0,
+        sessions_allocated: 0,
+        sessions_used: 0
+      });
     } catch (err: any) {
       setError(err.message);
       console.error('Error fetching analytics:', err);

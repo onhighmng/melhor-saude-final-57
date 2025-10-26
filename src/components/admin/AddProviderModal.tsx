@@ -99,14 +99,10 @@ export const AddProviderModal = ({ open, onOpenChange }: AddProviderModalProps) 
 
       // Create prestador record
       await supabase.from('prestadores').insert({
-        user_id: authData.user.id,
-        specialty: data.specialty,
-        pillars: [data.pillar],
-        session_type: data.sessionType,
-        cost_per_session: data.costPerSession,
-        credentials: data.credentials,
-        experience_years: data.experience,
-        is_approved: false
+        name: data.name,
+        email: data.email,
+        pillar_specialties: [data.pillar],
+        specialties: [data.specialty]
       });
 
       // Log action

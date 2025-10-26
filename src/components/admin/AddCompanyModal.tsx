@@ -98,19 +98,11 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .insert({
-          name: data.companyName,
-          nuit: data.nuit,
-          email: data.corporateEmail,
-          phone: data.phone,
-          address: data.address,
-          number_of_employees: data.numberOfEmployees,
-          hr_contact_person: data.hrContactPerson,
-          hr_email: data.hrEmail,
-          program_start_date: data.programStartDate,
-          sessions_per_employee: data.sessionsPerEmployee,
-          session_model: data.sessionModel,
-          price_per_session: data.pricePerSession,
-          pillars: selectedPillars
+          company_name: data.companyName,
+          contact_email: data.corporateEmail,
+          contact_phone: data.phone,
+          sessions_allocated: parseInt(data.seats) * 12,
+          plan_type: data.plan
         })
         .select()
         .single();

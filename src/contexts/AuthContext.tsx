@@ -8,6 +8,7 @@ interface UserProfile {
   email: string;
   role: 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral';
   company?: string;
+  company_id?: string | null;
   phone?: string;
   avatar_url?: string;
   is_active: boolean;
