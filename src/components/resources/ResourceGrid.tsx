@@ -5,9 +5,11 @@ interface ResourceGridProps {
   resources: UserResource[];
   onView: (resource: UserResource) => void;
   onDownload?: (resource: UserResource) => void;
+  onEdit?: (resource: UserResource) => void;
+  onDelete?: (resource: UserResource) => void;
 }
 
-export function ResourceGrid({ resources, onView, onDownload }: ResourceGridProps) {
+export function ResourceGrid({ resources, onView, onDownload, onEdit, onDelete }: ResourceGridProps) {
   if (resources.length === 0) {
     return (
       <div className="text-center py-12">
@@ -24,6 +26,8 @@ export function ResourceGrid({ resources, onView, onDownload }: ResourceGridProp
           resource={resource}
           onView={onView}
           onDownload={onDownload}
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
     </div>

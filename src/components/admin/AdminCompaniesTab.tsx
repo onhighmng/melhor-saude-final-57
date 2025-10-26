@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { 
   Search, 
   Eye, 
@@ -39,52 +41,7 @@ interface Company {
   monthlyFee: number;
 }
 
-const mockCompanies: Company[] = [
-  {
-    id: '1',
-    name: 'TechCorp Lda',
-    nuit: '501234567',
-    employees: 45,
-    plan: '400 sessões',
-    totalSessions: 400,
-    usedSessions: 287,
-    status: 'Ativa',
-    monthlyFee: 2500
-  },
-  {
-    id: '2',
-    name: 'HealthPlus SA',
-    nuit: '502345678',
-    employees: 120,
-    plan: '1000 sessões',
-    totalSessions: 1000,
-    usedSessions: 823,
-    status: 'Ativa',
-    monthlyFee: 6000
-  },
-  {
-    id: '3',
-    name: 'StartupHub',
-    nuit: '503456789',
-    employees: 15,
-    plan: '150 sessões',
-    totalSessions: 150,
-    usedSessions: 45,
-    status: 'Em Onboarding',
-    monthlyFee: 1200
-  },
-  {
-    id: '4',
-    name: 'ConsultPro',
-    nuit: '504567890',
-    employees: 80,
-    plan: '600 sessões',
-    totalSessions: 600,
-    usedSessions: 512,
-    status: 'Ativa',
-    monthlyFee: 3800
-  },
-];
+// Mock companies removed - using real data from database
 
 export const AdminCompaniesTab = ({ 
   isAddCompanyModalOpen: externalIsOpen,
@@ -95,12 +52,61 @@ export const AdminCompaniesTab = ({
 } = {}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
   // Use external state if provided, otherwise use internal state
   const isAddCompanyModalOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+
+  useEffect(() => {
+    const loadCompanies = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('companies')
+          .select(`
+            *,
+            company_employees (count)
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          const formattedCompanies = data.map(company => {
+            const employeeCount = company.company_employees?.length || 0;
+            const usagePercent = company.sessions_allocated > 0 
+              ? Math.round((company.sessions_used / company.sessions_allocated) * 100)
+              : 0;
+            
+            return {
+              id: company.id,
+              name: company.name,
+              nuit: company.nuit || '',
+              employees: employeeCount,
+              plan: `${company.sessions_allocated} sessões`,
+              totalSessions: company.sessions_allocated,
+              usedSessions: company.sessions_used,
+              status: company.is_active ? 'Ativa' : 'Em Onboarding',
+              monthlyFee: company.price_per_session ? company.price_per_session * company.sessions_allocated / 12 : 0
+            };
+          });
+
+          setCompanies(formattedCompanies);
+        }
+      } catch (error) {
+        console.error('Error loading companies:', error);
+        toast.error('Erro ao carregar empresas');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCompanies();
+  }, []);
   const setIsAddCompanyModalOpen = externalSetIsOpen || setInternalIsOpen;
 
-  const filteredCompanies = mockCompanies.filter(company =>
+  const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     company.nuit.includes(searchQuery)
   );
@@ -120,6 +126,14 @@ export const AdminCompaniesTab = ({
     { month: 'Mai', sessions: 72 },
     { month: 'Jun', sessions: 65 },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <>

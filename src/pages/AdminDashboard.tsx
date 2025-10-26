@@ -1,7 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Building2, 
@@ -13,11 +13,24 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
+import { supabase } from '@/integrations/supabase/client';
+
+interface ActivityMetrics {
+  utilizationRate: number;
+  activePrestadores: number;
+  avgSatisfaction: string;
+}
 
 const AdminDashboard = () => {
   const { profile } = useAuth();
   const { data: analytics } = useAnalytics();
   const navigate = useNavigate();
+  const [activityMetrics, setActivityMetrics] = useState<ActivityMetrics>({
+    utilizationRate: 0,
+    activePrestadores: 0,
+    avgSatisfaction: '0.0'
+  });
+  const [loadingMetrics, setLoadingMetrics] = useState(true);
 
   useEffect(() => {
     // Add admin-page class to body for gray background
@@ -28,6 +41,45 @@ const AdminDashboard = () => {
       document.body.classList.remove('admin-page');
     };
   }, []);
+
+  useEffect(() => {
+    loadActivityMetrics();
+  }, []);
+
+  const loadActivityMetrics = async () => {
+    try {
+      // Get utilization rate
+      const { data: utilData, error: utilError } = await supabase
+        .rpc('get_platform_utilization');
+
+      // Get active prestadores count
+      const { count: activePrestadores, error: prestadoresError } = await supabase
+        .from('prestadores')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .eq('is_approved', true);
+
+      // Get average satisfaction
+      const { data: ratings, error: ratingsError } = await supabase
+        .from('bookings')
+        .select('rating')
+        .not('rating', 'is', null);
+
+      const avgRating = ratings && ratings.length > 0
+        ? (ratings.reduce((sum, r) => sum + (r.rating || 0), 0) / ratings.length).toFixed(1)
+        : '0.0';
+
+      setActivityMetrics({
+        utilizationRate: utilData?.[0]?.utilization_rate || 0,
+        activePrestadores: activePrestadores || 0,
+        avgSatisfaction: avgRating
+      });
+    } catch (error) {
+      console.error('Error loading activity metrics:', error);
+    } finally {
+      setLoadingMetrics(false);
+    }
+  };
 
 
 
@@ -104,15 +156,15 @@ const AdminDashboard = () => {
                     <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-base font-medium text-gray-700">Taxa de Utilização</span>
-                        <span className="text-2xl font-bold text-purple-700">78%</span>
+                        <span className="text-2xl font-bold text-purple-700">{loadingMetrics ? '...' : `${Math.round(activityMetrics.utilizationRate)}%`}</span>
                       </div>
-                      <Progress value={78} className="h-3" />
+                      <Progress value={loadingMetrics ? 0 : activityMetrics.utilizationRate} className="h-3" />
                     </div>
                     
                     <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-base font-medium text-gray-700">Prestadores Ativos</span>
-                        <span className="text-2xl font-bold text-purple-700">24</span>
+                        <span className="text-2xl font-bold text-purple-700">{loadingMetrics ? '...' : activityMetrics.activePrestadores}</span>
                       </div>
                       <p className="text-sm text-muted-foreground">A fornecer serviços</p>
                     </div>
@@ -120,9 +172,9 @@ const AdminDashboard = () => {
                     <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-base font-medium text-gray-700">Satisfação Média</span>
-                        <span className="text-2xl font-bold text-purple-700">4.6/5</span>
+                        <span className="text-2xl font-bold text-purple-700">{loadingMetrics ? '...' : `${activityMetrics.avgSatisfaction}/10`}</span>
                       </div>
-                      <Progress value={92} className="h-3" />
+                      <Progress value={loadingMetrics ? 0 : parseFloat(activityMetrics.avgSatisfaction) * 10} className="h-3" />
                     </div>
                   </div>
                 </div>

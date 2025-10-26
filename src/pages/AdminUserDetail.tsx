@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   ArrowLeft, 
   Edit, 
@@ -88,32 +89,100 @@ const AdminUserDetail = () => {
   }, [id]);
 
   const loadUser = async () => {
+    if (!id) return;
     setIsLoading(true);
+    
     try {
-      setTimeout(() => {
-        const baseUser = getUserById(id || '1');
-        
-        if (baseUser) {
-          const userDetail = generateMockUserDetail(baseUser);
-          setUser(userDetail as UserDetail);
-        }
-        
-        setIsLoading(false);
-      }, 800);
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar utilizador",
-        variant: "destructive"
+      // Load profile
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      // Load company employee record
+      const { data: employee, error: employeeError } = await supabase
+        .from('company_employees')
+        .select(`
+          *,
+          companies:company_id (name)
+        `)
+        .eq('user_id', id)
+        .maybeSingle();
+
+      if (employeeError) throw employeeError;
+
+      // Load bookings
+      const { data: bookings, error: bookingsError } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          prestadores:prestador_id (
+            profiles:user_id (name)
+          )
+        `)
+        .eq('user_id', id)
+        .order('date', { ascending: false });
+
+      if (bookingsError) throw bookingsError;
+
+      // Load progress
+      const { data: progress, error: progressError } = await supabase
+        .from('user_progress')
+        .select('*')
+        .eq('user_id', id)
+        .order('action_date', { ascending: false });
+
+      if (progressError) throw progressError;
+
+      setUser({
+        ...profile,
+        company: employee?.companies?.name,
+        sessionsAllocated: employee?.sessions_allocated || 0,
+        sessionsUsed: employee?.sessions_used || 0,
+        companySessions: employee?.sessions_allocated || 0,
+        personalSessions: 0,
+        usedCompanySessions: employee?.sessions_used || 0,
+        usedPersonalSessions: 0,
+        status: profile.is_active ? 'active' : 'inactive',
+        createdAt: profile.created_at,
+        fixedProviders: {},
+        changeRequests: [],
+        sessionHistory: bookings?.map(b => ({
+          id: b.id,
+          date: b.date,
+          pillar: b.pillar,
+          provider: b.prestadores?.profiles?.name || '',
+          status: b.status as any,
+          type: 'company' as const
+        })) || [],
+        sessionUsageData: []
       });
+    } catch (error) {
+      console.error('Error loading user details:', error);
+      toast({
+        title: 'Erro',
+        description: 'Erro ao carregar detalhes do utilizador',
+        variant: 'destructive'
+      });
+    } finally {
       setIsLoading(false);
     }
   };
 
   const handleStatusChange = async (newStatus: 'active' | 'inactive') => {
-    if (!user) return;
+    if (!user || !id) return;
     
     try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: newStatus === 'active' })
+        .eq('id', id);
+
+      if (error) throw error;
+
       setUser(prev => prev ? { ...prev, status: newStatus } : null);
       
       toast({
@@ -121,6 +190,7 @@ const AdminUserDetail = () => {
         description: "Estado atualizado com sucesso"
       });
     } catch (error) {
+      console.error('Error updating user status:', error);
       toast({
         title: "Erro",
         description: "Erro ao atualizar estado",

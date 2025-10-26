@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -60,30 +61,106 @@ interface Employee {
   status: 'sem-codigo' | 'codigo-gerado' | 'enviado' | 'erro';
 }
 
-const mockCompany = {
-  id: '4',
-  name: 'TechCorp Lda',
-  nuit: '123456789',
-  employees: 100,
-  plan: 'Professional',
-  totalSessions: 400,
-  usedSessions: 245,
-  status: 'Ativa' as const,
-};
-
-const mockEmployees: Employee[] = [
-  { id: '1', name: 'Ana Silva', email: 'ana.silva@techcorp.co.mz', code: 'MS-X9K2', sentDate: '13/10/2025', status: 'enviado' },
-  { id: '2', name: 'João Santos', email: 'joao.santos@techcorp.co.mz', code: 'MS-P7M3', sentDate: '13/10/2025', status: 'enviado' },
-  { id: '3', name: 'Maria Costa', email: 'maria.costa@techcorp.co.mz', code: 'MS-R4N8', sentDate: '', status: 'codigo-gerado' },
-  { id: '4', name: 'Pedro Lima', email: 'pedro.lima@techcorp.co.mz', code: '', sentDate: '', status: 'sem-codigo' },
-];
+// Mock data removed - using real data from database
 
 export default function AdminCompanyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const [company, setCompany] = useState<any>(null);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [invites, setInvites] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCompanyDetails = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        
+        // Load company
+        const { data: companyData, error: companyError } = await supabase
+          .from('companies')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (companyError) throw companyError;
+
+        // Load employees
+        const { data: employeesData, error: employeesError } = await supabase
+          .from('company_employees')
+          .select(`
+            *,
+            profiles:user_id (
+              name,
+              email,
+              avatar_url
+            )
+          `)
+          .eq('company_id', id);
+
+        if (employeesError) throw employeesError;
+
+        // Load invites
+        const { data: invitesData, error: invitesError } = await supabase
+          .from('invites')
+          .select('*')
+          .eq('company_id', id)
+          .order('created_at', { ascending: false });
+
+        if (invitesError) throw invitesError;
+
+        setCompany(companyData);
+        setEmployees(employeesData?.map(emp => ({
+          id: emp.id,
+          name: emp.profiles?.name || '',
+          email: emp.profiles?.email || '',
+          code: invitesData?.find(inv => inv.user_id === emp.user_id)?.code || '',
+          sentDate: invitesData?.find(inv => inv.user_id === emp.user_id)?.sent_at || '',
+          status: 'enviado' as const
+        })) || []);
+        setInvites(invitesData || []);
+      } catch (error) {
+        console.error('Error loading company details:', error);
+        toast({
+          title: 'Erro',
+          description: 'Erro ao carregar detalhes da empresa',
+          variant: 'destructive'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCompanyDetails();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!company) {
+    return (
+      <div className="container mx-auto p-6">
+        <Button onClick={() => navigate('/admin/users-management')} variant="ghost">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+        <Card className="mt-6">
+          <CardContent className="p-12 text-center">
+            <p>Empresa não encontrada</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
   const [employeeToRemove, setEmployeeToRemove] = useState<string | null>(null);
@@ -97,17 +174,19 @@ export default function AdminCompanyDetail() {
   const [showPreviewDialog, setShowPreviewDialog] = useState(false);
   const [lastSendTimestamp, setLastSendTimestamp] = useState<string | null>(null);
   const [companyData, setCompanyData] = useState({
-    id: mockCompany.id,
-    name: mockCompany.name,
-    nuit: mockCompany.nuit,
-    contactEmail: 'contato@techcorp.co.mz',
-    contactPhone: '+258 84 123 4567',
+    id: company?.id || '',
+    name: company?.name || '',
+    nuit: company?.nuit || '',
+    contactEmail: company?.email || '',
+    contactPhone: company?.phone || '',
     planType: 'professional',
-    sessionsAllocated: mockCompany.totalSessions,
+    sessionsAllocated: company?.sessions_allocated || 0,
     finalNotes: '',
   });
 
-  const usagePercent = Math.round((mockCompany.usedSessions / mockCompany.totalSessions) * 100);
+  const usagePercent = company && company.sessions_allocated > 0
+    ? Math.round((company.sessions_used / company.sessions_allocated) * 100)
+    : 0;
   const employeesWithCode = employees.filter(e => e.status === 'enviado').length;
   const employeesPending = employees.filter(e => e.status !== 'enviado' && e.code).length + employees.filter(e => !e.code).length;
 
@@ -215,7 +294,7 @@ export default function AdminCompanyDetail() {
   };
 
   const handleExportCSV = () => {
-    exportEmployeesWithCodes(employees.map(e => ({ name: e.name, email: e.email, code: e.code || null })), mockCompany.name);
+    exportEmployeesWithCodes(employees.map(e => ({ name: e.name, email: e.email, code: e.code || null })), company?.name || '');
     toast({ title: 'CSV Exportado', description: 'Ficheiro descarregado com sucesso' });
   };
 
@@ -269,12 +348,12 @@ export default function AdminCompanyDetail() {
       </div>
 
       <AdminCompanyFeatures company={{
-        name: mockCompany.name,
-        employees: mockCompany.employees,
-        totalSessions: mockCompany.totalSessions,
-        usedSessions: mockCompany.usedSessions,
-        plan: mockCompany.plan,
-        status: mockCompany.status
+        name: company?.name || '',
+        employees: employees.length,
+        totalSessions: company?.sessions_allocated || 0,
+        usedSessions: company?.sessions_used || 0,
+        plan: `${company?.sessions_allocated || 0} sessões`,
+        status: company?.is_active ? 'Ativa' : 'Em Onboarding'
       }} />
 
         </div>
@@ -321,12 +400,44 @@ export default function AdminCompanyDetail() {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive"
-              onClick={() => {
+              onClick={async () => {
                 if (employeeToRemove) {
+                  try {
                   const employee = employees.find(e => e.id === employeeToRemove);
+                    if (!employee) return;
+
+                    // Delete from company_employees table
+                    const { error: deleteError } = await supabase
+                      .from('company_employees')
+                      .delete()
+                      .eq('id', employeeToRemove);
+
+                    if (deleteError) throw deleteError;
+
+                    // Optionally deactivate profile
+                    if (employee.user_id) {
+                      await supabase
+                        .from('profiles')
+                        .update({ is_active: false })
+                        .eq('id', employee.user_id);
+                    }
+
+                    // Update local state
                   setEmployees(employees.filter(e => e.id !== employeeToRemove));
-                  toast({ title: 'Colaborador Removido', description: `${employee?.name || ''} foi removido da lista` });
+                    toast({ 
+                      title: 'Colaborador Removido', 
+                      description: `${employee?.name || ''} foi removido da lista` 
+                    });
+                  } catch (error: any) {
+                    console.error('Error removing employee:', error);
+                    toast({ 
+                      title: 'Erro ao remover colaborador',
+                      description: error.message || 'Ocorreu um erro ao remover o colaborador',
+                      variant: 'destructive'
+                    });
+                  } finally {
                   setEmployeeToRemove(null);
+                  }
                 }
               }}
             >
@@ -345,13 +456,57 @@ export default function AdminCompanyDetail() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
+              onClick={async () => {
                 if (emailToResend) {
+                  try {
+                    // Get the employee's invite code from database
+                    const { data: invite, error: inviteError } = await supabase
+                      .from('invites')
+                      .select('invite_code')
+                      .eq('email', emailToResend.email)
+                      .eq('company_id', id)
+                      .order('created_at', { ascending: false })
+                      .limit(1)
+                      .single();
+
+                    if (inviteError) throw inviteError;
+
+                    // Send email via Edge Function
+                    const { error: emailError } = await supabase.functions.invoke('send-email', {
+                      body: {
+                        to: emailToResend.email,
+                        subject: 'Código de Acesso - Reenvio',
+                        html: `
+                          <h1>Olá!</h1>
+                          <p>O seu código de acesso para o Melhor Saúde é: <strong>${invite?.invite_code || 'N/A'}</strong></p>
+                          <p>Aceda à plataforma em: <a href="${window.location.origin}/login">${window.location.origin}/login</a></p>
+                          <p>Cumprimentos,<br>Equipa Melhor Saúde</p>
+                        `,
+                        type: 'invite'
+                      }
+                    });
+
+                    if (emailError) throw emailError;
+
+                    // Update employee status in local state
                   setEmployees(prev => prev.map(emp =>
                     emp.id === emailToResend.id ? { ...emp, status: 'enviado' as const, sentDate: new Date().toLocaleDateString('pt-PT') } : emp
                   ));
-                  toast({ title: 'Código Reenviado', description: `Código enviado para ${emailToResend.email}` });
+
+                    toast({ 
+                      title: 'Código Reenviado', 
+                      description: `Código enviado para ${emailToResend.email}` 
+                    });
+                  } catch (error: any) {
+                    console.error('Error resending invite:', error);
+                    toast({ 
+                      title: 'Erro ao reenviar código',
+                      description: error.message || 'Ocorreu um erro ao reenviar o código',
+                      variant: 'destructive'
+                    });
+                  } finally {
                   setEmailToResend(null);
+                  }
                 }
               }}
             >

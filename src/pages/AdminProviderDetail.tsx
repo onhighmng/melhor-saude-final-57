@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   ArrowLeft, 
   Edit, 
@@ -103,32 +104,114 @@ const AdminProviderDetail = () => {
   }, [id]);
 
   const loadProvider = async () => {
+    if (!id) return;
     setIsLoading(true);
+    
     try {
-      setTimeout(() => {
-        const baseProvider = getProviderById(id || '1');
-        
-        if (baseProvider) {
-          const providerDetail = generateMockProviderDetail(baseProvider);
-          setProvider(providerDetail as unknown as ProviderDetail);
-        }
-        
-        setIsLoading(false);
-      }, 800);
-    } catch (error) {
-      toast({
-        title: t('common:error'),
-        description: t('providerDetail.loadError'),
-        variant: "destructive"
+      // Load prestador with profile
+      const { data: prestador, error: prestadorError } = await supabase
+        .from('prestadores')
+        .select(`
+          *,
+          profiles:user_id (
+            name,
+            email,
+            avatar_url,
+            phone
+          )
+        `)
+        .eq('id', id)
+        .single();
+
+      if (prestadorError) throw prestadorError;
+
+      // Load sessions
+      const { data: sessions, error: sessionsError } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          profiles:user_id (name)
+        `)
+        .eq('prestador_id', id)
+        .order('date', { ascending: false });
+
+      if (sessionsError) throw sessionsError;
+
+      // Load availability
+      const { data: availability, error: availabilityError } = await supabase
+        .from('prestador_availability')
+        .select('*')
+        .eq('prestador_id', id);
+
+      if (availabilityError) throw availabilityError;
+
+      // Calculate metrics
+      const completedSessions = sessions?.filter(s => s.status === 'completed') || [];
+      const ratings = completedSessions.map(s => s.rating).filter(r => r !== null) as number[];
+      const avgRating = ratings.length > 0 
+        ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length 
+        : 0;
+
+      setProvider({
+        id: prestador.id,
+        name: prestador.profiles?.name || '',
+        email: prestador.profiles?.email || '',
+        phone: prestador.profiles?.phone,
+        avatar: prestador.profiles?.avatar_url,
+        bio: prestador.bio,
+        pillars: prestador.pillars as any,
+        availability: prestador.is_active ? 'active' : 'inactive',
+        licenseStatus: 'valid' as const,
+        capacity: 20,
+        defaultSlot: 60,
+        languages: prestador.languages || [],
+        specialties: prestador.specialization || [],
+        education: [],
+        experience: prestador.experience_years || 0,
+        rating: avgRating,
+        totalSessions: sessions?.length || 0,
+        completedSessions: completedSessions.length,
+        upcomingBookings: sessions?.filter(s => s.status === 'confirmed').slice(0, 5).map(s => ({
+          id: s.id,
+          date: s.date,
+          time: s.start_time || '',
+          patient: s.profiles?.name || '',
+          pillar: s.pillar,
+          status: 'scheduled' as const
+        })) || [],
+        sessionHistory: sessions?.slice(0, 10).map(s => ({
+          id: s.id,
+          date: s.date,
+          patient: s.profiles?.name || '',
+          pillar: s.pillar,
+          duration: 60,
+          status: s.status as any
+        })) || [],
+        monthlyStats: []
       });
+    } catch (error) {
+      console.error('Error loading provider details:', error);
+      toast({
+        title: 'Erro',
+        description: 'Erro ao carregar detalhes do prestador',
+        variant: 'destructive'
+      });
+    } finally {
       setIsLoading(false);
     }
   };
 
   const handleStatusChange = async (newStatus: 'active' | 'inactive') => {
-    if (!provider) return;
+    if (!provider || !id) return;
     
     try {
+      const { error } = await supabase
+        .from('prestadores')
+        .update({ is_active: newStatus === 'active' })
+        .eq('id', id);
+
+      if (error) throw error;
+
       setProvider(prev => prev ? { ...prev, availability: newStatus } : null);
       
       toast({
@@ -136,6 +219,7 @@ const AdminProviderDetail = () => {
         description: t('providerDetail.statusUpdated')
       });
     } catch (error) {
+      console.error('Error updating provider status:', error);
       toast({
         title: t('common:error'),
         description: t('providerDetail.statusUpdateError'),

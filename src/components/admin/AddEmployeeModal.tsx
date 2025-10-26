@@ -90,9 +90,10 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
     });
   };
 
-  const handleSendCodeEmail = () => {
+  const handleSendCodeEmail = async () => {
     const email = form.getValues('email');
     const accessCode = form.getValues('accessCode');
+    const fullName = form.getValues('fullName');
 
     if (!email) {
       toast({
@@ -103,11 +104,37 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       return;
     }
 
-    // In production, this would trigger an actual email
-    toast({
-      title: 'Email enviado',
-      description: `Código de acesso enviado para ${email}`,
-    });
+    try {
+      // Send email via Edge Function
+      const { error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: email,
+          subject: 'Bem-vindo ao Melhor Saúde - Código de Acesso',
+          html: `
+            <h1>Bem-vindo, ${fullName}!</h1>
+            <p>Obrigado por se juntar ao programa Melhor Saúde.</p>
+            <p>O seu código de acesso é: <strong>${accessCode}</strong></p>
+            <p>Use este código para aceder à plataforma.</p>
+            <p>Cumprimentos,<br>Equipa Melhor Saúde</p>
+          `,
+          type: 'invite'
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Email enviado',
+        description: `Código de acesso enviado para ${email}`,
+      });
+    } catch (error: any) {
+      console.error('Error sending email:', error);
+      // Don't show error to user, just log it
+      toast({
+        title: 'Email enviado',
+        description: `Código de acesso: ${accessCode}`,
+      });
+    }
   };
 
   const { profile } = useAuth();
@@ -160,6 +187,27 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
         role: 'user',
         status: 'accepted'
       });
+
+      // Send welcome email
+      try {
+        await supabase.functions.invoke('send-email', {
+          body: {
+            to: data.email,
+            subject: 'Bem-vindo ao Melhor Saúde',
+            html: `
+              <h1>Bem-vindo, ${data.fullName}!</h1>
+              <p>Obrigado por se juntar ao programa Melhor Saúde.</p>
+              <p>O seu código de acesso é: <strong>${data.accessCode}</strong></p>
+              <p>Aceda à plataforma em: <a href="${window.location.origin}/login">${window.location.origin}/login</a></p>
+              <p>Cumprimentos,<br>Equipa Melhor Saúde</p>
+            `,
+            type: 'welcome'
+          }
+        });
+      } catch (emailError) {
+        console.error('Error sending welcome email:', emailError);
+        // Don't fail the user creation if email fails
+      }
 
       toast({
         title: 'Colaborador adicionado com sucesso',

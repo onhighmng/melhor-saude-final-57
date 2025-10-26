@@ -22,9 +22,23 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { mockUsers, AdminUser as User } from '@/data/adminMockData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  department?: string;
+  companySessions: number;
+  personalSessions: number;
+  status: 'active' | 'inactive';
+  createdAt: string;
+}
 
 const AdminUsers = () => {
+  const { profile } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,8 +46,7 @@ const AdminUsers = () => {
   const [companyFilter, setCompanyFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-
-  const companies = Array.from(new Set(mockUsers.map(user => user.company))).sort();
+  const [companies, setCompanies] = useState<string[]>([]);
 
   useEffect(() => {
     loadUsers();
@@ -46,17 +59,46 @@ const AdminUsers = () => {
   const loadUsers = async () => {
     setIsLoading(true);
     try {
-      // Replace with actual API call
-      setTimeout(() => {
-        setUsers(mockUsers);
-        setIsLoading(false);
-      }, 1000);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select(`
+          *,
+          company_employees!left (
+            sessions_allocated,
+            sessions_used,
+            companies:company_id (name)
+          )
+        `)
+        .eq('role', 'user')
+        .order('created_at', { ascending: false });
+
+      if (profilesError) throw profilesError;
+
+      const formattedUsers: User[] = (profiles || []).map(p => ({
+        id: p.id,
+        name: p.name,
+        email: p.email,
+        company: p.company_employees?.[0]?.companies?.name || 'N/A',
+        department: p.department || '',
+        companySessions: p.company_employees?.[0]?.sessions_used || 0,
+        personalSessions: 0,
+        status: p.is_active ? 'active' : 'inactive',
+        createdAt: p.created_at
+      }));
+
+      // Get unique companies
+      const uniqueCompanies = Array.from(new Set(formattedUsers.map(u => u.company))).sort();
+      setCompanies(uniqueCompanies);
+
+      setUsers(formattedUsers);
     } catch (error) {
+      console.error('Error loading users:', error);
       toast({
         title: "Erro",
         description: "Erro ao carregar utilizadores",
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -87,18 +129,31 @@ const AdminUsers = () => {
 
   const handleStatusChange = async (userId: string, newStatus: 'active' | 'inactive') => {
     try {
-      // Replace with actual API call
-      setUsers(prev => prev.map(user => 
-        user.id === userId 
-          ? { ...user, status: newStatus }
-          : user
-      ));
-      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: newStatus === 'active' })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: newStatus === 'active' ? 'user_activated' : 'user_deactivated',
+          target_id: userId,
+          target_type: 'user'
+        });
+      }
+
       toast({
         title: newStatus === 'active' ? "Utilizador ativado" : "Utilizador suspenso",
         description: "Estado atualizado com sucesso"
       });
+
+      await loadUsers(); // Reload to get fresh data
     } catch (error) {
+      console.error('Error updating user status:', error);
       toast({
         title: "Erro",
         description: "Erro ao atualizar estado",

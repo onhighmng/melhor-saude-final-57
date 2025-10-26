@@ -208,6 +208,77 @@ const AdminProvidersTab = () => {
     navigate(`/admin/provider-metrics/${provider.id}`);
   };
 
+  const handleApproveProvider = async (providerId: string) => {
+    try {
+      const { error } = await supabase
+        .from('prestadores')
+        .update({ is_approved: true, is_active: true })
+        .eq('id', providerId);
+
+      if (error) throw error;
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'provider_approved',
+          target_id: providerId,
+          target_type: 'prestador'
+        });
+      }
+
+      toast({
+        title: "Prestador aprovado",
+        description: "O prestador foi aprovado com sucesso"
+      });
+
+      await loadProviders();
+    } catch (error: any) {
+      console.error('Error approving provider:', error);
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao aprovar prestador",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleRejectProvider = async (providerId: string) => {
+    try {
+      const { error } = await supabase
+        .from('prestadores')
+        .update({ is_approved: false, is_active: false })
+        .eq('id', providerId);
+
+      if (error) throw error;
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'provider_rejected',
+          target_id: providerId,
+          target_type: 'prestador'
+        });
+      }
+
+      toast({
+        title: "Prestador rejeitado",
+        description: "O prestador foi desativado",
+        variant: "destructive"
+      });
+
+      await loadProviders();
+    } catch (error: any) {
+      console.error('Error rejecting provider:', error);
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao rejeitar prestador",
+        variant: "destructive"
+      });
+    }
+  };
+
 
   // Calculate summary metrics
   const totalProviders = providers.length;
@@ -446,6 +517,10 @@ const AdminProvidersTab = () => {
               variant="specialist"
               type="provider"
               onView={() => handleViewProvider(provider)}
+              onApprove={() => handleApproveProvider(provider.id)}
+              onReject={() => handleRejectProvider(provider.id)}
+              showActions={provider.status !== 'approved'}
+              isApproved={provider.status === 'approved'}
               className="w-full"
             />
           ))
