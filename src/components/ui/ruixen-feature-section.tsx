@@ -117,7 +117,7 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
         </div>
 
         {/* Right Block - Sessions List */}
-        <div className="flex flex-col items-start justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-900">
+        <div className="flex flex-col items-start justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
           <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white mb-4 sm:mb-6 leading-relaxed">
             Sessões Recentes <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
             <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
@@ -134,7 +134,7 @@ export default function RuixenSection({ stats, sessions = [], getStatusBadge }: 
               displaySessions.map((session) => (
                 <div
                   key={session.id}
-                  className="flex flex-col gap-2 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all"
+                  className="flex flex-col gap-2 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
