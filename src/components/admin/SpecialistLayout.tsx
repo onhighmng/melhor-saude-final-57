@@ -4,6 +4,8 @@ import { Clock, CheckCircle2, ArrowRight, TrendingUp, X } from 'lucide-react';
 import { CardStack } from '@/components/ui/card-stack';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useState } from 'react';
+import { ProviderSessionManagementModal } from '@/components/sessions/ProviderSessionManagementModal';
+import { useToast } from '@/hooks/use-toast';
 
 interface Case {
   id: string;
@@ -114,10 +116,34 @@ const metricCards = [
 export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showManagementModal, setShowManagementModal] = useState(false);
+  const { toast } = useToast();
 
   const handleCaseClick = (caseItem: Case) => {
     setSelectedCase(caseItem);
-    setIsModalOpen(true);
+    setShowManagementModal(true);
+  };
+
+  const handleUpdateMeetingLink = (caseId: string, link: string) => {
+    toast({
+      title: "Link atualizado",
+      description: "O link da reunião foi atualizado com sucesso."
+    });
+  };
+
+  const handleReschedule = (caseId: string) => {
+    toast({
+      title: "Reagendar caso",
+      description: "Funcionalidade de reagendamento em desenvolvimento."
+    });
+  };
+
+  const handleCancel = (caseId: string) => {
+    toast({
+      title: "Caso cancelado",
+      description: "O caso foi cancelado com sucesso.",
+      variant: "destructive"
+    });
   };
 
   return (
@@ -173,7 +199,28 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
         </Card>
       </div>
 
-      {/* Fullscreen Modal */}
+      {/* Provider Session Management Modal */}
+      <ProviderSessionManagementModal
+        session={selectedCase ? {
+          id: selectedCase.id,
+          clientName: selectedCase.collaborator,
+          pillar: selectedCase.pillar,
+          date: selectedCase.date,
+          time: '10:00', // Default time, can be added to Case interface
+          platform: 'Zoom',
+          meetingLink: undefined
+        } : null}
+        isOpen={showManagementModal}
+        onClose={() => {
+          setShowManagementModal(false);
+          setSelectedCase(null);
+        }}
+        onUpdateMeetingLink={handleUpdateMeetingLink}
+        onReschedule={handleReschedule}
+        onCancel={handleCancel}
+      />
+
+      {/* Notes Modal (Keep for viewing case notes) */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-2xl">
           {selectedCase && (

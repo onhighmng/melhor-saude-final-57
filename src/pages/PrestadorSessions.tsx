@@ -31,6 +31,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { mockPrestadorSessions } from '@/data/prestadorMetrics';
 import RuixenSection from '@/components/ui/ruixen-feature-section';
+import { ProviderSessionManagementModal } from '@/components/sessions/ProviderSessionManagementModal';
 
 export default function PrestadorSessions() {
   const { toast } = useToast();
@@ -41,6 +42,7 @@ export default function PrestadorSessions() {
   const [selectedSession, setSelectedSession] = useState<any>(null);
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [sessionNotes, setSessionNotes] = useState('');
+  const [showManagementModal, setShowManagementModal] = useState(false);
 
   // Filter sessions
   React.useEffect(() => {
@@ -142,6 +144,35 @@ export default function PrestadorSessions() {
 
   const handleViewSession = (session: any) => {
     setSelectedSession(session);
+    setShowManagementModal(true);
+  };
+
+  const handleUpdateMeetingLink = (sessionId: string, link: string) => {
+    setSessions(prev => prev.map(s => 
+      s.id === sessionId ? { ...s, meetingLink: link } : s
+    ));
+    toast({
+      title: "Link atualizado",
+      description: "O link da reunião foi atualizado com sucesso."
+    });
+  };
+
+  const handleRescheduleSession = (sessionId: string) => {
+    toast({
+      title: "Reagendar sessão",
+      description: "Funcionalidade de reagendamento em desenvolvimento."
+    });
+  };
+
+  const handleCancelSession = (sessionId: string) => {
+    setSessions(prev => prev.map(s => 
+      s.id === sessionId ? { ...s, status: 'Cancelada' } : s
+    ));
+    toast({
+      title: "Sessão cancelada",
+      description: "A sessão foi cancelada com sucesso.",
+      variant: "destructive"
+    });
   };
 
   const handleAddNotes = (session: any) => {
@@ -193,77 +224,26 @@ export default function PrestadorSessions() {
         onSessionClick={handleViewSession}
       />
 
-      {/* Session Detail Modal - Full Screen */}
-      <Dialog open={!!selectedSession} onOpenChange={() => setSelectedSession(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">Detalhes da Sessão</DialogTitle>
-          </DialogHeader>
-          
-          {selectedSession && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Colaborador</label>
-                  <p className="text-xl font-semibold mt-1">{selectedSession.clientName}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Empresa</label>
-                  <p className="text-xl font-semibold mt-1">{selectedSession.company}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Tipo</label>
-                  <div className="mt-2">
-                    <Badge variant="outline" className="flex items-center gap-2 w-fit text-base py-2 px-3">
-                      {selectedSession.type === 'Virtual' ? (
-                        <Video className="h-4 w-4" />
-                      ) : (
-                        <MapPin className="h-4 w-4" />
-                      )}
-                      {selectedSession.type}
-                    </Badge>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Estado</label>
-                  <div className="mt-2">
-                    {getStatusBadge(selectedSession.status)}
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Data</label>
-                  <p className="text-lg mt-1">{new Date(selectedSession.date).toLocaleDateString('pt-PT', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Avaliação</label>
-                  {selectedSession.rating ? (
-                    <div className="flex items-center gap-2 mt-2">
-                      <Star className="h-6 w-6 fill-amber-400 text-amber-400" />
-                      <span className="text-xl font-medium">{selectedSession.rating}/10</span>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground mt-1">Não avaliado</p>
-                  )}
-                </div>
-              </div>
-              
-              {selectedSession.notes && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Notas</label>
-                  <div className="mt-2 p-4 bg-muted/30 rounded-lg">
-                    <p className="text-base">{selectedSession.notes}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Provider Session Management Modal */}
+      <ProviderSessionManagementModal
+        session={selectedSession ? {
+          id: selectedSession.id,
+          clientName: selectedSession.clientName,
+          pillar: selectedSession.pillar,
+          date: selectedSession.date,
+          time: selectedSession.time,
+          platform: selectedSession.type === 'Virtual' ? 'Zoom' : 'Presencial',
+          meetingLink: selectedSession.meetingLink
+        } : null}
+        isOpen={showManagementModal}
+        onClose={() => {
+          setShowManagementModal(false);
+          setSelectedSession(null);
+        }}
+        onUpdateMeetingLink={handleUpdateMeetingLink}
+        onReschedule={handleRescheduleSession}
+        onCancel={handleCancelSession}
+      />
 
       {/* Add Notes Modal */}
       <Dialog open={showNotesModal} onOpenChange={setShowNotesModal}>
