@@ -54,6 +54,7 @@ interface Provider {
   status: string;
   satisfaction: number;
   sessionsThisMonth: number;
+  isApproved: boolean;
 }
 
 const AdminProvidersTab = () => {
@@ -134,9 +135,10 @@ const AdminProvidersTab = () => {
             avatar: p.profiles?.avatar_url || '',
             specialty: p.specialty || '',
             pillar: p.pillars?.[0] || '',
-            status: p.is_approved ? 'Ativo' : 'Inativo',
+            status: p.is_approved ? 'Aprovado' : 'Pendente',
             satisfaction: Math.round(avgSatisfaction * 10) / 10,
-            sessionsThisMonth: stats.count
+            sessionsThisMonth: stats.count,
+            isApproved: p.is_approved || false
           };
         });
 
@@ -222,8 +224,8 @@ const AdminProvidersTab = () => {
         await supabase.from('admin_logs').insert({
           admin_id: profile.id,
           action: 'provider_approved',
-          target_id: providerId,
-          target_type: 'prestador'
+          entity_id: providerId,
+          entity_type: 'prestador'
         });
       }
 
@@ -257,8 +259,8 @@ const AdminProvidersTab = () => {
         await supabase.from('admin_logs').insert({
           admin_id: profile.id,
           action: 'provider_rejected',
-          target_id: providerId,
-          target_type: 'prestador'
+          entity_id: providerId,
+          entity_type: 'prestador'
         });
       }
 
@@ -282,7 +284,7 @@ const AdminProvidersTab = () => {
 
   // Calculate summary metrics
   const totalProviders = providers.length;
-  const activeProviders = providers.filter(p => p.status === 'Ativo').length;
+  const activeProviders = providers.filter(p => p.isApproved).length;
   const avgSatisfaction = providers.length > 0 
     ? (providers.reduce((sum, p) => sum + p.satisfaction, 0) / providers.length).toFixed(1)
     : '0.0';
@@ -335,10 +337,10 @@ const AdminProvidersTab = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Ativo':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Ativo</Badge>;
-      case 'Inativo':
-        return <Badge className="bg-gray-100 text-gray-600 border-gray-200">Inativo</Badge>;
+      case 'Aprovado':
+        return <Badge className="bg-green-100 text-green-800 border-green-200">Aprovado</Badge>;
+      case 'Pendente':
+        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Pendente</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -475,8 +477,8 @@ const AdminProvidersTab = () => {
             </SelectTrigger>
             <SelectContent className="bg-background border border-border shadow-lg z-50">
               <SelectItem value="all">Todos os Estados</SelectItem>
-              <SelectItem value="Ativo">Ativo</SelectItem>
-              <SelectItem value="Inativo">Inativo</SelectItem>
+              <SelectItem value="Aprovado">Aprovado</SelectItem>
+              <SelectItem value="Pendente">Pendente</SelectItem>
             </SelectContent>
           </Select>
 
@@ -510,6 +512,7 @@ const AdminProvidersTab = () => {
               key={provider.id}
               name={provider.name}
               title={provider.email}
+              subtitle={provider.status}
               avatar={provider.avatar || providerPlaceholder}
               specialty={provider.specialty}
               rating={provider.satisfaction}
@@ -519,8 +522,8 @@ const AdminProvidersTab = () => {
               onView={() => handleViewProvider(provider)}
               onApprove={() => handleApproveProvider(provider.id)}
               onReject={() => handleRejectProvider(provider.id)}
-              showActions={provider.status !== 'approved'}
-              isApproved={provider.status === 'approved'}
+              showActions={!provider.isApproved}
+              isApproved={provider.isApproved}
               className="w-full"
             />
           ))
