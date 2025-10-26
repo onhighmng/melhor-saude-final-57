@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils"
-import { CardContent } from "@/components/ui/card";
+import { CardContent, Card as UICard, CardHeader, CardTitle } from "@/components/ui/card";
 import { TbHeartPlus } from "react-icons/tb";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Calendar, CheckCircle, Clock, Star } from "lucide-react";
 
 export const Highlight = ({
   children,
@@ -23,59 +24,23 @@ export const Highlight = ({
   );
 };
 
-type Card = {
+type StatsCard = {
   id: number;
-  name: string;
-  designation: string;
-  content: React.ReactNode;
+  title: string;
+  value: string | number;
+  description: string;
+  icon: React.ReactNode;
+  gradient: string;
 };
 
-const CARDS: Card[] = [
-  {
-    id: 0,
-    name: "Ana Silva",
-    designation: "Psicóloga Clínica",
-    content: (
-      <p>
-        <Highlight>Sessões transformadoras</Highlight> que realmente fazem a diferença na vida dos colaboradores. A plataforma facilita{" "}
-        <Highlight>conexões genuínas</Highlight> e permite um acompanhamento eficaz.
-      </p>
-    ),
-  },
-  {
-    id: 1,
-    name: "João Santos",
-    designation: "Fisioterapeuta",
-    content: (
-      <p>
-        O <Highlight>sistema de agendamento</Highlight> é intuitivo e eficiente. Consigo gerir todas as minhas sessões com{" "}
-        <Highlight>total controlo e flexibilidade</Highlight> para melhor servir os colaboradores.
-      </p>
-    ),
-  },
-  {
-    id: 2,
-    name: "Maria Costa",
-    designation: "Consultora Financeira",
-    content: (
-      <p>
-        Após adoptar esta <Highlight>plataforma de bem-estar</Highlight>, a minha produtividade aumentou 40%. As{" "}
-        <Highlight>ferramentas integradas</Highlight> tornaram o meu trabalho muito mais eficiente.
-      </p>
-    ),
-  },
-  {
-    id: 3,
-    name: "Pedro Oliveira",
-    designation: "Advogado",
-    content: (
-      <p>
-        A plataforma permite <Highlight>gestão profissional</Highlight> de todas as consultas jurídicas. O sistema de notas e{" "}
-        <Highlight>histórico completo</Highlight> facilita o acompanhamento de cada caso.
-      </p>
-    ),
-  },
-];
+interface RuixenSectionProps {
+  stats?: {
+    total: number;
+    completed: number;
+    scheduled: number;
+    avgRating: number;
+  };
+}
 
 const integrations = [
   {
@@ -100,7 +65,42 @@ const integrations = [
   },
 ];
 
-export default function RuixenSection() {
+export default function RuixenSection({ stats }: RuixenSectionProps) {
+  const statsCards: StatsCard[] = stats ? [
+    {
+      id: 0,
+      title: "Total de Sessões",
+      value: stats.total,
+      description: "Todas as sessões",
+      icon: <Calendar className="h-4 w-4 text-blue-600" />,
+      gradient: "from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900"
+    },
+    {
+      id: 1,
+      title: "Concluídas",
+      value: stats.completed,
+      description: `${Math.round((stats.completed / stats.total) * 100)}% do total`,
+      icon: <CheckCircle className="h-4 w-4 text-green-600" />,
+      gradient: "from-green-50 to-green-100 dark:from-green-950 dark:to-green-900"
+    },
+    {
+      id: 2,
+      title: "Agendadas",
+      value: stats.scheduled,
+      description: "Próximas sessões",
+      icon: <Clock className="h-4 w-4 text-amber-600" />,
+      gradient: "from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900"
+    },
+    {
+      id: 3,
+      title: "Avaliação Média",
+      value: `${stats.avgRating.toFixed(1)}/10`,
+      description: "Satisfação dos colaboradores",
+      icon: <Star className="h-4 w-4 text-purple-600" />,
+      gradient: "from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900"
+    }
+  ] : [];
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
       <div className="grid grid-cols-1 lg:grid-cols-2 relative">
@@ -108,8 +108,8 @@ export default function RuixenSection() {
         <div className="flex flex-col items-start justify-center border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
           {/* Card */}
           <div className="relative w-full mb-4 sm:mb-6">
-            <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-10"></div>
-            <CardStack items={CARDS} />
+            <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-blue-50 dark:from-gray-900 to-transparent z-10"></div>
+            <StatsCardStack items={statsCards} />
           </div>
 
           {/* Content */}
@@ -197,34 +197,41 @@ export default function RuixenSection() {
 
 let interval: any;
 
-export const CardStack = ({
+export const StatsCardStack = ({
   items,
   offset,
   scaleFactor,
 }: {
-  items: Card[];
+  items: StatsCard[];
   offset?: number;
   scaleFactor?: number;
 }) => {
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
-  const [cards, setCards] = useState<Card[]>(items);
+  const [cards, setCards] = useState<StatsCard[]>(items);
 
   useEffect(() => {
-    startFlipping();
+    if (items.length > 0) {
+      setCards(items);
+      startFlipping();
+    }
 
     return () => clearInterval(interval);
-  }, []);
+  }, [items]);
   
   const startFlipping = () => {
     interval = setInterval(() => {
-      setCards((prevCards: Card[]) => {
+      setCards((prevCards: StatsCard[]) => {
         const newArray = [...prevCards];
         newArray.unshift(newArray.pop()!);
         return newArray;
       });
-    }, 5000);
+    }, 3000);
   };
+
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative mx-auto h-48 w-full md:h-48 md:w-96 my-4">
@@ -232,7 +239,10 @@ export const CardStack = ({
         return (
           <motion.div
             key={card.id}
-            className="absolute dark:bg-black bg-white h-48 w-full md:h-48 md:w-96 rounded-3xl p-4 shadow-xl border border-neutral-200 dark:border-white/[0.1] flex flex-col justify-between"
+            className={cn(
+              "absolute h-48 w-full md:h-48 md:w-96 rounded-3xl p-6 shadow-xl border-0 flex flex-col justify-between",
+              `bg-gradient-to-br ${card.gradient}`
+            )}
             style={{
               transformOrigin: "top center",
             }}
@@ -242,15 +252,18 @@ export const CardStack = ({
               zIndex: cards.length - index,
             }}
           >
-            <div className="font-normal text-neutral-700 dark:text-neutral-200">
-              {card.content}
-            </div>
+            <CardHeader className="p-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                {card.icon}
+                {card.title}
+              </CardTitle>
+            </CardHeader>
             <div>
-              <p className="text-neutral-500 font-medium dark:text-white">
-                {card.name}
-              </p>
-              <p className="text-neutral-400 font-normal dark:text-neutral-200">
-                {card.designation}
+              <div className="text-4xl font-bold text-foreground mb-1">
+                {card.value}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {card.description}
               </p>
             </div>
           </motion.div>

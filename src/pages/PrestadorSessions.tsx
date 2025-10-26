@@ -176,8 +176,8 @@ export default function PrestadorSessions() {
 
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
-      {/* Feature Section with Cards */}
-      <RuixenSection />
+      {/* Feature Section with Stats Cards */}
+      <RuixenSection stats={stats} />
       
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -192,78 +192,6 @@ export default function PrestadorSessions() {
           <Download className="h-4 w-4" />
           Exportar
         </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-blue-600" />
-              Total de Sessões
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">
-              {stats.total}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Todas as sessões
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              Concluídas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-700 dark:text-green-300">
-              {stats.completed}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {Math.round((stats.completed / stats.total) * 100)}% do total
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Clock className="h-4 w-4 text-amber-600" />
-              Agendadas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-amber-700 dark:text-amber-300">
-              {stats.scheduled}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Próximas sessões
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Star className="h-4 w-4 text-purple-600" />
-              Avaliação Média
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-purple-700 dark:text-purple-300 flex items-center gap-1">
-              <Star className="h-6 w-6 fill-purple-600 text-purple-600" />
-              {stats.avgRating.toFixed(1)}/10
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Satisfação dos colaboradores
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Filters */}
