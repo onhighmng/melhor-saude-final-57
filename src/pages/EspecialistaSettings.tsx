@@ -251,16 +251,6 @@ const EspecialistaSettings = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label className="text-sm font-medium">Notificações por SMS</Label>
-                        <p className="text-xs text-muted-foreground">Receber notificações por mensagem de texto</p>
-                      </div>
-                      <Switch 
-                        checked={notificationSettings.smsNotifications}
-                        onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, smsNotifications: checked})}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
                         <Label className="text-sm font-medium">Notificações Push</Label>
                         <p className="text-xs text-muted-foreground">Receber notificações no navegador</p>
                       </div>
