@@ -6,16 +6,12 @@ import { Phone, CheckCircle, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockCallRequests } from '@/data/especialistaGeralMockData';
 import { CallRequest } from '@/types/specialist';
-import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 
 const EspecialistaCallRequests = () => {
   const { toast } = useToast();
-  const { filterByCompanyAccess } = useCompanyFilter();
   
-  // Filter requests by assigned companies and pending status
-  const filteredRequests = filterByCompanyAccess(
-    mockCallRequests.filter(req => req.status === 'pending')
-  );
+  // Show all pending requests (no company filtering for demo purposes)
+  const filteredRequests = mockCallRequests.filter(req => req.status === 'pending');
 
   const handleCallRequest = (request: CallRequest) => {
     toast({
