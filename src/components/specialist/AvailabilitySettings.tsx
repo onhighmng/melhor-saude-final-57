@@ -10,10 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Calendar } from '@/components/ui/calendar';
+import { CalendarWithTimePresets } from '@/components/ui/calendar-with-time-presets';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format, isFuture, startOfToday } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface TimeSlot {
   id: string;
@@ -96,6 +98,10 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
   const [timeBlockDate, setTimeBlockDate] = useState<Date | undefined>();
   const [timeBlockStart, setTimeBlockStart] = useState('09:00 AM');
   const [timeBlockEnd, setTimeBlockEnd] = useState('10:00 AM');
+  
+  // Calendar with time presets state
+  const [calendarDate, setCalendarDate] = useState<Date | undefined>();
+  const [calendarTime, setCalendarTime] = useState<string | null>(null);
 
   const toggleDay = (dayKey: string) => {
     setAvailability(prev => ({
@@ -207,42 +213,48 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Meeting Duration */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Label className="text-base font-semibold">Duração da reunião</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Define a duração padrão das sessões</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <div className="flex gap-3">
-              <Input
-                type="number"
-                value={meetingDuration}
-                onChange={(e) => setMeetingDuration(e.target.value)}
-                className="w-32"
-              />
-              <Select value={durationUnit} onValueChange={setDurationUnit}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="minutes">Minutos</SelectItem>
-                  <SelectItem value="hours">Horas</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+        <Tabs defaultValue="weekly" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="weekly">Horários Semanais</TabsTrigger>
+            <TabsTrigger value="calendar">Calendário Visual</TabsTrigger>
+          </TabsList>
 
-          <Separator />
+          <TabsContent value="weekly" className="space-y-6">
+            {/* Meeting Duration */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Label className="text-base font-semibold">Duração da reunião</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Define a duração padrão das sessões</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex gap-3">
+                <Input
+                  type="number"
+                  value={meetingDuration}
+                  onChange={(e) => setMeetingDuration(e.target.value)}
+                  className="w-32"
+                />
+                <Select value={durationUnit} onValueChange={setDurationUnit}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="minutes">Minutos</SelectItem>
+                    <SelectItem value="hours">Horas</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <Separator />
 
           {/* Weekly Hours */}
           <div className="space-y-4">
@@ -572,7 +584,44 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
               </div>
             )}
           </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="calendar" className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Label className="text-base font-semibold">Selecione Data e Horário</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Use o calendário para definir sua disponibilidade</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              <CalendarWithTimePresets
+                selectedDate={calendarDate}
+                onDateSelect={setCalendarDate}
+                selectedTime={calendarTime}
+                onTimeSelect={setCalendarTime}
+                bookedDates={blockedDates}
+                showFooter={true}
+                continueButtonText="Adicionar Disponibilidade"
+                onContinue={() => {
+                  if (calendarDate && calendarTime) {
+                    console.log('Disponibilidade adicionada:', calendarDate, calendarTime);
+                    setCalendarDate(undefined);
+                    setCalendarTime(null);
+                  }
+                }}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+
 
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
