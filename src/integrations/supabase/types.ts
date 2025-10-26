@@ -924,6 +924,62 @@ export type Database = {
       }
     }
     Functions: {
+      assign_employee_sessions: {
+        Args: { _employee_id: string; _quota: number }
+        Returns: boolean
+      }
+      book_session_with_quota_check: {
+        Args: {
+          _booking_date: string
+          _end_time?: string
+          _meeting_type?: string
+          _pillar_specialties: string[]
+          _prestador_id: string
+          _session_type: string
+          _start_time?: string
+          _topic?: string
+          _user_id: string
+        }
+        Returns: string
+      }
+      get_company_analytics: {
+        Args: { _company_id: string }
+        Returns: {
+          active_employees: number
+          avg_rating: number
+          cancelled_bookings: number
+          completed_bookings: number
+          sessions_allocated: number
+          sessions_remaining: number
+          sessions_used: number
+          total_bookings: number
+          total_employees: number
+          utilization_rate: number
+        }[]
+      }
+      get_provider_performance: {
+        Args: { _prestador_id: string }
+        Returns: {
+          avg_rating: number
+          cancelled_sessions: number
+          completed_sessions: number
+          completion_rate: number
+          sessions_this_month: number
+          sessions_this_week: number
+          total_hours: number
+          total_sessions: number
+        }[]
+      }
+      get_user_session_balance: {
+        Args: { _user_id: string }
+        Returns: {
+          company_name: string
+          company_sessions_allocated: number
+          company_sessions_remaining: number
+          company_sessions_used: number
+          has_company_quota: boolean
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
