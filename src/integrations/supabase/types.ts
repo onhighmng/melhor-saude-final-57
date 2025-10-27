@@ -1813,6 +1813,7 @@ export type Database = {
           total_sessions: number
         }[]
       }
+      get_user_primary_role: { Args: { user_id: string }; Returns: string }
       get_user_session_balance: {
         Args: { _user_id: string }
         Returns: {
