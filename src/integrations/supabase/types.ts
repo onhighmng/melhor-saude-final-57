@@ -627,7 +627,9 @@ export type Database = {
           is_read: boolean | null
           message: string
           metadata: Json | null
+          priority: string | null
           read_at: string | null
+          related_booking_id: string | null
           title: string
           type: string
           user_id: string
@@ -638,7 +640,9 @@ export type Database = {
           is_read?: boolean | null
           message: string
           metadata?: Json | null
+          priority?: string | null
           read_at?: string | null
+          related_booking_id?: string | null
           title: string
           type: string
           user_id: string
@@ -649,12 +653,22 @@ export type Database = {
           is_read?: boolean | null
           message?: string
           metadata?: Json | null
+          priority?: string | null
           read_at?: string | null
+          related_booking_id?: string | null
           title?: string
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_related_booking_id_fkey"
+            columns: ["related_booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       onboarding_data: {
         Row: {
