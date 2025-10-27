@@ -281,19 +281,20 @@ export default function AdminCompanyDetail() {
         try {
           // Check if user already exists in auth
           const { data: existingAuthUser } = await supabase.auth.admin.listUsers();
-          const existingUser = existingAuthUser?.users?.find(u => u.email === emp.email);
+          const existingUser = existingAuthUser?.users?.find((u: any) => u.email === emp.email);
 
           let userId;
           if (existingUser) {
             userId = existingUser.id;
           } else {
-            // Create new user account
+            // Create new user account via auth.admin
             const { data: authData, error: authError } = await supabase.auth.admin.createUser({
               email: emp.email,
-              email_confirm: false,
+              email_confirm: true,
               user_metadata: { 
-                full_name: emp.name,
-                role: 'user'
+                name: emp.name,
+                role: 'user',
+                company_id: id
               }
             });
 
@@ -302,7 +303,12 @@ export default function AdminCompanyDetail() {
               continue;
             }
 
-            userId = authData.user.id;
+            userId = authData.user?.id;
+            
+            if (!userId) {
+              errors.push({ email: emp.email, error: 'Failed to create user' });
+              continue;
+            }
           }
 
           // Insert into company_employees
@@ -310,9 +316,8 @@ export default function AdminCompanyDetail() {
             .from('company_employees')
             .insert({
               user_id: userId,
-              company_id: companyId,
-              email: emp.email,
-              sessions_quota: 5, // Default quota
+              company_id: id,
+              sessions_allocated: emp.sessionsAllocated || 5,
               sessions_used: 0,
               is_active: true,
               joined_at: new Date().toISOString()
@@ -332,11 +337,16 @@ export default function AdminCompanyDetail() {
       }
 
       // Update seats_used counter
+      // Increment company sessions_used 
       if (createdEmployees.length > 0) {
-        await supabase.rpc('increment_company_seats_used', {
-          _company_id: companyId,
-          _count: createdEmployees.length
-        });
+        // Update company sessions_used
+        await supabase
+          .from('companies')
+          .update({ 
+            sessions_used: (company?.sessions_used || 0) + createdEmployees.length,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', id);
       }
 
       if (errors.length > 0) {
@@ -353,7 +363,7 @@ export default function AdminCompanyDetail() {
       }
 
       // Refresh employees list
-      await loadEmployees();
+      window.location.reload();
       
       setShowPreviewDialog(false);
       setCsvPreview(null);

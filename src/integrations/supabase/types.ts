@@ -799,6 +799,44 @@ export type Database = {
           },
         ]
       }
+      prestador_pricing: {
+        Row: {
+          created_at: string | null
+          currency: string
+          id: string
+          platform_commission_rate: number
+          prestador_id: string
+          session_price: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string
+          id?: string
+          platform_commission_rate?: number
+          prestador_id: string
+          session_price?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string
+          id?: string
+          platform_commission_rate?: number
+          prestador_id?: string
+          session_price?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prestador_pricing_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: true
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prestador_schedule: {
         Row: {
           created_at: string | null
@@ -1805,6 +1843,15 @@ export type Database = {
           is_active: boolean
           plan_type: string
           sessions_remaining: number
+        }[]
+      }
+      get_platform_utilization: {
+        Args: never
+        Returns: {
+          active_companies: number
+          platform_utilization_rate: number
+          total_sessions: number
+          total_users: number
         }[]
       }
       get_provider_availability: {

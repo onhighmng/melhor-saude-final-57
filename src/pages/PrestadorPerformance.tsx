@@ -67,13 +67,23 @@ const PrestadorPerformance = () => {
           }
           setSessionEvolution(evolution);
 
-          // Calculate financial data
-          const monthlyRevenue = completed * 1500 * 0.75; // 75% of 1500 MZN per session
+          // Fetch pricing from prestador_pricing table
+          const { data: pricing } = await supabase
+            .from('prestador_pricing')
+            .select('session_price, platform_commission_rate')
+            .eq('prestador_id', prestador.id)
+            .single();
+
+          const sessionPrice = pricing?.session_price || 1500;
+          const commissionRate = pricing?.platform_commission_rate || 0.25;
+          const providerRevenue = sessionPrice * (1 - commissionRate);
+
+          const monthlyRevenue = completed * providerRevenue;
           setFinancialData({
-            totalRevenue: completed * 1500 * 0.75,
-            pendingRevenue: (total - completed) * 1500 * 0.75,
+            totalRevenue: completed * providerRevenue,
+            pendingRevenue: (total - completed) * providerRevenue,
             monthlyRevenue,
-            sessionsValue: 1500
+            sessionsValue: sessionPrice
           });
         }
       } catch (error) {

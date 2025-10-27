@@ -6,7 +6,7 @@ import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EscalatedChatCard } from '@/components/specialist/EscalatedChatCard';
 import { AnalyticsCard } from '@/components/specialist/AnalyticsCard';
-import LoadingSpinner from '@/components/ui/loading-spinner';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Phone, TrendingUp, Users, Calendar, ThumbsUp, MessageSquare, ArrowRight, Clock, Building2, AlertTriangle, Star, BookOpen, User, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -50,7 +50,7 @@ export default function SpecialistDashboard() {
   if (chatsLoading || analyticsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" text="A carregar..." />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }

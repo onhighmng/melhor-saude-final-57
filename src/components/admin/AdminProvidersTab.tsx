@@ -219,29 +219,37 @@ const AdminProvidersTab = () => {
 
       if (error) throw error;
 
-      // Fetch provider email for notification
-      const { data: provider } = await supabase
+      // Fetch provider email and name via user_id
+      const { data: prestador } = await supabase
         .from('prestadores')
-        .select('profiles(email, full_name)')
+        .select('user_id, name')
         .eq('id', providerId)
         .single();
 
-      if (provider?.profiles) {
-        // Send approval email
-        await supabase.functions.invoke('send-email', {
-          body: {
-            to: provider.profiles.email,
-            subject: 'Aprovação de Prestador - Melhor Saúde',
-            html: `
-              <h2>Bem-vindo à Melhor Saúde!</h2>
-              <p>Olá ${provider.profiles.full_name},</p>
+      if (prestador?.user_id) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('id', prestador.user_id)
+          .single();
+
+        if (profileData) {
+          // Send approval email
+          await supabase.functions.invoke('send-email', {
+            body: {
+              to: profileData.email,
+              subject: 'Aprovação de Prestador - Melhor Saúde',
+              html: `
+                <h2>Bem-vindo à Melhor Saúde!</h2>
+                <p>Olá ${prestador.name},</p>
               <p>A sua candidatura foi <strong>aprovada</strong>. Pode agora aceder à plataforma e começar a agendar sessões.</p>
               <p>Aceda à sua área de prestador em <a href="https://melhorsaude.pt">melhorsaude.pt</a></p>
-              <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
-            `,
-            type: 'provider_approved'
-          }
-        });
+                <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
+              `,
+              type: 'provider_approved'
+            }
+          });
+        }
       }
 
       // Log admin action
@@ -279,29 +287,37 @@ const AdminProvidersTab = () => {
 
       if (error) throw error;
 
-      // Fetch provider email for notification
-      const { data: provider } = await supabase
+      // Fetch provider email and name via user_id
+      const { data: prestador } = await supabase
         .from('prestadores')
-        .select('profiles(email, full_name)')
+        .select('user_id, name')
         .eq('id', providerId)
         .single();
 
-      if (provider?.profiles) {
-        // Send rejection email
-        await supabase.functions.invoke('send-email', {
-          body: {
-            to: provider.profiles.email,
-            subject: 'Candidatura de Prestador - Melhor Saúde',
-            html: `
-              <h2>Candidatura Recebida</h2>
-              <p>Olá ${provider.profiles.full_name},</p>
+      if (prestador?.user_id) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('id', prestador.user_id)
+          .single();
+
+        if (profileData) {
+          // Send rejection email
+          await supabase.functions.invoke('send-email', {
+            body: {
+              to: profileData.email,
+              subject: 'Candidatura de Prestador - Melhor Saúde',
+              html: `
+                <h2>Candidatura Recebida</h2>
+                <p>Olá ${prestador.name},</p>
               <p>Obrigado pelo seu interesse em juntar-se à equipa Melhor Saúde.</p>
               <p>Após avaliação, a sua candidatura não foi aprovada neste momento. Ficaremos em contacto se surgirem oportunidades futuras.</p>
-              <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
-            `,
-            type: 'provider_rejected'
-          }
-        });
+                <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
+              `,
+              type: 'provider_rejected'
+            }
+          });
+        }
       }
 
       // Log admin action
