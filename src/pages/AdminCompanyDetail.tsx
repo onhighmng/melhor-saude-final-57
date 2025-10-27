@@ -390,22 +390,47 @@ export default function AdminCompanyDetail() {
     }
 
     setIsGenerating(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const existingCodes = new Set(employees.map(e => e.code).filter(Boolean));
+      const newCodes = generateUniqueAccessCodes(employeesWithoutCodes.length, existingCodes, 'MS');
 
-    const existingCodes = new Set(employees.map(e => e.code).filter(Boolean));
-    const newCodes = generateUniqueAccessCodes(employeesWithoutCodes.length, existingCodes, 'MS');
+      // Save codes to database
+      const inviteInserts = employeesWithoutCodes.map((emp, index) => ({
+        company_id: id,
+        email: emp.email,
+        invite_code: newCodes[index],
+        status: 'pending',
+        sessions_allocated: 5,
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
+      }));
 
-    let codeIndex = 0;
-    const updatedEmployees = employees.map(emp => {
-      if (!emp.code) {
-        return { ...emp, code: newCodes[codeIndex++], status: 'codigo-gerado' as const };
-      }
-      return emp;
-    });
+      const { error: inviteError } = await supabase
+        .from('invites')
+        .insert(inviteInserts);
 
-    setEmployees(updatedEmployees);
-    toast({ title: 'Códigos Gerados', description: `${newCodes.length} código(s) gerado(s) com sucesso` });
-    setIsGenerating(false);
+      if (inviteError) throw inviteError;
+
+      // Update local state
+      let codeIndex = 0;
+      const updatedEmployees = employees.map(emp => {
+        if (!emp.code) {
+          return { ...emp, code: newCodes[codeIndex++], status: 'codigo-gerado' as const };
+        }
+        return emp;
+      });
+
+      setEmployees(updatedEmployees);
+      toast({ title: 'Códigos Gerados', description: `${newCodes.length} código(s) gerado(s) e guardado(s) com sucesso` });
+    } catch (error: any) {
+      console.error('Error generating codes:', error);
+      toast({ 
+        title: 'Erro', 
+        description: error.message || 'Erro ao gerar códigos',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSendEmails = async () => {
