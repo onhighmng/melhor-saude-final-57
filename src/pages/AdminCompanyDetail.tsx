@@ -51,6 +51,7 @@ import {
   type CSVValidationError,
 } from '@/utils/csvHelpers';
 import { AdminCompanyFeatures } from '@/components/ui/admin-company-features';
+import { EditEmployeeDialog } from '@/components/admin/EditEmployeeDialog';
 
 interface Employee {
   id: string;
@@ -170,6 +171,8 @@ export default function AdminCompanyDetail() {
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
   const [employeeToRemove, setEmployeeToRemove] = useState<string | null>(null);
   const [emailToResend, setEmailToResend] = useState<{ id: string; email: string } | null>(null);
+  const [employeeToEdit, setEmployeeToEdit] = useState<{ id: string; name: string; sessions: number } | null>(null);
+  const [editEmployeeDialogOpen, setEditEmployeeDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -692,6 +695,22 @@ export default function AdminCompanyDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Employee Dialog */}
+      {employeeToEdit && (
+        <EditEmployeeDialog
+          open={editEmployeeDialogOpen}
+          onOpenChange={setEditEmployeeDialogOpen}
+          employeeId={employeeToEdit.id}
+          currentSessions={employeeToEdit.sessions}
+          employeeName={employeeToEdit.name}
+          onSuccess={() => {
+            setEditEmployeeDialogOpen(false);
+            setEmployeeToEdit(null);
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
   );
 }

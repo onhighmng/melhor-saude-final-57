@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
+import { DeleteCompanyDialog } from '@/components/admin/DeleteCompanyDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
@@ -17,7 +18,8 @@ import {
   TrendingUp,
   Calendar,
   Euro,
-  Plus
+  Plus,
+  Trash2
 } from 'lucide-react';
 import {
   BarChart,
@@ -54,56 +56,89 @@ export const AdminCompaniesTab = ({
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [companies, setCompanies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [companyToDelete, setCompanyToDelete] = useState<{ id: string; name: string } | null>(null);
   
   // Use external state if provided, otherwise use internal state
   const isAddCompanyModalOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
   useEffect(() => {
-    const loadCompanies = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('companies')
-          .select(`
-            *,
-            company_employees (count)
-          `)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (data) {
-          const formattedCompanies = data.map(company => {
-            const employeeCount = company.company_employees?.length || 0;
-            const usagePercent = company.sessions_allocated > 0 
-              ? Math.round((company.sessions_used / company.sessions_allocated) * 100)
-              : 0;
-            
-            return {
-              id: company.id,
-              name: company.company_name,
-              nuit: '',
-              employees: employeeCount,
-              plan: `${company.sessions_allocated} sessões`,
-              totalSessions: company.sessions_allocated,
-              usedSessions: company.sessions_used,
-              status: company.is_active ? 'Ativa' : 'Em Onboarding',
-              monthlyFee: 0
-            };
-          });
-
-          setCompanies(formattedCompanies);
-        }
-      } catch (error) {
-        console.error('Error loading companies:', error);
-        toast.error('Erro ao carregar empresas');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadCompanies();
+
+    // Real-time subscription
+    const channel = supabase
+      .channel('companies-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'companies' },
+        () => loadCompanies()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
+
+  const loadCompanies = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('companies')
+        .select(`
+          *,
+          company_employees (count)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        const formattedCompanies = data.map(company => {
+          const employeeCount = company.company_employees?.length || 0;
+          const usagePercent = company.sessions_allocated > 0 
+            ? Math.round((company.sessions_used / company.sessions_allocated) * 100)
+            : 0;
+          
+          return {
+            id: company.id,
+            name: company.company_name,
+            nuit: '',
+            employees: employeeCount,
+            plan: `${company.sessions_allocated} sessões`,
+            totalSessions: company.sessions_allocated,
+            usedSessions: company.sessions_used,
+            status: company.is_active ? 'Ativa' : 'Em Onboarding',
+            monthlyFee: 0
+          };
+        });
+
+        setCompanies(formattedCompanies);
+      }
+    } catch (error) {
+      console.error('Error loading companies:', error);
+      toast.error('Erro ao carregar empresas');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCompanies();
+
+    // Real-time subscription
+    const channel = supabase
+      .channel('companies-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'companies' },
+        () => loadCompanies()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+  
   const setIsAddCompanyModalOpen = externalSetIsOpen || setInternalIsOpen;
 
   const filteredCompanies = companies.filter(company =>
@@ -178,6 +213,7 @@ export const AdminCompaniesTab = ({
                   <TableHead className="text-lg">Colaboradores</TableHead>
                   <TableHead className="text-lg">Sessões</TableHead>
                   <TableHead className="text-lg">Estado</TableHead>
+                  <TableHead className="text-lg text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -186,10 +222,14 @@ export const AdminCompaniesTab = ({
                   return (
                     <TableRow 
                       key={company.id}
-                      onClick={() => handleViewDetails(company)}
-                      className="cursor-pointer hover:bg-muted/50"
+                      className="hover:bg-muted/50"
                     >
-                      <TableCell className="font-medium text-lg py-4">{company.name}</TableCell>
+                      <TableCell 
+                        className="font-medium text-lg py-4 cursor-pointer"
+                        onClick={() => handleViewDetails(company)}
+                      >
+                        {company.name}
+                      </TableCell>
                       <TableCell className="text-muted-foreground text-lg py-4">{company.nuit}</TableCell>
                       <TableCell className="text-lg py-4">
                         <div className="flex items-center gap-2">
@@ -210,6 +250,31 @@ export const AdminCompaniesTab = ({
                           {company.status}
                         </Badge>
                       </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewDetails(company);
+                            }}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCompanyToDelete({ id: company.id, name: company.name });
+                              setDeleteDialogOpen(true);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -224,6 +289,21 @@ export const AdminCompaniesTab = ({
         open={isAddCompanyModalOpen}
         onOpenChange={setIsAddCompanyModalOpen}
       />
+
+      {/* Delete Company Dialog */}
+      {companyToDelete && (
+        <DeleteCompanyDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          companyId={companyToDelete.id}
+          companyName={companyToDelete.name}
+          onSuccess={() => {
+            setDeleteDialogOpen(false);
+            setCompanyToDelete(null);
+            loadCompanies();
+          }}
+        />
+      )}
     </>
   );
 };

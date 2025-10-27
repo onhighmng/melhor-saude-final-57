@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
+import { EditUserDialog } from '@/components/admin/EditUserDialog';
 import { 
   ArrowLeft, 
-  Edit, 
+  Edit,
   Power, 
   PowerOff,
   Building2,
@@ -227,11 +228,10 @@ const AdminUserDetail = () => {
     }
   };
 
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   const handleEditProfile = () => {
-    toast({
-      title: "Editar Perfil",
-      description: "Funcionalidade em desenvolvimento"
-    });
+    setIsEditDialogOpen(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -689,6 +689,26 @@ const AdminUserDetail = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+    {/* Edit User Dialog */}
+    {user && isEditDialogOpen && (
+      <EditUserDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        userId={user.id}
+        currentData={{
+          name: user.name,
+          email: user.email,
+          phone: '',
+          department: user.department,
+          bio: ''
+        }}
+        onSuccess={() => {
+          setIsEditDialogOpen(false);
+          loadUser();
+        }}
+      />
+    )}
     </div>
   );
 };

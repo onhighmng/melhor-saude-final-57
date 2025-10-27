@@ -44,6 +44,19 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     loadActivityMetrics();
+
+    // Real-time subscription for bookings
+    const channel = supabase
+      .channel('dashboard-updates')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'bookings' },
+        () => loadActivityMetrics()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadActivityMetrics = async () => {
