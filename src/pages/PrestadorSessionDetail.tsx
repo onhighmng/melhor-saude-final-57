@@ -71,44 +71,83 @@ const pillarLabels = {
   juridica: 'Assistência Jurídica'
 };
 
-const mockSessionData: SessionDetailData = {
-  id: 'sess-1',
-  userName: 'Manuel Silva',
-  userAvatar: '/lovable-uploads/537ae6d8-8bad-4984-87ef-5165033fdc1c.png',
-  pillar: 'psicologica',
-  date: '2024-05-28',
-  time: '15:00',
-  duration: 50,
-  location: 'online',
-  status: 'confirmed',
-  deductionType: 'empresa',
-  companyName: 'TechCorp Lda.',
-  notes: 'Primeira consulta - questões de ansiedade laboral',
-  attachments: [
-    {
-      id: 'att-1',
-      name: 'avaliacao_inicial.pdf',
-      type: 'application/pdf',
-      size: 245760,
-      uploadedAt: '2024-05-27T10:30:00Z'
-    }
-  ]
-};
-
 export default function PrestadorSessionDetail() {
   const { id } = useParams();
   const { t } = useTranslation(['provider', 'user']);
-  const [session] = useState<SessionDetailData>(mockSessionData);
-  const [privateNotes, setPrivateNotes] = useState(session.notes || '');
+  const [session, setSession] = useState<SessionDetailData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSession = async () => {
+      if (!id) return;
+
+      try {
+        const { data: booking, error } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles (name, avatar_url),
+            companies (company_name)
+          `)
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
+        if (booking) {
+          const pillarMap: Record<string, 'psicologica' | 'juridica' | 'financeira' | 'fisica'> = {
+            'saude_mental': 'psicologica',
+            'assistencia_juridica': 'juridica',
+            'assistencia_financeira': 'financeira',
+            'bem_estar_fisico': 'fisica'
+          };
+
+          setSession({
+            id: booking.id,
+            userName: (booking.profiles as any)?.name || 'Utilizador',
+            userAvatar: (booking.profiles as any)?.avatar_url,
+            pillar: pillarMap[booking.pillar] || 'psicologica',
+            date: booking.date,
+            time: booking.start_time || '00:00',
+            duration: 50,
+            location: booking.meeting_type === 'online' ? 'online' : 'presencial',
+            status: booking.status as SessionStatus,
+            deductionType: booking.company_id ? 'empresa' : 'pessoal',
+            companyName: (booking.companies as any)?.company_name,
+            notes: booking.notes,
+            chat_session_id: booking.chat_session_id,
+            topic: booking.topic,
+            attachments: []
+          });
+        }
+      } catch (error) {
+        console.error('Error loading session:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSession();
+  }, [id]);
+  const [privateNotes, setPrivateNotes] = useState('');
   const [timeUntilSession, setTimeUntilSession] = useState<string>('');
   const [noShowReason, setNoShowReason] = useState('');
   const [noShowDescription, setNoShowDescription] = useState('');
   const [showNoShowDialog, setShowNoShowDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [attachments, setAttachments] = useState(session.attachments);
+  const [attachments, setAttachments] = useState<any[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
+    if (session) {
+      setPrivateNotes(session.notes || '');
+      setAttachments(session.attachments || []);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (!session) return;
+
     const updateCountdown = () => {
       const sessionDateTime = new Date(`${session.date}T${session.time}`);
       const now = new Date();
@@ -135,10 +174,10 @@ export default function PrestadorSessionDetail() {
     updateCountdown();
 
     return () => clearInterval(interval);
-  }, [session.date, session.time]);
+  }, [session?.date, session?.time]);
 
   useEffect(() => {
-    if (session.chat_session_id) {
+    if (session?.chat_session_id) {
       const fetchChatMessages = async () => {
         const { data, error } = await supabase
           .from('chat_messages')
@@ -152,9 +191,10 @@ export default function PrestadorSessionDetail() {
       };
       fetchChatMessages();
     }
-  }, [session.chat_session_id]);
+  }, [session?.chat_session_id]);
 
   const formatSessionDateTime = () => {
+    if (!session) return { date: '', time: '', dayOfWeek: '' };
     const dateTime = new Date(`${session.date}T${session.time}`);
     return {
       date: format(dateTime, "dd 'de' MMMM 'de' yyyy", { locale: pt }),
@@ -189,6 +229,22 @@ export default function PrestadorSessionDetail() {
   const removeAttachment = (attachmentId: string) => {
     setAttachments(attachments.filter(att => att.id !== attachmentId));
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+        <p>A carregar sessão...</p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+        <p>Sessão não encontrada</p>
+      </div>
+    );
+  }
 
   const { date, time, dayOfWeek } = formatSessionDateTime();
   const canCancel = session.status === 'scheduled' || session.status === 'confirmed';

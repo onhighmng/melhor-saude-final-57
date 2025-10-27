@@ -33,7 +33,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
-import { mockPrestadorUser, mockPrestadorSessions, mockPrestadorMetrics } from '@/data/mockData';
+// Mock data removed - using real Supabase data
 
 const pillarIcons = {
   'saude_mental': Brain,
@@ -50,6 +50,7 @@ export default function PrestadorDashboard() {
   const [sessions, setSessions] = useState<any[]>([]);
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [prestadorName, setPrestadorName] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -59,10 +60,10 @@ export default function PrestadorDashboard() {
       }
 
       try {
-        // Get prestador ID
+        // Get prestador ID and name
         const { data: prestador } = await supabase
           .from('prestadores')
-          .select('id')
+          .select('id, name')
           .eq('user_id', profile.id)
           .single();
 
@@ -70,6 +71,8 @@ export default function PrestadorDashboard() {
           setLoading(false);
           return;
         }
+
+        setPrestadorName(prestador.name);
 
         // Load bookings for this prestador
         const { data: bookings } = await supabase
@@ -96,13 +99,19 @@ export default function PrestadorDashboard() {
         const totalSessions = bookings?.length || 0;
         const todaySessions = bookings?.filter(b => b.date === new Date().toISOString().split('T')[0]).length || 0;
         const completedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
+        const thisWeekStart = new Date();
+        thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
+        const weekSessions = bookings?.filter(b => new Date(b.date) >= thisWeekStart).length || 0;
+        const uniqueUsers = new Set(bookings?.map(b => b.user_id)).size;
         const avgRating = bookings?.filter(b => b.rating)
-          .reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length || 0;
+          .reduce((sum, b) => sum + (b.rating || 0), 0) / (bookings?.filter(b => b.rating).length || 1);
 
         setMetrics({
           todaySessions,
           totalSessions,
           completedSessions,
+          weekSessions,
+          uniqueUsers,
           avgRating: avgRating.toFixed(1)
         });
       } catch (error: any) {
@@ -162,17 +171,21 @@ export default function PrestadorDashboard() {
     });
   };
 
-  const groupSessionsByDate = (sessions: typeof mockPrestadorSessions) => {
+  const groupSessionsByDate = (sessions: any[]) => {
     const grouped = sessions.reduce((acc, session) => {
       const date = session.date;
       if (!acc[date]) acc[date] = [];
       acc[date].push(session);
       return acc;
-    }, {} as Record<string, typeof mockPrestadorSessions>);
+    }, {} as Record<string, any[]>);
 
     // Sort sessions within each date by time
     Object.keys(grouped).forEach(date => {
-      grouped[date].sort((a, b) => a.time.localeCompare(b.time));
+      grouped[date].sort((a, b) => {
+        const timeA = a.start_time || a.time || '00:00';
+        const timeB = b.start_time || b.time || '00:00';
+        return timeA.localeCompare(timeB);
+      });
     });
 
     return grouped;
@@ -206,7 +219,7 @@ export default function PrestadorDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          Bem-vindo, {mockPrestadorUser.name.split(' ')[0]}
+          Bem-vindo, {prestadorName.split(' ')[0] || profile?.name || 'Prestador'}
         </h1>
         <p className="text-muted-foreground mt-1">
           Gerir as suas sessões e disponibilidade
@@ -270,14 +283,14 @@ export default function PrestadorDashboard() {
                           <CheckCircle className="w-3 h-3 text-green-600" />
                           <span className="text-xs text-muted-foreground">Sessões Concluídas</span>
                         </div>
-                        <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
+                        <p className="text-xl font-bold text-gray-900">{metrics?.weekSessions || 0}</p>
                       </div>
                       <div className="p-3 bg-white/70 rounded-lg border border-purple-100">
                         <div className="flex items-center gap-1 mb-1">
                           <Users className="w-3 h-3 text-blue-600" />
                           <span className="text-xs text-muted-foreground">Utilizadores Atendidos</span>
                         </div>
-                        <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
+                        <p className="text-xl font-bold text-gray-900">{metrics?.uniqueUsers || 0}</p>
                       </div>
                     </div>
 
@@ -285,11 +298,11 @@ export default function PrestadorDashboard() {
                     <div className="space-y-2 p-3 bg-white/70 rounded-lg border border-purple-100">
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Total Sessões</span>
-                        <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.totalSessoes}</span>
+                        <span className="font-medium text-sm">{metrics?.totalSessions || 0}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Satisfação</span>
-                        <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.satisfacao}/5</span>
+                        <span className="font-medium text-sm">{metrics?.avgRating || '0.0'}/5</span>
                       </div>
                     </div>
                   </div>
