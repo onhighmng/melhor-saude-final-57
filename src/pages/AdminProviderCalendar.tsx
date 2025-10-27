@@ -11,47 +11,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { mockProviders, AdminProvider } from '@/data/adminMockData';
 import { BookingModal } from '@/components/admin/providers/BookingModal';
 import { CalendarSlot } from '@/types/adminProvider';
 import { format, addDays, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
 import { pt } from 'date-fns/locale';
-
-// Generate mock calendar slots
-const generateMockSlots = (startDate: Date, pillar: string): CalendarSlot[] => {
-  const slots: CalendarSlot[] = [];
-  const hours = [9, 10, 11, 14, 15, 16, 17];
-
-  for (let day = 0; day < 7; day++) {
-    const date = addDays(startDate, day);
-    hours.forEach((hour) => {
-      const slotDate = new Date(date);
-      slotDate.setHours(hour, 0, 0, 0);
-      
-      const isBooked = Math.random() > 0.7;
-      
-      slots.push({
-        id: `${day}-${hour}`,
-        date: slotDate,
-        isAvailable: !isBooked,
-        ...(isBooked ? {
-          bookingId: `booking-${day}-${hour}`,
-          collaboratorName: ['João Silva', 'Maria Santos', 'Pedro Costa'][Math.floor(Math.random() * 3)],
-          company: ['TechCorp', 'HealthPlus', 'StartupHub'][Math.floor(Math.random() * 3)],
-          sessionType: ['virtual', 'presential'][Math.floor(Math.random() * 2)] as 'virtual' | 'presential',
-        } : {}),
-      });
-    });
-  }
-  
-  return slots;
-};
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const AdminProviderCalendar = () => {
   const { providerId } = useParams<{ providerId: string }>();
   const navigate = useNavigate();
-  const [provider, setProvider] = useState<AdminProvider | null>(null);
+  const [provider, setProvider] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [slots, setSlots] = useState<CalendarSlot[]>([]);
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterCompany, setFilterCompany] = useState<string>('all');
@@ -60,14 +32,88 @@ const AdminProviderCalendar = () => {
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
   useEffect(() => {
-    const loadProvider = () => {
-      const foundProvider = mockProviders.find(p => p.id === providerId);
-      setProvider(foundProvider || null);
-      setIsLoading(false);
-    };
-
     loadProvider();
   }, [providerId]);
+
+  useEffect(() => {
+    if (provider) {
+      loadSlots();
+    }
+  }, [provider, currentWeekStart]);
+
+  const loadProvider = async () => {
+    if (!providerId) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('prestadores')
+        .select('*')
+        .eq('id', providerId)
+        .single();
+
+      if (error) throw error;
+      setProvider(data);
+    } catch (error) {
+      console.error('Error loading provider:', error);
+      toast.error('Erro ao carregar prestador');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadSlots = async () => {
+    if (!providerId) return;
+
+    const weekEnd = endOfWeek(currentWeekStart, { locale: pt });
+    
+    try {
+      // Load bookings for this provider in the current week
+      const { data: bookings, error } = await supabase
+        .from('bookings')
+        .select('*, profiles(name), companies(company_name)')
+        .eq('prestador_id', providerId)
+        .gte('date', format(currentWeekStart, 'yyyy-MM-dd'))
+        .lte('date', format(weekEnd, 'yyyy-MM-dd'))
+        .neq('status', 'cancelled');
+
+      if (error) throw error;
+
+      // Generate slots for the week
+      const hours = [9, 10, 11, 14, 15, 16, 17];
+      const newSlots: CalendarSlot[] = [];
+
+      for (let day = 0; day < 7; day++) {
+        const date = addDays(currentWeekStart, day);
+        hours.forEach((hour) => {
+          const slotDate = new Date(date);
+          slotDate.setHours(hour, 0, 0, 0);
+          
+          const booking = bookings?.find(b => {
+            const bookingDate = new Date(b.date);
+            const bookingHour = b.start_time ? parseInt(b.start_time.split(':')[0]) : null;
+            return isSameDay(bookingDate, date) && bookingHour === hour;
+          });
+
+          newSlots.push({
+            id: `${day}-${hour}`,
+            date: slotDate,
+            isAvailable: !booking,
+            ...(booking ? {
+              bookingId: booking.id,
+              collaboratorName: (booking.profiles as any)?.name || 'N/A',
+              company: booking.companies?.company_name || 'N/A',
+              sessionType: booking.meeting_type as 'virtual' | 'presential',
+            } : {}),
+          });
+        });
+      }
+
+      setSlots(newSlots);
+    } catch (error) {
+      console.error('Error loading slots:', error);
+      toast.error('Erro ao carregar horários');
+    }
+  };
 
   const handleBack = () => {
     navigate('/admin/users-management');
@@ -110,7 +156,6 @@ const AdminProviderCalendar = () => {
     );
   }
 
-  const slots = generateMockSlots(currentWeekStart, provider.pillar);
   const weekEnd = endOfWeek(currentWeekStart, { locale: pt });
   const hours = [9, 10, 11, 14, 15, 16, 17];
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
