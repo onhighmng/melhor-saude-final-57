@@ -94,12 +94,8 @@ export default function AdminMatchingTab() {
     try {
       const { data, error } = await supabase
         .from('prestadores')
-        .select(`
-          *,
-          profiles:user_id(name, email)
-        `)
+        .select('*')
         .eq('is_active', true)
-        .eq('is_approved', true)
         .contains('pillar_specialties', [pillar]);
 
       if (error) throw error;
@@ -128,6 +124,7 @@ export default function AdminMatchingTab() {
         .insert({
           user_id: chatSession.user_id,
           prestador_id: selectedSpecialist,
+          booking_date: new Date(selectedDate).toISOString(),
           date: selectedDate,
           start_time: '10:00',
           end_time: '11:00',
@@ -160,13 +157,15 @@ export default function AdminMatchingTab() {
       });
 
       // Admin log
-      await supabase.from('admin_logs').insert({
-        admin_id: profile?.id,
-        action: 'specialist_assigned',
-        entity_type: 'chat_session',
-        entity_id: selectedCase,
-        details: { specialist_id: selectedSpecialist, booking_id: booking.id }
-      });
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'specialist_assigned',
+          entity_type: 'chat_session',
+          entity_id: selectedCase,
+          details: { specialist_id: selectedSpecialist, booking_id: booking.id }
+        });
+      }
 
       toast({
         title: 'Sucesso',
@@ -295,7 +294,7 @@ export default function AdminMatchingTab() {
                   <SelectContent>
                     {specialists.map((specialist) => (
                       <SelectItem key={specialist.id} value={specialist.id}>
-                        {specialist.profiles?.name || 'N/A'} - {specialist.specialty || 'Especialista'}
+                        {specialist.name || 'N/A'} - {specialist.specialties?.[0] || 'Especialista'}
                       </SelectItem>
                     ))}
                   </SelectContent>

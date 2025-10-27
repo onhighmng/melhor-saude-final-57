@@ -42,9 +42,7 @@ export default function AdminChangeRequestsTab() {
         .from('change_requests')
         .select(`
           *,
-          prestador:prestador_id(
-            profiles:user_id(name, email)
-          )
+          prestador:prestadores!prestador_id(name, email)
         `)
         .order('created_at', { ascending: false });
 
@@ -52,14 +50,14 @@ export default function AdminChangeRequestsTab() {
 
       const formatted: ChangeRequest[] = (data || []).map(req => ({
         id: req.id,
-        company: req.prestador?.profiles?.name || 'N/A',
+        company: (req.prestador as any)?.name || 'N/A',
         requestType: req.request_type || 'profile_update',
         description: JSON.stringify(req.requested_data || {}),
         status: req.status === 'pending' ? 'pendente' : req.status === 'approved' ? 'resolvido' : 'em_analise',
         createdAt: req.created_at,
-        requestedBy: req.prestador?.profiles?.name || 'N/A',
-        providerName: req.prestador?.profiles?.name || 'N/A',
-        providerEmail: req.prestador?.profiles?.email || 'N/A'
+        requestedBy: (req.prestador as any)?.name || 'N/A',
+        providerName: (req.prestador as any)?.name || 'N/A',
+        providerEmail: (req.prestador as any)?.email || 'N/A'
       }));
 
       setRequests(formatted);
@@ -96,7 +94,7 @@ export default function AdminChangeRequestsTab() {
 
       await supabase
         .from('prestadores')
-        .update(request.requested_data)
+        .update(request.requested_data as any)
         .eq('id', request.prestador_id);
 
       await supabase.from('admin_logs').insert({

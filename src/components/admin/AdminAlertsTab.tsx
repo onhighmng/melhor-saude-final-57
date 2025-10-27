@@ -120,7 +120,7 @@ const AdminAlertsTab = () => {
     try {
       await supabase
         .from('chat_sessions')
-        .update({ session_booked_by_specialist: true })
+        .update({ status: 'resolved' })
         .eq('id', sessionId);
       
       toast({

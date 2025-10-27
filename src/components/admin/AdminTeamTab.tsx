@@ -68,7 +68,7 @@ const AdminTeamTab = () => {
           role,
           user:profiles(id, name, email, last_seen, is_active)
         `)
-        .in('role', ['admin', 'super_admin', 'manager', 'support']);
+        .in('role', ['admin', 'hr', 'specialist']);
 
       if (error) throw error;
 

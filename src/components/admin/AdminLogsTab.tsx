@@ -50,10 +50,7 @@ const AdminLogsTab = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('admin_logs')
-        .select(`
-          *,
-          admin:profiles!admin_id(name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
 
@@ -62,7 +59,7 @@ const AdminLogsTab = () => {
       const formatted: LogEntry[] = (data || []).map(log => ({
         id: log.id,
         timestamp: log.created_at,
-        user: log.admin?.name || 'Sistema',
+        user: 'Admin',
         action: log.action as any,
         resource: log.entity_type,
         details: JSON.stringify(log.details),

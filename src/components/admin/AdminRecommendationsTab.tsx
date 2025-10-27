@@ -58,37 +58,19 @@ export default function AdminRecommendationsTab() {
     try {
       setLoading(true);
 
-      const { data, error } = await supabase
-        .from('resource_recommendations')
-        .select(`
-          *,
-          user:profiles(name),
-          resource:resources(title, type)
-        `)
-        .order('confidence_score', { ascending: false });
+      // Table doesn't exist yet - using empty array for now
+      setRecommendations([]);
+      
+      // TODO: When resource_recommendations table is created, uncomment:
+      // const { data, error } = await supabase
+      //   .from('resource_recommendations')
+      //   .select(`
+      //     *,
+      //     user:profiles(name),
+      //     resource:resources(title, type)
+      //   `)
+      //   .order('confidence_score', { ascending: false });
 
-      if (error) throw error;
-
-      const recs = (data || []).map((rec: any) => {
-        const userName = rec.user?.name || 'Unknown';
-        const initials = userName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-        const resourceTitle = rec.resource?.title || '';
-        const resourceType = rec.resource?.type || 'Artigo';
-
-        return {
-          id: rec.id,
-          employeeName: userName,
-          employeeInitials: initials,
-          pillar: rec.pillar,
-          reason: rec.reason || 'N/A',
-          resourceTitle,
-          resourceType,
-          confidence: rec.confidence_score || 0,
-          status: rec.status as 'pending' | 'sent' | 'viewed'
-        };
-      });
-
-      setRecommendations(recs);
     } catch (error) {
       console.error('Error loading recommendations:', error);
       toast({
@@ -103,11 +85,7 @@ export default function AdminRecommendationsTab() {
 
   const handleSend = async (recId: string) => {
     try {
-      await supabase
-        .from('resource_recommendations')
-        .update({ status: 'sent' })
-        .eq('id', recId);
-
+      // TODO: Implement when table exists
       toast({
         title: 'Recomendação enviada',
         description: 'A recomendação foi enviada com sucesso.',

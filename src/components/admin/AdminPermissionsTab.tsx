@@ -150,11 +150,11 @@ const AdminPermissionsTab = () => {
     try {
       setLoading(true);
 
-      // Count users per role
+      // Count users per role (using valid database roles only)
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
-        .in('role', ['super_admin', 'admin', 'manager', 'support']);
+        .in('role', ['admin', 'hr', 'prestador', 'specialist', 'user']);
 
       if (error) throw error;
 
@@ -221,7 +221,7 @@ const AdminPermissionsTab = () => {
         await supabase
           .from('platform_settings')
           .update({
-            setting_value: settingValue,
+            setting_value: settingValue as any,
             updated_by: profile.id
           })
           .eq('id', existingSettings.id);
@@ -231,7 +231,7 @@ const AdminPermissionsTab = () => {
           .insert({
             setting_key: 'access_levels',
             setting_type: 'json',
-            setting_value: settingValue,
+            setting_value: settingValue as any,
             description: 'Configuração de níveis de acesso e permissões',
             is_public: false,
             updated_by: profile.id
@@ -239,14 +239,16 @@ const AdminPermissionsTab = () => {
       }
 
       // Log admin action
-      await supabase
-        .from('admin_logs')
-        .insert({
-          admin_id: profile.id,
-          action: 'update_platform_permissions',
-          entity_type: 'platform_settings',
-          details: { access_levels: accessLevels }
-        });
+      if (profile?.id) {
+        await supabase
+          .from('admin_logs')
+          .insert({
+            admin_id: profile.id,
+            action: 'update_platform_permissions',
+            entity_type: 'platform_settings',
+            details: { access_levels: accessLevels } as any
+          });
+      }
 
       toast({
         title: 'Permissões Atualizadas',

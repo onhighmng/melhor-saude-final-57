@@ -63,8 +63,9 @@ const AdminBillingTab = () => {
       const subscriptionMap = new Map(subscriptions?.map(s => [s.company_id, s.status]) || []);
 
       // Calculate billing data
+      const SESSION_PRICE = 150; // MZN per session
       const billingRecords: BillingRecord[] = (companies || []).map(company => {
-        const sessionPrice = 150; // MZN per session
+        const sessionPrice = SESSION_PRICE;
         const amountBilled = (company.sessions_used || 0) * sessionPrice;
         const costPerSession = sessionPrice * 0.65; // 65% cost
         const margin = ((sessionPrice - costPerSession) / sessionPrice) * 100;
@@ -98,7 +99,7 @@ const AdminBillingTab = () => {
       bookings?.forEach(booking => {
         if (booking.pillar) {
           const revenue = pillarRevenue.get(booking.pillar) || 0;
-          pillarRevenue.set(booking.pillar, revenue + sessionPrice);
+          pillarRevenue.set(booking.pillar, revenue + SESSION_PRICE);
         }
       });
 

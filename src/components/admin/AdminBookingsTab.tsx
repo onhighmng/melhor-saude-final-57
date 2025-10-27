@@ -32,10 +32,8 @@ export default function AdminBookingsTab() {
         .from('bookings')
         .select(`
           *,
-          prestador:prestador_id(
-            profiles:user_id(name)
-          ),
-          user:profiles!user_id(name)
+          user:profiles!user_id(name),
+          prestador:prestadores!prestador_id(name)
         `)
         .gte('date', monthStart)
         .lte('date', monthEnd)
@@ -47,8 +45,8 @@ export default function AdminBookingsTab() {
         id: booking.id,
         date: booking.date,
         time: booking.start_time || '00:00',
-        collaborator: booking.user?.name || 'N/A',
-        specialist: booking.prestador?.profiles?.name || 'N/A',
+        collaborator: (booking.user as any)?.name || 'N/A',
+        specialist: (booking.prestador as any)?.name || 'N/A',
         type: booking.meeting_type === 'virtual' || booking.meeting_type === 'phone' ? 'virtual' : 'presencial',
       }));
 

@@ -55,26 +55,23 @@ export default function AdminSupportTicketsTab() {
         .from('support_tickets')
         .select(`
           id,
-          title,
+          subject,
           status,
           created_at,
-          company_id,
-          company:companies(company_name)
+          company_id
         `)
         .order('created_at', { ascending: false });
 
       if (ticketsError) throw ticketsError;
 
       const { data: messagesData, error: messagesError } = await supabase
-        .from('support_messages')
+        .from('support_ticket_messages')
         .select(`
           id,
           ticket_id,
           sender_id,
-          sender_type,
-          content,
-          created_at,
-          sender:profiles(name)
+          message,
+          created_at
         `)
         .in('ticket_id', ticketsData?.map(t => t.id) || [])
         .order('created_at', { ascending: true });
@@ -87,11 +84,7 @@ export default function AdminSupportTicketsTab() {
         const calculateAvgResponseTime = () => {
           if (ticketMessages.length < 2) return 0;
           
-          const adminMessages = ticketMessages.filter(m => m.sender_type === 'admin');
-          if (adminMessages.length === 0) return 0;
-          
-          const firstAdminMessage = adminMessages[0];
-          const timeDiff = new Date(firstAdminMessage.created_at).getTime() - new Date(ticket.created_at).getTime();
+          const timeDiff = new Date(ticketMessages[0].created_at).getTime() - new Date(ticket.created_at).getTime();
           return Math.round(timeDiff / (1000 * 60)); // minutes
         };
 
@@ -99,16 +92,16 @@ export default function AdminSupportTicketsTab() {
 
         return {
           id: ticket.id,
-          title: ticket.title,
-          company: ticket.company?.company_name || 'N/A',
-          status: ticket.status as 'aberto' | 'em_resolucao' | 'resolvido',
+          title: ticket.subject || 'Sem título',
+          company: 'N/A',
+          status: (ticket.status === 'open' ? 'aberto' : ticket.status === 'resolved' ? 'resolvido' : 'em_resolucao') as 'aberto' | 'em_resolucao' | 'resolvido',
           createdAt: ticket.created_at,
           avgResponseTime,
           messages: ticketMessages.map(msg => ({
             id: msg.id,
-            sender: (msg.sender as any)?.name || 'Unknown',
-            senderType: msg.sender_type as 'user' | 'admin',
-            content: msg.content,
+            sender: 'User',
+            senderType: 'user' as const,
+            content: msg.message,
             timestamp: msg.created_at
           }))
         };
@@ -163,17 +156,13 @@ export default function AdminSupportTicketsTab() {
     try {
       // Insert message into database
       const { data: messageData, error: messageError } = await supabase
-        .from('support_messages')
+        .from('support_ticket_messages')
         .insert({
           ticket_id: selectedTicket.id,
           sender_id: profile.id,
-          sender_type: 'admin',
-          content: newMessage
+          message: newMessage
         })
-        .select(`
-          *,
-          sender:profiles(name)
-        `)
+        .select()
         .single();
 
       if (messageError) throw messageError;
@@ -192,7 +181,7 @@ export default function AdminSupportTicketsTab() {
       // Update selected ticket
       const updatedMessages = [...selectedTicket.messages, {
         id: messageData.id,
-        sender: (messageData.sender as any)?.name || 'Suporte',
+        sender: 'Suporte',
         senderType: 'admin' as const,
         content: newMessage,
         timestamp: messageData.created_at
