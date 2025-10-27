@@ -73,6 +73,8 @@ export type Database = {
           prediagnostic_summary: Json | null
           prestador_id: string | null
           rating: number | null
+          rescheduled_at: string | null
+          rescheduled_from: string | null
           session_type: string | null
           start_time: string | null
           status: string | null
@@ -102,6 +104,8 @@ export type Database = {
           prediagnostic_summary?: Json | null
           prestador_id?: string | null
           rating?: number | null
+          rescheduled_at?: string | null
+          rescheduled_from?: string | null
           session_type?: string | null
           start_time?: string | null
           status?: string | null
@@ -131,6 +135,8 @@ export type Database = {
           prediagnostic_summary?: Json | null
           prestador_id?: string | null
           rating?: number | null
+          rescheduled_at?: string | null
+          rescheduled_from?: string | null
           session_type?: string | null
           start_time?: string | null
           status?: string | null
@@ -158,6 +164,13 @@ export type Database = {
             columns: ["prestador_id"]
             isOneToOne: false
             referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_rescheduled_from_fkey"
+            columns: ["rescheduled_from"]
+            isOneToOne: false
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
         ]
@@ -1235,6 +1248,7 @@ export type Database = {
           completed_at: string | null
           created_at: string | null
           id: string
+          outcome: string | null
           session_booked: boolean | null
           specialist_id: string | null
           user_id: string | null
@@ -1247,6 +1261,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           id?: string
+          outcome?: string | null
           session_booked?: boolean | null
           specialist_id?: string | null
           user_id?: string | null
@@ -1259,6 +1274,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           id?: string
+          outcome?: string | null
           session_booked?: boolean | null
           specialist_id?: string | null
           user_id?: string | null
