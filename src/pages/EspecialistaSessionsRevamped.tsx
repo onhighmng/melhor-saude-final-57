@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,8 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Video, Phone, Clock, FileText, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockEspecialistaSessions } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { SessionNoteModal } from '@/components/specialist/SessionNoteModal';
 import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
 import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
@@ -23,6 +24,7 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 
 const EspecialistaSessionsRevamped = () => {
   const { toast } = useToast();
+  const { profile } = useAuth();
   const { filterByCompanyAccess } = useCompanyFilter();
   const [selectedSession, setSelectedSession] = useState<any>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -32,12 +34,42 @@ const EspecialistaSessionsRevamped = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSelfBookingModalOpen, setIsSelfBookingModalOpen] = useState(false);
   const [isExternalBookingModalOpen, setIsExternalBookingModalOpen] = useState(false);
+  const [allSessions, setAllSessions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
   // Booking flow state
   const [bookingStep, setBookingStep] = useState<'company' | 'pillar' | 'especialista' | 'colaborador' | 'datetime' | 'notes' | 'confirm'>('company');
   const [selectedPillar, setSelectedPillar] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
   const [selectedPatient, setSelectedPatient] = useState('');
+
+  useEffect(() => {
+    const loadSessions = async () => {
+      if (!profile?.id) return;
+      
+      setLoading(true);
+      try {
+        const { data: sessions } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles(name, email),
+            companies(company_name),
+            prestadores(name, specialties)
+          `)
+          .eq('status', 'scheduled')
+          .order('booking_date', { ascending: true });
+
+        setAllSessions(sessions || []);
+      } catch (error) {
+        console.error('Error loading sessions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSessions();
+  }, [profile?.id]);
   const [selectedBookingDate, setSelectedBookingDate] = useState<Date | null>(null);
   const [selectedBookingTime, setSelectedBookingTime] = useState('');
   const [bookingNotes, setBookingNotes] = useState('');
@@ -46,10 +78,8 @@ const EspecialistaSessionsRevamped = () => {
   const [colaboradorOpen, setColaboradorOpen] = useState(false);
   const [providerOpen, setProviderOpen] = useState(false);
   
-  const allSessions = filterByCompanyAccess(mockEspecialistaSessions);
-  
-  // Debug: Show all if filter returns empty (for demo purposes)
-  const sessionsToShow = allSessions.length > 0 ? allSessions : mockEspecialistaSessions;
+  // Filter sessions by company access
+  const sessionsToShow = filterByCompanyAccess(allSessions);
 
   // Mock external specialists list
   const externalSpecialists = [

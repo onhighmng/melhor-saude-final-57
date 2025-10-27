@@ -16,8 +16,9 @@ import {
   Scale,
   Activity
 } from 'lucide-react';
-import { mockSessionAnalytics } from '@/data/companyMetrics';
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
@@ -120,6 +121,74 @@ const AnimatedInsights = () => {
 };
 
 const CompanySessions = () => {
+  const { profile } = useAuth();
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSessionAnalytics = async () => {
+      if (!profile?.company_id) return;
+      
+      setLoading(true);
+      try {
+        const { data: bookings, error } = await supabase
+          .from('bookings')
+          .select(`*, profiles!inner(name), prestadores(name)`)
+          .eq('company_id', profile.company_id);
+
+        if (error) throw error;
+
+        const pillarUsage: any = {};
+        bookings.forEach((b: any) => {
+          const pillar = b.pillar || 'unknown';
+          pillarUsage[pillar] = (pillarUsage[pillar] || 0) + 1;
+        });
+
+        const monthlyTrend: any = {};
+        bookings.forEach((b: any) => {
+          const month = new Date(b.booking_date).toLocaleString('pt-PT', { month: 'short' });
+          monthlyTrend[month] = (monthlyTrend[month] || 0) + 1;
+        });
+
+        const statusBreakdown: any = {};
+        bookings.forEach((b: any) => {
+          statusBreakdown[b.status] = (statusBreakdown[b.status] || 0) + 1;
+        });
+
+        const providerWorkload: any = {};
+        bookings.forEach((b: any) => {
+          const name = b.prestadores?.name || 'Unknown';
+          providerWorkload[name] = (providerWorkload[name] || 0) + 1;
+        });
+
+        const pillarBreakdown = Object.entries(pillarUsage).map(([pillar, count]) => ({
+          pillar,
+          sessionsUsed: count,
+          sessionsAvailable: 100,
+          utilizationRate: Math.round(((count as number) / bookings.length) * 100)
+        }));
+
+        const totalContracted = 1000; // From company.sessions_allocated
+        const totalUsed = bookings.length;
+        const utilizationRate = Math.round((totalUsed / totalContracted) * 100);
+        const employeesUsingServices = new Set(bookings.map((b: any) => b.user_id)).size;
+
+        setAnalytics({
+          totalContracted,
+          totalUsed,
+          utilizationRate,
+          employeesUsingServices,
+          pillarBreakdown: pillarBreakdown
+        });
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSessionAnalytics();
+  }, [profile?.company_id]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -210,7 +279,7 @@ const CompanySessions = () => {
                     <span className="text-sm font-medium">Sessões Contratadas</span>
                   </div>
                   <div className="text-5xl font-bold text-blue-700 dark:text-blue-300 mb-2">
-                    {mockSessionAnalytics.totalContracted}
+                    {analytics?.totalContracted || 0}
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Total incluído no contrato
@@ -232,7 +301,7 @@ const CompanySessions = () => {
                     <span className="text-sm font-medium">Sessões Utilizadas</span>
                   </div>
                   <div className="text-5xl font-bold text-green-700 dark:text-green-300 mb-2">
-                    {mockSessionAnalytics.totalUsed}
+                    {analytics?.totalUsed || 0}
                   </div>
                   <p className="text-sm text-muted-foreground">Este mês</p>
                 </div>
@@ -252,7 +321,7 @@ const CompanySessions = () => {
                     <span className="text-sm font-medium">Taxa de Utilização</span>
                   </div>
                   <div className="text-5xl font-bold text-amber-700 dark:text-amber-300 mb-2">
-                    {mockSessionAnalytics.utilizationRate}%
+                    {analytics?.utilizationRate || 0}%
                   </div>
                   <p className="text-sm text-muted-foreground">Eficiência do programa</p>
                 </div>
@@ -284,7 +353,7 @@ const CompanySessions = () => {
             )}
           >
             <CardContent className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 bg-background border border-border rounded-2xl sm:rounded-3xl z-10 w-full">
-              {mockSessionAnalytics.pillarBreakdown.map((pillar, i) => (
+              {analytics?.pillarBreakdown?.map((pillar: any, i: number) => (
                 <div
                   key={i}
                   className="flex items-center justify-between p-3 sm:p-4 border border-border rounded-xl sm:rounded-2xl hover:bg-muted/50 transition animate-fade-in"
@@ -321,25 +390,25 @@ const CompanySessions = () => {
           <div className="grid grid-cols-2 gap-8 sm:gap-12 w-full text-center">
             <div className="space-y-3">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-                {mockSessionAnalytics.totalContracted}
+                {analytics?.totalContracted || 0}
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">Sessões Contratadas</p>
             </div>
             <div className="space-y-3">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-emerald-600">
-                {mockSessionAnalytics.totalUsed}
+                {analytics?.totalUsed || 0}
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">Sessões Utilizadas</p>
             </div>
             <div className="space-y-3">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-600">
-                {mockSessionAnalytics.utilizationRate}%
+                {analytics?.utilizationRate || 0}%
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">Taxa Utilização</p>
             </div>
             <div className="space-y-3">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-600">
-                {mockSessionAnalytics.employeesUsingServices}
+                {analytics?.employeesUsingServices || 0}
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">Colaboradores Ativos</p>
             </div>

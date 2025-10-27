@@ -6,19 +6,71 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Users, Building2, TrendingUp } from 'lucide-react';
-import { mockCompanies } from '@/data/inviteCodesMockData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 
 export default function AdminCompanies() {
+  const { profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredCompanies = mockCompanies.filter(company =>
+  useEffect(() => {
+    const loadCompanies = async () => {
+      if (!profile) return;
+      
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('companies')
+          .select('*, company_employees(count)')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        setCompanies(data?.map(c => ({
+          id: c.id,
+          name: c.company_name,
+          email: c.contact_email,
+          phone: c.contact_phone,
+          planType: c.plan_type || 'basic',
+          seatsPurchased: c.sessions_allocated,
+          seatsUsed: c.sessions_used,
+          isActive: c.is_active,
+          employees: c.company_employees?.[0]?.count || 0
+        })) || []);
+      } catch (error) {
+        console.error('Error loading companies:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCompanies();
+  }, [profile]);
+
+  const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalCompanies = mockCompanies.length;
-  const totalSeats = mockCompanies.reduce((sum, c) => sum + c.seatsPurchased, 0);
-  const usedSeats = mockCompanies.reduce((sum, c) => sum + c.seatsUsed, 0);
-  const activeCompanies = mockCompanies.filter(c => c.isActive).length;
+  const totalCompanies = companies.length;
+  const totalSeats = companies.reduce((sum, c) => sum + c.seatsPurchased, 0);
+  const usedSeats = companies.reduce((sum, c) => sum + c.seatsUsed, 0);
+  const activeCompanies = companies.filter(c => c.isActive).length;
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">A carregar empresas...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">

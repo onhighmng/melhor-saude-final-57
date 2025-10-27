@@ -8,9 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone, Clock, CheckCircle, ArrowUpDown, User, Building2, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockCallRequests } from '@/data/especialistaGeralMockData';
-import { CallRequest } from '@/types/specialist';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
+import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 import { CallModal } from '@/components/specialist/CallModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -18,7 +17,8 @@ const EspecialistaCallRequestsRevamped = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { filterByCompanyAccess } = useCompanyFilter();
-  const [selectedRequest, setSelectedRequest] = useState<CallRequest | null>(null);
+  const { escalatedChats, isLoading } = useEscalatedChats();
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -26,11 +26,9 @@ const EspecialistaCallRequestsRevamped = () => {
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [resolvedRequestId, setResolvedRequestId] = useState<string | null>(null);
 
-  // Filter requests
-  const allRequests = filterByCompanyAccess(mockCallRequests);
-  
-  // Debug: Show all if filter returns empty (for demo purposes)
-  const requestsToShow = allRequests.length > 0 ? allRequests : mockCallRequests;
+  // Use real data from hook
+  const allRequests = filterByCompanyAccess(escalatedChats);
+  const requestsToShow = allRequests;
 
   // Filter by status
   const pendingRequests = useMemo(() => {

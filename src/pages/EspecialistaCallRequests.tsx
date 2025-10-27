@@ -5,18 +5,29 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone, CheckCircle, Clock, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockCallRequests } from '@/data/especialistaGeralMockData';
-import { CallRequest } from '@/types/specialist';
+import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 
 const EspecialistaCallRequests = () => {
   const { toast } = useToast();
-  const [selectedRequest, setSelectedRequest] = useState<CallRequest | null>(null);
+  const { escalatedChats, isLoading } = useEscalatedChats();
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   
-  // Show all pending requests (no company filtering for demo purposes)
-  const filteredRequests = mockCallRequests.filter(req => req.status === 'pending');
+  // Use real data from hook (already filters by company access)
+  const filteredRequests = escalatedChats.filter((chat: any) => chat.status === 'pending');
 
-  const handleCallRequest = (request: CallRequest) => {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">A carregar pedidos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleCallRequest = (request: any) => {
     setSelectedRequest(request);
     setIsCallModalOpen(true);
   };

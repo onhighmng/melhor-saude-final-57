@@ -1,12 +1,70 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Star, Clock, CheckCircle, ArrowRight, Brain, DollarSign, Scale, Dumbbell } from 'lucide-react';
-import { mockSpecialistPersonalStats } from '@/data/especialistaGeralMockData';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const EspecialistaStatsRevamped = () => {
-  const stats = mockSpecialistPersonalStats;
+  const { profile } = useAuth();
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    const calculateStats = async () => {
+      if (!profile?.id) return;
+      
+      try {
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        const { data: monthlyCases } = await supabase
+          .from('chat_sessions')
+          .select('id, satisfaction_rating, pillar')
+          .eq('specialist_id', profile.id)
+          .gte('created_at', startOfMonth.toISOString());
+
+        const { data: callLogs } = await supabase
+          .from('specialist_call_logs')
+          .select('created_at, completed_at')
+          .eq('specialist_id', profile.id)
+          .not('completed_at', 'is', null);
+
+        const avgResponseTime = callLogs?.length > 0
+          ? callLogs.reduce((sum, log) => {
+              const diff = new Date(log.completed_at).getTime() - new Date(log.created_at).getTime();
+              return sum + diff;
+            }, 0) / callLogs.length / (1000 * 60)
+          : 0;
+
+        const satisfiedCount = monthlyCases?.filter(c => c.satisfaction_rating === 'satisfied').length || 0;
+        const satisfactionRate = monthlyCases?.length > 0 
+          ? Math.round((satisfiedCount / monthlyCases.length) * 100)
+          : 0;
+
+        const pillarCounts = monthlyCases?.reduce((acc, c) => {
+          if (c.pillar) {
+            acc[c.pillar] = (acc[c.pillar] || 0) + 1;
+          }
+          return acc;
+        }, {}) || {};
+
+        setStats({
+          total_cases: monthlyCases?.length || 0,
+          resolved_cases: monthlyCases?.filter(c => c.status === 'resolved').length || 0,
+          avg_response_time: Math.round(avgResponseTime),
+          satisfaction_rate: satisfactionRate,
+          top_pillars: Object.entries(pillarCounts).map(([pillar, count]) => ({ pillar, count }))
+        });
+      } catch (error) {
+        console.error('Error calculating stats:', error);
+      }
+    };
+
+    calculateStats();
+  }, [profile?.id]);
 
   const getPillarIcon = (pillar: string) => {
     switch (pillar) {
@@ -22,6 +80,17 @@ const EspecialistaStatsRevamped = () => {
         return CheckCircle;
     }
   };
+
+  if (!stats) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">A carregar estatísticas...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

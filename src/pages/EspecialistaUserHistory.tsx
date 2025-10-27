@@ -6,19 +6,44 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Star, FileText } from 'lucide-react';
-import { mockUserHistory } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 
 const EspecialistaUserHistory = () => {
+  const { profile } = useAuth();
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
-  const { filterByCompanyAccess } = useCompanyFilter();
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  // Filter users by assigned companies
-  const allUsers = filterByCompanyAccess(mockUserHistory);
-  
-  // Debug: Show all if filter returns empty (for demo purposes)
-  const filteredUsers = allUsers.length > 0 ? allUsers : mockUserHistory;
+  useEffect(() => {
+    const loadUserHistory = async () => {
+      if (!profile?.id) return;
+      
+      setLoading(true);
+      try {
+        const { data: sessions } = await supabase
+          .from('chat_sessions')
+          .select(`
+            *,
+            profiles(name, email),
+            companies(company_name)
+          `)
+          .eq('specialist_id', profile.id)
+          .order('created_at', { ascending: false });
+
+        setFilteredUsers(sessions || []);
+      } catch (error) {
+        console.error('Error loading user history:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserHistory();
+  }, [profile?.id]);
 
   const handleViewChat = (user: any) => {
     setSelectedUser(user);
@@ -44,6 +69,17 @@ const EspecialistaUserHistory = () => {
     };
     return colors[pillar as keyof typeof colors] || { bg: 'hsl(0 0% 95%)', text: 'hsl(0 0% 40%)' };
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">A carregar historial...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

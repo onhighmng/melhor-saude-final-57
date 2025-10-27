@@ -21,17 +21,72 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { mockCompanies } from '@/data/companyMockData';
-import { mockEmployeeMetrics } from '@/data/companyMetrics';
 import { FeaturesGrid } from '@/components/ui/features-grid';
 
 const CompanyCollaborators = () => {
   const { toast } = useToast();
   const { profile } = useAuth();
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
+  const [companyData, setCompanyData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   
-  const company = mockCompanies[0];
-  const seatUsagePercent = Math.round((company.seatUsed / company.seatLimit) * 100);
+  useEffect(() => {
+    const loadCompanyData = async () => {
+      if (!profile?.company_id) return;
+      
+      setLoading(true);
+      try {
+        const { data: company, error: companyError } = await supabase
+          .from('companies')
+          .select('*')
+          .eq('id', profile.company_id)
+          .single();
+
+        if (companyError) throw companyError;
+
+        const { data: employees, error: empError } = await supabase
+          .from('company_employees')
+          .select(`
+            *,
+            profiles!inner(name, email, avatar_url),
+            bookings(id, status, rating)
+          `)
+          .eq('company_id', profile.company_id);
+
+        if (empError) throw empError;
+
+        const registeredEmployees = employees?.length || 0;
+        const activeEmployees = employees?.filter(e => e.is_active).length || 0;
+        const totalSessions = employees?.reduce((sum, e) => sum + (e.sessions_used || 0), 0) || 0;
+        const avgSessions = registeredEmployees > 0 ? totalSessions / registeredEmployees : 0;
+        const allRatings = employees?.flatMap(e => e.bookings?.filter(b => b.rating)?.map(b => b.rating) || []) || [];
+        const avgRating = allRatings.length > 0 ? allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length : 0;
+
+        setCompanyData({
+          ...company,
+          seatLimit: company.sessions_allocated,
+          seatUsed: employees.filter(e => e.sessions_used > 0).length,
+          seatAvailable: company.sessions_allocated - employees.filter(e => e.sessions_used > 0).length,
+          name: company.company_name,
+          registeredEmployees,
+          activeEmployees,
+          avgSessions: Math.round(avgSessions * 10) / 10,
+          avgRating: Math.round(avgRating * 10) / 10
+        });
+      } catch (error) {
+        console.error('Error loading company data:', error);
+        toast({
+          title: 'Erro',
+          description: 'Erro ao carregar dados da empresa',
+          variant: 'destructive'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCompanyData();
+  }, [profile?.company_id, toast]);
 
   useEffect(() => {
     document.body.classList.add('company-page');
@@ -65,10 +120,19 @@ const CompanyCollaborators = () => {
   }, [profile?.company_id]);
 
   const generateInviteCode = async () => {
-    if (generatedCodes.length >= company.seatAvailable) {
+    if (!companyData) {
+      toast({
+        title: "Erro",
+        description: "Dados da empresa não carregados",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (generatedCodes.length >= companyData.seatAvailable) {
       toast({
         title: "Limite atingido",
-        description: `Já foram gerados ${company.seatAvailable} códigos (limite disponível)`,
+        description: `Já foram gerados ${companyData.seatAvailable} códigos (limite disponível)`,
         variant: "destructive"
       });
       return;
@@ -131,6 +195,29 @@ const CompanyCollaborators = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-0 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-accent-sage border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">A carregar dados...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!companyData) {
+    return (
+      <div className="space-y-0 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Erro ao carregar dados da empresa</p>
+        </div>
+      </div>
+    );
+  }
+
+  const seatUsagePercent = Math.round((companyData.seatUsed / companyData.seatLimit) * 100);
+
   return (
     <div className="space-y-0">
       {/* Header */}
@@ -145,13 +232,13 @@ const CompanyCollaborators = () => {
       <FeaturesGrid 
         onGenerateCode={generateInviteCode}
         codesGenerated={generatedCodes.length}
-        seatsAvailable={company.seatAvailable}
-        canGenerateMore={company.seatAvailable > 0 && generatedCodes.length < company.seatAvailable}
+        seatsAvailable={companyData.seatAvailable}
+        canGenerateMore={companyData.seatAvailable > 0 && generatedCodes.length < companyData.seatAvailable}
         generatedCodes={generatedCodes}
         onCopyCode={copyToClipboard}
         onDownloadCodes={downloadCodes}
-        seatLimit={company.seatLimit}
-        seatUsed={company.seatUsed}
+        seatLimit={companyData.seatLimit}
+        seatUsed={companyData.seatUsed}
         seatUsagePercent={seatUsagePercent}
       />
 

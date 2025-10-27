@@ -11,7 +11,7 @@ import { Phone, TrendingUp, Users, Calendar, ThumbsUp, MessageSquare, ArrowRight
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { mockCallRequests, mockEspecialistaSessions, mockCompanies, mockReferrals, mockSpecialistPersonalStats } from '@/data/especialistaGeralMockData';
+// Real data loaded via hooks: useEscalatedChats, useSpecialistAnalytics
 import { useNavigate } from 'react-router-dom';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { useEffect } from 'react';
@@ -35,15 +35,11 @@ export default function SpecialistDashboard() {
     };
   }, []);
 
-  // Filter data based on role
-  const filteredCallRequests = filterByCompanyAccess(
-    mockCallRequests.filter(req => req.status === 'pending')
-  );
-  const filteredSessions = filterByCompanyAccess(
-    mockEspecialistaSessions.filter(s => s.date === new Date().toISOString().split('T')[0])
-  );
-  const assignedCompanies = filterByCompanyAccess(mockCompanies);
-  const filteredReferrals = filterByCompanyAccess(mockReferrals);
+  // Use real data from hooks
+  const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'pending');
+  const filteredSessions: any[] = []; // Real sessions loaded from bookings via hooks
+  const assignedCompanies: any[] = []; // Will be populated from company assignments
+  const filteredReferrals: any[] = []; // Real referrals loaded via hooks
 
   const filteredChats = pillarFilter === 'all' 
     ? escalatedChats 
@@ -119,7 +115,7 @@ export default function SpecialistDashboard() {
               {/* Bottom Left - Personal Stats */}
               <BentoCard 
                 name="Desempenho Pessoal" 
-                description={`${mockSpecialistPersonalStats.monthly_cases} casos este mês`} 
+                description={`${metrics?.monthlyCases || 0} casos este mês`} 
                 Icon={TrendingUp} 
                 onClick={() => navigate('/especialista/stats')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 

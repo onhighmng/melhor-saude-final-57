@@ -33,7 +33,6 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
-import { mockPrestadorUser, mockPrestadorSessions, mockPrestadorMetrics } from '@/data/mockData';
 
 const pillarIcons = {
   'saude_mental': Brain,
@@ -162,13 +161,13 @@ export default function PrestadorDashboard() {
     });
   };
 
-  const groupSessionsByDate = (sessions: typeof mockPrestadorSessions) => {
+  const groupSessionsByDate = (sessions: any[]) => {
     const grouped = sessions.reduce((acc, session) => {
       const date = session.date;
       if (!acc[date]) acc[date] = [];
       acc[date].push(session);
       return acc;
-    }, {} as Record<string, typeof mockPrestadorSessions>);
+    }, {} as Record<string, any[]>);
 
     // Sort sessions within each date by time
     Object.keys(grouped).forEach(date => {
@@ -206,7 +205,7 @@ export default function PrestadorDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          Bem-vindo, {mockPrestadorUser.name.split(' ')[0]}
+          Bem-vindo, {profile?.name?.split(' ')[0] || 'Prestador'}
         </h1>
         <p className="text-muted-foreground mt-1">
           Gerir as suas sessões e disponibilidade
@@ -270,14 +269,14 @@ export default function PrestadorDashboard() {
                           <CheckCircle className="w-3 h-3 text-green-600" />
                           <span className="text-xs text-muted-foreground">Sessões Concluídas</span>
                         </div>
-                        <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
+                        <p className="text-xl font-bold text-gray-900">{metrics?.completedSessions || 0}</p>
                       </div>
                       <div className="p-3 bg-white/70 rounded-lg border border-purple-100">
                         <div className="flex items-center gap-1 mb-1">
                           <Users className="w-3 h-3 text-blue-600" />
                           <span className="text-xs text-muted-foreground">Utilizadores Atendidos</span>
                         </div>
-                        <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
+                        <p className="text-xl font-bold text-gray-900">{new Set(sessions.filter(s => s.status === 'completed').map(s => s.userId)).size}</p>
                       </div>
                     </div>
 
@@ -285,11 +284,11 @@ export default function PrestadorDashboard() {
                     <div className="space-y-2 p-3 bg-white/70 rounded-lg border border-purple-100">
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Total Sessões</span>
-                        <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.totalSessoes}</span>
+                        <span className="font-medium text-sm">{metrics?.totalSessions || 0}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Satisfação</span>
-                        <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.satisfacao}/5</span>
+                        <span className="font-medium text-sm">{metrics?.avgRating || '0.0'}/5</span>
                       </div>
                     </div>
                   </div>

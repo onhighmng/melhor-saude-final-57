@@ -12,7 +12,6 @@ import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance
 import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { mockProviders } from '@/data/mockData';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -151,7 +150,7 @@ const BookingFlow = () => {
     setCurrentStep('assessment');
   };
 
-  const handleChooseHuman = () => {
+  const handleChooseHuman = async () => {
     const pillarMapping = {
       'psicologica': 'saude_mental',
       'fisica': 'bem_estar_fisico',
@@ -160,26 +159,41 @@ const BookingFlow = () => {
     };
 
     const mappedPillar = pillarMapping[selectedPillar!];
-    const availableProviders = mockProviders.filter(provider => 
-      provider.pillar === mappedPillar
-    );
+    
+    const { data: availableProviders, error } = await supabase
+      .from('prestadores')
+      .select('id, name, specialties, photo_url, pillar_specialties')
+      .contains('pillar_specialties', [mappedPillar])
+      .eq('is_active', true)
+      .limit(10);
 
-    if (availableProviders.length > 0) {
-      const assignedProvider = availableProviders[0];
+    if (error || !availableProviders || availableProviders.length === 0) {
+      toast({
+        title: 'Erro',
+        description: 'Não há especialistas disponíveis no momento.',
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const assignedProvider = {
+      id: availableProviders[0].id,
+      name: availableProviders[0].name,
+      specialty: availableProviders[0].specialties?.[0] || 'Especialista',
+      pillar: mappedPillar,
+      avatar_url: availableProviders[0].photo_url || '',
+      rating: 5,
+      experience: 'Anos de experiência',
+      availability: 'Disponível'
+    };
+    
       setSelectedProvider(assignedProvider);
       setCurrentStep('datetime');
       
       toast({
         title: 'Especialista Atribuído',
-        description: `Foi-lhe atribuído o especialista ${assignedProvider.name} (${assignedProvider.specialty})`,
-      });
-    } else {
-      toast({
-        title: 'Erro',
-        description: 'Não há especialistas disponíveis no momento. Tente novamente mais tarde.',
-        variant: "destructive"
-      });
-    }
+      description: `Foi-lhe atribuído ${assignedProvider.name}`,
+    });
   };
 
 

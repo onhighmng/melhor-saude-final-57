@@ -15,7 +15,6 @@ import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFl
 import { BookingPillar } from './BookingFlow';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { mockProviders } from '@/data/mockData';
 
 type BookingStep = 'pillar' | 'assessment' | 'provider' | 'datetime' | 'confirmation';
 
@@ -107,7 +106,7 @@ export const DirectBookingFlow = () => {
     }
   };
 
-  const handleChooseHuman = () => {
+  const handleChooseHuman = async () => {
     if (!selectedPillar) return;
     
     const pillarMapping = {
@@ -118,32 +117,43 @@ export const DirectBookingFlow = () => {
     };
 
     const mappedPillar = pillarMapping[selectedPillar];
-    const availableProviders = mockProviders.filter(provider => 
-      provider.pillar === mappedPillar
-    );
+    
+    const { data: availableProviders, error } = await supabase
+      .from('prestadores')
+      .select('id, name, specialties, photo_url, pillar_specialties')
+      .contains('pillar_specialties', [mappedPillar])
+      .eq('is_active', true)
+      .limit(10);
 
-    if (availableProviders.length > 0) {
-      const provider = availableProviders[0];
-      const assignedProvider = {
-        id: provider.id,
-        name: provider.name,
-        specialty: provider.specialty,
-        pillar: provider.pillar || mappedPillar,
-        avatar_url: provider.avatar_url,
-        rating: provider.rating || 5.0,
-        experience: provider.experience,
-        availability: provider.availability || 'Disponível'
-      };
-      
-      setAssignedProvider(assignedProvider);
-      setSelectedTopic(getPillarDisplayName(selectedPillar));
-      setCurrentStep('provider');
-      
+    if (error || !availableProviders || availableProviders.length === 0) {
       toast({
-        title: 'Especialista Atribuído',
-        description: `Foi-lhe atribuído ${assignedProvider.name} (${assignedProvider.specialty})`,
+        title: 'Erro',
+        description: 'Não há especialistas disponíveis no momento.',
+        variant: "destructive"
       });
+      return;
     }
+
+    const provider = availableProviders[0];
+    const assignedProvider = {
+      id: provider.id,
+      name: provider.name,
+      specialty: provider.specialties?.[0] || 'Especialista',
+      pillar: mappedPillar,
+      avatar_url: provider.photo_url || '',
+      rating: 5.0,
+      experience: 'Anos de experiência',
+      availability: 'Disponível'
+    };
+    
+    setAssignedProvider(assignedProvider);
+    setSelectedTopic(getPillarDisplayName(selectedPillar));
+    setCurrentStep('provider');
+    
+    toast({
+      title: 'Especialista Atribuído',
+      description: `Foi-lhe atribuído ${assignedProvider.name}`,
+    });
   };
 
 
