@@ -507,26 +507,36 @@ const UserDashboard = () => {
 
       // Fetch provider email to send notification
       if (booking.prestador_id) {
-        const { data: providerData } = await supabase
+        // Get provider's user_id from prestadores table
+        const { data: prestadorData } = await supabase
           .from('prestadores')
-          .select('profiles(email)')
+          .select('user_id')
           .eq('id', booking.prestador_id)
           .single();
 
-        if (providerData?.profiles?.email) {
-          await supabase.functions.invoke('send-email', {
-            body: {
-              to: providerData.profiles.email,
-              subject: 'Sessão Cancelada',
-              html: `
-                <p>Olá,</p>
-                <p>Uma sessão agendada foi cancelada.</p>
-                <p><strong>Data:</strong> ${new Date(booking.scheduled_for).toLocaleString('pt-PT')}</p>
-                <p><strong>Pilar:</strong> ${booking.pillar}</p>
-              `,
-              type: 'session_cancelled'
-            }
-          });
+        if (prestadorData?.user_id) {
+          // Get email from profiles table
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('email, full_name')
+            .eq('id', prestadorData.user_id)
+            .single();
+
+          if (profileData?.email) {
+            await supabase.functions.invoke('send-email', {
+              body: {
+                to: profileData.email,
+                subject: 'Sessão Cancelada',
+                html: `
+                  <p>Olá ${profileData.full_name || 'Prestador'},</p>
+                  <p>Uma sessão agendada foi cancelada.</p>
+                  <p><strong>Data:</strong> ${new Date(booking.scheduled_for).toLocaleString('pt-PT')}</p>
+                  <p><strong>Pilar:</strong> ${booking.pillar}</p>
+                `,
+                type: 'session_cancelled'
+              }
+            });
+          }
         }
       }
 

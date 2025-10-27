@@ -219,6 +219,31 @@ const AdminProvidersTab = () => {
 
       if (error) throw error;
 
+      // Fetch provider email for notification
+      const { data: provider } = await supabase
+        .from('prestadores')
+        .select('profiles(email, full_name)')
+        .eq('id', providerId)
+        .single();
+
+      if (provider?.profiles) {
+        // Send approval email
+        await supabase.functions.invoke('send-email', {
+          body: {
+            to: provider.profiles.email,
+            subject: 'Aprovação de Prestador - Melhor Saúde',
+            html: `
+              <h2>Bem-vindo à Melhor Saúde!</h2>
+              <p>Olá ${provider.profiles.full_name},</p>
+              <p>A sua candidatura foi <strong>aprovada</strong>. Pode agora aceder à plataforma e começar a agendar sessões.</p>
+              <p>Aceda à sua área de prestador em <a href="https://melhorsaude.pt">melhorsaude.pt</a></p>
+              <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
+            `,
+            type: 'provider_approved'
+          }
+        });
+      }
+
       // Log admin action
       if (profile?.id) {
         await supabase.from('admin_logs').insert({
@@ -231,7 +256,7 @@ const AdminProvidersTab = () => {
 
       toast({
         title: "Prestador aprovado",
-        description: "O prestador foi aprovado com sucesso"
+        description: "O prestador foi aprovado e foi notificado por email"
       });
 
       await loadProviders();
@@ -254,6 +279,31 @@ const AdminProvidersTab = () => {
 
       if (error) throw error;
 
+      // Fetch provider email for notification
+      const { data: provider } = await supabase
+        .from('prestadores')
+        .select('profiles(email, full_name)')
+        .eq('id', providerId)
+        .single();
+
+      if (provider?.profiles) {
+        // Send rejection email
+        await supabase.functions.invoke('send-email', {
+          body: {
+            to: provider.profiles.email,
+            subject: 'Candidatura de Prestador - Melhor Saúde',
+            html: `
+              <h2>Candidatura Recebida</h2>
+              <p>Olá ${provider.profiles.full_name},</p>
+              <p>Obrigado pelo seu interesse em juntar-se à equipa Melhor Saúde.</p>
+              <p>Após avaliação, a sua candidatura não foi aprovada neste momento. Ficaremos em contacto se surgirem oportunidades futuras.</p>
+              <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
+            `,
+            type: 'provider_rejected'
+          }
+        });
+      }
+
       // Log admin action
       if (profile?.id) {
         await supabase.from('admin_logs').insert({
@@ -266,7 +316,7 @@ const AdminProvidersTab = () => {
 
       toast({
         title: "Prestador rejeitado",
-        description: "O prestador foi desativado",
+        description: "O prestador foi desativado e notificado por email",
         variant: "destructive"
       });
 

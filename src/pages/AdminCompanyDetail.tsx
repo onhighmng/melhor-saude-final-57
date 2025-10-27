@@ -267,16 +267,88 @@ export default function AdminCompanyDetail() {
         return;
       }
 
-      const newEmployees = csvPreview.map((emp, idx) => ({
-        id: `emp-${Date.now()}-${idx}`,
-        name: emp.name,
-        email: emp.email,
-        code: '',
-        status: 'sem-codigo' as const,
-      }));
+      // Import employees to database
+      const createdEmployees = [];
+      const errors = [];
 
-      setEmployees([...employees, ...newEmployees]);
-      toast({ title: 'CSV Importado', description: `${newEmployees.length} colaborador(es) importado(s) com sucesso` });
+      for (const emp of csvPreview) {
+        try {
+          // Check if user already exists in auth
+          const { data: existingAuthUser } = await supabase.auth.admin.listUsers();
+          const existingUser = existingAuthUser?.users?.find(u => u.email === emp.email);
+
+          let userId;
+          if (existingUser) {
+            userId = existingUser.id;
+          } else {
+            // Create new user account
+            const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+              email: emp.email,
+              email_confirm: false,
+              user_metadata: { 
+                full_name: emp.name,
+                role: 'user'
+              }
+            });
+
+            if (authError) {
+              errors.push({ email: emp.email, error: authError.message });
+              continue;
+            }
+
+            userId = authData.user.id;
+          }
+
+          // Insert into company_employees
+          const { data, error } = await supabase
+            .from('company_employees')
+            .insert({
+              user_id: userId,
+              company_id: companyId,
+              email: emp.email,
+              sessions_quota: 5, // Default quota
+              sessions_used: 0,
+              is_active: true,
+              joined_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+          if (error) {
+            errors.push({ email: emp.email, error: error.message });
+            continue;
+          }
+
+          createdEmployees.push(data);
+        } catch (error: any) {
+          errors.push({ email: emp.email, error: error.message });
+        }
+      }
+
+      // Update seats_used counter
+      if (createdEmployees.length > 0) {
+        await supabase.rpc('increment_company_seats_used', {
+          _company_id: companyId,
+          _count: createdEmployees.length
+        });
+      }
+
+      if (errors.length > 0) {
+        toast({
+          title: 'Importação parcial',
+          description: `${createdEmployees.length} importado(s), ${errors.length} erro(s)`,
+          variant: createdEmployees.length === 0 ? 'destructive' : 'default'
+        });
+      } else {
+        toast({ 
+          title: 'CSV Importado', 
+          description: `${createdEmployees.length} colaborador(es) importado(s) com sucesso` 
+        });
+      }
+
+      // Refresh employees list
+      await loadEmployees();
+      
       setShowPreviewDialog(false);
       setCsvPreview(null);
     } catch (error: any) {
