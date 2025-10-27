@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useToast } from "@/hooks/use-toast";
+import { CANCELLATION_POLICY_HOURS } from "@/config/constants";
 
 export default function UserSessions() {
   const navigate = useNavigate();
@@ -109,10 +110,7 @@ export default function UserSessions() {
         .from('bookings')
         .select(`
           *,
-          prestadores!bookings_prestador_id_fkey (
-            user_id,
-            profiles:user_id (name, email)
-          )
+          prestadores!bookings_prestador_id_fkey (name, email, user_id)
         `)
         .eq('id', sessionId)
         .single();
@@ -124,7 +122,7 @@ export default function UserSessions() {
       const now = new Date();
       const hoursUntil = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-      if (hoursUntil < 24) {
+      if (hoursUntil < CANCELLATION_POLICY_HOURS) {
         toast({
           title: 'Atenção',
           description: 'Cancelamentos com menos de 24h de antecedência podem afetar a sua quota.',
@@ -132,55 +130,21 @@ export default function UserSessions() {
         });
       }
 
-      // Update booking status
-      const { error: updateError } = await supabase
-        .from('bookings')
-        .update({
-          status: 'cancelled',
-          cancellation_reason: 'user_requested',
-          cancelled_at: new Date().toISOString(),
-          cancelled_by: profile.id
-        })
-        .eq('id', sessionId);
+      // Use atomic RPC function to cancel booking
+      const { data: cancelResult, error: cancelError } = await supabase.rpc('cancel_booking_with_refund', {
+        _booking_id: sessionId,
+        _user_id: profile.id,
+        _company_id: booking.company_id,
+        _cancellation_reason: 'user_requested',
+        _refund_quota: hoursUntil >= CANCELLATION_POLICY_HOURS
+      });
 
-      if (updateError) throw updateError;
-
-      // Refund session quota if cancelled with >24h notice
-      if (hoursUntil >= 24) {
-        // Get current sessions_used
-        const { data: employeeData } = await supabase
-          .from('company_employees')
-          .select('sessions_used')
-          .eq('user_id', profile.id)
-          .single();
-
-        if (employeeData && employeeData.sessions_used > 0) {
-          await supabase
-            .from('company_employees')
-            .update({ sessions_used: employeeData.sessions_used - 1 })
-            .eq('user_id', profile.id);
-        }
-
-        // Decrement company sessions_used
-        if (booking.company_id) {
-          const { data: companyData } = await supabase
-            .from('companies')
-            .select('sessions_used')
-            .eq('id', booking.company_id)
-            .single();
-
-          if (companyData && companyData.sessions_used > 0) {
-            await supabase
-              .from('companies')
-              .update({ sessions_used: companyData.sessions_used - 1 })
-              .eq('id', booking.company_id);
-          }
-        }
-      }
+      if (cancelError) throw cancelError;
 
       // Create notification for provider
+      const prestadorUserId = booking.prestadores?.user_id || booking.prestador_id;
       await supabase.from('notifications').insert({
-        user_id: booking.prestadores?.user_id,
+        user_id: prestadorUserId,
         type: 'booking_cancelled',
         title: 'Sessão Cancelada',
         message: `A sessão de ${booking.date} às ${booking.start_time} foi cancelada pelo utilizador.`,
@@ -190,9 +154,9 @@ export default function UserSessions() {
 
       toast({
         title: 'Sessão cancelada',
-        description: hoursUntil >= 24 
-          ? 'A sua sessão foi reembolsada à sua quota.'
-          : 'Sessão cancelada. Quota não reembolsada (< 24h).'
+        description: cancelResult?.refunded 
+          ? 'A sua sessão foi cancelada e a quota foi reembolsada.'
+          : 'Sessão cancelada. Quota não reembolsada devido à política de cancelamento (< 24h).'
       });
 
       // Refresh bookings list

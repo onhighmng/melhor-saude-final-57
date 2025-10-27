@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { MAX_LOGS_DISPLAYED } from '@/config/constants';
 import {
   Select,
   SelectContent,
@@ -52,7 +53,7 @@ const AdminLogsTab = () => {
         .from('admin_logs')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(100);
+        .limit(MAX_LOGS_DISPLAYED);
 
       if (error) throw error;
 

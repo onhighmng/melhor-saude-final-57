@@ -63,7 +63,7 @@ const AdminAlertsTab = () => {
       // Load today's sessions
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('bookings')
-        .select('*, user:profiles(name), provider:prestadores!prestador_id(user:profiles(name))')
+        .select('*, user:profiles!user_id(name), provider:prestadores!prestador_id(name)')
         .eq('date', today)
         .eq('status', 'scheduled');
 

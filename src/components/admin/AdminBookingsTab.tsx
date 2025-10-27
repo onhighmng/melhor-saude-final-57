@@ -8,6 +8,7 @@ import { format, addMonths, subMonths, isSameDay, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { PAGINATION_SIZE } from '@/config/constants';
 
 interface Booking {
   id: string;
@@ -42,7 +43,7 @@ export default function AdminBookingsTab() {
         .gte('date', monthStart)
         .lte('date', monthEnd)
         .order('date', { ascending: true })
-        .range(0, 99); // Pagination - limit to 100 bookings per month
+        .range(0, PAGINATION_SIZE - 1);
 
       if (error) throw error;
 

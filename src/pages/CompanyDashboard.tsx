@@ -67,15 +67,17 @@ const CompanyDashboard = () => {
         const avgRating = bookings?.filter(b => b.rating)
           .reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length || 0;
 
-        // Count bookings by pillar
+        // Count bookings by pillar (handle null values)
         const pillarCounts = bookings?.reduce((acc: any, b: any) => {
-          acc[b.pillar] = (acc[b.pillar] || 0) + 1;
+          const pillarKey = b.pillar || 'unknown';
+          acc[pillarKey] = (acc[pillarKey] || 0) + 1;
           return acc;
         }, {}) || {};
 
-        const mostUsedPillar = Object.entries(pillarCounts).reduce((a, b) => 
-          (pillarCounts[a[0] as keyof typeof pillarCounts] || 0) > (pillarCounts[b[0] as keyof typeof pillarCounts] || 0) ? a : b, 
-          ['', 0])[0];
+        const mostUsedPillar = Object.keys(pillarCounts).length > 0
+          ? Object.entries(pillarCounts).reduce((a, b) => 
+              (pillarCounts[a[0]] || 0) > (pillarCounts[b[0]] || 0) ? a : b)[0]
+          : 'N/A';
 
         setMetrics({
           avgSatisfaction: avgRating.toFixed(1),
