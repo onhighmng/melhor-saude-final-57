@@ -28,26 +28,7 @@ interface ProviderMetricsViewProps {
   onBack: () => void;
 }
 
-// Mock metrics data - replace with real data
-const getMockMetrics = (provider: Provider): ProviderMetrics => ({
-  sessionsCompleted: provider.totalSessions,
-  avgSatisfaction: provider.avgSatisfaction,
-  sessionsThisMonth: 18,
-  companiesServed: 4,
-  costPerSession: provider.costPerSession,
-  platformMargin: provider.costPerSession * 0.25,
-  netToProvider: provider.costPerSession * 0.75,
-  totalPaidThisMonth: provider.costPerSession * 0.75 * 18,
-});
-
-// Mock history data - replace with real data
-const getMockHistory = (): ProviderHistoryItem[] => [
-  { id: '1', date: '2024-10-10', collaborator: 'Ana Silva', rating: 9.5, sessionType: 'virtual' },
-  { id: '2', date: '2024-10-08', collaborator: 'João Santos', rating: 9.0, sessionType: 'presential' },
-  { id: '3', date: '2024-10-05', collaborator: 'Maria Costa', rating: 9.2, sessionType: 'virtual' },
-  { id: '4', date: '2024-10-03', collaborator: 'Pedro Alves', rating: 8.8, sessionType: 'virtual' },
-  { id: '5', date: '2024-10-01', collaborator: 'Sofia Fernandes', rating: 9.4, sessionType: 'presential' },
-];
+// Removed - now using real database queries
 
 export const ProviderMetricsView = ({
   open,

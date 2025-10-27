@@ -152,15 +152,62 @@ export const AdminCompaniesTab = ({
     navigate(`/admin/companies/${company.id}`);
   };
 
-  // Mock data para gráfico de uso mensal
-  const monthlyUsageData = [
-    { month: 'Jan', sessions: 45 },
-    { month: 'Fev', sessions: 52 },
-    { month: 'Mar', sessions: 67 },
-    { month: 'Abr', sessions: 58 },
-    { month: 'Mai', sessions: 72 },
-    { month: 'Jun', sessions: 65 },
-  ];
+  // Fetch monthly usage data
+  const [monthlyUsageData, setMonthlyUsageData] = useState<Array<{ month: string; sessions: number }>>([]);
+
+  useEffect(() => {
+    const fetchMonthlyUsage = async () => {
+      try {
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+        const { data, error } = await supabase
+          .from('bookings')
+          .select('booking_date')
+          .gte('booking_date', sixMonthsAgo.toISOString())
+          .order('booking_date', { ascending: true });
+
+        if (error) throw error;
+
+        // Group by month
+        const monthCounts: Record<string, number> = {};
+        data?.forEach(booking => {
+          const date = new Date(booking.booking_date);
+          const monthKey = date.toLocaleDateString('pt-PT', { month: 'short' });
+          monthCounts[monthKey] = (monthCounts[monthKey] || 0) + 1;
+        });
+
+        const chartData = Object.entries(monthCounts).map(([month, sessions]) => ({
+          month,
+          sessions
+        }));
+
+        setMonthlyUsageData(chartData);
+      } catch (error) {
+        console.error('Error fetching monthly usage:', error);
+      }
+    };
+
+    fetchMonthlyUsage();
+  }, []);
+
+  // Real-time subscription for companies
+  useEffect(() => {
+    const channel = supabase
+      .channel('companies_changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'companies' },
+        () => {
+          console.log('Companies changed, refetching...');
+          loadCompanies();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   if (loading) {
     return (

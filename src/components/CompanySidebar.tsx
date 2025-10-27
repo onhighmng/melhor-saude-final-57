@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 import {
   AnimatedSidebar,
   AnimatedSidebarBody,
@@ -26,12 +28,57 @@ const CompanySidebar = () => {
   const { open } = useAnimatedSidebar();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [seatData, setSeatData] = useState({ used: 0, limit: 0 });
 
-  // Mock seat usage data - in real app this would come from API/state
-  const mockSeatData = {
-    used: 18,
-    limit: 25,
-  };
+  useEffect(() => {
+    const fetchSeatData = async () => {
+      if (!user?.id) return;
+
+      try {
+        // Get company employee data
+        const { data: employeeData } = await supabase
+          .from('company_employees')
+          .select('company_id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (employeeData?.company_id) {
+          // Get company data with seat information
+          const { data: companyData } = await supabase
+            .from('companies')
+            .select('sessions_allocated, sessions_used')
+            .eq('id', employeeData.company_id)
+            .single();
+
+          if (companyData) {
+            setSeatData({
+              used: companyData.sessions_used || 0,
+              limit: companyData.sessions_allocated || 0
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching seat data:', error);
+      }
+    };
+
+    fetchSeatData();
+
+    // Real-time subscription for seat updates
+    const channel = supabase
+      .channel('company_seat_changes')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'companies' },
+        () => {
+          fetchSeatData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
 
   const mainLinks = [
     {
@@ -43,7 +90,7 @@ const CompanySidebar = () => {
       label: "Colaboradores",
       href: "/company/colaboradores",
       icon: <Users className="text-primary h-5 w-5 flex-shrink-0" />,
-      badge: `${mockSeatData.used}/${mockSeatData.limit}`,
+      badge: `${seatData.used}/${seatData.limit}`,
     },
     {
       label: "Recursos",
