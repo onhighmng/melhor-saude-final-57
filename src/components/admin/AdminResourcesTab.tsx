@@ -59,6 +59,7 @@ export function AdminResourcesTab() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState<UserResource | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [addFormData, setAddFormData] = useState({
     title: '',
     pillar: 'saude_mental',
@@ -145,6 +146,16 @@ export function AdminResourcesTab() {
   const handleEditSave = async () => {
     if (!selectedResource) return;
 
+    // Validation
+    if (!editFormData.title?.trim()) {
+      toast.error('Título é obrigatório');
+      return;
+    }
+    if (!editFormData.pillar) {
+      toast.error('Selecione um pilar');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('resources')
@@ -178,9 +189,9 @@ export function AdminResourcesTab() {
       setShowEditDialog(false);
       setSelectedResource(null);
       await loadResources();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating resource:', error);
-      toast.error('Erro ao atualizar recurso');
+      toast.error('Erro ao atualizar recurso: ' + (error.message || 'Erro desconhecido'));
     }
   };
 
@@ -369,11 +380,23 @@ export function AdminResourcesTab() {
                     </div>
                     <Button 
                       className="w-full" 
+                      disabled={isSaving}
                       onClick={async () => {
-                        if (!addFormData.title || !addFormData.type) {
-                          toast.error('Preencha todos os campos obrigatórios');
+                        // Validation
+                        if (!addFormData.title?.trim()) {
+                          toast.error('Título é obrigatório');
                           return;
                         }
+                        if (!addFormData.pillar) {
+                          toast.error('Selecione um pilar');
+                          return;
+                        }
+                        if (!addFormData.type) {
+                          toast.error('Selecione um tipo');
+                          return;
+                        }
+                        
+                        setIsSaving(true);
                         
                         try {
                           const { error } = await supabase.from('resources').insert({
@@ -382,6 +405,7 @@ export function AdminResourcesTab() {
                             pillar: addFormData.pillar,
                             type: addFormData.type,
                             thumbnail_url: addFormData.thumbnail,
+                            url: addFormData.content_url,
                             is_public: true,
                             is_premium: false,
                             created_by: profile?.id
@@ -402,11 +426,13 @@ export function AdminResourcesTab() {
                           await loadResources();
                         } catch (error: any) {
                           console.error('Error creating resource:', error);
-                          toast.error('Erro ao criar recurso');
+                          toast.error('Erro ao criar recurso: ' + error.message);
+                        } finally {
+                          setIsSaving(false);
                         }
                       }}
                     >
-                      Guardar Recurso
+                      {isSaving ? 'A guardar...' : 'Guardar Recurso'}
                     </Button>
                   </div>
                 </DialogContent>

@@ -25,6 +25,8 @@ import DisplayCards from '@/components/ui/display-cards';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import cardBackground from '@/assets/card-background.png';
 import { supabase } from '@/integrations/supabase/client';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { RescheduleDialog } from '@/components/sessions/RescheduleDialog';
 
 const UserDashboard = () => {
   // Enable session auto-completion
@@ -368,31 +370,187 @@ const UserDashboard = () => {
     setIsSessionModalOpen(true);
   };
 
+  const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
+  const [sessionToReschedule, setSessionToReschedule] = useState<Booking | null>(null);
+
   const handleReschedule = (sessionId: string) => {
-    console.log('Reschedule session:', sessionId);
-    toast({
-      title: 'Reagendar Sessão',
-      description: 'Funcionalidade de reagendamento em desenvolvimento'
-    });
-    setIsSessionModalOpen(false);
+    const booking = allBookings.find(b => b.id === sessionId);
+    if (booking) {
+      setSessionToReschedule(booking);
+      setShowRescheduleDialog(true);
+    }
   };
 
-  const handleJoinSession = (sessionId: string) => {
-    console.log('Join session:', sessionId);
-    toast({
-      title: 'Entrar na Sessão',
-      description: 'A abrir link da sessão...'
-    });
-    // In production, this would open the actual meeting link
+  const handleRescheduleComplete = () => {
+    setIsSessionModalOpen(false);
+    setShowRescheduleDialog(false);
+    setSessionToReschedule(null);
+    window.location.reload();
   };
 
-  const handleCancelSession = (sessionId: string) => {
-    console.log('Cancel session:', sessionId);
-    toast({
-      title: 'Cancelar Sessão',
-      description: 'Tem a certeza que deseja cancelar esta sessão?'
-    });
-    setIsSessionModalOpen(false);
+  const handleJoinSession = async (sessionId: string) => {
+    try {
+      // Find the booking
+      const booking = allBookings.find(b => b.id === sessionId);
+      if (!booking) {
+        toast({
+          title: 'Erro',
+          description: 'Sessão não encontrada',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Check timing (±15 minutes window)
+      const sessionTime = new Date(booking.scheduled_for).getTime();
+      const now = Date.now();
+      const minutesDiff = (sessionTime - now) / (1000 * 60);
+
+      if (minutesDiff > 15) {
+        const hours = Math.floor(minutesDiff / 60);
+        const mins = Math.floor(minutesDiff % 60);
+        toast({
+          title: 'Muito cedo',
+          description: `Sessão começa em ${hours > 0 ? `${hours}h ` : ''}${mins}min`,
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      if (minutesDiff < -60) {
+        toast({
+          title: 'Sessão expirada',
+          description: 'Esta sessão já terminou',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Check if meeting link exists
+      if (!booking.meeting_link) {
+        toast({
+          title: 'Link indisponível',
+          description: 'Contacte o prestador para obter o link da sessão',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Open meeting link
+      window.open(booking.meeting_link, '_blank');
+
+      // Track access (optional - create session_access_log table first)
+      if (booking.meeting_link) {
+        try {
+          await supabase.from('session_access_log').insert({
+            booking_id: sessionId,
+            user_id: profile?.id,
+            accessed_at: new Date().toISOString()
+          });
+        } catch (error) {
+          // Ignore if table doesn't exist yet
+          console.log('session_access_log table not found, skipping tracking');
+        }
+      }
+
+      toast({
+        title: 'A abrir sessão',
+        description: 'A abrir link da sessão...'
+      });
+    } catch (error: any) {
+      console.error('Error joining session:', error);
+      toast({
+        title: 'Erro',
+        description: 'Erro ao abrir sessão',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [sessionToCancel, setSessionToCancel] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const handleCancelSession = async (sessionId: string) => {
+    setSessionToCancel(sessionId);
+    setShowCancelDialog(true);
+  };
+
+  const confirmCancelSession = async () => {
+    if (!sessionToCancel || !profile) return;
+    
+    setIsCancelling(true);
+    
+    try {
+      // Find the booking
+      const booking = allBookings.find(b => b.id === sessionToCancel);
+      if (!booking) {
+        throw new Error('Sessão não encontrada');
+      }
+
+      // Calculate if >24h before session for quota refund
+      const sessionTime = new Date(booking.scheduled_for).getTime();
+      const now = Date.now();
+      const hoursUntilSession = (sessionTime - now) / (1000 * 60 * 60);
+      const shouldRefund = hoursUntilSession > 24;
+
+      // Call RPC function
+      const { data, error } = await supabase.rpc('cancel_booking_with_refund', {
+        _booking_id: sessionToCancel,
+        _user_id: profile.id,
+        _company_id: profile.company_id,
+        _cancellation_reason: 'user_requested',
+        _refund_quota: shouldRefund
+      });
+
+      if (error) throw error;
+
+      // Fetch provider email to send notification
+      if (booking.prestador_id) {
+        const { data: providerData } = await supabase
+          .from('prestadores')
+          .select('profiles(email)')
+          .eq('id', booking.prestador_id)
+          .single();
+
+        if (providerData?.profiles?.email) {
+          await supabase.functions.invoke('send-email', {
+            body: {
+              to: providerData.profiles.email,
+              subject: 'Sessão Cancelada',
+              html: `
+                <p>Olá,</p>
+                <p>Uma sessão agendada foi cancelada.</p>
+                <p><strong>Data:</strong> ${new Date(booking.scheduled_for).toLocaleString('pt-PT')}</p>
+                <p><strong>Pilar:</strong> ${booking.pillar}</p>
+              `,
+              type: 'session_cancelled'
+            }
+          });
+        }
+      }
+
+      toast({
+        title: "Sessão cancelada",
+        description: shouldRefund ? "Sua quota foi reembolsada" : "Quota não reembolsada (cancelamento com menos de 24h)",
+      });
+
+      setIsSessionModalOpen(false);
+      setShowCancelDialog(false);
+      setSessionToCancel(null);
+      
+      // Refresh bookings
+      window.location.reload();
+    } catch (error: any) {
+      console.error('Error cancelling session:', error);
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao cancelar sessão",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
 
@@ -639,6 +797,30 @@ const UserDashboard = () => {
         )}
       </DialogContent>
     </Dialog>
+
+    {/* Cancel Session Confirmation Dialog */}
+    <ConfirmDialog
+      open={showCancelDialog}
+      onOpenChange={setShowCancelDialog}
+      title="Cancelar Sessão"
+      description="Tem a certeza que deseja cancelar esta sessão? Esta ação não pode ser desfeita."
+      onConfirm={confirmCancelSession}
+      confirmText="Sim, cancelar"
+      cancelText="Manter sessão"
+      variant="destructive"
+    />
+
+    {/* Reschedule Dialog */}
+    {sessionToReschedule && (
+      <RescheduleDialog
+        open={showRescheduleDialog}
+        onOpenChange={setShowRescheduleDialog}
+        bookingId={sessionToReschedule.id}
+        currentDate={new Date(sessionToReschedule.scheduled_for)}
+        providerId={sessionToReschedule.prestador_id}
+        onRescheduleComplete={handleRescheduleComplete}
+      />
+    )}
     </div>;
 };
 export default UserDashboard;

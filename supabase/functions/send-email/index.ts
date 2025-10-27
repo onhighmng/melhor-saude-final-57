@@ -12,37 +12,57 @@ serve(async (req) => {
   try {
     const { to, subject, html, type } = await req.json()
 
-    // For now, log the email (in production, use Resend, SendGrid, or similar)
     console.log(`[EMAIL ${type}]`, { to, subject })
-    
-    // Simulate email sending
-    // In production, you would use:
-    // const response = await fetch('https://api.resend.com/emails', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${RESEND_API_KEY}`,
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({
-    //     from: 'noreply@melhorsaude.pt',
-    //     to,
-    //     subject,
-    //     html
-    //   })
-    // })
 
-    // Return success
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Email would be sent',
-        timestamp: new Date().toISOString()
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+    // Send email via Resend API
+    if (RESEND_API_KEY) {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'Melhor Saúde <noreply@melhorsaude.pt>',
+          to,
+          subject,
+          html
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(`Resend API error: ${result.message || result.error}`)
       }
-    )
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          messageId: result.id,
+          message: 'Email sent successfully',
+          timestamp: new Date().toISOString()
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      )
+    } else {
+      // Fallback if API key is not configured
+      console.warn('RESEND_API_KEY not configured, email not sent')
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Email would be sent (RESEND_API_KEY not configured)',
+          timestamp: new Date().toISOString()
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      )
+    }
   } catch (error: any) {
     console.error('Error sending email:', error)
     

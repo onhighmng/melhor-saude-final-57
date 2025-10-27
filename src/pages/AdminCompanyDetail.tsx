@@ -221,21 +221,74 @@ export default function AdminCompanyDetail() {
     input.click();
   };
 
-  const confirmCSVImport = () => {
-    if (!csvPreview) return;
+  const confirmCSVImport = async () => {
+    if (!csvPreview || !companyId) return;
 
-    const newEmployees = csvPreview.map((emp, idx) => ({
-      id: `emp-${Date.now()}-${idx}`,
-      name: emp.name,
-      email: emp.email,
-      code: '',
-      status: 'sem-codigo' as const,
-    }));
+    setIsUploading(true);
+    try {
+      // Check for existing employees in DB
+      const emails = csvPreview.map(emp => emp.email);
+      const { data: existingEmployees } = await supabase
+        .from('company_employees')
+        .select('email')
+        .eq('company_id', companyId)
+        .in('email', emails);
 
-    setEmployees([...employees, ...newEmployees]);
-    toast({ title: 'CSV Importado', description: `${newEmployees.length} colaborador(es) importado(s) com sucesso` });
-    setShowPreviewDialog(false);
-    setCsvPreview(null);
+      const existingEmails = new Set(existingEmployees?.map(e => e.email) || []);
+      
+      // Check available seats
+      const { data: company } = await supabase
+        .from('companies')
+        .select('seats_total, seats_used')
+        .eq('id', companyId)
+        .single();
+        
+      const availableSeats = (company?.seats_total || 0) - (company?.seats_used || 0);
+      const newEmployeesCount = csvPreview.filter(e => !existingEmails.has(e.email)).length;
+      
+      // Block duplicates
+      if (existingEmails.size > 0) {
+        toast({ 
+          title: 'Duplicados encontrados', 
+          description: `${existingEmails.size} colaborador(es) já existem. Elimine-os do CSV antes de importar.`,
+          variant: 'destructive'
+        });
+        setIsUploading(false);
+        return;
+      }
+      
+      if (newEmployeesCount > availableSeats) {
+        toast({ 
+          title: 'Assentos insuficientes', 
+          description: `${newEmployeesCount} novos colaboradores vs ${availableSeats} assentos disponíveis`,
+          variant: 'destructive'
+        });
+        setIsUploading(false);
+        return;
+      }
+
+      const newEmployees = csvPreview.map((emp, idx) => ({
+        id: `emp-${Date.now()}-${idx}`,
+        name: emp.name,
+        email: emp.email,
+        code: '',
+        status: 'sem-codigo' as const,
+      }));
+
+      setEmployees([...employees, ...newEmployees]);
+      toast({ title: 'CSV Importado', description: `${newEmployees.length} colaborador(es) importado(s) com sucesso` });
+      setShowPreviewDialog(false);
+      setCsvPreview(null);
+    } catch (error: any) {
+      console.error('Error validating CSV import:', error);
+      toast({ 
+        title: 'Erro na validação', 
+        description: error.message || 'Erro ao validar importação',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleGenerateCodes = async () => {
