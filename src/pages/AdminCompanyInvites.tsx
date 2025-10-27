@@ -71,16 +71,13 @@ export default function AdminCompanyInvites() {
 
       // Load invite codes
       const { data: codes, error } = await supabase
-        .from('employee_invites')
+        .from('invites')
         .select('*')
         .eq('company_id', id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setInviteCodes((codes || []).map(code => ({
-        ...code,
-        status: code.is_used ? 'accepted' as const : 'pending' as const
-      })));
+      setInviteCodes(codes || []);
     } catch (error: any) {
       toast({
         title: "Erro ao carregar dados",

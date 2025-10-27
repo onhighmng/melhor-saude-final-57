@@ -1870,6 +1870,7 @@ export type Database = {
           id: string
           metadata: Json | null
           pillar: string | null
+          resource_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -1878,6 +1879,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           pillar?: string | null
+          resource_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -1886,9 +1888,17 @@ export type Database = {
           id?: string
           metadata?: Json | null
           pillar?: string | null
+          resource_id?: string | null
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "user_progress_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_progress_user_id_fkey"
             columns: ["user_id"]

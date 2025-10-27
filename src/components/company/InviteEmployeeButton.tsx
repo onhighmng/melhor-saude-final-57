@@ -1,20 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { UserPlus, AlertTriangle } from "lucide-react";
-// Company interface
-interface Company {
-  id: string;
-  company_name: string;
-  seats_allocated?: number;
-  seats_used?: number;
-  seats_available?: number;
-}
-
-// Helper function
-const canInviteEmployee = (company: Company) => {
-  if (!company.seats_allocated) return true;
-  return (company.seats_used || 0) < company.seats_allocated;
-};
+import { Company } from "@/types/company";
+import { canInviteEmployee, getAvailableSeats } from "@/utils/companyHelpers";
 
 interface InviteEmployeeButtonProps {
   company: Company;
@@ -43,8 +31,8 @@ export function InviteEmployeeButton({ company, onInvite }: InviteEmployeeButton
           <div className="text-sm max-w-xs">
             <p className="font-medium mb-1">Limite atingido</p>
             <p>
-              A empresa atingiu o limite de {company.sessions_allocated} contas ativas. 
-              Contacte o administrador para aumentar o limite ou desative contas inativas.
+              A empresa atingiu o limite de {company.sessions_allocated} sessões. 
+              Contacte o administrador para aumentar o limite.
             </p>
           </div>
         </TooltipContent>
@@ -67,10 +55,7 @@ export function InviteEmployeeButton({ company, onInvite }: InviteEmployeeButton
       <TooltipContent>
         <div className="text-sm">
           <p>
-            {(() => {
-              const seatsAvailable = (company.sessions_allocated || 0) - (company.sessions_used || 0);
-              return `${seatsAvailable} conta${seatsAvailable !== 1 ? 's' : ''} disponível${seatsAvailable !== 1 ? 's' : ''} de ${company.sessions_allocated}`;
-            })()}
+            {getAvailableSeats(company.sessions_allocated, company.sessions_used)} sessões disponíveis
           </p>
         </div>
       </TooltipContent>

@@ -1,13 +1,29 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { mockEspecialistaGeral } from '@/data/especialistaGeralMockData';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useCompanyFilter = () => {
   const { profile, isEspecialistaGeral } = useAuth();
+  const [assignedCompanies, setAssignedCompanies] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchAssignedCompanies = async () => {
+      if (isEspecialistaGeral && profile?.id) {
+        const { data } = await supabase
+          .from('specialist_assignments')
+          .select('company_id')
+          .eq('specialist_id', profile.id)
+          .eq('is_active', true);
+        
+        setAssignedCompanies(data?.map(a => a.company_id) || []);
+      }
+    };
+    fetchAssignedCompanies();
+  }, [isEspecialistaGeral, profile?.id]);
 
   const getAllowedCompanies = () => {
     if (isEspecialistaGeral) {
-      // Especialista Geral only sees assigned companies
-      return mockEspecialistaGeral.assigned_companies;
+      return assignedCompanies;
     }
     
     if (profile?.role === 'hr') {

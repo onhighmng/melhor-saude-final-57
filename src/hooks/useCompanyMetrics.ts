@@ -21,7 +21,7 @@ export const useCompanyMetrics = (companyId?: string) => {
         // Get company data
         const { data: company, error: companyError } = await supabase
           .from('companies')
-          .select('sessions_allocated, sessions_used, seats_allocated, seats_used')
+          .select('sessions_allocated, sessions_used')
           .eq('id', companyId)
           .single();
 
@@ -49,16 +49,9 @@ export const useCompanyMetrics = (companyId?: string) => {
         const totalSessions = bookings?.length || 0;
         const completedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
         
-        // Calculate satisfaction from session_feedback
-        const { data: feedback, error: feedbackError } = await supabase
-          .from('session_feedback')
-          .select('rating')
-          .in('booking_id', bookings?.map(b => b.id) || []);
-
-        if (feedbackError && feedbackError.code !== 'PGRST116') throw feedbackError;
-
-        const avgSatisfaction = feedback?.length 
-          ? feedback.reduce((sum, f) => sum + (f.rating || 0), 0) / feedback.length 
+        // Calculate average rating from bookings
+        const avgSatisfaction = bookings?.length 
+          ? bookings.reduce((sum, b) => sum + ((b as any).rating || 0), 0) / bookings.length 
           : 0;
 
         // Calculate most used pillar
@@ -81,9 +74,9 @@ export const useCompanyMetrics = (companyId?: string) => {
           totalSessions,
           avgSatisfaction: Math.round(avgSatisfaction * 10) / 10,
           utilizationRate,
-          totalEmployeesInPlan: company.seats_allocated || 0,
+          totalEmployeesInPlan: company.sessions_allocated || 0,
           registeredEmployees: activeEmployees,
-          unregisteredEmployees: (company.seats_allocated || 0) - activeEmployees,
+          unregisteredEmployees: (company.sessions_allocated || 0) - activeEmployees,
           contractedSessions: company.sessions_allocated || 0,
           usedSessions: company.sessions_used || 0,
           mostUsedPillar,

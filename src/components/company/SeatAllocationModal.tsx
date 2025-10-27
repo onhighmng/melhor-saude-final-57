@@ -10,16 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// Company interface
-interface Company {
-  id: string;
-  company_name: string;
-  sessions_allocated: number;
-  sessions_used: number;
-  seats_allocated?: number;
-  seats_used?: number;
-  seats_available?: number;
-}
+import { Company } from "@/types/company";
 import { Users, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
