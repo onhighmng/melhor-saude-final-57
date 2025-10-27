@@ -31,7 +31,6 @@ import {
   ArrowUpDown
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { getUserById, generateMockUserDetail } from '@/data/adminMockData';
 import { formatDate } from '@/utils/dateFormatting';
 
 interface UserDetail {

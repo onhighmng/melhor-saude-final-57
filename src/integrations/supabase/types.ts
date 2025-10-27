@@ -54,6 +54,9 @@ export type Database = {
         Row: {
           booking_date: string
           booking_source: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
           chat_session_id: string | null
           company_id: string | null
           created_at: string | null
@@ -80,6 +83,9 @@ export type Database = {
         Insert: {
           booking_date: string
           booking_source?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           chat_session_id?: string | null
           company_id?: string | null
           created_at?: string | null
@@ -106,6 +112,9 @@ export type Database = {
         Update: {
           booking_date?: string
           booking_source?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           chat_session_id?: string | null
           company_id?: string | null
           created_at?: string | null
@@ -1804,6 +1813,7 @@ export type Database = {
           total_sessions: number
         }[]
       }
+      get_user_primary_role: { Args: { user_id: string }; Returns: string }
       get_user_session_balance: {
         Args: { _user_id: string }
         Returns: {

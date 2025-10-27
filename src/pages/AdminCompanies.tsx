@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,70 +7,42 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Users, Building2, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 export default function AdminCompanies() {
-  const { profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [companies, setCompanies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadCompanies = async () => {
-      if (!profile) return;
-      
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('companies')
-          .select('*, company_employees(count)')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        setCompanies(data?.map(c => ({
-          id: c.id,
-          name: c.company_name,
-          email: c.contact_email,
-          phone: c.contact_phone,
-          planType: c.plan_type || 'basic',
-          seatsPurchased: c.sessions_allocated,
-          seatsUsed: c.sessions_used,
-          isActive: c.is_active,
-          employees: c.company_employees?.[0]?.count || 0
-        })) || []);
-      } catch (error) {
-        console.error('Error loading companies:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadCompanies();
-  }, [profile]);
+  }, []);
+
+  const loadCompanies = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('companies')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCompanies(data || []);
+    } catch (error) {
+      console.error('Error loading companies:', error);
+      toast.error('Erro ao carregar empresas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredCompanies = companies.filter(company =>
-    company.name.toLowerCase().includes(searchQuery.toLowerCase())
+    company.company_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalCompanies = companies.length;
-  const totalSeats = companies.reduce((sum, c) => sum + c.seatsPurchased, 0);
-  const usedSeats = companies.reduce((sum, c) => sum + c.seatsUsed, 0);
-  const activeCompanies = companies.filter(c => c.isActive).length;
-
-  if (loading) {
-    return (
-      <div className="container mx-auto p-6 space-y-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">A carregar empresas...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const totalSeats = companies.reduce((sum, c) => sum + c.sessions_allocated, 0);
+  const usedSeats = companies.reduce((sum, c) => sum + c.sessions_used, 0);
+  const activeCompanies = companies.filter(c => c.is_active).length;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -160,48 +132,64 @@ export default function AdminCompanies() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCompanies.map((company) => {
-                const available = company.seatsPurchased - company.seatsUsed;
-                const usagePercent = (company.seatsUsed / company.seatsPurchased) * 100;
-                
-                return (
-                  <TableRow key={company.id}>
-                    <TableCell className="font-medium">{company.name}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{company.planType}</Badge>
-                    </TableCell>
-                    <TableCell>{company.seatsPurchased}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {company.seatsUsed}
-                        <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary transition-all"
-                            style={{ width: `${usagePercent}%` }}
-                          />
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    Carregando...
+                  </TableCell>
+                </TableRow>
+              ) : filteredCompanies.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    Nenhuma empresa encontrada
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredCompanies.map((company) => {
+                  const available = company.sessions_allocated - company.sessions_used;
+                  const usagePercent = company.sessions_allocated > 0 
+                    ? (company.sessions_used / company.sessions_allocated) * 100 
+                    : 0;
+                  
+                  return (
+                    <TableRow key={company.id}>
+                      <TableCell className="font-medium">{company.company_name}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{company.plan_type}</Badge>
+                      </TableCell>
+                      <TableCell>{company.sessions_allocated}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {company.sessions_used}
+                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-primary transition-all"
+                              style={{ width: `${usagePercent}%` }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className={available <= 2 ? 'text-destructive font-medium' : ''}>
-                        {available}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={company.isActive ? 'secondary' : 'destructive'}>
-                        {company.isActive ? 'Ativo' : 'Inativo'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Link to={`/admin/companies/${company.id}`}>
-                        <Button variant="outline" size="sm">
-                          Gerir Convites
-                        </Button>
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                      </TableCell>
+                      <TableCell>
+                        <span className={available <= 2 ? 'text-destructive font-medium' : ''}>
+                          {available}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={company.is_active ? 'secondary' : 'destructive'}>
+                          {company.is_active ? 'Ativo' : 'Inativo'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Link to={`/admin/companies/${company.id}`}>
+                          <Button variant="outline" size="sm">
+                            Gerir Convites
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </CardContent>

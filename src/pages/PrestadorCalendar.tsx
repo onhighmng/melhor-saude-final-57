@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
-import { mockCalendarEvents, type PrestadorCalendarEvent } from '@/data/prestadorMetrics';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar as CalendarIcon, Clock } from 'lucide-react';
@@ -11,16 +12,76 @@ import { Button } from '@/components/ui/button';
 import { isSameDay } from 'date-fns';
 import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
 
+interface CalendarEvent {
+  id: string;
+  date: string;
+  time: string;
+  type: 'available' | 'session' | 'blocked';
+  clientName?: string;
+  company?: string;
+  pillar?: string;
+  status?: string;
+}
+
 const PrestadorCalendar = () => {
   const { toast } = useToast();
+  const { profile } = useAuth();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDayEventsModalOpen, setIsDayEventsModalOpen] = useState(false);
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
   const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState(false);
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load calendar events from Supabase
+  useEffect(() => {
+    const loadEvents = async () => {
+      if (!profile?.id) return;
+
+      try {
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
+
+        if (!prestador) return;
+
+        const { data: bookings } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles (name),
+            companies (company_name)
+          `)
+          .eq('prestador_id', prestador.id);
+
+        if (bookings) {
+          const events: CalendarEvent[] = bookings.map((b: any) => ({
+            id: b.id,
+            date: b.date,
+            time: b.start_time || '00:00',
+            type: 'session' as const,
+            clientName: (b.profiles as any)?.name,
+            company: (b.companies as any)?.company_name,
+            pillar: b.pillar,
+            status: b.status
+          }));
+          setCalendarEvents(events);
+        }
+      } catch (error) {
+        console.error('Error loading calendar:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
+  }, [profile?.id]);
 
   // Transform calendar events to FullScreenCalendar format
   const calendarData = useMemo(() => {
-    const groupedByDate = mockCalendarEvents.reduce((acc, event: PrestadorCalendarEvent) => {
+    const groupedByDate = calendarEvents.reduce((acc, event) => {
       const dateKey = event.date;
       if (!acc[dateKey]) {
         acc[dateKey] = [];
@@ -58,15 +119,15 @@ const PrestadorCalendar = () => {
     }));
     
     return result;
-  }, []);
+  }, [calendarEvents]);
 
   // Get events for selected date
   const selectedDateEvents = useMemo(() => {
     if (!selectedDate) return [];
-    return mockCalendarEvents.filter(event => 
+    return calendarEvents.filter(event => 
       isSameDay(new Date(event.date), selectedDate)
     ).sort((a, b) => a.time.localeCompare(b.time));
-  }, [selectedDate]);
+  }, [selectedDate, calendarEvents]);
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
@@ -74,7 +135,7 @@ const PrestadorCalendar = () => {
   };
 
   const handleEventClick = (event: any) => {
-    const calendarEvent = mockCalendarEvents.find(e => e.id === event.id);
+    const calendarEvent = calendarEvents.find(e => e.id === event.id);
     if (calendarEvent) {
       toast({
         title: calendarEvent.clientName || 'Evento',

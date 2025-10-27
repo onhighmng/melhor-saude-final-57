@@ -37,7 +37,6 @@ import {
   BookOpen
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { getProviderById, generateMockProviderDetail } from '@/data/adminMockData';
 import { formatDate } from '@/utils/dateFormatting';
 
 interface ProviderDetail {
