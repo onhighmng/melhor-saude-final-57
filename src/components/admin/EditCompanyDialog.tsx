@@ -24,7 +24,6 @@ import {
 interface Company {
   id: string;
   name: string;
-  nuit: string;
   contactEmail: string;
   contactPhone: string;
   planType: string;
@@ -54,32 +53,59 @@ export function EditCompanyDialog({
     setIsSaving(true);
     
     try {
-      // Update company in database
+      // Fetch current values for change tracking
+      const { data: currentCompany } = await supabase
+        .from('companies')
+        .select('company_name, contact_email, contact_phone, sessions_allocated, plan_type, final_notes')
+        .eq('id', company.id)
+        .single();
+
+      // Update company in database with correct column names
       const { error } = await supabase
         .from('companies')
         .update({
-          name: formData.name,
-          nuit: formData.nuit,
-          email: formData.contactEmail,
-          phone: formData.contactPhone,
+          company_name: formData.name,
+          contact_email: formData.contactEmail,
+          contact_phone: formData.contactPhone,
           sessions_allocated: formData.sessionsAllocated,
-          metadata: {
-            plan_type: formData.planType,
-            notes: formData.finalNotes
-          }
+          plan_type: formData.planType,
+          final_notes: formData.finalNotes,
+          updated_at: new Date().toISOString()
         })
         .eq('id', company.id);
 
       if (error) throw error;
 
-      // Log admin action
+      // Calculate actual changes for audit log
+      const changes = {
+        before: currentCompany,
+        after: {
+          company_name: formData.name,
+          contact_email: formData.contactEmail,
+          contact_phone: formData.contactPhone,
+          sessions_allocated: formData.sessionsAllocated,
+          plan_type: formData.planType,
+          final_notes: formData.finalNotes
+        },
+        modified_fields: Object.keys(formData).filter(key => {
+          const dbKey = key === 'name' ? 'company_name' : 
+                        key === 'contactEmail' ? 'contact_email' : 
+                        key === 'contactPhone' ? 'contact_phone' : 
+                        key === 'sessionsAllocated' ? 'sessions_allocated' : 
+                        key === 'planType' ? 'plan_type' : 
+                        key === 'finalNotes' ? 'final_notes' : key;
+          return currentCompany?.[dbKey as keyof typeof currentCompany] !== formData[key as keyof typeof formData];
+        })
+      };
+
+      // Log admin action with specific changes
       if (profile?.id) {
         await supabase.from('admin_logs').insert({
           admin_id: profile.id,
           action: 'company_updated',
           entity_type: 'company',
           entity_id: company.id,
-          changes: formData
+          details: changes
         });
       }
 
@@ -118,15 +144,6 @@ export function EditCompanyDialog({
               id="companyName"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="nuit">NUIT</Label>
-            <Input
-              id="nuit"
-              value={formData.nuit}
-              onChange={(e) => setFormData({ ...formData, nuit: e.target.value })}
             />
           </div>
 

@@ -470,6 +470,7 @@ export type Database = {
           id: string
           invite_code: string
           invited_by: string | null
+          sent_at: string | null
           sessions_allocated: number | null
           status: string | null
         }
@@ -482,6 +483,7 @@ export type Database = {
           id?: string
           invite_code: string
           invited_by?: string | null
+          sent_at?: string | null
           sessions_allocated?: number | null
           status?: string | null
         }
@@ -494,6 +496,7 @@ export type Database = {
           id?: string
           invite_code?: string
           invited_by?: string | null
+          sent_at?: string | null
           sessions_allocated?: number | null
           status?: string | null
         }
