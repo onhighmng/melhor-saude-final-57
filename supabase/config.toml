@@ -68,3 +68,6 @@ verify_jwt = false
 
 [functions.financial-assistance-chat]
 verify_jwt = false
+
+[functions.chat-assistant]
+verify_jwt = false

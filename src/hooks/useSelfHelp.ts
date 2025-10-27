@@ -1,186 +1,234 @@
-// Mock useSelfHelp hooks to replace Supabase calls
-import { useState } from 'react';
-import { mockSelfHelpContent } from '@/data/mockData';
-
-// Mock interface matching existing types exactly
-export interface SelfHelpContent {
-  id: string;
-  title: string;
-  description: string;
-  summary?: string;
-  category: 'psicologica' | 'medica' | 'juridica';
-  pillar: string;
-  type: string;
-  content_type: 'article';
-  thumbnail: string;
-  views: number;
-  likes: number;
-  view_count: number;
-  duration: string;
-  author: string;
-  tags?: string[];
-  is_published: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PsychologicalTest {
-  id: string;
-  name: string;
-  description: string;
-  test_type: string;
-  questions: any[];
-  scoring_method: string;
-  scoring_rules: any;
-  interpretation_guide: any;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface TestResult {
-  id: string;
-  test_id: string;
-  user_id?: string;
-  answers: Record<string, number>;
-  score: number;
-  interpretation: string;
-  is_anonymous: boolean;
-  consent_given: boolean;
-  completed_at: string;
-}
-
-export interface ContentAnalytics {
-  content_id: string;
-  title: string;
-  views: number;
-  likes: number;
-  total_views: number;
-  category: string;
-}
-
-const mockTests: PsychologicalTest[] = [
-  {
-    id: 'test-1',
-    name: 'Teste de Stress Laboral',
-    description: 'Avalie o seu nível de stress no trabalho',
-    test_type: 'stress_assessment',
-    questions: [],
-    scoring_method: 'sum',
-    scoring_rules: { low: 20, medium: 50, high: 80 },
-    interpretation_guide: { low: 'Baixo stress', medium: 'Stress moderado', high: 'Stress elevado' },
-    is_active: true,
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: 'test-2',
-    name: 'Questionário de Bem-Estar',
-    description: 'Avalie o seu bem-estar geral',
-    test_type: 'wellbeing_assessment',
-    questions: [],
-    scoring_method: 'average',
-    scoring_rules: { low: 2, medium: 3.5, high: 4.5 },
-    interpretation_guide: { low: 'Baixo bem-estar', medium: 'Bem-estar moderado', high: 'Bom bem-estar' },
-    is_active: true,
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2024-01-01T00:00:00Z'
-  }
-];
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { SelfHelpContent, PsychologicalTest, TestResult, ContentAnalytics } from '@/types/selfHelp';
 
 export const useSelfHelpContent = (category?: string | null) => {
-  const [content] = useState<SelfHelpContent[]>(
-    category 
-      ? mockSelfHelpContent.filter(item => item.category === category)
-      : mockSelfHelpContent
-  );
-  const [loading] = useState(false);
-  const [error] = useState<string | null>(null);
+  const [content, setContent] = useState<SelfHelpContent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchContent = () => {
-    // Mock fetch - do nothing since it's static data
-  };
+  const fetchContent = useCallback(async () => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from('self_help_content')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
 
-  const incrementViewCount = async (contentId: string) => {
-    // Mock increment - do nothing since it's static data
-    console.log('Mock: Incrementing view for content', contentId);
+      if (category) {
+        query = query.eq('category', category);
+      }
+
+      const { data, error: fetchError } = await query;
+
+      if (fetchError) throw fetchError;
+      setContent((data || []) as SelfHelpContent[]);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+      console.error('Error fetching content:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [category]);
+
+  useEffect(() => {
+    fetchContent();
+  }, [fetchContent]);
+
+  const incrementViewCount = async (contentId: string, userId?: string) => {
+    try {
+      // Track view in content_views table
+      await supabase.from('content_views').insert({
+        content_id: contentId,
+        user_id: userId || null
+      });
+
+      // Increment counter using RPC function
+      await supabase.rpc('increment_content_views', { content_id: contentId });
+
+      // Update local state optimistically
+      setContent(prev => prev.map(item => 
+        item.id === contentId 
+          ? { ...item, view_count: item.view_count + 1 }
+          : item
+      ));
+    } catch (error) {
+      console.error('Error tracking view:', error);
+    }
   };
 
   return { content, loading, error, refetch: fetchContent, incrementViewCount };
 };
 
 export const usePsychologicalTests = () => {
-  const [tests] = useState<PsychologicalTest[]>(mockTests);
-  const [loading] = useState(false);
-  const [error] = useState<string | null>(null);
+  const [tests, setTests] = useState<PsychologicalTest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchTests = () => {
-    // Mock fetch - do nothing since it's static data
-  };
+  const fetchTests = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data, error: fetchError } = await supabase
+        .from('psychological_tests')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (fetchError) throw fetchError;
+      setTests((data || []) as unknown as PsychologicalTest[]);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+      console.error('Error fetching tests:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTests();
+  }, [fetchTests]);
 
   return { tests, loading, error, refetch: fetchTests };
 };
 
 export const useTestResults = () => {
-  const [submitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const submitTestResult = async (
     testId: string,
     answers: Record<string, number>,
-    score: number,
-    interpretation: string,
-    isAnonymous: boolean = true,
-    consentGiven: boolean = false
-  ): Promise<TestResult | null> => {
-    // Mock submission - return mock result
-    const mockResult: TestResult = {
-      id: 'result-' + Date.now(),
-      test_id: testId,
-      answers,
-      score,
-      interpretation,
-      is_anonymous: isAnonymous,
-      consent_given: consentGiven,
-      completed_at: new Date().toISOString()
-    };
+    userId?: string,
+    isAnonymous: boolean = false
+  ): Promise<TestResult> => {
+    setSubmitting(true);
+    try {
+      // Get test details for scoring
+      const { data: test, error: testError } = await supabase
+        .from('psychological_tests')
+        .select('*')
+        .eq('id', testId)
+        .single();
 
-    console.log('Mock: Test result submitted', mockResult);
-    return mockResult;
+      if (testError) throw testError;
+      if (!test) throw new Error('Test not found');
+
+      // Calculate score based on test scoring rules
+      const score = Object.values(answers).reduce((sum, val) => sum + val, 0);
+
+      // Get interpretation based on score ranges
+      const interpretationGuide = test.interpretation_guide as any;
+      const interpretation = interpretationGuide?.ranges?.find(
+        (range: any) => score >= range.min && score <= range.max
+      )?.description || 'Score recorded';
+
+      // Save result to database
+      const { data: result, error: saveError } = await supabase
+        .from('test_results')
+        .insert({
+          test_id: testId,
+          user_id: userId || null,
+          answers,
+          score,
+          interpretation,
+          is_anonymous: isAnonymous,
+          consent_given: true,
+          completed_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (saveError) throw saveError;
+      return result as TestResult;
+
+    } catch (error: any) {
+      console.error('Error submitting test:', error);
+      throw error;
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const getUserTestResults = async (): Promise<TestResult[]> => {
-    // Mock user results - return empty array or mock data
-    return [];
+  const getUserTestResults = async (userId: string): Promise<TestResult[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('test_results')
+        .select('*')
+        .eq('user_id', userId)
+        .order('completed_at', { ascending: false });
+
+      if (error) throw error;
+      return (data || []) as TestResult[];
+    } catch (error) {
+      console.error('Error fetching results:', error);
+      return [];
+    }
   };
 
   return { submitTestResult, getUserTestResults, submitting };
 };
 
 export const useContentAnalytics = () => {
-  const [analytics] = useState<ContentAnalytics[]>([
-    {
-      content_id: 'content-1',
-      title: 'Como Gerir o Stress no Trabalho',
-      views: 1250,
-      likes: 89,
-      total_views: 1250,
-      category: 'Saúde Mental'
-    },
-    {
-      content_id: 'content-2',
-      title: 'Exercícios Simples para o Escritório',
-      views: 890,
-      likes: 67,
-      total_views: 890,
-      category: 'Bem-Estar Físico'
-    }
-  ]);
-  const [loading] = useState(false);
-  const [error] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<ContentAnalytics[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchAnalytics = () => {
-    // Mock fetch - do nothing since it's static data
-  };
+  const fetchAnalytics = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Get content with view counts
+      const { data: contentData, error: contentError } = await supabase
+        .from('self_help_content')
+        .select('id, title, category, view_count')
+        .eq('is_published', true)
+        .order('view_count', { ascending: false })
+        .limit(10);
+
+      if (contentError) throw contentError;
+
+      // Get time-based analytics for each content
+      const analyticsPromises = (contentData || []).map(async (content) => {
+        const now = new Date();
+        const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        const [daily, weekly, monthly] = await Promise.all([
+          supabase.from('content_views').select('id', { count: 'exact', head: true })
+            .eq('content_id', content.id).gte('viewed_at', oneDayAgo.toISOString()),
+          supabase.from('content_views').select('id', { count: 'exact', head: true })
+            .eq('content_id', content.id).gte('viewed_at', oneWeekAgo.toISOString()),
+          supabase.from('content_views').select('id', { count: 'exact', head: true })
+            .eq('content_id', content.id).gte('viewed_at', oneMonthAgo.toISOString())
+        ]);
+
+        return {
+          content_id: content.id,
+          title: content.title,
+          category: content.category || 'Geral',
+          total_views: content.view_count,
+          daily_views: daily.count || 0,
+          weekly_views: weekly.count || 0,
+          monthly_views: monthly.count || 0
+        };
+      });
+
+      const analyticsData = await Promise.all(analyticsPromises);
+      setAnalytics(analyticsData);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+      console.error('Error fetching analytics:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
   return { analytics, loading, error, refetch: fetchAnalytics };
 };
