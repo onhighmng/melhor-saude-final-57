@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import SpecialistLayout from './SpecialistLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { LiveIndicator } from '@/components/ui/live-indicator';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { handleError } from '@/utils/errorHandler';
 
 interface Case {
   id: string;
@@ -105,18 +107,17 @@ export default function AdminSpecialistTab() {
 
       setCases(formattedCases);
     } catch (error) {
-      console.error('Error loading specialist cases:', error);
+      handleError(error, {
+        title: 'Erro ao carregar casos',
+        fallbackMessage: 'Não foi possível carregar os casos do especialista'
+      });
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSkeleton variant="list" count={5} />;
   }
 
   return (

@@ -22,8 +22,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, FileText } from 'lucide-react';
 import { LiveIndicator } from '@/components/ui/live-indicator';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
+import { handleError } from '@/utils/errorHandler';
 
 // Mock sessions removed - using real data from database
 
@@ -100,8 +103,10 @@ export default function AdminSessionsTab() {
           setSessions(formattedSessions);
         }
       } catch (error) {
-        console.error('Error loading sessions:', error);
-        toast.error('Erro ao carregar sessões');
+        handleError(error, {
+          title: 'Erro ao carregar sessões',
+          fallbackMessage: 'Não foi possível carregar as sessões'
+        });
       } finally {
         setLoading(false);
       }
@@ -137,11 +142,7 @@ export default function AdminSessionsTab() {
   });
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSkeleton variant="table" />;
   }
 
   return (
@@ -223,8 +224,15 @@ export default function AdminSessionsTab() {
             <TableBody>
               {filteredSessions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                    Nenhuma sessão encontrada
+                  <TableCell colSpan={7} className="p-0">
+                    <EmptyState
+                      icon={FileText}
+                      title="Nenhuma sessão encontrada"
+                      description={statusFilter !== 'all' || pillarFilter !== 'all' || companyFilter !== 'all' || searchTerm
+                        ? "Não foram encontradas sessões com os filtros aplicados"
+                        : "Ainda não existem sessões registadas"}
+                      variant="compact"
+                    />
                   </TableCell>
                 </TableRow>
               ) : (

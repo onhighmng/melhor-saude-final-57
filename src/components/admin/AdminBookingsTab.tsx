@@ -10,6 +10,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { PAGINATION_SIZE } from '@/config/constants';
 import { LiveIndicator } from '@/components/ui/live-indicator';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
+import { handleError } from '@/utils/errorHandler';
 
 interface Booking {
   id: string;
@@ -59,11 +62,9 @@ export default function AdminBookingsTab() {
 
       setBookings(formatted);
     } catch (error: any) {
-      console.error('Error loading bookings:', error);
-      toast({
-        title: 'Erro',
-        description: 'Erro ao carregar marcações',
-        variant: 'destructive'
+      handleError(error, {
+        title: 'Erro ao carregar agendamentos',
+        fallbackMessage: 'Não foi possível carregar os agendamentos'
       });
     } finally {
       setLoading(false);
@@ -108,6 +109,15 @@ export default function AdminBookingsTab() {
   );
 
   const datesWithBookings = bookings.map(b => parseISO(b.date));
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <LoadingSkeleton variant="card" className="lg:col-span-2" />
+        <LoadingSkeleton variant="card" />
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -180,10 +190,12 @@ export default function AdminBookingsTab() {
         </CardHeader>
         <CardContent>
           {bookingsForSelectedDate.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <CalendarIcon className="h-12 w-12 mx-auto mb-2 opacity-20" />
-              <p>Sem agendamentos neste dia</p>
-            </div>
+            <EmptyState
+              icon={CalendarIcon}
+              title="Sem agendamentos"
+              description="Não há agendamentos neste dia"
+              variant="compact"
+            />
           ) : (
             <div className="space-y-3">
               {bookingsForSelectedDate.map((booking, idx) => (
