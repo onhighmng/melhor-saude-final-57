@@ -50,8 +50,8 @@ export const useResourceStats = (): ResourceStats => {
     
     const distribution: PillarStats[] = Object.entries(pillarCounts).map(([pillar, count]) => ({
       pillar,
-      count,
-      percentage: total > 0 ? Math.round((count / total) * 100) : 0,
+      count: count as number,
+      percentage: total > 0 ? Math.round(((count as number) / total) * 100) : 0,
       label: getPillarLabel(pillar)
     }));
     

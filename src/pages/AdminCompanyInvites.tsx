@@ -16,12 +16,13 @@ interface InviteCode {
   company_id: string;
   email: string | null;
   invite_code: string;
-  status: 'pending' | 'accepted' | 'revoked' | 'expired';
+  status: 'pending' | 'accepted' | 'expired';
   sessions_allocated?: number;
   created_at: string;
   expires_at: string | null;
-  used_at: string | null;
-  used_by: string | null;
+  accepted_at: string | null;
+  invited_by: string | null;
+  sent_at: string | null;
 }
 
 function generateInviteCode(companyId: string): string {
@@ -77,7 +78,10 @@ export default function AdminCompanyInvites() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setInviteCodes(codes || []);
+      setInviteCodes((codes || []).map(c => ({
+        ...c,
+        status: c.status as 'pending' | 'accepted' | 'expired'
+      })));
     } catch (error: any) {
       toast({
         title: "Erro ao carregar dados",
@@ -133,12 +137,13 @@ export default function AdminCompanyInvites() {
         const inviteCode = generateInviteCode(id);
         
         const { data, error } = await supabase
-          .from('employee_invites')
+          .from('invites')
           .insert({
             company_id: id,
-            email: undefined,
+            email: null,
             invite_code: inviteCode,
-            is_used: false,
+            status: 'pending',
+            invited_by: profile.id,
             expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
           })
           .select()
@@ -169,14 +174,14 @@ export default function AdminCompanyInvites() {
     try {
       const { error } = await supabase
         .from('invites')
-        .update({ status: 'revoked' })
+        .update({ status: 'expired' })
         .eq('id', codeId);
 
       if (error) throw error;
 
       setInviteCodes(prev => prev.map(code => 
         code.id === codeId 
-          ? { ...code, status: 'revoked' as const }
+          ? { ...code, status: 'expired' as const }
           : code
       ));
       
@@ -200,18 +205,19 @@ export default function AdminCompanyInvites() {
       // Revoke old code
       await supabase
         .from('invites')
-        .update({ status: 'revoked' })
+        .update({ status: 'expired' })
         .eq('id', codeId);
 
       // Create new code
       const inviteCode = generateInviteCode(id);
       const { data: newCode, error } = await supabase
-        .from('employee_invites')
+        .from('invites')
         .insert({
           company_id: id,
-          email: undefined,
+          email: null,
           invite_code: inviteCode,
-          is_used: false,
+          status: 'pending',
+          invited_by: profile.id,
           expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
         })
         .select()
@@ -222,9 +228,9 @@ export default function AdminCompanyInvites() {
       // Update local state
       setInviteCodes(prev => [
         ...prev.map(code => 
-          code.id === codeId ? { ...code, status: 'revoked' as const } : code
+          code.id === codeId ? { ...code, status: 'expired' as const } : code
         ),
-        { ...newCode, status: newCode.status as 'pending' | 'accepted' | 'revoked' | 'expired' }
+        { ...newCode, status: newCode.status as 'pending' | 'accepted' | 'expired' }
       ]);
       
       toast({
@@ -246,8 +252,6 @@ export default function AdminCompanyInvites() {
         return <Badge variant="secondary">Pendente</Badge>;
       case 'accepted':
         return <Badge variant="default">Aceito</Badge>;
-      case 'revoked':
-        return <Badge variant="destructive">Revogado</Badge>;
       case 'expired':
         return <Badge variant="outline">Expirado</Badge>;
       default:
@@ -353,7 +357,6 @@ export default function AdminCompanyInvites() {
               <SelectItem value="all">Todos os estados</SelectItem>
               <SelectItem value="pending">Pendente</SelectItem>
               <SelectItem value="accepted">Aceito</SelectItem>
-              <SelectItem value="revoked">Revogado</SelectItem>
               <SelectItem value="expired">Expirado</SelectItem>
             </SelectContent>
           </Select>
@@ -460,7 +463,7 @@ export default function AdminCompanyInvites() {
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         )}
-                        {(code.status === 'pending' || code.status === 'revoked') && (
+                        {(code.status === 'pending' || code.status === 'expired') && (
                           <Button
                             size="sm"
                             variant="ghost"

@@ -1,165 +1,21 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { AlertCircle, Users, Clock, TrendingUp, CheckCircle, XCircle, Info } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { AlertCircle, Users, Clock, TrendingUp } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-interface ChangeRequest {
-  id: string;
-  user: {
-    name: string;
-    avatar?: string;
-  };
-  pillar: "Saúde Mental" | "Bem-estar Físico" | "Assistência Financeira" | "Assistência Jurídica";
-  currentProvider: {
-    name: string;
-    avatar?: string;
-    atCapacity?: boolean;
-  };
-  preferences: string;
-  reason: string;
-  slaRemaining: number;
-  status: "pending" | "approved" | "rejected";
-  createdAt: string;
-}
-
-// Mock data removed - using real database queries
-
-const getPillarColor = (pillar: string) => {
-  switch (pillar) {
-    case "Saúde Mental": return "bg-blue-100 text-blue-800 border-blue-200";
-    case "Bem-estar Físico": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "Assistência Financeira": return "bg-green-100 text-green-800 border-green-200";
-    case "Assistência Jurídica": return "bg-purple-100 text-purple-800 border-purple-200";
-    default: return "bg-gray-100 text-gray-800 border-gray-200";
-  }
-};
+// This page requires the provider_change_requests table which doesn't exist yet
+// Displaying placeholder until the table is created
 
 const AdminProviderChangeRequests = () => {
-  const [requests, setRequests] = useState<ChangeRequest[]>([]);
-  const [selectedRequest, setSelectedRequest] = useState<ChangeRequest | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
-  const [requestInfoMessage, setRequestInfoMessage] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  const pendingRequests = requests.filter(r => r.status === "pending");
-  const slaViolations = pendingRequests.filter(r => r.slaRemaining <= 1).length;
-  const capacityWarnings = pendingRequests.filter(r => r.currentProvider.atCapacity).length;
+  const { toast } = useToast();
 
   useEffect(() => {
-    loadChangeRequests();
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "A gestão de pedidos de mudança de prestador estará disponível em breve.",
+    });
   }, []);
-
-  const loadChangeRequests = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('provider_change_requests')
-        .select(`
-          *,
-          user:profiles!user_id(name, avatar_url),
-          current_prestador:prestadores!current_prestador_id(id, name, photo_url)
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Transform to ChangeRequest format
-      const transformedRequests: ChangeRequest[] = (data || []).map(req => {
-        const createdAt = new Date(req.created_at);
-        const daysSinceRequest = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
-        const slaRemaining = 7 - daysSinceRequest;
-
-        return {
-          id: req.id,
-          user: { name: req.user?.name || 'Unknown', avatar: req.user?.avatar_url },
-          pillar: req.pillar as any,
-          currentProvider: { 
-            name: req.current_prestador?.name || 'Unknown',
-            avatar: req.current_prestador?.photo_url 
-          },
-          preferences: req.preferences || '',
-          reason: req.reason || '',
-          slaRemaining,
-          status: req.status as any,
-          createdAt: createdAt.toISOString().split('T')[0]
-        };
-      });
-
-      setRequests(transformedRequests);
-    } catch (error) {
-      console.error('Error loading change requests:', error);
-      toast.error('Erro ao carregar pedidos de mudança');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleApprove = async (requestId: string) => {
-    try {
-      const { error } = await supabase
-        .from('provider_change_requests')
-        .update({ 
-          status: 'approved',
-          resolved_at: new Date().toISOString(),
-          resolved_by: (await supabase.auth.getUser()).data.user?.id
-        })
-        .eq('id', requestId);
-
-      if (error) throw error;
-
-      setRequests(prev => prev.map(r => 
-        r.id === requestId ? { ...r, status: "approved" as const } : r
-      ));
-      toast.success('Pedido aprovado com sucesso');
-    } catch (error) {
-      console.error('Error approving request:', error);
-      toast.error('Erro ao aprovar pedido');
-    }
-  };
-
-  const handleReject = async (requestId: string, reason: string) => {
-    try {
-      const { error } = await supabase
-        .from('provider_change_requests')
-        .update({ 
-          status: 'rejected',
-          resolved_at: new Date().toISOString(),
-          resolved_by: (await supabase.auth.getUser()).data.user?.id
-        })
-        .eq('id', requestId);
-
-      if (error) throw error;
-
-      setRequests(prev => prev.map(r => 
-        r.id === requestId ? { ...r, status: "rejected" as const } : r
-      ));
-      setRejectReason("");
-      setSelectedRequest(null);
-      toast.success('Pedido rejeitado');
-    } catch (error) {
-      console.error('Error rejecting request:', error);
-      toast.error('Erro ao rejeitar pedido');
-    }
-  };
-
-  const handleRequestInfo = (requestId: string, message: string) => {
-    console.log(`Requesting info from user for request ${requestId}: ${message}`);
-    setRequestInfoMessage("");
-    setSelectedRequest(null);
-  };
-
-  const getSLABadgeVariant = (days: number) => {
-    if (days <= 1) return "destructive";
-    if (days <= 3) return "outline";
-    return "secondary";
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8">
@@ -184,7 +40,7 @@ const AdminProviderChangeRequests = () => {
               <Clock className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{pendingRequests.length}</div>
+              <div className="text-2xl font-bold text-foreground">0</div>
               <p className="text-xs text-muted-foreground">
                 Aguardam decisão
               </p>
@@ -199,9 +55,9 @@ const AdminProviderChangeRequests = () => {
               <AlertCircle className="h-4 w-4 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{Math.round((slaViolations / pendingRequests.length) * 100) || 0}%</div>
+              <div className="text-2xl font-bold text-foreground">0%</div>
               <p className="text-xs text-muted-foreground">
-                {slaViolations} violados esta semana
+                0 violados esta semana
               </p>
             </CardContent>
           </Card>
@@ -214,7 +70,7 @@ const AdminProviderChangeRequests = () => {
               <Users className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">{capacityWarnings}</div>
+              <div className="text-2xl font-bold text-foreground">0</div>
               <p className="text-xs text-muted-foreground">
                 Prestadores saturados
               </p>
@@ -229,7 +85,7 @@ const AdminProviderChangeRequests = () => {
               <TrendingUp className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">84%</div>
+              <div className="text-2xl font-bold text-foreground">--</div>
               <p className="text-xs text-muted-foreground">
                 Utilização média
               </p>
@@ -237,168 +93,21 @@ const AdminProviderChangeRequests = () => {
           </Card>
         </div>
 
-        {/* Change Requests Table */}
+        {/* Empty State */}
         <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">Pedidos de Mudança</CardTitle>
           </CardHeader>
           <CardContent>
-            {pendingRequests.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <Users className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                  Sem pedidos pendentes
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Todos os pedidos foram processados
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left p-4 font-medium text-muted-foreground">Utilizador</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">Pilar</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">Prestador Atual</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">Preferências</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">Motivo</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">SLA</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pendingRequests.map((request) => (
-                      <tr key={request.id} className="border-b border-border hover:bg-muted/50">
-                        <td className="p-4">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={request.user.avatar} alt={request.user.name} />
-                              <AvatarFallback>{request.user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium text-foreground">{request.user.name}</span>
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <Badge variant="outline" className={`text-xs ${getPillarColor(request.pillar)}`}>
-                            {request.pillar}
-                          </Badge>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={request.currentProvider.avatar} alt={request.currentProvider.name} />
-                              <AvatarFallback>{request.currentProvider.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <span className="font-medium text-foreground">{request.currentProvider.name}</span>
-                              {request.currentProvider.atCapacity && (
-                                <div className="flex items-center gap-1 mt-1">
-                                  <AlertCircle className="h-3 w-3 text-red-600" />
-                                  <span className="text-xs text-red-600">Capacidade máxima atingida</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <span className="text-sm text-muted-foreground">{request.preferences}</span>
-                        </td>
-                        <td className="p-4">
-                          <span className="text-sm text-foreground">{request.reason}</span>
-                        </td>
-                        <td className="p-4">
-                          <Badge variant={getSLABadgeVariant(request.slaRemaining)}>
-                            {request.slaRemaining === 1 ? "1 dia" : `${request.slaRemaining} dias`}
-                          </Badge>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              size="sm"
-                              onClick={() => handleApprove(request.id)}
-                              className="h-8 px-3 bg-green-600 hover:bg-green-700 text-white"
-                            >
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Aprovar
-                            </Button>
-                            
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-8 px-3 border-red-200 text-red-700 hover:bg-red-50"
-                                  onClick={() => setSelectedRequest(request)}
-                                >
-                                  <XCircle className="h-3 w-3 mr-1" />
-                                  Rejeitar
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Rejeitar Pedido</DialogTitle>
-                                  <DialogDescription>
-                                    Tem a certeza que deseja rejeitar o pedido de {request.user.name}?
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <Textarea
-                                  placeholder="Indique o motivo da rejeição..."
-                                  value={rejectReason}
-                                  onChange={(e) => setRejectReason(e.target.value)}
-                                />
-                                <DialogFooter>
-                                  <Button
-                                    onClick={() => handleReject(request.id, rejectReason)}
-                                    className="bg-red-600 hover:bg-red-700 text-white"
-                                  >
-                                    Confirmar Rejeição
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-8 px-3"
-                                  onClick={() => setSelectedRequest(request)}
-                                >
-                                  <Info className="h-3 w-3 mr-1" />
-                                  Pedir Info
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Pedir Mais Informações</DialogTitle>
-                                  <DialogDescription>
-                                    Solicitar informações adicionais a {request.user.name}
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <Textarea
-                                  placeholder="Que informações necessita?"
-                                  value={requestInfoMessage}
-                                  onChange={(e) => setRequestInfoMessage(e.target.value)}
-                                />
-                                <DialogFooter>
-                                  <Button
-                                    onClick={() => handleRequestInfo(request.id, requestInfoMessage)}
-                                  >
-                                    Enviar Pedido
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Users className="h-12 w-12 text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-muted-foreground mb-2">
+                Funcionalidade em Desenvolvimento
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                A tabela <code className="bg-muted px-2 py-1 rounded">provider_change_requests</code> precisa ser criada na base de dados para ativar esta funcionalidade.
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -51,7 +51,6 @@ const AdminUsersManagement = () => {
         .from('company_employees')
         .select(`
           *,
-          user:profiles(id, name, email, avatar_url),
           company:companies(id, company_name)
         `)
         .eq('id', employeeId)
@@ -60,43 +59,43 @@ const AdminUsersManagement = () => {
       if (error) throw error;
       if (!employeeData) return;
 
+      // Get user profile separately
+      const { data: userData } = await supabase
+        .from('profiles')
+        .select('id, name, email, avatar_url')
+        .eq('id', employeeData.user_id)
+        .single();
+
       // Get bookings for this employee
       const { data: bookings } = await supabase
         .from('bookings')
         .select(`
           *,
-          prestador:prestadores(id, name, photo_url),
-          pillar:pillars(id, name)
+          prestador:prestadores(id, name, photo_url)
         `)
         .eq('user_id', employeeData.user_id)
-        .order('scheduled_for', { ascending: false })
+        .order('booking_date', { ascending: false })
         .limit(10);
 
-      // Get feedback ratings
-      const { data: feedback } = await supabase
-        .from('session_feedback')
-        .select('rating')
-        .in('booking_id', bookings?.map(b => b.id) || []);
-
-      const avgRating = feedback?.length
-        ? feedback.reduce((sum, f) => sum + (f.rating || 0), 0) / feedback.length
+      const avgRating = bookings && bookings.length > 0
+        ? bookings.reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length
         : 0;
 
       // Transform to modal format
       const employee = {
         id: employeeData.id,
-        name: employeeData.user?.name || 'Unknown',
-        email: employeeData.user?.email || '',
+        name: userData?.name || 'Unknown',
+        email: userData?.email || '',
         company: employeeData.company?.company_name || '',
         sessions: {
           used: employeeData.sessions_used || 0,
           total: employeeData.sessions_allocated || 0
         },
         rating: Math.round(avgRating * 10) / 10,
-        objectives: employeeData.onboarding_goals || [],
+        objectives: [],
         sessionHistory: (bookings || []).map(b => ({
-          date: new Date(b.scheduled_for).toLocaleDateString('pt-PT'),
-          category: b.pillar?.name || 'N/A',
+          date: b.booking_date ? new Date(b.booking_date).toLocaleDateString('pt-PT') : 'N/A',
+          category: b.pillar || 'N/A',
           provider: b.prestador?.name || 'N/A'
         }))
       };

@@ -108,23 +108,24 @@ const Demo = () => {
       features: ['Gestão de Sessões', 'Disponibilidade', 'Perfil', 'Vídeos'],
       color: 'bg-green-500'
     },
-    {
-      ...mockHRUser,
-      title: 'Recursos Humanos',
-      description: 'Gerir colaboradores e acompanhar métricas da empresa',
-      icon: Building2,
-      role: 'hr' as const,
-      dashboardPath: '/company/dashboard',
-      quickLinks: [
-        { label: 'Dashboard', path: '/company/dashboard', icon: BarChart3 },
-        { label: 'Colaboradores', path: '/company/employees', icon: Users },
-        { label: 'Convites', path: '/company/invites', icon: ArrowRight },
-        { label: 'Relatórios', path: '/company/reports', icon: BarChart3 },
-        { label: 'Configurações', path: '/company/settings', icon: Settings }
-      ],
-      features: ['Gestão de Colaboradores', 'Relatórios', 'Convites', 'Configurações'],
-      color: 'bg-purple-500'
-    },
+  {
+    ...mockHRUser,
+    title: 'Recursos Humanos',
+    description: 'Gerir colaboradores e acompanhar métricas da empresa',
+    icon: Building2,
+    role: 'hr' as const,
+    company: 'Empresa Demo',
+    dashboardPath: '/company/dashboard',
+    quickLinks: [
+      { label: 'Dashboard', path: '/company/dashboard', icon: BarChart3 },
+      { label: 'Colaboradores', path: '/company/employees', icon: Users },
+      { label: 'Convites', path: '/company/invites', icon: ArrowRight },
+      { label: 'Relatórios', path: '/company/reports', icon: BarChart3 },
+      { label: 'Configurações', path: '/company/settings', icon: Settings }
+    ],
+    features: ['Gestão de Colaboradores', 'Relatórios', 'Convites', 'Configurações'],
+    color: 'bg-purple-500'
+  },
     {
       ...mockAdminUser,
       title: 'Administrador',
@@ -331,11 +332,11 @@ const Demo = () => {
                         {demoUser.description}
                       </p>
                       
-                      <div className="space-y-2">
+                       <div className="space-y-2">
                         <div className="text-xs space-y-1 bg-muted/50 p-2 rounded">
                           <p><strong>Nome:</strong> {demoUser.name}</p>
                           <p><strong>Email:</strong> {demoUser.email}</p>
-                          {demoUser.company && (
+                          {'company' in demoUser && demoUser.company && (
                             <p><strong>Empresa:</strong> {demoUser.company}</p>
                           )}
                         </div>
