@@ -32,47 +32,6 @@ import { Label } from '@/components/ui/label';
 import { GitBranch, Bot, UserCog, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Mock data
-const mockPendingCases = [
-  {
-    id: '1',
-    collaborator: 'Ana Silva',
-    company: 'Tech Corp',
-    pillar: 'Saúde Mental',
-    origin: 'Bot',
-    priority: 'high',
-    requestDate: '2025-10-13 09:30',
-    symptoms: 'Ansiedade, insónia',
-  },
-  {
-    id: '2',
-    collaborator: 'Carlos Santos',
-    company: 'Innovation Ltd',
-    pillar: 'Bem-Estar Físico',
-    origin: 'Profissional de Permanencia',
-    priority: 'medium',
-    requestDate: '2025-10-13 10:15',
-    symptoms: 'Dores nas costas',
-  },
-  {
-    id: '3',
-    collaborator: 'Beatriz Ferreira',
-    company: 'StartUp Inc',
-    pillar: 'Assistência Financeira',
-    origin: 'Bot',
-    priority: 'low',
-    requestDate: '2025-10-13 11:00',
-    symptoms: 'Planeamento orçamental',
-  },
-];
-
-const mockSpecialists = [
-  { id: '1', name: 'Dr. João Costa', specialty: 'Saúde Mental' },
-  { id: '2', name: 'Dra. Maria Oliveira', specialty: 'Bem-Estar Físico' },
-  { id: '3', name: 'Dr. Pedro Alves', specialty: 'Assistência Financeira' },
-  { id: '4', name: 'Dra. Sofia Martins', specialty: 'Assistência Jurídica' },
-];
-
 const priorityColors = {
   high: 'bg-red-500/10 text-red-700 dark:text-red-400',
   medium: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',

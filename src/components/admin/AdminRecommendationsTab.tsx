@@ -1,8 +1,11 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Brain, Heart, DollarSign, Scale, TrendingUp, ArrowRight } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface Recommendation {
   id: string;
@@ -16,63 +19,110 @@ interface Recommendation {
   status: 'pending' | 'sent' | 'viewed';
 }
 
-const mockRecommendations: Recommendation[] = [
-  {
-    id: '1',
-    employeeName: 'Maria Silva',
-    employeeInitials: 'MS',
-    pillar: 'saude_mental',
-    reason: 'Feedback indica stress elevado',
-    resourceTitle: 'Gestão de Stress no Trabalho',
-    resourceType: 'Artigo',
-    confidence: 92,
-    status: 'pending'
-  },
-  {
-    id: '2',
-    employeeName: 'João Santos',
-    employeeInitials: 'JS',
-    pillar: 'bem_estar_fisico',
-    reason: 'Interesse em exercício físico',
-    resourceTitle: 'Rotina de Exercícios em Casa',
-    resourceType: 'Vídeo',
-    confidence: 87,
-    status: 'sent'
-  },
-  {
-    id: '3',
-    employeeName: 'Ana Costa',
-    employeeInitials: 'AC',
-    pillar: 'assistencia_financeira',
-    reason: 'Completou sessão de planeamento',
-    resourceTitle: 'Planeamento Financeiro Básico',
-    resourceType: 'Guia',
-    confidence: 95,
-    status: 'viewed'
-  },
-  {
-    id: '4',
-    employeeName: 'Pedro Oliveira',
-    employeeInitials: 'PO',
-    pillar: 'saude_mental',
-    reason: 'Padrão de uso indica ansiedade',
-    resourceTitle: 'Exercícios de Respiração',
-    resourceType: 'Vídeo',
-    confidence: 89,
-    status: 'pending'
-  },
-  {
-    id: '5',
-    employeeName: 'Sofia Rodrigues',
-    employeeInitials: 'SR',
-    pillar: 'assistencia_juridica',
-    reason: 'Questões sobre direitos laborais',
-    resourceTitle: 'Direitos do Trabalhador',
-    resourceType: 'Artigo',
-    confidence: 84,
-    status: 'sent'
-  }
-];
+const pillarIcons = {
+  saude_mental: Brain,
+  bem_estar_fisico: Heart,
+  assistencia_financeira: DollarSign,
+  assistencia_juridica: Scale
+};
+
+const pillarColors = {
+  saude_mental: 'bg-blue-500/10 text-blue-700 border-blue-200',
+  bem_estar_fisico: 'bg-yellow-500/10 text-yellow-700 border-yellow-200',
+  assistencia_financeira: 'bg-green-500/10 text-green-700 border-green-200',
+  assistencia_juridica: 'bg-purple-500/10 text-purple-700 border-purple-200'
+};
+
+const statusColors = {
+  pending: 'bg-yellow-500/10 text-yellow-700 border-yellow-200',
+  sent: 'bg-blue-500/10 text-blue-700 border-blue-200',
+  viewed: 'bg-green-500/10 text-green-700 border-green-200'
+};
+
+const statusLabels = {
+  pending: 'Pendente',
+  sent: 'Enviado',
+  viewed: 'Visualizado'
+};
+
+export default function AdminRecommendationsTab() {
+  const { toast } = useToast();
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRecommendations();
+  }, []);
+
+  const loadRecommendations = async () => {
+    try {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from('resource_recommendations')
+        .select(`
+          *,
+          user:profiles(name),
+          resource:resources(title, type)
+        `)
+        .order('confidence_score', { ascending: false });
+
+      if (error) throw error;
+
+      const recs = (data || []).map((rec: any) => {
+        const userName = rec.user?.name || 'Unknown';
+        const initials = userName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
+        const resourceTitle = rec.resource?.title || '';
+        const resourceType = rec.resource?.type || 'Artigo';
+
+        return {
+          id: rec.id,
+          employeeName: userName,
+          employeeInitials: initials,
+          pillar: rec.pillar,
+          reason: rec.reason || 'N/A',
+          resourceTitle,
+          resourceType,
+          confidence: rec.confidence_score || 0,
+          status: rec.status as 'pending' | 'sent' | 'viewed'
+        };
+      });
+
+      setRecommendations(recs);
+    } catch (error) {
+      console.error('Error loading recommendations:', error);
+      toast({
+        title: 'Erro ao carregar recomendações',
+        description: 'Não foi possível carregar as recomendações.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSend = async (recId: string) => {
+    try {
+      await supabase
+        .from('resource_recommendations')
+        .update({ status: 'sent' })
+        .eq('id', recId);
+
+      toast({
+        title: 'Recomendação enviada',
+        description: 'A recomendação foi enviada com sucesso.',
+      });
+
+      await loadRecommendations();
+    } catch (error) {
+      console.error('Error sending recommendation:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível enviar a recomendação.',
+        variant: 'destructive'
+      });
+    }
+  };
 
 const pillarIcons = {
   saude_mental: Brain,
@@ -153,7 +203,16 @@ export function AdminRecommendationsTab() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {mockRecommendations.map((rec) => {
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Carregando recomendações...
+              </div>
+            ) : recommendations.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Nenhuma recomendação disponível
+              </div>
+            ) : (
+              recommendations.map((rec) => {
               const PillarIcon = pillarIcons[rec.pillar as keyof typeof pillarIcons];
               const pillarColor = pillarColors[rec.pillar as keyof typeof pillarColors];
 
@@ -203,12 +262,13 @@ export function AdminRecommendationsTab() {
                     </Badge>
 
                     {rec.status === 'pending' && (
-                      <Button size="sm">Enviar</Button>
+                      <Button size="sm" onClick={() => handleSend(rec.id)}>Enviar</Button>
                     )}
                   </div>
                 </div>
               );
-            })}
+              }))
+            )}
           </div>
         </CardContent>
       </Card>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,34 +26,117 @@ import {
   Clock
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockCallRequests, mockEspecialistaSessions, mockAdminAlerts, mockNegativeFeedback, mockInactiveUsers } from '@/data/especialistaGeralMockData';
-import { CallRequest } from '@/types/specialist';
-import { useCompanyFilter } from '@/hooks/useCompanyFilter';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
+import { pt } from 'date-fns/locale';
 
 const AdminAlertsTab = () => {
   const { t } = useTranslation('admin');
   const { toast } = useToast();
-  const { filterByCompanyAccess } = useCompanyFilter();
   const [activeTab, setActiveTab] = useState('calls');
-  
-  // Filter data by company access
-  const filteredCallRequests = filterByCompanyAccess(mockCallRequests.filter(req => req.status === 'pending'));
-  const filteredSessions = filterByCompanyAccess(mockEspecialistaSessions.filter(s => s.status === 'scheduled' && s.date === new Date().toISOString().split('T')[0]));
-  const filteredNegativeFeedback = filterByCompanyAccess(mockNegativeFeedback);
-  const filteredInactiveUsers = filterByCompanyAccess(mockInactiveUsers);
+  const [callRequests, setCallRequests] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [negativeFeedback, setNegativeFeedback] = useState<any[]>([]);
+  const [inactiveUsers, setInactiveUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleCallRequest = (request: CallRequest) => {
+  useEffect(() => {
+    loadAlerts();
+  }, []);
+
+  const loadAlerts = async () => {
+    try {
+      setLoading(true);
+      
+      const today = new Date().toISOString().split('T')[0];
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+      // Load pending call requests
+      const { data: callsData, error: callsError } = await supabase
+        .from('chat_sessions')
+        .select('*, user:profiles(name)')
+        .eq('phone_contact_made', true)
+        .is('session_booked_by_specialist', null);
+
+      if (callsError) throw callsError;
+
+      // Load today's sessions
+      const { data: sessionsData, error: sessionsError } = await supabase
+        .from('bookings')
+        .select('*, user:profiles(name), provider:prestadores!prestador_id(user:profiles(name))')
+        .eq('date', today)
+        .eq('status', 'scheduled');
+
+      if (sessionsError) throw sessionsError;
+
+      // Load negative feedback
+      const { data: feedbackData, error: feedbackError } = await supabase
+        .from('feedback')
+        .select('*, user:profiles(name)')
+        .lt('rating', 3)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (feedbackError) throw feedbackError;
+
+      // Load inactive users (last seen > 30 days ago)
+      const { data: inactiveData, error: inactiveError } = await supabase
+        .from('profiles')
+        .select('*, company_employees(company:companies(company_name))')
+        .lt('last_seen', thirtyDaysAgo)
+        .not('role', 'eq', 'prestador');
+
+      if (inactiveError) throw inactiveError;
+
+      setCallRequests(callsData || []);
+      setSessions(sessionsData || []);
+      setNegativeFeedback(feedbackData || []);
+      setInactiveUsers(inactiveData || []);
+    } catch (error) {
+      console.error('Error loading alerts:', error);
+      toast({
+        title: 'Erro ao carregar alertas',
+        description: 'Não foi possível carregar os alertas do sistema.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredCallRequests = callRequests;
+  const filteredSessions = sessions;
+  const filteredNegativeFeedback = negativeFeedback;
+  const filteredInactiveUsers = inactiveUsers;
+
+  const handleCallRequest = (request: any) => {
     toast({
       title: 'Ligação iniciada',
-      description: `Ligando para ${request.user_phone}`,
+      description: `Ligando para ${request.user_phone || 'usuario'}`,
     });
   };
 
-  const handleMarkResolved = (requestId: string) => {
-    toast({
-      title: 'Pedido resolvido',
-      description: 'O pedido foi marcado como resolvido.',
-    });
+  const handleMarkResolved = async (sessionId: string) => {
+    try {
+      await supabase
+        .from('chat_sessions')
+        .update({ session_booked_by_specialist: true })
+        .eq('id', sessionId);
+      
+      toast({
+        title: 'Pedido resolvido',
+        description: 'O pedido foi marcado como resolvido.',
+      });
+      
+      await loadAlerts();
+    } catch (error) {
+      console.error('Error resolving request:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível marcar o pedido como resolvido.',
+        variant: 'destructive'
+      });
+    }
   };
 
   const getWaitTimeColor = (waitTime: number) => {

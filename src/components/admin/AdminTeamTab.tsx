@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Search, UserPlus, Shield, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TeamMember {
   id: string;
@@ -42,79 +44,71 @@ interface TeamMember {
   status: 'active' | 'inactive';
 }
 
-const mockTeamMembers: TeamMember[] = [
-  {
-    id: '1',
-    name: 'Ana Silva',
-    email: 'ana.silva@admin.com',
-    role: 'super_admin',
-    permissions: {
-      users: true,
-      companies: true,
-      providers: true,
-      sessions: true,
-      reports: true,
-      settings: true,
-    },
-    lastActive: '2024-10-13T10:30:00',
-    status: 'active',
-  },
-  {
-    id: '2',
-    name: 'Carlos Mendes',
-    email: 'carlos.mendes@admin.com',
-    role: 'admin',
-    permissions: {
-      users: true,
-      companies: true,
-      providers: true,
-      sessions: true,
-      reports: true,
-      settings: false,
-    },
-    lastActive: '2024-10-13T09:15:00',
-    status: 'active',
-  },
-  {
-    id: '3',
-    name: 'Rita Costa',
-    email: 'rita.costa@admin.com',
-    role: 'manager',
-    permissions: {
-      users: true,
-      companies: true,
-      providers: false,
-      sessions: true,
-      reports: true,
-      settings: false,
-    },
-    lastActive: '2024-10-12T18:45:00',
-    status: 'active',
-  },
-  {
-    id: '4',
-    name: 'João Ferreira',
-    email: 'joao.ferreira@admin.com',
-    role: 'support',
-    permissions: {
-      users: true,
-      companies: false,
-      providers: false,
-      sessions: true,
-      reports: false,
-      settings: false,
-    },
-    lastActive: '2024-10-10T14:20:00',
-    status: 'inactive',
-  },
-];
-
+// TODO: Migrate to load from user_roles and profiles tables
 const AdminTeamTab = () => {
   const { t } = useTranslation('admin');
   const { toast } = useToast();
-  const [teamMembers, setTeamMembers] = useState(mockTeamMembers);
+  const { profile } = useAuth();
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadTeamMembers();
+  }, []);
+
+  const loadTeamMembers = async () => {
+    try {
+      setLoading(true);
+
+      const { data: adminUsers, error } = await supabase
+        .from('user_roles')
+        .select(`
+          role,
+          user:profiles(id, name, email, last_seen, is_active)
+        `)
+        .in('role', ['admin', 'super_admin', 'manager', 'support']);
+
+      if (error) throw error;
+
+      const team = (adminUsers || []).map((adminUser: any) => {
+        const user = adminUser.user;
+        const role = adminUser.role;
+        
+        // Define permissions based on role
+        const permissions = {
+          users: true,
+          companies: role !== 'support',
+          providers: ['super_admin', 'admin'].includes(role),
+          sessions: true,
+          reports: role !== 'support',
+          settings: role === 'super_admin',
+        };
+
+        return {
+          id: user?.id || '',
+          name: user?.name || 'Unknown',
+          email: user?.email || '',
+          role: role as 'super_admin' | 'admin' | 'manager' | 'support',
+          permissions,
+          lastActive: user?.last_seen || new Date().toISOString(),
+          status: user?.is_active ? ('active' as const) : ('inactive' as const),
+        };
+      });
+
+      setTeamMembers(team);
+    } catch (error) {
+      console.error('Error loading team members:', error);
+      toast({
+        title: 'Erro ao carregar equipa',
+        description: 'Não foi possível carregar os membros da equipa.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getRoleBadge = (role: string) => {
     const variants = {
@@ -155,11 +149,55 @@ const AdminTeamTab = () => {
     );
   };
 
-  const handleSavePermissions = () => {
-    toast({
-      title: 'Permissões Atualizadas',
-      description: 'As permissões foram guardadas com sucesso.',
-    });
+  const handleSavePermissions = async () => {
+    if (!selectedMember || !profile) return;
+
+    try {
+      // Save permissions to profiles.metadata
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          metadata: {
+            ...selectedMember,
+            permissions: selectedMember.permissions,
+            updated_by: profile.id,
+            updated_at: new Date().toISOString()
+          }
+        })
+        .eq('id', selectedMember.id);
+
+      if (updateError) throw updateError;
+
+      // Log admin action
+      const { error: logError } = await supabase
+        .from('admin_logs')
+        .insert({
+          admin_id: profile.id,
+          action: 'update_team_permissions',
+          entity_type: 'profiles',
+          entity_id: selectedMember.id,
+          details: { permissions: selectedMember.permissions }
+        });
+
+      if (logError) console.error('Failed to log action:', logError);
+
+      // Refresh team list
+      await loadTeamMembers();
+
+      toast({
+        title: 'Permissões Atualizadas',
+        description: 'As permissões foram guardadas com sucesso.',
+      });
+      
+      setSelectedMember(null);
+    } catch (error) {
+      console.error('Error saving permissions:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível guardar as permissões.',
+        variant: 'destructive'
+      });
+    }
   };
 
   const filteredMembers = teamMembers.filter(member =>
@@ -168,6 +206,25 @@ const AdminTeamTab = () => {
   );
 
   const activeMembers = teamMembers.filter(m => m.status === 'active').length;
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          {[1, 2, 3].map(i => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium animate-pulse bg-gray-200 h-4 w-24 rounded" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold animate-pulse bg-gray-200 h-8 w-16 rounded" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
