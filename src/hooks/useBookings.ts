@@ -31,49 +31,52 @@ export const useBookings = () => {
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchBookings = async () => {
     if (!user) return;
+    
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          prestadores!bookings_prestador_id_fkey (
+            id,
+            name,
+            photo_url
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('date', { ascending: true });
 
-    const fetchBookings = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('bookings')
-          .select(`
-            *,
-            prestadores!bookings_prestador_id_fkey (
-              id,
-              name,
-              photo_url
-            )
-          `)
-          .eq('user_id', user.id)
-          .order('date', { ascending: true });
+      if (error) throw error;
 
-        if (error) throw error;
-
-        if (data) {
-          const bookings: Booking[] = data.map(b => ({
-            ...b,
-            provider_name: b.prestadores?.name || '',
-            provider_avatar: b.prestadores?.photo_url || '',
-            time: b.start_time || '',
-            pillar: b.pillar || ''
-          }));
-          
-          setAllBookings(bookings);
-          setUpcomingBookings(bookings.filter(b => 
-            b.status === 'confirmed' && b.date && new Date(b.date) >= new Date()
-          ));
-        }
+      if (data) {
+        const bookings: Booking[] = data.map(b => ({
+          ...b,
+          provider_name: b.prestadores?.name || '',
+          provider_avatar: b.prestadores?.photo_url || '',
+          time: b.start_time || '',
+          pillar: b.pillar || ''
+        }));
         
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching bookings:', err);
-        setLoading(false);
+        setAllBookings(bookings);
+        setUpcomingBookings(bookings.filter(b => 
+          b.status === 'confirmed' && b.date && new Date(b.date) >= new Date()
+        ));
       }
-    };
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching bookings:', err);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchBookings();
+
+    if (!user) return;
 
     // Real-time subscription
     const subscription = supabase
@@ -100,9 +103,7 @@ export const useBookings = () => {
     nextAppointment: upcomingBookings[0]
   };
 
-  const refetch = () => {
-    // Mock refetch - do nothing since it's static data
-  };
+  const refetch = fetchBookings;
 
   const formatPillarName = (pillar: string) => {
     const names = {
