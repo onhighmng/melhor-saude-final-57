@@ -23,7 +23,7 @@ serve(async (req) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Melhor Saúde <noreply@melhorsaude.pt>',
+          from: 'OnHigh Management <noreply@onhighmanagment.com>',
           to,
           subject,
           html
