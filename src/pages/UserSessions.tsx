@@ -152,9 +152,11 @@ export default function UserSessions() {
         priority: 'high'
       });
 
+      const resultData = cancelResult as { success?: boolean; refunded?: boolean; error?: string } | null;
+      
       toast({
         title: 'Sessão cancelada',
-        description: cancelResult?.refunded 
+        description: resultData?.refunded 
           ? 'A sua sessão foi cancelada e a quota foi reembolsada.'
           : 'Sessão cancelada. Quota não reembolsada devido à política de cancelamento (< 24h).'
       });

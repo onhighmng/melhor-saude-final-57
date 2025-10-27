@@ -1748,6 +1748,16 @@ export type Database = {
         Args: { _month: string; _prestador_id: string }
         Returns: undefined
       }
+      cancel_booking_with_refund: {
+        Args: {
+          _booking_id: string
+          _cancellation_reason: string
+          _company_id: string
+          _refund_quota: boolean
+          _user_id: string
+        }
+        Returns: Json
+      }
       get_company_analytics: {
         Args: { _company_id: string }
         Returns: {
