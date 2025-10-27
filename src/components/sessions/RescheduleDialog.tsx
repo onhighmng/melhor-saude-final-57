@@ -38,38 +38,50 @@ export const RescheduleDialog = ({
   const loadAvailableSlots = async () => {
     setIsFetching(true);
     try {
-      // Fetch provider's availability
+      // Fetch provider's recurring availability
       const { data: availability, error } = await supabase
         .from('prestador_availability')
         .select('*')
         .eq('prestador_id', providerId)
-        .eq('is_available', true)
-        .gte('date', new Date().toISOString().split('T')[0]);
+        .eq('is_recurring', true);
 
       if (error) throw error;
 
-      // Fetch existing bookings for the provider to exclude
+      // Fetch existing bookings to exclude
       const { data: bookings } = await supabase
         .from('bookings')
-        .select('scheduled_for, scheduled_time')
+        .select('date, start_time')
         .eq('prestador_id', providerId)
-        .in('status', ['confirmed', 'scheduled']);
+        .in('status', ['confirmed', 'scheduled'])
+        .gte('date', new Date().toISOString().split('T')[0]);
 
       const bookedSlots = new Set(
-        (bookings || []).map(b => `${b.scheduled_for}T${b.scheduled_time}`)
+        (bookings || []).map(b => `${b.date}T${b.start_time}`)
       );
 
-      // Transform availability into slots
+      // Generate slots for next 30 days based on day_of_week
       const slots: { date: Date; time: string }[] = [];
-      (availability || []).forEach(a => {
-        const slotKey = `${a.date}T${a.start_time}`;
-        if (!bookedSlots.has(slotKey)) {
-          slots.push({
-            date: new Date(a.date),
-            time: a.start_time
-          });
-        }
-      });
+      const today = new Date();
+      
+      for (let i = 1; i <= 30; i++) {
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() + i);
+        const dayOfWeek = checkDate.getDay();
+
+        (availability || []).forEach(a => {
+          if (a.day_of_week === dayOfWeek) {
+            const dateStr = checkDate.toISOString().split('T')[0];
+            const slotKey = `${dateStr}T${a.start_time}`;
+            
+            if (!bookedSlots.has(slotKey)) {
+              slots.push({
+                date: new Date(dateStr),
+                time: a.start_time
+              });
+            }
+          }
+        });
+      }
 
       setAvailableSlots(slots);
     } catch (error: any) {
@@ -98,9 +110,10 @@ export const RescheduleDialog = ({
       const { error } = await supabase
         .from('bookings')
         .update({
-          scheduled_for: selectedSlot.date.toISOString().split('T')[0],
-          scheduled_time: selectedSlot.time,
-          rescheduled_from: currentDate.toISOString(),
+          booking_date: newDateTime.toISOString(),
+          date: selectedSlot.date.toISOString().split('T')[0],
+          start_time: selectedSlot.time,
+          rescheduled_from: bookingId,
           rescheduled_at: new Date().toISOString()
         })
         .eq('id', bookingId);

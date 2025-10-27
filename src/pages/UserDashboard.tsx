@@ -402,7 +402,7 @@ const UserDashboard = () => {
       }
 
       // Check timing (±15 minutes window)
-      const sessionTime = new Date(booking.scheduled_for).getTime();
+      const sessionTime = new Date(booking.booking_date).getTime();
       const now = Date.now();
       const minutesDiff = (sessionTime - now) / (1000 * 60);
 
@@ -438,20 +438,6 @@ const UserDashboard = () => {
 
       // Open meeting link
       window.open(booking.meeting_link, '_blank');
-
-      // Track access (optional - create session_access_log table first)
-      if (booking.meeting_link) {
-        try {
-          await supabase.from('session_access_log').insert({
-            booking_id: sessionId,
-            user_id: profile?.id,
-            accessed_at: new Date().toISOString()
-          });
-        } catch (error) {
-          // Ignore if table doesn't exist yet
-          console.log('session_access_log table not found, skipping tracking');
-        }
-      }
 
       toast({
         title: 'A abrir sessão',
@@ -489,7 +475,7 @@ const UserDashboard = () => {
       }
 
       // Calculate if >24h before session for quota refund
-      const sessionTime = new Date(booking.scheduled_for).getTime();
+      const sessionTime = new Date(booking.booking_date).getTime();
       const now = Date.now();
       const hoursUntilSession = (sessionTime - now) / (1000 * 60 * 60);
       const shouldRefund = hoursUntilSession > 24;
@@ -509,19 +495,19 @@ const UserDashboard = () => {
       if (booking.prestador_id) {
         const { data: providerData } = await supabase
           .from('prestadores')
-          .select('profiles(email)')
+          .select('user_id, email')
           .eq('id', booking.prestador_id)
           .single();
 
-        if (providerData?.profiles?.email) {
+        if (providerData?.email) {
           await supabase.functions.invoke('send-email', {
             body: {
-              to: providerData.profiles.email,
+              to: providerData.email,
               subject: 'Sessão Cancelada',
               html: `
                 <p>Olá,</p>
                 <p>Uma sessão agendada foi cancelada.</p>
-                <p><strong>Data:</strong> ${new Date(booking.scheduled_for).toLocaleString('pt-PT')}</p>
+                <p><strong>Data:</strong> ${new Date(booking.booking_date).toLocaleString('pt-PT')}</p>
                 <p><strong>Pilar:</strong> ${booking.pillar}</p>
               `,
               type: 'session_cancelled'
@@ -816,7 +802,7 @@ const UserDashboard = () => {
         open={showRescheduleDialog}
         onOpenChange={setShowRescheduleDialog}
         bookingId={sessionToReschedule.id}
-        currentDate={new Date(sessionToReschedule.scheduled_for)}
+        currentDate={new Date(sessionToReschedule.booking_date)}
         providerId={sessionToReschedule.prestador_id}
         onRescheduleComplete={handleRescheduleComplete}
       />
