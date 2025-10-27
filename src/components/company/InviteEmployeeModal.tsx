@@ -67,57 +67,32 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
     setIsSubmitting(true);
 
     try {
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: formData.email,
-        password: formData.password,
-        email_confirm: true
+      // Call edge function to create employee securely
+      const { data, error } = await supabase.functions.invoke('create-employee', {
+        body: {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          company_id: profile?.company_id, // Use from AuthContext
+          role: formData.role,
+          sessions_allocated: formData.companySessions
+        }
       });
 
-      if (authError) throw authError;
-
-      // Get company ID from database (assuming company object has the real ID)
-      const { data: companyData, error: companyError } = await supabase
-        .from('companies')
-        .select('id')
-        .eq('company_name', company.name)
-        .maybeSingle();
-
-      if (companyError) throw companyError;
-
-      // Create profile WITHOUT role
-      await supabase.from('profiles').insert({
-        id: authData.user.id,
-        email: formData.email,
-        name: formData.name,
-        company_id: companyData.id
-      });
-
-      // Create role in user_roles table
-      await supabase.from('user_roles').insert({
-        user_id: authData.user.id,
-        role: formData.role,
-        created_by: profile?.id
-      });
-
-      // Create company_employee link
-      await supabase.from('company_employees').insert({
-        company_id: companyData.id,
-        user_id: authData.user.id,
-        sessions_quota: formData.companySessions
-      });
+      if (error) throw error;
+      if (!data || !data.user_id) throw new Error('Failed to create user');
 
       // Create invite record
-      if (profile?.id) {
+      if (profile?.id && profile?.company_id) {
         await supabase.from('invites').insert({
           invite_code: `inv_${Date.now()}`,
           invited_by: profile.id,
-          company_id: companyData.id,
+          company_id: profile.company_id,
           email: formData.email,
           role: formData.role,
           status: 'accepted',
           accepted_at: new Date().toISOString(),
-          accepted_by: authData.user.id
+          accepted_by: data.user_id
         });
       }
 
@@ -130,7 +105,7 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
       });
       
       onInviteSuccess({
-        id: authData.user.id,
+        id: data.user_id,
         name: formData.name,
         email: formData.email,
         role: formData.role,

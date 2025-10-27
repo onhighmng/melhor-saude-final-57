@@ -55,6 +55,7 @@ const CompanyReportsImpact = lazy(() => import("./pages/CompanyReportsImpact"));
 const CompanyResources = lazy(() => import("./pages/CompanyResources"));
 const CompanySessions = lazy(() => import("./pages/CompanySessions"));
 const CompanyCollaborators = lazy(() => import("./pages/CompanyCollaborators"));
+const CompanySettings = lazy(() => import("./pages/CompanySettings"));
 const UserSessions = lazy(() => import("./pages/UserSessions"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const UserResources = lazy(() => import("./pages/UserResources"));
@@ -189,6 +190,7 @@ const AppWithTracking = () => {
           <Route path="/company/recursos" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanyResources /></CompanyLayout></ProtectedRoute>} />
           <Route path="/company/sessions" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanySessions /></CompanyLayout></ProtectedRoute>} />
           <Route path="/company/colaboradores" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanyCollaborators /></CompanyLayout></ProtectedRoute>} />
+          <Route path="/company/settings" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanySettings /></CompanyLayout></ProtectedRoute>} />
           
           {/* Catch-all route - redirect to home */}
           <Route path="*" element={<Index />} />

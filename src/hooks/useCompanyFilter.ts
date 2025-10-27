@@ -12,7 +12,7 @@ export const useCompanyFilter = () => {
     
     if (profile?.role === 'hr') {
       // HR only sees their own company
-      return profile.company ? [profile.company] : [];
+      return profile.company_id ? [profile.company_id] : [];
     }
     
     if (profile?.role === 'admin') {

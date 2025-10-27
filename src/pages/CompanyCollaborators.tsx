@@ -19,12 +19,15 @@ import {
   BarChart3
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { mockCompanies } from '@/data/companyMockData';
 import { mockEmployeeMetrics } from '@/data/companyMetrics';
 import { FeaturesGrid } from '@/components/ui/features-grid';
 
 const CompanyCollaborators = () => {
   const { toast } = useToast();
+  const { profile } = useAuth();
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
   
   const company = mockCompanies[0];
@@ -38,7 +41,30 @@ const CompanyCollaborators = () => {
     };
   }, []);
 
-  const generateInviteCode = () => {
+  // Load existing invite codes from database
+  useEffect(() => {
+    const loadInviteCodes = async () => {
+      if (!profile?.company_id) return;
+      
+      try {
+        const { data } = await supabase
+          .from('invites')
+          .select('invite_code')
+          .eq('company_id', profile.company_id)
+          .eq('status', 'pending');
+        
+        if (data) {
+          setGeneratedCodes(data.map(inv => inv.invite_code));
+        }
+      } catch (error) {
+        console.error('Error loading invite codes:', error);
+      }
+    };
+    
+    loadInviteCodes();
+  }, [profile?.company_id]);
+
+  const generateInviteCode = async () => {
     if (generatedCodes.length >= company.seatAvailable) {
       toast({
         title: "Limite atingido",
@@ -48,12 +74,34 @@ const CompanyCollaborators = () => {
       return;
     }
 
-    const code = `MS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    setGeneratedCodes([...generatedCodes, code]);
-    toast({
-      title: "Código gerado",
-      description: `Código de acesso: ${code}`,
-    });
+    try {
+      const code = `MS-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      
+      // Persist to database
+      const { error } = await supabase.from('invites').insert({
+        invite_code: code,
+        company_id: profile?.company_id,
+        invited_by: profile?.id,
+        email: '', // To be filled by invited user
+        role: 'user',
+        status: 'pending',
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      });
+
+      if (error) throw error;
+
+      setGeneratedCodes([...generatedCodes, code]);
+      toast({
+        title: "Código gerado",
+        description: `Código de acesso: ${code}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível gerar o código",
+        variant: "destructive"
+      });
+    }
   };
 
   const copyToClipboard = (text: string) => {

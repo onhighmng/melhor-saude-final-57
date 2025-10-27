@@ -96,10 +96,7 @@ export default function RegisterCompany() {
           contact_phone: formData.contactPhone,
           plan_type: 'basic',
           sessions_allocated: formData.totalSessions,
-          sessions_per_employee: Math.floor(formData.totalSessions / 10),
-          hr_contact_person: formData.contactName,
-          hr_email: formData.contactEmail,
-          program_start_date: new Date().toISOString().split('T')[0],
+          sessions_used: 0,
           is_active: false // Needs approval
         })
         .select()
@@ -134,22 +131,26 @@ export default function RegisterCompany() {
           email: formData.contactEmail,
           name: formData.contactName,
           phone: formData.contactPhone,
-          role: 'hr',
           company_id: company.id
         });
 
       if (profileError) throw profileError;
+
+      // Create role in user_roles table
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: authData.user.id,
+          role: 'hr',
+          created_by: null // Self-registration
+        });
+
+      if (roleError) throw roleError;
       
       toast({
         title: "Empresa registada com sucesso!",
         description: `Credenciais: Email: ${formData.contactEmail}, Senha: ${randomPassword}`,
       });
-
-      // Log the credentials
-      console.log('Company Registration Success:');
-      console.log('Company ID:', company.id);
-      console.log('HR Credentials - Email:', formData.contactEmail);
-      console.log('HR Credentials - Password:', randomPassword);
 
       setTimeout(() => {
         navigate('/login');
