@@ -48,6 +48,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Helper function to load profile with roles from user_roles table
+  const loadProfileWithRoles = async (userId: string): Promise<UserProfile> => {
+    const [profileResult, rolesResult] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase.from('user_roles').select('role').eq('user_id', userId)
+    ]);
+
+    if (profileResult.error) throw profileResult.error;
+    
+    const roles = rolesResult.data?.map(r => r.role) || [];
+    const primaryRole = roles.includes('admin') ? 'admin' 
+      : roles.includes('hr') ? 'hr'
+      : roles.includes('prestador') ? 'prestador'
+      : roles.includes('specialist') ? 'specialist'
+      : 'user';
+
+    return {
+      ...profileResult.data,
+      user_id: profileResult.data.id,
+      is_active: profileResult.data.is_active ?? true,
+      role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
+    };
+  };
+
   // Real authentication methods
   const login = async (email: string, password: string) => {
     try {
@@ -109,17 +133,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (error) throw error;
       
-      // Create profile if not exists
+      // Create profile WITHOUT role
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: data.user!.id,
           email,
-          name,
-          role: 'user'
+          name
         });
       
       if (profileError && profileError.code !== '23505') throw profileError;
+
+      // Create role in user_roles table
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: data.user!.id,
+          role: 'user'
+        });
+
+      if (roleError && roleError.code !== '23505') throw roleError;
       
       return {};
     } catch (error: any) {
@@ -158,47 +191,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Listen for auth state changes
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        // Load profile
-        supabase.from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data }) => {
-            if (data) {
-              setProfile({
-                ...data,
-                user_id: data.id,
-                is_active: data.is_active ?? true,
-                role: (data.role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
-              });
-            }
-          });
+        try {
+          const profileData = await loadProfileWithRoles(session.user.id);
+          setProfile(profileData);
+        } catch (error) {
+          console.error('Error loading profile:', error);
+        }
       }
       setIsLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        supabase.from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data }) => {
-            if (data) {
-              setProfile({
-                ...data,
-                user_id: data.id,
-                is_active: data.is_active ?? true,
-                role: (data.role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
-              });
-            }
-          });
+        try {
+          const profileData = await loadProfileWithRoles(session.user.id);
+          setProfile(profileData);
+        } catch (error) {
+          console.error('Error loading profile:', error);
+          setProfile(null);
+        }
       } else {
         setProfile(null);
       }

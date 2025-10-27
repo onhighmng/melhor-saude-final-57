@@ -85,13 +85,19 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
 
       if (companyError) throw companyError;
 
-      // Create profile
+      // Create profile WITHOUT role
       await supabase.from('profiles').insert({
         id: authData.user.id,
         email: formData.email,
         name: formData.name,
-        role: formData.role,
         company_id: companyData.id
+      });
+
+      // Create role in user_roles table
+      await supabase.from('user_roles').insert({
+        user_id: authData.user.id,
+        role: formData.role,
+        created_by: profile?.id
       });
 
       // Create company_employee link

@@ -198,7 +198,7 @@ const AdminProviderNew = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error('Falha ao criar utilizador');
 
-      // Create profile
+      // Create profile WITHOUT role
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -206,7 +206,6 @@ const AdminProviderNew = () => {
           email: formData.email,
           name: formData.name,
           bio: formData.bio,
-          role: 'prestador',
           metadata: {
             languages: formData.languages,
             license_number: formData.licenseNumber,
@@ -215,6 +214,17 @@ const AdminProviderNew = () => {
         });
 
       if (profileError) throw profileError;
+
+      // Create role in user_roles table
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: authData.user.id,
+          role: 'prestador',
+          created_by: profile?.id
+        });
+
+      if (roleError) throw roleError;
 
       // Create prestador record
       const { error: prestadorError } = await supabase

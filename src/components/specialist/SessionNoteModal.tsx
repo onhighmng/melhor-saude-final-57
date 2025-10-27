@@ -9,6 +9,8 @@ import { PreDiagnosticModal } from './PreDiagnosticModal';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { sanitizeInput } from '@/utils/sanitize';
+import { logErrorSecurely, getGenericErrorMessage } from '@/utils/errorHandling';
 
 interface SessionNoteModalProps {
   isOpen: boolean;
@@ -35,12 +37,12 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
         .single();
 
       if (prestador) {
-        // Save to database
+        // Save to database (with sanitization)
         await supabase.from('session_notes').insert({
           booking_id: session.id,
           prestador_id: prestador.id,
-          notes: notes,
-          outcome: outcome,
+          notes: sanitizeInput(notes),
+          outcome: sanitizeInput(outcome),
           is_confidential: true
         });
 
@@ -55,9 +57,10 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
       setOutcome('');
       onClose();
     } catch (error: any) {
+      logErrorSecurely(error, 'saving_session_note');
       toast({
         title: 'Erro',
-        description: error.message || 'Erro ao guardar nota',
+        description: getGenericErrorMessage('saving'),
         variant: 'destructive',
       });
     }

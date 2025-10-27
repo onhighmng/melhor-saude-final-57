@@ -88,13 +88,19 @@ export const AddProviderModal = ({ open, onOpenChange }: AddProviderModalProps) 
 
       if (authError) throw authError;
 
-      // Create profile
+      // Create profile WITHOUT role
       await supabase.from('profiles').insert({
         id: authData.user.id,
         email: data.email,
         name: data.name,
-        phone: data.phone,
-        role: 'prestador'
+        phone: data.phone
+      });
+
+      // Create role in user_roles table
+      await supabase.from('user_roles').insert({
+        user_id: authData.user.id,
+        role: 'prestador',
+        created_by: profile?.id
       });
 
       // Create prestador record

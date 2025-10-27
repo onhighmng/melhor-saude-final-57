@@ -94,9 +94,9 @@ export const useBookings = () => {
   }, [user]);
 
   const bookingStats = {
-    totalBookings: 15,
-    upcomingBookings: 3,
-    completedBookings: 12,
+    totalBookings: allBookings.length,
+    upcomingBookings: upcomingBookings.length,
+    completedBookings: allBookings.filter(b => b.status === 'completed').length,
     nextAppointment: upcomingBookings[0]
   };
 

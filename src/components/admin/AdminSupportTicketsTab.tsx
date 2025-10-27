@@ -13,6 +13,8 @@ import { formatDate } from '@/utils/dateFormatting';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { sanitizeInput } from '@/utils/sanitize';
+import { logErrorSecurely, getGenericErrorMessage } from '@/utils/errorHandling';
 
 interface Message {
   id: string;
@@ -154,13 +156,13 @@ export default function AdminSupportTicketsTab() {
     if (!selectedTicket || !newMessage.trim() || !profile?.id) return;
 
     try {
-      // Insert message into database
+      // Insert message into database (with sanitization)
       const { data: messageData, error: messageError } = await supabase
         .from('support_ticket_messages')
         .insert({
           ticket_id: selectedTicket.id,
           sender_id: profile.id,
-          message: newMessage
+          message: sanitizeInput(newMessage) // SANITIZE INPUT
         })
         .select()
         .single();
@@ -200,10 +202,10 @@ export default function AdminSupportTicketsTab() {
         description: 'A sua mensagem foi enviada com sucesso.',
       });
     } catch (error) {
-      console.error('Error sending message:', error);
+      logErrorSecurely(error, 'sending_support_message');
       toast({
-        title: 'Erro ao enviar mensagem',
-        description: 'Não foi possível enviar a mensagem.',
+        title: 'Erro',
+        description: getGenericErrorMessage('sending'),
         variant: 'destructive'
       });
     }

@@ -119,13 +119,19 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
       if (authError) throw authError;
 
-      // Create HR profile
+      // Create HR profile WITHOUT role
       await supabase.from('profiles').insert({
         id: authData.user.id,
         email: data.hrEmail,
         name: data.hrContactPerson,
-        role: 'hr',
         company_id: company.id
+      });
+
+      // Create role in user_roles table
+      await supabase.from('user_roles').insert({
+        user_id: authData.user.id,
+        role: 'hr',
+        created_by: profile?.id
       });
 
       // Log admin action

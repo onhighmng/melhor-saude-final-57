@@ -132,8 +132,9 @@ export const AdminEmployeesTab = () => {
         setLoading(true);
         const { data, error } = await supabase
           .from('company_employees')
-          .select('*')
-          .order('joined_at', { ascending: false });
+          .select('id, user_id, company_id, sessions_allocated, sessions_used, joined_at')
+          .order('joined_at', { ascending: false })
+          .range(0, 99); // Pagination
 
         if (error) throw error;
 
@@ -160,17 +161,17 @@ export const AdminEmployeesTab = () => {
               .eq('user_id', emp.user_id)
               .single();
 
-            // Get session count
+            // Get session count (optimized)
             const { count: sessionCount } = await supabase
               .from('bookings')
-              .select('*', { count: 'exact', head: true })
+              .select('id', { count: 'exact', head: true })
               .eq('user_id', emp.user_id)
               .eq('status', 'completed');
 
-            // Get progress
+            // Get progress count (optimized)
             const { count: progressCount } = await supabase
               .from('user_progress')
-              .select('*', { count: 'exact', head: true })
+              .select('id', { count: 'exact', head: true })
               .eq('user_id', emp.user_id);
 
             // Calculate progress percentage

@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { sanitizeInput } from '@/utils/sanitize';
+import { logErrorSecurely, getGenericErrorMessage } from '@/utils/errorHandling';
 
 export default function UserFeedback() {
   const { t } = useTranslation('user');
@@ -38,7 +40,7 @@ export default function UserFeedback() {
         user_id: user?.id,
         booking_id: sessionId,
         category: feedback.category,
-        message: feedback.comment,
+        message: sanitizeInput(feedback.comment),
         rating: feedback.rating
       });
 
@@ -63,7 +65,8 @@ export default function UserFeedback() {
         navigate('/user/sessions');
       }, 2000);
     } catch (error: any) {
-      toast.error(error.message || 'Erro ao submeter feedback');
+      logErrorSecurely(error, 'submitting_feedback');
+      toast.error(getGenericErrorMessage('creating'));
     }
   };
   

@@ -102,12 +102,18 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
   }, [open, toast]);
 
   function generateAccessCode(): string {
-    // Generate a 6-character alphanumeric code
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    // Generate a 12-character cryptographically secure code
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    const charLength = chars.length;
     let code = '';
-    for (let i = 0; i < 6; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    
+    const randomValues = new Uint32Array(12);
+    crypto.getRandomValues(randomValues);
+    
+    for (let i = 0; i < 12; i++) {
+      code += chars[randomValues[i] % charLength];
     }
+    
     return code;
   }
 
@@ -192,13 +198,19 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
 
       if (authError) throw authError;
 
-      // Create profile
+      // Create profile WITHOUT role
       await supabase.from('profiles').insert({
         id: authData.user.id,
         email: data.email,
         name: data.fullName,
-        role: 'user',
         company_id: company.id
+      });
+
+      // Create role in user_roles table
+      await supabase.from('user_roles').insert({
+        user_id: authData.user.id,
+        role: 'user',
+        created_by: profile?.id
       });
 
       // Create company_employee link

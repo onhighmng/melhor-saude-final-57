@@ -42,12 +42,8 @@ const AdminCompanyReportsTab = () => {
 
       const { data: companies, error: companiesError } = await supabase
         .from('companies')
-        .select(`
-          id,
-          company_name,
-          sessions_allocated,
-          sessions_used
-        `);
+        .select('id, company_name, sessions_allocated, sessions_used')
+        .range(0, 99); // Pagination
 
       if (companiesError) throw companiesError;
 
@@ -55,7 +51,7 @@ const AdminCompanyReportsTab = () => {
         const [employeesResult, feedbackResult] = await Promise.all([
           supabase
             .from('company_employees')
-            .select('id')
+            .select('id', { count: 'exact', head: true })
             .eq('company_id', company.id)
             .eq('is_active', true),
           supabase
@@ -63,9 +59,10 @@ const AdminCompanyReportsTab = () => {
             .select('rating')
             .eq('company_id', company.id)
             .not('rating', 'is', null)
+            .limit(1000) // Limit for performance
         ]);
 
-        const activeEmployees = employeesResult.data?.length || 0;
+        const activeEmployees = employeesResult.count || 0;
         const ratings = feedbackResult.data?.filter(f => f.rating) || [];
         const satisfaction = ratings.length > 0
           ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
@@ -95,7 +92,7 @@ const AdminCompanyReportsTab = () => {
     } catch (error) {
       console.error('Error loading company stats:', error);
       toast({
-        title: 'Erro ao carregar estatísticas',
+        title: 'Erro',
         description: 'Não foi possível carregar as estatísticas das empresas.',
         variant: 'destructive'
       });
