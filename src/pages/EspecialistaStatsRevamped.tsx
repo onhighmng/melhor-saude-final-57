@@ -22,14 +22,12 @@ const EspecialistaStatsRevamped = () => {
 
         const { data: monthlyCases } = await supabase
           .from('chat_sessions')
-          .select('id, satisfaction_rating, pillar')
-          .eq('specialist_id', profile.id)
+          .select('id, satisfaction_rating, pillar, status')
           .gte('created_at', startOfMonth.toISOString());
 
         const { data: callLogs } = await supabase
           .from('specialist_call_logs')
           .select('created_at, completed_at')
-          .eq('specialist_id', profile.id)
           .not('completed_at', 'is', null);
 
         const avgResponseTime = callLogs?.length > 0

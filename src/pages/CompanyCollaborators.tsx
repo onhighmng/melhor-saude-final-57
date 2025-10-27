@@ -48,25 +48,36 @@ const CompanyCollaborators = () => {
           .from('company_employees')
           .select(`
             *,
-            profiles!inner(name, email, avatar_url),
-            bookings(id, status, rating)
+            profiles!inner(name, email, avatar_url)
           `)
+          .eq('company_id', profile.company_id);
+        
+        // Get bookings separately
+        const { data: bookings } = await supabase
+          .from('bookings')
+          .select('id, user_id, status, rating')
           .eq('company_id', profile.company_id);
 
         if (empError) throw empError;
 
-        const registeredEmployees = employees?.length || 0;
-        const activeEmployees = employees?.filter(e => e.is_active).length || 0;
-        const totalSessions = employees?.reduce((sum, e) => sum + (e.sessions_used || 0), 0) || 0;
+        // Merge bookings with employees
+        const enrichedEmployees = employees?.map(emp => ({
+          ...emp,
+          bookings: bookings?.filter(b => b.user_id === emp.user_id) || []
+        })) || [];
+
+        const registeredEmployees = enrichedEmployees.length;
+        const activeEmployees = enrichedEmployees.filter(e => e.is_active).length;
+        const totalSessions = enrichedEmployees.reduce((sum, e) => sum + (e.sessions_used || 0), 0);
         const avgSessions = registeredEmployees > 0 ? totalSessions / registeredEmployees : 0;
-        const allRatings = employees?.flatMap(e => e.bookings?.filter(b => b.rating)?.map(b => b.rating) || []) || [];
+        const allRatings = enrichedEmployees.flatMap(e => e.bookings.filter((b: any) => b.rating).map((b: any) => b.rating));
         const avgRating = allRatings.length > 0 ? allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length : 0;
 
         setCompanyData({
           ...company,
           seatLimit: company.sessions_allocated,
-          seatUsed: employees.filter(e => e.sessions_used > 0).length,
-          seatAvailable: company.sessions_allocated - employees.filter(e => e.sessions_used > 0).length,
+          seatUsed: enrichedEmployees.filter(e => e.sessions_used > 0).length,
+          seatAvailable: company.sessions_allocated - enrichedEmployees.filter(e => e.sessions_used > 0).length,
           name: company.company_name,
           registeredEmployees,
           activeEmployees,

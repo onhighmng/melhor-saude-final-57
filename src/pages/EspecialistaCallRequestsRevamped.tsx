@@ -32,7 +32,7 @@ const EspecialistaCallRequestsRevamped = () => {
 
   // Filter by status
   const pendingRequests = useMemo(() => {
-    return requestsToShow.filter(r => r.status === 'pending');
+    return requestsToShow.filter(r => r.status === 'escalated');
   }, [requestsToShow]);
 
   const resolvedRequests = useMemo(() => {
@@ -43,16 +43,18 @@ const EspecialistaCallRequestsRevamped = () => {
   const sortedRequests = useMemo(() => {
     const requests = activeTab === 'pending' ? pendingRequests : resolvedRequests;
     return [...requests].sort((a, b) => {
-      return sortOrder === 'desc' ? b.wait_time - a.wait_time : a.wait_time - b.wait_time;
+      const timeA = new Date(a.created_at).getTime();
+      const timeB = new Date(b.created_at).getTime();
+      return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
     });
   }, [pendingRequests, resolvedRequests, sortOrder, activeTab]);
 
-  const handleCallClick = (request: CallRequest) => {
+  const handleCallClick = (request: any) => {
     setSelectedRequest(request);
     setIsCallModalOpen(true);
   };
 
-  const handleViewUserInfo = (request: CallRequest) => {
+  const handleViewUserInfo = (request: any) => {
     setSelectedRequest(request);
     setIsUserInfoModalOpen(true);
   };
@@ -120,15 +122,18 @@ const EspecialistaCallRequestsRevamped = () => {
     };
   };
 
-  const formatWaitTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}h ${mins}min`;
+  const formatWaitTime = (createdAt: string) => {
+    const elapsed = Date.now() - new Date(createdAt).getTime();
+    const hours = Math.floor(elapsed / (1000 * 60 * 60));
+    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}min`;
   };
 
-  const getWaitTimeColor = (minutes: number) => {
-    if (minutes >= 1440) return 'text-red-600 font-bold'; // >24h - SLA breach
-    if (minutes >= 180) return 'text-orange-600 font-semibold'; // >3h - urgent
+  const getWaitTimeColor = (createdAt: string) => {
+    const elapsed = Date.now() - new Date(createdAt).getTime();
+    const hours = elapsed / (1000 * 60 * 60);
+    if (hours >= 24) return 'text-red-600 font-bold';
+    if (hours >= 3) return 'text-orange-600 font-semibold';
     return 'text-muted-foreground';
   };
 
@@ -250,9 +255,9 @@ const EspecialistaCallRequestsRevamped = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className={`flex items-center gap-1 ${getWaitTimeColor(request.wait_time)}`}>
+                        <div className={`flex items-center gap-1 ${getWaitTimeColor(request.created_at)}`}>
                           <Clock className="h-4 w-4" />
-                          <span>{formatWaitTime(request.wait_time)}</span>
+                          <span>{formatWaitTime(request.created_at)}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
@@ -415,9 +420,9 @@ const EspecialistaCallRequestsRevamped = () => {
 
                     <div className="grid gap-2">
                       <label className="text-sm font-medium text-muted-foreground">Tempo de Espera</label>
-                      <div className={`flex items-center gap-2 text-sm ${getWaitTimeColor(selectedRequest.wait_time)}`}>
+                      <div className={`flex items-center gap-2 text-sm ${getWaitTimeColor(selectedRequest.created_at)}`}>
                         <Clock className="h-4 w-4" />
-                        <span className="font-medium">{formatWaitTime(selectedRequest.wait_time)}</span>
+                        <span className="font-medium">{formatWaitTime(selectedRequest.created_at)}</span>
                       </div>
                     </div>
 

@@ -27,14 +27,49 @@ const EspecialistaUserHistory = () => {
         const { data: sessions } = await supabase
           .from('chat_sessions')
           .select(`
-            *,
-            profiles(name, email),
-            companies(company_name)
+            id,
+            user_id,
+            pillar,
+            status,
+            created_at,
+            satisfaction_rating
           `)
-          .eq('specialist_id', profile.id)
           .order('created_at', { ascending: false });
 
-        setFilteredUsers(sessions || []);
+        // Enrich with user and company data
+        const enrichedSessions = await Promise.all(
+          (sessions || []).map(async (session) => {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('name, email, company_id')
+              .eq('id', session.user_id)
+              .single();
+
+            let companyName = null;
+            if (profile?.company_id) {
+              const { data: company } = await supabase
+                .from('companies')
+                .select('company_name')
+                .eq('id', profile.company_id)
+                .single();
+              companyName = company?.company_name;
+            }
+
+            return {
+              ...session,
+              user_name: profile?.name || 'Unknown',
+              user_email: profile?.email || 'Unknown',
+              company_name: companyName || 'Unknown',
+              pillar_attended: session.pillar,
+              last_session_date: session.created_at,
+              average_rating: session.satisfaction_rating === 'satisfied' ? 10 : 5,
+              internal_notes: [],
+              chat_history: []
+            };
+          })
+        );
+
+        setFilteredUsers(enrichedSessions);
       } catch (error) {
         console.error('Error loading user history:', error);
       } finally {
