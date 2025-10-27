@@ -433,6 +433,38 @@ export type Database = {
         }
         Relationships: []
       }
+      content_views: {
+        Row: {
+          content_id: string | null
+          duration_seconds: number | null
+          id: string
+          user_id: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          content_id?: string | null
+          duration_seconds?: number | null
+          id?: string
+          user_id?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          content_id?: string | null
+          duration_seconds?: number | null
+          id?: string
+          user_id?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_views_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "self_help_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feedback: {
         Row: {
           category: string | null
@@ -991,6 +1023,45 @@ export type Database = {
           },
         ]
       }
+      psychological_tests: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          interpretation_guide: Json
+          is_active: boolean | null
+          name: string
+          questions: Json
+          scoring_rules: Json
+          test_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          interpretation_guide: Json
+          is_active?: boolean | null
+          name: string
+          questions: Json
+          scoring_rules: Json
+          test_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          interpretation_guide?: Json
+          is_active?: boolean | null
+          name?: string
+          questions?: Json
+          scoring_rules?: Json
+          test_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       resource_access_log: {
         Row: {
           access_type: string | null
@@ -1090,6 +1161,60 @@ export type Database = {
           title?: string
           updated_at?: string | null
           url?: string | null
+        }
+        Relationships: []
+      }
+      self_help_content: {
+        Row: {
+          author: string | null
+          category: string | null
+          content_body: string | null
+          content_type: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_published: boolean | null
+          published_at: string | null
+          summary: string | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          content_body?: string | null
+          content_type?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_published?: boolean | null
+          published_at?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          content_body?: string | null
+          content_type?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_published?: boolean | null
+          published_at?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          view_count?: number | null
         }
         Relationships: []
       }
@@ -1563,6 +1688,50 @@ export type Database = {
           },
         ]
       }
+      test_results: {
+        Row: {
+          answers: Json
+          completed_at: string | null
+          consent_given: boolean | null
+          id: string
+          interpretation: string | null
+          is_anonymous: boolean | null
+          score: number | null
+          test_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          answers: Json
+          completed_at?: string | null
+          consent_given?: boolean | null
+          id?: string
+          interpretation?: string | null
+          is_anonymous?: boolean | null
+          score?: number | null
+          test_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          answers?: Json
+          completed_at?: string | null
+          consent_given?: boolean | null
+          id?: string
+          interpretation?: string | null
+          is_anonymous?: boolean | null
+          score?: number | null
+          test_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_results_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "psychological_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number
@@ -1896,6 +2065,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_content_views: {
+        Args: { content_id: string }
+        Returns: undefined
       }
     }
     Enums: {
