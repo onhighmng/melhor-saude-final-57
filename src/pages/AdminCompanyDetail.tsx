@@ -222,28 +222,34 @@ export default function AdminCompanyDetail() {
   };
 
   const confirmCSVImport = async () => {
-    if (!csvPreview || !companyId) return;
+    if (!csvPreview || !id) return;
 
     setIsUploading(true);
     try {
-      // Check for existing employees in DB
-      const emails = csvPreview.map(emp => emp.email);
+      // Get all existing employees for this company with their profile emails
       const { data: existingEmployees } = await supabase
         .from('company_employees')
-        .select('email')
-        .eq('company_id', companyId)
-        .in('email', emails);
+        .select('user_id')
+        .eq('company_id', id);
 
-      const existingEmails = new Set(existingEmployees?.map(e => e.email) || []);
+      const existingUserIds = new Set((existingEmployees || []).map(e => e.user_id));
       
-      // Check available seats
+      // Get emails from profiles for existing employees
+      const { data: existingProfiles } = await supabase
+        .from('profiles')
+        .select('email')
+        .in('id', Array.from(existingUserIds));
+      
+      const existingEmails = new Set(existingProfiles?.map(p => p.email) || []);
+      
+      // Check available sessions
       const { data: company } = await supabase
         .from('companies')
-        .select('seats_total, seats_used')
-        .eq('id', companyId)
+        .select('sessions_allocated, sessions_used')
+        .eq('id', id)
         .single();
         
-      const availableSeats = (company?.seats_total || 0) - (company?.seats_used || 0);
+      const availableSeats = (company?.sessions_allocated || 0) - (company?.sessions_used || 0);
       const newEmployeesCount = csvPreview.filter(e => !existingEmails.has(e.email)).length;
       
       // Block duplicates
