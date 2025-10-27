@@ -35,8 +35,7 @@ interface AccessLevel {
   };
 }
 
-// TODO: Load from platform_settings and user_roles
-const mockAccessLevels: AccessLevel[] = [
+const defaultAccessLevels: AccessLevel[] = [
   {
     id: 'super_admin',
     name: 'Super Administrador',
@@ -108,15 +107,44 @@ const AdminPermissionsTab = () => {
   const { toast } = useToast();
   const { profile } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<string>('admin');
-  const [accessLevels, setAccessLevels] = useState<AccessLevel[]>(mockAccessLevels);
+  const [accessLevels, setAccessLevels] = useState<AccessLevel[]>(defaultAccessLevels);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [sessionTimeout, setSessionTimeout] = useState('30');
   const [userCounts, setUserCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    loadSettings();
     loadUserCounts();
   }, []);
+
+  const loadSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('platform_settings')
+        .select('setting_value')
+        .eq('setting_key', 'access_levels')
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+
+      if (data?.setting_value) {
+        const settings = data.setting_value as any;
+        if (settings.access_levels) {
+          setAccessLevels(settings.access_levels);
+        }
+        if (settings.session_timeout) {
+          setSessionTimeout(settings.session_timeout.toString());
+        }
+        if (typeof settings.two_factor_enabled === 'boolean') {
+          setTwoFactorEnabled(settings.two_factor_enabled);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      // Keep default values
+    }
+  };
 
   const loadUserCounts = async () => {
     try {
@@ -178,32 +206,35 @@ const AdminPermissionsTab = () => {
       const { data: existingSettings } = await supabase
         .from('platform_settings')
         .select('id')
-        .single();
+        .eq('setting_key', 'access_levels')
+        .maybeSingle();
+
+      const settingValue = {
+        access_levels: accessLevels,
+        session_timeout: parseInt(sessionTimeout),
+        two_factor_enabled: twoFactorEnabled,
+        updated_by: profile.id,
+        updated_at: new Date().toISOString()
+      };
 
       if (existingSettings) {
         await supabase
           .from('platform_settings')
           .update({
-            settings: {
-              access_levels: accessLevels,
-              session_timeout: parseInt(sessionTimeout),
-              two_factor_enabled: twoFactorEnabled,
-              updated_by: profile.id,
-              updated_at: new Date().toISOString()
-            }
+            setting_value: settingValue,
+            updated_by: profile.id
           })
           .eq('id', existingSettings.id);
       } else {
         await supabase
           .from('platform_settings')
           .insert({
-            settings: {
-              access_levels: accessLevels,
-              session_timeout: parseInt(sessionTimeout),
-              two_factor_enabled: twoFactorEnabled,
-              updated_by: profile.id,
-              updated_at: new Date().toISOString()
-            }
+            setting_key: 'access_levels',
+            setting_type: 'json',
+            setting_value: settingValue,
+            description: 'Configuração de níveis de acesso e permissões',
+            is_public: false,
+            updated_by: profile.id
           });
       }
 

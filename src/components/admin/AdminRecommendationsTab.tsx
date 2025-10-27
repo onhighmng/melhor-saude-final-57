@@ -124,33 +124,6 @@ export default function AdminRecommendationsTab() {
     }
   };
 
-const pillarIcons = {
-  saude_mental: Brain,
-  bem_estar_fisico: Heart,
-  assistencia_financeira: DollarSign,
-  assistencia_juridica: Scale
-};
-
-const pillarColors = {
-  saude_mental: 'bg-blue-500/10 text-blue-700 border-blue-200',
-  bem_estar_fisico: 'bg-yellow-500/10 text-yellow-700 border-yellow-200',
-  assistencia_financeira: 'bg-green-500/10 text-green-700 border-green-200',
-  assistencia_juridica: 'bg-purple-500/10 text-purple-700 border-purple-200'
-};
-
-const statusColors = {
-  pending: 'bg-yellow-500/10 text-yellow-700',
-  sent: 'bg-blue-500/10 text-blue-700',
-  viewed: 'bg-green-500/10 text-green-700'
-};
-
-const statusLabels = {
-  pending: 'Pendente',
-  sent: 'Enviado',
-  viewed: 'Visualizado'
-};
-
-export function AdminRecommendationsTab() {
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -213,10 +186,10 @@ export function AdminRecommendationsTab() {
               </div>
             ) : (
               recommendations.map((rec) => {
-              const PillarIcon = pillarIcons[rec.pillar as keyof typeof pillarIcons];
-              const pillarColor = pillarColors[rec.pillar as keyof typeof pillarColors];
+                const PillarIcon = pillarIcons[rec.pillar as keyof typeof pillarIcons];
+                const pillarColor = pillarColors[rec.pillar as keyof typeof pillarColors];
 
-              return (
+                return (
                 <div 
                   key={rec.id} 
                   className="flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors"
@@ -265,9 +238,9 @@ export function AdminRecommendationsTab() {
                       <Button size="sm" onClick={() => handleSend(rec.id)}>Enviar</Button>
                     )}
                   </div>
-                </div>
-              );
-              }))
+                 </div>
+                );
+              })
             )}
           </div>
         </CardContent>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -47,16 +47,10 @@ interface AddEmployeeModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Mock companies - in production, this would come from the database
-const mockCompanies = [
-  { id: '1', name: 'TechCorp Lda' },
-  { id: '2', name: 'HealthPlus SA' },
-  { id: '3', name: 'StartupHub' },
-  { id: '4', name: 'ConsultPro' },
-];
-
 export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [companies, setCompanies] = useState<Array<{ id: string; name: string }>>([]);
+  const [loadingCompanies, setLoadingCompanies] = useState(true);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -70,6 +64,42 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       accessCode: generateAccessCode(),
     },
   });
+
+  // Load companies from database
+  useEffect(() => {
+    const loadCompanies = async () => {
+      try {
+        setLoadingCompanies(true);
+        const { data, error } = await supabase
+          .from('companies')
+          .select('id, company_name')
+          .eq('is_active', true)
+          .order('company_name');
+
+        if (error) throw error;
+
+        const companyList = (data || []).map(c => ({
+          id: c.id,
+          name: c.company_name
+        }));
+
+        setCompanies(companyList);
+      } catch (error) {
+        console.error('Error loading companies:', error);
+        toast({
+          title: 'Erro ao carregar empresas',
+          description: 'Não foi possível carregar a lista de empresas.',
+          variant: 'destructive'
+        });
+      } finally {
+        setLoadingCompanies(false);
+      }
+    };
+
+    if (open) {
+      loadCompanies();
+    }
+  }, [open, toast]);
 
   function generateAccessCode(): string {
     // Generate a 6-character alphanumeric code
@@ -330,11 +360,21 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {mockCompanies.map((company) => (
-                          <SelectItem key={company.id} value={company.id}>
-                            {company.name}
+                        {loadingCompanies ? (
+                          <SelectItem value="" disabled>
+                            A carregar empresas...
                           </SelectItem>
-                        ))}
+                        ) : companies.length === 0 ? (
+                          <SelectItem value="" disabled>
+                            Nenhuma empresa disponível
+                          </SelectItem>
+                        ) : (
+                          companies.map((company) => (
+                            <SelectItem key={company.id} value={company.name}>
+                              {company.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
