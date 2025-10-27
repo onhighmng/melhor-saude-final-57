@@ -14,6 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import { supabase } from '@/integrations/supabase/client';
+import { LiveIndicator } from '@/components/ui/live-indicator';
 
 interface ActivityMetrics {
   utilizationRate: number;
@@ -99,14 +100,17 @@ const AdminDashboard = () => {
       <div className="relative z-10 h-full flex flex-col">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
           {/* Page Header - Like other admin pages */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Dashboard Geral
-        </h1>
-        <p className="text-muted-foreground">
-              Visão geral da plataforma Melhor Saúde
-        </p>
-      </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Dashboard Geral
+              </h1>
+              <p className="text-muted-foreground">
+                Visão geral da plataforma Melhor Saúde
+              </p>
+            </div>
+            <LiveIndicator />
+          </div>
 
           {/* Bento Grid Layout - Fixed height */}
           <div className="h-[calc(100vh-200px)]">

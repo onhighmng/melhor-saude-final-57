@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import SpecialistLayout from './SpecialistLayout';
 import { supabase } from '@/integrations/supabase/client';
+import { LiveIndicator } from '@/components/ui/live-indicator';
 
 interface Case {
   id: string;
@@ -30,6 +31,22 @@ export default function AdminSpecialistTab() {
 
   useEffect(() => {
     loadCases();
+
+    // Real-time subscription
+    const subscription = supabase
+      .channel('specialist-cases-updates')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'bookings'
+      }, () => {
+        loadCases();
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const loadCases = async () => {

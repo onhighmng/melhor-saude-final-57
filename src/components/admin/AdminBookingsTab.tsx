@@ -9,6 +9,7 @@ import { pt } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { PAGINATION_SIZE } from '@/config/constants';
+import { LiveIndicator } from '@/components/ui/live-indicator';
 
 interface Booking {
   id: string;
@@ -80,6 +81,26 @@ export default function AdminBookingsTab() {
     const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).toISOString();
     const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).toISOString();
     loadBookings(monthStart, monthEnd);
+
+    // Real-time subscription
+    const subscription = supabase
+      .channel('admin-bookings-updates')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'bookings'
+      }, () => {
+        loadBookings(monthStart, monthEnd);
+        toast({
+          title: 'Atualização',
+          description: 'Agendamentos atualizados em tempo real',
+        });
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [currentMonth]);
 
   const bookingsForSelectedDate = bookings.filter(booking =>
@@ -98,24 +119,27 @@ export default function AdminBookingsTab() {
               <CalendarIcon className="h-5 w-5" />
               Calendário de Agendamentos
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-medium min-w-[120px] text-center">
-                {format(currentMonth, 'MMMM yyyy', { locale: pt })}
-              </span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+            <div className="flex items-center gap-4">
+              <LiveIndicator />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm font-medium min-w-[120px] text-center">
+                  {format(currentMonth, 'MMMM yyyy', { locale: pt })}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </CardTitle>
         </CardHeader>

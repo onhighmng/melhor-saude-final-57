@@ -43,6 +43,7 @@ import providerPlaceholder from '@/assets/provider-placeholder.jpg';
 import { BookingModal } from '@/components/admin/providers/BookingModal';
 import { InfoCard } from '@/components/ui/info-card';
 import type { CalendarSlot } from '@/types/adminProvider';
+import { LiveIndicator } from '@/components/ui/live-indicator';
 
 interface Provider {
   id: string;
@@ -86,6 +87,26 @@ const AdminProvidersTab = () => {
 
   useEffect(() => {
     loadProviders();
+
+    // Real-time subscription
+    const subscription = supabase
+      .channel('admin-providers-updates')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'prestadores'
+      }, () => {
+        loadProviders();
+        toast({
+          title: 'Atualização',
+          description: 'Lista de prestadores atualizada',
+        });
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -434,9 +455,12 @@ const AdminProvidersTab = () => {
     <div className="space-y-8">
       {/* Header with Add Button */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Prestadores</h2>
-          <p className="text-sm text-muted-foreground">Gerir prestadores externos e suas métricas</p>
+        <div className="flex items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Prestadores</h2>
+            <p className="text-sm text-muted-foreground">Gerir prestadores externos e suas métricas</p>
+          </div>
+          <LiveIndicator />
         </div>
         
         <Button onClick={() => setShowAddModal(true)} size="lg">

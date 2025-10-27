@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { ProviderSessionManagementModal } from '@/components/sessions/ProviderSessionManagementModal';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { LiveIndicator } from '@/components/ui/live-indicator';
 
 interface Case {
   id: string;
@@ -210,7 +211,10 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
         {/* Right Side - Cases List */}
         <Card>
           <CardHeader>
-            <CardTitle>Histórico de Casos</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+              <span>Histórico de Casos</span>
+              <LiveIndicator />
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
