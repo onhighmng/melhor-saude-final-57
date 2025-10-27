@@ -77,52 +77,7 @@ const AdminMatching = () => {
   const [showSimulation, setShowSimulation] = useState(false);
   const [availableProviders, setAvailableProviders] = useState<ProviderInQueue[]>([]);
 
-  const mockProviders: ProviderInQueue[] = [
-    {
-      id: '1',
-      name: 'Dra. Maria Santos',
-      email: 'maria.santos@clinic.pt',
-      weight: 1.0,
-      status: 'active',
-      maxPerDay: 3,
-      maxPerWeek: 15,
-      currentUsage: { today: 2, thisWeek: 8 },
-      pillar: 'mental-health'
-    },
-    {
-      id: '2',
-      name: 'Dr. Paulo Reis',
-      email: 'paulo.reis@financial.pt',
-      weight: 1.5,
-      status: 'active',
-      maxPerDay: 4,
-      maxPerWeek: 20,
-      currentUsage: { today: 1, thisWeek: 12 },
-      pillar: 'mental-health'
-    },
-    {
-      id: '3',
-      name: 'Prof. Ana Rodrigues',
-      email: 'ana.rodrigues@wellness.pt',
-      weight: 0.5,
-      status: 'inactive',
-      maxPerDay: 2,
-      maxPerWeek: 8,
-      currentUsage: { today: 0, thisWeek: 0 },
-      pillar: 'physical-wellness'
-    },
-    {
-      id: '4',
-      name: 'Dra. Sofia Alves',
-      email: 'sofia.alves@legal.pt',
-      weight: 1.0,
-      status: 'active',
-      maxPerDay: 3,
-      maxPerWeek: 15,
-      currentUsage: { today: 3, thisWeek: 15 },
-      pillar: 'legal-assistance'
-    }
-  ];
+  // Mock providers removed - using real database queries
 
   const pillarConfig = {
     'mental-health': {
@@ -200,9 +155,57 @@ const AdminMatching = () => {
         pillars: organizedPillars
       }));
       
-      setAvailableProviders([]);
+      // Load current usage from bookings
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const weekStart = new Date(todayStart);
+      weekStart.setDate(weekStart.getDate() - 7);
+
+      const { data: todayBookings, error: todayError } = await supabase
+        .from('bookings')
+        .select('prestador_id')
+        .gte('created_at', todayStart.toISOString())
+        .eq('status', 'scheduled');
+
+      const { data: weekBookings, error: weekError } = await supabase
+        .from('bookings')
+        .select('prestador_id')
+        .gte('created_at', weekStart.toISOString())
+        .eq('status', 'scheduled');
+
+      if (todayError || weekError) {
+        console.error('Error loading booking statistics:', todayError || weekError);
+      }
+
+      // Calculate usage for each provider
+      const todayCount: Record<string, number> = {};
+      const weekCount: Record<string, number> = {};
+
+      todayBookings?.forEach(booking => {
+        if (booking.prestador_id) {
+          todayCount[booking.prestador_id] = (todayCount[booking.prestador_id] || 0) + 1;
+        }
+      });
+
+      weekBookings?.forEach(booking => {
+        if (booking.prestador_id) {
+          weekCount[booking.prestador_id] = (weekCount[booking.prestador_id] || 0) + 1;
+        }
+      });
+
+      // Update providers with usage data
+      const providersWithUsage = transformedProviders.map(p => ({
+        ...p,
+        currentUsage: {
+          today: todayCount[p.id] || 0,
+          thisWeek: weekCount[p.id] || 0
+        }
+      }));
+
+      setAvailableProviders(providersWithUsage);
       setIsLoading(false);
     } catch (error) {
+      console.error('Error loading matching rules:', error);
       toast({
         title: "Erro",
         description: "Erro ao carregar regras de matching",
@@ -267,16 +270,54 @@ const AdminMatching = () => {
 
   const saveMatchingRules = async () => {
     try {
+      setIsLoading(true);
+
+      // Save provider assignments to specialist_assignments table
+      const assignmentsToSave = [];
+      
+      for (const [pillarKey, pillarData] of Object.entries(matchingRules.pillars)) {
+        for (const provider of pillarData.providers) {
+          assignmentsToSave.push({
+            pillar: pillarKey,
+            specialist_id: provider.id,
+            weight: provider.weight,
+            is_primary: provider.weight > 1.0,
+            assigned_by: (await supabase.auth.getUser()).data.user?.id
+          });
+        }
+      }
+
+      // Delete existing assignments for these pillars
+      const pillarKeys = Object.keys(matchingRules.pillars);
+      const { error: deleteError } = await supabase
+        .from('specialist_assignments')
+        .delete()
+        .in('pillar', pillarKeys);
+
+      if (deleteError) throw deleteError;
+
+      // Insert new assignments
+      if (assignmentsToSave.length > 0) {
+        const { error: insertError } = await supabase
+          .from('specialist_assignments')
+          .insert(assignmentsToSave);
+
+        if (insertError) throw insertError;
+      }
+
       toast({
         title: "Regras guardadas",
         description: "Regras de matching atualizadas com sucesso"
       });
+      setIsLoading(false);
     } catch (error) {
+      console.error('Error saving matching rules:', error);
       toast({
         title: "Erro",
         description: "Erro ao guardar regras",
         variant: "destructive"
       });
+      setIsLoading(false);
     }
   };
 

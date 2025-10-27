@@ -3,7 +3,26 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Users, AlertTriangle, CheckCircle, Info } from "lucide-react";
-import { Company, getSeatUsagePercentage, getSeatUsageBadgeVariant } from "@/data/companyMockData";
+// Company interface
+interface Company {
+  id: string;
+  company_name: string;
+  seats_allocated?: number;
+  seats_used?: number;
+  seats_available?: number;
+}
+
+// Helper functions
+const getSeatUsagePercentage = (company: Company) => {
+  if (!company.seats_allocated || company.seats_allocated === 0) return 0;
+  return Math.round((company.seats_used / company.seats_allocated) * 100);
+};
+
+const getSeatUsageBadgeVariant = (percentage: number) => {
+  if (percentage >= 90) return 'destructive';
+  if (percentage >= 70) return 'default';
+  return 'secondary';
+};
 
 interface SeatUsageCardProps {
   company: Company;

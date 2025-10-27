@@ -14,14 +14,14 @@ import { useAuth } from '@/contexts/AuthContext';
 interface InviteCode {
   id: string;
   company_id: string;
-  email: string;
+  email: string | null;
   invite_code: string;
   status: 'pending' | 'accepted' | 'revoked' | 'expired';
-  sessions_allocated: number;
+  sessions_allocated?: number;
   created_at: string;
   expires_at: string | null;
-  accepted_at: string | null;
-  invited_by: string | null;
+  used_at: string | null;
+  used_by: string | null;
 }
 
 function generateInviteCode(companyId: string): string {
@@ -71,7 +71,7 @@ export default function AdminCompanyInvites() {
 
       // Load invite codes
       const { data: codes, error } = await supabase
-        .from('invites')
+        .from('employee_invites')
         .select('*')
         .eq('company_id', id)
         .order('created_at', { ascending: false });
@@ -79,7 +79,7 @@ export default function AdminCompanyInvites() {
       if (error) throw error;
       setInviteCodes((codes || []).map(code => ({
         ...code,
-        status: code.status as 'pending' | 'accepted' | 'revoked' | 'expired'
+        status: code.is_used ? 'accepted' as const : 'pending' as const
       })));
     } catch (error: any) {
       toast({
@@ -136,13 +136,12 @@ export default function AdminCompanyInvites() {
         const inviteCode = generateInviteCode(id);
         
         const { data, error } = await supabase
-          .from('invites')
+          .from('employee_invites')
           .insert({
             company_id: id,
-            email: `temp_${i}@company.com`,
+            email: undefined,
             invite_code: inviteCode,
-            invited_by: profile.id,
-            status: 'pending',
+            is_used: false,
             expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
           })
           .select()
@@ -210,13 +209,12 @@ export default function AdminCompanyInvites() {
       // Create new code
       const inviteCode = generateInviteCode(id);
       const { data: newCode, error } = await supabase
-        .from('invites')
+        .from('employee_invites')
         .insert({
           company_id: id,
-          email: `temp_${Date.now()}@company.com`,
+          email: undefined,
           invite_code: inviteCode,
-          invited_by: profile.id,
-          status: 'pending',
+          is_used: false,
           expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
         })
         .select()

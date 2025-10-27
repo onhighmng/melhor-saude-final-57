@@ -21,7 +21,7 @@ const generateTimeSlots = () => {
       const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
       slots.push({
         time,
-        available: Math.random() > 0.2, // Most slots available with some randomness
+        available: true, // All slots available by default - real availability should be queried from prestador_availability table
       });
     }
   }

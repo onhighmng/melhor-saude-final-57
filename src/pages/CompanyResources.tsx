@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResourceGrid } from "@/components/resources/ResourceGrid";
 import { ResourceModal } from "@/components/resources/ResourceModal";
-import { UserResource, pillarNames } from "@/data/userResourcesData";
+import { UserResource, pillarNames } from "@/types/resources";
 import { BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";

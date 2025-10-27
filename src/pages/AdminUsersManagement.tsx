@@ -11,6 +11,8 @@ import RuixenSection from '@/components/ui/ruixen-feature-section';
 import { EmployeeDetailModal } from '@/components/admin/EmployeeDetailModal';
 import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
 import { AddProviderModal } from '@/components/admin/AddProviderModal';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const AdminUsersManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,63 +44,68 @@ const AdminUsersManagement = () => {
     setSearchParams({ tab: value });
   };
 
-  const handleEmployeeClick = (employeeId: number) => {
-    // Mock employee data - in real app would fetch from API
-    const mockEmployees = [
-      {
-        id: 1,
-        name: "João Silva",
-        email: "joao@techcorp.pt",
-        company: "TechCorp Lda",
-        sessions: { used: 5, total: 10 },
-        rating: 4.8,
-        objectives: ["Gestão de ansiedade", "Questões contratuais"],
-        sessionHistory: [
-          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
-        ]
-      },
-      {
-        id: 2,
-        name: "Maria Santos",
-        email: "maria@healthplus.pt",
-        company: "HealthPlus SA",
-        sessions: { used: 3, total: 8 },
-        rating: 4.5,
-        objectives: ["Gestão de ansiedade", "Questões contratuais"],
-        sessionHistory: [
-          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
-        ]
-      },
-      {
-        id: 3,
-        name: "Pedro Costa",
-        email: "pedro@startup.pt",
-        company: "StartupHub",
-        sessions: { used: 2, total: 5 },
-        rating: 4.7,
-        objectives: ["Gestão de ansiedade", "Questões contratuais"],
-        sessionHistory: [
-          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
-        ]
-      },
-      {
-        id: 4,
-        name: "Ana Pereira",
-        email: "ana@consultpro.pt",
-        company: "ConsultPro",
-        sessions: { used: 7, total: 12 },
-        rating: 4.9,
-        objectives: ["Gestão de ansiedade", "Questões contratuais"],
-        sessionHistory: [
-          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
-        ]
-      }
-    ];
+  const handleEmployeeClick = async (employeeId: string) => {
+    try {
+      // Fetch employee data from database
+      const { data: employeeData, error } = await supabase
+        .from('company_employees')
+        .select(`
+          *,
+          user:profiles(id, name, email, avatar_url),
+          company:companies(id, company_name)
+        `)
+        .eq('id', employeeId)
+        .single();
 
-    const employee = mockEmployees.find(emp => emp.id === employeeId);
-    if (employee) {
+      if (error) throw error;
+      if (!employeeData) return;
+
+      // Get bookings for this employee
+      const { data: bookings } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          prestador:prestadores(id, name, photo_url),
+          pillar:pillars(id, name)
+        `)
+        .eq('user_id', employeeData.user_id)
+        .order('scheduled_for', { ascending: false })
+        .limit(10);
+
+      // Get feedback ratings
+      const { data: feedback } = await supabase
+        .from('session_feedback')
+        .select('rating')
+        .in('booking_id', bookings?.map(b => b.id) || []);
+
+      const avgRating = feedback?.length
+        ? feedback.reduce((sum, f) => sum + (f.rating || 0), 0) / feedback.length
+        : 0;
+
+      // Transform to modal format
+      const employee = {
+        id: employeeData.id,
+        name: employeeData.user?.name || 'Unknown',
+        email: employeeData.user?.email || '',
+        company: employeeData.company?.company_name || '',
+        sessions: {
+          used: employeeData.sessions_used || 0,
+          total: employeeData.sessions_allocated || 0
+        },
+        rating: Math.round(avgRating * 10) / 10,
+        objectives: employeeData.onboarding_goals || [],
+        sessionHistory: (bookings || []).map(b => ({
+          date: new Date(b.scheduled_for).toLocaleDateString('pt-PT'),
+          category: b.pillar?.name || 'N/A',
+          provider: b.prestador?.name || 'N/A'
+        }))
+      };
+
       setSelectedEmployee(employee);
       setIsEmployeeModalOpen(true);
+    } catch (error) {
+      console.error('Error loading employee:', error);
+      toast.error('Erro ao carregar dados do colaborador');
     }
   };
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResourceGrid } from "@/components/resources/ResourceGrid";
 import { ResourceModal } from "@/components/resources/ResourceModal";
-import { UserResource } from "@/data/userResourcesData";
+import { UserResource } from "@/types/resources";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Edit, Trash2, Save } from "lucide-react";

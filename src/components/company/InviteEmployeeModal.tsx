@@ -7,7 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, User, Key, Eye, EyeOff, Building, Users } from 'lucide-react';
-import { Company } from "@/data/companyMockData";
+// Company type interface
+interface Company {
+  id: string;
+  company_name: string;
+  sessions_allocated: number;
+  sessions_used: number;
+}
+
 import { companyToasts } from "@/data/companyToastMessages";
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';

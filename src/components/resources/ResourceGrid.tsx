@@ -1,5 +1,5 @@
 import { ResourceCard } from "./ResourceCard";
-import { UserResource } from "@/data/userResourcesData";
+import { UserResource } from "@/types/resources";
 
 interface ResourceGridProps {
   resources: UserResource[];

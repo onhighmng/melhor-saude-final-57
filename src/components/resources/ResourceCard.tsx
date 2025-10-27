@@ -1,4 +1,4 @@
-import { UserResource, pillarNames, resourceTypeNames } from "@/data/userResourcesData";
+import { UserResource, pillarNames, resourceTypeNames } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

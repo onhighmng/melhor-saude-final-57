@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Users, Clock, TrendingUp, CheckCircle, XCircle, Info } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface ChangeRequest {
   id: string;
@@ -26,52 +29,7 @@ interface ChangeRequest {
   createdAt: string;
 }
 
-const mockChangeRequests: ChangeRequest[] = [
-  {
-    id: "1",
-    user: { name: "João Silva", avatar: "/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png" },
-    pillar: "Saúde Mental",
-    currentProvider: { name: "Leslie Alexander", avatar: "/lovable-uploads/085a608e-3a3e-45e5-898b-2f9b4c0f7f67.png" },
-    preferences: "Prefer switch to a new therapist",
-    reason: "Looking for a more suitable provider",
-    slaRemaining: 7,
-    status: "pending",
-    createdAt: "2024-01-15"
-  },
-  {
-    id: "2", 
-    user: { name: "Maria Santos", avatar: "/lovable-uploads/0daa1ba3-5b7c-49db-950f-22ccfee40b86.png" },
-    pillar: "Saúde Mental",
-    currentProvider: { name: "Guy Hawkins", avatar: "/lovable-uploads/18286dba-299d-452d-b21d-2860965d5785.png", atCapacity: true },
-    preferences: "Prefer therapy of a different format",
-    reason: "Format does not meet expectations", 
-    slaRemaining: 3,
-    status: "pending",
-    createdAt: "2024-01-18"
-  },
-  {
-    id: "3",
-    user: { name: "Cristina Silva", avatar: "/lovable-uploads/2315135f-f033-4434-be6f-1ad3824c1ebb.png" },
-    pillar: "Bem-estar Físico", 
-    currentProvider: { name: "Theresa Webb", avatar: "/lovable-uploads/5098d52a-638c-4f18-8bf0-36058ff94187.png" },
-    preferences: "Prefer online sessions only",
-    reason: "No preference needed left",
-    slaRemaining: 5,
-    status: "pending",
-    createdAt: "2024-01-16"
-  },
-  {
-    id: "4",
-    user: { name: "Pedro Costa", avatar: "/lovable-uploads/537ae6d8-8bad-4984-87ef-5165033fdc1c.png" },
-    pillar: "Assistência Financeira",
-    currentProvider: { name: "Floyd Miles", avatar: "/lovable-uploads/5d2071d4-8909-4e5f-b30d-cf52091ffba9.png" },
-    preferences: "Need help with tax planning",
-    reason: "Need help with tax planning",
-    slaRemaining: 1,
-    status: "pending", 
-    createdAt: "2024-01-20"
-  }
-];
+// Mock data removed - using real database queries
 
 const getPillarColor = (pillar: string) => {
   switch (pillar) {
@@ -84,27 +42,111 @@ const getPillarColor = (pillar: string) => {
 };
 
 const AdminProviderChangeRequests = () => {
-  const [requests, setRequests] = useState(mockChangeRequests);
+  const [requests, setRequests] = useState<ChangeRequest[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<ChangeRequest | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [requestInfoMessage, setRequestInfoMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const pendingRequests = requests.filter(r => r.status === "pending");
   const slaViolations = pendingRequests.filter(r => r.slaRemaining <= 1).length;
   const capacityWarnings = pendingRequests.filter(r => r.currentProvider.atCapacity).length;
 
-  const handleApprove = (requestId: string) => {
-    setRequests(prev => prev.map(r => 
-      r.id === requestId ? { ...r, status: "approved" as const } : r
-    ));
+  useEffect(() => {
+    loadChangeRequests();
+  }, []);
+
+  const loadChangeRequests = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('provider_change_requests')
+        .select(`
+          *,
+          user:profiles!user_id(name, avatar_url),
+          current_prestador:prestadores!current_prestador_id(id, name, photo_url)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform to ChangeRequest format
+      const transformedRequests: ChangeRequest[] = (data || []).map(req => {
+        const createdAt = new Date(req.created_at);
+        const daysSinceRequest = Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+        const slaRemaining = 7 - daysSinceRequest;
+
+        return {
+          id: req.id,
+          user: { name: req.user?.name || 'Unknown', avatar: req.user?.avatar_url },
+          pillar: req.pillar as any,
+          currentProvider: { 
+            name: req.current_prestador?.name || 'Unknown',
+            avatar: req.current_prestador?.photo_url 
+          },
+          preferences: req.preferences || '',
+          reason: req.reason || '',
+          slaRemaining,
+          status: req.status as any,
+          createdAt: createdAt.toISOString().split('T')[0]
+        };
+      });
+
+      setRequests(transformedRequests);
+    } catch (error) {
+      console.error('Error loading change requests:', error);
+      toast.error('Erro ao carregar pedidos de mudança');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReject = (requestId: string, reason: string) => {
-    setRequests(prev => prev.map(r => 
-      r.id === requestId ? { ...r, status: "rejected" as const } : r
-    ));
-    setRejectReason("");
-    setSelectedRequest(null);
+  const handleApprove = async (requestId: string) => {
+    try {
+      const { error } = await supabase
+        .from('provider_change_requests')
+        .update({ 
+          status: 'approved',
+          resolved_at: new Date().toISOString(),
+          resolved_by: (await supabase.auth.getUser()).data.user?.id
+        })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      setRequests(prev => prev.map(r => 
+        r.id === requestId ? { ...r, status: "approved" as const } : r
+      ));
+      toast.success('Pedido aprovado com sucesso');
+    } catch (error) {
+      console.error('Error approving request:', error);
+      toast.error('Erro ao aprovar pedido');
+    }
+  };
+
+  const handleReject = async (requestId: string, reason: string) => {
+    try {
+      const { error } = await supabase
+        .from('provider_change_requests')
+        .update({ 
+          status: 'rejected',
+          resolved_at: new Date().toISOString(),
+          resolved_by: (await supabase.auth.getUser()).data.user?.id
+        })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      setRequests(prev => prev.map(r => 
+        r.id === requestId ? { ...r, status: "rejected" as const } : r
+      ));
+      setRejectReason("");
+      setSelectedRequest(null);
+      toast.success('Pedido rejeitado');
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      toast.error('Erro ao rejeitar pedido');
+    }
   };
 
   const handleRequestInfo = (requestId: string, message: string) => {

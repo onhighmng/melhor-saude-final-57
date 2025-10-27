@@ -1,7 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { UserPlus, AlertTriangle } from "lucide-react";
-import { Company, canInviteEmployee } from "@/data/companyMockData";
+// Company interface
+interface Company {
+  id: string;
+  company_name: string;
+  seats_allocated?: number;
+  seats_used?: number;
+  seats_available?: number;
+}
+
+// Helper function
+const canInviteEmployee = (company: Company) => {
+  if (!company.seats_allocated) return true;
+  return (company.seats_used || 0) < company.seats_allocated;
+};
 
 interface InviteEmployeeButtonProps {
   company: Company;
