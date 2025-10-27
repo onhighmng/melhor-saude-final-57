@@ -18,7 +18,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { AdminProvider } from '@/data/adminMockData';
 import { CalendarSlot } from '@/types/adminProvider';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -27,7 +26,7 @@ import { Calendar, Clock } from 'lucide-react';
 interface BookingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  provider: AdminProvider | null;
+  provider: any;
   slot: CalendarSlot;
 }
 
