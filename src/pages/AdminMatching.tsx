@@ -31,6 +31,7 @@ import {
   UserPlus
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProviderInQueue {
   id: string;
@@ -157,29 +158,50 @@ const AdminMatching = () => {
   const loadMatchingRules = async () => {
     setIsLoading(true);
     try {
-      setTimeout(() => {
-        const organizedPillars = { ...matchingRules.pillars };
-        
-        mockProviders.forEach(provider => {
-          if (organizedPillars[provider.pillar]) {
-            organizedPillars[provider.pillar].providers.push(provider);
-            organizedPillars[provider.pillar].totalWeight += provider.weight;
-          }
-        });
+      // Load real providers from database
+      const { data: providers, error } = await supabase
+        .from('prestadores')
+        .select('id, name, email, photo_url, pillar_specialties, is_active')
+        .eq('is_active', true);
 
-        setMatchingRules(prev => ({
-          ...prev,
-          pillars: organizedPillars
-        }));
+      if (error) throw error;
+
+      // Transform to ProviderInQueue format
+      const transformedProviders: ProviderInQueue[] = (providers || []).map(p => ({
+        id: p.id,
+        name: p.name,
+        email: p.email,
+        avatar: p.photo_url || undefined,
+        weight: 1.0,
+        status: p.is_active ? 'active' : 'inactive',
+        maxPerDay: 5,
+        maxPerWeek: 25,
+        currentUsage: { today: 0, thisWeek: 0 },
+        pillar: p.pillar_specialties?.[0] || 'mental-health'
+      }));
+
+      // Organize by pillar
+      const organizedPillars = { ...matchingRules.pillars };
+      
+      transformedProviders.forEach(provider => {
+        const pillarKey = provider.pillar.replace('saude_mental', 'mental-health')
+          .replace('bem_estar_fisico', 'physical-wellness')
+          .replace('assistencia_financeira', 'financial-assistance')
+          .replace('assistencia_juridica', 'legal-assistance');
         
-        setAvailableProviders(mockProviders.filter(p => 
-          !Object.values(organizedPillars).some(pillar => 
-            pillar.providers.some(pp => pp.id === p.id)
-          )
-        ));
-        
-        setIsLoading(false);
-      }, 1000);
+        if (organizedPillars[pillarKey]) {
+          organizedPillars[pillarKey].providers.push(provider);
+          organizedPillars[pillarKey].totalWeight += provider.weight;
+        }
+      });
+
+      setMatchingRules(prev => ({
+        ...prev,
+        pillars: organizedPillars
+      }));
+      
+      setAvailableProviders([]);
+      setIsLoading(false);
     } catch (error) {
       toast({
         title: "Erro",

@@ -49,7 +49,7 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
       try {
         const { data, error } = await supabase
           .from('prestadores')
-          .select('id, name, specialties, photo_url, pillar_specialties, bio')
+          .select('id, name, specialties, photo_url, pillar_specialties')
           .eq('is_active', true)
           .order('name');
 

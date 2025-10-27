@@ -108,8 +108,7 @@ const EspecialistaCallRequests = () => {
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <p><strong>Email:</strong> {request.user_email}</p>
-                      <p><strong>Telefone:</strong> {request.user_phone}</p>
-                      {request.notes && <p><strong>Notas:</strong> {request.notes}</p>}
+                      <p><strong>Telefone:</strong> {request.user_phone || 'N/A'}</p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 items-end">
@@ -131,9 +130,9 @@ const EspecialistaCallRequests = () => {
                         Resolver
                       </Button>
                     </div>
-                    <div className={`text-sm font-medium ${getWaitTimeColor(request.wait_time)} flex items-center gap-1`}>
+                    <div className={`text-sm font-medium text-muted-foreground flex items-center gap-1`}>
                       <Clock className="h-4 w-4" />
-                      <span>{Math.floor(request.wait_time / 60)}h {request.wait_time % 60}min</span>
+                      <span>{new Date(request.created_at).toLocaleString('pt-PT')}</span>
                     </div>
                   </div>
                 </div>

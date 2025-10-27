@@ -199,10 +199,10 @@ const EspecialistaSessionsRevamped = () => {
       }
       acc[dateKey].push({
         id: session.id,
-        name: `${session.user_name} - ${getPillarLabel(session.pillar)}`,
-        time: session.time,
-        datetime: `${session.date}T${session.time}`,
-        userName: session.user_name,
+        name: `${session.profiles?.name || 'Unknown'} - ${getPillarLabel(session.pillar)}`,
+        time: session.start_time || '00:00',
+        datetime: `${session.date}T${session.start_time || '00:00'}`,
+        userName: session.profiles?.name || 'Unknown',
         pillar: session.pillar,
       });
       return acc;
@@ -210,7 +210,14 @@ const EspecialistaSessionsRevamped = () => {
 
     return Object.entries(groupedByDate).map(([date, events]) => ({
       day: new Date(date),
-      events,
+      events: events as Array<{
+        id: string;
+        name: string;
+        time: string;
+        datetime: string;
+        userName: string;
+        pillar: string;
+      }>,
     }));
   }, [sessionsToShow]);
 

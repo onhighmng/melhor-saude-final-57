@@ -36,10 +36,12 @@ export default function SpecialistDashboard() {
   }, []);
 
   // Use real data from hooks
-  const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'pending');
+  const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'escalated');
   const filteredSessions: any[] = []; // Real sessions loaded from bookings via hooks
   const assignedCompanies: any[] = []; // Will be populated from company assignments
-  const filteredReferrals: any[] = []; // Real referrals loaded via hooks
+  const filteredReferrals: any[] = [];
+  
+  const monthlyCases = metrics?.totalChats || 0;
 
   const filteredChats = pillarFilter === 'all' 
     ? escalatedChats 
@@ -115,7 +117,7 @@ export default function SpecialistDashboard() {
               {/* Bottom Left - Personal Stats */}
               <BentoCard 
                 name="Desempenho Pessoal" 
-                description={`${metrics?.monthlyCases || 0} casos este mês`} 
+                description={`${monthlyCases} casos este mês`} 
                 Icon={TrendingUp} 
                 onClick={() => navigate('/especialista/stats')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
@@ -189,7 +191,7 @@ export default function SpecialistDashboard() {
                               <p className="text-xs text-gray-600 truncate">{request.company_name}</p>
                             </div>
                             <Badge variant="outline" className="text-xs">
-                              {Math.floor(request.wait_time / 60)}h
+                              {new Date(request.created_at).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
                             </Badge>
                           </div>
                         ))}
