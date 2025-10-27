@@ -145,3 +145,4 @@ npm run build
 
 All critical production paths now use real Supabase data.
 
+
