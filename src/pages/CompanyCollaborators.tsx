@@ -75,9 +75,6 @@ const CompanyCollaborators = () => {
 
         setCompanyData({
           ...company,
-          seatLimit: company.sessions_allocated,
-          seatUsed: enrichedEmployees.filter(e => e.sessions_used > 0).length,
-          seatAvailable: company.sessions_allocated - enrichedEmployees.filter(e => e.sessions_used > 0).length,
           name: company.company_name,
           registeredEmployees,
           activeEmployees,
@@ -140,10 +137,11 @@ const CompanyCollaborators = () => {
       return;
     }
 
-    if (generatedCodes.length >= companyData.seatAvailable) {
+    const seatsAvailable = (companyData.sessions_allocated || 0) - (companyData.sessions_used || 0);
+    if (generatedCodes.length >= seatsAvailable) {
       toast({
         title: "Limite atingido",
-        description: `Já foram gerados ${companyData.seatAvailable} códigos (limite disponível)`,
+        description: `Já foram gerados ${seatsAvailable} códigos (limite disponível)`,
         variant: "destructive"
       });
       return;
@@ -227,7 +225,10 @@ const CompanyCollaborators = () => {
     );
   }
 
-  const seatUsagePercent = Math.round((companyData.seatUsed / companyData.seatLimit) * 100);
+  const seatLimit = companyData.sessions_allocated || 0;
+  const seatUsed = companyData.sessions_used || 0;
+  const seatAvailable = seatLimit - seatUsed;
+  const seatUsagePercent = seatLimit > 0 ? Math.round((seatUsed / seatLimit) * 100) : 0;
 
   return (
     <div className="space-y-0">
@@ -243,13 +244,13 @@ const CompanyCollaborators = () => {
       <FeaturesGrid 
         onGenerateCode={generateInviteCode}
         codesGenerated={generatedCodes.length}
-        seatsAvailable={companyData.seatAvailable}
-        canGenerateMore={companyData.seatAvailable > 0 && generatedCodes.length < companyData.seatAvailable}
+        seatsAvailable={seatAvailable}
+        canGenerateMore={seatAvailable > 0 && generatedCodes.length < seatAvailable}
         generatedCodes={generatedCodes}
         onCopyCode={copyToClipboard}
         onDownloadCodes={downloadCodes}
-        seatLimit={companyData.seatLimit}
-        seatUsed={companyData.seatUsed}
+        seatLimit={seatLimit}
+        seatUsed={seatUsed}
         seatUsagePercent={seatUsagePercent}
       />
 

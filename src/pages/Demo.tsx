@@ -5,7 +5,51 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { mockUser, mockAdminUser, mockHRUser, mockPrestadorUser, mockEspecialistaGeralUser } from '@/data/mockData';
+// Demo users for testing
+const demoUsers = [
+  { 
+    email: 'ana.silva@prestador.com', 
+    title: 'Affiliate', 
+    icon: UserCheck, 
+    role: 'prestador' as const, 
+    color: 'bg-green-500',
+    name: 'Dra. Ana Silva',
+    password: 'demo123'
+  },
+  { 
+    email: 'rh@empresademo.com', 
+    title: 'RH', 
+    icon: Building2, 
+    role: 'hr' as const, 
+    color: 'bg-purple-500',
+    name: 'Maria Silva',
+    password: 'demo123'
+  },
+  { 
+    email: 'admin@onhigh.com', 
+    title: 'Admin', 
+    icon: Shield, 
+    role: 'admin' as const, 
+    color: 'bg-red-500',
+    name: 'Admin OnHigh',
+    password: 'demo123'
+  },
+  { 
+    email: 'specialist@onhigh.com', 
+    title: 'Profissional de Permanencia', 
+    icon: Users, 
+    role: 'especialista_geral' as const, 
+    color: 'bg-orange-500',
+    name: 'Especialista Geral',
+    password: 'demo123'
+  }
+];
+
+const mockUser = demoUsers[0];
+const mockAdminUser = demoUsers[2];
+const mockHRUser = demoUsers[1];
+const mockPrestadorUser = demoUsers[0];
+const mockEspecialistaGeralUser = demoUsers[3];
 import { 
   User, 
   Shield, 

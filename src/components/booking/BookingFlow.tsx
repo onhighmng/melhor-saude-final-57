@@ -286,14 +286,63 @@ const BookingFlow = () => {
       }
 
       // NORMAL BOOKING FLOW
-      // Get company_id from company_employees table
-      const { data: employee } = await supabase
+      
+      // ========================================
+      // STEP 1: CHECK SESSION QUOTA
+      // ========================================
+      const { data: employee, error: quotaError } = await supabase
         .from('company_employees')
-        .select('company_id')
+        .select('company_id, sessions_allocated, sessions_used')
         .eq('user_id', profile.id)
         .maybeSingle();
       
+      if (quotaError) throw quotaError;
+      
       const companyId = employee?.company_id || null;
+      
+      if (employee) {
+        const remaining = (employee.sessions_allocated || 0) - (employee.sessions_used || 0);
+        
+        // Block if no sessions remaining
+        if (remaining <= 0) {
+          toast({
+            title: 'Sem Sessões Disponíveis',
+            description: 'Não tem sessões disponíveis na sua quota. Contacte o seu RH para adicionar mais sessões.',
+            variant: 'destructive'
+          });
+          return;
+        }
+        
+        // Warn if running low (≤ 2 sessions)
+        if (remaining <= 2) {
+          toast({
+            title: `⚠️ ${remaining} sessão${remaining !== 1 ? 'ões' : ''} restante${remaining !== 1 ? 's' : ''}`,
+            description: 'A sua quota está quase esgotada. Considere solicitar mais sessões.',
+            variant: 'default'
+          });
+        }
+      }
+      
+      // ========================================
+      // STEP 2: CHECK PROVIDER AVAILABILITY
+      // ========================================
+      const { data: existingBooking } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('prestador_id', selectedProvider.id)
+        .eq('date', selectedDate.toISOString().split('T')[0])
+        .eq('start_time', selectedTime)
+        .neq('status', 'cancelled')
+        .maybeSingle();
+      
+      if (existingBooking) {
+        toast({
+          title: 'Horário Indisponível',
+          description: 'Este horário já está reservado. Por favor, escolha outro.',
+          variant: 'destructive'
+        });
+        return;
+      }
 
       // Calculate end time (assuming 1 hour session)
       const [hour, minute] = selectedTime.split(':');
@@ -369,10 +418,55 @@ const BookingFlow = () => {
         }
       }
 
-    toast({
-      title: 'Sessão Agendada',
+      // Send confirmation email
+      try {
+        const emailHtml = `
+          <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #1e40af;">Confirmação de Sessão - Melhor Saúde</h2>
+              <p>Olá ${profile.name || 'Utilizador'},</p>
+              <p>Sua sessão foi agendada com sucesso!</p>
+              <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>Prestador:</strong> ${selectedProvider.name}</p>
+                <p><strong>Data:</strong> ${selectedDate.toLocaleDateString('pt-PT')}</p>
+                <p><strong>Hora:</strong> ${selectedTime}</p>
+                <p><strong>Tipo:</strong> ${
+                  meetingType === 'virtual' ? 'Virtual' : 
+                  meetingType === 'phone' ? 'Telefone' : 
+                  'Presencial'
+                }</p>
+                ${meetingType === 'virtual' && booking.meeting_link ? 
+                  `<p><strong>Link da Reunião:</strong> <a href="${booking.meeting_link}">${booking.meeting_link}</a></p>` : ''
+                }
+                <p><strong>Área:</strong> ${
+                  pillar === 'mental_health' ? 'Saúde Mental' : 
+                  pillar === 'financial_assistance' ? 'Assistência Financeira' :
+                  pillar === 'legal_assistance' ? 'Assistência Jurídica' : 
+                  'Bem-Estar Físico'
+                }</p>
+              </div>
+              <p>Até breve!</p>
+              <p style="color: #6b7280; font-size: 12px;">Melhor Saúde - Cuidando de si</p>
+            </body>
+          </html>
+        `;
+
+        await supabase.functions.invoke('send-email', {
+          body: {
+            to: profile.email,
+            subject: 'Confirmação de Sessão - Melhor Saúde',
+            html: emailHtml
+          }
+        });
+      } catch (emailError) {
+        console.error('Email send failed:', emailError);
+        // Don't block booking on email failure
+      }
+
+      toast({
+        title: 'Sessão Agendada',
         description: `A sua sessão com ${selectedProvider.name} foi agendada para ${selectedDate.toLocaleDateString()} às ${selectedTime}`,
-    });
+      });
     
     // If juridica pillar, show pre-diagnostic CTA
     if (selectedPillar === 'juridica') {

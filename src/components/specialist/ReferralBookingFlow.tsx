@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,50 +24,7 @@ interface ReferralBookingFlowProps {
   onBookingComplete: (prestadorId: string, date: Date, notes: string) => void;
 }
 
-const mockPrestadores: Prestador[] = [
-  {
-    id: 'prest-1',
-    name: 'Dr. João Silva',
-    specialty: 'Psicologia Clínica',
-    pillar: 'psychological',
-    rating: 4.8,
-  },
-  {
-    id: 'prest-2',
-    name: 'Dra. Maria Santos',
-    specialty: 'Terapia Cognitiva',
-    pillar: 'psychological',
-    rating: 4.9,
-  },
-  {
-    id: 'prest-3',
-    name: 'Dr. Pedro Costa',
-    specialty: 'Nutrição Clínica',
-    pillar: 'physical',
-    rating: 4.7,
-  },
-  {
-    id: 'prest-4',
-    name: 'Dra. Ana Ferreira',
-    specialty: 'Personal Training',
-    pillar: 'physical',
-    rating: 4.6,
-  },
-  {
-    id: 'prest-5',
-    name: 'Dr. Carlos Mendes',
-    specialty: 'Consultoria Financeira',
-    pillar: 'financial',
-    rating: 4.8,
-  },
-  {
-    id: 'prest-6',
-    name: 'Dra. Sofia Rodrigues',
-    specialty: 'Advocacia Laboral',
-    pillar: 'legal',
-    rating: 4.9,
-  },
-];
+// Mock data removed - using real database queries
 
 const pillarOptions = [
   { value: 'psychological', label: 'Saúde Mental', bgColor: 'hsl(210 80% 95%)', textColor: 'hsl(210 80% 40%)' },
@@ -145,7 +103,44 @@ export const ReferralBookingFlow = ({
     }
   };
 
-  const filteredProviders = mockPrestadores.filter(p => p.pillar === selectedPillar);
+  // Load real providers from database
+  const [providers, setProviders] = useState<Prestador[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProviders = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('prestadores')
+          .select('*')
+          .contains('pillar_specialties', [selectedPillar])
+          .eq('is_active', true);
+
+        if (error) throw error;
+
+        const transformedProviders = (data || []).map(p => ({
+          id: p.id,
+          name: p.name,
+          specialty: p.specialty || '',
+          pillar: p.pillar_specialties?.[0] || selectedPillar,
+          photo_url: p.photo_url,
+          rating: 4.8 // Default rating, could query from feedback
+        }));
+
+        setProviders(transformedProviders);
+      } catch (err) {
+        console.error('Error loading providers:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (selectedPillar) {
+      loadProviders();
+    }
+  }, [selectedPillar]);
+
+  const filteredProviders = providers.filter(p => p.pillar === selectedPillar);
   const days = generateDays();
   const timeSlots = selectedDate ? generateTimeSlots(selectedDate) : [];
 

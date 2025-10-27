@@ -149,7 +149,7 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
             {t('invite.modal.title')}
           </DialogTitle>
           <DialogDescription>
-            Adicione um novo colaborador à {company.name}. As credenciais de acesso serão enviadas por email.
+            Adicione um novo colaborador à {company.company_name}. As credenciais de acesso serão enviadas por email.
           </DialogDescription>
         </DialogHeader>
 
@@ -160,14 +160,17 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
               <div className="flex items-center gap-3">
                 <Building className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="font-medium">{company.name}</p>
+                  <p className="font-medium">{company.company_name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {company.seatAvailable} vaga{company.seatAvailable !== 1 ? 's' : ''} disponível{company.seatAvailable !== 1 ? 's' : ''} de {company.seatLimit}
+                    {(() => {
+                      const seatsAvailable = (company.sessions_allocated || 0) - (company.sessions_used || 0);
+                      return `${seatsAvailable} vaga${seatsAvailable !== 1 ? 's' : ''} disponível${seatsAvailable !== 1 ? 's' : ''} de ${company.sessions_allocated}`;
+                    })()}
                   </p>
                 </div>
               </div>
               <Badge variant="secondary">
-                {company.planType}
+                {company.plan_type || 'Standard'}
               </Badge>
             </div>
           </CardContent>

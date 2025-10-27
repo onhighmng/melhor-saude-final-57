@@ -42,10 +42,10 @@ export function SeatAllocationModal({
   const { t } = useTranslation();
   const { toast } = useToast();
   const { profile } = useAuth();
-  const [newLimit, setNewLimit] = useState(company.seatLimit);
+  const [newLimit, setNewLimit] = useState(company.sessions_allocated || 0);
 
   const handleSubmit = async () => {
-    if (newLimit < company.seatUsed) {
+    if (newLimit < (company.sessions_used || 0)) {
       toast({
         title: 'Erro',
         description: t('company:errors.seatLimitTooLow'),
@@ -69,9 +69,9 @@ export function SeatAllocationModal({
           entity_type: 'company',
           entity_id: company.id,
           details: { 
-            previous_allocation: company.seatLimit,
+            previous_allocation: company.sessions_allocated || 0,
             new_allocation: newLimit,
-            change: newLimit - company.seatLimit
+            change: newLimit - (company.sessions_allocated || 0)
           }
         });
       }
@@ -110,14 +110,14 @@ export function SeatAllocationModal({
           <div className="grid gap-2">
             <Label>Limite Atual</Label>
             <div className="text-2xl font-bold text-bright-royal">
-              {company.seatLimit} vagas
+              {company.sessions_allocated || 0} vagas
             </div>
           </div>
 
           <div className="grid gap-2">
             <Label>Vagas em Uso</Label>
             <div className="text-lg">
-              {company.seatUsed} de {company.seatLimit}
+              {company.sessions_used || 0} de {company.sessions_allocated || 0}
             </div>
           </div>
 
@@ -126,13 +126,13 @@ export function SeatAllocationModal({
             <Input
               id="new-limit"
               type="number"
-              min={company.seatUsed}
+              min={company.sessions_used || 0}
               value={newLimit}
               onChange={(e) => setNewLimit(parseInt(e.target.value))}
             />
           </div>
 
-          {newLimit < company.seatUsed && (
+          {newLimit < (company.sessions_used || 0) && (
             <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive rounded-lg">
               <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
               <p className="text-sm text-destructive">
@@ -146,7 +146,7 @@ export function SeatAllocationModal({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('buttons.cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={newLimit < company.seatUsed}>
+          <Button onClick={handleSubmit} disabled={newLimit < (company.sessions_used || 0)}>
             Atualizar Limite
           </Button>
         </DialogFooter>

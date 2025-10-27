@@ -43,7 +43,7 @@ export function InviteEmployeeButton({ company, onInvite }: InviteEmployeeButton
           <div className="text-sm max-w-xs">
             <p className="font-medium mb-1">Limite atingido</p>
             <p>
-              A empresa atingiu o limite de {company.seatLimit} contas ativas. 
+              A empresa atingiu o limite de {company.sessions_allocated} contas ativas. 
               Contacte o administrador para aumentar o limite ou desative contas inativas.
             </p>
           </div>
@@ -67,8 +67,10 @@ export function InviteEmployeeButton({ company, onInvite }: InviteEmployeeButton
       <TooltipContent>
         <div className="text-sm">
           <p>
-            {company.seatAvailable} conta{company.seatAvailable !== 1 ? 's' : ''} disponível{company.seatAvailable !== 1 ? 's' : ''} 
-            de {company.seatLimit}
+            {(() => {
+              const seatsAvailable = (company.sessions_allocated || 0) - (company.sessions_used || 0);
+              return `${seatsAvailable} conta${seatsAvailable !== 1 ? 's' : ''} disponível${seatsAvailable !== 1 ? 's' : ''} de ${company.sessions_allocated}`;
+            })()}
           </p>
         </div>
       </TooltipContent>
