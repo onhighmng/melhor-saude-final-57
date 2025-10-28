@@ -140,7 +140,7 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
                     </h3>
                     
                     <p className="font-semibold text-base lg:text-lg leading-tight mb-3 text-accent-sage">
-                      {provider.specialties as string[]?.[0] || 'Especialista'}
+                      {(provider.specialties as string[])?.[0] || 'Especialista'}
                     </p>
                     
                     <p className="text-sm md:text-base leading-relaxed tracking-tight mb-4 text-slate-grey">

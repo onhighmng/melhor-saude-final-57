@@ -8,7 +8,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { setNavigateFunction } from "@/services/redirectService";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useEffect } from "react";
-import { DemoAccessButton } from "@/components/DemoAccessButton";
 
 import ScrollIndicator from "@/components/ScrollIndicator";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
@@ -68,8 +67,6 @@ const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const BookingRouter = lazy(() => import("./components/booking/BookingRouter"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Support = lazy(() => import("./pages/Support"));
-// Demo page - force reload
-const Demo = lazy(() => import("./pages/Demo"));
 import { Suspense } from "react";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
 import { PerformanceMonitor } from "@/components/ui/performance-monitor";
@@ -104,13 +101,9 @@ const AppWithTracking = () => {
       window.removeEventListener('languageChanged', handleLanguageChange);
     };
   }, []);
-  
-  const showDemoButton = location.pathname !== '/demo';
 
   return (
     <>
-      {showDemoButton && <DemoAccessButton />}
-      
       <Suspense fallback={
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
           <div className="text-center space-y-4">
@@ -132,9 +125,6 @@ const AppWithTracking = () => {
           
           {/* Home page */}
           <Route path="/" element={<Index />} />
-          
-          {/* Demo page */}
-          <Route path="/demo" element={<Demo />} />
           
           {/* Static pages */}
           <Route path="/terms" element={<Terms />} />
