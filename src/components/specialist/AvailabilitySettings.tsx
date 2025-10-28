@@ -26,6 +26,8 @@ interface AvailabilitySettingsProps {
 export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySettingsProps) {
   const { toast } = useToast();
   const { profile } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [prestadorId, setPrestadorId] = useState<string | null>(null);
   
   // Unavailable time slots
   const [unavailableSlots, setUnavailableSlots] = useState<UnavailableSlot[]>([]);

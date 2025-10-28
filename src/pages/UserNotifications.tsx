@@ -57,16 +57,19 @@ export default function UserNotifications() {
 
   const markAsRead = async (id: string) => {
     try {
-      await supabase
+      const { error } = await supabase
         .from('notifications')
-        .update({ is_read: true, read_at: new Date().toISOString() })
+        .update({ is_read: true })
         .eq('id', id);
+
+      if (error) throw error;
 
       setNotifications(prev =>
         prev.map(n => n.id === id ? { ...n, is_read: true } : n)
       );
     } catch (error) {
       console.error('Error marking notification as read:', error);
+      toast.error('Erro ao marcar como lida');
     }
   };
 
@@ -83,11 +86,13 @@ export default function UserNotifications() {
 
   const markAllAsRead = async () => {
     try {
-      await supabase
+      const { error } = await supabase
         .from('notifications')
-        .update({ is_read: true, read_at: new Date().toISOString() })
+        .update({ is_read: true })
         .eq('user_id', user?.id)
         .eq('is_read', false);
+
+      if (error) throw error;
 
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
       toast.success('Todas as notificações marcadas como lidas');

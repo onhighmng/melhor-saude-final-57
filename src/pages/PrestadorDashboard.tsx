@@ -106,13 +106,23 @@ export default function PrestadorDashboard() {
         const avgRating = bookings?.filter(b => b.rating)
           .reduce((sum, b) => sum + (b.rating || 0), 0) / (bookings?.filter(b => b.rating).length || 1);
 
+        // Load revenue data from prestador_pricing
+        const { data: pricing } = await supabase
+          .from('prestador_pricing')
+          .select('session_price')
+          .eq('prestador_id', prestador.id)
+          .single();
+
+        const revenue = completedSessions * (pricing?.session_price || 0);
+
         setMetrics({
           todaySessions,
           totalSessions,
           completedSessions,
           weekSessions,
           uniqueUsers,
-          avgRating: avgRating.toFixed(1)
+          avgRating: avgRating.toFixed(1),
+          revenue
         });
       } catch (error: any) {
         console.error('Error loading prestador data:', error);
@@ -327,6 +337,10 @@ export default function PrestadorDashboard() {
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Total Sessões</span>
                         <span className="font-medium text-sm">{metrics?.totalSessions || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600">Receita Total</span>
+                        <span className="font-medium text-sm">{metrics?.revenue ? `${metrics.revenue.toFixed(2)} MZN` : '0 MZN'}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Satisfação</span>
