@@ -81,11 +81,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (error) throw error;
       
-      // onAuthStateChange will handle profile loading automatically
-      // Wait briefly for the profile to be set by the listener
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Load profile directly - onAuthStateChange will update it if needed
+      const userProfile = await loadProfileWithRoles(data.user.id);
       
-      return { profile: profile! };
+      // Update state immediately
+      setUser(data.user);
+      setSession(data.session);
+      setProfile(userProfile);
+      
+      return { profile: userProfile };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Credenciais inválidas';
       return { error: errorMessage };
@@ -163,39 +167,54 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Listen for auth state changes
   useEffect(() => {
+    let mounted = true;
+    
+    // Check for existing session on mount
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!mounted) return;
+      
       setSession(session);
       setUser(session?.user ?? null);
+      
       if (session?.user) {
         try {
           const profileData = await loadProfileWithRoles(session.user.id);
-          setProfile(profileData);
+          if (mounted) setProfile(profileData);
         } catch (error) {
-          // Silent fail for profile loading
+          console.error('Failed to load profile:', error);
         }
       }
-      setIsLoading(false);
+      
+      if (mounted) setIsLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // Listen for auth changes (logout, token refresh, etc)
+    // Note: login() handles profile loading directly, so this mainly handles logout/refresh
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+      
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
+      
+      // Only reload profile on token refresh or if profile is not set
+      if (session?.user && !profile) {
         try {
           const profileData = await loadProfileWithRoles(session.user.id);
-          setProfile(profileData);
+          if (mounted) setProfile(profileData);
         } catch (error) {
-          // Silent fail for profile loading
-          setProfile(null);
+          console.error('Failed to load profile:', error);
+          if (mounted) setProfile(null);
         }
-      } else {
-        setProfile(null);
+      } else if (!session) {
+        if (mounted) setProfile(null);
       }
-      setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []); // Empty deps - only run once on mount
 
   // Computed values
   const isAuthenticated = !!user && !!profile;
