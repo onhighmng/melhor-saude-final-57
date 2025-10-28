@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,19 +58,45 @@ export default function AdminRecommendationsTab() {
     try {
       setLoading(true);
 
-      // Table doesn't exist yet - using empty array for now
-      setRecommendations([]);
-      
-      // TODO: When resource_recommendations table is created, uncomment:
-      // const { data, error } = await supabase
-      //   .from('resource_recommendations')
-      //   .select(`
-      //     *,
-      //     user:profiles(name),
-      //     resource:resources(title, type)
-      //   `)
-      //   .order('confidence_score', { ascending: false });
+      const { data, error } = await supabase
+        .from('resource_recommendations')
+        .select(`
+          id,
+          confidence_score,
+          reason,
+          status,
+          created_at,
+          user:profiles!user_id(id, name, email),
+          resource:resources!resource_id(id, title, resource_type, pillar)
+        `)
+        .order('confidence_score', { ascending: false })
+        .order('created_at', { ascending: false });
 
+      if (error) throw error;
+
+      const formattedRecs: Recommendation[] = (data || []).map((rec: any) => {
+        const userName = rec.user?.name || 'Unknown';
+        const initials = userName
+          .split(' ')
+          .map((n: string) => n[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2);
+
+        return {
+          id: rec.id,
+          employeeName: userName,
+          employeeInitials: initials,
+          pillar: rec.resource?.pillar || 'saude_mental',
+          reason: rec.reason,
+          resourceTitle: rec.resource?.title || 'Unknown Resource',
+          resourceType: rec.resource?.resource_type || 'article',
+          confidence: rec.confidence_score,
+          status: rec.status as 'pending' | 'sent' | 'viewed',
+        };
+      });
+
+      setRecommendations(formattedRecs);
     } catch (error) {
       console.error('Error loading recommendations:', error);
       toast({
@@ -85,7 +111,17 @@ export default function AdminRecommendationsTab() {
 
   const handleSend = async (recId: string) => {
     try {
-      // TODO: Implement when table exists
+      const { error } = await supabase
+        .from('resource_recommendations')
+        .update({
+          status: 'sent',
+          sent_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', recId);
+
+      if (error) throw error;
+
       toast({
         title: 'Recomendação enviada',
         description: 'A recomendação foi enviada com sucesso.',
@@ -102,6 +138,20 @@ export default function AdminRecommendationsTab() {
     }
   };
 
+  // Calculate real-time stats from loaded recommendations
+  const stats = useMemo(() => {
+    const active = recommendations.filter(r => r.status === 'pending').length;
+    const sent = recommendations.filter(r => r.status === 'sent').length;
+    const viewed = recommendations.filter(r => r.status === 'viewed').length;
+    
+    const viewRate = sent > 0 ? Math.round((viewed / sent) * 100) : 0;
+    const avgConfidence = recommendations.length > 0
+      ? Math.round(recommendations.reduce((sum, r) => sum + r.confidence, 0) / recommendations.length)
+      : 0;
+
+    return { active, viewRate, avgConfidence };
+  }, [recommendations]);
+
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -111,7 +161,7 @@ export default function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Recomendações Ativas</p>
-                <p className="font-mono text-xl font-semibold mt-1">24</p>
+                <p className="font-mono text-xl font-semibold mt-1">{stats.active}</p>
               </div>
               <TrendingUp className="h-8 w-8 text-primary" />
             </div>
@@ -123,7 +173,7 @@ export default function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Taxa de Visualização</p>
-                <p className="font-mono text-xl font-semibold mt-1">68%</p>
+                <p className="font-mono text-xl font-semibold mt-1">{stats.viewRate}%</p>
               </div>
               <div className="h-8 w-8 rounded-full bg-green-500/10 flex items-center justify-center">
                 <span className="text-green-700 text-sm font-semibold">↑</span>
@@ -137,7 +187,7 @@ export default function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Confiança Média</p>
-                <p className="font-mono text-xl font-semibold mt-1">89%</p>
+                <p className="font-mono text-xl font-semibold mt-1">{stats.avgConfidence}%</p>
               </div>
               <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center">
                 <Brain className="h-4 w-4 text-blue-700" />

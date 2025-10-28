@@ -1130,6 +1130,84 @@ export type Database = {
           },
         ]
       }
+      resource_recommendations: {
+        Row: {
+          confidence_score: number
+          created_at: string
+          id: string
+          reason: string
+          recommended_by: string | null
+          resource_id: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          viewed_at: string | null
+        }
+        Insert: {
+          confidence_score: number
+          created_at?: string
+          id?: string
+          reason: string
+          recommended_by?: string | null
+          resource_id: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          viewed_at?: string | null
+        }
+        Update: {
+          confidence_score?: number
+          created_at?: string
+          id?: string
+          reason?: string
+          recommended_by?: string | null
+          resource_id?: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_recommendations_recommended_by_fkey"
+            columns: ["recommended_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_recommendations_recommended_by_fkey"
+            columns: ["recommended_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile_with_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_recommendations_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_recommendations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resource_recommendations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profile_with_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resources: {
         Row: {
           content: string | null

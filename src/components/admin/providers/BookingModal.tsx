@@ -7,7 +7,6 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -22,6 +21,8 @@ import { CalendarSlot } from '@/types/adminProvider';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { Calendar, Clock } from 'lucide-react';
+import { EmployeeAutocomplete } from '@/components/admin/EmployeeAutocomplete';
+import { supabase } from '@/integrations/supabase/client';
 
 interface BookingModalProps {
   open: boolean;
@@ -32,38 +33,116 @@ interface BookingModalProps {
 
 export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModalProps) => {
   const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
   
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const [formData, setFormData] = useState({
-    collaboratorName: '',
     sessionType: provider?.sessionType === 'Ambos' ? '' : (provider?.sessionType || ''),
     notes: '',
   });
 
   if (!provider) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.collaboratorName || !formData.sessionType) {
+    if (!selectedEmployee) {
       toast({
-        title: 'Erro ao agendar sessão',
+        title: 'Selecione um colaborador',
         variant: 'destructive',
       });
       return;
     }
 
-    // TODO: Implement actual booking logic
-    console.log('Creating booking:', {
-      provider: provider.id,
-      slot: slot.date,
-      ...formData,
-    });
+    if (!formData.sessionType) {
+      toast({
+        title: 'Selecione o tipo de sessão',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    toast({
-      title: 'Sessão agendada com sucesso!',
-    });
+    if (selectedEmployee.sessions_remaining <= 0) {
+      toast({
+        title: 'Colaborador sem sessões disponíveis',
+        description: 'Atribua mais sessões antes de agendar.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    onOpenChange(false);
+    setSubmitting(true);
+
+    try {
+      // Create booking
+      const { data: booking, error: bookingError } = await supabase
+        .from('bookings')
+        .insert({
+          user_id: selectedEmployee.user_id,
+          prestador_id: provider.id,
+          company_id: selectedEmployee.company_id,
+          booking_date: slot.date.toISOString(),
+          date: format(slot.date, 'yyyy-MM-dd'),
+          start_time: format(slot.date, 'HH:mm:ss'),
+          end_time: format(new Date(slot.date.getTime() + 60 * 60 * 1000), 'HH:mm:ss'),
+          session_type: formData.sessionType,
+          pillar: provider.pillar || 'saude_mental',
+          meeting_type: formData.sessionType === 'Virtual' ? 'online' : 'presencial',
+          status: 'scheduled',
+          notes: formData.notes || null,
+          booking_source: 'admin_manual',
+        })
+        .select()
+        .single();
+
+      if (bookingError) throw bookingError;
+
+      // Decrement employee quota
+      const { error: employeeError } = await supabase
+        .from('company_employees')
+        .update({
+          sessions_used: selectedEmployee.sessions_used + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', selectedEmployee.user_id)
+        .eq('company_id', selectedEmployee.company_id);
+
+      if (employeeError) throw employeeError;
+
+      // Get current company sessions_used to increment
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('sessions_used')
+        .eq('id', selectedEmployee.company_id)
+        .single();
+
+      // Decrement company quota
+      const { error: companyError } = await supabase
+        .from('companies')
+        .update({
+          sessions_used: (companyData?.sessions_used || 0) + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', selectedEmployee.company_id);
+
+      if (companyError) throw companyError;
+
+      toast({
+        title: 'Sessão agendada com sucesso!',
+        description: `Sessão marcada para ${selectedEmployee.name}`,
+      });
+
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast({
+        title: 'Erro ao agendar sessão',
+        description: error instanceof Error ? error.message : 'Tente novamente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -86,14 +165,16 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="collaborator">Escolher colaborador</Label>
-            <Input
-              id="collaborator"
-              placeholder="Pesquisar por nome ou email..."
-              value={formData.collaboratorName}
-              onChange={(e) => setFormData({ ...formData, collaboratorName: e.target.value })}
-              required
+            <Label>Escolher colaborador</Label>
+            <EmployeeAutocomplete
+              value={selectedEmployee?.user_id}
+              onSelect={setSelectedEmployee}
             />
+            {selectedEmployee && (
+              <p className="text-sm text-muted-foreground">
+                Sessões disponíveis: {selectedEmployee.sessions_remaining}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -133,11 +214,12 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              disabled={submitting}
             >
               Cancelar
             </Button>
-            <Button type="submit">
-              Confirmar Sessão
+            <Button type="submit" disabled={submitting}>
+              {submitting ? 'A agendar...' : 'Confirmar Sessão'}
             </Button>
           </DialogFooter>
         </form>
