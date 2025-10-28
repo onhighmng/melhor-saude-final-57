@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -53,7 +53,8 @@ const Login = () => {
         description: `Bem-vindo de volta!`
       });
 
-      // Don't navigate here - let useEffect handle it when profile loads
+      // Redirect to auth callback to handle role-based navigation
+      navigate('/auth/callback');
     } catch (error) {
       toast({
         title: "Erro ao entrar",
@@ -63,33 +64,6 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-
-  // Navigate when profile is loaded after successful login
-  useEffect(() => {
-    if (isLoading && profile?.role) {
-      const redirectPath = ROLE_REDIRECT_MAP[profile.role as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
-      console.log(`[Login] Redirecting to ${redirectPath} for role: ${profile.role}`);
-      navigate(redirectPath);
-      setIsLoading(false);
-    }
-  }, [profile, isLoading, navigate]);
-
-  // Safety timeout to prevent infinite loading
-  useEffect(() => {
-    if (isLoading) {
-      const timeout = setTimeout(() => {
-        console.error('[Login] Timeout - profile failed to load');
-        toast({
-          title: "Erro de timeout",
-          description: "O login demorou muito. Por favor, tente novamente.",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-      }, 5000);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [isLoading, toast]);
 
   return (
     <div className="min-h-screen w-full flex">
