@@ -102,11 +102,9 @@ export const AdminReportsTab: React.FC = () => {
       .from('companies')
       .select(`
         id,
-        name,
+        company_name,
         sessions_allocated,
-        sessions_used,
-        company_employees(count),
-        profiles!company_id(count)
+        sessions_used
       `)
       .eq('is_active', true);
 
@@ -114,12 +112,19 @@ export const AdminReportsTab: React.FC = () => {
 
     // Get additional stats for each company
     const statsPromises = companies.map(async (company) => {
+      // Get employee count for this company
+      const { count: employeesCount } = await supabase
+        .from('company_employees')
+        .select('*', { count: 'exact', head: true })
+        .eq('company_id', company.id)
+        .eq('is_active', true);
+
       // Get active users (users with activity in the period)
       const { count: activeUsers } = await supabase
-        .from('user_progress')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', company.profiles?.id)
-        .gte('action_date', startDate.toISOString());
+        .from('bookings')
+        .select('user_id', { count: 'exact', head: true })
+        .eq('company_id', company.id)
+        .gte('created_at', startDate.toISOString());
 
       // Get average satisfaction
       const { data: bookings } = await supabase
@@ -139,10 +144,10 @@ export const AdminReportsTab: React.FC = () => {
 
       return {
         id: company.id,
-        name: company.name,
+        name: company.company_name,
         sessions_allocated: company.sessions_allocated || 0,
         sessions_used: company.sessions_used || 0,
-        employees_count: company.company_employees?.length || 0,
+        employees_count: employeesCount || 0,
         active_users: activeUsers || 0,
         satisfaction_avg: satisfactionAvg,
         utilization_rate: utilizationRate
@@ -262,40 +267,10 @@ export const AdminReportsTab: React.FC = () => {
   };
 
   const loadGoalStats = async () => {
-    const days = parseInt(selectedPeriod);
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-
-    const pillars: Pillar[] = ['saude_mental', 'bem_estar_fisico', 'assistencia_financeira', 'assistencia_juridica'];
-    
-    const statsPromises = pillars.map(async (pillar) => {
-      // Get goals set
-      const { count: goalsSet } = await supabase
-        .from('user_goals')
-        .select('*', { count: 'exact', head: true })
-        .eq('pillar', pillar)
-        .gte('created_at', startDate.toISOString());
-
-      // Get goals achieved
-      const { count: goalsAchieved } = await supabase
-        .from('user_goals')
-        .select('*', { count: 'exact', head: true })
-        .eq('pillar', pillar)
-        .eq('status', 'completed')
-        .gte('created_at', startDate.toISOString());
-
-      const achievementRate = goalsSet > 0 ? (goalsAchieved / goalsSet) * 100 : 0;
-
-      return {
-        pillar,
-        goals_set: goalsSet || 0,
-        goals_achieved: goalsAchieved || 0,
-        achievement_rate: achievementRate
-      };
-    });
-
-    const stats = await Promise.all(statsPromises);
-    setGoalStats(stats);
+    // Table 'user_goals' does not exist yet
+    // This feature needs to be implemented with proper table creation
+    console.warn('user_goals table not implemented yet');
+    setGoalStats([]);
   };
 
   const exportToPDF = async () => {

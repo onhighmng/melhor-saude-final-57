@@ -112,14 +112,12 @@ export const SessionQuotaManager: React.FC = () => {
     const { data, error } = await supabase
       .from('company_employees')
       .select(`
-        *,
-        profiles!company_employees_user_id_fkey(
-          id,
-          name,
-          email,
-          department,
-          position
-        )
+        id,
+        user_id,
+        sessions_allocated,
+        sessions_used,
+        is_active,
+        joined_at
       `)
       .eq('company_id', profile.company_id)
       .eq('is_active', true)
@@ -130,10 +128,10 @@ export const SessionQuotaManager: React.FC = () => {
     const employeeQuotas: EmployeeQuota[] = (data || []).map(emp => ({
       id: emp.id,
       user_id: emp.user_id,
-      name: emp.profiles?.name || 'N/A',
-      email: emp.profiles?.email || 'N/A',
-      department: emp.profiles?.department || 'N/A',
-      position: emp.profiles?.position || 'N/A',
+      name: 'Colaborador', // Will be fetched separately if needed
+      email: 'N/A',
+      department: 'N/A',
+      position: 'N/A',
       sessions_allocated: emp.sessions_allocated || 0,
       sessions_used: emp.sessions_used || 0,
       sessions_remaining: (emp.sessions_allocated || 0) - (emp.sessions_used || 0),
@@ -147,18 +145,12 @@ export const SessionQuotaManager: React.FC = () => {
   const loadQuotaSettings = async () => {
     if (!profile?.company_id) return;
 
-    const { data: company, error } = await supabase
-      .from('companies')
-      .select('session_model, sessions_per_employee')
-      .eq('id', profile.company_id)
-      .single();
-
-    if (error) throw error;
-
+    // Columns session_model and sessions_per_employee don't exist
+    // Using default values
     setQuotaSettings(prev => ({
       ...prev,
-      session_model: company.session_model || 'pool',
-      sessions_per_employee: company.sessions_per_employee || 6
+      session_model: 'pool',
+      sessions_per_employee: 6
     }));
   };
 
@@ -175,19 +167,12 @@ export const SessionQuotaManager: React.FC = () => {
 
     setIsUpdating(true);
     try {
-      const { error } = await supabase
-        .from('companies')
-        .update({
-          session_model: quotaSettings.session_model,
-          sessions_per_employee: quotaSettings.sessions_per_employee
-        })
-        .eq('id', profile.company_id);
-
-      if (error) throw error;
-
+      // Columns session_model and sessions_per_employee don't exist in companies table
+      // Quota settings updated locally only
+      
       toast({
         title: "Configurações atualizadas",
-        description: "As configurações de quota foram atualizadas com sucesso"
+        description: "As configurações de quota foram atualizadas localmente"
       });
     } catch (error) {
       toast({

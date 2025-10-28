@@ -37,7 +37,7 @@ interface InviteStatus {
   created_at: string;
   expires_at: string;
   accepted_at: string | null;
-  metadata: any;
+  metadata?: any;
 }
 
 export const BulkInviteEmployees: React.FC = () => {
@@ -73,7 +73,11 @@ export const BulkInviteEmployees: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setInviteStatuses(data || []);
+      setInviteStatuses((data || []).map(invite => ({
+        ...invite,
+        status: invite.status as 'pending' | 'accepted' | 'expired' | 'cancelled',
+        metadata: {}
+      })) as InviteStatus[]);
     } catch (error) {
       console.error('Error loading invite statuses:', error);
       toast({

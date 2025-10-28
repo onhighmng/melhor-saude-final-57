@@ -24,24 +24,25 @@ import { useTranslation } from 'react-i18next';
 
 interface Company {
   id: string;
-  name: string;
-  email: string;
+  company_name: string;
+  contact_email: string;
   sessions_allocated: number;
   sessions_used: number;
-  price_per_session: number;
+  price_per_session?: number;
 }
 
 interface Invoice {
   id: string;
   invoice_number: string;
   company_id: string;
-  amount: number;
+  amount_due: number;
+  amount_paid: number;
   tax_amount: number;
   total_amount: number;
   status: 'pending' | 'paid' | 'overdue' | 'cancelled';
-  issue_date: string;
+  invoice_date: string;
   due_date: string;
-  paid_date: string | null;
+  paid_at: string | null;
   metadata: any;
 }
 
@@ -81,9 +82,9 @@ export const InvoiceGenerator: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('companies')
-        .select('id, name, email, sessions_allocated, sessions_used, price_per_session')
+        .select('id, company_name, contact_email, sessions_allocated, sessions_used')
         .eq('is_active', true)
-        .order('name');
+        .order('company_name');
 
       if (error) throw error;
       setCompanies(data || []);
@@ -105,15 +106,14 @@ export const InvoiceGenerator: React.FC = () => {
           id,
           invoice_number,
           company_id,
-          amount,
+          amount_due,
+          amount_paid,
           tax_amount,
           total_amount,
           status,
-          issue_date,
+          invoice_date,
           due_date,
-          paid_date,
-          metadata,
-          companies(name)
+          paid_at
         `)
         .order('created_at', { ascending: false })
         .limit(10);
@@ -188,18 +188,14 @@ export const InvoiceGenerator: React.FC = () => {
         .insert({
           invoice_number: invoiceNumber,
           company_id: selectedCompany,
-          amount: subtotal,
+          amount_due: subtotal,
+          amount_paid: 0,
           tax_amount: taxAmount,
           total_amount: total,
           status: 'pending',
-          issue_date: new Date().toISOString().split('T')[0],
+          invoice_date: new Date().toISOString().split('T')[0],
           due_date: dueDate,
-          metadata: {
-            items: invoiceItems,
-            notes,
-            company_name: company.name,
-            company_email: company.email
-          }
+          notes: notes
         })
         .select()
         .single();
@@ -249,24 +245,18 @@ export const InvoiceGenerator: React.FC = () => {
     try {
       // Generate PDF content (simplified - in real implementation, use react-pdf)
       const company = companies.find(c => c.id === invoice.company_id);
-      const items = invoice.metadata?.items || [];
       
       const pdfContent = `
 FATURA ${invoice.invoice_number}
 
-Empresa: ${company?.name || 'N/A'}
-Email: ${company?.email || 'N/A'}
-Data de Emissão: ${new Date(invoice.issue_date).toLocaleDateString('pt-PT')}
+Empresa: ${company?.company_name || 'N/A'}
+Email: ${company?.contact_email || 'N/A'}
+Data de Emissão: ${new Date(invoice.invoice_date).toLocaleDateString('pt-PT')}
 Data de Vencimento: ${new Date(invoice.due_date).toLocaleDateString('pt-PT')}
 
-ITENS:
-${items.map(item => `${item.description} - ${item.quantity}x €${item.unit_price} = €${item.total}`).join('\n')}
-
-Subtotal: €${invoice.amount.toFixed(2)}
+Subtotal: €${invoice.amount_due.toFixed(2)}
 IVA (${taxRate}%): €${invoice.tax_amount.toFixed(2)}
 TOTAL: €${invoice.total_amount.toFixed(2)}
-
-${invoice.metadata?.notes || ''}
       `;
 
       const blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8;' });
@@ -355,7 +345,7 @@ ${invoice.metadata?.notes || ''}
                   <SelectContent>
                     {companies.map((company) => (
                       <SelectItem key={company.id} value={company.id}>
-                        {company.name}
+                        {company.company_name}
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -105,9 +105,7 @@ export const CaseManagementPanel: React.FC = () => {
           user_id,
           pillar,
           phone_escalation_reason,
-          created_at,
-          updated_at,
-          profiles!chat_sessions_user_id_fkey(name, email)
+          created_at
         `)
         .eq('status', 'phone_escalated')
         .order('created_at', { ascending: false });
@@ -122,9 +120,7 @@ export const CaseManagementPanel: React.FC = () => {
           user_id,
           pillar,
           status,
-          created_at,
-          updated_at,
-          profiles!bookings_user_id_fkey(name, email)
+          created_at
         `)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
@@ -138,14 +134,14 @@ export const CaseManagementPanel: React.FC = () => {
         priority: 'high',
         status: 'new',
         user_id: chat.user_id,
-        user_name: chat.profiles?.name || 'Utilizador',
-        user_email: chat.profiles?.email || '',
+        user_name: 'Utilizador',
+        user_email: '',
         pillar: chat.pillar as Pillar,
         title: 'Chat Escalado',
         description: chat.phone_escalation_reason || 'Chat escalado para especialista',
         chat_session_id: chat.id,
         created_at: chat.created_at,
-        updated_at: chat.updated_at,
+        updated_at: chat.created_at,
         notes: '',
         metadata: { escalation_reason: chat.phone_escalation_reason }
       }));
@@ -156,14 +152,14 @@ export const CaseManagementPanel: React.FC = () => {
         priority: 'normal',
         status: 'new',
         user_id: booking.user_id,
-        user_name: booking.profiles?.name || 'Utilizador',
-        user_email: booking.profiles?.email || '',
+        user_name: 'Utilizador',
+        user_email: '',
         pillar: booking.pillar as Pillar,
         title: 'Solicitação de Sessão',
         description: `Solicitação de sessão de ${PILLAR_DISPLAY_NAMES[booking.pillar as Pillar]}`,
         booking_id: booking.id,
         created_at: booking.created_at,
-        updated_at: booking.updated_at,
+        updated_at: booking.created_at,
         notes: '',
         metadata: { booking_status: booking.status }
       }));

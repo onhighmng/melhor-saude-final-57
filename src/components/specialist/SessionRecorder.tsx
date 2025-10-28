@@ -31,9 +31,8 @@ interface Recording {
   id: string;
   booking_id: string;
   recording_url: string;
-  duration: number;
+  duration_minutes: number;
   is_encrypted: boolean;
-  is_transcribed: boolean;
   transcription_url?: string;
   created_at: string;
   expires_at?: string;
@@ -212,16 +211,26 @@ export const SessionRecorder: React.FC<SessionRecorderProps> = ({
         .from('session-recordings')
         .getPublicUrl(filename);
 
+      // Get booking details first
+      const { data: booking } = await supabase
+        .from('bookings')
+        .select('prestador_id, user_id')
+        .eq('id', bookingId)
+        .single();
+
+      if (!booking) throw new Error('Booking not found');
+
       // Save recording metadata to database
       const { data: recordingData, error: dbError } = await supabase
         .from('session_recordings')
         .insert({
           booking_id: bookingId,
+          prestador_id: booking.prestador_id || profile.id,
+          user_id: booking.user_id,
           recording_url: urlData.publicUrl,
-          duration: recordingTime,
-          is_encrypted: true, // Mark as encrypted for GDPR compliance
-          is_transcribed: false,
-          expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() // 90 days
+          duration_minutes: Math.ceil(recordingTime / 60),
+          is_encrypted: true,
+          expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
         })
         .select()
         .single();
@@ -279,7 +288,6 @@ export const SessionRecorder: React.FC<SessionRecorderProps> = ({
       const { error } = await supabase
         .from('session_recordings')
         .update({
-          is_transcribed: true,
           transcription_url: 'placeholder-transcription-url'
         })
         .eq('id', recordingId);
