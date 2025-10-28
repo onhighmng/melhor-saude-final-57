@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from 'react-i18next';
 
 const updatePasswordSchema = z.object({
   password: z.string()
@@ -28,7 +27,6 @@ type UpdatePasswordForm = z.infer<typeof updatePasswordSchema>;
 const UpdatePassword = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -43,8 +41,8 @@ const UpdatePassword = () => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
         toast({
-          title: t('auth.updatePassword.invalidLink', 'Link Inválido'),
-          description: t('auth.updatePassword.invalidLinkDescription', 'Este link de recuperação expirou ou é inválido'),
+          title: 'Link Inválido',
+          description: 'Este link de recuperação expirou ou é inválido',
           variant: 'destructive'
         });
         // Redirect after showing toast
@@ -53,7 +51,7 @@ const UpdatePassword = () => {
         setIsValidSession(true);
       }
     });
-  }, [navigate, toast, t]);
+  }, [navigate, toast]);
 
   const onSubmit = async (data: UpdatePasswordForm) => {
     setIsLoading(true);
@@ -65,14 +63,14 @@ const UpdatePassword = () => {
       
       if (error) {
         toast({
-          title: t('auth.updatePassword.errorTitle', 'Erro'),
+          title: 'Erro',
           description: error.message,
           variant: 'destructive'
         });
       } else {
         toast({
-          title: t('auth.updatePassword.success', 'Sucesso'),
-          description: t('auth.updatePassword.successDescription', 'Palavra-passe atualizada com sucesso. A redirecionar...'),
+          title: 'Sucesso',
+          description: 'Palavra-passe atualizada com sucesso. A redirecionar...',
         });
         
         // Wait for toast to show, then redirect to login
@@ -80,8 +78,8 @@ const UpdatePassword = () => {
       }
     } catch (error: any) {
       toast({
-        title: t('auth.updatePassword.errorTitle', 'Erro'),
-        description: error.message || t('auth.updatePassword.genericError', 'Ocorreu um erro inesperado'),
+        title: 'Erro',
+        description: error.message || 'Ocorreu um erro inesperado',
         variant: 'destructive'
       });
     } finally {
@@ -95,7 +93,7 @@ const UpdatePassword = () => {
       <div className="min-h-screen w-full flex items-center justify-center">
         <div className="text-center">
           <p className="text-muted-foreground">
-            {t('auth.updatePassword.verifying', 'A verificar link de recuperação...')}
+            A verificar link de recuperação...
           </p>
         </div>
       </div>
@@ -115,7 +113,7 @@ const UpdatePassword = () => {
         <div className="relative z-10 flex flex-col justify-end p-12 text-white">
           <h1 className="text-4xl font-bold mb-4">Melhor Saúde</h1>
           <p className="text-lg text-white/90">
-            {t('auth.updatePassword.hero', 'Defina uma nova palavra-passe segura para a sua conta.')}
+            Defina uma nova palavra-passe segura para a sua conta.
           </p>
         </div>
       </div>
@@ -125,23 +123,23 @@ const UpdatePassword = () => {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:text-left">
             <h2 className="text-3xl font-bold tracking-tight">
-              {t('auth.updatePassword.title', 'Definir Nova Palavra-passe')}
+              Definir Nova Palavra-passe
             </h2>
             <p className="text-muted-foreground mt-2">
-              {t('auth.updatePassword.description', 'Escolha uma palavra-passe forte e segura')}
+              Escolha uma palavra-passe forte e segura
             </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="password">
-                {t('auth.updatePassword.passwordLabel', 'Nova Palavra-passe')}
+                Nova Palavra-passe
               </Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder={t('auth.updatePassword.passwordPlaceholder', 'Mínimo 8 caracteres')}
+                  placeholder="Mínimo 8 caracteres"
                   {...register('password')}
                   className="h-11 pr-10"
                   disabled={isLoading}
@@ -161,13 +159,13 @@ const UpdatePassword = () => {
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">
-                {t('auth.updatePassword.confirmPasswordLabel', 'Confirmar Palavra-passe')}
+                Confirmar Palavra-passe
               </Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder={t('auth.updatePassword.confirmPasswordPlaceholder', 'Digite novamente')}
+                  placeholder="Digite novamente"
                   {...register('confirmPassword')}
                   className="h-11 pr-10"
                   disabled={isLoading}
@@ -188,17 +186,17 @@ const UpdatePassword = () => {
             {/* Password requirements */}
             <div className="text-xs text-muted-foreground space-y-1 bg-muted/50 p-3 rounded-md">
               <p className="font-medium mb-1">
-                {t('auth.updatePassword.requirements', 'A palavra-passe deve conter:')}
+                A palavra-passe deve conter:
               </p>
               <ul className="list-disc list-inside space-y-0.5">
-                <li>{t('auth.updatePassword.minLength', 'Mínimo 8 caracteres')}</li>
-                <li>{t('auth.updatePassword.uppercase', 'Pelo menos uma letra maiúscula')}</li>
-                <li>{t('auth.updatePassword.number', 'Pelo menos um número')}</li>
+                <li>Mínimo 8 caracteres</li>
+                <li>Pelo menos uma letra maiúscula</li>
+                <li>Pelo menos um número</li>
               </ul>
             </div>
 
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
-              {isLoading ? t('common.loading', 'A atualizar...') : t('auth.updatePassword.submitButton', 'Atualizar Palavra-passe')}
+              {isLoading ? 'A atualizar...' : 'Atualizar Palavra-passe'}
             </Button>
           </form>
         </div>
