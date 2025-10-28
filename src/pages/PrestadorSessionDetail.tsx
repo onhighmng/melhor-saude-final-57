@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Calendar, 
   Clock, 
@@ -289,10 +290,13 @@ export default function PrestadorSessionDetail() {
           .eq('id', id)
           .single();
 
-        if (booking?.profiles?.email && booking?.prestadores?.name) {
-          await emailService.sendBookingCancellation(booking.profiles.email, {
-            userName: booking.profiles.name,
-            providerName: booking.prestadores.name,
+        const userProfile = Array.isArray(booking?.profiles) ? booking.profiles[0] : booking?.profiles;
+        const providerProfile = Array.isArray(booking?.prestadores) ? booking.prestadores[0] : booking?.prestadores;
+        
+        if (userProfile?.email && providerProfile?.name) {
+          await emailService.sendBookingCancellation(userProfile.email, {
+            userName: userProfile.name,
+            providerName: providerProfile.name,
             date: booking.date,
             time: booking.start_time,
             pillar: booking.pillar

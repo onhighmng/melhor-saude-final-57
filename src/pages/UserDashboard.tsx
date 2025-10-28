@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings, Booking } from '@/hooks/useBookings';
+import { useToast } from '@/hooks/use-toast';
 import { useSessionCompletion } from '@/hooks/useSessionCompletion';
 import { useMilestoneChecker } from '@/hooks/useMilestoneChecker';
 import { ProgressBar } from '@/components/progress/ProgressBar';

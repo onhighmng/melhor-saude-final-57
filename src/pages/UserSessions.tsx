@@ -10,13 +10,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { emailService } from '@/services/emailService';
 import { CANCELLATION_POLICY_HOURS } from "@/config/constants";
+import { useToast } from '@/hooks/use-toast';
 
 export default function UserSessions() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const { allBookings, upcomingBookings, refetch, loading: bookingsLoading } = useBookings();
   const { sessionBalance, loading: balanceLoading, refetch: refetchBalance } = useSessionBalance();
-  const { toast } = useToast();
+  const toastHook = useToast();
   const [userGoals, setUserGoals] = useState<any[]>([]);
   const [isPastSessionsModalOpen, setIsPastSessionsModalOpen] = useState(false);
   const [isFutureSessionsModalOpen, setIsFutureSessionsModalOpen] = useState(false);
@@ -125,7 +126,7 @@ export default function UserSessions() {
       const hoursUntil = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
       if (hoursUntil < CANCELLATION_POLICY_HOURS) {
-        toast({
+        toastHook.toast({
           title: 'Atenção',
           description: 'Cancelamentos com menos de 24h de antecedência podem afetar a sua quota.',
           variant: 'destructive'
@@ -178,7 +179,7 @@ export default function UserSessions() {
 
       const resultData = cancelResult as { success?: boolean; refunded?: boolean; error?: string } | null;
       
-      toast({
+      toastHook.toast({
         title: 'Sessão cancelada',
         description: resultData?.refunded 
           ? 'A sua sessão foi cancelada e a quota foi reembolsada.'
@@ -190,7 +191,7 @@ export default function UserSessions() {
       refetchBalance();
     } catch (error: any) {
       console.error('Error cancelling session:', error);
-      toast({
+      toastHook.toast({
         title: 'Erro ao cancelar sessão',
         description: error.message || 'Tente novamente',
         variant: 'destructive'

@@ -13,6 +13,7 @@ import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
 import { getBookingConfirmationEmail } from '@/utils/emailTemplates';
 import { emailService } from '@/services/emailService';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
