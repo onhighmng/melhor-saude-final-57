@@ -71,14 +71,14 @@ const SessionHistoryCard = ({ employeeId }: { employeeId: string }) => {
           ) : sessions.length === 0 ? (
             <div className="text-center text-muted-foreground">Nenhuma sessão concluída</div>
           ) : (
-            sessions.map((session, index) => (
+              sessions.map((session, index) => (
               <div key={index} className="flex items-center justify-between py-2 border-b last:border-0">
                 <div>
-                  <p className="font-medium text-sm">{session.pillar}</p>
-                  <p className="text-xs text-muted-foreground">{session.provider}</p>
+                  <p className="font-medium text-sm">{session.pillar as string}</p>
+                  <p className="text-xs text-muted-foreground">{session.provider as string}</p>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {new Date(session.date).toLocaleDateString('pt-PT')}
+                  {new Date(session.date as string).toLocaleDateString('pt-PT')}
                 </div>
               </div>
             ))

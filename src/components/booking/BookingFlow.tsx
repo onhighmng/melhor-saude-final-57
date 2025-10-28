@@ -245,7 +245,7 @@ const BookingFlow = () => {
             end_time: endTime,
             prestador_id: selectedProvider.id,
             status: 'pending_confirmation',
-            rescheduled_from: originalBooking.date,
+            rescheduled_from: (originalBooking as Record<string, unknown>).date as string,
             rescheduled_at: new Date().toISOString()
           })
           .eq('id', rescheduleBookingId);
@@ -253,9 +253,10 @@ const BookingFlow = () => {
         if (updateError) throw updateError;
 
         // Notify original provider if changed
-        if (selectedProvider.id !== originalBooking.prestador_id) {
+        if (selectedProvider.id !== (originalBooking as Record<string, unknown>).prestador_id) {
+          const prestadores = (originalBooking as Record<string, unknown>).prestadores as Record<string, unknown>;
           await supabase.from('notifications').insert({
-            user_id: originalBooking.prestadores.user_id,
+            user_id: prestadores.user_id as string,
             type: 'booking_reassigned',
             title: 'Sessão Reagendada',
             message: `A sessão foi transferida para outro prestador.`,
@@ -265,7 +266,8 @@ const BookingFlow = () => {
         }
 
         // Notify new provider
-        const prestadorUserId = originalBooking.prestadores?.user_id;
+        const prestadores = (originalBooking as Record<string, unknown>)?.prestadores as Record<string, unknown> | undefined;
+        const prestadorUserId = prestadores?.user_id as string | undefined;
         if (prestadorUserId) {
           await supabase.from('notifications').insert({
             user_id: prestadorUserId,

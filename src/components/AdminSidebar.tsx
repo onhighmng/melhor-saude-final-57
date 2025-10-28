@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import type { User } from '@supabase/supabase-js';
 import {
   AnimatedSidebar,
   AnimatedSidebarBody,
@@ -95,16 +96,15 @@ const AdminSidebar = () => {
   );
 };
 
-const Logo = ({ open, user }: { open: boolean; user: Record<string, unknown> | null }) => {
+const Logo = ({ open, user }: { open: boolean; user: User | null }) => {
   return (
     <div className={cn(
       "flex items-center py-2",
       open ? "gap-3 justify-start" : "justify-center"
     )}>
       <Avatar className="h-10 w-10 flex-shrink-0">
-        <AvatarImage src={user?.avatar_url} />
         <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-          {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
+          {user?.user_metadata?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
         </AvatarFallback>
       </Avatar>
       <motion.div
@@ -115,7 +115,7 @@ const Logo = ({ open, user }: { open: boolean; user: Record<string, unknown> | n
         className="flex flex-col min-w-0 flex-1"
       >
         <span className="text-sm font-medium text-foreground truncate">
-          {user?.name || user?.email}
+          {user?.user_metadata?.name || user?.email}
         </span>
         <span className="text-xs text-muted-foreground">Administrador</span>
       </motion.div>

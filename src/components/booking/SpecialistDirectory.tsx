@@ -112,15 +112,15 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {providers.map((provider, index) => (
                 <div 
-                  key={provider.id}
+                  key={provider.id as string}
                   className="bg-gradient-to-br from-soft-white via-accent-sage/8 to-vibrant-blue/5 rounded-2xl p-6 shadow-[0_24px_48px_rgba(0,0,0,0.04)] hover:shadow-[0_32px_64px_rgba(0,0,0,0.08)] border border-accent-sage/25 hover:border-accent-sage/45 transition-all duration-500 animate-fade-in hover:scale-[1.02] group cursor-pointer"
                   style={{ animationDelay: `${index * 0.1}s` }}
                   onClick={() => onProviderSelect({
-                    id: provider.id,
-                    name: provider.name,
+                    id: provider.id as string,
+                    name: provider.name as string,
                     specialty: (provider.specialties as string[])?.[0] || 'Especialista',
                     pillar: mappedPillar,
-                    avatar_url: provider.photo_url || '',
+                    avatar_url: (provider.photo_url as string) || '',
                     rating: 5,
                     experience: 'Anos de experiência',
                     availability: 'Disponível'
@@ -129,14 +129,14 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
                   <div className="flex flex-col items-center text-center">
                     <div className="w-24 h-24 mb-4 rounded-2xl overflow-hidden border-2 border-accent-sage/35 shadow-lg group-hover:scale-105 transition-transform duration-300">
                       <img 
-                        src={provider.photo_url || '/placeholder.svg'} 
-                        alt={provider.name}
+                        src={(provider.photo_url as string) || '/placeholder.svg'} 
+                        alt={provider.name as string}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     
                     <h3 className="font-bold text-xl lg:text-2xl leading-tight mb-2 text-deep-navy tracking-tight">
-                      {provider.name}
+                      {provider.name as string}
                     </h3>
                     
                     <p className="font-semibold text-base lg:text-lg leading-tight mb-3 text-accent-sage">

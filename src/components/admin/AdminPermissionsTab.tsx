@@ -131,10 +131,10 @@ const AdminPermissionsTab = () => {
       if (data?.setting_value) {
         const settings = data.setting_value as Record<string, unknown>;
         if (settings.access_levels) {
-          setAccessLevels(settings.access_levels);
+          setAccessLevels(settings.access_levels as AccessLevel[]);
         }
         if (settings.session_timeout) {
-          setSessionTimeout(settings.session_timeout.toString());
+          setSessionTimeout((settings.session_timeout as number).toString());
         }
         if (typeof settings.two_factor_enabled === 'boolean') {
           setTwoFactorEnabled(settings.two_factor_enabled);

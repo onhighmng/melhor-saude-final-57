@@ -24,6 +24,17 @@ import { Calendar, Clock } from 'lucide-react';
 import { EmployeeAutocomplete } from '@/components/admin/EmployeeAutocomplete';
 import { supabase } from '@/integrations/supabase/client';
 
+interface Employee {
+  user_id: string;
+  name: string;
+  email: string;
+  company_name: string;
+  sessions_allocated: number;
+  sessions_used: number;
+  sessions_remaining: number;
+  company_id: string;
+}
+
 interface BookingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -35,9 +46,9 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   
-  const [selectedEmployee, setSelectedEmployee] = useState<Record<string, unknown> | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [formData, setFormData] = useState({
-    sessionType: provider?.sessionType === 'Ambos' ? '' : (provider?.sessionType || ''),
+    sessionType: provider?.sessionType === 'Ambos' ? '' : (provider?.sessionType as string || ''),
     notes: '',
   });
 
@@ -79,14 +90,14 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
         .from('bookings')
         .insert({
           user_id: selectedEmployee.user_id,
-          prestador_id: provider.id,
+          prestador_id: provider.id as string,
           company_id: selectedEmployee.company_id,
           booking_date: slot.date.toISOString(),
           date: format(slot.date, 'yyyy-MM-dd'),
           start_time: format(slot.date, 'HH:mm:ss'),
           end_time: format(new Date(slot.date.getTime() + 60 * 60 * 1000), 'HH:mm:ss'),
           session_type: formData.sessionType,
-          pillar: provider.pillar || 'saude_mental',
+          pillar: (provider.pillar as string) || 'saude_mental',
           meeting_type: formData.sessionType === 'Virtual' ? 'online' : 'presencial',
           status: 'scheduled',
           notes: formData.notes || null,
@@ -159,7 +170,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
               <Clock className="h-4 w-4" />
               <span>{format(slot.date, 'HH:mm', { locale: pt })}</span>
             </div>
-            <div className="text-sm font-medium">{provider.name}</div>
+            <div className="text-sm font-medium">{provider.name as string}</div>
           </div>
         </DialogHeader>
 
@@ -185,7 +196,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
               disabled={provider.sessionType !== 'Ambos'}
             >
               <SelectTrigger>
-                <SelectValue placeholder={provider.sessionType} />
+                <SelectValue placeholder={provider.sessionType as string} />
               </SelectTrigger>
               <SelectContent>
                 {(provider.sessionType === 'Ambos' || provider.sessionType === 'Virtual') && (

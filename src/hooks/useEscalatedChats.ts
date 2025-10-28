@@ -72,7 +72,7 @@ export const useEscalatedChats = () => {
               role: m.role as 'user' | 'assistant',
               metadata: m.metadata as Record<string, any>,
             })),
-            call_log: callLog as Record<string, unknown>,
+            call_log: (callLog || null) as any,
           };
         });
 

@@ -142,8 +142,8 @@ export const AdminCompaniesTab = ({
   const setIsAddCompanyModalOpen = externalSetIsOpen || setInternalIsOpen;
 
   const filteredCompanies = companies.filter(company =>
-    company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.nuit.includes(searchQuery)
+    (company.name as string).toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (company.nuit as string).includes(searchQuery)
   );
 
   const navigate = useNavigate();
@@ -264,36 +264,36 @@ export const AdminCompaniesTab = ({
               </TableHeader>
               <TableBody>
                 {filteredCompanies.map((company) => {
-                  const usagePercent = (company.usedSessions / company.totalSessions) * 100;
+                  const usagePercent = ((company.usedSessions as number) / (company.totalSessions as number)) * 100;
                   return (
                     <TableRow 
-                      key={company.id}
+                      key={company.id as string}
                       className="hover:bg-muted/50"
                     >
                       <TableCell 
                         className="font-medium text-lg py-4 cursor-pointer"
-                        onClick={() => handleViewDetails(company)}
+                        onClick={() => handleViewDetails(company as unknown as Company)}
                       >
-                        {company.name}
+                        {company.name as string}
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-lg py-4">{company.nuit}</TableCell>
+                      <TableCell className="text-muted-foreground text-lg py-4">{company.nuit as string}</TableCell>
                       <TableCell className="text-lg py-4">
                         <div className="flex items-center gap-2">
                           <Users className="h-5 w-5 text-muted-foreground" />
-                          {company.employees}
+                          {company.employees as number}
                         </div>
                       </TableCell>
                       <TableCell className="text-lg py-4">
                         <span>
-                          {company.usedSessions}/{company.totalSessions}
+                          {company.usedSessions as number}/{company.totalSessions as number}
                         </span>
                       </TableCell>
                       <TableCell className="text-lg py-4">
                         <Badge 
-                          variant={company.status === 'Ativa' ? 'default' : 'secondary'}
-                          className={company.status === 'Ativa' ? 'bg-emerald-600 text-white hover:bg-emerald-600 hover:text-white border-0 text-base' : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary text-base'}
+                          variant={(company.status as string) === 'Ativa' ? 'default' : 'secondary'}
+                          className={(company.status as string) === 'Ativa' ? 'bg-emerald-600 text-white hover:bg-emerald-600 hover:text-white border-0 text-base' : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary text-base'}
                         >
-                          {company.status}
+                          {company.status as string}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -303,7 +303,7 @@ export const AdminCompaniesTab = ({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleViewDetails(company);
+                              handleViewDetails(company as unknown as Company);
                             }}
                           >
                             <Eye className="h-4 w-4" />
@@ -313,7 +313,7 @@ export const AdminCompaniesTab = ({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setCompanyToDelete({ id: company.id, name: company.name });
+                              setCompanyToDelete({ id: company.id as string, name: company.name as string });
                               setDeleteDialogOpen(true);
                             }}
                           >

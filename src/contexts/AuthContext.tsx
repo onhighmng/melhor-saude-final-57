@@ -69,7 +69,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       ...profileResult.data,
       user_id: profileResult.data.id,
       is_active: profileResult.data.is_active ?? true,
-      role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
+      role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
+      metadata: (profileResult.data.metadata as Record<string, unknown>) || {}
     };
   };
 
@@ -112,7 +113,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ...profileData,
         user_id: profileData.id,
         is_active: profileData.is_active ?? true,
-        role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral'
+        role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
+        metadata: (profileData.metadata as Record<string, unknown>) || {}
       });
       
       return {};
