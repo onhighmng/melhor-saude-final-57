@@ -131,12 +131,13 @@ export const PrestadorCalendar: React.FC = () => {
 
     try {
       const { data, error } = await supabase
-        .from('provider_availability')
+        .from('prestador_availability')
         .select('*')
         .eq('prestador_id', profile.id)
         .order('day_of_week', { ascending: true });
 
       if (error) throw error;
+      // Note: prestador_availability doesn't have is_available column
       setAvailabilitySlots(data || []);
     } catch (error) {
       console.error('Error loading availability slots:', error);
@@ -156,17 +157,10 @@ export const PrestadorCalendar: React.FC = () => {
 
       if (error) throw error;
       
-      const specificSlots: SpecificAvailability[] = (data || []).map(slot => ({
-        id: slot.id,
-        date: slot.date,
-        start_time: slot.start_time || '09:00',
-        end_time: slot.end_time || '17:00',
-        is_available: slot.is_available,
-        reason: slot.reason,
-        created_at: slot.created_at
-      }));
-
-      setSpecificAvailability(specificSlots);
+      // prestador_schedule table structure doesn't match SpecificAvailability interface
+      // Commenting out until table is properly migrated
+      console.warn('[PrestadorCalendar] prestador_schedule table structure mismatch');
+      setSpecificAvailability([]);
     } catch (error) {
       console.error('Error loading specific availability:', error);
     }
@@ -245,13 +239,12 @@ export const PrestadorCalendar: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from('provider_availability')
+        .from('prestador_availability')
         .insert({
           prestador_id: profile.id,
           day_of_week: selectedDay,
           start_time: startTime,
-          end_time: endTime,
-          is_available: true
+          end_time: endTime
         });
 
       if (error) throw error;
@@ -274,45 +267,18 @@ export const PrestadorCalendar: React.FC = () => {
   };
 
   const addSpecificAvailability = async () => {
-    if (!profile?.id || !selectedDate) return;
-
-    try {
-      const { error } = await supabase
-        .from('prestador_schedule')
-        .insert({
-          prestador_id: profile.id,
-          date: selectedDate,
-          start_time: startTime,
-          end_time: endTime,
-          is_available: true,
-          reason: reason || null
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Disponibilidade específica adicionada",
-        description: `${selectedDate} das ${startTime} às ${endTime}`
-      });
-
-      setIsAddingSpecific(false);
-      setSelectedDate('');
-      setReason('');
-      loadSpecificAvailability();
-    } catch (error) {
-      console.error('Error adding specific availability:', error);
-      toast({
-        title: "Erro",
-        description: "Falha ao adicionar disponibilidade específica",
-        variant: "destructive"
-      });
-    }
+    console.warn('[PrestadorCalendar] prestador_schedule table structure not compatible');
+    toast({
+      title: "Funcionalidade não disponível",
+      description: "A adição de disponibilidade específica ainda não está implementada",
+      variant: "destructive"
+    });
   };
 
   const removeAvailabilitySlot = async (slotId: string) => {
     try {
       const { error } = await supabase
-        .from('provider_availability')
+        .from('prestador_availability')
         .delete()
         .eq('id', slotId);
 
@@ -335,28 +301,12 @@ export const PrestadorCalendar: React.FC = () => {
   };
 
   const toggleAvailability = async (slotId: string, isAvailable: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('provider_availability')
-        .update({ is_available: isAvailable })
-        .eq('id', slotId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Disponibilidade atualizada",
-        description: isAvailable ? "Slot ativado" : "Slot desativado"
-      });
-
-      loadAvailabilitySlots();
-    } catch (error) {
-      console.error('Error toggling availability:', error);
-      toast({
-        title: "Erro",
-        description: "Falha ao atualizar disponibilidade",
-        variant: "destructive"
-      });
-    }
+    console.warn('[PrestadorCalendar] Toggle availability not supported - is_available column missing');
+    toast({
+      title: "Funcionalidade não disponível",
+      description: "Alteração de disponibilidade não implementada",
+      variant: "destructive"
+    });
   };
 
   const exportCalendar = () => {

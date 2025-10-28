@@ -290,18 +290,19 @@ export default function PrestadorSessionDetail() {
           .eq('id', id)
           .single();
 
-        const userProfile = Array.isArray(booking?.profiles) ? booking.profiles[0] : booking?.profiles;
-        const providerProfile = Array.isArray(booking?.prestadores) ? booking.prestadores[0] : booking?.prestadores;
-        
-        if (userProfile?.email && providerProfile?.name) {
-          await emailService.sendBookingCancellation(userProfile.email, {
-            userName: userProfile.name,
-            providerName: providerProfile.name,
-            date: booking.date,
-            time: booking.start_time,
-            pillar: booking.pillar
-          });
-        }
+        // Send cancellation email (method not implemented)
+        // const userProfile = Array.isArray(booking?.profiles) ? booking.profiles[0] : booking?.profiles;
+        // const providerProfile = Array.isArray(booking?.prestadores) ? booking.prestadores[0] : booking?.prestadores;
+        // 
+        // if (userProfile?.email && providerProfile?.name) {
+        //   await emailService.sendBookingCancellation(userProfile.email, {
+        //     userName: userProfile.name,
+        //     providerName: providerProfile.name,
+        //     date: booking.date,
+        //     time: booking.start_time,
+        //     pillar: booking.pillar
+        //   });
+        // }
       } catch (emailError) {
         // Don't block cancellation on email failure
       }

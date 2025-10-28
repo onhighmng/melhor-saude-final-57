@@ -128,21 +128,14 @@ export const useUserProgress = () => {
   };
 
   const loadUserGoals = async () => {
-    if (!user?.id) return;
-
-    const { data, error } = await supabase
-      .from('user_goals')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('priority', { ascending: true });
-
-    if (error) throw error;
-    setGoals(data || []);
-
-    // Update goals completed count in progress
+    // user_goals table does not exist in database
+    console.warn('[useUserProgress] user_goals table not implemented');
+    setGoals([]);
+    
+    // Set goals_completed to 0 for all pillars
     setProgress(prev => prev.map(p => ({
       ...p,
-      goals_completed: (data || []).filter(g => g.pillar === p.pillar && g.status === 'completed').length
+      goals_completed: 0
     })));
   };
 
@@ -262,42 +255,11 @@ export const useUserProgress = () => {
   };
 
   const updateGoal = async (goalId: string, updates: Partial<UserGoal>) => {
-    if (!user?.id) return;
-
-    try {
-      const { error } = await supabase
-        .from('user_goals')
-        .update(updates)
-        .eq('id', goalId)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      // Reload goals
-      await loadUserGoals();
-    } catch (error) {
-      console.error('Error updating goal:', error);
-    }
+    console.warn('[useUserProgress] user_goals table not implemented');
   };
 
   const createGoal = async (goalData: Omit<UserGoal, 'id' | 'created_at' | 'updated_at'>) => {
-    if (!user?.id) return;
-
-    try {
-      const { error } = await supabase
-        .from('user_goals')
-        .insert({
-          ...goalData,
-          user_id: user.id
-        });
-
-      if (error) throw error;
-
-      // Reload goals
-      await loadUserGoals();
-      } catch (error) {
-      console.error('Error creating goal:', error);
-    }
+    console.warn('[useUserProgress] user_goals table not implemented');
   };
 
   const getPillarProgress = (pillar: Pillar): UserProgress | undefined => {

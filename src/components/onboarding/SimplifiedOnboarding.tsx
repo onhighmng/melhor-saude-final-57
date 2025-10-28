@@ -216,13 +216,9 @@ export const SimplifiedOnboarding = ({
         });
       });
 
-      // Insert all goals
+      // Insert all goals (user_goals table not implemented)
       if (goalsToCreate.length > 0) {
-        const { error: goalsError } = await supabase
-          .from('user_goals')
-          .insert(goalsToCreate);
-
-        if (goalsError) throw goalsError;
+        console.warn('[Onboarding] user_goals table not implemented, skipping goal creation');
       }
 
       // Update user progress

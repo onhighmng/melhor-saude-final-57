@@ -102,14 +102,17 @@ export const UserDashboard: React.FC = () => {
 
       if (error) throw error;
 
-      const sessions: UpcomingSession[] = (data || []).map(booking => ({
-      id: booking.id,
-        pillar: booking.pillar as Pillar,
-      date: booking.date,
-        start_time: booking.start_time,
-        prestador_name: booking.prestadores?.profiles?.name || 'Especialista',
-        session_type: booking.session_type
-      }));
+      const sessions: UpcomingSession[] = (data || []).map(booking => {
+        const prestadorData: any = booking.prestadores;
+        return {
+          id: booking.id,
+          pillar: booking.pillar as Pillar,
+          date: booking.date,
+          start_time: booking.start_time,
+          prestador_name: (Array.isArray(prestadorData) ? prestadorData[0]?.name : prestadorData?.name) || 'Especialista',
+          session_type: booking.session_type
+        };
+      });
 
       setUpcomingSessions(sessions);
     } catch (error) {
@@ -152,7 +155,7 @@ export const UserDashboard: React.FC = () => {
             break;
           case 'milestone_achieved':
             title = 'Marco Alcançado';
-            description = activity.metadata?.milestone || 'Marco alcançado';
+            description = (activity.metadata as any)?.milestone || 'Marco alcançado';
             break;
         }
 

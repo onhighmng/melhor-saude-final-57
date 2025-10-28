@@ -80,37 +80,45 @@ export const useSpecialistNotifications = () => {
       if (sessionsError) throw sessionsError;
 
       // Transform data into notifications
-      const chatNotifications: SpecialistNotification[] = (escalatedChats || []).map(chat => ({
-        id: `chat_${chat.id}`,
-        type: 'escalated_chat',
-        priority: 'high',
-        title: 'Chat Escalado',
-        description: `Chat de ${chat.profiles?.name || 'Utilizador'} escalado: ${chat.phone_escalation_reason || 'Motivo não especificado'}`,
-        user_id: chat.user_id,
-        user_name: chat.profiles?.name || 'Utilizador',
+      const chatNotifications: SpecialistNotification[] = (escalatedChats || []).map(chat => {
+        const chatProfiles: any = chat.profiles;
+        const profileName = Array.isArray(chatProfiles) ? chatProfiles[0]?.name : chatProfiles?.name;
+        return {
+          id: `chat_${chat.id}`,
+          type: 'escalated_chat',
+          priority: 'high',
+          title: 'Chat Escalado',
+          description: `Chat de ${profileName || 'Utilizador'} escalado: ${chat.phone_escalation_reason || 'Motivo não especificado'}`,
+          user_id: chat.user_id,
+          user_name: profileName || 'Utilizador',
         pillar: chat.pillar as Pillar,
         chat_session_id: chat.id,
         created_at: chat.created_at,
         read: false,
         metadata: { escalation_reason: chat.phone_escalation_reason }
-      }));
+      };
+      });
 
-      const sessionNotifications: SpecialistNotification[] = (sessionRequests || []).map(booking => ({
+    const sessionNotifications: SpecialistNotification[] = (sessionRequests || []).map(booking => {
+      const bookingProfiles: any = booking.profiles;
+      const bookingProfileName = Array.isArray(bookingProfiles) ? bookingProfiles[0]?.name : bookingProfiles?.name;
+      return {
         id: `session_${booking.id}`,
         type: 'session_request',
         priority: 'normal',
         title: 'Solicitação de Sessão',
-        description: `${booking.profiles?.name || 'Utilizador'} solicitou uma sessão de ${booking.pillar}`,
+        description: `${bookingProfileName || 'Utilizador'} solicitou uma sessão de ${booking.pillar}`,
         user_id: booking.user_id,
-        user_name: booking.profiles?.name || 'Utilizador',
+        user_name: bookingProfileName || 'Utilizador',
         pillar: booking.pillar as Pillar,
         booking_id: booking.id,
         created_at: booking.created_at,
         read: false,
         metadata: { booking_status: booking.status }
-      }));
+      };
+    });
 
-      const allNotifications = [...chatNotifications, ...sessionNotifications]
+    const allNotifications = [...chatNotifications, ...sessionNotifications]
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
       setNotifications(allNotifications);

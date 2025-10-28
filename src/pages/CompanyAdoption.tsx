@@ -139,39 +139,39 @@ export const CompanyAdoption: React.FC = () => {
 
     // Process invites
     for (const invite of invites || []) {
-      const employee = employees?.find(e => e.profiles?.email === invite.email);
+      const employee = employees?.find(e => e.user_id === invite.invited_by);
       
       if (employee) {
-        // Employee registered
+        // Employee has registered
         employeeAdoption.push({
           id: employee.id,
-          name: employee.profiles?.name || invite.metadata?.name || 'N/A',
+          name: 'N/A',
           email: invite.email,
-          department: employee.profiles?.department || invite.metadata?.department || 'N/A',
-          position: employee.profiles?.position || invite.metadata?.position || 'N/A',
-          status: 'active', // Simplified - would check last activity
+          department: 'N/A',
+          position: 'N/A',
+          status: 'active',
           invite_sent_at: invite.created_at,
-          registered_at: employee.profiles?.created_at || null,
-          last_activity_at: null, // Would get from user_progress
-          sessions_allocated: employee.sessions_allocated || invite.metadata?.sessions_allocated || 0,
+          registered_at: employee.joined_at,
+          last_activity_at: null,
+          sessions_allocated: invite.sessions_allocated || 0,
           sessions_used: employee.sessions_used || 0,
-          sessions_remaining: (employee.sessions_allocated || 0) - (employee.sessions_used || 0)
+          sessions_remaining: (invite.sessions_allocated || 0) - (employee.sessions_used || 0)
         });
       } else {
-        // Employee not registered yet
+        // Employee has not registered yet
         employeeAdoption.push({
           id: invite.id,
-          name: invite.metadata?.name || 'N/A',
+          name: 'N/A',
           email: invite.email,
-          department: invite.metadata?.department || 'N/A',
-          position: invite.metadata?.position || 'N/A',
+          department: 'N/A',
+          position: 'N/A',
           status: invite.status === 'accepted' ? 'registered' : 'invited',
           invite_sent_at: invite.created_at,
           registered_at: null,
           last_activity_at: null,
-          sessions_allocated: invite.metadata?.sessions_allocated || 0,
+          sessions_allocated: invite.sessions_allocated || 0,
           sessions_used: 0,
-          sessions_remaining: invite.metadata?.sessions_allocated || 0
+          sessions_remaining: invite.sessions_allocated || 0
         });
       }
     }

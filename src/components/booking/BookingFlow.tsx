@@ -423,20 +423,20 @@ const BookingFlow = () => {
         }
       }
 
-      // Send confirmation email
-      try {
-        await emailService.sendBookingConfirmation(profile.email, {
-          userName: profile.name || 'Utilizador',
-          providerName: selectedProvider.name,
-          date: selectedDate.toISOString(),
-          time: selectedTime,
-          pillar: pillar,
-          meetingLink: booking.meeting_link || undefined,
-          meetingType: meetingType
-        });
-      } catch (emailError) {
-        // Email send failed - silently continue, don't block booking
-      }
+      // Send confirmation email (method not implemented yet)
+      // try {
+      //   await emailService.sendBookingConfirmation(profile.email, {
+      //     userName: profile.name || 'Utilizador',
+      //     providerName: selectedProvider.name,
+      //     date: selectedDate.toISOString(),
+      //     time: selectedTime,
+      //     pillar: pillar,
+      //     meetingLink: booking.meeting_link || undefined,
+      //     meetingType: meetingType
+      //   });
+      // } catch (emailError) {
+      //   // Email send failed - silently continue, don't block booking
+      // }
 
       toast({
         title: 'Sessão Agendada',

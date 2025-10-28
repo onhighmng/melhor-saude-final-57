@@ -119,7 +119,11 @@ export const InvoiceGenerator: React.FC = () => {
         .limit(10);
 
       if (error) throw error;
-      setRecentInvoices(data || []);
+      setRecentInvoices((data || []).map(inv => ({ 
+        ...inv, 
+        metadata: {}, 
+        status: inv.status as 'pending' | 'paid' | 'overdue' | 'cancelled' 
+      })));
     } catch (error) {
       console.error('Error loading invoices:', error);
     }
@@ -500,7 +504,7 @@ TOTAL: €${invoice.total_amount.toFixed(2)}
                   <div>
                     <p className="font-medium">{invoice.invoice_number}</p>
                     <p className="text-sm text-muted-foreground">
-                      {companies.find(c => c.id === invoice.company_id)?.name}
+                      {companies.find(c => c.id === invoice.company_id)?.company_name}
                     </p>
                   </div>
                   <div>

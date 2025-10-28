@@ -166,21 +166,22 @@ export default function UserSessions() {
 
       // Send cancellation email to user
       try {
-        const { data: providerData } = await supabase
-          .from('prestadores')
-          .select('name, email')
-          .eq('id', booking.prestador_id)
-          .single();
-          
-        if (providerData?.name && profile?.email) {
-          await emailService.sendBookingCancellation(profile.email, {
-            userName: profile.name,
-            providerName: providerData.name,
-            date: booking.date,
-            time: booking.start_time,
-            pillar: booking.pillar
-          });
-        }
+        // Send cancellation email (method not implemented)
+        // const { data: providerData } = await supabase
+        //   .from('prestadores')
+        //   .select('name, email')
+        //   .eq('id', booking.prestador_id)
+        //   .single();
+        //   
+        // if (providerData?.name && profile?.email) {
+        //   await emailService.sendBookingCancellation(profile.email, {
+        //     userName: profile.name,
+        //     providerName: providerData.name,
+        //     date: booking.date,
+        //     time: booking.start_time,
+        //     pillar: booking.pillar
+        //   });
+        // }
       } catch (emailError) {
         // Don't block cancellation on email failure
       }

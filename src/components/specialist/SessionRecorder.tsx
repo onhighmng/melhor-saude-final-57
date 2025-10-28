@@ -511,7 +511,7 @@ export const SessionRecorder: React.FC<SessionRecorderProps> = ({
                     
                     <div>
                       <p className="font-medium">
-                        Gravação de {formatTime(recording.duration)}
+                        Gravação de {formatTime(recording.duration_minutes * 60)}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         Criada em {new Date(recording.created_at).toLocaleDateString('pt-PT')}
@@ -530,7 +530,7 @@ export const SessionRecorder: React.FC<SessionRecorderProps> = ({
                           </Badge>
                         )}
                         
-                        {recording.is_transcribed ? (
+                        {recording.transcription_url ? (
                           <Badge className="bg-green-500 text-xs">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Transcrito
@@ -562,7 +562,7 @@ export const SessionRecorder: React.FC<SessionRecorderProps> = ({
                       <Download className="h-4 w-4" />
                     </Button>
                     
-                    {!recording.is_transcribed && !isExpired(recording.expires_at) && (
+                    {!recording.transcription_url && !isExpired(recording.expires_at) && (
                       <Button
                         variant="outline"
                         size="sm"
