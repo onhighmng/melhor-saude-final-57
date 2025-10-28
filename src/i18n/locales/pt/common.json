@@ -1,0 +1,45 @@
+{
+  "common": {
+    "loading": "A carregar..."
+  },
+  "auth": {
+    "resetPassword": {
+      "title": "Recuperar Palavra-passe",
+      "description": "Insira o seu email para receber instruções de recuperação",
+      "hero": "Recupere o acesso à sua conta de forma segura.",
+      "heroSuccess": "Email de recuperação enviado com sucesso.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "submitButton": "Enviar Instruções",
+      "backToHome": "Voltar à página inicial",
+      "backToLogin": "Voltar ao login",
+      "rememberedPassword": "Lembrou-se da palavra-passe?",
+      "emailSentTitle": "Email Enviado",
+      "emailSentDescription": "Verifique o seu email para instruções de recuperação",
+      "checkInbox": "Verifique a sua caixa de entrada e siga as instruções para recuperar a sua conta.",
+      "errorTitle": "Erro",
+      "genericError": "Ocorreu um erro inesperado"
+    },
+    "updatePassword": {
+      "title": "Definir Nova Palavra-passe",
+      "description": "Escolha uma palavra-passe forte e segura",
+      "hero": "Defina uma nova palavra-passe segura para a sua conta.",
+      "passwordLabel": "Nova Palavra-passe",
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "confirmPasswordLabel": "Confirmar Palavra-passe",
+      "confirmPasswordPlaceholder": "Digite novamente",
+      "submitButton": "Atualizar Palavra-passe",
+      "requirements": "A palavra-passe deve conter:",
+      "minLength": "Mínimo 8 caracteres",
+      "uppercase": "Pelo menos uma letra maiúscula",
+      "number": "Pelo menos um número",
+      "verifying": "A verificar link de recuperação...",
+      "success": "Sucesso",
+      "successDescription": "Palavra-passe atualizada com sucesso. A redirecionar...",
+      "errorTitle": "Erro",
+      "genericError": "Ocorreu um erro inesperado",
+      "invalidLink": "Link Inválido",
+      "invalidLinkDescription": "Este link de recuperação expirou ou é inválido"
+    }
+  }
+}

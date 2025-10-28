@@ -97,7 +97,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Global prestador access restriction - dynamic route matrix
-  const allowedPublicRoutes = ['/', '/login', '/register/company', '/register/employee', '/reset-password'];
+  const allowedPublicRoutes = ['/', '/login', '/register/company', '/register/employee', '/reset-password', '/auth/reset'];
   const isPrestadorOnPublicRoute = profile.role === 'prestador' && allowedPublicRoutes.includes(location.pathname);
   const isPrestadorOnAllowedRoute = profile.role === 'prestador' && location.pathname.startsWith('/prestador/');
   
