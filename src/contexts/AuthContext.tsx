@@ -77,54 +77,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Real authentication methods
   const login = async (email: string, password: string) => {
     try {
-      setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       
       if (error) throw error;
       
-      // Get profile
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
+      // onAuthStateChange will handle profile loading automatically
+      // Wait briefly for the profile to be set by the listener
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      if (profileError) throw profileError;
-      
-      // Query user_roles table for secure role checking
-      const { data: userRoles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', data.user.id);
-      
-      if (rolesError) throw rolesError;
-      
-      // Determine primary role (admin takes precedence)
-      const roles = userRoles?.map(r => r.role) || [];
-      const primaryRole = roles.includes('admin') ? 'admin' 
-        : roles.includes('hr') ? 'hr'
-        : roles.includes('prestador') ? 'prestador'
-        : roles.includes('specialist') ? 'specialist'
-        : 'user';
-      
-      const userProfile: UserProfile = {
-        ...profileData,
-        user_id: profileData.id,
-        is_active: profileData.is_active ?? true,
-        role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
-        metadata: (profileData.metadata as Record<string, unknown>) || {}
-      };
-      
-      setUser(data.user);
-      setSession(data.session);
-      setProfile(userProfile);
-      
-      return { profile: userProfile };
+      return { profile: profile! };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Credenciais inválidas';
       return { error: errorMessage };
-    } finally {
-      setIsLoading(false);
     }
   };
 
