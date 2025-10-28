@@ -82,7 +82,7 @@ const AdminDashboard = () => {
         : '0.0';
 
       setActivityMetrics({
-        utilizationRate: utilData?.[0]?.utilization_rate || 0,
+        utilizationRate: utilData?.[0]?.platform_utilization_rate || 0,
         activePrestadores: activePrestadoresCount,
         avgSatisfaction: avgRating
       });

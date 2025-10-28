@@ -77,7 +77,7 @@ export const usePsychologicalTests = () => {
         .order('created_at', { ascending: false });
 
       if (fetchError) throw fetchError;
-      setTests((data || []) as PsychologicalTest[]);
+      setTests((data || []) as unknown as PsychologicalTest[]);
       setError(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar testes';

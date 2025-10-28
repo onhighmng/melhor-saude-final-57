@@ -64,6 +64,18 @@ interface Employee {
   status: 'sem-codigo' | 'codigo-gerado' | 'enviado' | 'erro';
 }
 
+interface CompanyData {
+  id: string;
+  company_name: string;
+  contact_email: string;
+  contact_phone: string;
+  plan_type: string;
+  sessions_allocated: number;
+  sessions_used: number;
+  final_notes: string;
+  is_active: boolean;
+}
+
 // Mock data removed - using real data from database
 
 export default function AdminCompanyDetail() {
@@ -72,7 +84,7 @@ export default function AdminCompanyDetail() {
   const { toast } = useToast();
   const { profile } = useAuth();
 
-  const [company, setCompany] = useState<Record<string, unknown> | null>(null);
+  const [company, setCompany] = useState<CompanyData | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [invites, setInvites] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);

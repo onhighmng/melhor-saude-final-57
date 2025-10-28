@@ -9,9 +9,18 @@ import { Search, Users, Building2, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+interface Company {
+  id: string;
+  company_name: string;
+  sessions_allocated: number;
+  sessions_used: number;
+  is_active: boolean;
+  plan_type: string;
+}
+
 export default function AdminCompanies() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [companies, setCompanies] = useState<Array<Record<string, unknown>>>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -56,6 +56,12 @@ export default function PrestadorDashboard() {
     pillar: string;
     notes: string;
     profiles?: { name: string; email: string };
+    user_name?: string;
+    userName?: string;
+    userEmail?: string;
+    userAvatar?: string;
+    companyName?: string;
+    time?: string;
   }
   interface Metrics {
     today: number;
@@ -63,6 +69,12 @@ export default function PrestadorDashboard() {
     completed: number;
     cancelled: number;
     noShow: number;
+    todaySessions: number;
+    totalSessions: number;
+    weekSessions: number;
+    uniqueUsers: number;
+    avgRating: string;
+    revenue: number;
   }
   const [sessions, setSessions] = useState<Session[]>([]);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
@@ -103,13 +115,18 @@ export default function PrestadorDashboard() {
           .order('date', { ascending: true });
 
         if (bookings) {
-          setSessions(bookings.map((b) => ({
-            ...b,
-            userName: b.profiles?.name || '',
-            userEmail: b.profiles?.email || '',
-            userAvatar: b.profiles?.avatar_url || '',
-            companyName: b.companies?.company_name || ''
-          })));
+          setSessions(bookings.map((b) => {
+            const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
+            const company = Array.isArray(b.companies) ? b.companies[0] : b.companies;
+            return {
+              ...b,
+              profiles: profile ? { name: profile.name || '', email: profile.email || '' } : undefined,
+              userName: profile?.name || '',
+              userEmail: profile?.email || '',
+              userAvatar: profile?.avatar_url || '',
+              companyName: company?.company_name || ''
+            };
+          }) as Session[]);
         }
 
         // Calculate metrics
