@@ -33,8 +33,10 @@ interface AvailabilitySlot {
   day_of_week: number; // 0 = Sunday, 1 = Monday, etc.
   start_time: string;
   end_time: string;
-  is_available: boolean;
+  is_recurring?: boolean;
+  prestador_id: string;
   created_at: string;
+  updated_at: string;
 }
 
 interface SpecificAvailability {
@@ -190,18 +192,24 @@ export const PrestadorCalendar: React.FC = () => {
 
       if (error) throw error;
 
-      const bookingData: Booking[] = (data || []).map(booking => ({
-        id: booking.id,
-        user_id: booking.user_id,
-        user_name: booking.profiles?.name || 'Utilizador',
-        pillar: booking.pillar as Pillar,
-        date: booking.date,
-        start_time: booking.start_time,
-        end_time: booking.end_time,
-        status: booking.status as any,
-        session_type: booking.session_type as any,
-        notes: booking.notes
-      }));
+      const bookingData: Booking[] = (data || []).map(booking => {
+        // Handle profiles - could be array or single object
+        const profiles = booking.profiles as any;
+        const userName = Array.isArray(profiles) ? profiles[0]?.name : profiles?.name;
+        
+        return {
+          id: booking.id,
+          user_id: booking.user_id,
+          user_name: userName || 'Utilizador',
+          pillar: booking.pillar as Pillar,
+          date: booking.date,
+          start_time: booking.start_time,
+          end_time: booking.end_time,
+          status: booking.status as any,
+          session_type: booking.session_type as any,
+          notes: booking.notes
+        };
+      });
 
       setBookings(bookingData);
     } catch (error) {
@@ -218,7 +226,7 @@ export const PrestadorCalendar: React.FC = () => {
       ).length;
 
       const totalSlots = availabilitySlots.length;
-      const availableSlots = availabilitySlots.filter(s => s.is_available).length;
+      const availableSlots = availabilitySlots.length; // All slots are available since is_available column doesn't exist
       const bookedSlots = bookings.filter(b => b.status === 'confirmed').length;
       const utilizationRate = totalSlots > 0 ? (bookedSlots / totalSlots) * 100 : 0;
 
@@ -551,16 +559,9 @@ export const PrestadorCalendar: React.FC = () => {
                             <div className="space-y-2">
                               {daySlots.map((slot) => (
                                 <div key={slot.id} className="flex items-center gap-2">
-                                  <Badge variant={slot.is_available ? "default" : "secondary"}>
+                                  <Badge variant="default">
                                     {slot.start_time} - {slot.end_time}
                                   </Badge>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => toggleAvailability(slot.id, !slot.is_available)}
-                                  >
-                                    {slot.is_available ? 'Desativar' : 'Ativar'}
-                                  </Button>
                                   <Button
                                     variant="outline"
                                     size="sm"
