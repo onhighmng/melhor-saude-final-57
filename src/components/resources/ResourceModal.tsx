@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download, ExternalLink } from "lucide-react";
-import { UserResource, pillarNames, resourceTypeNames } from "@/types/resources";
+import { UserResource, pillarNames, resourceTypeNames } from "@/data/userResourcesData";
 
 interface ResourceModalProps {
   resource: UserResource | null;

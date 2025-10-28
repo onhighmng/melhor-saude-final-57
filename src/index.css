@@ -363,15 +363,6 @@ body.legal-assessment-page {
   .bg-pillar-legal-light { background-color: hsl(var(--pillar-legal-light)); }
   .border-pillar-legal { border-color: hsl(var(--pillar-legal)); }
 
-  /* Custom scrollbar hiding */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
   /* Enhanced interaction utilities */
   .transition-smooth { transition: var(--transition-normal); }
   .transition-fast { transition: var(--transition-fast); }

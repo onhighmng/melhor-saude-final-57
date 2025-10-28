@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils"
 import { CardContent } from "@/components/ui/card";
 import { History, CalendarDays, Info } from "lucide-react";
-import { GoalCardStack } from "@/components/ui/goal-card-stack";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export const Highlight = ({
   children,
@@ -100,7 +101,7 @@ export default function UserJourneySection({
         <div className="flex flex-col items-start justify-center border border-border rounded-2xl p-4 sm:p-6 lg:p-8 bg-card">
           <div className="relative w-full mb-4 sm:mb-6">
             <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-card to-transparent z-10"></div>
-            <GoalCardStack items={CARDS} />
+            <CardStack items={CARDS} />
           </div>
 
           <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-foreground leading-relaxed">
@@ -208,3 +209,90 @@ export default function UserJourneySection({
     </section>
   )
 }
+
+let interval: any;
+
+export const CardStack = ({
+  items,
+  offset,
+  scaleFactor,
+}: {
+  items: Card[];
+  offset?: number;
+  scaleFactor?: number;
+}) => {
+  const CARD_OFFSET = offset || 10;
+  const SCALE_FACTOR = scaleFactor || 0.06;
+  const [cards, setCards] = useState<Card[]>(items);
+
+  useEffect(() => {
+    interval = setInterval(() => {
+      setCards((prevCards: Card[]) => {
+        const newArray = [...prevCards];
+        newArray.unshift(newArray.pop()!);
+        return newArray;
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getPillarColor = (pillar: string) => {
+    switch (pillar) {
+      case 'saude_mental':
+        return 'from-blue-500 to-blue-600';
+      case 'assistencia_juridica':
+        return 'from-purple-500 to-purple-600';
+      case 'assistencia_financeira':
+        return 'from-green-500 to-green-600';
+      case 'bem_estar_fisico':
+        return 'from-amber-500 to-orange-600';
+      default:
+        return 'from-gray-500 to-gray-600';
+    }
+  };
+
+  return (
+    <div className="relative mx-auto h-48 w-full md:h-48 md:w-96 my-4">
+      {cards.map((card, index) => {
+        return (
+          <motion.div
+            key={card.id}
+            className="absolute bg-card h-48 w-full md:h-48 md:w-96 rounded-3xl p-4 shadow-xl border border-border flex flex-col justify-between"
+            style={{
+              transformOrigin: "top center",
+            }}
+            animate={{
+              top: index * -CARD_OFFSET,
+              scale: 1 - index * SCALE_FACTOR,
+              zIndex: cards.length - index,
+            }}
+          >
+            <div className="space-y-3">
+              <h4 className="font-semibold text-foreground text-sm">{card.title}</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">{card.progress}% alcançado</span>
+                  <div className="flex gap-1">
+                    {card.emojis.slice(0, 5).map((emoji, i) => (
+                      <span key={i} className="text-sm">{emoji}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className={cn("h-full bg-gradient-to-r transition-all", getPillarColor(card.pillar))}
+                    style={{ width: `${card.progress}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">{card.sessions}</p>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};

@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Video, Clock, ExternalLink, Send, CheckCircle2 } from 'lucide-react';
-import { getMeetingPlatformLabel, getTimeUntilLinkSent } from '@/utils/sessionHelpers';
+import { getMeetingPlatformLabel, getTimeUntilLinkSent } from '@/data/sessionMockData';
 
 interface MeetingInfoCardProps {
   session: {

@@ -72,16 +72,16 @@ export const useEscalatedChats = () => {
               role: m.role as 'user' | 'assistant',
               metadata: m.metadata as Record<string, any>,
             })),
-            call_log: (callLog || null) as any,
+            call_log: callLog as any,
           };
         });
 
         setEscalatedChats(enrichedChats);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Não foi possível carregar as conversas escaladas.';
+        console.error('Error fetching escalated chats:', error);
         toast({
           title: 'Erro',
-          description: errorMessage,
+          description: 'Não foi possível carregar as conversas escaladas.',
           variant: 'destructive',
         });
       } finally {

@@ -75,8 +75,10 @@ const PsychologicalTestModal: React.FC<PsychologicalTestModalProps> = ({
     const result = await submitTestResult(
       test.id,
       answers,
-      user?.id,
-      isAnonymous
+      score,
+      interpretation,
+      isAnonymous,
+      consentGiven
     );
     
     if (result) {

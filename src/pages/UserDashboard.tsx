@@ -1,652 +1,511 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare, BookOpen, Bell, Brain, Heart, DollarSign, Scale } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { useUserProgress } from '@/hooks/useUserProgress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { 
-  Target, 
-  TrendingUp, 
-  Calendar, 
-  BookOpen,
-  MessageCircle,
-  Award,
-  Star,
-  CheckCircle,
-  Clock,
-  BarChart3,
-  Plus,
-  Edit
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Pillar, PILLAR_DISPLAY_NAMES } from '@/integrations/supabase/types-unified';
-
-interface UpcomingSession {
-  id: string;
-  pillar: Pillar;
-  date: string;
-  start_time: string;
-  prestador_name: string;
-  session_type: string;
-}
-
-interface RecentActivity {
-  id: string;
-  type: 'session' | 'chat' | 'resource' | 'milestone';
-  title: string;
-  pillar: Pillar;
-  date: string;
-  description: string;
-}
-
-export const UserDashboard: React.FC = () => {
-  const { t } = useTranslation('user');
-  const { toast } = useToast();
-  const { profile } = useAuth();
+import { useSessionBalance } from '@/hooks/useSessionBalance';
+import { useBookings, Booking } from '@/hooks/useBookings';
+import { ProgressBar } from '@/components/progress/ProgressBar';
+import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
+import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
+import { useToast } from '@/hooks/use-toast';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import { SessionCard, SessionCardData } from '@/components/ui/session-card';
+import { getPillarColors, cn } from '@/lib/utils';
+import DisplayCards from '@/components/ui/display-cards';
+import recursosWellness from '@/assets/recursos-wellness.jpg';
+import cardBackground from '@/assets/card-background.png';
+const UserDashboard = () => {
+  const navigate = useNavigate();
   const {
-    loading,
-    progress,
-    goals,
-    milestones,
-    overallProgress,
-    getPillarProgress,
-    getAchievedMilestones,
-    getPendingMilestones,
-    getActiveGoals,
-    getCompletedGoals,
-    trackProgress
-  } = useUserProgress();
+    profile
+  } = useAuth();
+  const {
+    sessionBalance
+  } = useSessionBalance();
+  const {
+    upcomingBookings,
+    allBookings,
+    formatPillarName
+  } = useBookings();
+  const {
+    toast
+  } = useToast();
+  const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(() => {
+    const stored = localStorage.getItem('onboardingData');
+    return stored ? JSON.parse(stored) : null;
+  });
 
-  const [upcomingSessions, setUpcomingSessions] = useState<UpcomingSession[]>([]);
-  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
-  const [isLoadingSessions, setIsLoadingSessions] = useState(true);
-  const [isLoadingActivity, setIsLoadingActivity] = useState(true);
+  // Check if this specific user has completed onboarding
+  const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
+  const hasCompletedOnboarding = localStorage.getItem(userOnboardingKey) === 'true';
 
+  // Only show onboarding for users with 'user' role who haven't completed it
+  const shouldShowOnboarding = profile?.role === 'user' && !hasCompletedOnboarding;
+  const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
+  const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
+  
+  // Session modal state
+  const [selectedSession, setSelectedSession] = useState<Booking | null>(null);
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+
+  // Default milestones structure
+  const defaultMilestones = [{
+    id: 'onboarding',
+    label: 'Concluiu o onboarding',
+    points: 10,
+    completed: false
+  }, {
+    id: 'specialist',
+    label: 'Falou com um especialista',
+    points: 20,
+    completed: false
+  }, {
+    id: 'first_session',
+    label: 'Fez a primeira sessão',
+    points: 25,
+    completed: false
+  }, {
+    id: 'resources',
+    label: 'Usou recursos da plataforma',
+    points: 15,
+    completed: false
+  }, {
+    id: 'ratings',
+    label: 'Avaliou 3 sessões efetuadas',
+    points: 20,
+    completed: false
+  }, {
+    id: 'goal',
+    label: 'Atingiu 1 objetivo pessoal',
+    points: 10,
+    completed: false
+  }];
+
+  // Initialize default milestones if none exist
+  const initializeMilestones = () => {
+    const stored = localStorage.getItem('journeyMilestones');
+    if (!stored) {
+      localStorage.setItem('journeyMilestones', JSON.stringify(defaultMilestones));
+      return defaultMilestones;
+    }
+    return JSON.parse(stored);
+  };
+
+  // Get milestone progress from localStorage (persistent)
+  const getMilestoneProgress = (milestonesData: any[]) => {
+    return milestonesData.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
+  };
+
+  // Initialize milestones from localStorage
+  const [milestones, setMilestones] = useState<any[]>(() => initializeMilestones());
+  const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress(milestones));
+  const [animatedProgress, setAnimatedProgress] = useState(0);
+  const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
+  const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const handleOnboardingComplete = (data: OnboardingData) => {
+    const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
+    localStorage.setItem('onboardingData', JSON.stringify(data));
+    localStorage.setItem(userOnboardingKey, 'true');
+    setOnboardingData(data);
+    setShowOnboarding(false);
+    setJustCompletedOnboarding(true);
+  };
+
+  // Listen for milestone completion events
   useEffect(() => {
-    loadDashboardData();
+    const handleMilestoneCompleted = () => {
+      const stored = localStorage.getItem('journeyMilestones');
+      if (stored) {
+        const updatedMilestones = JSON.parse(stored);
+        setMilestones(updatedMilestones);
+        const progress = getMilestoneProgress(updatedMilestones);
+        setMilestoneProgress(progress);
+      }
+    };
+    window.addEventListener('milestoneCompleted', handleMilestoneCompleted);
+    return () => {
+      window.removeEventListener('milestoneCompleted', handleMilestoneCompleted);
+    };
   }, []);
 
-  const loadDashboardData = async () => {
-    await Promise.all([
-      loadUpcomingSessions(),
-      loadRecentActivity()
-    ]);
+  // Animate progress bar when scrolled into view with smooth 4-second animation
+  useEffect(() => {
+    if (!isProgressVisible || hasAnimated || milestoneProgress === 0) return;
+    setHasAnimated(true);
+    setAnimatedProgress(0);
+    setAnimatedMilestoneProgress(0);
+    const startTime = Date.now();
+    const duration = 4000; // 4 seconds total animation
+
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+      setAnimatedProgress(milestoneProgress * easedProgress);
+      setAnimatedMilestoneProgress(milestoneProgress * easedProgress);
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    requestAnimationFrame(animate);
+  }, [isProgressVisible, milestoneProgress, hasAnimated]);
+  const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
+  const recentCompleted = completedSessions.slice(0, 2);
+  const getStatusBadge = (status: string) => {
+    const statusMap: Record<string, {
+      label: string;
+      variant: 'default' | 'secondary' | 'destructive' | 'outline';
+    }> = {
+      'confirmed': {
+        label: 'Confirmada',
+        variant: 'secondary'
+      },
+      'completed': {
+        label: 'Concluída',
+        variant: 'default'
+      },
+      'cancelled': {
+        label: 'Cancelada',
+        variant: 'destructive'
+      },
+      'pending': {
+        label: 'Pendente',
+        variant: 'outline'
+      }
+    };
+    return statusMap[status] || {
+      label: status,
+      variant: 'outline'
+    };
+  };
+  const isToday = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+  const isWithin5Minutes = (dateStr: string, timeStr: string) => {
+    const sessionDateTime = new Date(`${dateStr}T${timeStr}:00`);
+    const now = new Date();
+    const diffMinutes = (sessionDateTime.getTime() - now.getTime()) / (1000 * 60);
+
+    // Session starts within 5 minutes (but not passed)
+    return diffMinutes <= 5 && diffMinutes >= -60; // Can join up to 1 hour after start
   };
 
-  const loadUpcomingSessions = async () => {
-    if (!profile?.id) return;
-
-    setIsLoadingSessions(true);
-    try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`
-          id,
-          pillar,
-          date,
-          start_time,
-          session_type,
-          prestadores!bookings_prestador_id_fkey(
-            profiles!prestadores_user_id_fkey(name)
-          )
-        `)
-        .eq('user_id', profile.id)
-        .in('status', ['confirmed', 'pending'])
-        .gte('date', new Date().toISOString().split('T')[0])
-        .order('date', { ascending: true })
-        .limit(3);
-
-      if (error) throw error;
-
-      const sessions: UpcomingSession[] = (data || []).map(booking => {
-        const prestadorData: any = booking.prestadores;
-        return {
-          id: booking.id,
-          pillar: booking.pillar as Pillar,
-          date: booking.date,
-          start_time: booking.start_time,
-          prestador_name: (Array.isArray(prestadorData) ? prestadorData[0]?.name : prestadorData?.name) || 'Especialista',
-          session_type: booking.session_type
-        };
-      });
-
-      setUpcomingSessions(sessions);
-    } catch (error) {
-      console.error('Error loading upcoming sessions:', error);
-    } finally {
-      setIsLoadingSessions(false);
-    }
+  const getPillarIcon = (pillar: string) => {
+    const iconMap: Record<string, any> = {
+      'saude_mental': Brain,
+      'bem_estar_fisico': Heart,
+      'assistencia_financeira': DollarSign,
+      'assistencia_juridica': Scale
+    };
+    return iconMap[pillar] || Calendar;
   };
 
-  const loadRecentActivity = async () => {
-    if (!profile?.id) return;
+  // Transform booking to session card data
+  const transformBookingToSession = (booking: Booking): SessionCardData => {
+    return {
+      id: booking.id,
+      pillar: booking.pillar,
+      date: booking.date,
+      time: booking.time,
+      duration: 60,
+      prestador: booking.provider_name,
+      meetingType: booking.session_type === 'presencial' ? 'presencial' : 'virtual',
+      meetingPlatform: booking.session_type === 'presencial' ? undefined : 'zoom',
+      meetingLink: booking.session_type === 'presencial' ? undefined : '#',
+      status: booking.status === 'confirmed' ? 'confirmed' : 'pending',
+      quota: 'Quota Empresa'
+    };
+  };
 
-    setIsLoadingActivity(true);
-    try {
-      const { data, error } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('action_date', { ascending: false })
-        .limit(10);
+  // Session modal handlers
+  const handleSessionClick = (booking: Booking) => {
+    setSelectedSession(booking);
+    setIsSessionModalOpen(true);
+  };
 
-      if (error) throw error;
+  const handleReschedule = (sessionId: string) => {
+    console.log('Reschedule session:', sessionId);
+    toast({
+      title: 'Reagendar Sessão',
+      description: 'Funcionalidade de reagendamento em desenvolvimento'
+    });
+    setIsSessionModalOpen(false);
+  };
 
-      const activities: RecentActivity[] = (data || []).map(activity => {
-        let title = '';
-        let description = '';
+  const handleJoinSession = (sessionId: string) => {
+    console.log('Join session:', sessionId);
+    toast({
+      title: 'Entrar na Sessão',
+      description: 'A abrir link da sessão...'
+    });
+    // In production, this would open the actual meeting link
+  };
 
-        switch (activity.action_type) {
-          case 'session_completed':
-            title = 'Sessão Concluída';
-            description = `Sessão de ${PILLAR_DISPLAY_NAMES[activity.pillar as Pillar]} concluída`;
-            break;
-          case 'chat_interaction':
-            title = 'Chat com Especialista';
-            description = `Interação no pilar ${PILLAR_DISPLAY_NAMES[activity.pillar as Pillar]}`;
-            break;
-          case 'resource_viewed':
-            title = 'Recurso Visualizado';
-            description = `Recurso do pilar ${PILLAR_DISPLAY_NAMES[activity.pillar as Pillar]}`;
-            break;
-          case 'milestone_achieved':
-            title = 'Marco Alcançado';
-            description = (activity.metadata as any)?.milestone || 'Marco alcançado';
-            break;
+  const handleCancelSession = (sessionId: string) => {
+    console.log('Cancel session:', sessionId);
+    toast({
+      title: 'Cancelar Sessão',
+      description: 'Tem a certeza que deseja cancelar esta sessão?'
+    });
+    setIsSessionModalOpen(false);
+  };
+
+
+  // Trigger confetti when user first lands on dashboard after onboarding
+  useEffect(() => {
+    if (justCompletedOnboarding) {
+      const duration = 3000;
+      const animationEnd = Date.now() + duration;
+      const defaults = {
+        startVelocity: 30,
+        spread: 360,
+        ticks: 60,
+        zIndex: 100
+      };
+      const randomInRange = (min: number, max: number) => {
+        return Math.random() * (max - min) + min;
+      };
+      const interval = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          setJustCompletedOnboarding(false); // Reset flag
+          return;
         }
-
-        return {
-          id: activity.id,
-          type: activity.action_type as any,
-          title,
-          pillar: activity.pillar as Pillar,
-          date: activity.action_date,
-          description
-        };
-      });
-
-      setRecentActivity(activities);
-    } catch (error) {
-      console.error('Error loading recent activity:', error);
-    } finally {
-      setIsLoadingActivity(false);
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: {
+            x: randomInRange(0.1, 0.3),
+            y: Math.random() - 0.2
+          }
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: {
+            x: randomInRange(0.7, 0.9),
+            y: Math.random() - 0.2
+          }
+        });
+      }, 250);
+      return () => clearInterval(interval);
     }
-  };
+  }, [justCompletedOnboarding]);
 
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'session':
-        return <Calendar className="h-4 w-4" />;
-      case 'chat':
-        return <MessageCircle className="h-4 w-4" />;
-      case 'resource':
-        return <BookOpen className="h-4 w-4" />;
-      case 'milestone':
-        return <Award className="h-4 w-4" />;
-      default:
-        return <Clock className="h-4 w-4" />;
-    }
-  };
+  // Calculate sessions based on mock data structure
+  const remainingSessions = sessionBalance?.totalRemaining || 0;
+  const totalSessions = 28; // Mock total from design
+  const usedSessions = totalSessions - remainingSessions;
+  const usagePercent = totalSessions > 0 ? Math.round(usedSessions / totalSessions * 100) : 0;
 
-  const getActivityColor = (type: string) => {
-    switch (type) {
-      case 'session':
-        return 'text-blue-500';
-      case 'chat':
-        return 'text-green-500';
-      case 'resource':
-        return 'text-purple-500';
-      case 'milestone':
-        return 'text-yellow-500';
-      default:
-        return 'text-gray-500';
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map(i => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
+  // Show onboarding if user hasn't completed it
+  if (showOnboarding) {
+    return <SimplifiedOnboarding onComplete={handleOnboardingComplete} />;
   }
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Bem-vindo de volta, {profile?.name || 'Utilizador'}!
+  return <div className="relative w-full min-h-screen h-full flex flex-col">
+    {/* Background that covers main content area */}
+    <div 
+      className="absolute inset-0 w-full h-full"
+      style={{
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1600 900\'%3E%3Cdefs%3E%3ClinearGradient id=\'blueGrad\' x1=\'0%25\' y1=\'0%25\' x2=\'100%25\' y2=\'100%25\'%3E%3Cstop offset=\'0%25\' style=\'stop-color:%23F0F9FF;stop-opacity:1\' /%3E%3Cstop offset=\'20%25\' style=\'stop-color:%23E0F2FE;stop-opacity:1\' /%3E%3Cstop offset=\'40%25\' style=\'stop-color:%23BAE6FD;stop-opacity:1\' /%3E%3Cstop offset=\'60%25\' style=\'stop-color:%237DD3FC;stop-opacity:1\' /%3E%3Cstop offset=\'80%25\' style=\'stop-color:%2338BDF8;stop-opacity:1\' /%3E%3Cstop offset=\'100%25\' style=\'stop-color:%230EA5E9;stop-opacity:1\' /%3E%3C/linearGradient%3E%3CradialGradient id=\'highlight\' cx=\'50%25\' cy=\'20%25\' r=\'60%25\'%3E%3Cstop offset=\'0%25\' style=\'stop-color:%23FFFFFF;stop-opacity:0.3\' /%3E%3Cstop offset=\'100%25\' style=\'stop-color:%23FFFFFF;stop-opacity:0\' /%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width=\'1600\' height=\'900\' fill=\'url(%23blueGrad)\'/%3E%3Crect width=\'1600\' height=\'900\' fill=\'url(%23highlight)\'/%3E%3C/svg%3E")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    />
+    
+    {/* Gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none"></div>
+    
+    {/* Content */}
+    <div className="relative z-10 h-full flex flex-col">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
+        {/* Welcome Header */}
+        <div className="space-y-1 flex-shrink-0">
+          <h1 className="text-2xl font-normal tracking-tight">
+            Olá, {profile?.name || 'ana.silva'}! 👋
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Bem-vinda de volta ao seu espaço de saúde e bem-estar.
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Nova Sessão
-        </Button>
-        </div>
 
-      {/* Overall Progress */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Progresso Geral
-          </CardTitle>
-          <CardDescription>
-            Seu progresso geral em todos os pilares de bem-estar
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Progresso Total</span>
-              <span className="text-sm font-medium">{overallProgress.toFixed(1)}%</span>
+
+        {/* Session Balance Card - Full Width */}
+        <div ref={progressRef} className="flex-shrink-0">
+          <Card className="w-full border shadow-sm overflow-hidden relative">
+            <div className="absolute inset-0">
+              <img src={cardBackground} alt="" className="w-full h-full object-cover" />
             </div>
-            <Progress value={overallProgress} className="w-full h-3" />
-            <div className="text-sm text-muted-foreground">
-              Continue trabalhando nos seus objetivos para aumentar o progresso!
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Pillar Progress Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {(['saude_mental', 'bem_estar_fisico', 'assistencia_financeira', 'assistencia_juridica'] as Pillar[]).map((pillar) => {
-          const pillarProgress = getPillarProgress(pillar);
-          const pillarGoals = goals.filter(g => g.pillar === pillar);
-          const activeGoals = pillarGoals.filter(g => g.status === 'active').length;
-          const completedGoals = pillarGoals.filter(g => g.status === 'completed').length;
-
-          return (
-            <Card key={pillar}>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">{PILLAR_DISPLAY_NAMES[pillar]}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Progresso</span>
-                    <span>{pillarProgress?.progress_percentage.toFixed(1) || 0}%</span>
-                  </div>
-                  <Progress value={pillarProgress?.progress_percentage || 0} className="w-full" />
+            <CardContent className="pt-8 pb-6 flex flex-col items-center text-center space-y-4 relative z-10">
+              <div className="w-16 h-16 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
+                <Calendar className="w-8 h-8 text-white" />
               </div>
               
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="text-center">
-                    <p className="font-medium">{pillarProgress?.sessions_completed || 0}</p>
-                    <p className="text-muted-foreground">Sessões</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-medium">{activeGoals}</p>
-                    <p className="text-muted-foreground">Objetivos</p>
-                  </div>
+              <div className="w-full max-w-md space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-50 font-bold">Progresso Pessoal</span>
+                  <span className="font-mono text-xl font-semibold text-zinc-50">{Math.round(animatedMilestoneProgress)}%</span>
                 </div>
-                
-                <Button variant="outline" size="sm" className="w-full">
-                  <Target className="h-3 w-3 mr-1" />
-                  Ver Detalhes
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+                <Progress value={animatedMilestoneProgress} className="h-2" />
               </div>
               
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="goals">Objetivos</TabsTrigger>
-          <TabsTrigger value="milestones">Marcos</TabsTrigger>
-          <TabsTrigger value="activity">Atividade</TabsTrigger>
-        </TabsList>
-
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Upcoming Sessions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Próximas Sessões
-                </CardTitle>
-                <CardDescription>
-                  Suas sessões agendadas
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoadingSessions ? (
-                  <div className="text-center py-4">
-                    <p className="text-muted-foreground">A carregar sessões...</p>
-                  </div>
-                ) : upcomingSessions.length > 0 ? (
-                  <div className="space-y-3">
-                    {upcomingSessions.map((session) => (
-                      <div key={session.id} className="flex items-center justify-between p-3 border rounded">
-                        <div>
-                          <p className="font-medium">{PILLAR_DISPLAY_NAMES[session.pillar]}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(session.date).toLocaleDateString('pt-PT')} às {session.start_time}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {session.prestador_name} • {session.session_type}
-                          </p>
-                        </div>
-                        <Badge variant="outline">Confirmada</Badge>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma sessão agendada</p>
-                    <p className="text-sm">Agende sua primeira sessão para começar</p>
+              <div className="space-y-1">
+                <div className="font-mono text-6xl font-semibold text-white">{remainingSessions}</div>
+                <div className="text-lg font-serif text-white">Sessões</div>
               </div>
-                )}
-              </CardContent>
-            </Card>
 
-            {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Atividade Recente
-                </CardTitle>
-                <CardDescription>
-                  Suas últimas atividades na plataforma
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoadingActivity ? (
-                  <div className="text-center py-4">
-                    <p className="text-muted-foreground">A carregar atividade...</p>
-                  </div>
-                ) : recentActivity.length > 0 ? (
-                  <div className="space-y-3">
-                    {recentActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-center gap-3 p-3 border rounded">
-                        <div className={`${getActivityColor(activity.type)}`}>
-                          {getActivityIcon(activity.type)}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{activity.title}</p>
-                          <p className="text-xs text-muted-foreground">{activity.description}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(activity.date).toLocaleDateString('pt-PT')}
-                          </p>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {PILLAR_DISPLAY_NAMES[activity.pillar]}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma atividade recente</p>
-                    <p className="text-sm">Comece a usar a plataforma para ver sua atividade</p>
+              <div className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
+                <InteractiveHoverButton text="Falar com Especialista" className="w-full" onClick={() => navigate('/user/chat')} />
               </div>
-                )}
             </CardContent>
           </Card>
         </div>
-        </TabsContent>
 
-        {/* Goals Tab */}
-        <TabsContent value="goals" className="space-y-6">
-          <div className="grid gap-6">
-            {/* Active Goals */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5" />
-                  Objetivos Ativos
-                </CardTitle>
-                <CardDescription>
-                  Seus objetivos em andamento
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {getActiveGoals().length > 0 ? (
-                  <div className="space-y-4">
-                    {getActiveGoals().map((goal) => (
-                      <div key={goal.id} className="flex items-center justify-between p-4 border rounded">
-                        <div className="flex-1">
-                          <p className="font-medium">{goal.goal_type}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {goal.pillar && PILLAR_DISPLAY_NAMES[goal.pillar]}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Prioridade: {goal.priority}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">Ativo</Badge>
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhum objetivo ativo</p>
-                    <p className="text-sm">Complete o onboarding para definir seus objetivos</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+        {/* Bento Grid Layout */}
+        <div className="flex-1 min-h-0">
+          <BentoGrid className="lg:grid-rows-3 h-full grid-rows-[10rem] lg:auto-rows-[minmax(14rem,1fr)]">
+          {/* Top Left - Session History */}
+          <BentoCard 
+            name="Histórico de Sessões" 
+            description={`${completedSessions.length} sessões concluídas`}
+            Icon={Calendar} 
+            onClick={() => navigate('/user/sessions')} 
+            className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
+            iconColor="text-black"
+            textColor="text-black"
+            descriptionColor="text-black/70"
+            href="#"
+            cta=""
+          />
 
-            {/* Completed Goals */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5" />
-                  Objetivos Concluídos
-                </CardTitle>
-                <CardDescription>
-                  Objetivos que você alcançou
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {getCompletedGoals().length > 0 ? (
+          {/* Top Right - Notifications */}
+          <BentoCard 
+            name="Notificações" 
+            description="Fique atualizado com as suas últimas atividades" 
+            Icon={Bell} 
+            onClick={() => navigate('/user/notifications')} 
+            className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
+            background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
+            iconColor="text-black"
+            textColor="text-black"
+            descriptionColor="text-black/70"
+            href="#"
+            cta=""
+          />
+
+          {/* Middle - Progress (Progreso Pessoal) */}
+          <BentoCard name="" description="" href="#" cta="" className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" background={<div className="absolute inset-0 flex flex-col p-8 overflow-y-auto">
+                <h3 className="text-2xl font-semibold mb-2">Progresso Pessoal</h3>
+                <p className="text-base text-muted-foreground mb-6 italic">"Pequenos passos todos os dias levam a grandes conquistas"</p>
+                <div className="flex-1 flex flex-col justify-start min-h-0">
+                  <div className="w-full space-y-6">
                     <div className="space-y-4">
-                    {getCompletedGoals().map((goal) => (
-                      <div key={goal.id} className="flex items-center justify-between p-4 border rounded bg-green-50">
-                        <div className="flex-1">
-                          <p className="font-medium">{goal.goal_type}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {goal.pillar && PILLAR_DISPLAY_NAMES[goal.pillar]}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Concluído em {new Date(goal.updated_at).toLocaleDateString('pt-PT')}
-                          </p>
-                        </div>
-                        <Badge className="bg-green-500">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Concluído
-                        </Badge>
+                      <div className="flex items-center justify-between">
+                        <span className="text-base font-medium">Progresso</span>
+                        <span className="font-mono text-xl font-semibold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhum objetivo concluído ainda</p>
-                    <p className="text-sm">Continue trabalhando nos seus objetivos!</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                      <Progress value={animatedMilestoneProgress} className="h-3" />
                     </div>
-        </TabsContent>
-
-        {/* Milestones Tab */}
-        <TabsContent value="milestones" className="space-y-6">
-          <div className="grid gap-6">
-            {/* Achieved Milestones */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5" />
-                  Marcos Alcançados
-                </CardTitle>
-                <CardDescription>
-                  Marcos que você já alcançou
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {getAchievedMilestones().length > 0 ? (
-                  <div className="space-y-4">
-                    {getAchievedMilestones().map((milestone) => (
-                      <div key={milestone.id} className="flex items-center justify-between p-4 border rounded bg-yellow-50">
-                        <div className="flex items-center gap-3">
-                          <Award className="h-8 w-8 text-yellow-500" />
-                          <div>
-                            <p className="font-medium">{milestone.title}</p>
-                            <p className="text-sm text-muted-foreground">{milestone.description}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Alcançado em {milestone.achieved_at && new Date(milestone.achieved_at).toLocaleDateString('pt-PT')}
-                            </p>
+                    
+                    <div className="space-y-3 overflow-y-auto pr-2">
+                      {milestones.map((milestone: any) => (
+                        <div key={milestone.id} className={`flex items-center gap-3 p-3.5 rounded-lg border text-sm ${milestone.completed ? 'bg-green-50 border-green-200' : 'bg-white/50 border-gray-200'}`}>
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300'}`}>
+                            {milestone.completed && (
+                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
                           </div>
-                        </div>
-                        <Badge className="bg-yellow-500">
-                          <Star className="h-3 w-3 mr-1" />
-                          Alcançado
-                        </Badge>
+                          <span className={`flex-1 ${milestone.completed ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
+                            {milestone.label}
+                          </span>
+                          <span className={`text-sm font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
+                            +{milestone.points}%
+                          </span>
                         </div>
                       ))}
                     </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Award className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhum marco alcançado ainda</p>
-                    <p className="text-sm">Continue usando a plataforma para alcançar marcos!</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </div>
+              </div>} />
 
-            {/* Pending Milestones */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Próximos Marcos
-                </CardTitle>
-                <CardDescription>
-                  Marcos que você pode alcançar
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {getPendingMilestones().length > 0 ? (
-                  <div className="space-y-4">
-                    {getPendingMilestones().map((milestone) => (
-                      <div key={milestone.id} className="flex items-center justify-between p-4 border rounded">
-                        <div className="flex items-center gap-3">
-                          <Clock className="h-8 w-8 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium">{milestone.title}</p>
-                            <p className="text-sm text-muted-foreground">{milestone.description}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Progress 
-                                value={(milestone.current_value / milestone.target_value) * 100} 
-                                className="w-20 h-2" 
-                              />
-                              <span className="text-xs text-muted-foreground">
-                                {milestone.current_value}/{milestone.target_value}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <Badge variant="outline">Pendente</Badge>
+          {/* Bottom Left - Resources */}
+          <BentoCard name="Recursos" description="" href="#" cta="" Icon={BookOpen} onClick={() => navigate('/user/resources')} className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" textColor="text-white" iconColor="text-white" background={<div className="absolute inset-0">
+                <img src={recursosWellness} alt="Wellness activities" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/20" />
+              </div>} />
+
+          {/* Bottom Right - Upcoming Sessions */}
+          <BentoCard name="" description="" href="#" cta="" className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" background={<div className="absolute inset-0 p-5 flex flex-col">
+                  <h3 className="text-xl font-semibold mb-4">Próximas Sessões</h3>
+                  <div className="flex-1 min-h-0 flex items-center justify-center">
+                    {upcomingBookings && upcomingBookings.length > 0 ? (
+                      <DisplayCards 
+                        cards={upcomingBookings.slice(0, 3).map((booking, index) => {
+                          const PillarIcon = getPillarIcon(booking.pillar);
+                          const pillarColors = getPillarColors(booking.pillar);
+                          
+                          const baseClassName = index === 0 
+                            ? "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0"
+                            : index === 1
+                            ? "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0"
+                            : "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10";
+
+                          return {
+                            icon: <PillarIcon className="size-4 text-white" />,
+                            title: formatPillarName(booking.pillar),
+                            description: booking.date,
+                            date: booking.time,
+                            className: `${baseClassName} ${pillarColors.bg}`,
+                            iconClassName: pillarColors.text,
+                            titleClassName: pillarColors.text,
+                            onClick: () => handleSessionClick(booking),
+                          };
+                        })}
+                      />
+                    ) : (
+                      <div className="text-center text-sm text-muted-foreground">
+                        Nenhuma sessão agendada
                       </div>
-                    ))}
+                    )}
                   </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Todos os marcos alcançados!</p>
-                    <p className="text-sm">Parabéns pelo seu progresso!</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Activity Tab */}
-        <TabsContent value="activity" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Estatísticas de Atividade
-              </CardTitle>
-              <CardDescription>
-                Suas estatísticas de uso da plataforma
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-500">
-                    {progress.reduce((sum, p) => sum + p.sessions_completed, 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Sessões Concluídas</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-green-500">
-                    {progress.reduce((sum, p) => sum + p.chats_interactions, 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Chats</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-purple-500">
-                    {progress.reduce((sum, p) => sum + p.resources_viewed, 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Recursos</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-yellow-500">
-                    {progress.reduce((sum, p) => sum + p.milestones_achieved, 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Marcos</p>
+                </div>} />
+          </BentoGrid>
         </div>
       </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
     </div>
-  );
-};
 
+    {/* Session Details Modal */}
+    <Dialog open={isSessionModalOpen} onOpenChange={setIsSessionModalOpen}>
+      <DialogContent className="max-w-md p-0 overflow-hidden border-none bg-transparent shadow-none">
+        {selectedSession && (
+          <SessionCard
+            session={transformBookingToSession(selectedSession)}
+            onReschedule={handleReschedule}
+            onJoin={handleJoinSession}
+            onCancel={handleCancelSession}
+            className="w-full"
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+    </div>;
+};
 export default UserDashboard;

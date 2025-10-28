@@ -5,11 +5,12 @@ import { Building2, Users, UserCog } from 'lucide-react';
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
 import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import FeaturedSectionStats from '@/components/ui/featured-section-stats';
+import RuixenSection from '@/components/ui/ruixen-feature-section';
 import { EmployeeDetailModal } from '@/components/admin/EmployeeDetailModal';
 import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
 import { AddProviderModal } from '@/components/admin/AddProviderModal';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 const AdminUsersManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,122 +42,95 @@ const AdminUsersManagement = () => {
     setSearchParams({ tab: value });
   };
 
-  const handleEmployeeClick = async (employeeId: string) => {
-    try {
-      // Fetch employee data from database
-      const { data: employeeData, error } = await supabase
-        .from('company_employees')
-        .select(`
-          *,
-          company:companies(id, company_name)
-        `)
-        .eq('id', employeeId)
-        .single();
+  const handleEmployeeClick = (employeeId: number) => {
+    // Mock employee data - in real app would fetch from API
+    const mockEmployees = [
+      {
+        id: 1,
+        name: "João Silva",
+        email: "joao@techcorp.pt",
+        company: "TechCorp Lda",
+        sessions: { used: 5, total: 10 },
+        rating: 4.8,
+        objectives: ["Gestão de ansiedade", "Questões contratuais"],
+        sessionHistory: [
+          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
+        ]
+      },
+      {
+        id: 2,
+        name: "Maria Santos",
+        email: "maria@healthplus.pt",
+        company: "HealthPlus SA",
+        sessions: { used: 3, total: 8 },
+        rating: 4.5,
+        objectives: ["Gestão de ansiedade", "Questões contratuais"],
+        sessionHistory: [
+          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
+        ]
+      },
+      {
+        id: 3,
+        name: "Pedro Costa",
+        email: "pedro@startup.pt",
+        company: "StartupHub",
+        sessions: { used: 2, total: 5 },
+        rating: 4.7,
+        objectives: ["Gestão de ansiedade", "Questões contratuais"],
+        sessionHistory: [
+          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
+        ]
+      },
+      {
+        id: 4,
+        name: "Ana Pereira",
+        email: "ana@consultpro.pt",
+        company: "ConsultPro",
+        sessions: { used: 7, total: 12 },
+        rating: 4.9,
+        objectives: ["Gestão de ansiedade", "Questões contratuais"],
+        sessionHistory: [
+          { date: "15/01/2025", category: "Saúde Mental", provider: "Dra. Maria Santos" }
+        ]
+      }
+    ];
 
-      if (error) throw error;
-      if (!employeeData) return;
-
-      // Get user profile separately
-      const { data: userData } = await supabase
-        .from('profiles')
-        .select('id, name, email, avatar_url')
-        .eq('id', employeeData.user_id)
-        .single();
-
-      // Get bookings for this employee
-      const { data: bookings } = await supabase
-        .from('bookings')
-        .select(`
-          *,
-          prestador:prestadores(id, name, photo_url)
-        `)
-        .eq('user_id', employeeData.user_id)
-        .order('booking_date', { ascending: false })
-        .limit(10);
-
-      const avgRating = bookings && bookings.length > 0
-        ? bookings.reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length
-        : 0;
-
-      // Transform to modal format
-      const employee = {
-        id: employeeData.id,
-        name: userData?.name || 'Unknown',
-        email: userData?.email || '',
-        company: employeeData.company?.company_name || '',
-        sessions: {
-          used: employeeData.sessions_used || 0,
-          total: employeeData.sessions_allocated || 0
-        },
-        rating: Math.round(avgRating * 10) / 10,
-        objectives: [],
-        sessionHistory: (bookings || []).map(b => ({
-          date: b.booking_date ? new Date(b.booking_date).toLocaleDateString('pt-PT') : 'N/A',
-          category: b.pillar || 'N/A',
-          provider: b.prestador?.name || 'N/A'
-        }))
-      };
-
+    const employee = mockEmployees.find(emp => emp.id === employeeId);
+    if (employee) {
       setSelectedEmployee(employee);
       setIsEmployeeModalOpen(true);
-    } catch (error) {
-      console.error('Error loading employee:', error);
-      toast.error('Erro ao carregar dados do colaborador');
     }
   };
+
+  const userStats = [
+    { value: "150+", label: "Empresas Ativas" },
+    { value: "5,000+", label: "Colaboradores" },
+    { value: "200+", label: "Prestadores" },
+    { value: "98%", label: "Taxa de Satisfação" },
+  ];
+
+  const chartData = [
+    { name: "Jan", value: 850 },
+    { name: "Fev", value: 1200 },
+    { name: "Mar", value: 1800 },
+    { name: "Abr", value: 2400 },
+    { name: "Mai", value: 3200 },
+    { name: "Jun", value: 4100 },
+    { name: "Jul", value: 5000 },
+  ];
 
   return (
     <div className="relative w-full min-h-screen h-full flex flex-col">
       <div className="relative z-10 h-full flex flex-col">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-6 h-full flex flex-col min-h-0">
-          {/* Page Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                Gestão de Utilizadores
-              </h1>
-              <p className="text-muted-foreground">
-                Gerir empresas, colaboradores e prestadores
-              </p>
-            </div>
-          </div>
+          {/* Feature Section */}
+          <RuixenSection 
+            onAddCompany={() => setIsAddCompanyModalOpen(true)}
+            onAddProvider={() => setIsAddProviderModalOpen(true)}
+            onTabChange={handleTabChange}
+            onEmployeeClick={handleEmployeeClick}
+          />
 
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="companies" className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
-                Empresas
-              </TabsTrigger>
-              <TabsTrigger value="employees" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Colaboradores
-              </TabsTrigger>
-              <TabsTrigger value="providers" className="flex items-center gap-2">
-                <UserCog className="h-4 w-4" />
-                Prestadores
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="companies" className="mt-6">
-              <AdminCompaniesTab 
-                isAddCompanyModalOpen={isAddCompanyModalOpen}
-                setIsAddCompanyModalOpen={setIsAddCompanyModalOpen}
-              />
-            </TabsContent>
-
-            <TabsContent value="employees" className="mt-6">
-              <AdminEmployeesTab 
-                onEmployeeClick={handleEmployeeClick}
-              />
-            </TabsContent>
-
-            <TabsContent value="providers" className="mt-6">
-              <AdminProvidersTab 
-                onAddProvider={() => setIsAddProviderModalOpen(true)}
-              />
-            </TabsContent>
-          </Tabs>
         </div>
       </div>
 

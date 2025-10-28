@@ -8,8 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone, Clock, CheckCircle, ArrowUpDown, User, Building2, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { mockCallRequests } from '@/data/especialistaGeralMockData';
+import { CallRequest } from '@/types/specialist';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
-import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 import { CallModal } from '@/components/specialist/CallModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -17,8 +18,7 @@ const EspecialistaCallRequestsRevamped = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { filterByCompanyAccess } = useCompanyFilter();
-  const { escalatedChats, isLoading } = useEscalatedChats();
-  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [selectedRequest, setSelectedRequest] = useState<CallRequest | null>(null);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -26,13 +26,15 @@ const EspecialistaCallRequestsRevamped = () => {
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [resolvedRequestId, setResolvedRequestId] = useState<string | null>(null);
 
-  // Use real data from hook
-  const allRequests = filterByCompanyAccess(escalatedChats);
-  const requestsToShow = allRequests;
+  // Filter requests
+  const allRequests = filterByCompanyAccess(mockCallRequests);
+  
+  // Debug: Show all if filter returns empty (for demo purposes)
+  const requestsToShow = allRequests.length > 0 ? allRequests : mockCallRequests;
 
   // Filter by status
   const pendingRequests = useMemo(() => {
-    return requestsToShow.filter(r => r.status === 'escalated');
+    return requestsToShow.filter(r => r.status === 'pending');
   }, [requestsToShow]);
 
   const resolvedRequests = useMemo(() => {
@@ -43,18 +45,16 @@ const EspecialistaCallRequestsRevamped = () => {
   const sortedRequests = useMemo(() => {
     const requests = activeTab === 'pending' ? pendingRequests : resolvedRequests;
     return [...requests].sort((a, b) => {
-      const timeA = new Date(a.created_at).getTime();
-      const timeB = new Date(b.created_at).getTime();
-      return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
+      return sortOrder === 'desc' ? b.wait_time - a.wait_time : a.wait_time - b.wait_time;
     });
   }, [pendingRequests, resolvedRequests, sortOrder, activeTab]);
 
-  const handleCallClick = (request: any) => {
+  const handleCallClick = (request: CallRequest) => {
     setSelectedRequest(request);
     setIsCallModalOpen(true);
   };
 
-  const handleViewUserInfo = (request: any) => {
+  const handleViewUserInfo = (request: CallRequest) => {
     setSelectedRequest(request);
     setIsUserInfoModalOpen(true);
   };
@@ -122,18 +122,15 @@ const EspecialistaCallRequestsRevamped = () => {
     };
   };
 
-  const formatWaitTime = (createdAt: string) => {
-    const elapsed = Date.now() - new Date(createdAt).getTime();
-    const hours = Math.floor(elapsed / (1000 * 60 * 60));
-    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}min`;
+  const formatWaitTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}min`;
   };
 
-  const getWaitTimeColor = (createdAt: string) => {
-    const elapsed = Date.now() - new Date(createdAt).getTime();
-    const hours = elapsed / (1000 * 60 * 60);
-    if (hours >= 24) return 'text-red-600 font-bold';
-    if (hours >= 3) return 'text-orange-600 font-semibold';
+  const getWaitTimeColor = (minutes: number) => {
+    if (minutes >= 1440) return 'text-red-600 font-bold'; // >24h - SLA breach
+    if (minutes >= 180) return 'text-orange-600 font-semibold'; // >3h - urgent
     return 'text-muted-foreground';
   };
 
@@ -255,9 +252,9 @@ const EspecialistaCallRequestsRevamped = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className={`flex items-center gap-1 ${getWaitTimeColor(request.created_at)}`}>
+                        <div className={`flex items-center gap-1 ${getWaitTimeColor(request.wait_time)}`}>
                           <Clock className="h-4 w-4" />
-                          <span>{formatWaitTime(request.created_at)}</span>
+                          <span>{formatWaitTime(request.wait_time)}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
@@ -420,9 +417,9 @@ const EspecialistaCallRequestsRevamped = () => {
 
                     <div className="grid gap-2">
                       <label className="text-sm font-medium text-muted-foreground">Tempo de Espera</label>
-                      <div className={`flex items-center gap-2 text-sm ${getWaitTimeColor(selectedRequest.created_at)}`}>
+                      <div className={`flex items-center gap-2 text-sm ${getWaitTimeColor(selectedRequest.wait_time)}`}>
                         <Clock className="h-4 w-4" />
-                        <span className="font-medium">{formatWaitTime(selectedRequest.created_at)}</span>
+                        <span className="font-medium">{formatWaitTime(selectedRequest.wait_time)}</span>
                       </div>
                     </div>
 

@@ -1,12 +1,9 @@
-import { useAuth } from '@/contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import {
   Select,
   SelectContent,
@@ -22,13 +19,55 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Filter, FileText } from 'lucide-react';
-import { LiveIndicator } from '@/components/ui/live-indicator';
-import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
-import { EmptyState } from '@/components/ui/empty-state';
-import { handleError } from '@/utils/errorHandler';
+import { Search, Filter } from 'lucide-react';
 
-// Mock sessions removed - using real data from database
+// Mock data
+const mockSessions = [
+  {
+    id: '1',
+    collaborator: 'Ana Silva',
+    company: 'Tech Corp',
+    pillar: 'Saúde Mental',
+    specialist: 'Dr. João Costa',
+    date: '2025-10-15',
+    time: '10:00',
+    status: 'completed',
+    type: 'virtual'
+  },
+  {
+    id: '2',
+    collaborator: 'Carlos Santos',
+    company: 'Innovation Ltd',
+    pillar: 'Bem-Estar Físico',
+    specialist: 'Dra. Maria Oliveira',
+    date: '2025-10-16',
+    time: '14:30',
+    status: 'scheduled',
+    type: 'presencial'
+  },
+  {
+    id: '3',
+    collaborator: 'Beatriz Ferreira',
+    company: 'Tech Corp',
+    pillar: 'Assistência Financeira',
+    specialist: 'Dr. Pedro Alves',
+    date: '2025-10-14',
+    time: '11:00',
+    status: 'cancelled',
+    type: 'virtual'
+  },
+  {
+    id: '4',
+    collaborator: 'Daniel Rocha',
+    company: 'StartUp Inc',
+    pillar: 'Assistência Jurídica',
+    specialist: 'Dra. Sofia Martins',
+    date: '2025-10-17',
+    time: '09:00',
+    status: 'scheduled',
+    type: 'virtual'
+  },
+];
 
 const statusColors = {
   completed: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
@@ -49,91 +88,10 @@ export default function AdminSessionsTab() {
   const [companyFilter, setCompanyFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [pillarFilter, setPillarFilter] = useState('all');
-  const [sessions, setSessions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadSessions = async () => {
-      try {
-        setLoading(true);
-        const { data, error} = await supabase
-          .from('bookings')
-          .select('*')
-          .gte('date', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
-          .order('date', { ascending: false });
-
-        if (error) throw error;
-
-        if (data) {
-          const formattedSessions = await Promise.all(data.map(async (booking) => {
-            // Get user profile
-            const { data: userProfile } = await supabase
-              .from('profiles')
-              .select('name')
-              .eq('id', booking.user_id)
-              .maybeSingle();
-            
-            // Get company
-            const { data: company } = await supabase
-              .from('companies')
-              .select('company_name')
-              .eq('id', booking.company_id)
-              .maybeSingle();
-            
-            // Get prestador
-            const { data: prestador } = await supabase
-              .from('prestadores')
-              .select('name')
-              .eq('id', booking.prestador_id)
-              .maybeSingle();
-
-            return {
-              id: booking.id,
-              collaborator: userProfile?.name || '',
-              company: company?.company_name || '',
-              pillar: booking.pillar,
-              specialist: prestador?.name || '',
-              date: booking.date,
-              time: booking.start_time,
-              status: booking.status,
-              rating: booking.rating
-            };
-          }));
-
-          setSessions(formattedSessions);
-        }
-      } catch (error) {
-        handleError(error, {
-          title: 'Erro ao carregar sessões',
-          fallbackMessage: 'Não foi possível carregar as sessões'
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSessions();
-
-    // Real-time subscription
-    const subscription = supabase
-      .channel('admin-sessions')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'bookings'
-      }, () => {
-        loadSessions();
-      })
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const filteredSessions = sessions.filter(session => {
-    const matchesSearch = session.collaborator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         session.specialist?.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredSessions = mockSessions.filter(session => {
+    const matchesSearch = session.collaborator.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         session.specialist.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCompany = companyFilter === 'all' || session.company === companyFilter;
     const matchesStatus = statusFilter === 'all' || session.status === statusFilter;
     const matchesPillar = pillarFilter === 'all' || session.pillar === pillarFilter;
@@ -141,19 +99,12 @@ export default function AdminSessionsTab() {
     return matchesSearch && matchesCompany && matchesStatus && matchesPillar;
   });
 
-  if (loading) {
-    return <LoadingSkeleton variant="table" />;
-  }
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Lista de Sessões
-          </div>
-          <LiveIndicator />
+        <CardTitle className="flex items-center gap-2">
+          <Filter className="h-5 w-5" />
+          Lista de Sessões
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -224,15 +175,8 @@ export default function AdminSessionsTab() {
             <TableBody>
               {filteredSessions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="p-0">
-                    <EmptyState
-                      icon={FileText}
-                      title="Nenhuma sessão encontrada"
-                      description={statusFilter !== 'all' || pillarFilter !== 'all' || companyFilter !== 'all' || searchTerm
-                        ? "Não foram encontradas sessões com os filtros aplicados"
-                        : "Ainda não existem sessões registadas"}
-                      variant="compact"
-                    />
+                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                    Nenhuma sessão encontrada
                   </TableCell>
                 </TableRow>
               ) : (

@@ -22,17 +22,6 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Building2, Calendar } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-
-const generateRandomPassword = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-  let password = '';
-  for (let i = 0; i < 16; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return password;
-};
 
 const addCompanySchema = z.object({
   companyName: z.string().min(1, 'Campo obrigatório'),
@@ -58,7 +47,6 @@ interface AddCompanyModalProps {
 
 export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) => {
   const { toast } = useToast();
-  const { profile } = useAuth();
   const [selectedPillars, setSelectedPillars] = useState<string[]>([
     'mental',
     'physical',
@@ -94,69 +82,24 @@ export const AddCompanyModal = ({ open, onOpenChange }: AddCompanyModalProps) =>
 
   const onSubmit = async (data: AddCompanyFormData) => {
     try {
-      // Create company
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .insert({
-          company_name: data.companyName,
-          contact_email: data.corporateEmail,
-          contact_phone: data.phone,
-          sessions_allocated: data.numberOfEmployees * data.sessionsPerEmployee,
-          plan_type: data.sessionModel
-        })
-        .select()
-        .single();
-
-      if (companyError) throw companyError;
-
-      // Create HR user account with random password
-      const hrPassword = generateRandomPassword();
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: data.hrEmail,
-        password: hrPassword,
-        email_confirm: true
+      // TODO: Implement API call to create company
+      console.log('Company data:', {
+        ...data,
+        pillars: selectedPillars,
       });
-
-      if (authError) throw authError;
-
-      // Create HR profile WITHOUT role
-      await supabase.from('profiles').insert({
-        id: authData.user.id,
-        email: data.hrEmail,
-        name: data.hrContactPerson,
-        company_id: company.id
-      });
-
-      // Create role in user_roles table
-      await supabase.from('user_roles').insert({
-        user_id: authData.user.id,
-        role: 'hr',
-        created_by: profile?.id
-      });
-
-      // Log admin action
-      if (profile?.id) {
-        await supabase.from('admin_logs').insert({
-          admin_id: profile.id,
-          action: 'company_created',
-          entity_type: 'company',
-          entity_id: company.id,
-          changes: { company_data: data }
-        });
-      }
 
       toast({
         title: 'Empresa adicionada com sucesso',
-        description: `Empresa criada. Email HR: ${data.hrEmail}, Password: ${hrPassword}`,
+        description: 'A empresa foi registada e os colaboradores já podem aceder ao programa',
       });
 
       reset();
       setSelectedPillars(['mental', 'physical', 'financial', 'legal']);
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Erro ao adicionar empresa',
-        description: error.message || 'Ocorreu um erro ao tentar adicionar a empresa. Por favor, tente novamente.',
+        description: 'Ocorreu um erro ao tentar adicionar a empresa. Por favor, tente novamente.',
         variant: 'destructive',
       });
     }

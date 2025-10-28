@@ -13,7 +13,6 @@ import { RatingScaleGroup, RatingScaleItem } from "@/components/ui/rating-scale-
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { userToastMessages } from "@/data/userToastMessages";
-import { supabase } from "@/integrations/supabase/client";
 
 interface SessionRatingDialogProps {
   open: boolean;
@@ -44,61 +43,26 @@ export function SessionRatingDialog({
 
     setIsSubmitting(true);
     
-    try {
-      // Get booking to get user_id
-      const { data: booking, error: bookingFetchError } = await supabase
-        .from('bookings')
-        .select('user_id')
-        .eq('id', sessionId)
-        .single();
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    console.log('Session rating submitted:', {
+      sessionId,
+      rating,
+      comments
+    });
 
-      if (bookingFetchError || !booking) throw bookingFetchError;
+    toast({
+      title: userToastMessages.success.feedbackSubmitted,
+      description: `Classificação: ${rating}/10`
+    });
 
-      // Update booking with rating and feedback
-      const { error } = await supabase
-        .from('bookings')
-        .update({
-          rating: parseInt(rating),
-          feedback: comments || null
-        })
-        .eq('id', sessionId);
-
-      if (error) throw error;
-
-      // Also insert feedback record for tracking
-      const { error: feedbackError } = await supabase
-        .from('feedback')
-        .insert({
-          user_id: booking.user_id,
-          booking_id: sessionId,
-          rating: parseInt(rating),
-          message: comments,
-          status: 'new',
-          category: 'session_rating'
-        });
-
-      if (feedbackError) throw feedbackError;
-
-      toast({
-        title: userToastMessages.success.feedbackSubmitted,
-        description: `Classificação: ${rating}/10`
-      });
-
-      onOpenChange(false);
-      
-      // Reset form
-      setRating("");
-      setComments("");
-    } catch (error: any) {
-      console.error('Error submitting rating:', error);
-      toast({
-        title: "Erro ao enviar avaliação",
-        description: error.message || "Ocorreu um erro. Tente novamente.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setIsSubmitting(false);
+    onOpenChange(false);
+    
+    // Reset form
+    setRating("");
+    setComments("");
   };
 
   return (

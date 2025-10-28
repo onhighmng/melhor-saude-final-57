@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Phone, PhoneOff, CheckCircle, ArrowRight, Clock, MessageSquare } from 'lucide-react';
 import { CallRequest } from '@/types/specialist';
-import { supabase } from '@/integrations/supabase/client';
+import { mockChatSessions } from '@/data/especialistaGeralMockData';
 
 interface CallModalProps {
   isOpen: boolean;
@@ -21,29 +21,11 @@ export const CallModal = ({ isOpen, onClose, request, onComplete }: CallModalPro
   const [callState, setCallState] = useState<CallState>('preparing');
   const [notes, setNotes] = useState('');
   const [outcome, setOutcome] = useState('');
-  const [chatHistory, setChatHistory] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (isOpen && request.chat_session_id) {
-      loadChatHistory();
-    }
-  }, [isOpen, request.chat_session_id]);
-
-  const loadChatHistory = async () => {
-    if (!request.chat_session_id) return;
-    
-    try {
-      const { data } = await supabase
-        .from('chat_messages')
-        .select('*')
-        .eq('session_id', request.chat_session_id)
-        .order('created_at');
-      
-      setChatHistory(data || []);
-    } catch (error) {
-      console.error('Error loading chat history:', error);
-    }
-  };
+  // Get chat history for this request
+  const chatHistory = mockChatSessions.find(
+    session => session.id === request.chat_session_id
+  )?.messages || [];
 
   const handleStartCall = () => {
     setCallState('calling');
@@ -101,7 +83,7 @@ export const CallModal = ({ isOpen, onClose, request, onComplete }: CallModalPro
                   <p><strong>Email:</strong> {request.user_email}</p>
                   <p><strong>Telefone:</strong> {request.user_phone}</p>
                   <p><strong>Pilar:</strong> {getPillarLabel(request.pillar)}</p>
-                  <p><strong>Tempo de Espera:</strong> {new Date(request.created_at).toLocaleString('pt-PT')}</p>
+                  <p><strong>Tempo de Espera:</strong> {Math.floor(request.wait_time / 60)}h {request.wait_time % 60}min</p>
                 </div>
               </div>
             </div>

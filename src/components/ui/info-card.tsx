@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { UserPlus, MessageCircle, Star, CheckCircle2, Calendar, Building2, Brain, Dumbbell, DollarSign, Scale, Eye, X } from 'lucide-react';
+import { UserPlus, MessageCircle, Star, CheckCircle2, Calendar, Building2, Brain, Dumbbell, DollarSign, Scale, Eye } from 'lucide-react';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 
 interface InfoCardProps {
@@ -34,11 +34,6 @@ interface InfoCardProps {
   location?: string;
   nextAvailable?: string;
   type?: 'employee' | 'provider';
-  // Action props
-  onApprove?: () => void;
-  onReject?: () => void;
-  showActions?: boolean;
-  isApproved?: boolean;
 }
 
 export function InfoCard({
@@ -66,12 +61,7 @@ export function InfoCard({
   experience,
   location,
   nextAvailable,
-  type = 'employee',
-  // Action props
-  onApprove,
-  onReject,
-  showActions = false,
-  isApproved = false
+  type = 'employee'
 }: InfoCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -271,26 +261,6 @@ export function InfoCard({
             >
               <MessageCircle className="w-4 h-4 mr-1" />
               Contactar
-            </Button>
-          )}
-          {showActions && onApprove && (
-            <Button
-              size="sm"
-              onClick={onApprove}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-            >
-              <CheckCircle2 className="w-4 h-4 mr-1" />
-              Aprovar
-            </Button>
-          )}
-          {showActions && onReject && (
-            <Button
-              size="sm"
-              onClick={onReject}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-            >
-              <X className="w-4 h-4 mr-1" />
-              Rejeitar
             </Button>
           )}
         </div>

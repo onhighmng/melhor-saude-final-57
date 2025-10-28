@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import {
   AnimatedSidebar,
   AnimatedSidebarBody,
@@ -28,7 +26,6 @@ export function UserSidebar() {
   const { open } = useAnimatedSidebar();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [unreadCount, setUnreadCount] = useState(0);
 
   const mainLinks = [
     {
@@ -52,12 +49,6 @@ export function UserSidebar() {
       icon: <BookOpen className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
-      label: "Notificações",
-      href: "/user/notifications",
-      icon: <Bell className="text-primary h-5 w-5 flex-shrink-0" />,
-      badge: unreadCount > 0 ? `${unreadCount}` : undefined,
-    },
-    {
       label: "Definições",
       href: "/user/settings",
       icon: <Settings className="text-primary h-5 w-5 flex-shrink-0" />,
@@ -76,44 +67,6 @@ export function UserSidebar() {
       icon: <FileText className="text-muted-foreground h-5 w-5 flex-shrink-0" />,
     },
   ];
-
-  useEffect(() => {
-    if (!user?.id) return undefined;
-
-    const fetchUnreadCount = async () => {
-      try {
-        const { count, error } = await supabase
-          .from('notifications')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('is_read', false);
-
-        if (!error && count !== null) {
-          setUnreadCount(count);
-        }
-      } catch (error) {
-        // Silent fail for unread count
-      }
-    };
-
-    fetchUnreadCount();
-
-    const subscription = supabase
-      .channel('notification-count')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'notifications',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        fetchUnreadCount();
-      })
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [user?.id]);
 
   const handleLogout = async () => {
     try {

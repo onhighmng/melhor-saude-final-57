@@ -17,9 +17,7 @@ import {
 } from '@/components/ui/select';
 import { ArrowLeft, DollarSign, Users, Calendar, TrendingUp, Euro } from 'lucide-react';
 import { Provider, ProviderMetrics, ProviderHistoryItem, ProviderStatus } from '@/types/adminProvider';
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useState } from 'react';
 
 interface ProviderMetricsViewProps {
   open: boolean;
@@ -28,7 +26,26 @@ interface ProviderMetricsViewProps {
   onBack: () => void;
 }
 
-// Removed - now using real database queries
+// Mock metrics data - replace with real data
+const getMockMetrics = (provider: Provider): ProviderMetrics => ({
+  sessionsCompleted: provider.totalSessions,
+  avgSatisfaction: provider.avgSatisfaction,
+  sessionsThisMonth: 18,
+  companiesServed: 4,
+  costPerSession: provider.costPerSession,
+  platformMargin: provider.costPerSession * 0.25,
+  netToProvider: provider.costPerSession * 0.75,
+  totalPaidThisMonth: provider.costPerSession * 0.75 * 18,
+});
+
+// Mock history data - replace with real data
+const getMockHistory = (): ProviderHistoryItem[] => [
+  { id: '1', date: '2024-10-10', collaborator: 'Ana Silva', rating: 9.5, sessionType: 'virtual' },
+  { id: '2', date: '2024-10-08', collaborator: 'João Santos', rating: 9.0, sessionType: 'presential' },
+  { id: '3', date: '2024-10-05', collaborator: 'Maria Costa', rating: 9.2, sessionType: 'virtual' },
+  { id: '4', date: '2024-10-03', collaborator: 'Pedro Alves', rating: 8.8, sessionType: 'virtual' },
+  { id: '5', date: '2024-10-01', collaborator: 'Sofia Fernandes', rating: 9.4, sessionType: 'presential' },
+];
 
 export const ProviderMetricsView = ({
   open,
@@ -38,83 +55,11 @@ export const ProviderMetricsView = ({
 }: ProviderMetricsViewProps) => {
   const { t } = useTranslation('admin-providers');
   const [status, setStatus] = useState<ProviderStatus>(provider?.status || 'active');
-  const [metrics, setMetrics] = useState<ProviderMetrics | null>(null);
-  const [history, setHistory] = useState<ProviderHistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (provider && open) {
-      loadMetrics();
-    }
-  }, [provider, open]);
-
-  const loadMetrics = async () => {
-    if (!provider?.id) return;
-
-    setLoading(true);
-    try {
-      // Load bookings for metrics
-      const { data: bookings, error: bookingsError } = await supabase
-        .from('bookings')
-        .select('*, profiles(name)')
-        .eq('prestador_id', provider.id);
-
-      if (bookingsError) throw bookingsError;
-
-      const completedSessions = bookings?.filter(b => b.status === 'completed') || [];
-      const ratings = completedSessions.map(b => b.rating).filter(r => r !== null) as number[];
-      const avgRating = ratings.length > 0 
-        ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length 
-        : 0;
-
-      const thisMonth = new Date();
-      thisMonth.setDate(1);
-      const sessionsThisMonth = bookings?.filter(b => 
-        new Date(b.date) >= thisMonth
-      ).length || 0;
-
-      // Get unique companies
-      const { data: companies } = await supabase
-        .from('bookings')
-        .select('company_id')
-        .eq('prestador_id', provider.id)
-        .not('company_id', 'is', null);
-
-      const uniqueCompanies = new Set(companies?.map(c => c.company_id) || []).size;
-
-      setMetrics({
-        sessionsCompleted: completedSessions.length,
-        avgSatisfaction: parseFloat(avgRating.toFixed(1)),
-        sessionsThisMonth,
-        companiesServed: uniqueCompanies,
-        costPerSession: provider.costPerSession || 0,
-        platformMargin: (provider.costPerSession || 0) * 0.25,
-        netToProvider: (provider.costPerSession || 0) * 0.75,
-        totalPaidThisMonth: (provider.costPerSession || 0) * 0.75 * sessionsThisMonth,
-      });
-
-      // Load recent history
-      const recentBookings = bookings
-        ?.filter(b => b.status === 'completed')
-        .slice(0, 5)
-        .map(b => ({
-          id: b.id,
-          date: b.date,
-          collaborator: (b.profiles as any)?.name || 'N/A',
-          rating: b.rating || 0,
-          sessionType: b.meeting_type as 'virtual' | 'presential'
-        })) || [];
-
-      setHistory(recentBookings);
-    } catch (error) {
-      console.error('Error loading metrics:', error);
-      toast.error('Erro ao carregar métricas');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (!provider) return null;
+
+  const metrics = getMockMetrics(provider);
+  const history = getMockHistory();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -134,16 +79,6 @@ export const ProviderMetricsView = ({
         </DialogHeader>
 
         <div className="space-y-6 pt-4">
-          {loading ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Carregando métricas...</p>
-            </div>
-          ) : !metrics ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Erro ao carregar métricas</p>
-            </div>
-          ) : (
-            <>
           {/* General Data */}
           <Card>
             <CardHeader>
@@ -269,8 +204,6 @@ export const ProviderMetricsView = ({
               )}
             </CardContent>
           </Card>
-            </>
-          )}
         </div>
       </DialogContent>
     </Dialog>

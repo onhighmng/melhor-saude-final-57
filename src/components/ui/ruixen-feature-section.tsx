@@ -1,13 +1,12 @@
 import { cn } from "@/lib/utils"
-import { CardContent, Card as UICard, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { TbHeartPlus } from "react-icons/tb";
+import { Building2, Users, UserCog, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, CheckCircle, Clock, Star, Building, Video, MapPin, Download, RefreshCw } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 export const Highlight = ({
   children,
   className,
@@ -27,304 +26,495 @@ export const Highlight = ({
   );
 };
 
-type StatsCard = {
-  id: number;
-  title: string;
-  value: string | number;
-  description: string;
-  icon: React.ReactNode;
-  gradient: string;
-};
 
-type Session = {
-  id: number | string;
-  date: string;
-  clientName: string;
-  company: string;
-  type: string;
-  status: string;
-  rating?: number;
-};
+const CARDS = [
+  {
+    id: 0,
+    name: "Empresas",
+    designation: "Gerir empresas e códigos",
+    Icon: Building2,
+    bgColor: "bg-gradient-to-br from-blue-100 to-blue-200",
+    iconColor: "text-blue-600",
+    tabValue: "companies",
+    content: (
+      <p className="text-sm text-muted-foreground">
+        Gestão completa de empresas cadastradas, geração de códigos de acesso únicos
+        e monitoramento de utilizações em tempo real.
+      </p>
+    ),
+  },
+  {
+    id: 1,
+    name: "Affiliates",
+    designation: "Gerir especialistas",
+    Icon: UserCog,
+    bgColor: "bg-gradient-to-br from-yellow-100 to-yellow-200",
+    iconColor: "text-yellow-600",
+    tabValue: "providers",
+    content: (
+      <p className="text-sm text-muted-foreground">
+        Administração de prestadores de serviços, atribuição de especialidades
+        e controle de disponibilidade para agendamentos.
+      </p>
+    ),
+  },
+];
 
-interface RuixenSectionProps {
-  stats?: {
-    total: number;
-    completed: number;
-    scheduled: number;
-    avgRating: number;
-  };
-  sessions?: Session[];
-  getStatusBadge?: (status: string) => React.ReactNode;
-  dateFilter?: string;
-  statusFilter?: string;
-  onDateFilterChange?: (value: string) => void;
-  onStatusFilterChange?: (value: string) => void;
-  onClearFilters?: () => void;
-  onExport?: () => void;
-  onSessionClick?: (session: Session) => void;
-}
 
+const activeCompanies = [
+  {
+    id: 1,
+    name: "TechCorp Lda",
+    employees: 45,
+    sessions: { used: 287, total: 400 },
+    status: "active",
+    bgColor: "bg-blue-100"
+  },
+  {
+    id: 2,
+    name: "HealthPlus SA",
+    employees: 120,
+    sessions: { used: 823, total: 1000 },
+    status: "active",
+    bgColor: "bg-green-100"
+  },
+  {
+    id: 3,
+    name: "StartupHub",
+    employees: 15,
+    sessions: { used: 45, total: 150 },
+    status: "onboarding",
+    bgColor: "bg-yellow-100"
+  },
+  {
+    id: 4,
+    name: "ConsultPro",
+    employees: 80,
+    sessions: { used: 512, total: 600 },
+    status: "active",
+    bgColor: "bg-purple-100"
+  }
+];
+
+
+const activeProviders = [
+  {
+    id: 1,
+    name: "Dr. Carlos Mendes",
+    specialty: "Psicologia",
+    sessions: { completed: 145, scheduled: 12 },
+    status: "active",
+    bgColor: "bg-blue-100"
+  },
+  {
+    id: 2,
+    name: "Dra. Sofia Rodrigues",
+    specialty: "Nutrição",
+    sessions: { completed: 98, scheduled: 8 },
+    status: "active",
+    bgColor: "bg-green-100"
+  },
+  {
+    id: 3,
+    name: "Dr. Miguel Ferreira",
+    specialty: "Consultoria Financeira",
+    sessions: { completed: 67, scheduled: 5 },
+    status: "active",
+    bgColor: "bg-yellow-100"
+  },
+  {
+    id: 4,
+    name: "Dra. Beatriz Alves",
+    specialty: "Assistência Legal",
+    sessions: { completed: 52, scheduled: 3 },
+    status: "active",
+    bgColor: "bg-purple-100"
+  }
+];
+
+const platformTips = [
+  {
+    id: 1,
+    tip: "Auditorias regulares de empresas inativas ajudam a manter métricas precisas",
+    category: "Boa Prática"
+  },
+  {
+    id: 2,
+    tip: "Reveja a disponibilidade dos prestadores semanalmente para garantir capacidade ideal de agendamento",
+    category: "Agendamento"
+  },
+  {
+    id: 3,
+    tip: "Monitorize padrões de uso de sessões para identificar empresas que necessitam de apoio",
+    category: "Análise"
+  },
+  {
+    id: 4,
+    tip: "Configure alertas automáticos para empresas que se aproximam dos seus limites de sessões",
+    category: "Automação"
+  },
+  {
+    id: 5,
+    tip: "Comunicação regular com contactos de RH melhora as taxas de adoção da plataforma",
+    category: "Envolvimento"
+  }
+];
+
+const integrations = [
+  {
+    name: "Saúde Mental",
+    desc: "Sessões de psicologia e apoio emocional",
+    icon: "🧠",
+  },
+  {
+    name: "Bem-Estar Físico",
+    desc: "Consultas de nutrição e fisioterapia",
+    icon: "💪",
+  },
+  {
+    name: "Apoio Financeiro",
+    desc: "Consultoria financeira personalizada",
+    icon: "💰",
+  },
+  {
+    name: "Assistência Legal",
+    desc: "Suporte jurídico especializado",
+    icon: "⚖️",
+  },
+];
 
 export default function RuixenSection({ 
-  stats, 
-  sessions = [], 
-  getStatusBadge,
-  dateFilter = 'all',
-  statusFilter = 'all',
-  onDateFilterChange,
-  onStatusFilterChange,
-  onClearFilters,
-  onExport,
-  onSessionClick
-}: RuixenSectionProps) {
-  // Sort sessions by date (most recent first) and take top 5
-  const displaySessions = [...sessions]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
-  const statsCards: StatsCard[] = stats ? [
-    {
-      id: 0,
-      title: "Total de Sessões",
-      value: stats.total,
-      description: "Todas as sessões",
-      icon: <Calendar className="h-4 w-4 text-blue-600" />,
-      gradient: "from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900"
-    },
-    {
-      id: 1,
-      title: "Concluídas",
-      value: stats.completed,
-      description: `${Math.round((stats.completed / stats.total) * 100)}% do total`,
-      icon: <CheckCircle className="h-4 w-4 text-green-600" />,
-      gradient: "from-green-50 to-green-100 dark:from-green-950 dark:to-green-900"
-    },
-    {
-      id: 2,
-      title: "Agendadas",
-      value: stats.scheduled,
-      description: "Próximas sessões",
-      icon: <Clock className="h-4 w-4 text-amber-600" />,
-      gradient: "from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900"
-    },
-    {
-      id: 3,
-      title: "Avaliação Média",
-      value: `${stats.avgRating.toFixed(1)}/10`,
-      description: "Satisfação dos colaboradores",
-      icon: <Star className="h-4 w-4 text-purple-600" />,
-      gradient: "from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900"
-    }
-  ] : [];
+  onAddCompany,
+  onAddProvider,
+  onTabChange,
+  onEmployeeClick
+}: { 
+  onAddCompany?: () => void;
+  onAddProvider?: () => void;
+  onTabChange?: (tab: string) => void;
+  onEmployeeClick?: (employeeId: number) => void;
+}) {
+  const navigate = useNavigate();
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [activeCardIndex, setActiveCardIndex] = useState(0);
 
+  // Rotate tips every 8 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTipIndex((prev) => (prev + 1) % platformTips.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-      <div className="grid grid-cols-1 lg:grid-cols-2 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-2 relative gap-4">
         {/* Left Block */}
-        <div className="flex flex-col items-start justify-center border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
-          {/* Card */}
+        <div className="flex flex-col items-start justify-center border border-border p-4 sm:p-6 lg:p-8 relative">
+          {/* Card Stack with Navigation */}
           <div className="relative w-full mb-4 sm:mb-6">
-            <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-blue-50 dark:from-gray-900 to-transparent z-10"></div>
-            <StatsCardStack items={statsCards} />
+            <CardStack 
+              items={CARDS} 
+              onTabChange={onTabChange}
+              onCardChange={(index) => setActiveCardIndex(index)}
+              navigate={navigate}
+              onEmployeeClick={onEmployeeClick}
+            />
           </div>
 
           {/* Content */}
-          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white leading-relaxed">
-            Experiência Profissional Intuitiva com <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
-            <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
-              Simplifique a gestão das suas sessões com ferramentas profissionais que fornecem insights e controlo total.
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-foreground leading-relaxed">
+            Gestão Centralizada de Utilizadores{" "}
+            <span className="text-primary">Wellness Platform</span>{" "}
+            <span className="text-muted-foreground text-sm sm:text-base lg:text-lg">
+              {" "}
+              Controle completo sobre empresas e affiliates numa única
+              plataforma integrada.
             </span>
           </h3>
         </div>
 
-        {/* Right Block - Sessions List */}
-        <div className="flex flex-col items-start justify-start border border-gray-200 dark:border-gray-700 p-4 sm:p-6 lg:p-8">
-          <div className="w-full mb-4 sm:mb-6">
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-gray-900 dark:text-white leading-relaxed">
-              Sessões Recentes <span className="text-primary">Plataforma de Bem-Estar</span>{" "}
-              <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base lg:text-lg">
-                Acompanhe as suas últimas sessões com colaboradores e empresas.
-              </span>
-            </h3>
+
+        {/* Right Block - Dynamic Content Based on Active Card */}
+        <div className="flex flex-col border border-border p-4 sm:p-6 lg:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">
+              {activeCardIndex === 0 && "Empresas Ativas"}
+              {activeCardIndex === 1 && "Affiliates Ativos"}
+            </h2>
+            {activeCardIndex === 0 && (
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onAddCompany) {
+                    onAddCompany();
+                  }
+                }}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Empresa
+              </Button>
+            )}
+            {activeCardIndex === 1 && (
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onAddProvider) {
+                    onAddProvider();
+                  }
+                }}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Affiliate
+              </Button>
+            )}
           </div>
 
-          {/* Filters and Export */}
-          <div className="w-full flex flex-wrap items-center gap-3 mb-4">
-            <Select value={dateFilter} onValueChange={onDateFilterChange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filtrar por Data" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as Datas</SelectItem>
-                <SelectItem value="today">Hoje</SelectItem>
-                <SelectItem value="week">Última Semana</SelectItem>
-                <SelectItem value="month">Último Mês</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filtrar por Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os Estados</SelectItem>
-                <SelectItem value="Agendada">Agendada</SelectItem>
-                <SelectItem value="Concluída">Concluída</SelectItem>
-                <SelectItem value="Cancelada">Cancelada</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button 
-              variant="outline" 
-              onClick={onClearFilters}
-              className="gap-2"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Limpar Filtros
-            </Button>
-
-            <Button 
-              onClick={onExport} 
-              variant="outline" 
-              className="gap-2 ml-auto"
-            >
-              <Download className="h-4 w-4" />
-              Exportar
-            </Button>
-          </div>
-          
-          <div className="w-full overflow-y-auto max-h-[400px] pr-2 space-y-3 no-scrollbar">
-            {displaySessions.length === 0 ? (
-              <p className="text-center py-8 text-muted-foreground">
-                Nenhuma sessão encontrada
-              </p>
-            ) : (
-              displaySessions.map((session) => (
-                <div
-                  key={session.id}
-                  onClick={() => onSessionClick?.(session)}
-                  className="flex flex-col gap-3 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition-all shadow-sm cursor-pointer"
-                >
-                  {/* Row 1: Name, Type Badge, and Status */}
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <p className="text-lg font-semibold text-foreground truncate">
-                        {session.clientName}
-                      </p>
-                      <Badge variant="outline" className="flex items-center gap-1.5 text-sm flex-shrink-0">
-                        {session.type === 'Virtual' ? (
-                          <Video className="h-3.5 w-3.5" />
-                        ) : (
-                          <MapPin className="h-3.5 w-3.5" />
-                        )}
-                        {session.type}
-                      </Badge>
-                    </div>
-                    <div className="flex-shrink-0">
-                      {getStatusBadge ? getStatusBadge(session.status) : (
-                        <Badge variant="outline" className="text-sm">
-                          {session.status}
+          {/* Table */}
+          <div className="w-full">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
+                    {activeCardIndex === 0 && "Empresa"}
+                    {activeCardIndex === 1 && "Affiliate"}
+                  </th>
+                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
+                    {activeCardIndex === 0 && "Colaboradores"}
+                    {activeCardIndex === 1 && "Especialidade"}
+                  </th>
+                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
+                    Sessões
+                  </th>
+                  <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {activeCardIndex === 0 && activeCompanies.map((company) => (
+                  <tr 
+                    key={company.id} 
+                    onClick={() => navigate(`/admin/companies/${company.id}`)}
+                    className="group border-b border-border cursor-pointer transition-all relative"
+                  >
+                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
+                      <div className={cn(
+                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none -z-10",
+                        company.bgColor
+                      )} style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />
+                      {company.name}
+                    </td>
+                    <td className="py-4 px-4 relative z-10">
+                      <div className="flex items-center gap-2 text-foreground">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span>{company.employees}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 text-foreground relative z-10">
+                      {company.sessions.used}/{company.sessions.total}
+                    </td>
+                    <td className="py-4 px-4 relative z-10">
+                      {company.status === "active" ? (
+                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
+                          Ativa
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-blue-500 text-blue-500">
+                          Em Onboarding
                         </Badge>
                       )}
-                    </div>
-                  </div>
-                  
-                  {/* Row 2: Company, Date, and Rating */}
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                        <p className="text-base text-muted-foreground truncate">
-                          {session.company}
-                        </p>
-                      </div>
-                      <span className="text-base text-muted-foreground flex-shrink-0">
-                        {new Date(session.date).toLocaleDateString('pt-PT')}
-                      </span>
-                    </div>
-                    {session.rating && (
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                        <span className="text-base font-medium">{session.rating}/10</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
+                    </td>
+                  </tr>
+                ))}
+                
+                {activeCardIndex === 1 && activeProviders.map((provider) => (
+                  <tr 
+                    key={provider.id}
+                    onClick={() => navigate(`/admin/provider-metrics/${provider.id}`)}
+                    className="group border-b border-border cursor-pointer transition-all relative"
+                  >
+                    <td className="py-4 px-4 text-foreground font-medium relative z-10">
+                      <div className={cn(
+                        "absolute inset-y-1 left-0 right-0 rounded-full transition-all duration-300 group-hover:shadow-md pointer-events-none -z-10",
+                        provider.bgColor
+                      )} style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />
+                      {provider.name}
+                    </td>
+                    <td className="py-4 px-4 text-foreground relative z-10">
+                      {provider.specialty}
+                    </td>
+                    <td className="py-4 px-4 text-foreground relative z-10">
+                      {provider.sessions.completed} / {provider.sessions.scheduled} agendadas
+                    </td>
+                    <td className="py-4 px-4 relative z-10">
+                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">
+                        Ativo
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-      
-      {/* Stats Section */}
-      <div className="mt-12 sm:mt-16 lg:mt-20">
+
+      {/* Stats and Testimonial Section */}
+      <div className="mt-12 sm:mt-16 lg:mt-20 grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
         <div className="flex justify-center items-center p-4 sm:p-6">
-          <div className="grid grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left max-w-3xl">
+          <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left">
             <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">+150</div>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Prestadores Ativos</p>
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-foreground">
+                150+
+              </div>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Empresas Ativas
+              </p>
             </div>
             <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">5K+</div>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Sessões Realizadas</p>
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-foreground">
+                200+
+              </div>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Affiliates
+              </p>
             </div>
-            <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">4.9</div>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Avaliação Média</p>
-            </div>
+          </div>
+        </div>
+        <div className="relative">
+          <div className="border-l-4 border-primary pl-4 sm:pl-6 lg:pl-8">
+            <motion.div
+              key={currentTipIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Badge variant="outline" className="text-xs">
+                  {platformTips[currentTipIndex].category}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  Dica {currentTipIndex + 1} de {platformTips.length}
+                </span>
+              </div>
+              <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-foreground font-medium">
+                💡 {platformTips[currentTipIndex].tip}
+              </p>
+            </motion.div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 let interval: any;
 
-export const StatsCardStack = ({
+type Card = {
+  id: number;
+  name: string;
+  designation: string;
+  content: React.ReactNode;
+  Icon: any;
+  bgColor: string;
+  iconColor: string;
+  tabValue: string;
+};
+
+export const CardStack = ({
   items,
   offset,
   scaleFactor,
+  onTabChange,
+  onCardChange,
+  navigate,
+  onEmployeeClick
 }: {
-  items: StatsCard[];
+  items: Card[];
   offset?: number;
   scaleFactor?: number;
+  onTabChange?: (tab: string) => void;
+  onCardChange?: (index: number) => void;
+  navigate?: (path: string) => void;
+  onEmployeeClick?: (employeeId: number) => void;
 }) => {
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
-  const [cards, setCards] = useState<StatsCard[]>(items);
+  const [cards, setCards] = useState<Card[]>(items);
 
+  // Notify parent of card change
   useEffect(() => {
-    if (items.length > 0) {
-      setCards(items);
-      startFlipping();
-    }
+    const topCardIndex = items.findIndex(item => item.id === cards[0].id);
+    onCardChange?.(topCardIndex);
+  }, [cards, items, onCardChange]);
 
-    return () => clearInterval(interval);
-  }, [items]);
-  
-  const startFlipping = () => {
-    interval = setInterval(() => {
-      setCards((prevCards: StatsCard[]) => {
-        const newArray = [...prevCards];
-        newArray.unshift(newArray.pop()!);
-        return newArray;
-      });
-    }, 3000);
+  const nextCard = () => {
+    setCards((prevCards: Card[]) => {
+      const newArray = [...prevCards];
+      newArray.unshift(newArray.pop()!);
+      return newArray;
+    });
   };
 
-  if (items.length === 0) {
-    return null;
-  }
+  const prevCard = () => {
+    setCards((prevCards: Card[]) => {
+      const newArray = [...prevCards];
+      newArray.push(newArray.shift()!);
+      return newArray;
+    });
+  };
+
 
   return (
-    <div className="relative mx-auto h-48 w-full md:h-48 md:w-96 my-4">
+    <div className="relative mx-auto h-64 w-full md:h-64 md:w-96 my-4">
+      {/* Navigation Arrows - Always visible */}
+      <div className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 z-30">
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            prevCard();
+          }}
+          size="icon"
+          variant="outline"
+          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted border-2"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+      </div>
+      
+      <div className="absolute -right-4 sm:-right-6 top-1/2 -translate-y-1/2 z-30">
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            nextCard();
+          }}
+          size="icon"
+          variant="outline"
+          className="h-10 w-10 rounded-full bg-background shadow-lg hover:bg-muted border-2"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
+
       {cards.map((card, index) => {
+        const CardIcon = card.Icon;
+        const isTopCard = index === 0;
+        
         return (
           <motion.div
             key={card.id}
+            onClick={() => {
+              if (isTopCard && navigate) {
+                navigate(`/admin/users-management?tab=${card.tabValue}`);
+              }
+            }}
             className={cn(
-              "absolute h-48 w-full md:h-48 md:w-96 rounded-3xl p-6 shadow-xl border-0 flex flex-col justify-between",
-              `bg-gradient-to-br ${card.gradient}`
+              "absolute h-64 w-full md:h-64 md:w-96 rounded-3xl p-6 shadow-xl border-2 flex flex-col justify-between transition-all",
+              card.bgColor,
+              isTopCard ? "cursor-pointer hover:shadow-2xl hover:scale-[1.02] border-primary/20" : "border-border"
             )}
             style={{
               transformOrigin: "top center",
@@ -334,24 +524,26 @@ export const StatsCardStack = ({
               scale: 1 - index * SCALE_FACTOR,
               zIndex: cards.length - index,
             }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut"
+            }}
           >
-            <CardHeader className="p-0 pb-2">
-              <CardTitle className="text-base font-medium text-muted-foreground flex items-center gap-2">
-                {card.icon}
-                {card.title}
-              </CardTitle>
-            </CardHeader>
-            <div>
-              <div className="text-5xl font-bold text-foreground mb-2">
-                {card.value}
+            <div className="flex items-start gap-4">
+              <div className={cn("p-3 rounded-xl bg-white/50", card.iconColor)}>
+                <CardIcon className="h-8 w-8" />
               </div>
-              <p className="text-sm text-muted-foreground">
-                {card.description}
-              </p>
+              <div className="flex-1">
+                <h4 className="text-2xl font-semibold text-foreground mb-1">{card.name}</h4>
+                <p className="text-sm text-muted-foreground font-medium">{card.designation}</p>
+              </div>
+            </div>
+            <div className="mt-4">
+              {card.content}
             </div>
           </motion.div>
         );
       })}
     </div>
   );
-};
+}

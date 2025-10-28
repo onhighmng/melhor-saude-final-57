@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import LoadingSpinner from '@/components/ui/loading-spinner';
 import { SecurePasswordInput, usePasswordValidation } from '@/components/ui/secure-password-input';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { useState } from 'react';

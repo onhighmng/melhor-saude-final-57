@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, CheckCircle, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface ChatMessage {
   from: "user" | "bot";
@@ -19,49 +18,68 @@ const quickChips = [
   "Problemas de login"
 ];
 
-// Removed - now using edge function
-
-async function createSupportTicket(
-  userId: string | null,
-  chatSessionId: string,
-  thread: ChatMessage[]
-) {
-  try {
-    const { data, error } = await supabase
-      .from('support_tickets')
-      .insert({
-        user_id: userId,
-        subject: 'Escalado do Chat - Assistente Virtual',
-        description: `Chat escalado. Histórico:\n${thread.map(m => `${m.from}: ${m.text}`).join('\n')}`,
-        status: 'open',
-        priority: 'medium',
-        category: 'chat_escalation'
-      } as any)
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Update chat session
-    await supabase
-      .from('chat_sessions')
-      .update({ status: 'resolved' })
-      .eq('id', chatSessionId);
-
-    return { id: data.ticket_number };
-  } catch (error) {
-    console.error('Error creating support ticket:', error);
-    throw error;
+// Helper function placeholder
+async function getBotReply(message: string): Promise<{ text: string; confidence: number }> {
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  const lowerMessage = message.toLowerCase();
+  
+  // Low confidence responses that trigger escalation
+  if (lowerMessage.includes("humano") || lowerMessage.includes("atendente") || lowerMessage.includes("falar com alguém")) {
+    return {
+      text: "Compreendo que pretende falar com um humano. Posso encaminhar o seu pedido para a nossa equipa de suporte.",
+      confidence: 0.3
+    };
   }
+  
+  if (lowerMessage.includes("agendar") || lowerMessage.includes("marcar")) {
+    return {
+      text: "Para agendar uma sessão, pode aceder à secção 'Marcar Sessão' no seu painel. Lá pode escolher o tipo de apoio e o horário que melhor se adequa às suas necessidades.",
+      confidence: 0.8
+    };
+  }
+  
+  if (lowerMessage.includes("login") || lowerMessage.includes("acesso")) {
+    return {
+      text: "Se tem problemas de acesso, certifique-se de que está a usar o email correto e a palavra-passe. Pode usar a opção 'Esqueceu a palavra-passe?' se necessário.",
+      confidence: 0.7
+    };
+  }
+  
+  // Default response with medium confidence
+  return {
+    text: "Obrigado pela sua questão. Estou aqui para ajudar com informações sobre a nossa plataforma. Pode ser mais específico sobre o que precisa?",
+    confidence: 0.5
+  };
+}
+
+async function createSupportTicket(ticket: {
+  source: 'chat' | 'form';
+  thread?: ChatMessage[];
+  [key: string]: any;
+}) {
+  // Save to localStorage for demo
+  const tickets = JSON.parse(localStorage.getItem('support_tickets') || '[]');
+  const newTicket = {
+    id: `AS-2025-${String(Date.now()).slice(-6)}`,
+    ...ticket,
+    createdAt: new Date().toISOString(),
+    status: 'open'
+  };
+  tickets.push(newTicket);
+  localStorage.setItem('support_tickets', JSON.stringify(tickets));
+  
+  console.log('Create ticket', newTicket);
+  return { id: newTicket.id };
 }
 
 export function SupportAssistant() {
-  const { user } = useAuth();
-  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       from: "bot",
-      text: "Olá! Sou o assistente virtual da OnHigh Management. Como posso ajudar hoje?",
+      text: "Olá! Sou o assistente virtual da Melhor Saúde. Como posso ajudar hoje?",
       timestamp: Date.now(),
       confidence: 1
     }
@@ -77,33 +95,30 @@ export function SupportAssistant() {
 
   useEffect(scrollToBottom, [messages]);
 
-  // Initialize chat session
+  // Load chat history from localStorage
   useEffect(() => {
-    const initChatSession = async () => {
+    const savedHistory = localStorage.getItem('support_chat_history');
+    if (savedHistory) {
       try {
-        const { data, error } = await supabase
-          .from('chat_sessions')
-          .insert({
-            user_id: user?.id || null,
-            pillar: 'geral',
-            status: 'active'
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        setChatSessionId(data.id);
+        const parsed = JSON.parse(savedHistory);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+        }
       } catch (error) {
-        console.error('Error creating chat session:', error);
-        // Continue without session ID - graceful degradation
+        console.error('Error loading chat history:', error);
       }
-    };
+    }
+  }, []);
 
-    initChatSession();
-  }, [user]);
+  // Save chat history to localStorage
+  useEffect(() => {
+    if (messages.length > 1) { // Don't save just the initial bot message
+      localStorage.setItem('support_chat_history', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const handleSendMessage = async (message: string) => {
-    if (!message.trim() || isLoading || !chatSessionId) return;
+    if (!message.trim() || isLoading) return;
 
     const userMessage: ChatMessage = {
       from: "user",
@@ -117,34 +132,22 @@ export function SupportAssistant() {
     setShowEscalation(false);
 
     try {
-      // Call edge function for chat response
-      const { data, error } = await supabase.functions.invoke('chat-assistant', {
-        body: {
-          sessionId: chatSessionId,
-          message: message.trim(),
-          userId: user?.id,
-          pillar: 'geral'
-        }
-      });
-
-      if (error) throw error;
-
+      const response = await getBotReply(message);
+      
       const botMessage: ChatMessage = {
         from: "bot",
-        text: data.message,
+        text: response.text,
         timestamp: Date.now(),
-        confidence: data.confidence
+        confidence: response.confidence
       };
 
       setMessages(prev => [...prev, botMessage]);
 
-      // Show escalation if confidence is low or suggested
-      if (data.confidence < 0.5 || data.suggestEscalation) {
+      // Show escalation if confidence is low
+      if (response.confidence < 0.5) {
         setShowEscalation(true);
       }
-    } catch (error: any) {
-      console.error('Chat error:', error);
-      
+    } catch (error) {
       const errorMessage: ChatMessage = {
         from: "bot",
         text: "Desculpe, ocorreu um erro. Tente novamente ou contacte o nosso suporte humano.",
@@ -159,14 +162,15 @@ export function SupportAssistant() {
   };
 
   const handleEscalation = async () => {
-    if (!chatSessionId) return;
-
     try {
-      const ticket = await createSupportTicket(user?.id || null, chatSessionId, messages);
+      const ticket = await createSupportTicket({
+        source: 'chat',
+        thread: messages
+      });
 
       toast({
         title: "Pedido enviado",
-        description: `Ticket ${ticket.id} criado. A nossa equipa entrará em contacto brevemente.`,
+        description: `Ticket #${ticket.id} criado. Um humano entrará em contacto brevemente.`,
         variant: "default"
       });
 
@@ -174,7 +178,7 @@ export function SupportAssistant() {
       
       const confirmationMessage: ChatMessage = {
         from: "bot",
-        text: `Perfeito! Criei o ticket ${ticket.id} para si. A nossa equipa de suporte humano entrará em contacto consigo brevemente através do email.`,
+        text: `Perfeito! Criei o ticket #${ticket.id} para si. A nossa equipa entrará em contacto consigo brevemente.`,
         timestamp: Date.now(),
         confidence: 1
       };
@@ -291,12 +295,12 @@ export function SupportAssistant() {
               handleSendMessage(inputValue);
             }
           }}
-          aria-label="Campo de mensagem"
+          aria-label={t('support.messageField')}
         />
         <Button
           onClick={() => handleSendMessage(inputValue)}
           disabled={isLoading || !inputValue.trim()}
-          aria-label="Enviar mensagem"
+          aria-label={t('support.sendMessage')}
         >
           <Send className="h-4 w-4" />
         </Button>

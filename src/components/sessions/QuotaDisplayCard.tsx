@@ -3,7 +3,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Building2, User, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { UserBalance } from "@/types/sessionTypes";
+import { UserBalance } from "@/data/sessionMockData";
 
 interface QuotaDisplayCardProps {
   balance: UserBalance;

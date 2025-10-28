@@ -7,10 +7,6 @@ import { CheckCircle, ArrowRight, Clock, FileText, MessageSquare } from 'lucide-
 import { ReferralBookingFlow } from './ReferralBookingFlow';
 import { PreDiagnosticModal } from './PreDiagnosticModal';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { sanitizeInput } from '@/utils/sanitize';
-import { logErrorSecurely, getGenericErrorMessage } from '@/utils/errorHandling';
 
 interface SessionNoteModalProps {
   isOpen: boolean;
@@ -21,59 +17,16 @@ interface SessionNoteModalProps {
 
 export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNoteModalProps) => {
   const { toast } = useToast();
-  const { profile } = useAuth();
   const [notes, setNotes] = useState('');
   const [outcome, setOutcome] = useState('');
   const [showReferralFlow, setShowReferralFlow] = useState(false);
   const [showPreDiagnostic, setShowPreDiagnostic] = useState(false);
 
-  const handleSave = async () => {
-    try {
-      // Get prestador_id for current user
-      const { data: prestador } = await supabase
-        .from('prestadores')
-        .select('id')
-        .eq('user_id', profile?.id)
-        .single();
-
-      if (prestador) {
-        // Save to database (with sanitization)
-        await supabase.from('session_notes').insert({
-          booking_id: session.id,
-          prestador_id: prestador.id,
-          notes: sanitizeInput(notes),
-          outcome: sanitizeInput(outcome),
-          is_confidential: true
-        });
-
-        toast({
-          title: 'Nota guardada',
-          description: 'As notas da sessão foram guardadas com sucesso',
-        });
-      }
-
-      onSave(notes, outcome);
-      setNotes('');
-      setOutcome('');
-      onClose();
-    } catch (error: any) {
-      logErrorSecurely(error, 'saving_session_note');
-      toast({
-        title: 'Erro',
-        description: getGenericErrorMessage('saving'),
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const getPillarColor = (pillar: string) => {
-    const colors = {
-      psychological: 'bg-blue-100 text-blue-700 border-blue-300',
-      physical: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-      financial: 'bg-green-100 text-green-700 border-green-300',
-      legal: 'bg-purple-100 text-purple-700 border-purple-300'
-    };
-    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
+  const handleSave = () => {
+    onSave(notes, outcome);
+    setNotes('');
+    setOutcome('');
+    onClose();
   };
 
   const getPillarLabel = (pillar: string) => {
@@ -110,34 +63,31 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Session Info and Notes - Side by Side */}
-          <div className="grid grid-cols-3 gap-4">
-            {/* Session Info - Left */}
-            <div className="col-span-1 p-4 bg-blue-50 rounded-lg space-y-2">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold">{session.user_name}</span>
-                <Badge variant="outline">{session.company_name}</Badge>
-                <Badge className={getPillarColor(session.pillar)}>{getPillarLabel(session.pillar)}</Badge>
-              </div>
-              <div className="text-sm text-foreground">
-                <p><strong>Data:</strong> {session.date} às {session.time}</p>
-                <p><strong>Tipo:</strong> {getSessionTypeLabel(session.session_type || session.type)}</p>
-              </div>
+          {/* Session Info */}
+          <div className="p-4 bg-muted rounded-lg space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold">{session.user_name}</span>
+              <Badge variant="outline">{session.company_name}</Badge>
+              <Badge variant="secondary">{getPillarLabel(session.pillar)}</Badge>
             </div>
+            <div className="text-sm text-muted-foreground">
+              <p><strong>Data:</strong> {session.date} às {session.time}</p>
+              <p><strong>Tipo:</strong> {getSessionTypeLabel(session.session_type || session.type)}</p>
+            </div>
+          </div>
 
-            {/* Notes - Right */}
-            <div className="col-span-2 space-y-2">
-              <label className="text-sm font-medium">Notas Internas</label>
-              <Textarea
-                placeholder="Descreva o que foi discutido na sessão, observações importantes, próximos passos..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={6}
-              />
-              <p className="text-xs text-foreground">
-                Estas notas são confidenciais e apenas visíveis para especialistas
-              </p>
-            </div>
+          {/* Notes */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Notas Internas</label>
+            <Textarea
+              placeholder="Descreva o que foi discutido na sessão, observações importantes, próximos passos..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={6}
+            />
+            <p className="text-xs text-muted-foreground">
+              Estas notas são confidenciais e apenas visíveis para especialistas
+            </p>
           </div>
 
           {/* Outcome Selection */}
@@ -150,7 +100,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
                   setOutcome('resolved');
                   handleSave();
                 }}
-                className="h-auto py-4 flex flex-col gap-2 bg-green-50 hover:bg-green-100 border-green-200 hover:text-foreground"
+                className="h-auto py-4 flex flex-col gap-2"
               >
                 <CheckCircle className="h-6 w-6" />
                 <span className="text-sm font-medium">Resolvido</span>
@@ -164,7 +114,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
                   setOutcome('escalated');
                   setShowReferralFlow(true);
                 }}
-                className="h-auto py-4 flex flex-col gap-2 bg-blue-50 hover:bg-blue-100 border-blue-200 hover:text-foreground"
+                className="h-auto py-4 flex flex-col gap-2"
               >
                 <ArrowRight className="h-6 w-6" />
                 <span className="text-sm font-medium">Encaminhar</span>
@@ -175,7 +125,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
               <Button
                 variant={outcome === 'follow_up' ? 'default' : 'outline'}
                 onClick={() => setShowPreDiagnostic(true)}
-                className="h-auto py-4 flex flex-col gap-2 bg-yellow-50 hover:bg-yellow-100 border-yellow-200 hover:text-foreground"
+                className="h-auto py-4 flex flex-col gap-2"
               >
                 <MessageSquare className="h-6 w-6" />
                 <span className="text-sm font-medium">Ver Pré-Diagnóstico</span>

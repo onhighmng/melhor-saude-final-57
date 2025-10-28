@@ -74,10 +74,3 @@ export const MetricsCardStack = ({
     </div>
   );
 };
-
-
-
-
-
-
-

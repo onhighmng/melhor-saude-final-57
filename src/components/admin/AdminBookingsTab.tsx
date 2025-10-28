@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
@@ -6,118 +6,25 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { format, addMonths, subMonths, isSameDay, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { PAGINATION_SIZE } from '@/config/constants';
-import { LiveIndicator } from '@/components/ui/live-indicator';
-import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
-import { EmptyState } from '@/components/ui/empty-state';
-import { handleError } from '@/utils/errorHandler';
 
-interface Booking {
-  id: string;
-  date: string;
-  collaborator: string;
-  specialist: string;
-  type: string;
-  time: string;
-}
+// Mock bookings data
+const mockBookings = [
+  { date: '2025-10-15', collaborator: 'Ana Silva', specialist: 'Dr. João Costa', type: 'virtual', time: '10:00' },
+  { date: '2025-10-16', collaborator: 'Carlos Santos', specialist: 'Dra. Maria Oliveira', type: 'presencial', time: '14:30' },
+  { date: '2025-10-17', collaborator: 'Daniel Rocha', specialist: 'Dra. Sofia Martins', type: 'virtual', time: '09:00' },
+  { date: '2025-10-18', collaborator: 'Eva Pereira', specialist: 'Dr. Pedro Alves', type: 'presencial', time: '16:00' },
+  { date: '2025-10-20', collaborator: 'Fernando Lima', specialist: 'Dra. Clara Nunes', type: 'virtual', time: '11:30' },
+];
 
 export default function AdminBookingsTab() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
-  const loadBookings = async (monthStart: string, monthEnd: string) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`
-          id,
-          date,
-          start_time,
-          meeting_type,
-          status,
-          user:profiles!user_id(name),
-          prestador:prestadores!prestador_id(name)
-        `)
-        .gte('date', monthStart)
-        .lte('date', monthEnd)
-        .order('date', { ascending: true })
-        .range(0, PAGINATION_SIZE - 1);
-
-      if (error) throw error;
-
-      const formatted: Booking[] = (data || []).map(booking => ({
-        id: booking.id,
-        date: booking.date,
-        time: booking.start_time || '00:00',
-        collaborator: (booking.user as any)?.name || 'N/A',
-        specialist: (booking.prestador as any)?.name || 'N/A',
-        type: booking.meeting_type === 'virtual' || booking.meeting_type === 'phone' ? 'virtual' : 'presencial',
-      }));
-
-      setBookings(formatted);
-    } catch (error: any) {
-      handleError(error, {
-        title: 'Erro ao carregar agendamentos',
-        fallbackMessage: 'Não foi possível carregar os agendamentos'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
-    loadBookings(monthStart, monthEnd);
-  }, []);
-
-  useEffect(() => {
-    const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).toISOString();
-    const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).toISOString();
-    loadBookings(monthStart, monthEnd);
-
-    // Real-time subscription
-    const subscription = supabase
-      .channel('admin-bookings-updates')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'bookings'
-      }, () => {
-        loadBookings(monthStart, monthEnd);
-        toast({
-          title: 'Atualização',
-          description: 'Agendamentos atualizados em tempo real',
-        });
-      })
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [currentMonth]);
-
-  const bookingsForSelectedDate = bookings.filter(booking =>
+  const bookingsForSelectedDate = mockBookings.filter(booking =>
     isSameDay(parseISO(booking.date), selectedDate)
   );
 
-  const datesWithBookings = bookings.map(b => parseISO(b.date));
-
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <LoadingSkeleton variant="card" className="lg:col-span-2" />
-        <LoadingSkeleton variant="card" />
-      </div>
-    );
-  }
+  const datesWithBookings = mockBookings.map(b => parseISO(b.date));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -129,27 +36,24 @@ export default function AdminBookingsTab() {
               <CalendarIcon className="h-5 w-5" />
               Calendário de Agendamentos
             </div>
-            <div className="flex items-center gap-4">
-              <LiveIndicator />
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm font-medium min-w-[120px] text-center">
-                  {format(currentMonth, 'MMMM yyyy', { locale: pt })}
-                </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm font-medium min-w-[120px] text-center">
+                {format(currentMonth, 'MMMM yyyy', { locale: pt })}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
           </CardTitle>
         </CardHeader>
@@ -190,12 +94,10 @@ export default function AdminBookingsTab() {
         </CardHeader>
         <CardContent>
           {bookingsForSelectedDate.length === 0 ? (
-            <EmptyState
-              icon={CalendarIcon}
-              title="Sem agendamentos"
-              description="Não há agendamentos neste dia"
-              variant="compact"
-            />
+            <div className="text-center py-8 text-muted-foreground">
+              <CalendarIcon className="h-12 w-12 mx-auto mb-2 opacity-20" />
+              <p>Sem agendamentos neste dia</p>
+            </div>
           ) : (
             <div className="space-y-3">
               {bookingsForSelectedDate.map((booking, idx) => (

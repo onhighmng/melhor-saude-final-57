@@ -3,21 +3,18 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Users, AlertTriangle, CheckCircle, Info } from "lucide-react";
-import { Company } from "@/types/company";
-import { getSeatUsagePercentage, getSeatUsageBadgeVariant } from "@/utils/companyHelpers";
+import { Company, getSeatUsagePercentage, getSeatUsageBadgeVariant } from "@/data/companyMockData";
 
 interface SeatUsageCardProps {
   company: Company;
 }
 
 export function SeatUsageCard({ company }: SeatUsageCardProps) {
-  const usagePercentage = getSeatUsagePercentage(company.sessions_allocated, company.sessions_used);
-  const badgeVariant = getSeatUsageBadgeVariant(usagePercentage);
-  const availableSeats = Math.max(0, company.sessions_allocated - company.sessions_used);
-  const isAtLimit = company.sessions_used >= company.sessions_allocated;
+  const usagePercentage = getSeatUsagePercentage(company);
+  const badgeVariant = getSeatUsageBadgeVariant(company);
   
   const getStatusIcon = () => {
-    if (isAtLimit) {
+    if (company.isAtSeatLimit) {
       return <AlertTriangle className="h-4 w-4 text-red-600" />;
     }
     if (usagePercentage >= 90) {
@@ -27,7 +24,7 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
   };
 
   const getStatusMessage = () => {
-    if (isAtLimit) {
+    if (company.isAtSeatLimit) {
       return "Limite de contas atingido";
     }
     if (usagePercentage >= 90) {
@@ -67,7 +64,7 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
             <span className="font-medium">{getStatusMessage()}</span>
           </div>
           <Badge variant={badgeVariant}>
-            {company.sessions_used} / {company.sessions_allocated} usadas
+            {company.seatUsed} / {company.seatLimit} usadas
           </Badge>
         </div>
 
@@ -75,7 +72,7 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
         <div className="space-y-2">
           <Progress value={usagePercentage} className="h-3" />
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Disponíveis: {availableSeats}</span>
+            <span>Disponíveis: {company.seatAvailable}</span>
             <span>{usagePercentage.toFixed(1)}% utilizado</span>
           </div>
         </div>
@@ -85,13 +82,13 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium">Plano Atual:</span>
             <Badge variant="outline">
-              {company.plan_type.charAt(0).toUpperCase() + company.plan_type.slice(1)}
+              {company.planType.charAt(0).toUpperCase() + company.planType.slice(1)}
             </Badge>
           </div>
         </div>
 
         {/* Warning Messages */}
-        {isAtLimit && (
+        {company.isAtSeatLimit && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3">
             <div className="flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
@@ -106,14 +103,14 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
           </div>
         )}
 
-        {usagePercentage >= 90 && !isAtLimit && (
+        {usagePercentage >= 90 && !company.isAtSeatLimit && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
             <div className="flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-yellow-800">
                 <p className="font-medium mb-1">Próximo do Limite</p>
                 <p>
-                  Apenas {availableSeats} conta{availableSeats !== 1 ? 's' : ''} disponível{availableSeats !== 1 ? 's' : ''}. 
+                  Apenas {company.seatAvailable} conta{company.seatAvailable !== 1 ? 's' : ''} disponível{company.seatAvailable !== 1 ? 's' : ''}. 
                   Considere aumentar o limite ou revisar contas inativas.
                 </p>
               </div>

@@ -6,79 +6,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Star, FileText } from 'lucide-react';
+import { mockUserHistory } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
 
 const EspecialistaUserHistory = () => {
-  const { profile } = useAuth();
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { filterByCompanyAccess } = useCompanyFilter();
   
-  useEffect(() => {
-    const loadUserHistory = async () => {
-      if (!profile?.id) return;
-      
-      setLoading(true);
-      try {
-        const { data: sessions } = await supabase
-          .from('chat_sessions')
-          .select(`
-            id,
-            user_id,
-            pillar,
-            status,
-            created_at,
-            satisfaction_rating
-          `)
-          .order('created_at', { ascending: false });
-
-        // Enrich with user and company data
-        const enrichedSessions = await Promise.all(
-          (sessions || []).map(async (session) => {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('name, email, company_id')
-              .eq('id', session.user_id)
-              .single();
-
-            let companyName = null;
-            if (profile?.company_id) {
-              const { data: company } = await supabase
-                .from('companies')
-                .select('company_name')
-                .eq('id', profile.company_id)
-                .single();
-              companyName = company?.company_name;
-            }
-
-            return {
-              ...session,
-              user_name: profile?.name || 'Unknown',
-              user_email: profile?.email || 'Unknown',
-              company_name: companyName || 'Unknown',
-              pillar_attended: session.pillar,
-              last_session_date: session.created_at,
-              average_rating: session.satisfaction_rating === 'satisfied' ? 10 : 5,
-              internal_notes: [],
-              chat_history: []
-            };
-          })
-        );
-
-        setFilteredUsers(enrichedSessions);
-      } catch (error) {
-        console.error('Error loading user history:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUserHistory();
-  }, [profile?.id]);
+  // Filter users by assigned companies
+  const allUsers = filterByCompanyAccess(mockUserHistory);
+  
+  // Debug: Show all if filter returns empty (for demo purposes)
+  const filteredUsers = allUsers.length > 0 ? allUsers : mockUserHistory;
 
   const handleViewChat = (user: any) => {
     setSelectedUser(user);
@@ -104,17 +44,6 @@ const EspecialistaUserHistory = () => {
     };
     return colors[pillar as keyof typeof colors] || { bg: 'hsl(0 0% 95%)', text: 'hsl(0 0% 40%)' };
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">A carregar historial...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">

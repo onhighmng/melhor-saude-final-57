@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,8 +15,6 @@ import {
 } from '@/components/ui/select';
 import { Shield, Lock, Key, Smartphone, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface AccessLevel {
   id: string;
@@ -35,7 +33,7 @@ interface AccessLevel {
   };
 }
 
-const defaultAccessLevels: AccessLevel[] = [
+const mockAccessLevels: AccessLevel[] = [
   {
     id: 'super_admin',
     name: 'Super Administrador',
@@ -105,75 +103,10 @@ const defaultAccessLevels: AccessLevel[] = [
 const AdminPermissionsTab = () => {
   const { t } = useTranslation('admin');
   const { toast } = useToast();
-  const { profile } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<string>('admin');
-  const [accessLevels, setAccessLevels] = useState<AccessLevel[]>(defaultAccessLevels);
+  const [accessLevels, setAccessLevels] = useState(mockAccessLevels);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [sessionTimeout, setSessionTimeout] = useState('30');
-  const [userCounts, setUserCounts] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadSettings();
-    loadUserCounts();
-  }, []);
-
-  const loadSettings = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('platform_settings')
-        .select('setting_value')
-        .eq('setting_key', 'access_levels')
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
-
-      if (data?.setting_value) {
-        const settings = data.setting_value as Record<string, unknown>;
-        if (settings.access_levels) {
-          setAccessLevels(settings.access_levels as AccessLevel[]);
-        }
-        if (settings.session_timeout) {
-          setSessionTimeout((settings.session_timeout as number).toString());
-        }
-        if (typeof settings.two_factor_enabled === 'boolean') {
-          setTwoFactorEnabled(settings.two_factor_enabled);
-        }
-      }
-    } catch (error) {
-      // Keep default values - silent fail
-    }
-  };
-
-  const loadUserCounts = async () => {
-    try {
-      setLoading(true);
-
-      // Count users per role (using valid database roles only)
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .in('role', ['admin', 'hr', 'prestador', 'specialist', 'user']);
-
-      if (error) throw error;
-
-      const counts = (data || []).reduce((acc, role) => {
-        acc[role.role] = (acc[role.role] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
-      setUserCounts(counts);
-    } catch (error) {
-      console.error('Error loading user counts:', error);
-      toast({
-        title: 'Erro ao carregar contagens',
-        description: 'Não foi possível carregar as contagens de utilizadores.',
-        variant: 'destructive'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const currentLevel = accessLevels.find(level => level.id === selectedLevel);
 
@@ -195,72 +128,11 @@ const AdminPermissionsTab = () => {
     );
   };
 
-  const handleSaveChanges = async () => {
-    try {
-      if (!profile) {
-        throw new Error('No profile found');
-      }
-
-      // Save access level definitions to platform_settings
-      const { data: existingSettings } = await supabase
-        .from('platform_settings')
-        .select('id')
-        .eq('setting_key', 'access_levels')
-        .maybeSingle();
-
-      const settingValue = {
-        access_levels: accessLevels,
-        session_timeout: parseInt(sessionTimeout),
-        two_factor_enabled: twoFactorEnabled,
-        updated_by: profile.id,
-        updated_at: new Date().toISOString()
-      };
-
-      if (existingSettings) {
-        await supabase
-          .from('platform_settings')
-          .update({
-            setting_value: settingValue as any,
-            updated_by: profile.id
-          })
-          .eq('id', existingSettings.id);
-      } else {
-        await supabase
-          .from('platform_settings')
-          .insert({
-            setting_key: 'access_levels',
-            setting_type: 'json',
-            setting_value: settingValue as any,
-            description: 'Configuração de níveis de acesso e permissões',
-            is_public: false,
-            updated_by: profile.id
-          });
-      }
-
-      // Log admin action
-      if (profile?.id) {
-        await supabase
-          .from('admin_logs')
-          .insert({
-            admin_id: profile.id,
-            action: 'update_platform_permissions',
-            entity_type: 'platform_settings',
-            details: { access_levels: accessLevels } as any
-          });
-      }
-
-      toast({
-        title: 'Permissões Atualizadas',
-        description: 'As alterações foram guardadas com sucesso.',
-      });
-    } catch (error) {
-      console.error('Error saving changes:', error);
-      toast({
-        title: 'Erro',
-        description: 'Não foi possível guardar as alterações.',
-        variant: 'destructive'
-      });
-    }
+  const handleSaveChanges = () => {
+    toast({
+      title: 'Permissões Atualizadas',
+      description: 'As alterações foram guardadas com sucesso.',
+    });
   };
 
   const handleEnable2FA = () => {
@@ -289,9 +161,7 @@ const AdminPermissionsTab = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{accessLevels.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {Object.values(userCounts).reduce((sum, count) => sum + count, 0)} utilizadores ativos
-            </p>
+            <p className="text-xs text-muted-foreground">Configurados no sistema</p>
           </CardContent>
         </Card>
         <Card>

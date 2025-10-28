@@ -22,60 +22,12 @@ import {
   DollarSign,
   Scale
 } from 'lucide-react';
+import { mockPrestadorSettings } from '@/data/prestadorMetrics';
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
 
 const PrestadorSettings = () => {
-  const { profile } = useAuth();
-  const [settings, setSettings] = useState({
-    name: '',
-    email: '',
-    pillar: '',
-    costPerSession: 0,
-    preferredHours: ''
-  });
-  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState(mockPrestadorSettings);
   const [isEditing, setIsEditing] = useState(false);
-
-  // Load prestador settings
-  useEffect(() => {
-    const loadSettings = async () => {
-      if (!profile?.id) return;
-
-      try {
-        const { data: prestador } = await supabase
-          .from('prestadores')
-          .select('*')
-          .eq('user_id', profile.id)
-          .single();
-
-        if (prestador) {
-          const pillarMap: Record<string, string> = {
-            'psychological': 'Saúde Mental',
-            'physical': 'Bem-Estar Físico',
-            'financial': 'Assistência Financeira',
-            'legal': 'Assistência Jurídica'
-          };
-
-          setSettings({
-            name: prestador.name,
-            email: prestador.email,
-            pillar: pillarMap[prestador.pillar_specialties?.[0]] || 'Saúde Mental',
-            costPerSession: 1500, // Default value
-            preferredHours: '09:00 - 18:00'
-          });
-        }
-      } catch (error) {
-        console.error('Error loading settings:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSettings();
-  }, [profile?.id]);
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
   const [isPersonalInfoOpen, setIsPersonalInfoOpen] = useState(false);
   const [isFinancialInfoOpen, setIsFinancialInfoOpen] = useState(false);
