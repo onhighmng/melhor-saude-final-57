@@ -324,14 +324,14 @@ export const CaseManagementPanel: React.FC = () => {
     }
   };
 
-  const filteredCases = cases.filter(case => {
-    const matchesSearch = case.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         case.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         case.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredCases = cases.filter(caseItem => {
+    const matchesSearch = caseItem.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         caseItem.description.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || case.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || case.priority === priorityFilter;
-    const matchesPillar = pillarFilter === 'all' || case.pillar === pillarFilter;
+    const matchesStatus = statusFilter === 'all' || caseItem.status === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || caseItem.priority === priorityFilter;
+    const matchesPillar = pillarFilter === 'all' || caseItem.pillar === pillarFilter;
 
     return matchesSearch && matchesStatus && matchesPriority && matchesPillar;
   });
