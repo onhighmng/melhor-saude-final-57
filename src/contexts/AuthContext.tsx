@@ -56,7 +56,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       supabase.from('user_roles').select('role').eq('user_id', userId)
     ]);
 
-    if (profileResult.error) throw profileResult.error;
+    if (profileResult.error) {
+      console.error('Profile load error:', profileResult.error);
+      throw profileResult.error;
+    }
+    
+    if (rolesResult.error) {
+      console.error('Roles load error:', rolesResult.error);
+    }
     
     const roles = rolesResult.data?.map(r => r.role) || [];
     const primaryRole = roles.includes('admin') ? 'admin' 
@@ -79,7 +86,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
       
       // Load profile directly - onAuthStateChange will update it if needed
       const userProfile = await loadProfileWithRoles(data.user.id);
