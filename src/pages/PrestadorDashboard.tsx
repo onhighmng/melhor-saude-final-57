@@ -64,13 +64,9 @@ export default function PrestadorDashboard() {
     time?: string;
   }
   interface Metrics {
-    today: number;
-    week: number;
-    completed: number;
-    cancelled: number;
-    noShow: number;
     todaySessions: number;
     totalSessions: number;
+    completedSessions: number;
     weekSessions: number;
     uniqueUsers: number;
     avgRating: string;

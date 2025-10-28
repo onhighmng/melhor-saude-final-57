@@ -116,7 +116,7 @@ const UserDashboard = () => {
   };
 
   // Initialize milestones from database, fallback to localStorage
-  const [milestones, setMilestones] = useState<Array<{id: string; label: string; points: number; completed: boolean}>>([]);
+  const [milestones, setMilestones] = useState<Array<{id: string; milestone_id: string; label: string; milestone_label: string; points: number; completed: boolean}>>([]);
   const [milestoneProgress, setMilestoneProgress] = useState(0);
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
@@ -138,7 +138,11 @@ const UserDashboard = () => {
         if (error) throw error;
 
         if (existingMilestones && existingMilestones.length > 0) {
-          setMilestones(existingMilestones);
+          setMilestones(existingMilestones.map(m => ({
+            ...m,
+            id: m.milestone_id,
+            label: m.milestone_label
+          })));
           setMilestoneProgress(getMilestoneProgress(existingMilestones));
         } else {
           // Initialize default milestones in database
@@ -159,7 +163,11 @@ const UserDashboard = () => {
           if (insertError) throw insertError;
 
           if (inserted) {
-            setMilestones(inserted);
+            setMilestones(inserted.map(m => ({
+              ...m,
+              id: m.milestone_id,
+              label: m.milestone_label
+            })));
             setMilestoneProgress(0);
           }
         }
@@ -256,7 +264,11 @@ const UserDashboard = () => {
           .order('created_at', { ascending: true });
 
         if (updatedMilestones) {
-          setMilestones(updatedMilestones);
+          setMilestones(updatedMilestones.map(m => ({
+            ...m,
+            id: m.milestone_id,
+            label: m.milestone_label
+          })));
           const progress = getMilestoneProgress(updatedMilestones);
           setMilestoneProgress(progress);
         }
