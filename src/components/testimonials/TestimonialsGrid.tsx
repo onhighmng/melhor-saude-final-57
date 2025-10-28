@@ -1,6 +1,4 @@
-
 import React, { useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 
 interface Testimonial {
   name: string;
@@ -16,7 +14,6 @@ interface TestimonialsGridProps {
 }
 
 const TestimonialsGrid: React.FC<TestimonialsGridProps> = ({ testimonials, onTestimonialClick }) => {
-  const { t } = useTranslation('common');
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const handleMouseEnter = (index: number) => {

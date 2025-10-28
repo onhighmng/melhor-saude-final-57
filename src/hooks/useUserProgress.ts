@@ -1,92 +1,359 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { Pillar } from '@/integrations/supabase/types-unified';
 
-interface ProgressMetrics {
-  totalSessions: number;
-  chatInteractions: number;
-  resourcesViewed: number;
-  activeDays: number;
-  pillars: string[];
-  lastActive: string | null;
+interface UserProgress {
+  pillar: Pillar;
+  sessions_completed: number;
+  chats_interactions: number;
+  resources_viewed: number;
+  milestones_achieved: number;
+  goals_completed: number;
+  total_points: number;
+  progress_percentage: number;
 }
 
-export const useUserProgress = (userId: string | undefined) => {
-  const [metrics, setMetrics] = useState<ProgressMetrics>({
-    totalSessions: 0,
-    chatInteractions: 0,
-    resourcesViewed: 0,
-    activeDays: 0,
-    pillars: [],
-    lastActive: null
-  });
-  const [isLoading, setIsLoading] = useState(true);
+interface UserGoal {
+  id: string;
+  goal_type: string;
+  target_value: any;
+  current_value: any;
+  pillar: Pillar | null;
+  status: 'active' | 'completed' | 'paused' | 'cancelled';
+  priority: number;
+  created_at: string;
+  updated_at: string;
+}
 
-  useEffect(() => {
-    if (!userId) {
-      setIsLoading(false);
-      return;
+interface Milestone {
+  id: string;
+  pillar: Pillar;
+  title: string;
+  description: string;
+  target_value: number;
+  current_value: number;
+  achieved: boolean;
+  achieved_at: string | null;
+}
+
+export const useUserProgress = () => {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState<UserProgress[]>([]);
+  const [goals, setGoals] = useState<UserGoal[]>([]);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [overallProgress, setOverallProgress] = useState(0);
+
+  const pillars: Pillar[] = ['saude_mental', 'bem_estar_fisico', 'assistencia_financeira', 'assistencia_juridica'];
+
+  const loadUserProgress = useCallback(async () => {
+    if (!user?.id) return;
+
+    setLoading(true);
+    try {
+      await Promise.all([
+        loadProgressData(),
+        loadUserGoals(),
+        loadMilestones()
+      ]);
+    } catch (error) {
+      console.error('Error loading user progress:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  const loadProgressData = async () => {
+    if (!user?.id) return;
+
+    const progressData: UserProgress[] = [];
+
+    for (const pillar of pillars) {
+      // Get sessions completed
+      const { count: sessionsCompleted } = await supabase
+        .from('bookings')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('pillar', pillar)
+        .eq('status', 'completed');
+
+      // Get chat interactions
+      const { count: chatInteractions } = await supabase
+        .from('user_progress')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('pillar', pillar)
+        .eq('action_type', 'chat_interaction');
+
+      // Get resources viewed
+      const { count: resourcesViewed } = await supabase
+        .from('user_progress')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('pillar', pillar)
+        .eq('action_type', 'resource_viewed');
+
+      // Get milestones achieved
+      const { count: milestonesAchieved } = await supabase
+        .from('user_progress')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('pillar', pillar)
+        .eq('action_type', 'milestone_achieved');
+
+      // Calculate total points (weighted)
+      const totalPoints = 
+        (sessionsCompleted || 0) * 10 + // Sessions worth 10 points each
+        (chatInteractions || 0) * 2 +   // Chat interactions worth 2 points each
+        (resourcesViewed || 0) * 1 +    // Resources worth 1 point each
+        (milestonesAchieved || 0) * 5;  // Milestones worth 5 points each
+
+      // Calculate progress percentage (max 100 points per pillar)
+      const progressPercentage = Math.min((totalPoints / 100) * 100, 100);
+
+      progressData.push({
+        pillar,
+        sessions_completed: sessionsCompleted || 0,
+        chats_interactions: chatInteractions || 0,
+        resources_viewed: resourcesViewed || 0,
+        milestones_achieved: milestonesAchieved || 0,
+        goals_completed: 0, // Will be calculated from goals
+        total_points: totalPoints,
+        progress_percentage: progressPercentage
+      });
     }
 
-    const fetchProgress = async () => {
-      try {
-        const { data, error } = await supabase
+    setProgress(progressData);
+  };
+
+  const loadUserGoals = async () => {
+    if (!user?.id) return;
+
+    const { data, error } = await supabase
+      .from('user_goals')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('priority', { ascending: true });
+
+    if (error) throw error;
+    setGoals(data || []);
+
+    // Update goals completed count in progress
+    setProgress(prev => prev.map(p => ({
+      ...p,
+      goals_completed: (data || []).filter(g => g.pillar === p.pillar && g.status === 'completed').length
+    })));
+  };
+
+  const loadMilestones = async () => {
+    if (!user?.id) return;
+
+    // Define milestone definitions
+    const milestoneDefinitions: Milestone[] = [
+      {
+        id: 'first_session',
+        pillar: 'saude_mental',
+        title: 'Primeira Sessão',
+        description: 'Complete sua primeira sessão de bem-estar',
+        target_value: 1,
+        current_value: 0,
+        achieved: false,
+        achieved_at: null
+      },
+      {
+        id: 'three_sessions',
+        pillar: 'saude_mental',
+        title: 'Três Sessões',
+        description: 'Complete três sessões em qualquer pilar',
+        target_value: 3,
+        current_value: 0,
+        achieved: false,
+        achieved_at: null
+      },
+      {
+        id: 'five_sessions',
+        pillar: 'bem_estar_fisico',
+        title: 'Cinco Sessões',
+        description: 'Complete cinco sessões em qualquer pilar',
+        target_value: 5,
+        current_value: 0,
+        achieved: false,
+        achieved_at: null
+      },
+      {
+        id: 'ten_sessions',
+        pillar: 'assistencia_financeira',
+        title: 'Dez Sessões',
+        description: 'Complete dez sessões em qualquer pilar',
+        target_value: 10,
+        current_value: 0,
+        achieved: false,
+        achieved_at: null
+      },
+      {
+        id: 'all_pillars',
+        pillar: 'assistencia_juridica',
+        title: 'Todos os Pilares',
+        description: 'Complete pelo menos uma sessão em cada pilar',
+        target_value: 4,
+        current_value: 0,
+        achieved: false,
+        achieved_at: null
+      }
+    ];
+
+    // Calculate current values
+    const totalSessions = progress.reduce((sum, p) => sum + p.sessions_completed, 0);
+    const pillarsWithSessions = progress.filter(p => p.sessions_completed > 0).length;
+
+    const updatedMilestones = milestoneDefinitions.map(milestone => {
+      let currentValue = 0;
+      
+      switch (milestone.id) {
+        case 'first_session':
+        case 'three_sessions':
+        case 'five_sessions':
+        case 'ten_sessions':
+          currentValue = totalSessions;
+          break;
+        case 'all_pillars':
+          currentValue = pillarsWithSessions;
+          break;
+      }
+
+      const achieved = currentValue >= milestone.target_value;
+      
+      return {
+        ...milestone,
+        current_value: currentValue,
+        achieved,
+        achieved_at: achieved ? new Date().toISOString() : null
+      };
+    });
+
+    setMilestones(updatedMilestones);
+  };
+
+  const trackProgress = async (
+    actionType: 'session_completed' | 'chat_interaction' | 'resource_viewed' | 'milestone_achieved',
+    pillar: Pillar,
+    metadata: any = {}
+  ) => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
           .from('user_progress')
-          .select('*')
-          .eq('user_id', userId);
+        .insert({
+          user_id: user.id,
+          pillar,
+          action_type: actionType,
+          metadata
+        });
 
         if (error) throw error;
 
-        if (data && data.length > 0) {
-          const sessions = data.filter(p => p.action_type === 'session_completed').length;
-          const chats = data.filter(p => p.action_type === 'chat_interaction').length;
-          const resources = data.filter(p => p.action_type === 'resource_viewed').length;
-          
-          const uniqueDays = new Set(data.map(p => 
-            new Date(p.action_date).toDateString()
-          )).size;
-          
-          const uniquePillars = [...new Set(data.map(p => p.pillar).filter(Boolean))] as string[];
+      // Reload progress data
+      await loadUserProgress();
+    } catch (error) {
+      console.error('Error tracking progress:', error);
+    }
+  };
 
-          const sortedByDate = [...data].sort((a, b) => 
-            new Date(b.action_date).getTime() - new Date(a.action_date).getTime()
-          );
-          const lastActive = sortedByDate.length > 0 ? sortedByDate[0].action_date : null;
+  const updateGoal = async (goalId: string, updates: Partial<UserGoal>) => {
+    if (!user?.id) return;
 
-          setMetrics({
-            totalSessions: sessions,
-            chatInteractions: chats,
-            resourcesViewed: resources,
-            activeDays: uniqueDays,
-            pillars: uniquePillars,
-            lastActive
-          });
-        }
+    try {
+      const { error } = await supabase
+        .from('user_goals')
+        .update(updates)
+        .eq('id', goalId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Reload goals
+      await loadUserGoals();
+    } catch (error) {
+      console.error('Error updating goal:', error);
+    }
+  };
+
+  const createGoal = async (goalData: Omit<UserGoal, 'id' | 'created_at' | 'updated_at'>) => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_goals')
+        .insert({
+          ...goalData,
+          user_id: user.id
+        });
+
+      if (error) throw error;
+
+      // Reload goals
+      await loadUserGoals();
       } catch (error) {
-        // Silent fail for progress fetching
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      console.error('Error creating goal:', error);
+    }
+  };
 
-    fetchProgress();
+  const getPillarProgress = (pillar: Pillar): UserProgress | undefined => {
+    return progress.find(p => p.pillar === pillar);
+  };
 
-    // Real-time subscription for progress updates
-    const subscription = supabase
-      .channel('user-progress-updates')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'user_progress',
-        filter: `user_id=eq.${userId}`
-      }, () => {
-        fetchProgress();
-      })
-      .subscribe();
+  const getOverallProgress = (): number => {
+    if (progress.length === 0) return 0;
+    const totalProgress = progress.reduce((sum, p) => sum + p.progress_percentage, 0);
+    return totalProgress / progress.length;
+  };
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [userId]);
+  const getAchievedMilestones = (): Milestone[] => {
+    return milestones.filter(m => m.achieved);
+  };
 
-  return { metrics, isLoading };
+  const getPendingMilestones = (): Milestone[] => {
+    return milestones.filter(m => !m.achieved);
+  };
+
+  const getGoalsByPillar = (pillar: Pillar): UserGoal[] => {
+    return goals.filter(g => g.pillar === pillar);
+  };
+
+  const getActiveGoals = (): UserGoal[] => {
+    return goals.filter(g => g.status === 'active');
+  };
+
+  const getCompletedGoals = (): UserGoal[] => {
+    return goals.filter(g => g.status === 'completed');
+  };
+
+  useEffect(() => {
+    loadUserProgress();
+  }, [loadUserProgress]);
+
+  useEffect(() => {
+    setOverallProgress(getOverallProgress());
+  }, [progress]);
+
+  return {
+    loading,
+    progress,
+    goals,
+    milestones,
+    overallProgress,
+    trackProgress,
+    updateGoal,
+    createGoal,
+    getPillarProgress,
+    getOverallProgress,
+    getAchievedMilestones,
+    getPendingMilestones,
+    getGoalsByPillar,
+    getActiveGoals,
+    getCompletedGoals,
+    refreshProgress: loadUserProgress
+  };
 };

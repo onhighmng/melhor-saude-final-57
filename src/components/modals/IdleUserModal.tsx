@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import { useTranslation } from 'react-i18next';
 
 interface IdleUserModalProps {
   open: boolean;
@@ -10,8 +9,6 @@ interface IdleUserModalProps {
 }
 
 export function IdleUserModal({ open, onClose, onBookSession }: IdleUserModalProps) {
-  const { t } = useTranslation('user');
-  
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -20,19 +17,19 @@ export function IdleUserModal({ open, onClose, onBookSession }: IdleUserModalPro
             <Heart className="w-8 h-8 text-primary" />
           </div>
           <DialogTitle className="text-center text-xl">
-            {t('crossFlow.idleUserTitle')}
+            A sua saúde importa
           </DialogTitle>
           <DialogDescription className="text-center">
-            {t('crossFlow.idleUserMessage')}
+            Você não tem marcado uma sessão há um tempo. Que tal agendar uma agora?
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-3">
           <Button onClick={onBookSession} className="w-full" size="lg">
-            {t('crossFlow.idleUserCTA')}
+            Agendar Sessão
           </Button>
           <Button onClick={onClose} variant="ghost" className="w-full">
-            {t('crossFlow.remindLater')}
+            Lembrar Mais Tarde
           </Button>
         </div>
       </DialogContent>

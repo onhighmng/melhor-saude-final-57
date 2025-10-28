@@ -1,11 +1,9 @@
 import React from 'react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import FruitfulLogo from './FruitfulLogo';
-import { useTranslation } from 'react-i18next';
 
 const SectionHeader: React.FC = () => {
   const [headerRef, isVisible] = useScrollAnimation(0.1);
-  const { t } = useTranslation('common');
 
   return (
     <div 
@@ -23,10 +21,10 @@ const SectionHeader: React.FC = () => {
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}>
           <h2 className="font-semibold text-[40px] leading-[44px] tracking-[-0.4px] mb-4">
-            {t('membership.title')}
+            Subscrever
           </h2>
           <p className="text-lg leading-6 tracking-[-0.072px] text-gray-700">
-            {t('membership.description')}
+            Aceda aos nossos serviços premium
           </p>
         </div>
       </div>

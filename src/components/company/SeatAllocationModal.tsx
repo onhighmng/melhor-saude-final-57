@@ -14,7 +14,6 @@ import { Company } from "@/types/company";
 import { Users, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/contexts/AuthContext";
 
 interface SeatAllocationModalProps {
@@ -30,7 +29,6 @@ export function SeatAllocationModal({
   company,
   onUpdate 
 }: SeatAllocationModalProps) {
-  const { t } = useTranslation();
   const { toast } = useToast();
   const { profile } = useAuth();
   const [newLimit, setNewLimit] = useState(company.sessions_allocated || 0);
@@ -39,7 +37,7 @@ export function SeatAllocationModal({
     if (newLimit < (company.sessions_used || 0)) {
       toast({
         title: 'Erro',
-        description: t('company:errors.seatLimitTooLow'),
+        description: 'O novo limite não pode ser inferior ao número de vagas atualmente em uso.',
         variant: 'destructive'
       });
       return;
@@ -135,7 +133,7 @@ export function SeatAllocationModal({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('buttons.cancel')}
+            Cancelar
           </Button>
           <Button onClick={handleSubmit} disabled={newLimit < (company.sessions_used || 0)}>
             Atualizar Limite

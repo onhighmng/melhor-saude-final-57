@@ -7,6 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Sparkles, Target, Clock, CheckCircle2 } from 'lucide-react';
 import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 interface SimplifiedOnboardingProps {
   onComplete: (data: OnboardingData) => void;
 }
@@ -20,6 +22,7 @@ export interface OnboardingData {
 export const SimplifiedOnboarding = ({
   onComplete
 }: SimplifiedOnboardingProps) => {
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [wellbeingScore, setWellbeingScore] = useState<number | null>(null);
   const [difficultyAreas, setDifficultyAreas] = useState<string[]>([]);
@@ -123,11 +126,124 @@ export const SimplifiedOnboarding = ({
       setImprovementSigns([...improvementSigns, value]);
     }
   };
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < 6) {
       setStep(step + 1);
     } else {
       // Step 6 is completion screen, complete onboarding
+      await completeOnboarding();
+    }
+  };
+
+  const completeOnboarding = async () => {
+    try {
+      const onboardingData = {
+        wellbeingScore: wellbeingScore!,
+        difficultyAreas,
+        mainGoals,
+        improvementSigns,
+        frequency
+      };
+
+      // Save to onboarding_data table (legacy)
+      const { error: onboardingError } = await supabase
+        .from('onboarding_data')
+        .upsert({
+          user_id: user?.id,
+          wellbeing_score: onboardingData.wellbeingScore,
+          difficulty_areas: onboardingData.difficultyAreas,
+          main_goals: onboardingData.mainGoals,
+          improvement_signs: onboardingData.improvementSigns,
+          frequency: onboardingData.frequency,
+          completed_at: new Date().toISOString()
+        });
+
+      if (onboardingError) throw onboardingError;
+
+      // Save structured goals to user_goals table
+      const goalsToCreate = [];
+
+      // Create wellbeing score goal
+      goalsToCreate.push({
+        user_id: user?.id,
+        goal_type: 'wellbeing_score',
+        target_value: { target_score: onboardingData.wellbeingScore },
+        current_value: { current_score: onboardingData.wellbeingScore },
+        pillar: null,
+        status: 'completed',
+        priority: 1
+      });
+
+      // Create difficulty area goals
+      onboardingData.difficultyAreas.forEach((area, index) => {
+        const pillar = mapDifficultyAreaToPillar(area);
+        goalsToCreate.push({
+          user_id: user?.id,
+          goal_type: 'difficulty_area',
+          target_value: { area, target_status: 'improved' },
+          current_value: { area, current_status: 'needs_work' },
+          pillar,
+          status: 'active',
+          priority: index + 2
+        });
+      });
+
+      // Create main goal targets
+      onboardingData.mainGoals.forEach((goal, index) => {
+        const pillar = mapMainGoalToPillar(goal);
+        goalsToCreate.push({
+          user_id: user?.id,
+          goal_type: 'main_goal',
+          target_value: { goal, target_status: 'achieved' },
+          current_value: { goal, current_status: 'in_progress' },
+          pillar,
+          status: 'active',
+          priority: index + 2 + onboardingData.difficultyAreas.length
+        });
+      });
+
+      // Create improvement sign goals
+      onboardingData.improvementSigns.forEach((sign, index) => {
+        const pillar = mapImprovementSignToPillar(sign);
+        goalsToCreate.push({
+          user_id: user?.id,
+          goal_type: 'improvement_sign',
+          target_value: { sign, target_status: 'achieved' },
+          current_value: { sign, current_status: 'not_yet' },
+          pillar,
+          status: 'active',
+          priority: index + 2 + onboardingData.difficultyAreas.length + onboardingData.mainGoals.length
+        });
+      });
+
+      // Insert all goals
+      if (goalsToCreate.length > 0) {
+        const { error: goalsError } = await supabase
+          .from('user_goals')
+          .insert(goalsToCreate);
+
+        if (goalsError) throw goalsError;
+      }
+
+      // Update user progress
+      await supabase
+        .from('user_progress')
+        .insert({
+          user_id: user?.id,
+          action_type: 'milestone_achieved',
+          metadata: {
+            milestone: 'onboarding_completed',
+            wellbeing_score: onboardingData.wellbeingScore,
+            goals_set: goalsToCreate.length
+          }
+        });
+
+      // Call the original completion handler
+      onComplete(onboardingData);
+
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      // Still call onComplete to not block the user
       onComplete({
         wellbeingScore: wellbeingScore!,
         difficultyAreas,
@@ -136,6 +252,58 @@ export const SimplifiedOnboarding = ({
         frequency
       });
     }
+  };
+
+  const mapDifficultyAreaToPillar = (area: string): string | null => {
+    const mapping: Record<string, string> = {
+      'stress': 'saude_mental',
+      'ansiedade': 'saude_mental',
+      'depressao': 'saude_mental',
+      'relacionamentos': 'saude_mental',
+      'energia': 'bem_estar_fisico',
+      'sono': 'bem_estar_fisico',
+      'exercicio': 'bem_estar_fisico',
+      'alimentacao': 'bem_estar_fisico',
+      'dinheiro': 'assistencia_financeira',
+      'poupancas': 'assistencia_financeira',
+      'dividas': 'assistencia_financeira',
+      'investimentos': 'assistencia_financeira',
+      'contratos': 'assistencia_juridica',
+      'direitos': 'assistencia_juridica',
+      'trabalho': 'assistencia_juridica',
+      'familia': 'assistencia_juridica'
+    };
+    return mapping[area] || null;
+  };
+
+  const mapMainGoalToPillar = (goal: string): string | null => {
+    const mapping: Record<string, string> = {
+      'autoconfianca': 'saude_mental',
+      'relacionamentos': 'saude_mental',
+      'stress': 'saude_mental',
+      'energia': 'bem_estar_fisico',
+      'exercicio': 'bem_estar_fisico',
+      'saude': 'bem_estar_fisico',
+      'poupar': 'assistencia_financeira',
+      'dinheiro': 'assistencia_financeira',
+      'investir': 'assistencia_financeira',
+      'juridico': 'assistencia_juridica',
+      'direitos': 'assistencia_juridica',
+      'contratos': 'assistencia_juridica'
+    };
+    return mapping[goal] || null;
+  };
+
+  const mapImprovementSignToPillar = (sign: string): string | null => {
+    const mapping: Record<string, string> = {
+      'menos-stress': 'saude_mental',
+      'confiante': 'saude_mental',
+      'relacoes-saudaveis': 'saude_mental',
+      'energia': 'bem_estar_fisico',
+      'poupar': 'assistencia_financeira',
+      'juridico': 'assistencia_juridica'
+    };
+    return mapping[sign] || null;
   };
   const handleBack = () => {
     if (step > 0) setStep(step - 1);

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { values } from './InfoCardsData';
 
 interface ValuesStepProps {
@@ -11,7 +10,6 @@ interface ValuesStepProps {
 
 const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, onLearnMore }) => {
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
   
   const handleImplementPillars = () => {
     onImplementPillars();
@@ -34,7 +32,7 @@ const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, 
     >
       <div className="text-center text-navy-blue max-w-4xl mx-auto p-8">
         <h3 className="text-4xl font-bold mb-6 text-navy-blue animate-fade-in">
-          {t('landing.ourValues')}
+          Os Nossos Valores
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {values.map((value, index) => (

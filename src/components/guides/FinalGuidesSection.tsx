@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import AdditionalGuidesCarousel from './AdditionalGuidesCarousel';
 
 interface AdditionalGuide {
@@ -16,7 +15,6 @@ interface FinalGuidesSectionProps {
 }
 
 const FinalGuidesSection: React.FC<FinalGuidesSectionProps> = ({ additionalGuides }) => {
-  const { t } = useTranslation('common');
   
   const handleKnowAll = () => {
     // Navigate to guides section
@@ -33,11 +31,11 @@ const FinalGuidesSection: React.FC<FinalGuidesSectionProps> = ({ additionalGuide
           <div className="w-full max-w-3xl mx-auto text-center mb-6">
             <div className="flex flex-col items-center gap-2">
               <h3 className="font-semibold text-xl sm:text-2xl lg:text-3xl xl:text-[36px] leading-tight mb-0 text-navy-blue">
-                {t('guides.final.title')}
+                Mais Guias
               </h3>
               <div className="w-full max-w-lg">
                 <p className="text-sm md:text-base leading-relaxed tracking-tight mb-0 text-navy-blue">
-                  {t('guides.final.subtitle')}
+                  Explore guias adicionais para melhorar o seu bem-estar
                 </p>
               </div>
               <div className="flex items-center justify-center gap-2 mt-1">
@@ -46,7 +44,7 @@ const FinalGuidesSection: React.FC<FinalGuidesSectionProps> = ({ additionalGuide
                   className="relative w-32 sm:w-36 h-10 rounded-[20px] border border-navy-blue flex items-center justify-center text-navy-blue transition-colors duration-300 hover:text-soft-white group overflow-hidden"
                 >
                   <div className="relative z-10 text-sm leading-5 tracking-tight">
-                    {t('guides.final.knowAllButton')}
+                    Ver Todos
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 h-10 bg-navy-blue rounded-[20px] transform scale-y-0 origin-bottom transition-transform duration-600 ease-out group-hover:scale-y-100" />
                 </button>

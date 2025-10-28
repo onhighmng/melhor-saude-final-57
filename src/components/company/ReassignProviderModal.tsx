@@ -13,7 +13,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UserCog } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useTranslation } from 'react-i18next';
 
 interface ReassignProviderModalProps {
   open: boolean;
@@ -32,7 +31,6 @@ export function ReassignProviderModal({
   onReassign,
   bookingId 
 }: ReassignProviderModalProps) {
-  const { t } = useTranslation();
   const { toast } = useToast();
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
 
@@ -100,7 +98,7 @@ export function ReassignProviderModal({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('buttons.cancel')}
+            Cancelar
           </Button>
           <Button onClick={handleSubmit} disabled={!selectedProviderId}>
             Reatribuir

@@ -1,7 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
-import { useTranslation } from 'react-i18next';
 
 interface WelcomeScreenProps {
   companyName: string;
@@ -9,8 +8,6 @@ interface WelcomeScreenProps {
 }
 
 export function WelcomeScreen({ companyName, onContinue }: WelcomeScreenProps) {
-  const { t } = useTranslation('user');
-  
   return (
     <div className="max-w-2xl mx-auto p-6">
       <Card className="text-center">
@@ -18,19 +15,19 @@ export function WelcomeScreen({ companyName, onContinue }: WelcomeScreenProps) {
           <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center">
             <Sparkles className="w-10 h-10 text-white" />
           </div>
-          <CardTitle className="text-3xl">{t('onboarding.welcome')}</CardTitle>
+          <CardTitle className="text-3xl">Bem-vindo!</CardTitle>
           <CardDescription className="text-base">
-            {t('onboarding.welcomeTo', { company: companyName })}
+            Bem-vindo à {companyName}
           </CardDescription>
         </CardHeader>
         
         <CardContent className="space-y-6">
           <p className="text-muted-foreground">
-            {t('onboarding.welcomeMessage')}
+            Estamos felizes por tê-lo connosco. Vamos começar a sua jornada de bem-estar.
           </p>
           
           <Button onClick={onContinue} size="lg" className="w-full">
-            {t('onboarding.startButton')}
+            Começar
           </Button>
         </CardContent>
       </Card>

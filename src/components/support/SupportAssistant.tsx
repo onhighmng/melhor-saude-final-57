@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, CheckCircle, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -57,7 +56,6 @@ async function createSupportTicket(
 }
 
 export function SupportAssistant() {
-  const { t } = useTranslation();
   const { user } = useAuth();
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -293,12 +291,12 @@ export function SupportAssistant() {
               handleSendMessage(inputValue);
             }
           }}
-          aria-label={t('support.messageField')}
+          aria-label="Campo de mensagem"
         />
         <Button
           onClick={() => handleSendMessage(inputValue)}
           disabled={isLoading || !inputValue.trim()}
-          aria-label={t('support.sendMessage')}
+          aria-label="Enviar mensagem"
         >
           <Send className="h-4 w-4" />
         </Button>
