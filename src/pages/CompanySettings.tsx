@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { sanitizeInput } from '@/utils/sanitize';
 
 export default function CompanySettings() {
   const { profile } = useAuth();
@@ -39,9 +40,16 @@ export default function CompanySettings() {
   const handleSave = async () => {
     setLoading(true);
     try {
+      // Sanitize all text inputs before saving
+      const sanitizedData = {
+        company_name: sanitizeInput(companyData.company_name),
+        contact_email: sanitizeInput(companyData.contact_email),
+        contact_phone: sanitizeInput(companyData.contact_phone)
+      };
+
       const { error } = await supabase
         .from('companies')
-        .update(companyData)
+        .update(sanitizedData)
         .eq('id', profile?.company_id);
       
       if (error) throw error;

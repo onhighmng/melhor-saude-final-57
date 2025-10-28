@@ -96,12 +96,13 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('❌ Error in send-auth-email function:', error);
     
+    // Return generic error to client, full details logged server-side
     return new Response(
       JSON.stringify({
         error: {
-          message: error.message,
-          code: error.code || 'UNKNOWN_ERROR',
-        },
+          message: 'Não foi possível enviar email de recuperação',
+          code: 'EMAIL_SEND_FAILED'
+        }
       }),
       {
         status: 500,

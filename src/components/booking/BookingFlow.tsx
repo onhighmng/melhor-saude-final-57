@@ -14,6 +14,7 @@ import { getBookingConfirmationEmail } from '@/utils/emailTemplates';
 import { emailService } from '@/services/emailService';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { sanitizeInput } from '@/utils/sanitize';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -352,7 +353,7 @@ const BookingFlow = () => {
       const [hour, minute] = selectedTime.split(':');
       const endTime = `${String((parseInt(hour) + 1)).padStart(2, '0')}:${minute}`;
 
-      // Create booking
+      // Create booking with sanitized inputs
       const pillar = selectedPillar ? pillarMap[selectedPillar] : null;
       const { data: booking, error } = await supabase
         .from('bookings')
@@ -362,7 +363,7 @@ const BookingFlow = () => {
           company_id: companyId,
           prestador_id: selectedProvider.id,
           pillar: pillar,
-          topic: selectedTopics.join(', '),
+          topic: sanitizeInput(selectedTopics.join(', ')),
           date: selectedDate.toISOString().split('T')[0],
           start_time: selectedTime,
           end_time: endTime,
@@ -371,7 +372,7 @@ const BookingFlow = () => {
           meeting_type: meetingType,
           quota_type: 'employer',
           meeting_link: meetingType === 'virtual' ? `https://meet.example.com/${profile.id}-${new Date().getTime()}` : null,
-          notes: additionalNotes || null,
+          notes: additionalNotes ? sanitizeInput(additionalNotes) : null,
           booking_source: 'direct'
         })
         .select()
