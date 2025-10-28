@@ -833,3 +833,5 @@ export const PrestadorCalendar: React.FC = () => {
     </div>
   );
 };
+
+export default PrestadorCalendar;

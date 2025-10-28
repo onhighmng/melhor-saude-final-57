@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { values } from './InfoCardsData';
 
 interface ValuesStepProps {
@@ -10,6 +11,7 @@ interface ValuesStepProps {
 
 const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, onLearnMore }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const handleImplementPillars = () => {
     onImplementPillars();

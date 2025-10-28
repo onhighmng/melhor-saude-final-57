@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,7 @@ interface CallLogFormProps {
 }
 
 export const CallLogForm: React.FC<CallLogFormProps> = ({ sessionId, userId, onSubmit, onCancel }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     call_duration: '',
     outcome: '',

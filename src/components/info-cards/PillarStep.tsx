@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface PillarStepProps {
@@ -18,6 +19,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
   isVisible,
   index
 }) => {
+  const { t } = useTranslation();
   
   const pillarImages = [
     "/lovable-uploads/therapy-session.png", // Saúde Psicológica

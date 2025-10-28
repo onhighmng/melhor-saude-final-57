@@ -645,3 +645,5 @@ export const UserDashboard: React.FC = () => {
     </div>
   );
 };
+
+export default UserDashboard;
