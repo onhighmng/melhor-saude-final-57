@@ -95,6 +95,33 @@ const CompanyDashboard = () => {
     };
 
     loadCompanyData();
+
+    // Real-time subscription for bookings changes
+    const channel = supabase
+      .channel('company-dashboard-updates')
+      .on('postgres_changes',
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'bookings',
+          filter: `company_id=eq.${profile?.company_id}`
+        },
+        () => loadCompanyData()
+      )
+      .on('postgres_changes',
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'company_employees',
+          filter: `company_id=eq.${profile?.company_id}`
+        },
+        () => loadCompanyData()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [profile?.company_id]);
 
   useEffect(() => {

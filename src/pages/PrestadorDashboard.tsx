@@ -123,6 +123,34 @@ export default function PrestadorDashboard() {
     };
 
     loadData();
+
+    // Real-time subscription for bookings updates
+    const prestadorIdPromise = supabase
+      .from('prestadores')
+      .select('id')
+      .eq('user_id', profile.id)
+      .single();
+
+    prestadorIdPromise.then(({ data: prestador }) => {
+      if (prestador?.id) {
+        const channel = supabase
+          .channel('prestador-dashboard-updates')
+          .on('postgres_changes',
+            { 
+              event: '*', 
+              schema: 'public', 
+              table: 'bookings',
+              filter: `prestador_id=eq.${prestador.id}`
+            },
+            () => loadData()
+          )
+          .subscribe();
+
+        return () => {
+          supabase.removeChannel(channel);
+        };
+      }
+    });
   }, [profile?.id]);
 
   const pillarNames = {

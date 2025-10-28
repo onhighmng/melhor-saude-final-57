@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,110 +50,7 @@ interface AuditLog {
   sessionDuration?: number;
 }
 
-const mockLogs: AuditLog[] = [
-  {
-    id: "1",
-    timestamp: "2024-01-24 12:56:00",
-    user: { name: "Alice Brown", email: "alice@healthcorp.com", avatar: "/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png" },
-    action: "Exportou relatório de utilizadores",
-    actionType: "export",
-    resource: "PHI",
-    resourceDetails: "Relatório mensal - 45 registos de utilizadores",
-    justification: "Relatório mensal obrigatório para compliance",
-    result: "success",
-    tenant: "HealthCorp",
-    ipAddress: "192.168.1.45",
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    sessionDuration: 180
-  },
-  {
-    id: "2", 
-    timestamp: "2024-01-20 09:12:00",
-    user: { name: "John Doe", email: "john@techmed.com", avatar: "/lovable-uploads/085a608e-3a3e-45e5-898b-2f9b4c0f7f67.png" },
-    action: "Acedeu a detalhes da sessão #1247",
-    actionType: "view",
-    resource: "session",
-    resourceDetails: "Sessão entre Maria Santos e Dr. Pedro Costa",
-    justification: "Revisão semanal de qualidade do serviço",
-    result: "success",
-    tenant: "TechMed",
-    ipAddress: "10.0.0.23",
-    userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15",
-    sessionDuration: 300
-  },
-  {
-    id: "3",
-    timestamp: "2024-01-15 15:33:00", 
-    user: { name: "David Smith", email: "david@wellness.co", avatar: "/lovable-uploads/0daa1ba3-5b7c-49db-950f-22ccfee40b86.png" },
-    action: "Visualizou perfil do utilizador",
-    actionType: "view",
-    resource: "PHI",
-    resourceDetails: "Perfil completo de Carlos Ferreira #USER-789",
-    justification: "Pedido do utilizador para verificação de dados",
-    result: "success",
-    tenant: "Wellness Co",
-    ipAddress: "203.0.113.12",
-    userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
-    sessionDuration: 120
-  },
-  {
-    id: "4",
-    timestamp: "2024-01-15 11:44:00",
-    user: { name: "Alice Brown", email: "alice@healthcorp.com", avatar: "/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png" },
-    action: "Modificou dados de cliente #389",
-    actionType: "modify",
-    resource: "PHI", 
-    resourceDetails: "Atualizou informações de contacto do utilizador",
-    justification: "Correção de dados pessoais a pedido do utilizador",
-    result: "success",
-    tenant: "HealthCorp",
-    ipAddress: "192.168.1.45",
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    sessionDuration: 90
-  },
-  {
-    id: "5",
-    timestamp: "2024-01-20 03:31:00",
-    user: { name: "John Doe", email: "john@techmed.com", avatar: "/lovable-uploads/085a608e-3a3e-45e5-898b-2f9b4c0f7f67.png" },
-    action: "Adicionou novo utilizador",
-    actionType: "modify",
-    resource: "user",
-    resourceDetails: "Criou conta para Ana Lima - Law Firm",
-    justification: "Novo colaborador admitido na empresa cliente",
-    result: "success",
-    tenant: "TechMed",
-    ipAddress: "10.0.0.23",
-    userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15"
-  },
-  {
-    id: "6",
-    timestamp: "2024-01-15 03:14:00",
-    user: { name: "Emma Wilson", email: "emma@mindcare.org", avatar: "/lovable-uploads/18286dba-299d-452d-b21d-2860965d5785.png" },
-    action: "Falha no login do sistema",
-    actionType: "login",
-    resource: "system",
-    resourceDetails: "Tentativa de acesso com credenciais inválidas",
-    result: "error",
-    tenant: "MindCare",
-    ipAddress: "198.51.100.42",
-    userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15"
-  },
-  {
-    id: "7",
-    timestamp: "2024-01-31 11:58:00",
-    user: { name: "Michael Lee", email: "michael@lawfirm.com", avatar: "/lovable-uploads/2315135f-f033-4434-be6f-1ad3824c1ebb.png" },
-    action: "Exportou dados de feedback",
-    actionType: "export",
-    resource: "PHI",
-    resourceDetails: "Relatório de feedback dos últimos 3 meses",
-    justification: "Análise de satisfação trimestral",
-    result: "success",
-    tenant: "Law Firm",
-    ipAddress: "172.16.0.88",
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    sessionDuration: 240
-  }
-];
+// Mock data removed - using real database queries
 
 const actionIcons = {
   view: Eye,
@@ -182,7 +81,9 @@ const resultIcons = {
 };
 
 const AdminLogs = () => {
-  const [logs] = useState(mockLogs);
+  const { profile } = useAuth();
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const [tenantFilter, setTenantFilter] = useState<string>("all");
   const [actionFilter, setActionFilter] = useState<string>("all");
@@ -190,6 +91,58 @@ const AdminLogs = () => {
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const loadLogs = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('admin_logs')
+          .select(`
+            *,
+            admin_profile:profiles!admin_id(name, email, avatar_url)
+          `)
+          .order('created_at', { ascending: false })
+          .limit(1000);
+
+        if (error) throw error;
+
+        // Transform to AuditLog format
+        const transformedLogs: AuditLog[] = (data || []).map((log: any) => ({
+          id: log.id,
+          timestamp: new Date(log.created_at).toLocaleString('pt-PT'),
+          user: {
+            name: log.admin_profile?.name || 'Unknown',
+            email: log.admin_profile?.email || '',
+            avatar: log.admin_profile?.avatar_url
+          },
+          action: log.action,
+          actionType: log.action as any,
+          resource: log.entity_type as any,
+          resourceDetails: JSON.stringify(log.details || {}),
+          result: 'success',
+          tenant: log.details?.tenant || 'N/A',
+          ipAddress: log.ip_address || 'N/A',
+          userAgent: log.user_agent || 'N/A'
+        }));
+
+        setLogs(transformedLogs);
+      } catch (error) {
+        console.error('Error loading logs:', error);
+        toast({
+          title: 'Erro',
+          description: 'Erro ao carregar logs',
+          variant: 'destructive'
+        });
+        // Fallback to empty array on error
+        setLogs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadLogs();
+  }, [toast]);
 
   // Calculate metrics
   const totalLogs = logs.length;

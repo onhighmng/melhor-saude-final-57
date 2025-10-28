@@ -14,7 +14,6 @@ interface SecurityModalProps {
 
 export const SecurityModal = ({ isOpen, onClose, onChangePassword, onEnable2FA }: SecurityModalProps) => {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [show2FADialog, setShow2FADialog] = useState(false);
   const [passwordData, setPasswordData] = useState({
     current: '',
     new: '',
@@ -25,11 +24,6 @@ export const SecurityModal = ({ isOpen, onClose, onChangePassword, onEnable2FA }
     onChangePassword();
     setShowPasswordDialog(false);
     setPasswordData({ current: '', new: '', confirm: '' });
-  };
-
-  const handle2FAEnable = () => {
-    onEnable2FA();
-    setShow2FADialog(false);
   };
 
   return (
@@ -63,15 +57,15 @@ export const SecurityModal = ({ isOpen, onClose, onChangePassword, onEnable2FA }
                   </Button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
                   <div>
                     <Label className="text-base">Autenticação de dois fatores (2FA)</Label>
                     <p className="text-sm text-muted-foreground">
-                      Estado: Desativado
+                      Em breve estará disponível
                     </p>
                   </div>
-                  <Button variant="outline" onClick={() => setShow2FADialog(true)}>
-                    Ativar 2FA
+                  <Button variant="outline" disabled>
+                    Brevemente
                   </Button>
                 </div>
               </div>
@@ -134,41 +128,6 @@ export const SecurityModal = ({ isOpen, onClose, onChangePassword, onEnable2FA }
         </DialogContent>
       </Dialog>
 
-      {/* 2FA Dialog */}
-      <Dialog open={show2FADialog} onOpenChange={setShow2FADialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Ativar Autenticação de Dois Fatores</DialogTitle>
-            <DialogDescription>
-              Adicione uma camada extra de segurança à sua conta.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="bg-muted p-4 rounded-lg text-center">
-              <p className="text-sm mb-2">Digitalize este código QR com a sua aplicação de autenticação:</p>
-              <div className="w-48 h-48 bg-white mx-auto flex items-center justify-center rounded">
-                <div className="text-xs text-muted-foreground">[QR Code simulado]</div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="2fa-code">Código de verificação</Label>
-              <Input
-                id="2fa-code"
-                placeholder="000000"
-                maxLength={6}
-              />
-            </div>
-          </div>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShow2FADialog(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handle2FAEnable}>
-              Ativar 2FA
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
