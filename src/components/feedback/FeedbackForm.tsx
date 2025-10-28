@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { StarRating } from "./StarRating";
 import { TagSelector } from "./TagSelector";
 import { useTranslation } from 'react-i18next';
-import { Session } from "@/data/sessionMockData";
+import { Session } from "@/types/sessionTypes";
 
 interface FeedbackFormProps {
   session: Session;

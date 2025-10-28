@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
-import { SessionStatus } from "@/data/sessionMockData";
+import { SessionStatus } from "@/types/sessionTypes";
 
 interface SessionDeductionBadgeProps {
   status: SessionStatus;

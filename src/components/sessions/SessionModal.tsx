@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, User, Building2, User as UserIcon, ExternalLink } from "lucide-react";
-import { Session, SessionStatus, getStatusLabel, getPillarLabel, getPayerSourceLabel, Pillar } from "@/data/sessionMockData";
+import { Session, SessionStatus, getStatusLabel, getPillarLabel, getPayerSourceLabel, Pillar } from "@/types/sessionTypes";
 import { SessionDeductionBadge } from "./SessionDeductionBadge";
 import { SessionRatingDialog } from "./SessionRatingDialog";
 import { SessionCard, SessionCardData, HistorySessionCard } from "@/components/ui/session-card";

@@ -7,13 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, User, Key, Eye, EyeOff, Building, Users } from 'lucide-react';
-// Company type interface
-interface Company {
-  id: string;
-  company_name: string;
-  sessions_allocated: number;
-  sessions_used: number;
-}
+import { Company } from "@/types/company";
+import { getAvailableSeats } from "@/utils/companyHelpers";
 
 import { companyToasts } from "@/data/companyToastMessages";
 import { useTranslation } from 'react-i18next';
@@ -162,15 +157,12 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
                 <div>
                   <p className="font-medium">{company.company_name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {(() => {
-                      const seatsAvailable = (company.sessions_allocated || 0) - (company.sessions_used || 0);
-                      return `${seatsAvailable} vaga${seatsAvailable !== 1 ? 's' : ''} disponível${seatsAvailable !== 1 ? 's' : ''} de ${company.sessions_allocated}`;
-                    })()}
+                    {getAvailableSeats(company.sessions_allocated, company.sessions_used)} sessões disponíveis de {company.sessions_allocated}
                   </p>
                 </div>
               </div>
               <Badge variant="secondary">
-                {company.plan_type || 'Standard'}
+                {company.plan_type}
               </Badge>
             </div>
           </CardContent>

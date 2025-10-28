@@ -3,37 +3,21 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Users, AlertTriangle, CheckCircle, Info } from "lucide-react";
-// Company interface
-interface Company {
-  id: string;
-  company_name: string;
-  seats_allocated?: number;
-  seats_used?: number;
-  seats_available?: number;
-}
-
-// Helper functions
-const getSeatUsagePercentage = (company: Company) => {
-  if (!company.seats_allocated || company.seats_allocated === 0) return 0;
-  return Math.round((company.seats_used / company.seats_allocated) * 100);
-};
-
-const getSeatUsageBadgeVariant = (percentage: number) => {
-  if (percentage >= 90) return 'destructive';
-  if (percentage >= 70) return 'default';
-  return 'secondary';
-};
+import { Company } from "@/types/company";
+import { getSeatUsagePercentage, getSeatUsageBadgeVariant } from "@/utils/companyHelpers";
 
 interface SeatUsageCardProps {
   company: Company;
 }
 
 export function SeatUsageCard({ company }: SeatUsageCardProps) {
-  const usagePercentage = getSeatUsagePercentage(company);
-  const badgeVariant = getSeatUsageBadgeVariant(company);
+  const usagePercentage = getSeatUsagePercentage(company.sessions_allocated, company.sessions_used);
+  const badgeVariant = getSeatUsageBadgeVariant(usagePercentage);
+  const availableSeats = Math.max(0, company.sessions_allocated - company.sessions_used);
+  const isAtLimit = company.sessions_used >= company.sessions_allocated;
   
   const getStatusIcon = () => {
-    if (company.isAtSeatLimit) {
+    if (isAtLimit) {
       return <AlertTriangle className="h-4 w-4 text-red-600" />;
     }
     if (usagePercentage >= 90) {
@@ -43,7 +27,7 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
   };
 
   const getStatusMessage = () => {
-    if (company.isAtSeatLimit) {
+    if (isAtLimit) {
       return "Limite de contas atingido";
     }
     if (usagePercentage >= 90) {
@@ -83,7 +67,7 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
             <span className="font-medium">{getStatusMessage()}</span>
           </div>
           <Badge variant={badgeVariant}>
-            {company.seatUsed} / {company.seatLimit} usadas
+            {company.sessions_used} / {company.sessions_allocated} usadas
           </Badge>
         </div>
 
@@ -91,7 +75,7 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
         <div className="space-y-2">
           <Progress value={usagePercentage} className="h-3" />
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Disponíveis: {company.seatAvailable}</span>
+            <span>Disponíveis: {availableSeats}</span>
             <span>{usagePercentage.toFixed(1)}% utilizado</span>
           </div>
         </div>
@@ -101,13 +85,13 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium">Plano Atual:</span>
             <Badge variant="outline">
-              {company.planType.charAt(0).toUpperCase() + company.planType.slice(1)}
+              {company.plan_type.charAt(0).toUpperCase() + company.plan_type.slice(1)}
             </Badge>
           </div>
         </div>
 
         {/* Warning Messages */}
-        {company.isAtSeatLimit && (
+        {isAtLimit && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3">
             <div className="flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
@@ -122,14 +106,14 @@ export function SeatUsageCard({ company }: SeatUsageCardProps) {
           </div>
         )}
 
-        {usagePercentage >= 90 && !company.isAtSeatLimit && (
+        {usagePercentage >= 90 && !isAtLimit && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
             <div className="flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-yellow-800">
                 <p className="font-medium mb-1">Próximo do Limite</p>
                 <p>
-                  Apenas {company.seatAvailable} conta{company.seatAvailable !== 1 ? 's' : ''} disponível{company.seatAvailable !== 1 ? 's' : ''}. 
+                  Apenas {availableSeats} conta{availableSeats !== 1 ? 's' : ''} disponível{availableSeats !== 1 ? 's' : ''}. 
                   Considere aumentar o limite ou revisar contas inativas.
                 </p>
               </div>

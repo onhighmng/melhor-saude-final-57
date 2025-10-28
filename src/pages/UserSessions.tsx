@@ -53,8 +53,9 @@ export default function UserSessions() {
   // Convert bookings to sessions format
   const sessions = allBookings.map(booking => ({
     id: booking.id,
-    userId: booking.user_id,
-    prestadorId: booking.prestador_id,
+    user_id: booking.user_id,
+    prestador_id: booking.prestador_id,
+    booking_date: booking.booking_date,
     date: booking.booking_date,
     time: booking.start_time || '',
     prestadorName: booking.provider_name || 'Provider',
@@ -66,6 +67,7 @@ export default function UserSessions() {
     deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
     createdAt: booking.booking_date,
     updatedAt: booking.booking_date,
+    session_type: 'individual' as const,
     sessionType: 'individual' as const,
     meetingPlatform: (booking.meeting_link?.includes('zoom') ? 'zoom' : booking.meeting_link?.includes('teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
     meetingLink: booking.meeting_link || ''

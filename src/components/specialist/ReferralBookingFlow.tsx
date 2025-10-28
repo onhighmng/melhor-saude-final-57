@@ -121,7 +121,7 @@ export const ReferralBookingFlow = ({
         const transformedProviders = (data || []).map(p => ({
           id: p.id,
           name: p.name,
-          specialty: p.specialty || '',
+          specialty: p.specialties?.[0] || '',
           pillar: p.pillar_specialties?.[0] || selectedPillar,
           photo_url: p.photo_url,
           rating: 4.8 // Default rating, could query from feedback

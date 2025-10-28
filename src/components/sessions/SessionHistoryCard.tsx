@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, Building2, User as UserIcon, ExternalLink } from "lucide-react";
-import { Session, getStatusLabel, getPillarLabel, getPayerSourceLabel } from "@/data/sessionMockData";
+import { Session, getStatusLabel, getPillarLabel, getPayerSourceLabel } from "@/types/sessionTypes";
 import { SessionDeductionBadge } from "./SessionDeductionBadge";
 import { SessionRatingDialog } from "./SessionRatingDialog";
 import { useState, useEffect } from "react";
@@ -38,11 +38,13 @@ export function SessionHistoryCard({
     return () => clearInterval(interval);
   }, [session.date, session.time]);
 
-  const getMeetingPlatformDisplay = (platform: 'zoom' | 'google_meet' | 'teams') => {
+  const getMeetingPlatformDisplay = (platform?: 'zoom' | 'google_meet' | 'teams' | 'whatsapp') => {
+    if (!platform) return 'Online';
     const platformMap = {
       'zoom': 'Zoom',
       'google_meet': 'Google Meet',
-      'teams': 'Microsoft Teams'
+      'teams': 'Microsoft Teams',
+      'whatsapp': 'WhatsApp'
     };
     return platformMap[platform];
   };

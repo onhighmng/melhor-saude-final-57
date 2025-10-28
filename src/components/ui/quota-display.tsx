@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Building2, User, Info } from "lucide-react";
-import { UserBalance } from "@/data/sessionMockData";
+import { UserBalance } from "@/types/sessionTypes";
 
 interface QuotaDisplayProps {
   balance: UserBalance;
