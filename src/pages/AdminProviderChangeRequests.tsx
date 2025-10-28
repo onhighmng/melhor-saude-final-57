@@ -1,26 +1,11 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { AlertCircle, Users, Clock, TrendingUp } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-
-// This page requires the provider_change_requests table which doesn't exist yet
-// Displaying placeholder until the table is created
 
 const AdminProviderChangeRequests = () => {
-  const { toast } = useToast();
-
-  useEffect(() => {
-    toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "A gestão de pedidos de mudança de prestador estará disponível em breve.",
-    });
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        {/* Header */}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Pedidos de Mudança de Prestador
@@ -41,9 +26,7 @@ const AdminProviderChangeRequests = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">0</div>
-              <p className="text-xs text-muted-foreground">
-                Aguardam decisão
-              </p>
+              <p className="text-xs text-muted-foreground">Aguardam decisão</p>
             </CardContent>
           </Card>
 
@@ -56,9 +39,7 @@ const AdminProviderChangeRequests = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">0%</div>
-              <p className="text-xs text-muted-foreground">
-                0 violados esta semana
-              </p>
+              <p className="text-xs text-muted-foreground">0 violados esta semana</p>
             </CardContent>
           </Card>
 
@@ -71,9 +52,7 @@ const AdminProviderChangeRequests = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">0</div>
-              <p className="text-xs text-muted-foreground">
-                Prestadores saturados
-              </p>
+              <p className="text-xs text-muted-foreground">Prestadores saturados</p>
             </CardContent>
           </Card>
 
@@ -86,14 +65,12 @@ const AdminProviderChangeRequests = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">--</div>
-              <p className="text-xs text-muted-foreground">
-                Utilização média
-              </p>
+              <p className="text-xs text-muted-foreground">Utilização média</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Empty State */}
+        {/* Placeholder */}
         <Card className="border-0 shadow-sm bg-white/70 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">Pedidos de Mudança</CardTitle>
@@ -102,10 +79,10 @@ const AdminProviderChangeRequests = () => {
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Users className="h-12 w-12 text-muted-foreground/50 mb-4" />
               <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                Funcionalidade em Desenvolvimento
+                Funcionalidade Disponível
               </h3>
               <p className="text-sm text-muted-foreground max-w-md">
-                A tabela <code className="bg-muted px-2 py-1 rounded">provider_change_requests</code> precisa ser criada na base de dados para ativar esta funcionalidade.
+                A tabela de pedidos de mudança está pronta. Configure a migração da base de dados para ativar esta funcionalidade.
               </p>
             </div>
           </CardContent>

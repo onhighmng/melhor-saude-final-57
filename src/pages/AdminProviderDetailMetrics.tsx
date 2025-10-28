@@ -20,14 +20,45 @@ const AdminProviderDetailMetrics = () => {
     if (!providerId) return;
 
     try {
-      const { data, error } = await supabase
+      // Load prestador
+      const { data: prestadorData, error: prestadorError } = await supabase
         .from('prestadores')
         .select('*')
         .eq('id', providerId)
         .single();
 
-      if (error) throw error;
-      setProvider(data);
+      if (prestadorError) throw prestadorError;
+
+      // Load performance data
+      const { data: performanceData } = await supabase
+        .from('prestador_performance')
+        .select('*')
+        .eq('prestador_id', providerId)
+        .order('month', { ascending: false })
+        .limit(6);
+
+      // Load pricing
+      const { data: pricingData } = await supabase
+        .from('prestador_pricing')
+        .select('*')
+        .eq('prestador_id', providerId)
+        .single();
+
+      const sessionPrice = pricingData?.session_price || 1500;
+      const commissionRate = pricingData?.platform_commission_rate || 0.25;
+
+      // Calculate revenue from performance
+      const monthlyRevenue = performanceData?.map(p => ({
+        month: p.month,
+        revenue: (p.completed_sessions || 0) * sessionPrice * (1 - commissionRate)
+      })) || [];
+
+      setProvider({
+        ...prestadorData,
+        performance: performanceData || [],
+        pricing: pricingData,
+        monthlyRevenue
+      });
     } catch (error) {
       console.error('Error loading provider:', error);
       toast.error('Erro ao carregar prestador');
