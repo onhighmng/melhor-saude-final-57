@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -135,6 +136,25 @@ const AdminSettings = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { toast } = useToast();
 
+  // Load settings on mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      const { data } = await supabase.from('platform_settings').select('*');
+      if (data) {
+        const loaded = data.reduce((acc, item) => {
+          if (item.setting_key === 'dataRetention') {
+            acc.dataRetention = (item.setting_value as any)?.value;
+          } else {
+            acc[item.setting_key] = item.setting_value as any;
+          }
+          return acc;
+        }, {} as Partial<PlatformSettings>);
+        setSettings({ ...defaultSettings, ...loaded });
+      }
+    };
+    loadSettings();
+  }, []);
+
   const updateSettings = (newSettings: Partial<PlatformSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
     setHasUnsavedChanges(true);
@@ -148,16 +168,33 @@ const AdminSettings = () => {
     setHasUnsavedChanges(true);
   };
 
-  const handleSave = () => {
-    // In a real app, this would save to backend
-    console.log("Saving settings:", settings);
-    setHasUnsavedChanges(false);
-    
-    toast({
-      title: "Configurações guardadas",
-      description: "Todas as alterações foram aplicadas com sucesso.",
-      duration: 3000,
-    });
+  const handleSave = async () => {
+    try {
+      // Save each setting category to platform_settings
+      await supabase.from('platform_settings').upsert([
+        { setting_key: 'companies', setting_value: settings.companies as any, setting_type: 'config' },
+        { setting_key: 'users', setting_value: settings.users as any, setting_type: 'config' },
+        { setting_key: 'providers', setting_value: settings.providers as any, setting_type: 'config' },
+        { setting_key: 'sessions', setting_value: settings.sessions as any, setting_type: 'config' },
+        { setting_key: 'billing', setting_value: settings.billing as any, setting_type: 'config' },
+        { setting_key: 'notifications', setting_value: settings.notifications as any, setting_type: 'config' },
+        { setting_key: 'dataRetention', setting_value: { value: settings.dataRetention } as any, setting_type: 'config' },
+        { setting_key: 'flags', setting_value: settings.flags as any, setting_type: 'security' }
+      ], { onConflict: 'setting_key' });
+
+      setHasUnsavedChanges(false);
+      toast({
+        title: "Configurações guardadas",
+        description: "Todas as alterações foram aplicadas com sucesso.",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao guardar configurações",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleReset = () => {

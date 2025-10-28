@@ -152,9 +152,7 @@ export default function RegisterCompany() {
         description: `Credenciais: Email: ${formData.contactEmail}, Senha: ${randomPassword}`,
       });
 
-      setTimeout(() => {
-        navigate('/login');
-      }, 3000);
+      navigate('/login');
       
     } catch (error: any) {
       console.error('Company registration error:', error);

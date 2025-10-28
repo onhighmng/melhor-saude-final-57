@@ -256,8 +256,6 @@ const AdminProviderNew = () => {
         title: t('providerNew.success.title'),
         description: `Prestador criado. Email: ${formData.email}, Senha: ${randomPassword}`,
       });
-
-      console.log('Provider credentials:', { email: formData.email, password: randomPassword });
       
       navigate('/admin/prestadores');
     } catch (error: any) {

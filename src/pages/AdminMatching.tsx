@@ -272,6 +272,10 @@ const AdminMatching = () => {
     try {
       setIsLoading(true);
 
+      // Get current admin user ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
       // Save provider assignments to specialist_assignments table
       const assignmentsToSave = [];
       
@@ -282,7 +286,7 @@ const AdminMatching = () => {
             specialist_id: provider.id,
             weight: provider.weight,
             is_primary: provider.weight > 1.0,
-            assigned_by: (await supabase.auth.getUser()).data.user?.id
+            assigned_by: user.id
           });
         }
       }

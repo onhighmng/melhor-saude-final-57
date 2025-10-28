@@ -1365,6 +1365,7 @@ export type Database = {
       }
       specialist_assignments: {
         Row: {
+          assigned_by: string | null
           company_id: string
           contract_end_date: string | null
           contract_start_date: string | null
@@ -1378,8 +1379,10 @@ export type Database = {
           pillar: string | null
           specialist_id: string
           updated_at: string | null
+          weight: number | null
         }
         Insert: {
+          assigned_by?: string | null
           company_id: string
           contract_end_date?: string | null
           contract_start_date?: string | null
@@ -1393,8 +1396,10 @@ export type Database = {
           pillar?: string | null
           specialist_id: string
           updated_at?: string | null
+          weight?: number | null
         }
         Update: {
+          assigned_by?: string | null
           company_id?: string
           contract_end_date?: string | null
           contract_start_date?: string | null
@@ -1408,8 +1413,23 @@ export type Database = {
           pillar?: string | null
           specialist_id?: string
           updated_at?: string | null
+          weight?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "specialist_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specialist_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile_with_roles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "specialist_assignments_company_id_fkey"
             columns: ["company_id"]

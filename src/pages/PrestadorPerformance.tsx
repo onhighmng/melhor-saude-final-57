@@ -103,14 +103,35 @@ const PrestadorPerformance = () => {
 
   const handleExportReport = async () => {
     setIsExporting(true);
-    
-    setTimeout(() => {
+    try {
+      // Prepare CSV data
+      const csvHeader = 'Mês,Sessões,Completas,Avaliação Média\n';
+      const csvRows = sessionEvolution.map(row => 
+        `${row.month},${row.sessions},${row.completed},${performance.averageRating}`
+      ).join('\n');
+      const csvContent = csvHeader + csvRows;
+
+      // Create downloadable blob
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `desempenho-${Date.now()}.csv`;
+      link.click();
+
       toast({
         title: "Relatório exportado",
-        description: "Relatório mensal foi gerado em CSV com sucesso"
+        description: "CSV gerado com sucesso"
       });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao gerar CSV",
+        variant: "destructive"
+      });
+    } finally {
       setIsExporting(false);
-    }, 2000);
+    }
   };
 
   if (loading || !performance) {

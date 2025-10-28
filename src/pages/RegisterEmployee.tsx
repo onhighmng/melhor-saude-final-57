@@ -195,9 +195,7 @@ export default function RegisterEmployee() {
       });
 
       if (!loginError) {
-        setTimeout(() => {
-          navigate('/user/dashboard');
-        }, 500);
+        navigate('/user/dashboard');
       } else {
         // Even if auto-login fails, redirect to login with success message
         navigate('/login?registered=true');

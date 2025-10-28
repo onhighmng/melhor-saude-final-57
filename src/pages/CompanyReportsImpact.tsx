@@ -200,15 +200,47 @@ const CompanyReportsImpact = () => {
 
   const handleExportReport = async () => {
     setIsExporting(true);
-    
-    // Simulate PDF generation
-    setTimeout(() => {
+    try {
+      const reportData = {
+        companyMetrics,
+        pillarDistribution,
+        wellnessTrends,
+        generatedAt: new Date().toISOString()
+      };
+
+      // Create CSV export
+      const csvHeader = 'Métrica,Valor\n';
+      const csvRows = [
+        `Colaboradores Ativos,${companyMetrics.activeEmployees}`,
+        `Sessões Realizadas,${companyMetrics.totalSessions}`,
+        `Satisfação Média,${companyMetrics.avgSatisfaction}/10`,
+        `Taxa de Utilização,${companyMetrics.utilizationRate}%`,
+        '',
+        'Pilar,Sessões,Percentagem',
+        ...pillarDistribution.map(p => `${p.pillar},${p.sessions},${p.percentage}%`)
+      ].join('\n');
+      const csvContent = csvHeader + csvRows;
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `relatorio-${Date.now()}.csv`;
+      link.click();
+
       toast({
         title: "Relatório exportado",
         description: "Relatório mensal foi gerado com sucesso"
       });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao gerar relatório",
+        variant: "destructive"
+      });
+    } finally {
       setIsExporting(false);
-    }, 2000);
+    }
   };
 
   if (loading || !companyMetrics) {

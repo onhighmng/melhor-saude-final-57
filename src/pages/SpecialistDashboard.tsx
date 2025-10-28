@@ -15,6 +15,7 @@ import { Progress } from '@/components/ui/progress';
 import { useNavigate } from 'react-router-dom';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { getPillarColors } from '@/utils/pillarColors';
 
 export default function SpecialistDashboard() {
@@ -35,11 +36,40 @@ export default function SpecialistDashboard() {
     };
   }, []);
 
+  // State for real data
+  const [filteredSessions, setFilteredSessions] = useState<any[]>([]);
+  const [assignedCompanies, setAssignedCompanies] = useState<any[]>([]);
+  
   // Use real data from hooks
   const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'escalated');
-  const filteredSessions: any[] = []; // Real sessions loaded from bookings via hooks
-  const assignedCompanies: any[] = []; // Will be populated from company assignments
-  const filteredReferrals: any[] = [];
+
+  // Load real sessions
+  useEffect(() => {
+    const loadSessions = async () => {
+      if (!profile?.id) return;
+      const { data } = await supabase
+        .from('bookings')
+        .select('*, profiles!bookings_user_id_fkey(name)')
+        .eq('booking_source', 'specialist_referral')
+        .order('booking_date', { ascending: false });
+      setFilteredSessions(data || []);
+    };
+    loadSessions();
+  }, [profile?.id]);
+
+  // Load assigned companies
+  useEffect(() => {
+    const loadCompanies = async () => {
+      if (!profile?.id) return;
+      const { data } = await supabase
+        .from('specialist_assignments')
+        .select('*, companies!specialist_assignments_company_id_fkey(*)')
+        .eq('specialist_id', profile.id)
+        .eq('is_active', true);
+      setAssignedCompanies(data?.map(a => a.companies) || []);
+    };
+    loadCompanies();
+  }, [profile?.id]);
   
   const monthlyCases = metrics?.totalChats || 0;
 

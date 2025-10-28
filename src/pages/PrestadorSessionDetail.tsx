@@ -32,6 +32,7 @@ import { pt } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '@/hooks/use-toast';
 
 interface SessionDetailData {
   id: string;
@@ -74,6 +75,7 @@ const pillarLabels = {
 export default function PrestadorSessionDetail() {
   const { id } = useParams();
   const { t } = useTranslation(['provider', 'user']);
+  const { toast } = useToast();
   const [session, setSession] = useState<SessionDetailData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -203,27 +205,83 @@ export default function PrestadorSessionDetail() {
     };
   };
 
-  const savePrivateNotes = () => {
-    // Mock save functionality
-    console.log('Saving private notes:', privateNotes);
+  const savePrivateNotes = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ notes: privateNotes })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast({ title: "Notas guardadas", description: "Notas privadas atualizadas" });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao guardar notas", variant: "destructive" });
+    }
   };
 
-  const startSession = () => {
-    console.log('Starting session:', id);
+  const startSession = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'in-progress' })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast({ title: "Sessão iniciada", description: "Estado atualizado" });
+      if (session) setSession({ ...session, status: 'in-progress' as SessionStatus });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao iniciar sessão", variant: "destructive" });
+    }
   };
 
-  const completeSession = () => {
-    console.log('Completing session:', id);
+  const completeSession = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'completed' })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast({ title: "Sessão concluída", description: "Estado atualizado com sucesso" });
+      if (session) setSession({ ...session, status: 'completed' as SessionStatus });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao concluir sessão", variant: "destructive" });
+    }
   };
 
-  const markNoShow = () => {
-    console.log('Marking no-show:', { reason: noShowReason, description: noShowDescription });
-    setShowNoShowDialog(false);
+  const markNoShow = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'no_show',
+          notes: `No-show: ${noShowReason} - ${noShowDescription}`
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      setShowNoShowDialog(false);
+      toast({ title: "Marcado como faltoso", description: "Registo atualizado" });
+      if (session) setSession({ ...session, status: 'no_show' as SessionStatus });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao marcar falta", variant: "destructive" });
+    }
   };
 
-  const cancelSession = () => {
-    console.log('Cancelling session:', id);
-    setShowCancelDialog(false);
+  const cancelSession = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+      setShowCancelDialog(false);
+      toast({ title: "Sessão cancelada", description: "Cancelamento registado" });
+      if (session) setSession({ ...session, status: 'cancelled' as SessionStatus });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao cancelar sessão", variant: "destructive" });
+    }
   };
 
   const removeAttachment = (attachmentId: string) => {
