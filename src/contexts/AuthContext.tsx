@@ -26,7 +26,7 @@ interface AuthContextType {
   isHR: boolean;
   isPrestador: boolean;
   isEspecialistaGeral: boolean;
-  login: (email: string, password: string) => Promise<{ error?: string }>;
+  login: (email: string, password: string) => Promise<{ error?: string; profile?: UserProfile }>;
   signup: (email: string, password: string, name: string) => Promise<{ error?: string }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
@@ -107,17 +107,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         : roles.includes('specialist') ? 'specialist'
         : 'user';
       
-      setUser(data.user);
-      setSession(data.session);
-      setProfile({
+      const userProfile: UserProfile = {
         ...profileData,
         user_id: profileData.id,
         is_active: profileData.is_active ?? true,
         role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
         metadata: (profileData.metadata as Record<string, unknown>) || {}
-      });
+      };
       
-      return {};
+      setUser(data.user);
+      setSession(data.session);
+      setProfile(userProfile);
+      
+      return { profile: userProfile };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Credenciais inválidas';
       return { error: errorMessage };

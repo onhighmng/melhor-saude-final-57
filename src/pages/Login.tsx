@@ -4,17 +4,56 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import heroNeural from '@/assets/hero-neural.jpg';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { ROLE_REDIRECT_MAP } from '@/utils/authRedirects';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, profile } = useAuth();
+  const { toast } = useToast();
 
-  const handleLogin = () => {
-    // Mock login for demo
-    navigate('/');
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error, profile: userProfile } = await login(email, password);
+      
+      if (error) {
+        toast({
+          title: "Erro ao entrar",
+          description: error,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Redirect based on role from login response
+      if (userProfile?.role && userProfile.role in ROLE_REDIRECT_MAP) {
+        navigate(ROLE_REDIRECT_MAP[userProfile.role as keyof typeof ROLE_REDIRECT_MAP]);
+      } else {
+        navigate('/user/dashboard');
+      }
+      
+      toast({
+        title: "Login bem-sucedido",
+        description: `Bem-vindo de volta!`
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao entrar",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,13 +95,7 @@ const Login = () => {
             </p>
           </div>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleLogin();
-            }}
-            className="space-y-6"
-          >
+          <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -99,8 +132,15 @@ const Login = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full h-11">
-              Entrar
+            <Button type="submit" className="w-full h-11" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  A entrar...
+                </>
+              ) : (
+                'Entrar'
+              )}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">
