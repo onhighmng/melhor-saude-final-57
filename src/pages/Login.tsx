@@ -18,33 +18,49 @@ const Login = () => {
   const { login, profile } = useAuth();
   const { toast } = useToast();
 
+  const getErrorMessage = (error: string) => {
+    if (error.includes('Invalid login credentials')) {
+      return 'Email ou senha incorretos';
+    }
+    if (error.includes('Email not confirmed')) {
+      return 'Por favor, confirme seu email primeiro';
+    }
+    if (error.includes('Too many requests')) {
+      return 'Muitas tentativas. Aguarde alguns minutos.';
+    }
+    return error || 'Erro ao fazer login. Tente novamente.';
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const { error, profile: userProfile } = await login(email, password);
+      const { error } = await login(email, password);
       
       if (error) {
         toast({
           title: "Erro ao entrar",
-          description: error,
+          description: getErrorMessage(error),
           variant: "destructive"
         });
         return;
       }
 
-      // Redirect based on role from login response
-      if (userProfile?.role && userProfile.role in ROLE_REDIRECT_MAP) {
-        navigate(ROLE_REDIRECT_MAP[userProfile.role as keyof typeof ROLE_REDIRECT_MAP]);
-      } else {
-        navigate('/user/dashboard');
-      }
-      
       toast({
         title: "Login bem-sucedido",
         description: `Bem-vindo de volta!`
       });
+
+      // Wait for profile to load via onAuthStateChange
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Redirect based on user role
+      if (profile?.role && profile.role in ROLE_REDIRECT_MAP) {
+        navigate(ROLE_REDIRECT_MAP[profile.role as keyof typeof ROLE_REDIRECT_MAP]);
+      } else {
+        navigate('/user/dashboard');
+      }
     } catch (error) {
       toast({
         title: "Erro ao entrar",

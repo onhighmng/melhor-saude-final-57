@@ -48,41 +48,60 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const loadingProfileRef = React.useRef(false);
 
   // Helper function to load profile with roles from user_roles table
-  const loadProfileWithRoles = async (userId: string): Promise<UserProfile> => {
-    const [profileResult, rolesResult] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', userId).single(),
-      supabase.from('user_roles').select('role').eq('user_id', userId)
-    ]);
-
-    if (profileResult.error) {
-      console.error('Profile load error:', profileResult.error);
-      throw profileResult.error;
+  const loadProfileWithRoles = async (userId: string): Promise<UserProfile | null> => {
+    // Deduplication: If already loading, skip
+    if (loadingProfileRef.current) {
+      console.log('[Auth] Profile load already in progress, skipping');
+      return null;
     }
-    
-    if (rolesResult.error) {
-      console.error('Roles load error:', rolesResult.error);
-    }
-    
-    const roles = rolesResult.data?.map(r => r.role) || [];
-    const primaryRole = roles.includes('admin') ? 'admin' 
-      : roles.includes('hr') ? 'hr'
-      : roles.includes('prestador') ? 'prestador'
-      : roles.includes('specialist') ? 'specialist'
-      : 'user';
 
-    return {
-      ...profileResult.data,
-      user_id: profileResult.data.id,
-      is_active: profileResult.data.is_active ?? true,
-      role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
-      metadata: (profileResult.data.metadata as Record<string, unknown>) || {}
-    };
+    loadingProfileRef.current = true;
+    const startTime = performance.now();
+
+    try {
+      const [profileResult, rolesResult] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', userId).single(),
+        supabase.from('user_roles').select('role').eq('user_id', userId)
+      ]);
+
+      if (profileResult.error) {
+        console.error('Profile load error:', profileResult.error);
+        throw profileResult.error;
+      }
+      
+      if (rolesResult.error) {
+        console.error('Roles load error:', rolesResult.error);
+      }
+      
+      const roles = rolesResult.data?.map(r => r.role) || [];
+      const primaryRole = roles.includes('admin') ? 'admin' 
+        : roles.includes('hr') ? 'hr'
+        : roles.includes('prestador') ? 'prestador'
+        : roles.includes('specialist') ? 'specialist'
+        : 'user';
+
+      const loadTime = performance.now() - startTime;
+      console.log(`[Auth] Profile loaded in ${loadTime.toFixed(0)}ms`);
+
+      return {
+        ...profileResult.data,
+        user_id: profileResult.data.id,
+        is_active: profileResult.data.is_active ?? true,
+        role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
+        metadata: (profileResult.data.metadata as Record<string, unknown>) || {}
+      };
+    } finally {
+      loadingProfileRef.current = false;
+    }
   };
 
   // Real authentication methods
   const login = async (email: string, password: string) => {
+    const startTime = performance.now();
+    
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       
@@ -91,15 +110,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw error;
       }
       
-      // Load profile directly - onAuthStateChange will update it if needed
-      const userProfile = await loadProfileWithRoles(data.user.id);
+      const authTime = performance.now() - startTime;
+      console.log(`[Auth] Login completed in ${authTime.toFixed(0)}ms`);
       
-      // Update state immediately
-      setUser(data.user);
-      setSession(data.session);
-      setProfile(userProfile);
-      
-      return { profile: userProfile };
+      // Let onAuthStateChange handle profile loading for consistency
+      // This eliminates race conditions and duplicate loads
+      return {};
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Credenciais inválidas';
       return { error: errorMessage };
@@ -198,19 +214,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (mounted) setIsLoading(false);
     });
 
-    // Listen for auth changes (logout, token refresh, etc)
-    // Note: login() handles profile loading directly, so this mainly handles logout/refresh
+    // Listen for auth changes (login, logout, token refresh, etc)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
       setSession(session);
       setUser(session?.user ?? null);
       
-      // Only reload profile on token refresh or if profile is not set
-      if (session?.user && !profile) {
+      // Always load profile when there's a session for consistency
+      if (session?.user) {
         try {
           const profileData = await loadProfileWithRoles(session.user.id);
-          if (mounted) setProfile(profileData);
+          if (mounted && profileData) setProfile(profileData);
         } catch (error) {
           console.error('Failed to load profile:', error);
           if (mounted) setProfile(null);
