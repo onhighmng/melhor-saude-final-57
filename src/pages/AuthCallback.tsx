@@ -13,19 +13,12 @@ const AuthCallback = () => {
     const handleAuthCallback = async () => {
       try {
         console.log('[AuthCallback] Starting authentication processing...');
-        
-        // Set a timeout fallback to prevent infinite loading
-        const timeoutId = setTimeout(() => {
-          console.error('[AuthCallback] Timeout - redirecting to user dashboard');
-          navigate('/user/dashboard');
-        }, 5000);
 
         // Get the session from URL params (handles OAuth and magic links)
         const { data: { session }, error } = await supabase.auth.getSession();
         console.log('[AuthCallback] Session fetch result:', { hasSession: !!session, error });
 
         if (error) {
-          clearTimeout(timeoutId);
           console.error('[AuthCallback] Session error:', error);
           const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
           toast({
@@ -38,7 +31,6 @@ const AuthCallback = () => {
         }
 
         if (!session) {
-          clearTimeout(timeoutId);
           console.warn('[AuthCallback] No session found');
           toast({
             title: 'Sessão expirada',
@@ -60,14 +52,13 @@ const AuthCallback = () => {
         console.log('[AuthCallback] Profile fetch result:', { hasProfile: !!profileData, error: profileError });
 
         if (profileError) {
-          clearTimeout(timeoutId);
           console.error('[AuthCallback] Profile error:', profileError);
-          // Default to user dashboard if profile not found
           toast({
-            title: 'Login bem-sucedido',
-            description: 'Bem-vindo de volta!'
+            title: 'Erro de perfil',
+            description: 'Não foi possível carregar o perfil',
+            variant: 'destructive'
           });
-          navigate('/user/dashboard');
+          navigate('/login');
           return;
         }
 
@@ -78,10 +69,18 @@ const AuthCallback = () => {
           .select('role')
           .eq('user_id', session.user.id);
 
-        console.log('[AuthCallback] Roles fetch result:', { roles: rolesData, error: rolesError });
+        console.log('[AuthCallback] Roles fetch result:', { 
+          roles: rolesData, 
+          error: rolesError,
+          rolesCount: rolesData?.length 
+        });
+
+        if (rolesError) {
+          console.error('[AuthCallback] Error fetching roles:', rolesError);
+        }
 
         const roles = rolesData?.map(r => r.role) || [];
-        console.log('[AuthCallback] User roles:', roles);
+        console.log('[AuthCallback] Mapped user roles:', roles, 'Length:', roles.length);
 
         // Determine primary role (priority order: admin > hr > prestador > specialist > user)
         const primaryRole: UserRole = roles.includes('admin') ? 'admin'
@@ -91,9 +90,7 @@ const AuthCallback = () => {
           : 'user';
 
         const redirectPath = ROLE_REDIRECT_MAP[primaryRole];
-        console.log('[AuthCallback] Redirecting to:', redirectPath);
-
-        clearTimeout(timeoutId);
+        console.log('[AuthCallback] Primary role:', primaryRole, '-> Redirecting to:', redirectPath);
 
         toast({
           title: 'Login bem-sucedido',
@@ -109,7 +106,7 @@ const AuthCallback = () => {
           description: errorMessage,
           variant: 'destructive'
         });
-        navigate('/user/dashboard');
+        navigate('/login');
       } finally {
         setIsProcessing(false);
       }
