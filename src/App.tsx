@@ -39,6 +39,7 @@ const AdminReports = lazy(() => import("./pages/AdminReports"));
 const AdminControlCenter = lazy(() => import("./pages/AdminControlCenter"));
 const AdminSupport = lazy(() => import("./pages/AdminSupport"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
+const AdminCompanies = lazy(() => import("./pages/AdminCompanies"));
 const AdminCompanyDetail = lazy(() => import("./pages/AdminCompanyDetail"));
 
 // Specialist pages
@@ -159,6 +160,8 @@ const AppWithTracking = () => {
           <Route path="/admin/provider-calendar/:providerId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminProviderCalendar /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/operations" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminOperations /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/operacoes" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminOperations /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/companies" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanies /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/empresas" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanies /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/companies/:id" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanyDetail /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/empresas/:id" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanyDetail /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/resources" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminResources /></AdminLayout></ProtectedRoute>} />

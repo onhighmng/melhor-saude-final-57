@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Users, Building2, TrendingUp } from 'lucide-react';
+import { Search, Users, Building2, TrendingUp, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -112,7 +112,7 @@ export default function AdminCompanies() {
         </Card>
       </div>
 
-      {/* Search Bar */}
+      {/* Search Bar and Add Button */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -123,6 +123,10 @@ export default function AdminCompanies() {
             className="pl-10"
           />
         </div>
+        <Button className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Adicionar Empresa
+        </Button>
       </div>
 
       {/* Companies Table */}
