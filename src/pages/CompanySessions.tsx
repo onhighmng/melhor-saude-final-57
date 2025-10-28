@@ -281,7 +281,7 @@ const CompanySessions = () => {
                     <span className="text-sm font-medium">Sessões Contratadas</span>
                   </div>
                   <div className="text-5xl font-bold text-blue-700 dark:text-blue-300 mb-2">
-                    {analytics?.totalContracted || 0}
+                    {Number(analytics?.totalContracted) || 0}
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Total incluído no contrato
@@ -303,7 +303,7 @@ const CompanySessions = () => {
                     <span className="text-sm font-medium">Sessões Utilizadas</span>
                   </div>
                   <div className="text-5xl font-bold text-green-700 dark:text-green-300 mb-2">
-                    {analytics?.totalUsed || 0}
+                    {Number(analytics?.totalUsed) || 0}
                   </div>
                   <p className="text-sm text-muted-foreground">Este mês</p>
                 </div>
@@ -323,7 +323,7 @@ const CompanySessions = () => {
                     <span className="text-sm font-medium">Taxa de Utilização</span>
                   </div>
                   <div className="text-5xl font-bold text-amber-700 dark:text-amber-300 mb-2">
-                    {analytics?.utilizationRate || 0}%
+                    {Number(analytics?.utilizationRate) || 0}%
                   </div>
                   <p className="text-sm text-muted-foreground">Eficiência do programa</p>
                 </div>
@@ -355,7 +355,7 @@ const CompanySessions = () => {
             )}
           >
             <CardContent className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 bg-background border border-border rounded-2xl sm:rounded-3xl z-10 w-full">
-              {analytics?.pillarBreakdown?.map((pillar: Record<string, unknown>, i: number) => (
+              {(analytics?.pillarBreakdown as any[])?.map((pillar: any, i: number) => (
                 <div
                   key={i}
                   className="flex items-center justify-between p-3 sm:p-4 border border-border rounded-xl sm:rounded-2xl hover:bg-muted/50 transition animate-fade-in"
@@ -363,11 +363,11 @@ const CompanySessions = () => {
                 >
                   <div className="flex items-center gap-3 sm:gap-4 flex-1">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                      {getPillarIcon(pillar.pillar)}
+                      {getPillarIcon(String(pillar.pillar))}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm sm:text-base font-semibold text-foreground truncate">
-                        {pillar.pillar as string}
+                        {String(pillar.pillar)}
                       </p>
                       <p className="text-xs sm:text-sm text-muted-foreground">
                         {pillar.sessionsUsed as number} de {pillar.sessionsAvailable as number} sessões
@@ -392,25 +392,25 @@ const CompanySessions = () => {
           <div className="grid grid-cols-2 gap-8 sm:gap-12 w-full text-center">
             <div className="space-y-3">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-                {analytics?.totalContracted || 0}
+                {Number(analytics?.totalContracted) || 0}
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">Sessões Contratadas</p>
             </div>
             <div className="space-y-3">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-emerald-600">
-                {analytics?.totalUsed || 0}
+                {Number(analytics?.totalUsed) || 0}
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">Sessões Utilizadas</p>
             </div>
             <div className="space-y-3">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-600">
-                {analytics?.utilizationRate || 0}%
+                {Number(analytics?.utilizationRate) || 0}%
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">Taxa Utilização</p>
             </div>
             <div className="space-y-3">
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-600">
-                {analytics?.employeesUsingServices || 0}
+                {Number(analytics?.employeesUsingServices) || 0}
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">Colaboradores Ativos</p>
             </div>

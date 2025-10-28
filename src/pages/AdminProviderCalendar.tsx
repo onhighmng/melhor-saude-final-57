@@ -100,8 +100,8 @@ const AdminProviderCalendar = () => {
             isAvailable: !booking,
             ...(booking ? {
               bookingId: booking.id,
-              collaboratorName: (booking.profiles as Record<string, unknown>)?.name as string || 'N/A',
-              company: (booking.companies as Record<string, unknown>)?.company_name as string || 'N/A',
+              collaboratorName: (booking.profiles as any)?.name as string || 'N/A',
+              company: (booking.companies as any)?.company_name as string || 'N/A',
               sessionType: booking.meeting_type as 'virtual' | 'presential',
             } : {}),
           });
@@ -171,10 +171,10 @@ const AdminProviderCalendar = () => {
           </Button>
           <div>
             <h1 className="text-3xl font-heading font-bold text-foreground">
-              Calendário de {provider.name}
+              Calendário de {String(provider.name)}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {provider.specialty} • {provider.pillar}
+              {String(provider.specialty)} • {String(provider.pillar)}
             </p>
           </div>
         </div>

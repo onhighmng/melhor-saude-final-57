@@ -107,8 +107,8 @@ export default function PrestadorSessionDetail() {
 
           setSession({
             id: booking.id,
-            userName: (booking.profiles as Record<string, unknown>)?.name as string || 'Utilizador',
-            userAvatar: (booking.profiles as Record<string, unknown>)?.avatar_url as string,
+            userName: (booking.profiles as any)?.name as string || 'Utilizador',
+            userAvatar: (booking.profiles as any)?.avatar_url as string,
             pillar: pillarMap[booking.pillar] || 'psicologica',
             date: booking.date,
             time: booking.start_time || '00:00',
@@ -547,20 +547,20 @@ export default function PrestadorSessionDetail() {
                 {attachments.length > 0 && (
                   <div className="space-y-2">
                     {attachments.map((attachment) => (
-                      <div key={attachment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={String(attachment.id)} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <FileText className="h-5 w-5 text-gray-600" />
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{attachment.name}</p>
+                            <p className="text-sm font-medium text-gray-900">{String(attachment.name)}</p>
                             <p className="text-xs text-gray-500">
-                              {(attachment.size / 1024).toFixed(1)} KB
+                              {(Number(attachment.size) / 1024).toFixed(1)} KB
                             </p>
                           </div>
                         </div>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeAttachment(attachment.id)}
+                          onClick={() => removeAttachment(String(attachment.id))}
                           className="text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="h-4 w-4" />

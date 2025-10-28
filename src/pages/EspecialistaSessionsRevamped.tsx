@@ -195,14 +195,14 @@ const EspecialistaSessionsRevamped = () => {
     const groupedByDate = sessionsToShow.reduce((acc, session) => {
       const dateKey = session.date as string;
       if (!acc[dateKey]) {
-        acc[dateKey] = [];
+        acc[dateKey] = [] as any[];
       }
-      acc[dateKey].push({
+      (acc[dateKey] as any[]).push({
         id: session.id,
-        name: `${(session.profiles as Record<string, unknown>)?.name || 'Unknown'} - ${getPillarLabel(session.pillar as string)}`,
+        name: `${(session.profiles as any)?.name || 'Unknown'} - ${getPillarLabel(session.pillar as string)}`,
         time: (session.start_time as string) || '00:00',
         datetime: `${session.date}T${(session.start_time as string) || '00:00'}`,
-        userName: (session.profiles as Record<string, unknown>)?.name || 'Unknown',
+        userName: (session.profiles as any)?.name || 'Unknown',
         pillar: session.pillar,
       });
       return acc;
@@ -232,8 +232,8 @@ const EspecialistaSessionsRevamped = () => {
   const selectedDateSessions = useMemo(() => {
     if (!selectedDate) return [];
     return sessionsToShow.filter(session => 
-      isSameDay(new Date(session.date), selectedDate)
-    ).sort((a, b) => a.time.localeCompare(b.time));
+      isSameDay(new Date(session.date as any), selectedDate)
+    ).sort((a, b) => String(a.start_time).localeCompare(String(b.start_time)));
   }, [sessionsToShow, selectedDate]);
 
   const handleSaveNote = (notes: string, outcome: string) => {
@@ -338,8 +338,8 @@ const EspecialistaSessionsRevamped = () => {
     setCurrentBookingType(null);
   };
 
-  const renderSessionCard = (session: Record<string, unknown>) => (
-    <Card key={session.id} className="p-6 hover:shadow-md transition-shadow">
+  const renderSessionCard = (session: any) => (
+    <Card key={String(session.id)} className="p-6 hover:shadow-md transition-shadow">
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
@@ -398,7 +398,7 @@ const EspecialistaSessionsRevamped = () => {
       <Card className="p-0">
         <FullScreenCalendar 
           data={calendarData}
-          onEventClick={handleEventClick}
+          onEventClick={(event: any) => handleEventClick(event)}
           onDayClick={handleDateClick}
           onSetAvailability={() => setIsAvailabilityModalOpen(true)}
           onAddEvent={handleAddEvent}
