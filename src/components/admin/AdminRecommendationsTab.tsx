@@ -98,7 +98,7 @@ export default function AdminRecommendationsTab() {
 
       setRecommendations(formattedRecs);
     } catch (error) {
-      console.error('Error loading recommendations:', error);
+      // Silent fail for recommendations loading
       toast({
         title: 'Erro ao carregar recomendações',
         description: 'Não foi possível carregar as recomendações.',

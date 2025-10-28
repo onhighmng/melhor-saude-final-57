@@ -114,14 +114,12 @@ export function SessionModal({
 
   // Handler functions for the three action buttons
   const handleRescheduleSession = (sessionId: string) => {
-    console.log('Reschedule session:', sessionId);
     if (onReschedule) {
       onReschedule(sessionId);
     }
   };
 
   const handleJoinSession = (sessionId: string) => {
-    console.log('Join session:', sessionId);
     // Find the session and open meeting link if available
     const session = sessions.find(s => s.id === sessionId);
     if (session && session.meetingLink) {
@@ -130,7 +128,6 @@ export function SessionModal({
   };
 
   const handleCancelSession = (sessionId: string) => {
-    console.log('Cancel session:', sessionId);
     if (onCancel) {
       onCancel(sessionId);
     }

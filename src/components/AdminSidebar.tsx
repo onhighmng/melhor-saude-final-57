@@ -53,7 +53,7 @@ const AdminSidebar = () => {
       await logout();
       navigate('/');
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      // Silent fail for logout
     }
   };
 
@@ -95,7 +95,7 @@ const AdminSidebar = () => {
   );
 };
 
-const Logo = ({ open, user }: { open: boolean; user: any }) => {
+const Logo = ({ open, user }: { open: boolean; user: Record<string, unknown> | null }) => {
   return (
     <div className={cn(
       "flex items-center py-2",

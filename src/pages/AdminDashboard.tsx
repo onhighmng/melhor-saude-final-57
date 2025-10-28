@@ -63,7 +63,7 @@ const AdminDashboard = () => {
   const loadActivityMetrics = async () => {
     try {
       // Get utilization rate (type will regenerate after migration)
-      const { data: utilData, error: utilError } = await (supabase.rpc as any)('get_platform_utilization');
+      const { data: utilData } = await supabase.rpc('get_platform_utilization');
 
       // Get active prestadores count
       const { count: activePrestadoresCount } = (await supabase
@@ -87,7 +87,7 @@ const AdminDashboard = () => {
         avgSatisfaction: avgRating
       });
     } catch (error) {
-      console.error('Error loading activity metrics:', error);
+      // Silent fail for activity metrics loading
     } finally {
       setLoadingMetrics(false);
     }

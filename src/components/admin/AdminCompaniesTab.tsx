@@ -54,7 +54,7 @@ export const AdminCompaniesTab = ({
 } = {}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const [companies, setCompanies] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -115,8 +115,8 @@ export const AdminCompaniesTab = ({
         setCompanies(formattedCompanies);
       }
     } catch (error) {
-      console.error('Error loading companies:', error);
-      toast.error('Erro ao carregar empresas');
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar empresas';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -184,7 +184,7 @@ export const AdminCompaniesTab = ({
 
         setMonthlyUsageData(chartData);
       } catch (error) {
-        console.error('Error fetching monthly usage:', error);
+        // Silent fail for monthly usage fetching
       }
     };
 
@@ -198,7 +198,6 @@ export const AdminCompaniesTab = ({
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'companies' },
         () => {
-          console.log('Companies changed, refetching...');
           loadCompanies();
         }
       )

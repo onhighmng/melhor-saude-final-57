@@ -289,11 +289,11 @@ const AdminProvidersTab = () => {
       });
 
       await loadProviders();
-    } catch (error: any) {
-      console.error('Error approving provider:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro ao aprovar prestador";
       toast({
         title: "Erro",
-        description: error.message || "Erro ao aprovar prestador",
+        description: errorMessage,
         variant: "destructive"
       });
     }
@@ -358,11 +358,11 @@ const AdminProvidersTab = () => {
       });
 
       await loadProviders();
-    } catch (error: any) {
-      console.error('Error rejecting provider:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro ao rejeitar prestador";
       toast({
         title: "Erro",
-        description: error.message || "Erro ao rejeitar prestador",
+        description: errorMessage,
         variant: "destructive"
       });
     }

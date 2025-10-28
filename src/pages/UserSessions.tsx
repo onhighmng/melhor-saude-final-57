@@ -182,7 +182,6 @@ export default function UserSessions() {
           });
         }
       } catch (emailError) {
-        console.error('Failed to send cancellation email:', emailError);
         // Don't block cancellation on email failure
       }
 

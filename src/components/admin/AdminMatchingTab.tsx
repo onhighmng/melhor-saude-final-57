@@ -78,8 +78,8 @@ export default function AdminMatchingTab() {
 
       if (error) throw error;
       setPendingCases(data || []);
-    } catch (error: any) {
-      console.error('Error loading pending cases:', error);
+    } catch (error) {
+      // Silent fail for pending cases loading
       toast({
         title: 'Erro',
         description: 'Erro ao carregar casos pendentes',
@@ -101,7 +101,7 @@ export default function AdminMatchingTab() {
       if (error) throw error;
       setSpecialists(data || []);
     } catch (error) {
-      console.error('Error loading specialists:', error);
+      // Silent fail for specialists loading
     }
   };
 
@@ -176,11 +176,11 @@ export default function AdminMatchingTab() {
       setIsDialogOpen(false);
       setSelectedCase(null);
       setSelectedSpecialist('');
-    } catch (error: any) {
-      console.error('Error assigning specialist:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao atribuir especialista';
       toast({
         title: 'Erro',
-        description: error.message || 'Erro ao atribuir especialista',
+        description: errorMessage,
         variant: 'destructive'
       });
     }

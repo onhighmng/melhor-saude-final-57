@@ -72,34 +72,34 @@ const AdminTeamTab = () => {
 
       if (error) throw error;
 
-      const team = (adminUsers || []).map((adminUser: any) => {
-        const user = adminUser.user;
-        const role = adminUser.role;
+      const team = (adminUsers || []).map((adminUser: Record<string, unknown>) => {
+        const userData = adminUser.user as Record<string, unknown>;
+        const roleValue = adminUser.role as string;
         
         // Define permissions based on role
         const permissions = {
           users: true,
-          companies: role !== 'support',
-          providers: ['super_admin', 'admin'].includes(role),
+          companies: roleValue !== 'support',
+          providers: ['super_admin', 'admin'].includes(roleValue),
           sessions: true,
-          reports: role !== 'support',
-          settings: role === 'super_admin',
+          reports: roleValue !== 'support',
+          settings: roleValue === 'super_admin',
         };
 
         return {
-          id: user?.id || '',
-          name: user?.name || 'Unknown',
-          email: user?.email || '',
-          role: role as 'super_admin' | 'admin' | 'manager' | 'support',
+          id: userData?.id as string || '',
+          name: userData?.name as string || 'Unknown',
+          email: userData?.email as string || '',
+          role: roleValue as 'super_admin' | 'admin' | 'manager' | 'support',
           permissions,
-          lastActive: user?.last_seen || new Date().toISOString(),
-          status: user?.is_active ? ('active' as const) : ('inactive' as const),
+          lastActive: userData?.last_seen as string || new Date().toISOString(),
+          status: userData?.is_active ? ('active' as const) : ('inactive' as const),
         };
       });
 
       setTeamMembers(team);
     } catch (error) {
-      console.error('Error loading team members:', error);
+      // Silent fail for team members loading
       toast({
         title: 'Erro ao carregar equipa',
         description: 'Não foi possível carregar os membros da equipa.',
@@ -124,7 +124,7 @@ const AdminTeamTab = () => {
       support: 'Suporte',
     };
     return (
-      <Badge variant={variants[role as keyof typeof variants] as any}>
+      <Badge variant={variants[role as keyof typeof variants] as 'default' | 'secondary' | 'destructive' | 'outline'}>
         {labels[role as keyof typeof labels]}
       </Badge>
     );

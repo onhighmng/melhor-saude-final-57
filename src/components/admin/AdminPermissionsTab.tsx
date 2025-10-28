@@ -129,7 +129,7 @@ const AdminPermissionsTab = () => {
       if (error && error.code !== 'PGRST116') throw error;
 
       if (data?.setting_value) {
-        const settings = data.setting_value as any;
+        const settings = data.setting_value as Record<string, unknown>;
         if (settings.access_levels) {
           setAccessLevels(settings.access_levels);
         }
@@ -141,8 +141,7 @@ const AdminPermissionsTab = () => {
         }
       }
     } catch (error) {
-      console.error('Error loading settings:', error);
-      // Keep default values
+      // Keep default values - silent fail
     }
   };
 

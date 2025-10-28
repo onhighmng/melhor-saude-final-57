@@ -12,16 +12,14 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        console.log('[AuthCallback] Processing auth redirect...');
-
         // Get the session from URL params (handles OAuth and magic links)
         const { data: { session }, error } = await supabase.auth.getSession();
 
         if (error) {
-          console.error('[AuthCallback] Session error:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
           toast({
             title: 'Erro de autenticação',
-            description: error.message,
+            description: errorMessage,
             variant: 'destructive'
           });
           navigate('/login');
@@ -29,7 +27,6 @@ const AuthCallback = () => {
         }
 
         if (!session) {
-          console.log('[AuthCallback] No session found, redirecting to login');
           toast({
             title: 'Sessão expirada',
             description: 'Por favor, faça login novamente',
@@ -39,8 +36,6 @@ const AuthCallback = () => {
           return;
         }
 
-        console.log('[AuthCallback] Session found, fetching profile...');
-
         // Get user profile
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
@@ -49,7 +44,6 @@ const AuthCallback = () => {
           .single();
 
         if (profileError) {
-          console.error('[AuthCallback] Profile fetch error:', profileError);
           // User might not have profile yet, redirect to login
           navigate('/login');
           return;
@@ -72,7 +66,6 @@ const AuthCallback = () => {
           : 'user';
 
         const redirectPath = ROLE_REDIRECT_MAP[primaryRole];
-        console.log('[AuthCallback] Redirecting to:', redirectPath);
 
         toast({
           title: 'Login bem-sucedido',
@@ -81,10 +74,10 @@ const AuthCallback = () => {
 
         navigate(redirectPath);
       } catch (error) {
-        console.error('[AuthCallback] Unexpected error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Erro ao processar autenticação';
         toast({
           title: 'Erro inesperado',
-          description: 'Ocorreu um erro ao processar autenticação',
+          description: errorMessage,
           variant: 'destructive'
         });
         navigate('/login');

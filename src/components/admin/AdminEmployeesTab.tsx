@@ -24,7 +24,7 @@ import {
 
 // Session History Component
 const SessionHistoryCard = ({ employeeId }: { employeeId: string }) => {
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const SessionHistoryCard = ({ employeeId }: { employeeId: string }) => {
 
         setSessions(formattedSessions);
       } catch (error) {
-        console.error('Error loading session history:', error);
+        // Silent fail for session history loading
       } finally {
         setLoading(false);
       }
@@ -104,7 +104,11 @@ interface Employee {
 
 // Mock employees removed - using real data from database
 
-const pillarIcons: Record<string, any> = {
+interface PillarIconType {
+  [key: string]: React.ComponentType<{ className?: string }>;
+}
+
+const pillarIcons: PillarIconType = {
   'Saúde Mental': Brain,
   'Bem-Estar Físico': Dumbbell,
   'Assistência Financeira': DollarSign,

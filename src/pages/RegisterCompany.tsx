@@ -59,7 +59,7 @@ export default function RegisterCompany() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const updateFormData = (field: keyof CompanyFormData, value: any) => {
+  const updateFormData = (field: keyof CompanyFormData, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -155,11 +155,11 @@ export default function RegisterCompany() {
 
       navigate('/login');
       
-    } catch (error: any) {
-      console.error('Company registration error:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro. Tente novamente.";
       toast({
         title: "Erro no registo",
-        description: error.message || "Ocorreu um erro. Tente novamente.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

@@ -85,7 +85,7 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
 
         setCompanies(companyList);
       } catch (error) {
-        console.error('Error loading companies:', error);
+        // Silent fail for companies loading
         toast({
           title: 'Erro ao carregar empresas',
           description: 'Não foi possível carregar a lista de empresas.',

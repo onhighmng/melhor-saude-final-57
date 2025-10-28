@@ -14,7 +14,6 @@ const Login = () => {
 
   const handleLogin = () => {
     // Mock login for demo
-    console.log('Login attempt:', { email, password });
     navigate('/');
   };
 

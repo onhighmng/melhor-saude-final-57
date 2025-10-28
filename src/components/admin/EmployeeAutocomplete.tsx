@@ -67,20 +67,24 @@ export const EmployeeAutocomplete = ({ value, onSelect, companyId }: EmployeeAut
 
       if (error) throw error;
 
-      const formattedEmployees: Employee[] = (data || []).map((emp: any) => ({
-        user_id: emp.user_id,
-        name: emp.profiles.name || 'Unnamed',
-        email: emp.profiles.email || '',
-        company_name: emp.companies.company_name || '',
-        sessions_allocated: emp.sessions_allocated,
-        sessions_used: emp.sessions_used,
-        sessions_remaining: emp.sessions_allocated - emp.sessions_used,
-        company_id: emp.company_id,
-      }));
+      const formattedEmployees: Employee[] = (data || []).map((emp: Record<string, unknown>) => {
+        const profiles = emp.profiles as Record<string, unknown>;
+        const companies = emp.companies as Record<string, unknown>;
+        return {
+          user_id: emp.user_id as string,
+          name: (profiles?.name as string) || 'Unnamed',
+          email: (profiles?.email as string) || '',
+          company_name: (companies?.company_name as string) || '',
+          sessions_allocated: emp.sessions_allocated as number,
+          sessions_used: emp.sessions_used as number,
+          sessions_remaining: (emp.sessions_allocated as number) - (emp.sessions_used as number),
+          company_id: emp.company_id as string,
+        };
+      });
 
       setEmployees(formattedEmployees);
     } catch (error) {
-      console.error('Error loading employees:', error);
+      // Silent fail for employee loading
       toast({
         title: 'Erro ao carregar colaboradores',
         variant: 'destructive',

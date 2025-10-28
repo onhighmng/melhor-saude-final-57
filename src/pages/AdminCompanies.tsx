@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 export default function AdminCompanies() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [companies, setCompanies] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export default function AdminCompanies() {
       if (error) throw error;
       setCompanies(data || []);
     } catch (error) {
-      console.error('Error loading companies:', error);
-      toast.error('Erro ao carregar empresas');
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar empresas';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

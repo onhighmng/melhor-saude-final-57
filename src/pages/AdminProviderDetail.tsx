@@ -168,10 +168,10 @@ const AdminProviderDetail = () => {
         monthlyStats: []
       });
     } catch (error) {
-      console.error('Error loading provider details:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar detalhes do prestador';
       toast({
         title: 'Erro',
-        description: 'Erro ao carregar detalhes do prestador',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {

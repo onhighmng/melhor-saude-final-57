@@ -192,11 +192,11 @@ export default function RegisterEmployee() {
       // User must verify email first, then will be redirected via callback
       navigate('/login?registered=employee');
       
-    } catch (error: any) {
-      console.error('Registration error:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro inesperado.";
       toast({
         title: "Erro na criação da conta",
-        description: error.message || "Ocorreu um erro inesperado.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

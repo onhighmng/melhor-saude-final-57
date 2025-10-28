@@ -92,7 +92,7 @@ export function UserSidebar() {
           setUnreadCount(count);
         }
       } catch (error) {
-        console.error('Error fetching unread count:', error);
+        // Silent fail for unread count
       }
     };
 

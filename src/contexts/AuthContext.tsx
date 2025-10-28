@@ -189,7 +189,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem('auth_redirect_intent');
       localStorage.removeItem('navigation_history');
     } catch (error) {
-      console.error('Logout error:', error);
+      // Silent fail for logout errors
     }
   };
 
@@ -203,7 +203,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const profileData = await loadProfileWithRoles(session.user.id);
           setProfile(profileData);
         } catch (error) {
-          console.error('Error loading profile:', error);
+          // Silent fail for profile loading
         }
       }
       setIsLoading(false);
@@ -217,7 +217,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const profileData = await loadProfileWithRoles(session.user.id);
           setProfile(profileData);
         } catch (error) {
-          console.error('Error loading profile:', error);
+          // Silent fail for profile loading
           setProfile(null);
         }
       } else {

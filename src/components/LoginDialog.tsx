@@ -36,7 +36,7 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
   try {
     authContext = useAuth();
   } catch (error) {
-    console.error('Auth context not available in LoginDialog:', error);
+    // Auth context not available
     authContext = {
       login: async () => {
         throw new Error('Auth context not available');
@@ -56,8 +56,6 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      console.log('🔐 LoginDialog: Attempting login...');
-      
       const result = await login(data.email, data.password);
       
       if (result.error) {
