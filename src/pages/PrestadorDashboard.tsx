@@ -47,8 +47,25 @@ export default function PrestadorDashboard() {
   const { profile } = useAuth();
   const [isOnline, setIsOnline] = useState(true);
   const [timeFilter, setTimeFilter] = useState<'hoje' | 'proximos7dias'>('hoje');
-  const [sessions, setSessions] = useState<any[]>([]);
-  const [metrics, setMetrics] = useState<any>(null);
+  interface Session {
+    id: string;
+    user_id: string;
+    date: string;
+    start_time: string;
+    status: string;
+    pillar: string;
+    notes: string;
+    profiles?: { name: string; email: string };
+  }
+  interface Metrics {
+    today: number;
+    week: number;
+    completed: number;
+    cancelled: number;
+    noShow: number;
+  }
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [prestadorName, setPrestadorName] = useState('');
 
@@ -86,7 +103,7 @@ export default function PrestadorDashboard() {
           .order('date', { ascending: true });
 
         if (bookings) {
-          setSessions(bookings.map((b: any) => ({
+          setSessions(bookings.map((b) => ({
             ...b,
             userName: b.profiles?.name || '',
             userEmail: b.profiles?.email || '',
@@ -124,8 +141,7 @@ export default function PrestadorDashboard() {
           avgRating: avgRating.toFixed(1),
           revenue
         });
-      } catch (error: any) {
-        console.error('Error loading prestador data:', error);
+      } catch (error) {
         toast.error('Erro ao carregar dados');
       } finally {
         setLoading(false);
@@ -209,7 +225,7 @@ export default function PrestadorDashboard() {
     });
   };
 
-  const groupSessionsByDate = (sessions: any[]) => {
+  const groupSessionsByDate = (sessions: Session[]) => {
     const grouped = sessions.reduce((acc, session) => {
       const date = session.date;
       if (!acc[date]) acc[date] = [];
@@ -245,7 +261,7 @@ export default function PrestadorDashboard() {
       ));
       toast.warning('Falta registada');
     } else if (action === 'detalhes') {
-      console.log(`Viewing details for session ${sessionId}`);
+      // Navigate to session details would go here
     }
   };
 

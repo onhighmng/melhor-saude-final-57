@@ -31,9 +31,9 @@ export const useSessionBalance = () => {
           hasActiveSessions: (employee.sessions_allocated - employee.sessions_used) > 0
         });
       }
-    } catch (err: any) {
-      setError(err.message);
-      console.error('Error fetching session balance:', err);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch session balance';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

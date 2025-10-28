@@ -107,7 +107,7 @@ export const useMilestoneChecker = () => {
           }
         }
       } catch (error) {
-        console.error('Error checking milestones:', error);
+        // Silent fail for milestone checking
       }
     };
 

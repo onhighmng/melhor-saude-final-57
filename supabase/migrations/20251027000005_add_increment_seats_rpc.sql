@@ -6,6 +6,7 @@ CREATE OR REPLACE FUNCTION increment_company_seats_used(
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   UPDATE companies

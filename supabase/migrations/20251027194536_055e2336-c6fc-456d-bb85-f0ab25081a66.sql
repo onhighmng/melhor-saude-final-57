@@ -97,14 +97,18 @@ CREATE POLICY "Admins can view all content views" ON content_views
 
 -- Create RPC function for incrementing view counts
 CREATE OR REPLACE FUNCTION increment_content_views(content_id UUID)
-RETURNS VOID AS $$
+RETURNS VOID 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   UPDATE self_help_content 
   SET view_count = view_count + 1,
       updated_at = now()
   WHERE id = content_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_self_help_content_category ON self_help_content(category) WHERE is_published = true;

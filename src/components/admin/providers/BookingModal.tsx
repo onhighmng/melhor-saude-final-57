@@ -27,7 +27,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface BookingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  provider: any;
+  provider: Record<string, unknown>;
   slot: CalendarSlot;
 }
 
@@ -35,7 +35,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Record<string, unknown> | null>(null);
   const [formData, setFormData] = useState({
     sessionType: provider?.sessionType === 'Ambos' ? '' : (provider?.sessionType || ''),
     notes: '',
@@ -134,10 +134,10 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
 
       onOpenChange(false);
     } catch (error) {
-      console.error('Booking error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Tente novamente.';
       toast({
         title: 'Erro ao agendar sessão',
-        description: error instanceof Error ? error.message : 'Tente novamente.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

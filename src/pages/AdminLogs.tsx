@@ -128,7 +128,6 @@ const AdminLogs = () => {
 
         setLogs(transformedLogs);
       } catch (error) {
-        console.error('Error loading logs:', error);
         toast({
           title: 'Erro',
           description: 'Erro ao carregar logs',

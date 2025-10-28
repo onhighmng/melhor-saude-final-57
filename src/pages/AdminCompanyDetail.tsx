@@ -72,9 +72,9 @@ export default function AdminCompanyDetail() {
   const { toast } = useToast();
   const { profile } = useAuth();
 
-  const [company, setCompany] = useState<any>(null);
+  const [company, setCompany] = useState<Record<string, unknown> | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [invites, setInvites] = useState<any[]>([]);
+  const [invites, setInvites] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -132,10 +132,10 @@ export default function AdminCompanyDetail() {
         setEmployees(employeesWithProfiles);
         setInvites(invitesData || []);
       } catch (error) {
-        console.error('Error loading company details:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar detalhes da empresa';
         toast({
           title: 'Erro',
-          description: 'Erro ao carregar detalhes da empresa',
+          description: errorMessage,
           variant: 'destructive'
         });
       } finally {
@@ -285,7 +285,7 @@ export default function AdminCompanyDetail() {
         try {
           // Check if user already exists in auth
           const { data: existingAuthUser } = await supabase.auth.admin.listUsers();
-          const existingUser = existingAuthUser?.users?.find((u: any) => u.email === emp.email);
+          const existingUser = existingAuthUser?.users?.find((u: Record<string, unknown>) => u.email === emp.email);
 
           let userId;
           if (existingUser) {
@@ -335,8 +335,9 @@ export default function AdminCompanyDetail() {
           }
 
           createdEmployees.push(data);
-        } catch (error: any) {
-          errors.push({ email: emp.email, error: error.message });
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+          errors.push({ email: emp.email, error: errorMessage });
         }
       }
 
@@ -371,11 +372,11 @@ export default function AdminCompanyDetail() {
       
       setShowPreviewDialog(false);
       setCsvPreview(null);
-    } catch (error: any) {
-      console.error('Error validating CSV import:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao validar importação';
       toast({ 
         title: 'Erro na validação', 
-        description: error.message || 'Erro ao validar importação',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
@@ -422,11 +423,11 @@ export default function AdminCompanyDetail() {
 
       setEmployees(updatedEmployees);
       toast({ title: 'Códigos Gerados', description: `${newCodes.length} código(s) gerado(s) e guardado(s) com sucesso` });
-    } catch (error: any) {
-      console.error('Error generating codes:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao gerar códigos';
       toast({ 
         title: 'Erro', 
-        description: error.message || 'Erro ao gerar códigos',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
@@ -486,9 +487,8 @@ export default function AdminCompanyDetail() {
             : emp
         ));
 
-      } catch (error: any) {
-        console.error(`Failed to send email to ${employee.email}:`, error);
-        
+      } catch (error) {
+        // Silent fail for email sending
         setEmployees(prev => prev.map(emp => 
           emp.id === employee.id 
             ? { ...emp, status: 'erro' as const }
@@ -635,14 +635,14 @@ export default function AdminCompanyDetail() {
                   });
 
                   setTimeout(() => navigate('/admin/operations'), 1000);
-                } catch (error: any) {
-                  console.error('Error deactivating company:', error);
-                  toast({ 
-                    title: 'Erro', 
-                    description: error.message || 'Erro ao desativar empresa',
-                    variant: 'destructive'
-                  });
-                }
+                  } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Erro ao desativar empresa';
+                    toast({ 
+                      title: 'Erro', 
+                      description: errorMessage,
+                      variant: 'destructive'
+                    });
+                  }
               }}
             >
               Desativar
@@ -689,11 +689,11 @@ export default function AdminCompanyDetail() {
                       title: 'Colaborador Removido', 
                       description: `${employee?.name || ''} foi removido da lista` 
                     });
-                  } catch (error: any) {
-                    console.error('Error removing employee:', error);
+                  } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao remover o colaborador';
                     toast({ 
                       title: 'Erro ao remover colaborador',
-                      description: error.message || 'Ocorreu um erro ao remover o colaborador',
+                      description: errorMessage,
                       variant: 'destructive'
                     });
                   } finally {
@@ -758,11 +758,11 @@ export default function AdminCompanyDetail() {
                       title: 'Código Reenviado', 
                       description: `Código enviado para ${emailToResend.email}` 
                     });
-                  } catch (error: any) {
-                    console.error('Error resending invite:', error);
+                  } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao reenviar o código';
                     toast({ 
                       title: 'Erro ao reenviar código',
-                      description: error.message || 'Ocorreu um erro ao reenviar o código',
+                      description: errorMessage,
                       variant: 'destructive'
                     });
                   } finally {

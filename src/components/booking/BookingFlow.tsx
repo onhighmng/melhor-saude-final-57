@@ -45,7 +45,7 @@ const BookingFlow = () => {
   
   // Reschedule mode state
   const [rescheduleBookingId, setRescheduleBookingId] = useState<string | null>(null);
-  const [originalBooking, setOriginalBooking] = useState<any>(null);
+  const [originalBooking, setOriginalBooking] = useState<Record<string, unknown> | null>(null);
   const isRescheduleMode = searchParams.get('mode') === 'reschedule';
 
   const timeSlots = [
@@ -432,8 +432,7 @@ const BookingFlow = () => {
           meetingType: meetingType
         });
       } catch (emailError) {
-        console.error('Email send failed:', emailError);
-        // Don't block booking on email failure
+        // Email send failed - silently continue, don't block booking
       }
 
       toast({
@@ -452,10 +451,11 @@ const BookingFlow = () => {
         navigate('/user/dashboard');
       }, 2000);
       }
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao agendar a sessão';
       toast({
         title: 'Erro ao agendar',
-        description: error.message || 'Ocorreu um erro ao agendar a sessão',
+        description: errorMessage,
         variant: 'destructive'
       });
     }

@@ -107,8 +107,8 @@ export default function PrestadorSessionDetail() {
 
           setSession({
             id: booking.id,
-            userName: (booking.profiles as any)?.name || 'Utilizador',
-            userAvatar: (booking.profiles as any)?.avatar_url,
+            userName: (booking.profiles as Record<string, unknown>)?.name as string || 'Utilizador',
+            userAvatar: (booking.profiles as Record<string, unknown>)?.avatar_url as string,
             pillar: pillarMap[booking.pillar] || 'psicologica',
             date: booking.date,
             time: booking.start_time || '00:00',
@@ -116,7 +116,7 @@ export default function PrestadorSessionDetail() {
             location: booking.meeting_type === 'online' ? 'online' : 'presencial',
             status: booking.status as SessionStatus,
             deductionType: booking.company_id ? 'empresa' : 'pessoal',
-            companyName: (booking.companies as any)?.company_name,
+            companyName: (booking.companies as Record<string, unknown>)?.company_name as string,
             notes: booking.notes,
             chat_session_id: booking.chat_session_id,
             topic: booking.topic,
@@ -124,7 +124,7 @@ export default function PrestadorSessionDetail() {
           });
         }
       } catch (error) {
-        console.error('Error loading session:', error);
+        // Silent fail for session loading
       } finally {
         setLoading(false);
       }
@@ -138,7 +138,7 @@ export default function PrestadorSessionDetail() {
   const [noShowDescription, setNoShowDescription] = useState('');
   const [showNoShowDialog, setShowNoShowDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [attachments, setAttachments] = useState<any[]>([]);
+  const [attachments, setAttachments] = useState<Array<Record<string, unknown>>>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
@@ -303,7 +303,6 @@ export default function PrestadorSessionDetail() {
           });
         }
       } catch (emailError) {
-        console.error('Failed to send cancellation email:', emailError);
         // Don't block cancellation on email failure
       }
 

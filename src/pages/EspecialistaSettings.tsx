@@ -100,10 +100,10 @@ const EspecialistaSettings = () => {
       // Reload page to refresh auth context
       window.location.reload();
     } catch (error) {
-      console.error('Error updating profile:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Não foi possível guardar as alterações.';
       toast({
         title: 'Erro ao atualizar perfil',
-        description: 'Não foi possível guardar as alterações.',
+        description: errorMessage,
         variant: 'destructive',
       });
     }

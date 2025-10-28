@@ -1,6 +1,10 @@
 -- Platform analytics function
 CREATE OR REPLACE FUNCTION get_platform_analytics()
-RETURNS JSON AS $$
+RETURNS JSON 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
   result JSON;
 BEGIN
@@ -17,7 +21,7 @@ BEGIN
   ) INTO result;
   RETURN result;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Set updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()

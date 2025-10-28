@@ -1,6 +1,10 @@
 -- RPC function for platform utilization calculation
 CREATE OR REPLACE FUNCTION public.get_platform_utilization()
-RETURNS TABLE(utilization_rate NUMERIC) AS $$
+RETURNS TABLE(utilization_rate NUMERIC) 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   RETURN QUERY
   SELECT 
@@ -12,11 +16,15 @@ BEGIN
   FROM companies
   WHERE is_active = true;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- RPC function for monthly company usage
 CREATE OR REPLACE FUNCTION public.get_monthly_company_usage(company_id_param UUID)
-RETURNS TABLE(month TEXT, sessions BIGINT) AS $$
+RETURNS TABLE(month TEXT, sessions BIGINT) 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   RETURN QUERY
   SELECT 
@@ -29,5 +37,5 @@ BEGIN
   GROUP BY TO_CHAR(date, 'Mon'), EXTRACT(MONTH FROM date)
   ORDER BY EXTRACT(MONTH FROM date);
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 

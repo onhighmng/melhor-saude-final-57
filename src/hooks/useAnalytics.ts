@@ -12,12 +12,12 @@ interface AnalyticsData {
   sessions_allocated: number;
   sessions_used: number;
   pillarTrends?: {
-    weekly: any[];
-    monthly: any[];
-    overall: any[];
+    weekly: Array<{ pillar: string; count: number; percentage: number }>;
+    monthly: Array<{ pillar: string; count: number; percentage: number }>;
+    overall: Array<{ pillar: string; count: number; percentage: number }>;
   };
-  sessionActivity?: any[];
-  pillarDistribution?: any[];
+  sessionActivity?: Array<{ date: string; count: number }>;
+  pillarDistribution?: Array<{ pillar: string; count: number }>;
 }
 
 export const useAnalytics = () => {
@@ -55,9 +55,9 @@ export const useAnalytics = () => {
         sessions_allocated: sessionTotals.allocated,
         sessions_used: sessionTotals.used
       });
-    } catch (err: any) {
-      setError(err.message);
-      console.error('Error fetching analytics:', err);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch analytics';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

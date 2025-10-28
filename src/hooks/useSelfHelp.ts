@@ -25,9 +25,9 @@ export const useSelfHelpContent = (category?: string | null) => {
       if (fetchError) throw fetchError;
       setContent((data || []) as SelfHelpContent[]);
       setError(null);
-    } catch (err: any) {
-      setError(err.message);
-      console.error('Error fetching content:', err);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar conteúdo';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ export const useSelfHelpContent = (category?: string | null) => {
           : item
       ));
     } catch (error) {
-      console.error('Error tracking view:', error);
+      // Silent fail for view tracking
     }
   };
 
@@ -77,11 +77,11 @@ export const usePsychologicalTests = () => {
         .order('created_at', { ascending: false });
 
       if (fetchError) throw fetchError;
-      setTests((data || []) as unknown as PsychologicalTest[]);
+      setTests((data || []) as PsychologicalTest[]);
       setError(null);
-    } catch (err: any) {
-      setError(err.message);
-      console.error('Error fetching tests:', err);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar testes';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -119,9 +119,10 @@ export const useTestResults = () => {
       const score = Object.values(answers).reduce((sum, val) => sum + val, 0);
 
       // Get interpretation based on score ranges
-      const interpretationGuide = test.interpretation_guide as any;
-      const interpretation = interpretationGuide?.ranges?.find(
-        (range: any) => score >= range.min && score <= range.max
+      const interpretationGuide = test.interpretation_guide as Record<string, unknown>;
+      const ranges = interpretationGuide?.ranges as Array<{min: number; max: number; description: string}>;
+      const interpretation = ranges?.find(
+        (range) => score >= range.min && score <= range.max
       )?.description || 'Score recorded';
 
       // Save result to database
@@ -143,9 +144,9 @@ export const useTestResults = () => {
       if (saveError) throw saveError;
       return result as TestResult;
 
-    } catch (error: any) {
-      console.error('Error submitting test:', error);
-      throw error;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao submeter teste';
+      throw new Error(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -162,7 +163,7 @@ export const useTestResults = () => {
       if (error) throw error;
       return (data || []) as TestResult[];
     } catch (error) {
-      console.error('Error fetching results:', error);
+      // Silent fail for results fetching
       return [];
     }
   };
@@ -218,9 +219,9 @@ export const useContentAnalytics = () => {
       const analyticsData = await Promise.all(analyticsPromises);
       setAnalytics(analyticsData);
       setError(null);
-    } catch (err: any) {
-      setError(err.message);
-      console.error('Error fetching analytics:', err);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar analytics';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

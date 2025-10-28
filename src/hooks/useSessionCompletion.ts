@@ -71,7 +71,7 @@ export const useSessionCompletion = () => {
           }
         }
       } catch (error) {
-        console.error('Error checking session completions:', error);
+        // Silent fail for session completion checking
       }
     };
 

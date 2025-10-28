@@ -51,7 +51,10 @@ export const useCompanyMetrics = (companyId?: string) => {
         
         // Calculate average rating from bookings
         const avgSatisfaction = bookings?.length 
-          ? bookings.reduce((sum, b) => sum + ((b as any).rating || 0), 0) / bookings.length 
+          ? bookings.reduce((sum, b) => {
+              const rating = 'rating' in b ? (b.rating as number) : 0;
+              return sum + rating;
+            }, 0) / bookings.length 
           : 0;
 
         // Calculate most used pillar
@@ -84,8 +87,8 @@ export const useCompanyMetrics = (companyId?: string) => {
           inactivePercentage: Math.round(((totalEmployees - activeEmployees) / totalEmployees) * 100) || 0
         });
       } catch (err) {
-        console.error('Error fetching company metrics:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch metrics');
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch metrics';
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }

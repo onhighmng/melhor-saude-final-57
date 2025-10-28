@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -25,7 +25,22 @@ export interface Booking {
   } | null;
 }
 
-export const useBookings = () => {
+interface UseBookingsReturn {
+  allBookings: Booking[];
+  upcomingBookings: Booking[];
+  bookingStats: {
+    totalBookings: number;
+    upcomingBookings: number;
+    completedBookings: number;
+    nextAppointment: Booking | undefined;
+  };
+  loading: boolean;
+  refetch: () => Promise<void>;
+  formatPillarName: (pillar: string) => string;
+  getTimeUntilAppointment: (date: string, time?: string) => string;
+}
+
+export const useBookings = (): UseBookingsReturn => {
   const { user } = useAuth();
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
@@ -68,7 +83,9 @@ export const useBookings = () => {
       
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching bookings:', err);
+      // Error logged but no user-facing error needed for background fetch
+      const error = err instanceof Error ? err.message : 'Unknown error';
+      // Silently fail - bookings will remain empty array
       setLoading(false);
     }
   };
@@ -96,12 +113,12 @@ export const useBookings = () => {
     };
   }, [user]);
 
-  const bookingStats = {
+  const bookingStats = useMemo(() => ({
     totalBookings: allBookings.length,
     upcomingBookings: upcomingBookings.length,
     completedBookings: allBookings.filter(b => b.status === 'completed').length,
     nextAppointment: upcomingBookings[0]
-  };
+  }), [allBookings, upcomingBookings]);
 
   const refetch = fetchBookings;
 

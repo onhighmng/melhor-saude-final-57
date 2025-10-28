@@ -25,7 +25,15 @@ import { supabase } from '@/integrations/supabase/client';
 const CompanyDashboard = () => {
   const { profile } = useAuth();
   const navigate = useNavigate();
-  const [metrics, setMetrics] = useState<any>(null);
+  interface CompanyMetrics {
+    avgSatisfaction: string;
+    activeEmployees: number;
+    totalEmployees: number;
+    sessionsUsed: number;
+    sessionsAllocated: number;
+    mostUsedPillar: string;
+  }
+  const [metrics, setMetrics] = useState<CompanyMetrics | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,7 +76,7 @@ const CompanyDashboard = () => {
           .reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length || 0;
 
         // Count bookings by pillar (handle null values)
-        const pillarCounts = bookings?.reduce((acc: any, b: any) => {
+        const pillarCounts = bookings?.reduce((acc: Record<string, number>, b) => {
           const pillarKey = b.pillar || 'unknown';
           acc[pillarKey] = (acc[pillarKey] || 0) + 1;
           return acc;
@@ -87,8 +95,8 @@ const CompanyDashboard = () => {
           sessionsAllocated: totalSessions,
           mostUsedPillar: mostUsedPillar || 'Saúde Mental'
         });
-      } catch (error: any) {
-        console.error('Error loading company data:', error);
+      } catch (error) {
+        // Error loading company data - silently fail, show empty state
       } finally {
         setLoading(false);
       }

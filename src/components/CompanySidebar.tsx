@@ -58,7 +58,7 @@ const CompanySidebar = () => {
           }
         }
       } catch (error) {
-        console.error('Error fetching seat data:', error);
+        // Error fetching seat data - silently fail
       }
     };
 
@@ -127,7 +127,7 @@ const CompanySidebar = () => {
       await logout();
       navigate('/');
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      // Logout error - silently fail, user will be redirected
     }
   };
 

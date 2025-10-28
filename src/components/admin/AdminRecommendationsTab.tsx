@@ -74,7 +74,7 @@ export default function AdminRecommendationsTab() {
 
       if (error) throw error;
 
-      const formattedRecs: Recommendation[] = (data || []).map((rec: any) => {
+      const formattedRecs: Recommendation[] = (data || []).map((rec) => {
         const userName = rec.user?.name || 'Unknown';
         const initials = userName
           .split(' ')

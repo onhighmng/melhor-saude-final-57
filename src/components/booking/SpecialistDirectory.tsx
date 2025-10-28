@@ -23,7 +23,7 @@ interface SpecialistDirectoryProps {
 
 const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDirectoryProps) => {
   const { toast } = useToast();
-  const [providers, setProviders] = useState<any[]>([]);
+  const [providers, setProviders] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
 
   const pillarMapping = {
@@ -62,10 +62,10 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
 
         setProviders(filtered || []);
       } catch (error) {
-        console.error('Error loading providers:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar especialistas';
         toast({
           title: 'Erro',
-          description: 'Erro ao carregar especialistas',
+          description: errorMessage,
           variant: 'destructive'
         });
       } finally {
@@ -118,7 +118,7 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
                   onClick={() => onProviderSelect({
                     id: provider.id,
                     name: provider.name,
-                    specialty: provider.specialties?.[0] || 'Especialista',
+                    specialty: (provider.specialties as string[])?.[0] || 'Especialista',
                     pillar: mappedPillar,
                     avatar_url: provider.photo_url || '',
                     rating: 5,
@@ -140,7 +140,7 @@ const SpecialistDirectory = ({ pillar, onProviderSelect, onBack }: SpecialistDir
                     </h3>
                     
                     <p className="font-semibold text-base lg:text-lg leading-tight mb-3 text-accent-sage">
-                      {provider.specialties?.[0] || 'Especialista'}
+                      {provider.specialties as string[]?.[0] || 'Especialista'}
                     </p>
                     
                     <p className="text-sm md:text-base leading-relaxed tracking-tight mb-4 text-slate-grey">

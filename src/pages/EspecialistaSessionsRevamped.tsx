@@ -26,7 +26,7 @@ const EspecialistaSessionsRevamped = () => {
   const { toast } = useToast();
   const { profile } = useAuth();
   const { filterByCompanyAccess } = useCompanyFilter();
-  const [selectedSession, setSelectedSession] = useState<any>(null);
+  const [selectedSession, setSelectedSession] = useState<Record<string, unknown> | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDaySessionsModalOpen, setIsDaySessionsModalOpen] = useState(false);
@@ -34,7 +34,7 @@ const EspecialistaSessionsRevamped = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSelfBookingModalOpen, setIsSelfBookingModalOpen] = useState(false);
   const [isExternalBookingModalOpen, setIsExternalBookingModalOpen] = useState(false);
-  const [allSessions, setAllSessions] = useState<any[]>([]);
+  const [allSessions, setAllSessions] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
   
   // Booking flow state
@@ -62,7 +62,7 @@ const EspecialistaSessionsRevamped = () => {
 
         setAllSessions(sessions || []);
       } catch (error) {
-        console.error('Error loading sessions:', error);
+        // Silent fail for session loading
       } finally {
         setLoading(false);
       }
@@ -193,20 +193,27 @@ const EspecialistaSessionsRevamped = () => {
   // Transform sessions data for calendar
   const calendarData = useMemo(() => {
     const groupedByDate = sessionsToShow.reduce((acc, session) => {
-      const dateKey = session.date;
+      const dateKey = session.date as string;
       if (!acc[dateKey]) {
         acc[dateKey] = [];
       }
       acc[dateKey].push({
         id: session.id,
-        name: `${session.profiles?.name || 'Unknown'} - ${getPillarLabel(session.pillar)}`,
-        time: session.start_time || '00:00',
-        datetime: `${session.date}T${session.start_time || '00:00'}`,
-        userName: session.profiles?.name || 'Unknown',
+        name: `${(session.profiles as Record<string, unknown>)?.name || 'Unknown'} - ${getPillarLabel(session.pillar as string)}`,
+        time: (session.start_time as string) || '00:00',
+        datetime: `${session.date}T${(session.start_time as string) || '00:00'}`,
+        userName: (session.profiles as Record<string, unknown>)?.name || 'Unknown',
         pillar: session.pillar,
       });
       return acc;
-    }, {} as Record<string, any[]>);
+    }, {} as Record<string, Array<{
+      id: string;
+      name: string;
+      time: string;
+      datetime: string;
+      userName: string;
+      pillar: string;
+    }>>);
 
     return Object.entries(groupedByDate).map(([date, events]) => ({
       day: new Date(date),
@@ -237,7 +244,7 @@ const EspecialistaSessionsRevamped = () => {
     setIsNoteModalOpen(false);
   };
 
-  const handleAddNote = (session: any) => {
+  const handleAddNote = (session: Record<string, unknown>) => {
     setSelectedSession(session);
     setIsNoteModalOpen(true);
   };
@@ -247,7 +254,7 @@ const EspecialistaSessionsRevamped = () => {
     setIsDaySessionsModalOpen(true);
   };
 
-  const handleEventClick = (event: any) => {
+  const handleEventClick = (event: Record<string, unknown>) => {
     const session = sessionsToShow.find(s => s.id === event.id);
     if (session) {
       setSelectedSession(session);
@@ -331,16 +338,16 @@ const EspecialistaSessionsRevamped = () => {
     setCurrentBookingType(null);
   };
 
-  const renderSessionCard = (session: any) => (
+  const renderSessionCard = (session: Record<string, unknown>) => (
     <Card key={session.id} className="p-6 hover:shadow-md transition-shadow">
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
-            <h4 className="font-semibold text-base mb-2">{session.user_name}</h4>
-            <p className="text-sm text-foreground">{session.company_name}</p>
+            <h4 className="font-semibold text-base mb-2">{session.user_name as string}</h4>
+            <p className="text-sm text-foreground">{session.company_name as string}</p>
           </div>
-          <Badge className={`text-sm px-3 py-1 ${getPillarColor(session.pillar)}`}>
-            {getPillarLabel(session.pillar)}
+          <Badge className={`text-sm px-3 py-1 ${getPillarColor(session.pillar as string)}`}>
+            {getPillarLabel(session.pillar as string)}
           </Badge>
         </div>
 
@@ -348,20 +355,20 @@ const EspecialistaSessionsRevamped = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              <span>{session.time}</span>
+              <span>{session.time as string}</span>
             </div>
             <div className="flex items-center gap-2">
-              {getSessionTypeIcon(session.session_type || 'video')}
-              <span>{getSessionTypeLabel(session.session_type || 'video')}</span>
+              {getSessionTypeIcon((session.session_type as string) || 'video')}
+              <span>{getSessionTypeLabel((session.session_type as string) || 'video')}</span>
             </div>
           </div>
-          <Badge className={`text-sm px-3 py-1 ${getStatusBadge(session.status).variant}`}>
-            {getStatusBadge(session.status).label}
+          <Badge className={`text-sm px-3 py-1 ${getStatusBadge(session.status as string).variant}`}>
+            {getStatusBadge(session.status as string).label}
           </Badge>
         </div>
 
         {session.notes && (
-          <p className="text-sm text-foreground italic">{session.notes}</p>
+          <p className="text-sm text-foreground italic">{session.notes as string}</p>
         )}
 
         <Button

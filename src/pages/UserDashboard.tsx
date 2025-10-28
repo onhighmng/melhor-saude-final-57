@@ -111,12 +111,12 @@ const UserDashboard = () => {
   };
 
   // Get milestone progress from localStorage (persistent)
-  const getMilestoneProgress = (milestonesData: any[]) => {
-    return milestonesData.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
+  const getMilestoneProgress = (milestonesData: Array<{completed: boolean; points: number}>) => {
+    return milestonesData.reduce((sum: number, m) => sum + (m.completed ? m.points : 0), 0);
   };
 
   // Initialize milestones from database, fallback to localStorage
-  const [milestones, setMilestones] = useState<any[]>([]);
+  const [milestones, setMilestones] = useState<Array<{id: string; label: string; points: number; completed: boolean}>>([]);
   const [milestoneProgress, setMilestoneProgress] = useState(0);
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
@@ -164,8 +164,7 @@ const UserDashboard = () => {
           }
         }
       } catch (error) {
-        console.error('Error loading milestones from database:', error);
-        // Fallback to localStorage
+        // Fallback to localStorage on error
         const fallback = initializeMilestones();
         setMilestones(fallback);
         setMilestoneProgress(getMilestoneProgress(fallback));
@@ -206,7 +205,7 @@ const UserDashboard = () => {
       const updated = milestones.map(m => m.milestone_id === milestoneId ? { ...m, completed: true } : m);
       setMilestoneProgress(getMilestoneProgress(updated));
     } catch (error) {
-      console.error('Error completing milestone:', error);
+      // Silent fail for milestone completion
     }
   };
 
@@ -236,7 +235,6 @@ const UserDashboard = () => {
       setShowOnboarding(false);
       setJustCompletedOnboarding(true);
     } catch (error) {
-      console.error('Error saving onboarding data:', error);
       // Fallback to localStorage on error
       localStorage.setItem('onboardingData', JSON.stringify(data));
       setOnboardingData(data);
@@ -263,7 +261,7 @@ const UserDashboard = () => {
           setMilestoneProgress(progress);
         }
       } catch (error) {
-        console.error('Error refreshing milestones:', error);
+        // Silent fail for milestone refresh
       }
     };
     
@@ -339,7 +337,7 @@ const UserDashboard = () => {
   };
 
   const getPillarIcon = (pillar: string) => {
-    const iconMap: Record<string, any> = {
+    const iconMap: Record<string, React.ComponentType<{className?: string}>> = {
       'saude_mental': Brain,
       'bem_estar_fisico': Heart,
       'assistencia_financeira': DollarSign,
@@ -444,11 +442,11 @@ const UserDashboard = () => {
         title: 'Link aberto',
         description: 'O link da reunião foi aberto'
       });
-    } catch (error: any) {
-      console.error('Error joining session:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao abrir sessão';
       toast({
         title: 'Erro',
-        description: 'Erro ao abrir sessão',
+        description: errorMessage,
         variant: 'destructive'
       });
     }
@@ -545,7 +543,6 @@ const UserDashboard = () => {
           });
         }
       } catch (emailError) {
-        console.error('Failed to send cancellation email:', emailError);
         // Don't block cancellation on email failure
       }
 
@@ -560,11 +557,11 @@ const UserDashboard = () => {
       
       // Refresh bookings
       window.location.reload();
-    } catch (error: any) {
-      console.error('Error cancelling session:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro ao cancelar sessão";
       toast({
         title: "Erro",
-        description: error.message || "Erro ao cancelar sessão",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -734,7 +731,7 @@ const UserDashboard = () => {
                     </div>
                     
                     <div className="space-y-3 overflow-y-auto pr-2">
-                      {milestones.map((milestone: any) => (
+                      {milestones.map((milestone) => (
                         <div key={milestone.id} className={`flex items-center gap-3 p-3.5 rounded-lg border text-sm ${milestone.completed ? 'bg-green-50 border-green-200' : 'bg-white/50 border-gray-200'}`}>
                           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300'}`}>
                             {milestone.completed && (

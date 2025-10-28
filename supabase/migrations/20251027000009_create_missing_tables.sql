@@ -118,6 +118,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   RETURN QUERY
@@ -144,6 +145,7 @@ CREATE OR REPLACE FUNCTION mark_invite_used(
 RETURNS UUID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
   v_company_id UUID;

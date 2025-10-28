@@ -72,9 +72,7 @@ export const DirectBookingFlow = () => {
     }
   }, [searchParams, selectedPillar]); // Only run when URL changes or selectedPillar is null
 
-  useEffect(() => {
-    console.log('[DirectBookingFlow] Step:', currentStep, 'Pillar:', selectedPillar, 'Topic:', selectedTopic);
-  }, [currentStep, selectedPillar, selectedTopic]);
+  // Debug logging removed for production
 
   // Function to get proper pillar name in Portuguese
   const getPillarDisplayName = (pillar: BookingPillar | null): string => {
@@ -233,11 +231,11 @@ export const DirectBookingFlow = () => {
       setTimeout(() => {
         navigate('/user/dashboard');
       }, 1500);
-    } catch (error: any) {
-      console.error('Booking error:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao agendar a sessão';
       toast({
         title: 'Erro ao agendar',
-        description: error.message || 'Ocorreu um erro ao agendar a sessão',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {

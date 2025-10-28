@@ -18,7 +18,16 @@ export default function UserSessions() {
   const { allBookings, upcomingBookings, refetch, loading: bookingsLoading } = useBookings();
   const { sessionBalance, loading: balanceLoading, refetch: refetchBalance } = useSessionBalance();
   const toastHook = useToast();
-  const [userGoals, setUserGoals] = useState<any[]>([]);
+  interface UserGoal {
+    id: string;
+    title: string;
+    pillar: string;
+    targetSessions: number;
+    completedSessions: number;
+    progressPercentage: number;
+    progressEmojis: string[];
+  }
+  const [userGoals, setUserGoals] = useState<UserGoal[]>([]);
   const [isPastSessionsModalOpen, setIsPastSessionsModalOpen] = useState(false);
   const [isFutureSessionsModalOpen, setIsFutureSessionsModalOpen] = useState(false);
   const [showRatingDialog, setShowRatingDialog] = useState(false);
@@ -61,7 +70,7 @@ export default function UserSessions() {
     time: booking.start_time || '',
     prestadorName: booking.provider_name || 'Provider',
     pillar: (booking.pillar || 'saude_mental') as 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica',
-    status: booking.status as any,
+    status: booking.status as 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show',
     minutes: 60,
     wasDeducted: booking.status === 'completed',
     payerSource: 'company' as const,
@@ -189,11 +198,11 @@ export default function UserSessions() {
       // Refresh bookings list
       refetch();
       refetchBalance();
-    } catch (error: any) {
-      console.error('Error cancelling session:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido ao cancelar sessão';
       toastHook.toast({
         title: 'Erro ao cancelar sessão',
-        description: error.message || 'Tente novamente',
+        description: errorMessage,
         variant: 'destructive'
       });
     }

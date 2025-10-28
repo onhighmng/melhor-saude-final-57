@@ -122,7 +122,7 @@ const AnimatedInsights = () => {
 
 const CompanySessions = () => {
   const { profile } = useAuth();
-  const [analytics, setAnalytics] = useState<any>(null);
+  const [analytics, setAnalytics] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -138,26 +138,28 @@ const CompanySessions = () => {
 
         if (error) throw error;
 
-        const pillarUsage: any = {};
-        bookings.forEach((b: any) => {
-          const pillar = b.pillar || 'unknown';
+        const pillarUsage: Record<string, number> = {};
+        bookings.forEach((b: Record<string, unknown>) => {
+          const pillar = (b.pillar as string) || 'unknown';
           pillarUsage[pillar] = (pillarUsage[pillar] || 0) + 1;
         });
 
-        const monthlyTrend: any = {};
-        bookings.forEach((b: any) => {
-          const month = new Date(b.booking_date).toLocaleString('pt-PT', { month: 'short' });
+        const monthlyTrend: Record<string, number> = {};
+        bookings.forEach((b: Record<string, unknown>) => {
+          const month = new Date(b.booking_date as string).toLocaleString('pt-PT', { month: 'short' });
           monthlyTrend[month] = (monthlyTrend[month] || 0) + 1;
         });
 
-        const statusBreakdown: any = {};
-        bookings.forEach((b: any) => {
-          statusBreakdown[b.status] = (statusBreakdown[b.status] || 0) + 1;
+        const statusBreakdown: Record<string, number> = {};
+        bookings.forEach((b: Record<string, unknown>) => {
+          const status = b.status as string;
+          statusBreakdown[status] = (statusBreakdown[status] || 0) + 1;
         });
 
-        const providerWorkload: any = {};
-        bookings.forEach((b: any) => {
-          const name = b.prestadores?.name || 'Unknown';
+        const providerWorkload: Record<string, number> = {};
+        bookings.forEach((b: Record<string, unknown>) => {
+          const prestadores = b.prestadores as Record<string, unknown>;
+          const name = (prestadores?.name as string) || 'Unknown';
           providerWorkload[name] = (providerWorkload[name] || 0) + 1;
         });
 
@@ -171,7 +173,7 @@ const CompanySessions = () => {
         const totalContracted = 1000; // From company.sessions_allocated
         const totalUsed = bookings.length;
         const utilizationRate = Math.round((totalUsed / totalContracted) * 100);
-        const employeesUsingServices = new Set(bookings.map((b: any) => b.user_id)).size;
+        const employeesUsingServices = new Set(bookings.map((b: Record<string, unknown>) => b.user_id as string)).size;
 
         setAnalytics({
           totalContracted,
@@ -181,7 +183,7 @@ const CompanySessions = () => {
           pillarBreakdown: pillarBreakdown
         });
       } catch (error) {
-        console.error('Error loading analytics:', error);
+        // Silent fail for analytics loading
       } finally {
         setLoading(false);
       }
@@ -353,7 +355,7 @@ const CompanySessions = () => {
             )}
           >
             <CardContent className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 bg-background border border-border rounded-2xl sm:rounded-3xl z-10 w-full">
-              {analytics?.pillarBreakdown?.map((pillar: any, i: number) => (
+              {analytics?.pillarBreakdown?.map((pillar: Record<string, unknown>, i: number) => (
                 <div
                   key={i}
                   className="flex items-center justify-between p-3 sm:p-4 border border-border rounded-xl sm:rounded-2xl hover:bg-muted/50 transition animate-fade-in"
@@ -365,16 +367,16 @@ const CompanySessions = () => {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm sm:text-base font-semibold text-foreground truncate">
-                        {pillar.pillar}
+                        {pillar.pillar as string}
                       </p>
                       <p className="text-xs sm:text-sm text-muted-foreground">
-                        {pillar.sessionsUsed} de {pillar.sessionsAvailable} sessões
+                        {pillar.sessionsUsed as number} de {pillar.sessionsAvailable as number} sessões
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-2">
-                    <Badge className={`${getPillarColor(pillar.pillar)} text-sm px-3 py-1`}>
-                      {pillar.utilizationRate}%
+                    <Badge className={`${getPillarColor(pillar.pillar as string)} text-sm px-3 py-1`}>
+                      {pillar.utilizationRate as number}%
                     </Badge>
                   </div>
                 </div>

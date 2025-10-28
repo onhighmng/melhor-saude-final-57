@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { User, Session } from '@supabase/supabase-js';
 
 interface UserProfile {
   id: string;
@@ -12,14 +13,14 @@ interface UserProfile {
   phone?: string;
   avatar_url?: string;
   bio?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   is_active: boolean;
 }
 
 interface AuthContextType {
-  user: any | null;
+  user: User | null;
   profile: UserProfile | null;
-  session: any | null;
+  session: Session | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isHR: boolean;
@@ -43,8 +44,8 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -115,8 +116,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       
       return {};
-    } catch (error: any) {
-      return { error: error.message || 'Credenciais inválidas' };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Credenciais inválidas';
+      return { error: errorMessage };
     } finally {
       setIsLoading(false);
     }
@@ -155,8 +157,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (roleError && roleError.code !== '23505') throw roleError;
       
       return {};
-    } catch (error: any) {
-      return { error: error.message || 'Erro ao criar conta' };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao criar conta';
+      return { error: errorMessage };
     } finally {
       setIsLoading(false);
     }
@@ -169,8 +172,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       if (error) throw error;
       return {};
-    } catch (error: any) {
-      return { error: error.message || 'Erro ao redefinir palavra-passe' };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao redefinir palavra-passe';
+      return { error: errorMessage };
     }
   };
 

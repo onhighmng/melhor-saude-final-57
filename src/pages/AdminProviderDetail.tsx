@@ -197,10 +197,10 @@ const AdminProviderDetail = () => {
         description: t('providerDetail.statusUpdated')
       });
     } catch (error) {
-      console.error('Error updating provider status:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar status do prestador';
       toast({
         title: t('common:error'),
-        description: t('providerDetail.statusUpdateError'),
+        description: errorMessage,
         variant: "destructive"
       });
     }

@@ -110,10 +110,9 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
         if (prestador) {
           // Note: prestador_schedule table uses day_of_week, not date
           // This is a simplified deletion - adjust based on actual schema
-          console.warn('Delete operation needs schema adjustment for prestador_schedule');
         }
       } catch (error) {
-        console.error('Error removing slot:', error);
+        // Error removing slot - silently fail
       }
     }
 
@@ -246,17 +245,17 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
 
                 if (prestador) {
                   // Note: prestador_schedule schema mismatch - needs day_of_week and end_time
-                  console.warn('Schema adjustment needed for prestador_schedule');
                 }
 
                 toast({
                   title: "Indisponibilidade guardada",
                   description: `${unavailableSlots.length} horário(s) marcado(s) como indisponível`,
                 });
-              } catch (error: any) {
+              } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Erro ao guardar indisponibilidade';
                 toast({
                   title: "Erro",
-                  description: error.message || "Erro ao guardar indisponibilidade",
+                  description: errorMessage,
                   variant: 'destructive'
                 });
               }

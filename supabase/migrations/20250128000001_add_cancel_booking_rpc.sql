@@ -9,6 +9,7 @@ CREATE OR REPLACE FUNCTION cancel_booking_with_refund(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
   v_result JSONB;

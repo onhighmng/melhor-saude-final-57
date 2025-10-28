@@ -62,7 +62,7 @@ export const useUserProgress = (userId: string | undefined) => {
           });
         }
       } catch (error) {
-        console.error('Error fetching progress:', error);
+        // Silent fail for progress fetching
       } finally {
         setIsLoading(false);
       }

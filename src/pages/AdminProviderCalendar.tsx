@@ -21,7 +21,7 @@ import { toast } from 'sonner';
 const AdminProviderCalendar = () => {
   const { providerId } = useParams<{ providerId: string }>();
   const navigate = useNavigate();
-  const [provider, setProvider] = useState<any>(null);
+  const [provider, setProvider] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [slots, setSlots] = useState<CalendarSlot[]>([]);
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
@@ -54,8 +54,8 @@ const AdminProviderCalendar = () => {
       if (error) throw error;
       setProvider(data);
     } catch (error) {
-      console.error('Error loading provider:', error);
-      toast.error('Erro ao carregar prestador');
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar prestador';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -100,8 +100,8 @@ const AdminProviderCalendar = () => {
             isAvailable: !booking,
             ...(booking ? {
               bookingId: booking.id,
-              collaboratorName: (booking.profiles as any)?.name || 'N/A',
-              company: booking.companies?.company_name || 'N/A',
+              collaboratorName: (booking.profiles as Record<string, unknown>)?.name as string || 'N/A',
+              company: (booking.companies as Record<string, unknown>)?.company_name as string || 'N/A',
               sessionType: booking.meeting_type as 'virtual' | 'presential',
             } : {}),
           });
@@ -110,8 +110,8 @@ const AdminProviderCalendar = () => {
 
       setSlots(newSlots);
     } catch (error) {
-      console.error('Error loading slots:', error);
-      toast.error('Erro ao carregar horários');
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar horários';
+      toast.error(errorMessage);
     }
   };
 
