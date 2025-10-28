@@ -8,7 +8,7 @@ import { useSessionBalance } from "@/hooks/useSessionBalance";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useToast } from "@/hooks/use-toast";
+import { emailService } from '@/services/emailService';
 import { CANCELLATION_POLICY_HOURS } from "@/config/constants";
 
 export default function UserSessions() {
@@ -153,6 +153,28 @@ export default function UserSessions() {
         related_booking_id: sessionId,
         priority: 'high'
       });
+
+      // Send cancellation email to user
+      try {
+        const { data: providerData } = await supabase
+          .from('prestadores')
+          .select('name, email')
+          .eq('id', booking.prestador_id)
+          .single();
+          
+        if (providerData?.name && profile?.email) {
+          await emailService.sendBookingCancellation(profile.email, {
+            userName: profile.name,
+            providerName: providerData.name,
+            date: booking.date,
+            time: booking.start_time,
+            pillar: booking.pillar
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send cancellation email:', emailError);
+        // Don't block cancellation on email failure
+      }
 
       const resultData = cancelResult as { success?: boolean; refunded?: boolean; error?: string } | null;
       

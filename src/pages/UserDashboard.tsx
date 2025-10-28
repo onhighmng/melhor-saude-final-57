@@ -16,7 +16,7 @@ import { useMilestoneChecker } from '@/hooks/useMilestoneChecker';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
-import { useToast } from '@/hooks/use-toast';
+import { emailService } from '@/services/emailService';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { SessionCard, SessionCardData } from '@/components/ui/session-card';
@@ -524,6 +524,28 @@ const UserDashboard = () => {
             });
           }
         }
+      }
+
+      // Send cancellation email to user
+      try {
+        const { data: providerData } = await supabase
+          .from('prestadores')
+          .select('name')
+          .eq('id', booking.prestador_id)
+          .single();
+          
+        if (providerData?.name && profile?.email) {
+          await emailService.sendBookingCancellation(profile.email, {
+            userName: profile.name,
+            providerName: providerData.name,
+            date: booking.booking_date,
+            time: booking.start_time || '00:00',
+            pillar: booking.pillar
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send cancellation email:', emailError);
+        // Don't block cancellation on email failure
       }
 
       toast({

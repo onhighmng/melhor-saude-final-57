@@ -59,11 +59,12 @@ export const getBookingConfirmationEmail = (data: BookingEmailData): string => {
 
             <p>Por favor, esteja disponível 5 minutos antes da hora marcada.</p>
             
-            <a href="https://onhigh.com/user/sessions" class="button">Ver Minhas Sessões</a>
+            <a href="https://www.melhorsaúde.com/user/sessions" class="button">Ver Minhas Sessões</a>
           </div>
           <div class="footer">
-            <p>OnHigh Management Platform</p>
-            <p>Este é um email automático, por favor não responda.</p>
+            <p>Melhor Saúde</p>
+            <p>Cuidando de si e do seu bem-estar</p>
+            <p style="font-size: 12px; margin-top: 8px;">Este é um email automático, por favor não responda.</p>
           </div>
         </div>
       </body>
@@ -114,11 +115,12 @@ export const getBookingCancellationEmail = (data: Omit<BookingEmailData, 'meetin
 
             <p>Pode agendar uma nova sessão a qualquer momento através da plataforma.</p>
             
-            <a href="https://onhigh.com/user/book" class="button">Agendar Nova Sessão</a>
+            <a href="https://www.melhorsaúde.com/user/book" class="button">Agendar Nova Sessão</a>
           </div>
           <div class="footer">
-            <p>OnHigh Management Platform</p>
-            <p>Este é um email automático, por favor não responda.</p>
+            <p>Melhor Saúde</p>
+            <p>Cuidando de si e do seu bem-estar</p>
+            <p style="font-size: 12px; margin-top: 8px;">Este é um email automático, por favor não responda.</p>
           </div>
         </div>
       </body>
@@ -173,11 +175,12 @@ export const getBookingReminderEmail = (data: BookingEmailData): string => {
 
             <p>Por favor, esteja disponível 5 minutos antes da hora marcada.</p>
             
-            <a href="https://onhigh.com/user/sessions" class="button">Ver Detalhes</a>
+            <a href="https://www.melhorsaúde.com/user/sessions" class="button">Ver Detalhes</a>
           </div>
           <div class="footer">
-            <p>OnHigh Management Platform</p>
-            <p>Este é um email automático, por favor não responda.</p>
+            <p>Melhor Saúde</p>
+            <p>Cuidando de si e do seu bem-estar</p>
+            <p style="font-size: 12px; margin-top: 8px;">Este é um email automático, por favor não responda.</p>
           </div>
         </div>
       </body>

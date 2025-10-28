@@ -10,7 +10,8 @@ import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/Me
 import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-assessment/PhysicalWellnessAssessmentFlow';
 import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
 import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
-import { supabase } from '@/integrations/supabase/client';
+import { getBookingConfirmationEmail } from '@/utils/emailTemplates';
+import { emailService } from '@/services/emailService';
 import { useAuth } from '@/contexts/AuthContext';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
@@ -420,43 +421,14 @@ const BookingFlow = () => {
 
       // Send confirmation email
       try {
-        const emailHtml = `
-          <html>
-            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #1e40af;">Confirmação de Sessão - Melhor Saúde</h2>
-              <p>Olá ${profile.name || 'Utilizador'},</p>
-              <p>Sua sessão foi agendada com sucesso!</p>
-              <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>Prestador:</strong> ${selectedProvider.name}</p>
-                <p><strong>Data:</strong> ${selectedDate.toLocaleDateString('pt-PT')}</p>
-                <p><strong>Hora:</strong> ${selectedTime}</p>
-                <p><strong>Tipo:</strong> ${
-                  meetingType === 'virtual' ? 'Virtual' : 
-                  meetingType === 'phone' ? 'Telefone' : 
-                  'Presencial'
-                }</p>
-                ${meetingType === 'virtual' && booking.meeting_link ? 
-                  `<p><strong>Link da Reunião:</strong> <a href="${booking.meeting_link}">${booking.meeting_link}</a></p>` : ''
-                }
-                <p><strong>Área:</strong> ${
-                  pillar === 'mental_health' ? 'Saúde Mental' : 
-                  pillar === 'financial_assistance' ? 'Assistência Financeira' :
-                  pillar === 'legal_assistance' ? 'Assistência Jurídica' : 
-                  'Bem-Estar Físico'
-                }</p>
-              </div>
-              <p>Até breve!</p>
-              <p style="color: #6b7280; font-size: 12px;">Melhor Saúde - Cuidando de si</p>
-            </body>
-          </html>
-        `;
-
-        await supabase.functions.invoke('send-email', {
-          body: {
-            to: profile.email,
-            subject: 'Confirmação de Sessão - Melhor Saúde',
-            html: emailHtml
-          }
+        await emailService.sendBookingConfirmation(profile.email, {
+          userName: profile.name || 'Utilizador',
+          providerName: selectedProvider.name,
+          date: selectedDate.toISOString(),
+          time: selectedTime,
+          pillar: pillar,
+          meetingLink: booking.meeting_link || undefined,
+          meetingType: meetingType
         });
       } catch (emailError) {
         console.error('Email send failed:', emailError);

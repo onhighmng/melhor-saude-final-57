@@ -32,7 +32,7 @@ import { pt } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
+import { emailService } from '@/services/emailService';
 
 interface SessionDetailData {
   id: string;
@@ -276,6 +276,33 @@ export default function PrestadorSessionDetail() {
         .eq('id', id);
 
       if (error) throw error;
+
+      // Send cancellation email to user
+      try {
+        const { data: booking } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles (name, email),
+            prestadores (name)
+          `)
+          .eq('id', id)
+          .single();
+
+        if (booking?.profiles?.email && booking?.prestadores?.name) {
+          await emailService.sendBookingCancellation(booking.profiles.email, {
+            userName: booking.profiles.name,
+            providerName: booking.prestadores.name,
+            date: booking.date,
+            time: booking.start_time,
+            pillar: booking.pillar
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send cancellation email:', emailError);
+        // Don't block cancellation on email failure
+      }
+
       setShowCancelDialog(false);
       toast({ title: "Sessão cancelada", description: "Cancelamento registado" });
       if (session) setSession({ ...session, status: 'cancelled' as SessionStatus });
