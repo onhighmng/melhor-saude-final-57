@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Eye, EyeOff, User, Mail, Key, Lock, ArrowLeft, CheckCircle, AlertCircle, Copy, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { getAuthCallbackUrl } from '@/utils/authRedirects';
 import heroFitness from '@/assets/hero-fitness.jpg';
 
 type FormStep = 'invite-code' | 'user-details';
@@ -140,7 +141,7 @@ export default function RegisterEmployee() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/user/dashboard`
+          emailRedirectTo: getAuthCallbackUrl()
         }
       });
 
@@ -185,21 +186,11 @@ export default function RegisterEmployee() {
 
       toast({
         title: "Conta criada com sucesso!",
-        description: "Bem-vindo à plataforma. A redireccionar para o dashboard...",
+        description: "Bem-vindo à plataforma. Verifique o seu email para ativar a conta.",
       });
 
-      // Auto login and redirect
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (!loginError) {
-        navigate('/user/dashboard');
-      } else {
-        // Even if auto-login fails, redirect to login with success message
-        navigate('/login?registered=true');
-      }
+      // User must verify email first, then will be redirected via callback
+      navigate('/login?registered=employee');
       
     } catch (error: any) {
       console.error('Registration error:', error);

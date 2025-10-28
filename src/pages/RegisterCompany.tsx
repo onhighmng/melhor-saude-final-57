@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, Building2, User, Target, FileText, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { getAuthCallbackUrl } from '@/utils/authRedirects';
 
 interface CompanyFormData {
   companyName: string;
@@ -116,7 +117,7 @@ export default function RegisterCompany() {
             name: formData.contactName,
             company_name: formData.companyName
           },
-          emailRedirectTo: `${window.location.origin}/company/dashboard`
+          emailRedirectTo: getAuthCallbackUrl()
         }
       });
 

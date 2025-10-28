@@ -48,6 +48,7 @@ const EspecialistaSessions = lazy(() => import("./pages/EspecialistaSessionsReva
 const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistory"));
 const EspecialistaStatsRevamped = lazy(() => import("./pages/EspecialistaStatsRevamped"));
 const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettings"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 
 // Company pages
 const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
@@ -118,6 +119,9 @@ const AppWithTracking = () => {
         </div>
       }>
         <Routes>
+          {/* Authentication callback - handles OAuth, magic links, email verification */}
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          
           {/* Authentication pages */}
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
