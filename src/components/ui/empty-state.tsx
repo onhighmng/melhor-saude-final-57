@@ -25,14 +25,19 @@ export const EmptyState = ({
   const renderIcon = () => {
     if (!IconOrElement) return null;
     
-    // Check if it's a Lucide icon component
+    // Check if it's a Lucide icon component (function)
     if (typeof IconOrElement === 'function') {
       const Icon = IconOrElement as LucideIcon;
       return <Icon className={variant === 'compact' ? "h-10 w-10" : "h-12 w-12"} />;
     }
     
-    // Otherwise render as React element
-    return IconOrElement;
+    // Check if it's a React element (has $$typeof property)
+    if (typeof IconOrElement === 'object' && IconOrElement !== null && '$$typeof' in IconOrElement) {
+      return <div className={variant === 'compact' ? "h-10 w-10" : "h-12 w-12"}>{IconOrElement}</div>;
+    }
+    
+    // Otherwise render as React node
+    return <>{IconOrElement}</>;
   };
 
   if (variant === 'compact') {
