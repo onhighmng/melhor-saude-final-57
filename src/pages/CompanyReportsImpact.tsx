@@ -19,55 +19,166 @@ import {
   ArrowRight,
   BarChart3
 } from 'lucide-react';
-import { 
-  mockCompanyMetrics, 
-  mockPillarDistribution, 
-  mockWellnessTrends, 
-  mockEmployeeHighlights,
-  mockROIData,
-  mockAbsenteeismData,
-  mockEmployeeMetrics
-} from '@/data/companyMetrics';
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useToast } from "@/hooks/use-toast";
 import { motion } from 'framer-motion';
 import ResourceUsageCard from '@/components/ui/horizontal-bar-chart';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const CompanyReportsImpact = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const { toast } = useToast();
+  const { profile } = useAuth();
+  const [companyMetrics, setCompanyMetrics] = useState<any>(null);
+  const [pillarDistribution, setPillarDistribution] = useState<any[]>([]);
+  const [wellnessTrends, setWellnessTrends] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const metricCards = [
+  useEffect(() => {
+    const loadAnalytics = async () => {
+      if (!profile?.company_id) return;
+      
+      try {
+        // Load company data
+        const { data: company } = await supabase
+          .from('companies')
+          .select('*')
+          .eq('id', profile.company_id)
+          .single();
+
+        // Load bookings
+        const { data: bookings } = await supabase
+          .from('bookings')
+          .select('*')
+          .eq('company_id', profile.company_id);
+
+        // Load employees
+        const { data: employees } = await supabase
+          .from('company_employees')
+          .select('*')
+          .eq('company_id', profile.company_id);
+
+        // Calculate metrics
+        const activeEmployees = employees?.filter(e => e.is_active).length || 0;
+        const totalSessions = bookings?.filter(b => b.status === 'completed').length || 0;
+        const ratings = bookings?.filter(b => b.rating).map(b => b.rating) || [];
+        const avgSatisfaction = ratings.length > 0 
+          ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length 
+          : 0;
+        const utilizationRate = company?.sessions_allocated > 0
+          ? Math.round((company.sessions_used / company.sessions_allocated) * 100)
+          : 0;
+
+        setCompanyMetrics({
+          activeEmployees,
+          totalSessions,
+          avgSatisfaction: Math.round(avgSatisfaction * 10) / 10,
+          utilizationRate
+        });
+
+        // Calculate pillar distribution
+        const pillarCounts = bookings?.reduce((acc, b) => {
+          const pillar = b.pillar || 'unknown';
+          acc[pillar] = (acc[pillar] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>) || {};
+
+        const pillarColors = {
+          'saude_mental': '#3B82F6',
+          'bem_estar_fisico': '#F59E0B',
+          'assistencia_financeira': '#10B981',
+          'assistencia_juridica': '#8B5CF6'
+        };
+
+        const pillarNames = {
+          'saude_mental': 'Saúde Mental',
+          'bem_estar_fisico': 'Bem-Estar Físico',
+          'assistencia_financeira': 'Assistência Financeira',
+          'assistencia_juridica': 'Assistência Jurídica'
+        };
+
+        const distribution = Object.entries(pillarCounts).map(([pillar, count]) => ({
+          pillar: pillarNames[pillar as keyof typeof pillarNames] || pillar,
+          sessions: count,
+          percentage: Math.round((count / totalSessions) * 100),
+          color: pillarColors[pillar as keyof typeof pillarColors] || '#6B7280'
+        }));
+
+        setPillarDistribution(distribution);
+
+        // Calculate wellness trends (last 6 months)
+        const monthlyData = [];
+        for (let i = 5; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(date.getMonth() - i);
+          const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+          const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+          const monthBookings = bookings?.filter(b => {
+            const bookingDate = new Date(b.booking_date);
+            return bookingDate >= monthStart && bookingDate <= monthEnd;
+          }) || [];
+
+          const monthRatings = monthBookings.filter(b => b.rating).map(b => b.rating);
+          const avgWellness = monthRatings.length > 0
+            ? monthRatings.reduce((sum, r) => sum + r, 0) / monthRatings.length
+            : 0;
+
+          monthlyData.push({
+            month: date.toLocaleDateString('pt-PT', { month: 'short' }),
+            avgWellness: Math.round(avgWellness * 10) / 10,
+            sessions: monthBookings.length
+          });
+        }
+
+        setWellnessTrends(monthlyData);
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+        toast({
+          title: 'Erro',
+          description: 'Erro ao carregar análises',
+          variant: 'destructive'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAnalytics();
+  }, [profile?.company_id, toast]);
+
+  const metricCards = companyMetrics ? [
     {
       title: "Colaboradores Ativos",
-      value: mockCompanyMetrics.activeEmployees,
+      value: companyMetrics.activeEmployees,
       icon: <Users className="h-6 w-6" />,
       bgColor: "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900",
       textColor: "text-blue-700 dark:text-blue-300"
     },
     {
       title: "Sessões Realizadas",
-      value: mockCompanyMetrics.totalSessions,
+      value: companyMetrics.totalSessions,
       icon: <Calendar className="h-6 w-6" />,
       bgColor: "bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900",
       textColor: "text-green-700 dark:text-green-300"
     },
     {
       title: "Satisfação Média",
-      value: `${mockCompanyMetrics.avgSatisfaction}/10`,
+      value: `${companyMetrics.avgSatisfaction}/10`,
       icon: <Star className="h-6 w-6" />,
       bgColor: "bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900",
       textColor: "text-yellow-700 dark:text-yellow-300"
     },
     {
       title: "Taxa de Utilização",
-      value: `${mockCompanyMetrics.utilizationRate}%`,
+      value: `${companyMetrics.utilizationRate}%`,
       icon: <TrendingUp className="h-6 w-6" />,
       bgColor: "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900",
       textColor: "text-purple-700 dark:text-purple-300"
     }
-  ];
+  ] : [];
 
   useEffect(() => {
     // Add company-page class to body for light blue background
@@ -89,16 +200,61 @@ const CompanyReportsImpact = () => {
 
   const handleExportReport = async () => {
     setIsExporting(true);
-    
-    // Simulate PDF generation
-    setTimeout(() => {
+    try {
+      const reportData = {
+        companyMetrics,
+        pillarDistribution,
+        wellnessTrends,
+        generatedAt: new Date().toISOString()
+      };
+
+      // Create CSV export
+      const csvHeader = 'Métrica,Valor\n';
+      const csvRows = [
+        `Colaboradores Ativos,${companyMetrics.activeEmployees}`,
+        `Sessões Realizadas,${companyMetrics.totalSessions}`,
+        `Satisfação Média,${companyMetrics.avgSatisfaction}/10`,
+        `Taxa de Utilização,${companyMetrics.utilizationRate}%`,
+        '',
+        'Pilar,Sessões,Percentagem',
+        ...pillarDistribution.map(p => `${p.pillar},${p.sessions},${p.percentage}%`)
+      ].join('\n');
+      const csvContent = csvHeader + csvRows;
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `relatorio-${Date.now()}.csv`;
+      link.click();
+
       toast({
         title: "Relatório exportado",
         description: "Relatório mensal foi gerado com sucesso"
       });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao gerar relatório",
+        variant: "destructive"
+      });
+    } finally {
       setIsExporting(false);
-    }, 2000);
+    }
   };
+
+  if (loading || !companyMetrics) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">A carregar relatórios...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const getPillarIcon = (pillar: string) => {
     switch (pillar) {
@@ -212,7 +368,7 @@ const CompanyReportsImpact = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={mockPillarDistribution}
+                    data={pillarDistribution}
                     cx="50%"
                     cy="50%"
                     outerRadius={100}
@@ -222,7 +378,7 @@ const CompanyReportsImpact = () => {
                     isAnimationActive={false}
                     style={{ fontSize: '16px', fontWeight: '600' }}
                   >
-                    {mockPillarDistribution.map((entry, index) => (
+                    {pillarDistribution.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -230,7 +386,7 @@ const CompanyReportsImpact = () => {
               </ResponsiveContainer>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              {mockPillarDistribution.map((pillar, index) => (
+              {pillarDistribution.map((pillar, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <div 
                     className="w-4 h-4 rounded-full" 
@@ -257,14 +413,14 @@ const CompanyReportsImpact = () => {
           </CardHeader>
           <CardContent className="pb-0" style={{ height: 'calc(100% - 80px)' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={mockWellnessTrends} margin={{ top: 5, right: 30, left: 0, bottom: 0 }}>
+              <LineChart data={wellnessTrends} margin={{ top: 5, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="month" 
                     style={{ fontSize: '16px' }}
                   />
                   <YAxis 
-                    domain={[6, 10]} 
+                    domain={[0, 10]} 
                     style={{ fontSize: '16px' }}
                   />
                   <Tooltip 

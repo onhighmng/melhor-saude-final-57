@@ -29,10 +29,28 @@ import {
   Star
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface Provider {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  specialty?: string;
+  pillars: string[];
+  status: string;
+  rating?: number;
+  totalSessions?: number;
+  avatar?: string;
+  bio?: string;
+  isApproved?: boolean;
+  createdAt?: string;
+}
 
 const AdminProviders = () => {
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,17 +70,43 @@ const AdminProviders = () => {
   const loadProviders = async () => {
     setIsLoading(true);
     try {
-      // Replace with actual API call
-      setTimeout(() => {
-        setProviders(mockProviders);
-        setIsLoading(false);
-      }, 1000);
-    } catch (error) {
+      // Load prestadores with profiles
+      const { data, error } = await supabase
+        .from('prestadores')
+        .select(`
+          *,
+          profiles (name, email, phone, avatar_url, bio)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        const formattedProviders = data.map((p: any) => ({
+          id: p.id,
+          name: p.profiles?.name || '',
+          email: p.profiles?.email || '',
+          phone: p.profiles?.phone || '',
+          specialty: p.specialty || '',
+          pillars: p.pillars || [],
+          status: p.is_approved ? 'approved' : (p.is_active ? 'active' : 'inactive'),
+          rating: p.rating || 0,
+          totalSessions: p.total_sessions || 0,
+          avatar: p.profiles?.avatar_url || '',
+          bio: p.profiles?.bio || p.bio || '',
+          isApproved: p.is_approved,
+          createdAt: p.created_at
+        }));
+
+        setProviders(formattedProviders);
+      }
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Erro ao carregar prestadores",
+        description: error.message || "Erro ao carregar prestadores",
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -81,7 +125,8 @@ const AdminProviders = () => {
     // Pillar filter
     if (pillarFilter !== 'all') {
       filtered = filtered.filter(provider => 
-        provider.pillar === pillarFilter
+        (provider as any).pillar === pillarFilter || 
+        (provider as any).pillar_specialties?.includes(pillarFilter)
       );
     }
 
@@ -120,7 +165,7 @@ const AdminProviders = () => {
     const csv = [
       headers.join(','),
       ...filteredProviders.map(p => 
-        [p.name, p.email, p.pillar, p.specialty, p.sessionType, p.status, p.satisfaction].join(',')
+        [p.name, p.email, (p as any).pillar || 'N/A', (p as any).specialty || 'N/A', (p as any).sessionType || 'N/A', 'active', (p as any).satisfaction || 'N/A'].join(',')
       )
     ].join('\n');
     
@@ -142,9 +187,9 @@ const AdminProviders = () => {
 
   // Calculate summary metrics
   const totalProviders = providers.length;
-  const activeProviders = providers.filter(p => p.status === 'Ativo').length;
+  const activeProviders = providers.filter(p => (p as any).status === 'Ativo').length;
   const avgSatisfaction = providers.length > 0 
-    ? (providers.reduce((sum, p) => sum + p.satisfaction, 0) / providers.length).toFixed(1)
+    ? (providers.reduce((sum, p) => sum + ((p as any).satisfaction || 0), 0) / providers.length).toFixed(1)
     : '0.0';
 
   const getStatusBadge = (status: string) => {
@@ -190,11 +235,12 @@ const AdminProviders = () => {
     }
   };
 
-  const formatPillar = (pillar: Provider['pillar']) => {
+  const formatPillar = (pillar: string | string[] | undefined) => {
+    const pillarStr = Array.isArray(pillar) ? pillar[0] : pillar || 'saude_mental';
     return (
       <div className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md w-fit">
-        {getPillarIcon(pillar)}
-        <span className="text-xs font-medium">{getPillarName(pillar)}</span>
+        {getPillarIcon(pillarStr as any)}
+        <span className="text-xs font-medium">{getPillarName(pillarStr as any)}</span>
       </div>
     );
   };
@@ -385,25 +431,25 @@ const AdminProviders = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {formatPillar(provider.pillar)}
+                        {formatPillar((provider as any).pillar || (provider as any).pillar_specialties)}
                       </TableCell>
                       <TableCell>
-                        {getStatusBadge(provider.status)}
+                        {getStatusBadge('active')}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {provider.sessionType}
+                          {(provider as any).sessionType || 'Online'}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="bg-amber-50 text-amber-700">
                           <Star className="h-3 w-3 mr-1" />
-                          {provider.satisfaction}/10
+                          {(provider as any).satisfaction || 'N/A'}/10
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="bg-blue-50 text-blue-700">
-                          {provider.sessionsThisMonth} este mês
+                          {(provider as any).sessionsThisMonth || 0} este mês
                         </Badge>
                       </TableCell>
                       <TableCell>

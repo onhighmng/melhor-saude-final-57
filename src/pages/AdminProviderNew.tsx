@@ -26,6 +26,8 @@ import {
   X
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProviderFormData {
   // Basic Data
@@ -61,6 +63,7 @@ interface ProviderFormData {
 const AdminProviderNew = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile } = useAuth();
   const { t } = useTranslation('admin');
   const { t: tCommon } = useTranslation('common');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -173,21 +176,93 @@ const AdminProviderNew = () => {
     setIsSubmitting(true);
     
     try {
-      // Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Get selected pillars
+      const selectedPillars = [];
+      if (formData.pillars.mentalHealth) selectedPillars.push('saude_mental');
+      if (formData.pillars.physicalWellness) selectedPillars.push('bem_estar_fisico');
+      if (formData.pillars.financialAssistance) selectedPillars.push('assistencia_financeira');
+      if (formData.pillars.legalAssistance) selectedPillars.push('assistencia_juridica');
+
+      // Generate random password
+      const randomPassword = Math.random().toString(36).slice(-12) + 'A1!';
+
+      // Create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: randomPassword,
+        options: {
+          data: { name: formData.name }
+        }
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) throw new Error('Falha ao criar utilizador');
+
+      // Create profile WITHOUT role
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          email: formData.email,
+          name: formData.name,
+          bio: formData.bio,
+          metadata: {
+            languages: formData.languages,
+            license_number: formData.licenseNumber,
+            license_expiry: formData.licenseExpiry
+          }
+        });
+
+      if (profileError) throw profileError;
+
+      // Create role in user_roles table
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: authData.user.id,
+          role: 'prestador',
+          created_by: profile?.id
+        });
+
+      if (roleError) throw roleError;
+
+      // Create prestador record
+      const { error: prestadorError } = await supabase
+        .from('prestadores')
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          pillar_specialties: selectedPillars,
+          biography: formData.bio,
+          languages: formData.languages
+        });
+
+      if (prestadorError) throw prestadorError;
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'prestador_created',
+          entity_type: 'prestador',
+          entity_id: authData.user.id,
+          changes: formData
+        });
+      }
+
       const statusText = formData.initialStatus === 'active' ? t('providerNew.availability.active') : t('providerNew.credentials.statusPending').replace('Estado: ', '');
       
       toast({
         title: t('providerNew.success.title'),
-        description: t('providerNew.success.description', { name: formData.name, status: statusText }),
+        description: `Prestador criado. Email: ${formData.email}, Senha: ${randomPassword}`,
       });
       
       navigate('/admin/prestadores');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Provider creation error:', error);
       toast({
         title: t('providerNew.error.title'),
-        description: t('providerNew.error.description'),
+        description: error.message || t('providerNew.error.description'),
         variant: "destructive"
       });
     } finally {

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, User, Building2, User as UserIcon, ExternalLink } from "lucide-react";
-import { Session, SessionStatus, getStatusLabel, getPillarLabel, getPayerSourceLabel, Pillar } from "@/data/sessionMockData";
+import { Session, SessionStatus, getStatusLabel, getPillarLabel, getPayerSourceLabel, Pillar } from "@/types/sessionTypes";
 import { SessionDeductionBadge } from "./SessionDeductionBadge";
 import { SessionRatingDialog } from "./SessionRatingDialog";
 import { SessionCard, SessionCardData, HistorySessionCard } from "@/components/ui/session-card";
@@ -19,6 +19,7 @@ interface SessionModalProps {
   onViewDetails?: (sessionId: string) => void;
   onReschedule?: (sessionId: string) => void;
   onCancel?: (sessionId: string) => void;
+  onRate?: (sessionId: string) => void;
 }
 
 export function SessionModal({ 
@@ -29,7 +30,8 @@ export function SessionModal({
   type,
   onViewDetails,
   onReschedule,
-  onCancel
+  onCancel,
+  onRate
 }: SessionModalProps) {
   const [showRatingDialog, setShowRatingDialog] = useState(false);
   const [selectedSessionForRating, setSelectedSessionForRating] = useState<Session | null>(null);
@@ -102,20 +104,22 @@ export function SessionModal({
   };
 
   const handleRatingClick = (session: Session) => {
-    setSelectedSessionForRating(session);
-    setShowRatingDialog(true);
+    if (onRate) {
+      onRate(session.id);
+    } else {
+      setSelectedSessionForRating(session);
+      setShowRatingDialog(true);
+    }
   };
 
   // Handler functions for the three action buttons
   const handleRescheduleSession = (sessionId: string) => {
-    console.log('Reschedule session:', sessionId);
     if (onReschedule) {
       onReschedule(sessionId);
     }
   };
 
   const handleJoinSession = (sessionId: string) => {
-    console.log('Join session:', sessionId);
     // Find the session and open meeting link if available
     const session = sessions.find(s => s.id === sessionId);
     if (session && session.meetingLink) {
@@ -124,7 +128,6 @@ export function SessionModal({
   };
 
   const handleCancelSession = (sessionId: string) => {
-    console.log('Cancel session:', sessionId);
     if (onCancel) {
       onCancel(sessionId);
     }

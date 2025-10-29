@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
+import { ReactNode, memo } from "react";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const BentoGrid = ({
+const BentoGrid = memo(({
   children,
   className,
   style,
@@ -24,7 +24,7 @@ const BentoGrid = ({
       {children}
     </div>
   );
-};
+});
 
 const BentoCard = ({
   name,
@@ -47,7 +47,7 @@ const BentoCard = ({
   name: string;
   className: string;
   background: ReactNode;
-  Icon?: any;
+  Icon?: React.ComponentType<{className?: string; style?: React.CSSProperties}>;
   description: string;
   href: string;
   cta: string;

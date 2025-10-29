@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   ArrowLeft, 
   Edit, 
@@ -36,7 +37,6 @@ import {
   BookOpen
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { getProviderById, generateMockProviderDetail } from '@/data/adminMockData';
 import { formatDate } from '@/utils/dateFormatting';
 
 interface ProviderDetail {
@@ -103,32 +103,93 @@ const AdminProviderDetail = () => {
   }, [id]);
 
   const loadProvider = async () => {
+    if (!id) return;
     setIsLoading(true);
+    
     try {
-      setTimeout(() => {
-        const baseProvider = getProviderById(id || '1');
-        
-        if (baseProvider) {
-          const providerDetail = generateMockProviderDetail(baseProvider);
-          setProvider(providerDetail as unknown as ProviderDetail);
-        }
-        
-        setIsLoading(false);
-      }, 800);
-    } catch (error) {
-      toast({
-        title: t('common:error'),
-        description: t('providerDetail.loadError'),
-        variant: "destructive"
+      // Load prestador without joins
+      const { data: prestador, error: prestadorError } = await supabase
+        .from('prestadores')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (prestadorError) throw prestadorError;
+
+      // Get sessions for this provider
+      const { data: sessions, error: sessionsError } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('prestador_id', id);
+
+      if (sessionsError) throw sessionsError;
+
+      const completedSessions = sessions?.filter(s => s.status === 'completed') || [];
+      const ratings = completedSessions.map(s => s.rating).filter(r => r !== null) as number[];
+      const avgRating = ratings.length > 0 
+        ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length 
+        : 0;
+
+      setProvider({
+        id: prestador.id,
+        name: prestador.name || '',
+        email: prestador.email || '',
+        phone: '',
+        avatar: prestador.photo_url,
+        bio: prestador.biography,
+        pillars: (prestador.pillar_specialties || []) as any,
+        availability: prestador.is_active ? 'active' : 'inactive',
+        licenseStatus: 'valid' as const,
+        capacity: 20,
+        defaultSlot: 60,
+        languages: prestador.languages || [],
+        specialties: (prestador as any).specialization || [],
+        education: [],
+        experience: (prestador as any).experience_years || 0,
+        rating: avgRating,
+        totalSessions: sessions?.length || 0,
+        completedSessions: completedSessions.length,
+        upcomingBookings: sessions?.filter(s => s.status === 'confirmed').slice(0, 5).map(s => ({
+          id: s.id,
+          date: s.date,
+          time: s.start_time || '',
+          patient: '',
+          pillar: s.pillar,
+          status: 'scheduled' as const
+        })) || [],
+        sessionHistory: sessions?.slice(0, 10).map(s => ({
+          id: s.id,
+          date: s.date,
+          patient: '',
+          pillar: s.pillar,
+          duration: 60,
+          status: s.status as any
+        })) || [],
+        monthlyStats: []
       });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar detalhes do prestador';
+      toast({
+        title: 'Erro',
+        description: errorMessage,
+        variant: 'destructive'
+      });
+    } finally {
       setIsLoading(false);
     }
   };
 
   const handleStatusChange = async (newStatus: 'active' | 'inactive') => {
-    if (!provider) return;
+    if (!provider || !id) return;
     
     try {
+      const { error } = await supabase
+        .from('prestadores')
+        .update({ is_active: newStatus === 'active' })
+        .eq('id', id);
+
+      if (error) throw error;
+
       setProvider(prev => prev ? { ...prev, availability: newStatus } : null);
       
       toast({
@@ -136,9 +197,10 @@ const AdminProviderDetail = () => {
         description: t('providerDetail.statusUpdated')
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar status do prestador';
       toast({
         title: t('common:error'),
-        description: t('providerDetail.statusUpdateError'),
+        description: errorMessage,
         variant: "destructive"
       });
     }

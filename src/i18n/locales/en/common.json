@@ -1,0 +1,45 @@
+{
+  "common": {
+    "loading": "Loading..."
+  },
+  "auth": {
+    "resetPassword": {
+      "title": "Reset Password",
+      "description": "Enter your email to receive recovery instructions",
+      "hero": "Securely recover access to your account.",
+      "heroSuccess": "Recovery email sent successfully.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "submitButton": "Send Instructions",
+      "backToHome": "Back to home",
+      "backToLogin": "Back to login",
+      "rememberedPassword": "Remembered your password?",
+      "emailSentTitle": "Email Sent",
+      "emailSentDescription": "Check your email for recovery instructions",
+      "checkInbox": "Check your inbox and follow the instructions to recover your account.",
+      "errorTitle": "Error",
+      "genericError": "An unexpected error occurred"
+    },
+    "updatePassword": {
+      "title": "Set New Password",
+      "description": "Choose a strong and secure password",
+      "hero": "Set a new secure password for your account.",
+      "passwordLabel": "New Password",
+      "passwordPlaceholder": "Minimum 8 characters",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Type again",
+      "submitButton": "Update Password",
+      "requirements": "Password must contain:",
+      "minLength": "Minimum 8 characters",
+      "uppercase": "At least one uppercase letter",
+      "number": "At least one number",
+      "verifying": "Verifying recovery link...",
+      "success": "Success",
+      "successDescription": "Password updated successfully. Redirecting...",
+      "errorTitle": "Error",
+      "genericError": "An unexpected error occurred",
+      "invalidLink": "Invalid Link",
+      "invalidLinkDescription": "This recovery link has expired or is invalid"
+    }
+  }
+}

@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 interface MembershipSelectorProps {
   membershipType: string;
@@ -11,7 +10,6 @@ const MembershipSelector: React.FC<MembershipSelectorProps> = ({
   membershipType,
   onMembershipChange
 }) => {
-  const { t } = useTranslation('common');
   
   return (
     <div className="flex flex-row items-center gap-5">
@@ -23,8 +21,8 @@ const MembershipSelector: React.FC<MembershipSelectorProps> = ({
             : 'bg-white text-black border-black'
         }`}
       >
-        <div className="font-semibold text-base leading-[22px] tracking-[-0.064px]">{t('pricing.selector.individual.title')}</div>
-        <div className="text-xs leading-[13.8px] tracking-[-0.048px]">{t('pricing.selector.individual.subtitle')}</div>
+        <div className="font-semibold text-base leading-[22px] tracking-[-0.064px]">Individual</div>
+        <div className="text-xs leading-[13.8px] tracking-[-0.048px]">Para si</div>
       </button>
       <button
         onClick={() => onMembershipChange('empresarial')}
@@ -34,8 +32,8 @@ const MembershipSelector: React.FC<MembershipSelectorProps> = ({
             : 'bg-white text-black border-black'
         }`}
       >
-        <div className="font-semibold text-base leading-[22px] tracking-[-0.064px]">{t('pricing.selector.enterprise.title')}</div>
-        <div className="text-xs leading-[13.8px] tracking-[-0.048px]">{t('pricing.selector.enterprise.subtitle')}</div>
+        <div className="font-semibold text-base leading-[22px] tracking-[-0.064px]">Empresarial</div>
+        <div className="text-xs leading-[13.8px] tracking-[-0.048px]">Para a sua empresa</div>
       </button>
     </div>
   );

@@ -11,6 +11,8 @@ import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
+import { getAuthCallbackUrl } from '@/utils/authRedirects';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -34,7 +36,7 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
   try {
     authContext = useAuth();
   } catch (error) {
-    console.error('Auth context not available in LoginDialog:', error);
+    // Auth context not available
     authContext = {
       login: async () => {
         throw new Error('Auth context not available');
@@ -54,8 +56,6 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      console.log('🔐 LoginDialog: Attempting login...');
-      
       const result = await login(data.email, data.password);
       
       if (result.error) {
@@ -175,11 +175,33 @@ const LoginDialog = ({ isOpen, onClose }: LoginDialogProps) => {
             type="button"
             variant="outline"
             className="w-full mt-4 border-slate-grey/20 hover:bg-slate-grey/10"
-            onClick={() => {
-              toast({
-                title: 'OAuth',
-                description: 'Login com Google em desenvolvimento',
-              });
+            onClick={async () => {
+              try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                  provider: 'google',
+                  options: {
+                    redirectTo: getAuthCallbackUrl(),
+                    queryParams: {
+                      access_type: 'offline',
+                      prompt: 'consent',
+                    }
+                  }
+                });
+
+                if (error) {
+                  toast({
+                    title: 'Erro',
+                    description: error.message,
+                    variant: 'destructive'
+                  });
+                }
+              } catch (error: any) {
+                toast({
+                  title: 'Erro ao iniciar sessão com Google',
+                  description: error.message,
+                  variant: 'destructive'
+                });
+              }
             }}
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">

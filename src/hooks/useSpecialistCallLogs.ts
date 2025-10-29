@@ -24,10 +24,10 @@ export const useSpecialistCallLogs = (specialistId: string | undefined) => {
         if (error) throw error;
         setCallLogs((data || []) as SpecialistCallLog[]);
       } catch (error) {
-        console.error('Error fetching call logs:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Não foi possível carregar os registos de chamadas.';
         toast({
           title: 'Erro',
-          description: 'Não foi possível carregar os registos de chamadas.',
+          description: errorMessage,
           variant: 'destructive',
         });
       } finally {
@@ -76,10 +76,10 @@ export const useSpecialistCallLogs = (specialistId: string | undefined) => {
 
       return newLog;
     } catch (error) {
-      console.error('Error creating call log:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Não foi possível criar o registo de chamada.';
       toast({
         title: 'Erro',
-        description: 'Não foi possível criar o registo de chamada.',
+        description: errorMessage,
         variant: 'destructive',
       });
       throw error;
@@ -101,10 +101,10 @@ export const useSpecialistCallLogs = (specialistId: string | undefined) => {
         description: 'Registo de chamada atualizado com sucesso.',
       });
     } catch (error) {
-      console.error('Error updating call log:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Não foi possível atualizar o registo de chamada.';
       toast({
         title: 'Erro',
-        description: 'Não foi possível atualizar o registo de chamada.',
+        description: errorMessage,
         variant: 'destructive',
       });
       throw error;

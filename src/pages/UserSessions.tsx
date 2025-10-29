@@ -1,78 +1,87 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockSessions, mockUserBalance, Session, SessionStatus } from "@/data/sessionMockData";
-import { getMockBookings } from "@/data/mockData";
 import { SessionModal } from "@/components/sessions/SessionModal";
+import { SessionRatingDialog } from "@/components/sessions/SessionRatingDialog";
 import UserJourneySection from "@/components/ui/user-journey-section";
+import { useBookings } from "@/hooks/useBookings";
+import { useSessionBalance } from "@/hooks/useSessionBalance";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { emailService } from '@/services/emailService';
+import { CANCELLATION_POLICY_HOURS } from "@/config/constants";
+import { useToast } from '@/hooks/use-toast';
 
 export default function UserSessions() {
   const navigate = useNavigate();
-  const [userBalance] = useState(mockUserBalance);
+  const { profile } = useAuth();
+  const { allBookings, upcomingBookings, refetch, loading: bookingsLoading } = useBookings();
+  const { sessionBalance, loading: balanceLoading, refetch: refetchBalance } = useSessionBalance();
+  const toastHook = useToast();
+  interface UserGoal {
+    id: string;
+    title: string;
+    pillar: string;
+    targetSessions: number;
+    completedSessions: number;
+    progressPercentage: number;
+    progressEmojis: string[];
+  }
+  const [userGoals, setUserGoals] = useState<UserGoal[]>([]);
   const [isPastSessionsModalOpen, setIsPastSessionsModalOpen] = useState(false);
   const [isFutureSessionsModalOpen, setIsFutureSessionsModalOpen] = useState(false);
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
+  const [selectedSessionForRating, setSelectedSessionForRating] = useState<string | null>(null);
   
-  // Mock user goals data - based on onboarding choices
-  const [userGoals] = useState([
-    {
-      id: '1',
-      title: 'Gerir melhor o stress e a ansiedade',
-      pillar: 'saude_mental',
+  // Load user goals from onboarding data
+  useEffect(() => {
+    const loadGoals = async () => {
+      if (!profile?.id) return;
+      
+      const { data } = await supabase
+        .from('onboarding_data')
+        .select('health_goals, pillar_preferences')
+        .eq('user_id', profile.id)
+        .maybeSingle();
+      
+      if (data?.health_goals) {
+        setUserGoals(data.health_goals.map((goal: string, index: number) => ({
+          id: `${index}`,
+          title: goal,
+          pillar: data.pillar_preferences?.[index] || 'saude_mental',
       targetSessions: 6,
-      completedSessions: 4,
+          completedSessions: allBookings.filter(b => b.status === 'completed').length,
       progressPercentage: 70,
       progressEmojis: ['😟', '🙂', '😄']
-    },
-    {
-      id: '2',
-      title: 'Sentir-me mais seguro juridicamente',
-      pillar: 'assistencia_juridica',
-      targetSessions: 4,
-      completedSessions: 2,
-      progressPercentage: 45,
-      progressEmojis: ['⚪', '⚪', '🔵', '⚪']
-    },
-    {
-      id: '3',
-      title: 'Organizar melhor as minhas finanças',
-      pillar: 'assistencia_financeira',
-      targetSessions: 3,
-      completedSessions: 1,
-      progressPercentage: 30,
-      progressEmojis: ['💸', '💸', '⚪', '⚪']
-    },
-    {
-      id: '4',
-      title: 'Melhorar o meu bem-estar físico',
-      pillar: 'bem_estar_fisico',
-      targetSessions: 5,
-      completedSessions: 0,
-      progressPercentage: 0,
-      progressEmojis: ['⚪', '⚪', '⚪', '⚪', '⚪']
-    }
-  ]);
+        })));
+      }
+    };
+    
+    loadGoals();
+  }, [profile?.id, allBookings]);
   
-  // Convert mockBookings to Session format
-  const [sessions] = useState<Session[]>(
-    getMockBookings().map(booking => ({
-      id: booking.id,
-      userId: 'user123',
-      prestadorId: 'prest123',
-      date: booking.date,
-      time: booking.time,
-      prestadorName: booking.provider_name,
-      pillar: booking.pillar as 'saude_mental' | 'assistencia_juridica' | 'assistencia_financeira' | 'bem_estar_fisico',
-      status: booking.status as SessionStatus,
-      minutes: 60,
-      wasDeducted: booking.status === 'completed',
-      payerSource: 'company' as const,
-      deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
-      createdAt: booking.booking_date,
-      updatedAt: booking.booking_date,
-      sessionType: 'individual' as const,
-      meetingPlatform: (booking.meeting_platform?.includes('Zoom') ? 'zoom' : booking.meeting_platform?.includes('Teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
-      meetingLink: booking.meeting_link
-    }))
-  );
+  // Convert bookings to sessions format
+  const sessions = allBookings.map(booking => ({
+    id: booking.id,
+    user_id: booking.user_id,
+    prestador_id: booking.prestador_id,
+    booking_date: booking.booking_date,
+    date: booking.booking_date,
+    time: booking.start_time || '',
+    prestadorName: booking.provider_name || 'Provider',
+    pillar: (booking.pillar || 'saude_mental') as 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica',
+    status: booking.status as 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show',
+    minutes: 60,
+    wasDeducted: booking.status === 'completed',
+    payerSource: 'company' as const,
+    deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
+    createdAt: booking.booking_date,
+    updatedAt: booking.booking_date,
+    session_type: 'individual' as const,
+    sessionType: 'individual' as const,
+    meetingPlatform: (booking.meeting_link?.includes('zoom') ? 'zoom' : booking.meeting_link?.includes('teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
+    meetingLink: booking.meeting_link || ''
+  }));
 
   // Separate past and future sessions
   const now = new Date();
@@ -96,11 +105,107 @@ export default function UserSessions() {
   };
 
   const handleReschedule = (sessionId: string) => {
-    navigate('/user/book');
+    // Store booking ID in sessionStorage for booking flow
+    sessionStorage.setItem('reschedule_booking_id', sessionId);
+    navigate('/user/book?mode=reschedule');
   };
 
-  const handleCancel = (sessionId: string) => {
-    console.log('Cancel session:', sessionId);
+  const handleRateSession = (sessionId: string) => {
+    setSelectedSessionForRating(sessionId);
+    setShowRatingDialog(true);
+  };
+
+  const handleCancel = async (sessionId: string) => {
+    try {
+      // Get booking details for notification
+      const { data: booking, error: fetchError } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          prestadores!bookings_prestador_id_fkey (name, email, user_id)
+        `)
+        .eq('id', sessionId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Check if booking is within 24 hours
+      const bookingDateTime = new Date(`${booking.date}T${booking.start_time}`);
+      const now = new Date();
+      const hoursUntil = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+      if (hoursUntil < CANCELLATION_POLICY_HOURS) {
+        toastHook.toast({
+          title: 'Atenção',
+          description: 'Cancelamentos com menos de 24h de antecedência podem afetar a sua quota.',
+          variant: 'destructive'
+        });
+      }
+
+      // Use atomic RPC function to cancel booking
+      const { data: cancelResult, error: cancelError } = await supabase.rpc('cancel_booking_with_refund', {
+        _booking_id: sessionId,
+        _user_id: profile.id,
+        _company_id: booking.company_id,
+        _cancellation_reason: 'user_requested',
+        _refund_quota: hoursUntil >= CANCELLATION_POLICY_HOURS
+      });
+
+      if (cancelError) throw cancelError;
+
+      // Create notification for provider
+      const prestadorUserId = booking.prestadores?.user_id || booking.prestador_id;
+      await supabase.from('notifications').insert({
+        user_id: prestadorUserId,
+        type: 'booking_cancelled',
+        title: 'Sessão Cancelada',
+        message: `A sessão de ${booking.date} às ${booking.start_time} foi cancelada pelo utilizador.`,
+        related_booking_id: sessionId,
+        priority: 'high'
+      });
+
+      // Send cancellation email to user
+      try {
+        // Send cancellation email (method not implemented)
+        // const { data: providerData } = await supabase
+        //   .from('prestadores')
+        //   .select('name, email')
+        //   .eq('id', booking.prestador_id)
+        //   .single();
+        //   
+        // if (providerData?.name && profile?.email) {
+        //   await emailService.sendBookingCancellation(profile.email, {
+        //     userName: profile.name,
+        //     providerName: providerData.name,
+        //     date: booking.date,
+        //     time: booking.start_time,
+        //     pillar: booking.pillar
+        //   });
+        // }
+      } catch (emailError) {
+        // Don't block cancellation on email failure
+      }
+
+      const resultData = cancelResult as { success?: boolean; refunded?: boolean; error?: string } | null;
+      
+      toastHook.toast({
+        title: 'Sessão cancelada',
+        description: resultData?.refunded 
+          ? 'A sua sessão foi cancelada e a quota foi reembolsada.'
+          : 'Sessão cancelada. Quota não reembolsada devido à política de cancelamento (< 24h).'
+      });
+
+      // Refresh bookings list
+      refetch();
+      refetchBalance();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido ao cancelar sessão';
+      toastHook.toast({
+        title: 'Erro ao cancelar sessão',
+        description: errorMessage,
+        variant: 'destructive'
+      });
+    }
   };
 
   return (
@@ -119,7 +224,15 @@ export default function UserSessions() {
         <div className="container mx-auto px-6">
           <UserJourneySection
             goals={userGoals}
-            balance={userBalance}
+            balance={{
+              userId: profile?.id || '',
+              companyQuota: sessionBalance?.employerRemaining || 0,
+              personalQuota: sessionBalance?.personalRemaining || 0,
+              usedCompany: 0,
+              usedPersonal: 0,
+              availableCompany: sessionBalance?.employerRemaining || 0,
+              availablePersonal: sessionBalance?.personalRemaining || 0
+            }}
             completedSessionsCount={completedSessionsCount}
             futureSessionsCount={futureSessionsCount}
             onHistoryClick={() => setIsPastSessionsModalOpen(true)}
@@ -135,6 +248,7 @@ export default function UserSessions() {
           title="Histórico de Sessões Passadas"
           type="past"
           onViewDetails={handleViewDetails}
+          onRate={handleRateSession}
         />
         <SessionModal
           isOpen={isFutureSessionsModalOpen}
@@ -146,6 +260,16 @@ export default function UserSessions() {
           onReschedule={handleReschedule}
           onCancel={handleCancel}
         />
+
+        {/* Rating Dialog */}
+        {selectedSessionForRating && (
+          <SessionRatingDialog
+            open={showRatingDialog}
+            onOpenChange={setShowRatingDialog}
+            sessionId={selectedSessionForRating}
+            pillarName={sessions.find(s => s.id === selectedSessionForRating)?.pillar || ''}
+          />
+        )}
       </div>
     </div>
   );

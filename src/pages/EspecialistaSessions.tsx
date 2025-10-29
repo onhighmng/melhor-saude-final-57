@@ -1,18 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, Play, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockEspecialistaSessions } from '@/data/especialistaGeralMockData';
-import { useCompanyFilter } from '@/hooks/useCompanyFilter';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const EspecialistaSessions = () => {
   const { toast } = useToast();
-  const { filterByCompanyAccess } = useCompanyFilter();
-  
-  // Filter sessions by assigned companies
-  const filteredSessions = filterByCompanyAccess(mockEspecialistaSessions);
+  const { profile } = useAuth();
+  const [filteredSessions, setFilteredSessions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSessions = async () => {
+      if (!profile?.id) return;
+      
+      setLoading(true);
+      try {
+        const { data: sessions } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles(name, email),
+            companies(company_name),
+            prestadores(name, specialties)
+          `)
+          .eq('status', 'scheduled')
+          .order('booking_date', { ascending: true });
+
+        setFilteredSessions(sessions || []);
+      } catch (error) {
+        console.error('Error loading sessions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSessions();
+  }, [profile?.id]);
 
   const handleStartSession = (sessionId: string) => {
     toast({
@@ -37,6 +64,17 @@ const EspecialistaSessions = () => {
     };
     return labels[pillar as keyof typeof labels] || pillar;
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">A carregar sessões...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

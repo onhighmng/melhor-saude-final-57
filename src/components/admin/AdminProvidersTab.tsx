@@ -37,13 +37,29 @@ import {
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
-import { mockProviders, AdminProvider as Provider } from '@/data/adminMockData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import providerPlaceholder from '@/assets/provider-placeholder.jpg';
 import { BookingModal } from '@/components/admin/providers/BookingModal';
 import { InfoCard } from '@/components/ui/info-card';
 import type { CalendarSlot } from '@/types/adminProvider';
+import { LiveIndicator } from '@/components/ui/live-indicator';
+
+interface Provider {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  specialty: string;
+  pillar: string;
+  status: string;
+  satisfaction: number;
+  sessionsThisMonth: number;
+  isApproved: boolean;
+}
 
 const AdminProvidersTab = () => {
+  const { profile } = useAuth();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,6 +87,26 @@ const AdminProvidersTab = () => {
 
   useEffect(() => {
     loadProviders();
+
+    // Real-time subscription
+    const subscription = supabase
+      .channel('admin-providers-updates')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'prestadores'
+      }, () => {
+        loadProviders();
+        toast({
+          title: 'Atualização',
+          description: 'Lista de prestadores atualizada',
+        });
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -80,16 +116,62 @@ const AdminProvidersTab = () => {
   const loadProviders = async () => {
     setIsLoading(true);
     try {
-      setTimeout(() => {
-        setProviders(mockProviders);
-        setIsLoading(false);
-      }, 1000);
-    } catch (error) {
+      // Load prestadores with profiles
+      const { data, error } = await supabase
+        .from('prestadores')
+        .select(`
+          *,
+          profiles (name, email, avatar_url)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        // Get bookings for metrics
+        const { data: bookingsData } = await supabase
+          .from('bookings')
+          .select('prestador_id, rating')
+          .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+
+        const bookingStats = bookingsData?.reduce((acc: any, b: any) => {
+          if (!acc[b.prestador_id]) {
+            acc[b.prestador_id] = { count: 0, ratings: [] };
+          }
+          acc[b.prestador_id].count++;
+          if (b.rating) acc[b.prestador_id].ratings.push(b.rating);
+          return acc;
+        }, {});
+
+        const formattedProviders = data.map((p: any) => {
+          const stats = bookingStats?.[p.id] || { count: 0, ratings: [] };
+          const avgSatisfaction = stats.ratings.length > 0
+            ? stats.ratings.reduce((sum: number, r: number) => sum + r, 0) / stats.ratings.length
+            : p.rating || 0;
+
+          return {
+            id: p.id,
+            name: p.profiles?.name || '',
+            email: p.profiles?.email || '',
+            avatar: p.profiles?.avatar_url || '',
+            specialty: p.specialty || '',
+            pillar: p.pillars?.[0] || '',
+            status: p.is_approved ? 'Aprovado' : 'Pendente',
+            satisfaction: Math.round(avgSatisfaction * 10) / 10,
+            sessionsThisMonth: stats.count,
+            isApproved: p.is_approved || false
+          };
+        });
+
+        setProviders(formattedProviders);
+      }
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Erro ao carregar prestadores",
+        description: error.message || "Erro ao carregar prestadores",
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -149,10 +231,147 @@ const AdminProvidersTab = () => {
     navigate(`/admin/provider-metrics/${provider.id}`);
   };
 
+  const handleApproveProvider = async (providerId: string) => {
+    try {
+      const { error } = await supabase
+        .from('prestadores')
+        .update({ is_approved: true, is_active: true })
+        .eq('id', providerId);
+
+      if (error) throw error;
+
+      // Fetch provider email and name via user_id
+      const { data: prestador } = await supabase
+        .from('prestadores')
+        .select('user_id, name')
+        .eq('id', providerId)
+        .single();
+
+      if (prestador?.user_id) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('id', prestador.user_id)
+          .single();
+
+        if (profileData) {
+          // Send approval email
+          await supabase.functions.invoke('send-email', {
+            body: {
+              to: profileData.email,
+              subject: 'Aprovação de Prestador - Melhor Saúde',
+              html: `
+                <h2>Bem-vindo à Melhor Saúde!</h2>
+                <p>Olá ${prestador.name},</p>
+              <p>A sua candidatura foi <strong>aprovada</strong>. Pode agora aceder à plataforma e começar a agendar sessões.</p>
+              <p>Aceda à sua área de prestador em <a href="https://melhorsaude.pt">melhorsaude.pt</a></p>
+                <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
+              `,
+              type: 'provider_approved'
+            }
+          });
+        }
+      }
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'provider_approved',
+          entity_id: providerId,
+          entity_type: 'prestador'
+        });
+      }
+
+      toast({
+        title: "Prestador aprovado",
+        description: "O prestador foi aprovado e foi notificado por email"
+      });
+
+      await loadProviders();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro ao aprovar prestador";
+      toast({
+        title: "Erro",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleRejectProvider = async (providerId: string) => {
+    try {
+      const { error } = await supabase
+        .from('prestadores')
+        .update({ is_approved: false, is_active: false })
+        .eq('id', providerId);
+
+      if (error) throw error;
+
+      // Fetch provider email and name via user_id
+      const { data: prestador } = await supabase
+        .from('prestadores')
+        .select('user_id, name')
+        .eq('id', providerId)
+        .single();
+
+      if (prestador?.user_id) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('id', prestador.user_id)
+          .single();
+
+        if (profileData) {
+          // Send rejection email
+          await supabase.functions.invoke('send-email', {
+            body: {
+              to: profileData.email,
+              subject: 'Candidatura de Prestador - Melhor Saúde',
+              html: `
+                <h2>Candidatura Recebida</h2>
+                <p>Olá ${prestador.name},</p>
+              <p>Obrigado pelo seu interesse em juntar-se à equipa Melhor Saúde.</p>
+              <p>Após avaliação, a sua candidatura não foi aprovada neste momento. Ficaremos em contacto se surgirem oportunidades futuras.</p>
+                <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
+              `,
+              type: 'provider_rejected'
+            }
+          });
+        }
+      }
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'provider_rejected',
+          entity_id: providerId,
+          entity_type: 'prestador'
+        });
+      }
+
+      toast({
+        title: "Prestador rejeitado",
+        description: "O prestador foi desativado e notificado por email",
+        variant: "destructive"
+      });
+
+      await loadProviders();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro ao rejeitar prestador";
+      toast({
+        title: "Erro",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    }
+  };
+
 
   // Calculate summary metrics
   const totalProviders = providers.length;
-  const activeProviders = providers.filter(p => p.status === 'Ativo').length;
+  const activeProviders = providers.filter(p => p.isApproved).length;
   const avgSatisfaction = providers.length > 0 
     ? (providers.reduce((sum, p) => sum + p.satisfaction, 0) / providers.length).toFixed(1)
     : '0.0';
@@ -205,10 +424,10 @@ const AdminProvidersTab = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Ativo':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Ativo</Badge>;
-      case 'Inativo':
-        return <Badge className="bg-gray-100 text-gray-600 border-gray-200">Inativo</Badge>;
+      case 'Aprovado':
+        return <Badge className="bg-green-100 text-green-800 border-green-200">Aprovado</Badge>;
+      case 'Pendente':
+        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Pendente</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -236,9 +455,12 @@ const AdminProvidersTab = () => {
     <div className="space-y-8">
       {/* Header with Add Button */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Prestadores</h2>
-          <p className="text-sm text-muted-foreground">Gerir prestadores externos e suas métricas</p>
+        <div className="flex items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Prestadores</h2>
+            <p className="text-sm text-muted-foreground">Gerir prestadores externos e suas métricas</p>
+          </div>
+          <LiveIndicator />
         </div>
         
         <Button onClick={() => setShowAddModal(true)} size="lg">
@@ -345,8 +567,8 @@ const AdminProvidersTab = () => {
             </SelectTrigger>
             <SelectContent className="bg-background border border-border shadow-lg z-50">
               <SelectItem value="all">Todos os Estados</SelectItem>
-              <SelectItem value="Ativo">Ativo</SelectItem>
-              <SelectItem value="Inativo">Inativo</SelectItem>
+              <SelectItem value="Aprovado">Aprovado</SelectItem>
+              <SelectItem value="Pendente">Pendente</SelectItem>
             </SelectContent>
           </Select>
 
@@ -380,6 +602,7 @@ const AdminProvidersTab = () => {
               key={provider.id}
               name={provider.name}
               title={provider.email}
+              subtitle={provider.status}
               avatar={provider.avatar || providerPlaceholder}
               specialty={provider.specialty}
               rating={provider.satisfaction}
@@ -387,6 +610,10 @@ const AdminProvidersTab = () => {
               variant="specialist"
               type="provider"
               onView={() => handleViewProvider(provider)}
+              onApprove={() => handleApproveProvider(provider.id)}
+              onReject={() => handleRejectProvider(provider.id)}
+              showActions={!provider.isApproved}
+              isApproved={provider.isApproved}
               className="w-full"
             />
           ))
@@ -499,7 +726,7 @@ const AdminProvidersTab = () => {
         <BookingModal
           open={showBookingModal}
           onOpenChange={setShowBookingModal}
-          provider={selectedProvider}
+          provider={selectedProvider as any}
           slot={selectedSlot}
         />
       )}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,8 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Video, Phone, Clock, FileText, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockEspecialistaSessions } from '@/data/especialistaGeralMockData';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { SessionNoteModal } from '@/components/specialist/SessionNoteModal';
 import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
 import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
@@ -23,8 +24,9 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 
 const EspecialistaSessionsRevamped = () => {
   const { toast } = useToast();
+  const { profile } = useAuth();
   const { filterByCompanyAccess } = useCompanyFilter();
-  const [selectedSession, setSelectedSession] = useState<any>(null);
+  const [selectedSession, setSelectedSession] = useState<Record<string, unknown> | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDaySessionsModalOpen, setIsDaySessionsModalOpen] = useState(false);
@@ -32,12 +34,42 @@ const EspecialistaSessionsRevamped = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSelfBookingModalOpen, setIsSelfBookingModalOpen] = useState(false);
   const [isExternalBookingModalOpen, setIsExternalBookingModalOpen] = useState(false);
+  const [allSessions, setAllSessions] = useState<Array<Record<string, unknown>>>([]);
+  const [loading, setLoading] = useState(true);
   
   // Booking flow state
   const [bookingStep, setBookingStep] = useState<'company' | 'pillar' | 'especialista' | 'colaborador' | 'datetime' | 'notes' | 'confirm'>('company');
   const [selectedPillar, setSelectedPillar] = useState('');
   const [selectedCompany, setSelectedCompany] = useState('');
   const [selectedPatient, setSelectedPatient] = useState('');
+
+  useEffect(() => {
+    const loadSessions = async () => {
+      if (!profile?.id) return;
+      
+      setLoading(true);
+      try {
+        const { data: sessions } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles(name, email),
+            companies(company_name),
+            prestadores(name, specialties)
+          `)
+          .eq('status', 'scheduled')
+          .order('booking_date', { ascending: true });
+
+        setAllSessions(sessions || []);
+      } catch (error) {
+        // Silent fail for session loading
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSessions();
+  }, [profile?.id]);
   const [selectedBookingDate, setSelectedBookingDate] = useState<Date | null>(null);
   const [selectedBookingTime, setSelectedBookingTime] = useState('');
   const [bookingNotes, setBookingNotes] = useState('');
@@ -46,10 +78,8 @@ const EspecialistaSessionsRevamped = () => {
   const [colaboradorOpen, setColaboradorOpen] = useState(false);
   const [providerOpen, setProviderOpen] = useState(false);
   
-  const allSessions = filterByCompanyAccess(mockEspecialistaSessions);
-  
-  // Debug: Show all if filter returns empty (for demo purposes)
-  const sessionsToShow = allSessions.length > 0 ? allSessions : mockEspecialistaSessions;
+  // Filter sessions by company access
+  const sessionsToShow = filterByCompanyAccess(allSessions);
 
   // Mock external specialists list
   const externalSpecialists = [
@@ -127,12 +157,12 @@ const EspecialistaSessionsRevamped = () => {
 
   const getPillarColor = (pillar: string) => {
     const colors = {
-      psychological: 'bg-blue-100 text-blue-700',
-      physical: 'bg-green-100 text-green-700',
-      financial: 'bg-purple-100 text-purple-700',
-      legal: 'bg-orange-100 text-orange-700'
+      psychological: 'bg-blue-100 text-blue-700 border-blue-300',
+      physical: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+      financial: 'bg-green-100 text-green-700 border-green-300',
+      legal: 'bg-purple-100 text-purple-700 border-purple-300'
     };
-    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
+    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
   };
 
   const getStatusBadge = (status: string) => {
@@ -163,24 +193,38 @@ const EspecialistaSessionsRevamped = () => {
   // Transform sessions data for calendar
   const calendarData = useMemo(() => {
     const groupedByDate = sessionsToShow.reduce((acc, session) => {
-      const dateKey = session.date;
+      const dateKey = session.date as string;
       if (!acc[dateKey]) {
-        acc[dateKey] = [];
+        acc[dateKey] = [] as any[];
       }
-      acc[dateKey].push({
+      (acc[dateKey] as any[]).push({
         id: session.id,
-        name: `${session.user_name} - ${getPillarLabel(session.pillar)}`,
-        time: session.time,
-        datetime: `${session.date}T${session.time}`,
-        userName: session.user_name,
+        name: `${(session.profiles as any)?.name || 'Unknown'} - ${getPillarLabel(session.pillar as string)}`,
+        time: (session.start_time as string) || '00:00',
+        datetime: `${session.date}T${(session.start_time as string) || '00:00'}`,
+        userName: (session.profiles as any)?.name || 'Unknown',
         pillar: session.pillar,
       });
       return acc;
-    }, {} as Record<string, any[]>);
+    }, {} as Record<string, Array<{
+      id: string;
+      name: string;
+      time: string;
+      datetime: string;
+      userName: string;
+      pillar: string;
+    }>>);
 
     return Object.entries(groupedByDate).map(([date, events]) => ({
       day: new Date(date),
-      events,
+      events: events as Array<{
+        id: string;
+        name: string;
+        time: string;
+        datetime: string;
+        userName: string;
+        pillar: string;
+      }>,
     }));
   }, [sessionsToShow]);
 
@@ -188,8 +232,8 @@ const EspecialistaSessionsRevamped = () => {
   const selectedDateSessions = useMemo(() => {
     if (!selectedDate) return [];
     return sessionsToShow.filter(session => 
-      isSameDay(new Date(session.date), selectedDate)
-    ).sort((a, b) => a.time.localeCompare(b.time));
+      isSameDay(new Date(session.date as any), selectedDate)
+    ).sort((a, b) => String(a.start_time).localeCompare(String(b.start_time)));
   }, [sessionsToShow, selectedDate]);
 
   const handleSaveNote = (notes: string, outcome: string) => {
@@ -200,7 +244,7 @@ const EspecialistaSessionsRevamped = () => {
     setIsNoteModalOpen(false);
   };
 
-  const handleAddNote = (session: any) => {
+  const handleAddNote = (session: Record<string, unknown>) => {
     setSelectedSession(session);
     setIsNoteModalOpen(true);
   };
@@ -210,7 +254,7 @@ const EspecialistaSessionsRevamped = () => {
     setIsDaySessionsModalOpen(true);
   };
 
-  const handleEventClick = (event: any) => {
+  const handleEventClick = (event: Record<string, unknown>) => {
     const session = sessionsToShow.find(s => s.id === event.id);
     if (session) {
       setSelectedSession(session);
@@ -295,45 +339,45 @@ const EspecialistaSessionsRevamped = () => {
   };
 
   const renderSessionCard = (session: any) => (
-    <Card key={session.id} className="p-4 hover:shadow-md transition-shadow">
-      <div className="space-y-3">
-        <div className="flex items-start justify-between gap-2">
+    <Card key={String(session.id)} className="p-6 hover:shadow-md transition-shadow">
+      <div className="space-y-4">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
-            <h4 className="font-semibold text-sm mb-1">{session.user_name}</h4>
-            <p className="text-xs text-muted-foreground">{session.company_name}</p>
+            <h4 className="font-semibold text-base mb-2">{session.user_name as string}</h4>
+            <p className="text-sm text-foreground">{session.company_name as string}</p>
           </div>
-          <Badge className={`text-xs ${getPillarColor(session.pillar)}`}>
-            {getPillarLabel(session.pillar)}
+          <Badge className={`text-sm px-3 py-1 ${getPillarColor(session.pillar as string)}`}>
+            {getPillarLabel(session.pillar as string)}
           </Badge>
         </div>
 
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>{session.time}</span>
+        <div className="flex items-center justify-between text-sm text-foreground">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              <span>{session.time as string}</span>
             </div>
-            <div className="flex items-center gap-1">
-              {getSessionTypeIcon(session.session_type || 'video')}
-              <span>{getSessionTypeLabel(session.session_type || 'video')}</span>
+            <div className="flex items-center gap-2">
+              {getSessionTypeIcon((session.session_type as string) || 'video')}
+              <span>{getSessionTypeLabel((session.session_type as string) || 'video')}</span>
             </div>
           </div>
-          <Badge className={`text-xs ${getStatusBadge(session.status).variant}`}>
-            {getStatusBadge(session.status).label}
+          <Badge className={`text-sm px-3 py-1 ${getStatusBadge(session.status as string).variant}`}>
+            {getStatusBadge(session.status as string).label}
           </Badge>
         </div>
 
         {session.notes && (
-          <p className="text-xs text-muted-foreground italic">{session.notes}</p>
+          <p className="text-sm text-foreground italic">{session.notes as string}</p>
         )}
 
         <Button
-          size="sm"
+          size="default"
           variant="outline"
           onClick={() => handleAddNote(session)}
           className="w-full"
         >
-          <FileText className="h-3 w-3 mr-1" />
+          <FileText className="h-4 w-4 mr-2" />
           Ver/Adicionar Notas
         </Button>
       </div>
@@ -354,7 +398,7 @@ const EspecialistaSessionsRevamped = () => {
       <Card className="p-0">
         <FullScreenCalendar 
           data={calendarData}
-          onEventClick={handleEventClick}
+          onEventClick={(event: any) => handleEventClick(event)}
           onDayClick={handleDateClick}
           onSetAvailability={() => setIsAvailabilityModalOpen(true)}
           onAddEvent={handleAddEvent}
@@ -371,9 +415,9 @@ const EspecialistaSessionsRevamped = () => {
             </DialogTitle>
           </DialogHeader>
           <ScrollArea className="flex-1 overflow-auto">
-            <div className="space-y-3 pr-4">
+            <div className="grid grid-cols-2 gap-4 pr-4">
               {selectedDateSessions.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="col-span-2 text-center py-12 text-muted-foreground">
                   <CalendarIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p>Sem sessões neste dia</p>
                 </div>

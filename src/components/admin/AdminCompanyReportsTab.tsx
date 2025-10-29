@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { FileText, Send, Download, TrendingUp, Users, Star, Target } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CompanyStats {
   id: string;
@@ -24,17 +25,81 @@ interface CompanyStats {
   activeEmployees: number;
 }
 
-const mockCompanyStats: CompanyStats[] = [
-  { id: '1', name: 'TechCorp', utilization: 87, satisfaction: 8.5, progress: 75, totalSessions: 400, usedSessions: 350, activeEmployees: 120 },
-  { id: '2', name: 'InnovaSolutions', utilization: 78, satisfaction: 9.1, progress: 82, totalSessions: 300, usedSessions: 250, activeEmployees: 85 },
-  { id: '3', name: 'GlobalFinance', utilization: 73, satisfaction: 8.2, progress: 68, totalSessions: 300, usedSessions: 220, activeEmployees: 95 },
-  { id: '4', name: 'StartupHub', utilization: 80, satisfaction: 8.9, progress: 70, totalSessions: 150, usedSessions: 120, activeEmployees: 45 },
-];
-
 const AdminCompanyReportsTab = () => {
   const { t } = useTranslation('admin');
   const { toast } = useToast();
   const [selectedCompany, setSelectedCompany] = useState<string>('');
+  const [companyStats, setCompanyStats] = useState<CompanyStats[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadCompanyStats();
+  }, []);
+
+  const loadCompanyStats = async () => {
+    try {
+      setLoading(true);
+
+      const { data: companies, error: companiesError } = await supabase
+        .from('companies')
+        .select('id, company_name, sessions_allocated, sessions_used')
+        .range(0, 99); // Pagination
+
+      if (companiesError) throw companiesError;
+
+      const statsPromises = (companies || []).map(async (company) => {
+        const [employeesResult, feedbackResult] = await Promise.all([
+          supabase
+            .from('company_employees')
+            .select('id', { count: 'exact', head: true })
+            .eq('company_id', company.id)
+            .eq('is_active', true),
+          supabase
+            .from('bookings')
+            .select('rating')
+            .eq('company_id', company.id)
+            .not('rating', 'is', null)
+            .limit(1000) // Limit for performance
+        ]);
+
+        const activeEmployees = employeesResult.count || 0;
+        const ratings = feedbackResult.data?.filter(f => f.rating) || [];
+        const satisfaction = ratings.length > 0
+          ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+          : 0;
+        
+        const utilization = company.sessions_allocated > 0
+          ? (company.sessions_used / company.sessions_allocated) * 100
+          : 0;
+
+        // Progress calculation (placeholder - would need user_progress table)
+        const progress = Math.min(utilization, 100);
+
+        return {
+          id: company.id,
+          name: company.company_name || 'N/A',
+          utilization: Math.round(utilization),
+          satisfaction: Math.round(satisfaction * 10) / 10,
+          progress: Math.round(progress),
+          totalSessions: company.sessions_allocated || 0,
+          usedSessions: company.sessions_used || 0,
+          activeEmployees
+        };
+      });
+
+      const stats = await Promise.all(statsPromises);
+      setCompanyStats(stats);
+    } catch (error) {
+      console.error('Error loading company stats:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível carregar as estatísticas das empresas.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGeneratePDF = () => {
     toast({
@@ -50,7 +115,22 @@ const AdminCompanyReportsTab = () => {
     });
   };
 
-  const selectedStats = mockCompanyStats.find(c => c.id === selectedCompany);
+  const selectedStats = companyStats.find(c => c.id === selectedCompany);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Selecionar Empresa</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="animate-pulse bg-gray-200 h-10 w-full rounded" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -65,7 +145,7 @@ const AdminCompanyReportsTab = () => {
               <SelectValue placeholder="Escolha uma empresa" />
             </SelectTrigger>
             <SelectContent>
-              {mockCompanyStats.map((company) => (
+              {companyStats.map((company) => (
                 <SelectItem key={company.id} value={company.id}>
                   {company.name}
                 </SelectItem>

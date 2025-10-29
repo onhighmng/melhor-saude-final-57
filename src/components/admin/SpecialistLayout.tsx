@@ -4,6 +4,10 @@ import { Clock, CheckCircle2, ArrowRight, TrendingUp, X } from 'lucide-react';
 import { CardStack } from '@/components/ui/card-stack';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useState } from 'react';
+import { ProviderSessionManagementModal } from '@/components/sessions/ProviderSessionManagementModal';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { LiveIndicator } from '@/components/ui/live-indicator';
 
 interface Case {
   id: string;
@@ -114,10 +118,86 @@ const metricCards = [
 export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showManagementModal, setShowManagementModal] = useState(false);
+  const { toast } = useToast();
 
   const handleCaseClick = (caseItem: Case) => {
     setSelectedCase(caseItem);
-    setIsModalOpen(true);
+    setShowManagementModal(true);
+  };
+
+  const handleUpdateMeetingLink = async (caseId: string, link: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ meeting_link: link })
+        .eq('id', caseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Link atualizado",
+        description: "O link da reunião foi atualizado com sucesso."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao atualizar link",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleReschedule = async (caseId: string) => {
+    try {
+      // Update booking status and add rescheduled flag
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'rescheduled',
+          rescheduled_from: caseId 
+        })
+        .eq('id', caseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Caso reagendado",
+        description: "O caso foi marcado para reagendamento."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao reagendar caso",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCancel = async (caseId: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'cancelled',
+          cancellation_reason: 'Cancelado por especialista' 
+        })
+        .eq('id', caseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Caso cancelado",
+        description: "O caso foi cancelado com sucesso.",
+        variant: "destructive"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao cancelar caso",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -131,7 +211,10 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
         {/* Right Side - Cases List */}
         <Card>
           <CardHeader>
-            <CardTitle>Histórico de Casos</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+              <span>Histórico de Casos</span>
+              <LiveIndicator />
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -173,7 +256,28 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
         </Card>
       </div>
 
-      {/* Fullscreen Modal */}
+      {/* Provider Session Management Modal */}
+      <ProviderSessionManagementModal
+        session={selectedCase ? {
+          id: selectedCase.id,
+          clientName: selectedCase.collaborator,
+          pillar: selectedCase.pillar,
+          date: selectedCase.date,
+          time: '10:00', // Default time, can be added to Case interface
+          platform: 'Zoom',
+          meetingLink: undefined
+        } : null}
+        isOpen={showManagementModal}
+        onClose={() => {
+          setShowManagementModal(false);
+          setSelectedCase(null);
+        }}
+        onUpdateMeetingLink={handleUpdateMeetingLink}
+        onReschedule={handleReschedule}
+        onCancel={handleCancel}
+      />
+
+      {/* Notes Modal (Keep for viewing case notes) */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-2xl">
           {selectedCase && (

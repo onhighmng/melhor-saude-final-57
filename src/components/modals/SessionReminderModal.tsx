@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
-import { useTranslation } from 'react-i18next';
 
 interface SessionReminderModalProps {
   open: boolean;
@@ -20,8 +19,6 @@ export function SessionReminderModal({
   providerName,
   sessionTime,
 }: SessionReminderModalProps) {
-  const { t } = useTranslation('user');
-  
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -30,10 +27,10 @@ export function SessionReminderModal({
             <Clock className="w-8 h-8 text-green-500" />
           </div>
           <DialogTitle className="text-center text-xl">
-            {t('crossFlow.reminderTitle')}
+            Lembrete de Sessão
           </DialogTitle>
           <DialogDescription className="text-center">
-            {t('crossFlow.reminderMessage')}
+            A sua sessão está prestes a começar.
             <br />
             <span className="font-semibold">{providerName}</span> às <span className="font-semibold">{sessionTime}</span>
           </DialogDescription>
@@ -41,10 +38,10 @@ export function SessionReminderModal({
         
         <div className="space-y-3">
           <Button onClick={onJoinNow} className="w-full" size="lg">
-            {t('crossFlow.reminderCTAJoin')}
+            Entrar Agora
           </Button>
           <Button onClick={onSnooze} variant="outline" className="w-full">
-            {t('crossFlow.reminderCTASnooze')}
+            Adiar 5 Min
           </Button>
         </div>
       </DialogContent>

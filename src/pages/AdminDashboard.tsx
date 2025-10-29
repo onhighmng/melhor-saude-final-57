@@ -1,7 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Building2, 
@@ -13,11 +13,25 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
+import { supabase } from '@/integrations/supabase/client';
+import { LiveIndicator } from '@/components/ui/live-indicator';
+
+interface ActivityMetrics {
+  utilizationRate: number;
+  activePrestadores: number;
+  avgSatisfaction: string;
+}
 
 const AdminDashboard = () => {
   const { profile } = useAuth();
   const { data: analytics } = useAnalytics();
   const navigate = useNavigate();
+  const [activityMetrics, setActivityMetrics] = useState<ActivityMetrics>({
+    utilizationRate: 0,
+    activePrestadores: 0,
+    avgSatisfaction: '0.0'
+  });
+  const [loadingMetrics, setLoadingMetrics] = useState(true);
 
   useEffect(() => {
     // Add admin-page class to body for gray background
@@ -29,6 +43,56 @@ const AdminDashboard = () => {
     };
   }, []);
 
+  useEffect(() => {
+    loadActivityMetrics();
+
+    // Real-time subscription for bookings
+    const channel = supabase
+      .channel('dashboard-updates')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'bookings' },
+        () => loadActivityMetrics()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const loadActivityMetrics = async () => {
+    try {
+      // Get utilization rate (type will regenerate after migration)
+      const { data: utilData } = await supabase.rpc('get_platform_utilization');
+
+      // Get active prestadores count
+      const { count: activePrestadoresCount } = (await supabase
+        .from('prestadores')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true)) as { count: number };
+
+      // Get average satisfaction
+      const { data: ratings } = await supabase
+        .from('bookings')
+        .select('rating')
+        .not('rating', 'is', null);
+
+      const avgRating = ratings && ratings.length > 0
+        ? (ratings.reduce((sum, r) => sum + (r.rating || 0), 0) / ratings.length).toFixed(1)
+        : '0.0';
+
+      setActivityMetrics({
+        utilizationRate: utilData?.[0]?.platform_utilization_rate || 0,
+        activePrestadores: activePrestadoresCount,
+        avgSatisfaction: avgRating
+      });
+    } catch (error) {
+      // Silent fail for activity metrics loading
+    } finally {
+      setLoadingMetrics(false);
+    }
+  };
+
 
 
   return (
@@ -36,14 +100,17 @@ const AdminDashboard = () => {
       <div className="relative z-10 h-full flex flex-col">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
           {/* Page Header - Like other admin pages */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Dashboard Geral
-        </h1>
-        <p className="text-muted-foreground">
-              Visão geral da plataforma Melhor Saúde
-        </p>
-      </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Dashboard Geral
+              </h1>
+              <p className="text-muted-foreground">
+                Visão geral da plataforma Melhor Saúde
+              </p>
+            </div>
+            <LiveIndicator />
+          </div>
 
           {/* Bento Grid Layout - Fixed height */}
           <div className="h-[calc(100vh-200px)]">
@@ -53,7 +120,7 @@ const AdminDashboard = () => {
             name="Empresas Ativas" 
             description={`${analytics?.total_companies || 0} empresas ativas`}
             Icon={Building2} 
-            onClick={() => navigate('/admin/users-management?tab=companies')} 
+            onClick={() => navigate('/admin/companies')} 
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
             background={
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />
@@ -104,15 +171,15 @@ const AdminDashboard = () => {
                     <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-base font-medium text-gray-700">Taxa de Utilização</span>
-                        <span className="text-2xl font-bold text-purple-700">78%</span>
+                        <span className="text-2xl font-bold text-purple-700">{loadingMetrics ? '...' : `${Math.round(activityMetrics.utilizationRate)}%`}</span>
                       </div>
-                      <Progress value={78} className="h-3" />
+                      <Progress value={loadingMetrics ? 0 : activityMetrics.utilizationRate} className="h-3" />
                     </div>
                     
                     <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-base font-medium text-gray-700">Prestadores Ativos</span>
-                        <span className="text-2xl font-bold text-purple-700">24</span>
+                        <span className="text-2xl font-bold text-purple-700">{loadingMetrics ? '...' : activityMetrics.activePrestadores}</span>
                       </div>
                       <p className="text-sm text-muted-foreground">A fornecer serviços</p>
                     </div>
@@ -120,9 +187,9 @@ const AdminDashboard = () => {
                     <div className="p-5 bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:scale-[1.02] cursor-pointer">
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-base font-medium text-gray-700">Satisfação Média</span>
-                        <span className="text-2xl font-bold text-purple-700">4.6/5</span>
+                        <span className="text-2xl font-bold text-purple-700">{loadingMetrics ? '...' : `${activityMetrics.avgSatisfaction}/10`}</span>
                       </div>
-                      <Progress value={92} className="h-3" />
+                      <Progress value={loadingMetrics ? 0 : parseFloat(activityMetrics.avgSatisfaction) * 10} className="h-3" />
                     </div>
                   </div>
                 </div>

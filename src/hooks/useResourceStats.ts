@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { mockResources } from '@/data/userResourcesData';
+import { useMemo, useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { getPillarLabel } from '@/utils/pillarColors';
 
 interface PillarStats {
@@ -16,18 +16,42 @@ interface ResourceStats {
 }
 
 export const useResourceStats = (): ResourceStats => {
+  const [resources, setResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*');
+
+        if (error) throw error;
+        setResources(data || []);
+      } catch (error) {
+        console.error('Error fetching resources:', error);
+        setResources([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, []);
+
   const stats = useMemo(() => {
-    const total = mockResources.length;
+    const total = resources.length;
     
-    const pillarCounts = mockResources.reduce((acc, resource) => {
-      acc[resource.pillar] = (acc[resource.pillar] || 0) + 1;
+    const pillarCounts = resources.reduce((acc, resource) => {
+      const pillar = resource.pillar || 'unknown';
+      acc[pillar] = (acc[pillar] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     
     const distribution: PillarStats[] = Object.entries(pillarCounts).map(([pillar, count]) => ({
       pillar,
-      count,
-      percentage: Math.round((count / total) * 100),
+      count: count as number,
+      percentage: total > 0 ? Math.round(((count as number) / total) * 100) : 0,
       label: getPillarLabel(pillar)
     }));
     
@@ -39,7 +63,7 @@ export const useResourceStats = (): ResourceStats => {
       distribution,
       mostPopular: distribution[0] || null
     };
-  }, []);
+  }, [resources]);
   
   return stats;
 };

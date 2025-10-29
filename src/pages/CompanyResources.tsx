@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResourceGrid } from "@/components/resources/ResourceGrid";
 import { ResourceModal } from "@/components/resources/ResourceModal";
-import { mockResources, UserResource, pillarNames } from "@/data/userResourcesData";
+import { UserResource, pillarNames } from "@/types/resources";
 import { BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -75,10 +75,50 @@ const getCategoryColors = (category: string) => {
 };
 
 export default function CompanyResources() {
-  const [resources] = useState(mockResources);
+  const [resources, setResources] = useState<UserResource[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const { user } = useAuth();
+  
+  useEffect(() => {
+    const loadResources = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const transformedResources: UserResource[] = (data || []).map(r => {
+          const validPillars = ['saude_mental', 'bem_estar_fisico', 'assistencia_financeira', 'assistencia_juridica'];
+          const pillar = validPillars.includes(r.pillar) ? r.pillar : 'saude_mental';
+          
+          return {
+            id: r.id,
+            title: r.title,
+            pillar: pillar as 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica',
+            type: (r.resource_type || 'article') as 'pdf' | 'video' | 'article',
+            description: r.description || '',
+            url: r.url,
+            thumbnail: r.thumbnail_url,
+            createdAt: r.created_at || new Date().toISOString()
+          };
+        });
+
+        setResources(transformedResources);
+      } catch (error) {
+        console.error('Error loading resources:', error);
+        toast.error('Erro ao carregar recursos');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadResources();
+  }, []);
   
   useEffect(() => {
     // Add company-page class to body for light blue background
@@ -94,9 +134,16 @@ export default function CompanyResources() {
     setSelectedResource(resource);
     setModalOpen(true);
     
-    // Track resource view in user_progress table
+    // Track resource view in resource_access_log table
     if (user?.id) {
       try {
+        await supabase.from('resource_access_log').insert({
+          user_id: user.id,
+          resource_id: resource.id,
+          access_type: 'view'
+        });
+        
+        // Also track in user_progress
         await supabase.from('user_progress').insert({
           user_id: user.id,
           action_type: 'resource_viewed',
@@ -148,6 +195,17 @@ export default function CompanyResources() {
     readTime: 6,
     rating: 4
   }];
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-accent-sage border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">A carregar recursos...</p>
+        </div>
+      </div>
+    );
+  }
+
   return <div className="w-full min-h-screen">
     <div className="space-y-6">
       <div className="max-w-7xl mx-auto px-6 pt-6">
