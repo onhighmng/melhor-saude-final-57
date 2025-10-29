@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Clock, Building2, Calendar, Send, Search } from 'lucide-react';
 import { formatDate } from '@/utils/dateFormatting';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { sanitizeInput } from '@/utils/sanitize';
+import { logErrorSecurely, getGenericErrorMessage } from '@/utils/errorHandling';
 
 interface Message {
   id: string;
@@ -29,81 +34,93 @@ interface Ticket {
   messages: Message[];
 }
 
-const mockTickets: Ticket[] = [
-  {
-    id: '1',
-    title: 'Problema com acesso ao sistema',
-    company: 'Tech Solutions Lda',
-    status: 'aberto',
-    createdAt: '2024-01-15T10:30:00Z',
-    avgResponseTime: 45,
-    messages: [
-      {
-        id: 'm1',
-        sender: 'João Silva',
-        senderType: 'user',
-        content: 'Não consigo aceder ao sistema desde ontem.',
-        timestamp: '2024-01-15T10:30:00Z',
-      },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Solicitação de relatório customizado',
-    company: 'Consulting Partners',
-    status: 'em_resolucao',
-    createdAt: '2024-01-14T14:20:00Z',
-    avgResponseTime: 120,
-    messages: [
-      {
-        id: 'm2',
-        sender: 'Maria Costa',
-        senderType: 'user',
-        content: 'Gostaria de um relatório mensal personalizado.',
-        timestamp: '2024-01-14T14:20:00Z',
-      },
-      {
-        id: 'm3',
-        sender: 'Suporte',
-        senderType: 'admin',
-        content: 'Estamos a trabalhar no seu pedido. Terá resposta em breve.',
-        timestamp: '2024-01-14T15:00:00Z',
-      },
-    ],
-  },
-  {
-    id: '3',
-    title: 'Dúvida sobre faturação',
-    company: 'Wellness Corp',
-    status: 'resolvido',
-    createdAt: '2024-01-10T09:15:00Z',
-    avgResponseTime: 30,
-    messages: [
-      {
-        id: 'm4',
-        sender: 'Pedro Santos',
-        senderType: 'user',
-        content: 'Tenho uma dúvida sobre a última fatura.',
-        timestamp: '2024-01-10T09:15:00Z',
-      },
-      {
-        id: 'm5',
-        sender: 'Suporte',
-        senderType: 'admin',
-        content: 'A fatura está correta. Reflete as sessões utilizadas no mês anterior.',
-        timestamp: '2024-01-10T09:45:00Z',
-      },
-    ],
-  },
-];
-
 export default function AdminSupportTicketsTab() {
   const { t } = useTranslation('admin');
-  const [tickets, setTickets] = useState<Ticket[]>(mockTickets);
+  const { toast } = useToast();
+  const { profile } = useAuth();
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
+
+  useEffect(() => {
+    loadTickets();
+  }, []);
+
+  const loadTickets = async () => {
+    try {
+      setLoading(true);
+
+      const { data: ticketsData, error: ticketsError } = await supabase
+        .from('support_tickets')
+        .select(`
+          id,
+          subject,
+          status,
+          created_at,
+          company_id
+        `)
+        .order('created_at', { ascending: false });
+
+      if (ticketsError) throw ticketsError;
+
+      const { data: messagesData, error: messagesError } = await supabase
+        .from('support_ticket_messages')
+        .select(`
+          id,
+          ticket_id,
+          sender_id,
+          message,
+          created_at
+        `)
+        .in('ticket_id', ticketsData?.map(t => t.id) || [])
+        .order('created_at', { ascending: true });
+
+      if (messagesError) throw messagesError;
+
+      const ticketsWithMessages: Ticket[] = (ticketsData || []).map(ticket => {
+        const ticketMessages = messagesData?.filter(m => m.ticket_id === ticket.id) || [];
+        
+        const calculateAvgResponseTime = () => {
+          if (ticketMessages.length < 2) return 0;
+          
+          const timeDiff = new Date(ticketMessages[0].created_at).getTime() - new Date(ticket.created_at).getTime();
+          return Math.round(timeDiff / (1000 * 60)); // minutes
+        };
+
+        const avgResponseTime = calculateAvgResponseTime();
+
+        return {
+          id: ticket.id,
+          title: ticket.subject || 'Sem título',
+          company: 'N/A',
+          status: (ticket.status === 'open' ? 'aberto' : ticket.status === 'resolved' ? 'resolvido' : 'em_resolucao') as 'aberto' | 'em_resolucao' | 'resolvido',
+          createdAt: ticket.created_at,
+          avgResponseTime,
+          messages: ticketMessages.map(msg => ({
+            id: msg.id,
+            sender: 'User',
+            senderType: 'user' as const,
+            content: msg.message,
+            timestamp: msg.created_at
+          }))
+        };
+      });
+
+      setTickets(ticketsWithMessages);
+    } catch (error) {
+      console.error('Error loading tickets:', error);
+      toast({
+        title: 'Erro ao carregar tickets',
+        description: 'Não foi possível carregar os tickets de suporte.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status: Ticket['status']) => {
     switch (status) {
@@ -135,42 +152,95 @@ export default function AdminSupportTicketsTab() {
     return matchesStatus && matchesSearch;
   });
 
-  const handleSendMessage = () => {
-    if (!selectedTicket || !newMessage.trim()) return;
+  const handleSendMessage = async () => {
+    if (!selectedTicket || !newMessage.trim() || !profile?.id) return;
 
-    const message: Message = {
-      id: `m${Date.now()}`,
-      sender: 'Suporte',
-      senderType: 'admin',
-      content: newMessage,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      // Insert message into database (with sanitization)
+      const { data: messageData, error: messageError } = await supabase
+        .from('support_ticket_messages')
+        .insert({
+          ticket_id: selectedTicket.id,
+          sender_id: profile.id,
+          message: sanitizeInput(newMessage) // SANITIZE INPUT
+        })
+        .select()
+        .single();
 
-    const updatedTickets = tickets.map((ticket) =>
-      ticket.id === selectedTicket.id
-        ? {
-            ...ticket,
-            messages: [...ticket.messages, message],
-            status: ticket.status === 'aberto' ? ('em_resolucao' as const) : ticket.status,
-          }
-        : ticket
-    );
+      if (messageError) throw messageError;
 
-    setTickets(updatedTickets);
-    setSelectedTicket({
-      ...selectedTicket,
-      messages: [...selectedTicket.messages, message],
-    });
-    setNewMessage('');
+      // Update ticket status if it's open
+      if (selectedTicket.status === 'aberto') {
+        await supabase
+          .from('support_tickets')
+          .update({ status: 'em_resolucao' })
+          .eq('id', selectedTicket.id);
+      }
+
+      // Refresh tickets
+      await loadTickets();
+
+      // Update selected ticket
+      const updatedMessages = [...selectedTicket.messages, {
+        id: messageData.id,
+        sender: 'Suporte',
+        senderType: 'admin' as const,
+        content: newMessage,
+        timestamp: messageData.created_at
+      }];
+
+      setSelectedTicket({
+        ...selectedTicket,
+        messages: updatedMessages,
+        status: selectedTicket.status === 'aberto' ? 'em_resolucao' : selectedTicket.status
+      });
+
+      setNewMessage('');
+      
+      toast({
+        title: 'Mensagem enviada',
+        description: 'A sua mensagem foi enviada com sucesso.',
+      });
+    } catch (error) {
+      logErrorSecurely(error, 'sending_support_message');
+      toast({
+        title: 'Erro',
+        description: getGenericErrorMessage('sending'),
+        variant: 'destructive'
+      });
+    }
   };
 
-  const handleStatusChange = (ticketId: string, newStatus: Ticket['status']) => {
-    const updatedTickets = tickets.map((ticket) =>
-      ticket.id === ticketId ? { ...ticket, status: newStatus } : ticket
-    );
-    setTickets(updatedTickets);
-    if (selectedTicket?.id === ticketId) {
-      setSelectedTicket({ ...selectedTicket, status: newStatus });
+  const handleStatusChange = async (ticketId: string, newStatus: Ticket['status']) => {
+    try {
+      const { error } = await supabase
+        .from('support_tickets')
+        .update({ status: newStatus })
+        .eq('id', ticketId);
+
+      if (error) throw error;
+
+      // Update local state
+      const updatedTickets = tickets.map((ticket) =>
+        ticket.id === ticketId ? { ...ticket, status: newStatus } : ticket
+      );
+      setTickets(updatedTickets);
+      
+      if (selectedTicket?.id === ticketId) {
+        setSelectedTicket({ ...selectedTicket, status: newStatus });
+      }
+
+      toast({
+        title: 'Status atualizado',
+        description: 'O status do ticket foi atualizado.',
+      });
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: 'Erro ao atualizar status',
+        description: 'Não foi possível atualizar o status do ticket.',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -180,6 +250,25 @@ export default function AdminSupportTicketsTab() {
     em_resolucao: tickets.filter((t) => t.status === 'em_resolucao').length,
     resolvido: tickets.filter((t) => t.status === 'resolvido').length,
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-4">
+          {[1, 2, 3, 4].map(i => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium animate-pulse bg-gray-200 h-4 w-24 rounded" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold animate-pulse bg-gray-200 h-8 w-16 rounded" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

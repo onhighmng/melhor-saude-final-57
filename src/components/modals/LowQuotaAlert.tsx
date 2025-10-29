@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
-import { useTranslation } from 'react-i18next';
 
 interface LowQuotaAlertProps {
   open: boolean;
@@ -11,8 +10,6 @@ interface LowQuotaAlertProps {
 }
 
 export function LowQuotaAlert({ open, onClose, onBookSession, remainingSessions }: LowQuotaAlertProps) {
-  const { t } = useTranslation('user');
-  
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -21,21 +18,21 @@ export function LowQuotaAlert({ open, onClose, onBookSession, remainingSessions 
             <AlertCircle className="w-8 h-8 text-amber-500" />
           </div>
           <DialogTitle className="text-center text-xl">
-            {t('crossFlow.lowQuotaTitle')}
+            Suas sessões estão a acabar
           </DialogTitle>
           <DialogDescription className="text-center">
             Restam apenas {remainingSessions} {remainingSessions === 1 ? 'sessão' : 'sessões'}.
             <br />
-            {t('crossFlow.lowQuotaMessage')}
+            Agende uma nova sessão antes que terminem.
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-3">
           <Button onClick={onBookSession} className="w-full" size="lg">
-            {t('crossFlow.lowQuotaCTA')}
+            Agendar Sessão
           </Button>
           <Button onClick={onClose} variant="ghost" className="w-full">
-            {t('crossFlow.close')}
+            Fechar
           </Button>
         </div>
       </DialogContent>

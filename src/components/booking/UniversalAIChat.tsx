@@ -7,6 +7,7 @@ import { Loader2, Send, Phone, X } from 'lucide-react';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { SpecialistContactCard } from './SpecialistContactCard';
 import { ChatExitFeedbackButtons } from './ChatExitFeedbackButtons';
 import { ChatIntroSection } from './ChatIntroSection';
@@ -77,6 +78,20 @@ export const UniversalAIChat = ({
     
     try {
       await sendMessage(input);
+      
+      // Track chat interaction in user_progress
+      if (user?.id && pillar) {
+        await supabase.from('user_progress').insert({
+          user_id: user.id,
+          pillar: pillar,
+          action_type: 'chat_interaction',
+          action_date: new Date().toISOString(),
+          metadata: {
+            session_id: sessionId,
+            message_count: messages.length + 1
+          }
+        });
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       toast({

@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UserCog } from "lucide-react";
-import { companyToasts } from "@/data/companyToastMessages";
-import { useTranslation } from 'react-i18next';
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ReassignProviderModalProps {
   open: boolean;
@@ -20,6 +20,7 @@ interface ReassignProviderModalProps {
   currentProvider: { id: string; name: string };
   availableProviders: { id: string; name: string; specialty: string }[];
   onReassign: (newProviderId: string) => void;
+  bookingId: string;
 }
 
 export function ReassignProviderModal({ 
@@ -27,16 +28,37 @@ export function ReassignProviderModal({
   onOpenChange, 
   currentProvider,
   availableProviders,
-  onReassign 
+  onReassign,
+  bookingId 
 }: ReassignProviderModalProps) {
-  const { t } = useTranslation();
+  const { toast } = useToast();
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedProviderId) return;
-    onReassign(selectedProviderId);
-    companyToasts.settingsSaved();
-    onOpenChange(false);
+    
+    try {
+      // Update booking with new prestador_id
+      await supabase
+        .from('bookings')
+        .update({ prestador_id: selectedProviderId })
+        .eq('id', bookingId);
+
+      onReassign(selectedProviderId);
+      
+      toast({
+        title: 'Prestador reatribuído',
+        description: 'O prestador foi alterado com sucesso.',
+      });
+      
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao reatribuir prestador',
+        variant: 'destructive'
+      });
+    }
   };
 
   return (
@@ -76,7 +98,7 @@ export function ReassignProviderModal({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('buttons.cancel')}
+            Cancelar
           </Button>
           <Button onClick={handleSubmit} disabled={!selectedProviderId}>
             Reatribuir

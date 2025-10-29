@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface PillarStepProps {
@@ -19,7 +19,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
   isVisible,
   index
 }) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   
   const pillarImages = [
     "/lovable-uploads/therapy-session.png", // Saúde Psicológica
@@ -29,9 +29,74 @@ const PillarStep: React.FC<PillarStepProps> = ({
   ];
 
   const pillarKeys = ['psychological', 'physical', 'financial', 'legal'];
-  const pillarKey = pillarKeys[index];
   
-  const specialistsList = t(`pillars.${pillarKey}.specialists.list`, { returnObjects: true }) as string[];
+  // Portuguese translations for pillars
+  const pillarData = {
+    psychological: {
+      title: 'Saúde Mental',
+      description: 'Apoio psicológico e emocional',
+      specialists: {
+        title: 'Especialistas Disponíveis',
+        availability: 'disponíveis 24/7',
+        list: [
+          'Psicólogos Clínicos',
+          'Terapeutas Cognitivo-Comportamentais',
+          'Psicoterapeutas',
+          'Conselheiros de Saúde Mental',
+          'Especialistas em Gestão de Stress'
+        ]
+      }
+    },
+    physical: {
+      title: 'Bem-estar Físico',
+      description: 'Saúde física e nutrição',
+      specialists: {
+        title: 'Especialistas Disponíveis',
+        availability: 'disponíveis 24/7',
+        list: [
+          'Nutricionistas',
+          'Personal Trainers',
+          'Fisioterapeutas',
+          'Médicos de Desporto',
+          'Especialistas em Sono'
+        ]
+      }
+    },
+    financial: {
+      title: 'Assistência Financeira',
+      description: 'Planeamento e gestão financeira',
+      specialists: {
+        title: 'Especialistas Disponíveis',
+        availability: 'disponíveis 24/7',
+        list: [
+          'Consultores Financeiros',
+          'Gestores de Investimentos',
+          'Especialistas em Orçamento',
+          'Planeadores de Reforma',
+          'Consultores de Dívida'
+        ]
+      }
+    },
+    legal: {
+      title: 'Assistência Jurídica',
+      description: 'Apoio legal e consultoria',
+      specialists: {
+        title: 'Especialistas Disponíveis',
+        availability: 'disponíveis 24/7',
+        list: [
+          'Advogados de Família',
+          'Advogados Laborais',
+          'Consultores Jurídicos',
+          'Notários',
+          'Mediadores'
+        ]
+      }
+    }
+  };
+  
+  const pillarKey = pillarKeys[index];
+  const currentPillar = pillarData[pillarKey as keyof typeof pillarData];
+  const specialistsList = currentPillar?.specialists?.list || [];
 
   return (
     <div 
@@ -52,17 +117,17 @@ const PillarStep: React.FC<PillarStepProps> = ({
               {pillar.icon}
             </div>
             <h2 className="font-bold text-lg sm:text-xl lg:text-2xl text-navy-blue leading-tight text-center">
-              {t(`pillars.${pillarKey}.title`)}
+              {currentPillar?.title || pillar.title}
             </h2>
           </div>
           <p className="text-sm sm:text-base lg:text-lg text-navy-blue leading-relaxed max-w-2xl mx-auto font-medium px-2">
-            {t(`pillars.${pillarKey}.description`)}
+            {currentPillar?.description || pillar.description}
           </p>
           
           {/* 24/7 Availability Message */}
           <div className="mt-4 max-w-3xl mx-auto">
             <p className="text-xs sm:text-sm text-royal-blue/80 font-semibold">
-              {t(`pillars.${pillarKey}.specialists.sectionTitle`)} {t(`pillars.${pillarKey}.specialists.availability`)}
+              {currentPillar?.specialists?.title || 'Especialistas Disponíveis'} {currentPillar?.specialists?.availability || 'disponíveis 24/7'}
             </p>
           </div>
         </div>
@@ -91,7 +156,7 @@ const PillarStep: React.FC<PillarStepProps> = ({
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                   <h3 className="font-bold text-base sm:text-lg text-navy-blue">
-                    {t(`pillars.${pillarKey}.specialists.sectionTitle`)}
+                    {currentPillar?.specialists?.title || 'Especialistas Disponíveis'}
                   </h3>
                 </div>
                 

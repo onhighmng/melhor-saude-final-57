@@ -1,8 +1,11 @@
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Brain, Heart, DollarSign, Scale, TrendingUp, ArrowRight } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface Recommendation {
   id: string;
@@ -15,64 +18,6 @@ interface Recommendation {
   confidence: number;
   status: 'pending' | 'sent' | 'viewed';
 }
-
-const mockRecommendations: Recommendation[] = [
-  {
-    id: '1',
-    employeeName: 'Maria Silva',
-    employeeInitials: 'MS',
-    pillar: 'saude_mental',
-    reason: 'Feedback indica stress elevado',
-    resourceTitle: 'Gestão de Stress no Trabalho',
-    resourceType: 'Artigo',
-    confidence: 92,
-    status: 'pending'
-  },
-  {
-    id: '2',
-    employeeName: 'João Santos',
-    employeeInitials: 'JS',
-    pillar: 'bem_estar_fisico',
-    reason: 'Interesse em exercício físico',
-    resourceTitle: 'Rotina de Exercícios em Casa',
-    resourceType: 'Vídeo',
-    confidence: 87,
-    status: 'sent'
-  },
-  {
-    id: '3',
-    employeeName: 'Ana Costa',
-    employeeInitials: 'AC',
-    pillar: 'assistencia_financeira',
-    reason: 'Completou sessão de planeamento',
-    resourceTitle: 'Planeamento Financeiro Básico',
-    resourceType: 'Guia',
-    confidence: 95,
-    status: 'viewed'
-  },
-  {
-    id: '4',
-    employeeName: 'Pedro Oliveira',
-    employeeInitials: 'PO',
-    pillar: 'saude_mental',
-    reason: 'Padrão de uso indica ansiedade',
-    resourceTitle: 'Exercícios de Respiração',
-    resourceType: 'Vídeo',
-    confidence: 89,
-    status: 'pending'
-  },
-  {
-    id: '5',
-    employeeName: 'Sofia Rodrigues',
-    employeeInitials: 'SR',
-    pillar: 'assistencia_juridica',
-    reason: 'Questões sobre direitos laborais',
-    resourceTitle: 'Direitos do Trabalhador',
-    resourceType: 'Artigo',
-    confidence: 84,
-    status: 'sent'
-  }
-];
 
 const pillarIcons = {
   saude_mental: Brain,
@@ -89,9 +34,9 @@ const pillarColors = {
 };
 
 const statusColors = {
-  pending: 'bg-yellow-500/10 text-yellow-700',
-  sent: 'bg-blue-500/10 text-blue-700',
-  viewed: 'bg-green-500/10 text-green-700'
+  pending: 'bg-yellow-500/10 text-yellow-700 border-yellow-200',
+  sent: 'bg-blue-500/10 text-blue-700 border-blue-200',
+  viewed: 'bg-green-500/10 text-green-700 border-green-200'
 };
 
 const statusLabels = {
@@ -100,7 +45,113 @@ const statusLabels = {
   viewed: 'Visualizado'
 };
 
-export function AdminRecommendationsTab() {
+export default function AdminRecommendationsTab() {
+  const { toast } = useToast();
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRecommendations();
+  }, []);
+
+  const loadRecommendations = async () => {
+    try {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from('resource_recommendations')
+        .select(`
+          id,
+          confidence_score,
+          reason,
+          status,
+          created_at,
+          user:profiles!user_id(id, name, email),
+          resource:resources!resource_id(id, title, resource_type, pillar)
+        `)
+        .order('confidence_score', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const formattedRecs: Recommendation[] = (data || []).map((rec) => {
+        const userName = rec.user?.name || 'Unknown';
+        const initials = userName
+          .split(' ')
+          .map((n: string) => n[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2);
+
+        return {
+          id: rec.id,
+          employeeName: userName,
+          employeeInitials: initials,
+          pillar: rec.resource?.pillar || 'saude_mental',
+          reason: rec.reason,
+          resourceTitle: rec.resource?.title || 'Unknown Resource',
+          resourceType: rec.resource?.resource_type || 'article',
+          confidence: rec.confidence_score,
+          status: rec.status as 'pending' | 'sent' | 'viewed',
+        };
+      });
+
+      setRecommendations(formattedRecs);
+    } catch (error) {
+      // Silent fail for recommendations loading
+      toast({
+        title: 'Erro ao carregar recomendações',
+        description: 'Não foi possível carregar as recomendações.',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSend = async (recId: string) => {
+    try {
+      const { error } = await supabase
+        .from('resource_recommendations')
+        .update({
+          status: 'sent',
+          sent_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', recId);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Recomendação enviada',
+        description: 'A recomendação foi enviada com sucesso.',
+      });
+
+      await loadRecommendations();
+    } catch (error) {
+      console.error('Error sending recommendation:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível enviar a recomendação.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Calculate real-time stats from loaded recommendations
+  const stats = useMemo(() => {
+    const active = recommendations.filter(r => r.status === 'pending').length;
+    const sent = recommendations.filter(r => r.status === 'sent').length;
+    const viewed = recommendations.filter(r => r.status === 'viewed').length;
+    
+    const viewRate = sent > 0 ? Math.round((viewed / sent) * 100) : 0;
+    const avgConfidence = recommendations.length > 0
+      ? Math.round(recommendations.reduce((sum, r) => sum + r.confidence, 0) / recommendations.length)
+      : 0;
+
+    return { active, viewRate, avgConfidence };
+  }, [recommendations]);
+
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -110,7 +161,7 @@ export function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Recomendações Ativas</p>
-                <p className="font-mono text-xl font-semibold mt-1">24</p>
+                <p className="font-mono text-xl font-semibold mt-1">{stats.active}</p>
               </div>
               <TrendingUp className="h-8 w-8 text-primary" />
             </div>
@@ -122,7 +173,7 @@ export function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Taxa de Visualização</p>
-                <p className="font-mono text-xl font-semibold mt-1">68%</p>
+                <p className="font-mono text-xl font-semibold mt-1">{stats.viewRate}%</p>
               </div>
               <div className="h-8 w-8 rounded-full bg-green-500/10 flex items-center justify-center">
                 <span className="text-green-700 text-sm font-semibold">↑</span>
@@ -136,7 +187,7 @@ export function AdminRecommendationsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Confiança Média</p>
-                <p className="font-mono text-xl font-semibold mt-1">89%</p>
+                <p className="font-mono text-xl font-semibold mt-1">{stats.avgConfidence}%</p>
               </div>
               <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center">
                 <Brain className="h-4 w-4 text-blue-700" />
@@ -153,11 +204,20 @@ export function AdminRecommendationsTab() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {mockRecommendations.map((rec) => {
-              const PillarIcon = pillarIcons[rec.pillar as keyof typeof pillarIcons];
-              const pillarColor = pillarColors[rec.pillar as keyof typeof pillarColors];
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Carregando recomendações...
+              </div>
+            ) : recommendations.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Nenhuma recomendação disponível
+              </div>
+            ) : (
+              recommendations.map((rec) => {
+                const PillarIcon = pillarIcons[rec.pillar as keyof typeof pillarIcons];
+                const pillarColor = pillarColors[rec.pillar as keyof typeof pillarColors];
 
-              return (
+                return (
                 <div 
                   key={rec.id} 
                   className="flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors"
@@ -203,12 +263,13 @@ export function AdminRecommendationsTab() {
                     </Badge>
 
                     {rec.status === 'pending' && (
-                      <Button size="sm">Enviar</Button>
+                      <Button size="sm" onClick={() => handleSend(rec.id)}>Enviar</Button>
                     )}
                   </div>
-                </div>
-              );
-            })}
+                 </div>
+                );
+              })
+            )}
           </div>
         </CardContent>
       </Card>

@@ -1,9 +1,12 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SecurePasswordInput } from "@/components/ui/secure-password-input";
 import { X } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { validatePassword } from "@/utils/passwordValidation";
 
 interface SecurityModalProps {
   isOpen: boolean;
@@ -14,22 +17,54 @@ interface SecurityModalProps {
 
 export const SecurityModal = ({ isOpen, onClose, onChangePassword, onEnable2FA }: SecurityModalProps) => {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [show2FADialog, setShow2FADialog] = useState(false);
   const [passwordData, setPasswordData] = useState({
     current: '',
     new: '',
     confirm: ''
   });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  const handlePasswordChange = () => {
-    onChangePassword();
-    setShowPasswordDialog(false);
-    setPasswordData({ current: '', new: '', confirm: '' });
-  };
+  const handlePasswordChange = async () => {
+    // Validate new password
+    const validation = validatePassword(passwordData.new);
+    if (!validation.isValid) {
+      toast.error('Palavra-passe fraca', {
+        description: validation.errors.join('. ')
+      });
+      return;
+    }
 
-  const handle2FAEnable = () => {
-    onEnable2FA();
-    setShow2FADialog(false);
+    // Check if passwords match
+    if (passwordData.new !== passwordData.confirm) {
+      toast.error('As palavras-passe não coincidem');
+      return;
+    }
+
+    // Check minimum fields
+    if (!passwordData.new || !passwordData.confirm) {
+      toast.error('Por favor, preencha todos os campos');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      // Update password using Supabase
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.new
+      });
+
+      if (error) throw error;
+
+      toast.success('Palavra-passe alterada com sucesso');
+      setShowPasswordDialog(false);
+      setPasswordData({ current: '', new: '', confirm: '' });
+      onChangePassword();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao alterar palavra-passe';
+      toast.error(errorMessage);
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   return (
@@ -63,15 +98,15 @@ export const SecurityModal = ({ isOpen, onClose, onChangePassword, onEnable2FA }
                   </Button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
                   <div>
                     <Label className="text-base">Autenticação de dois fatores (2FA)</Label>
                     <p className="text-sm text-muted-foreground">
-                      Estado: Desativado
+                      Em breve estará disponível
                     </p>
                   </div>
-                  <Button variant="outline" onClick={() => setShow2FADialog(true)}>
-                    Ativar 2FA
+                  <Button variant="outline" disabled>
+                    Brevemente
                   </Button>
                 </div>
               </div>
@@ -96,79 +131,47 @@ export const SecurityModal = ({ isOpen, onClose, onChangePassword, onEnable2FA }
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="current-password">Palavra-passe atual</Label>
-              <Input
-                id="current-password"
-                type="password"
-                value={passwordData.current}
-                onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="new-password">Nova palavra-passe</Label>
-              <Input
-                id="new-password"
-                type="password"
+              <SecurePasswordInput
                 value={passwordData.new}
-                onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
+                onChange={(value) => setPasswordData({ ...passwordData, new: value })}
+                placeholder="Mínimo 12 caracteres"
+                required
+                showStrength={true}
+                onValidationChange={(isValid, issues) => {
+                  // Validation feedback handled by component
+                }}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirmar nova palavra-passe</Label>
-              <Input
-                id="confirm-password"
-                type="password"
+              <SecurePasswordInput
                 value={passwordData.confirm}
-                onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
+                onChange={(value) => setPasswordData({ ...passwordData, confirm: value })}
+                placeholder="Repetir palavra-passe"
+                required
+                showStrength={false}
               />
             </div>
           </div>
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowPasswordDialog(false)}
+              disabled={isChangingPassword}
+            >
               Cancelar
             </Button>
-            <Button onClick={handlePasswordChange}>
-              Alterar Palavra-Passe
+            <Button 
+              onClick={handlePasswordChange}
+              disabled={isChangingPassword}
+            >
+              {isChangingPassword ? 'A alterar...' : 'Alterar Palavra-Passe'}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* 2FA Dialog */}
-      <Dialog open={show2FADialog} onOpenChange={setShow2FADialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Ativar Autenticação de Dois Fatores</DialogTitle>
-            <DialogDescription>
-              Adicione uma camada extra de segurança à sua conta.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="bg-muted p-4 rounded-lg text-center">
-              <p className="text-sm mb-2">Digitalize este código QR com a sua aplicação de autenticação:</p>
-              <div className="w-48 h-48 bg-white mx-auto flex items-center justify-center rounded">
-                <div className="text-xs text-muted-foreground">[QR Code simulado]</div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="2fa-code">Código de verificação</Label>
-              <Input
-                id="2fa-code"
-                placeholder="000000"
-                maxLength={6}
-              />
-            </div>
-          </div>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShow2FADialog(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handle2FAEnable}>
-              Ativar 2FA
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };

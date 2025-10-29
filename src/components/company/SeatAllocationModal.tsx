@@ -10,10 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Company } from "@/data/companyMockData";
+import { Company } from "@/types/company";
 import { Users, AlertCircle } from "lucide-react";
-import { companyToasts } from "@/data/companyToastMessages";
-import { useTranslation } from 'react-i18next';
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SeatAllocationModalProps {
   open: boolean;
@@ -28,17 +29,57 @@ export function SeatAllocationModal({
   company,
   onUpdate 
 }: SeatAllocationModalProps) {
-  const { t } = useTranslation();
-  const [newLimit, setNewLimit] = useState(company.seatLimit);
+  const { toast } = useToast();
+  const { profile } = useAuth();
+  const [newLimit, setNewLimit] = useState(company.sessions_allocated || 0);
 
-  const handleSubmit = () => {
-    if (newLimit < company.seatUsed) {
-      companyToasts.actionFailed(t('company:errors.seatLimitTooLow'));
+  const handleSubmit = async () => {
+    if (newLimit < (company.sessions_used || 0)) {
+      toast({
+        title: 'Erro',
+        description: 'O novo limite não pode ser inferior ao número de vagas atualmente em uso.',
+        variant: 'destructive'
+      });
       return;
     }
-    onUpdate(newLimit);
-    companyToasts.settingsSaved();
-    onOpenChange(false);
+
+    try {
+      // Update company sessions_allocated
+      await supabase
+        .from('companies')
+        .update({ sessions_allocated: newLimit })
+        .eq('id', company.id);
+
+      // Log admin action
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'sessions_allocated',
+          entity_type: 'company',
+          entity_id: company.id,
+          details: { 
+            previous_allocation: company.sessions_allocated || 0,
+            new_allocation: newLimit,
+            change: newLimit - (company.sessions_allocated || 0)
+          }
+        });
+      }
+
+      onUpdate(newLimit);
+      
+      toast({
+        title: 'Limite atualizado',
+        description: 'As alterações foram guardadas com sucesso.',
+      });
+      
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao atualizar limite',
+        variant: 'destructive'
+      });
+    }
   };
 
   return (
@@ -58,14 +99,14 @@ export function SeatAllocationModal({
           <div className="grid gap-2">
             <Label>Limite Atual</Label>
             <div className="text-2xl font-bold text-bright-royal">
-              {company.seatLimit} vagas
+              {company.sessions_allocated || 0} vagas
             </div>
           </div>
 
           <div className="grid gap-2">
             <Label>Vagas em Uso</Label>
             <div className="text-lg">
-              {company.seatUsed} de {company.seatLimit}
+              {company.sessions_used || 0} de {company.sessions_allocated || 0}
             </div>
           </div>
 
@@ -74,13 +115,13 @@ export function SeatAllocationModal({
             <Input
               id="new-limit"
               type="number"
-              min={company.seatUsed}
+              min={company.sessions_used || 0}
               value={newLimit}
               onChange={(e) => setNewLimit(parseInt(e.target.value))}
             />
           </div>
 
-          {newLimit < company.seatUsed && (
+          {newLimit < (company.sessions_used || 0) && (
             <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive rounded-lg">
               <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
               <p className="text-sm text-destructive">
@@ -92,9 +133,9 @@ export function SeatAllocationModal({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('buttons.cancel')}
+            Cancelar
           </Button>
-          <Button onClick={handleSubmit} disabled={newLimit < company.seatUsed}>
+          <Button onClick={handleSubmit} disabled={newLimit < (company.sessions_used || 0)}>
             Atualizar Limite
           </Button>
         </DialogFooter>

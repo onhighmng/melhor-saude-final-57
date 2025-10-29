@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { StarRating } from "./StarRating";
 import { TagSelector } from "./TagSelector";
-import { useTranslation } from 'react-i18next';
-import { Session } from "@/data/sessionMockData";
+import { Session } from "@/types/sessionTypes";
 
 interface FeedbackFormProps {
   session: Session;
@@ -17,10 +16,10 @@ export interface FeedbackData {
   rating: number;
   comment: string;
   tags: string[];
+  category?: string;
 }
 
 export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
-  const { t } = useTranslation('user');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -33,7 +32,7 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
   
   const handleSubmit = () => {
     if (rating === 0) {
-      alert(t('feedback.ratingRequired'));
+      alert('Por favor, selecione uma classificação');
       return;
     }
     
@@ -47,8 +46,8 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>{t('feedback.title')}</CardTitle>
-        <CardDescription>{t('feedback.subtitle')}</CardDescription>
+        <CardTitle>Avalie a Sessão</CardTitle>
+        <CardDescription>Partilhe a sua experiência e ajudenos a melhorar</CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-6">
@@ -62,7 +61,7 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
         
         {/* Star Rating */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">{t('feedback.ratingLabel')}</label>
+          <label className="text-sm font-medium">Classificação *</label>
           <div className="flex justify-center py-2">
             <StarRating rating={rating} onRatingChange={setRating} size="lg" />
           </div>
@@ -73,9 +72,9 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
         
         {/* Comment */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">{t('feedback.commentLabel')}</label>
+          <label className="text-sm font-medium">Comentário (opcional)</label>
           <Textarea
-            placeholder={t('feedback.placeholder')}
+            placeholder="Conte-nos mais sobre a sua experiência..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={4}
@@ -85,10 +84,10 @@ export function FeedbackForm({ session, onSubmit, onSkip }: FeedbackFormProps) {
         {/* Actions */}
         <div className="flex gap-3">
           <Button onClick={handleSubmit} className="flex-1" disabled={rating === 0}>
-            {t('feedback.ctaSubmit')}
+            Enviar Avaliação
           </Button>
           <Button onClick={onSkip} variant="ghost">
-            {t('feedback.ctaSkip')}
+            Saltar
           </Button>
         </div>
       </CardContent>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,8 @@ import { Progress } from '@/components/ui/progress';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { AddEmployeeModal } from '@/components/admin/AddEmployeeModal';
 import { InfoCard } from '@/components/ui/info-card';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { 
   Search, 
   Eye, 
@@ -19,6 +21,73 @@ import {
   Calendar,
   Plus
 } from 'lucide-react';
+
+// Session History Component
+const SessionHistoryCard = ({ employeeId }: { employeeId: string }) => {
+  const [sessions, setSessions] = useState<Array<Record<string, unknown>>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSessionHistory = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('bookings')
+          .select('*')
+          .eq('user_id', employeeId)
+          .eq('status', 'completed')
+          .order('date', { ascending: false })
+          .limit(10);
+
+        if (error) throw error;
+
+        const formattedSessions = (data || []).map(booking => ({
+          date: booking.date,
+          pillar: booking.pillar,
+          provider: 'N/A'
+        }));
+
+        setSessions(formattedSessions);
+      } catch (error) {
+        // Silent fail for session history loading
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (employeeId) {
+      loadSessionHistory();
+    }
+  }, [employeeId]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Histórico de Sessões</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {loading ? (
+            <div className="text-center text-muted-foreground">Carregando...</div>
+          ) : sessions.length === 0 ? (
+            <div className="text-center text-muted-foreground">Nenhuma sessão concluída</div>
+          ) : (
+              sessions.map((session, index) => (
+              <div key={index} className="flex items-center justify-between py-2 border-b last:border-0">
+                <div>
+                  <p className="font-medium text-sm">{session.pillar as string}</p>
+                  <p className="text-xs text-muted-foreground">{session.provider as string}</p>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {new Date(session.date as string).toLocaleDateString('pt-PT')}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 interface Employee {
   id: string;
@@ -33,58 +102,13 @@ interface Employee {
   goals: string[];
 }
 
-const mockEmployees: Employee[] = [
-  {
-    id: '1',
-    name: 'João Silva',
-    email: 'joao@techcorp.pt',
-    company: 'TechCorp Lda',
-    pillars: ['Saúde Mental', 'Bem-Estar Físico'],
-    progress: 75,
-    totalSessions: 12,
-    completedSessions: 9,
-    avgRating: 4.8,
-    goals: ['Reduzir stress', 'Melhorar condição física']
-  },
-  {
-    id: '2',
-    name: 'Maria Oliveira',
-    email: 'maria@healthplus.pt',
-    company: 'HealthPlus SA',
-    pillars: ['Saúde Mental', 'Assistência Jurídica'],
-    progress: 60,
-    totalSessions: 8,
-    completedSessions: 5,
-    avgRating: 4.5,
-    goals: ['Gestão de ansiedade', 'Questões contratuais']
-  },
-  {
-    id: '3',
-    name: 'Carlos Santos',
-    email: 'carlos@startup.pt',
-    company: 'StartupHub',
-    pillars: ['Assistência Financeira'],
-    progress: 40,
-    totalSessions: 5,
-    completedSessions: 2,
-    avgRating: 4.2,
-    goals: ['Planeamento financeiro']
-  },
-  {
-    id: '4',
-    name: 'Ana Costa',
-    email: 'ana@consultpro.pt',
-    company: 'ConsultPro',
-    pillars: ['Saúde Mental', 'Bem-Estar Físico', 'Assistência Financeira'],
-    progress: 85,
-    totalSessions: 20,
-    completedSessions: 17,
-    avgRating: 4.9,
-    goals: ['Equilíbrio vida-trabalho', 'Poupança reforma', 'Nutrição']
-  },
-];
+// Mock employees removed - using real data from database
 
-const pillarIcons: Record<string, any> = {
+interface PillarIconType {
+  [key: string]: React.ComponentType<{ className?: string }>;
+}
+
+const pillarIcons: PillarIconType = {
   'Saúde Mental': Brain,
   'Bem-Estar Físico': Dumbbell,
   'Assistência Financeira': DollarSign,
@@ -103,8 +127,92 @@ export const AdminEmployeesTab = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredEmployees = mockEmployees.filter(emp =>
+  useEffect(() => {
+    const loadEmployees = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('company_employees')
+          .select('id, user_id, company_id, sessions_allocated, sessions_used, joined_at')
+          .order('joined_at', { ascending: false })
+          .range(0, 99); // Pagination
+
+        if (error) throw error;
+
+        const formattedEmployees = await Promise.all(
+          data.map(async (emp) => {
+            // Get user profile
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('name, email, avatar_url')
+              .eq('id', emp.user_id)
+              .single();
+            
+            // Get company info
+            const { data: company } = await supabase
+              .from('companies')
+              .select('company_name')
+              .eq('id', emp.company_id)
+              .single();
+
+            // Get pillar preferences from onboarding
+            const { data: onboarding } = await supabase
+              .from('onboarding_data')
+              .select('pillar_preferences')
+              .eq('user_id', emp.user_id)
+              .single();
+
+            // Get session count (optimized)
+            const { count: sessionCount } = await supabase
+              .from('bookings')
+              .select('id', { count: 'exact', head: true })
+              .eq('user_id', emp.user_id)
+              .eq('status', 'completed');
+
+            // Get progress count (optimized)
+            const { count: progressCount } = await supabase
+              .from('user_progress')
+              .select('id', { count: 'exact', head: true })
+              .eq('user_id', emp.user_id);
+
+            // Calculate progress percentage
+            const progress = emp.sessions_allocated > 0
+              ? Math.round((sessionCount || 0) / emp.sessions_allocated * 100)
+              : 0;
+
+            return {
+              id: emp.id,
+              name: profile?.name || '',
+              email: profile?.email || '',
+              company: company?.company_name || '',
+              pillars: onboarding?.pillar_preferences || [],
+              sessionsUsed: emp.sessions_used,
+              sessionsAllocated: emp.sessions_allocated,
+              progress,
+              completedSessions: sessionCount || 0,
+              totalSessions: emp.sessions_allocated,
+              avgRating: 0, // Calculate from bookings.rating if needed
+              goals: [] // Load from onboarding_data.main_goals if available
+            };
+          })
+        );
+
+        setEmployees(formattedEmployees);
+      } catch (error) {
+        console.error('Error loading employees:', error);
+        toast.error('Erro ao carregar colaboradores');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEmployees();
+  }, []);
+
+  const filteredEmployees = employees.filter(emp =>
     emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     emp.company.toLowerCase().includes(searchQuery.toLowerCase())
@@ -119,6 +227,14 @@ export const AdminEmployeesTab = () => {
   const handleAddEmployee = () => {
     setIsAddEmployeeModalOpen(true);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -241,28 +357,7 @@ export const AdminEmployeesTab = () => {
                 </Card>
 
                 {/* Session History */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Histórico de Sessões</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {[
-                        { date: '15/01/2025', pillar: 'Saúde Mental', provider: 'Dra. Maria Santos' },
-                        { date: '08/01/2025', pillar: 'Bem-Estar Físico', provider: 'Prof. Ana Rodrigues' },
-                        { date: '22/12/2024', pillar: 'Saúde Mental', provider: 'Dra. Maria Santos' },
-                      ].map((session, index) => (
-                        <div key={index} className="flex items-center justify-between py-2 border-b last:border-0">
-                          <div>
-                            <p className="font-medium text-sm">{session.pillar}</p>
-                            <p className="text-xs text-muted-foreground">{session.provider}</p>
-                          </div>
-                          <div className="text-xs text-muted-foreground">{session.date}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <SessionHistoryCard employeeId={selectedEmployee.id} />
               </div>
             </>
           )}

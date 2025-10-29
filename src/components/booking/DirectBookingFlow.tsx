@@ -13,7 +13,8 @@ import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-asses
 import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
 import LegalAssessmentFlow from '@/components/legal-assessment/LegalAssessmentFlow';
 import { BookingPillar } from './BookingFlow';
-import { mockProviders } from '@/data/mockData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 type BookingStep = 'pillar' | 'assessment' | 'provider' | 'datetime' | 'confirmation';
 
@@ -31,6 +32,7 @@ interface Provider {
 export const DirectBookingFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile } = useAuth();
   const [searchParams] = useSearchParams();
   
   // Initialize state based on URL parameters to avoid flash
@@ -70,9 +72,7 @@ export const DirectBookingFlow = () => {
     }
   }, [searchParams, selectedPillar]); // Only run when URL changes or selectedPillar is null
 
-  useEffect(() => {
-    console.log('[DirectBookingFlow] Step:', currentStep, 'Pillar:', selectedPillar, 'Topic:', selectedTopic);
-  }, [currentStep, selectedPillar, selectedTopic]);
+  // Debug logging removed for production
 
   // Function to get proper pillar name in Portuguese
   const getPillarDisplayName = (pillar: BookingPillar | null): string => {
@@ -104,7 +104,7 @@ export const DirectBookingFlow = () => {
     }
   };
 
-  const handleChooseHuman = () => {
+  const handleChooseHuman = async () => {
     if (!selectedPillar) return;
     
     const pillarMapping = {
@@ -115,32 +115,43 @@ export const DirectBookingFlow = () => {
     };
 
     const mappedPillar = pillarMapping[selectedPillar];
-    const availableProviders = mockProviders.filter(provider => 
-      provider.pillar === mappedPillar
-    );
+    
+    const { data: availableProviders, error } = await supabase
+      .from('prestadores')
+      .select('id, name, specialties, photo_url, pillar_specialties')
+      .contains('pillar_specialties', [mappedPillar])
+      .eq('is_active', true)
+      .limit(10);
 
-    if (availableProviders.length > 0) {
-      const provider = availableProviders[0];
-      const assignedProvider = {
-        id: provider.id,
-        name: provider.name,
-        specialty: provider.specialty,
-        pillar: provider.pillar || mappedPillar,
-        avatar_url: provider.avatar_url,
-        rating: provider.rating || 5.0,
-        experience: provider.experience,
-        availability: provider.availability || 'Disponível'
-      };
-      
-      setAssignedProvider(assignedProvider);
-      setSelectedTopic(getPillarDisplayName(selectedPillar));
-      setCurrentStep('provider');
-      
+    if (error || !availableProviders || availableProviders.length === 0) {
       toast({
-        title: 'Especialista Atribuído',
-        description: `Foi-lhe atribuído ${assignedProvider.name} (${assignedProvider.specialty})`,
+        title: 'Erro',
+        description: 'Não há especialistas disponíveis no momento.',
+        variant: "destructive"
       });
+      return;
     }
+
+    const provider = availableProviders[0];
+    const assignedProvider = {
+      id: provider.id,
+      name: provider.name,
+      specialty: provider.specialties?.[0] || 'Especialista',
+      pillar: mappedPillar,
+      avatar_url: provider.photo_url || '',
+      rating: 5.0,
+      experience: 'Anos de experiência',
+      availability: 'Disponível'
+    };
+    
+    setAssignedProvider(assignedProvider);
+    setSelectedTopic(getPillarDisplayName(selectedPillar));
+    setCurrentStep('provider');
+    
+    toast({
+      title: 'Especialista Atribuído',
+      description: `Foi-lhe atribuído ${assignedProvider.name}`,
+    });
   };
 
 
@@ -162,22 +173,74 @@ export const DirectBookingFlow = () => {
   };
 
   const handleConfirmBooking = async () => {
+    if (!profile?.id || !assignedProvider || !selectedDate || !selectedTime) {
+      toast({
+        title: 'Erro',
+        description: 'Informação em falta para criar agendamento',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsConfirming(true);
     
-    // Simulate booking creation
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast({
-      title: 'Sessão Agendada',
-      description: `A sua sessão com ${assignedProvider?.name} foi agendada para ${selectedDate?.toLocaleDateString('pt-PT')} às ${selectedTime}`,
-    });
-    
-    setIsConfirming(false);
-    
-    // Navigate to dashboard
-    setTimeout(() => {
-      navigate('/user/dashboard');
-    }, 1500);
+    try {
+      // Map pillar to database format
+      const pillarMap: Record<string, string> = {
+        'psicologica': 'saude_mental',
+        'fisica': 'bem_estar_fisico',
+        'financeira': 'assistencia_financeira',
+        'juridica': 'assistencia_juridica'
+      };
+
+      // Calculate end time (assuming 1 hour session)
+      const [hour, minute] = selectedTime.split(':');
+      const endTime = `${String((parseInt(hour) + 1)).padStart(2, '0')}:${minute}`;
+
+      // Get company_id from company_employees table
+      const { data: employee } = await supabase
+        .from('company_employees')
+        .select('company_id')
+        .eq('user_id', profile.id)
+        .maybeSingle();
+
+      // Create booking
+      const { error } = await supabase
+        .from('bookings')
+        .insert({
+          user_id: profile.id,
+          booking_date: new Date().toISOString(),
+          company_id: employee?.company_id || null,
+          prestador_id: assignedProvider.id,
+          date: selectedDate.toISOString().split('T')[0],
+          start_time: selectedTime,
+          end_time: endTime,
+          status: 'pending',
+          session_type: 'virtual',
+          booking_source: 'direct'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Sessão Agendada',
+        description: `A sua sessão com ${assignedProvider.name} foi agendada para ${selectedDate.toLocaleDateString('pt-PT')} às ${selectedTime}`,
+      });
+      
+      // Navigate to dashboard
+      setTimeout(() => {
+        navigate('/user/dashboard');
+      }, 1500);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao agendar a sessão';
+      toast({
+        title: 'Erro ao agendar',
+        description: errorMessage,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   const handleBack = () => {

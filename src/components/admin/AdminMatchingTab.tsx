@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Table,
   TableBody,
@@ -25,49 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { GitBranch, Bot, UserCog, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-// Mock data
-const mockPendingCases = [
-  {
-    id: '1',
-    collaborator: 'Ana Silva',
-    company: 'Tech Corp',
-    pillar: 'Saúde Mental',
-    origin: 'Bot',
-    priority: 'high',
-    requestDate: '2025-10-13 09:30',
-    symptoms: 'Ansiedade, insónia',
-  },
-  {
-    id: '2',
-    collaborator: 'Carlos Santos',
-    company: 'Innovation Ltd',
-    pillar: 'Bem-Estar Físico',
-    origin: 'Profissional de Permanencia',
-    priority: 'medium',
-    requestDate: '2025-10-13 10:15',
-    symptoms: 'Dores nas costas',
-  },
-  {
-    id: '3',
-    collaborator: 'Beatriz Ferreira',
-    company: 'StartUp Inc',
-    pillar: 'Assistência Financeira',
-    origin: 'Bot',
-    priority: 'low',
-    requestDate: '2025-10-13 11:00',
-    symptoms: 'Planeamento orçamental',
-  },
-];
-
-const mockSpecialists = [
-  { id: '1', name: 'Dr. João Costa', specialty: 'Saúde Mental' },
-  { id: '2', name: 'Dra. Maria Oliveira', specialty: 'Bem-Estar Físico' },
-  { id: '3', name: 'Dr. Pedro Alves', specialty: 'Assistência Financeira' },
-  { id: '4', name: 'Dra. Sofia Martins', specialty: 'Assistência Jurídica' },
-];
 
 const priorityColors = {
   high: 'bg-red-500/10 text-red-700 dark:text-red-400',
@@ -77,21 +40,150 @@ const priorityColors = {
 
 export default function AdminMatchingTab() {
   const { toast } = useToast();
+  const { profile } = useAuth();
   const [selectedCase, setSelectedCase] = useState<string | null>(null);
   const [selectedSpecialist, setSelectedSpecialist] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [pendingCases, setPendingCases] = useState<any[]>([]);
+  const [specialists, setSpecialists] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAssign = () => {
-    if (!selectedSpecialist) return;
+  useEffect(() => {
+    loadPendingCases();
+  }, []);
+
+  useEffect(() => {
+    if (selectedCase && selectedCase !== '') {
+      const caseData = pendingCases.find(c => c.id === selectedCase);
+      if (caseData?.pillar) {
+        loadSpecialists(caseData.pillar);
+      }
+    }
+  }, [selectedCase]);
+
+  const loadPendingCases = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('chat_sessions')
+        .select(`
+          *,
+          user:profiles!user_id(name, email)
+        `)
+        .eq('phone_contact_made', true)
+        .is('session_booked_by_specialist', null)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPendingCases(data || []);
+    } catch (error) {
+      // Silent fail for pending cases loading
+      toast({
+        title: 'Erro',
+        description: 'Erro ao carregar casos pendentes',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadSpecialists = async (pillar: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('prestadores')
+        .select('*')
+        .eq('is_active', true)
+        .contains('pillar_specialties', [pillar]);
+
+      if (error) throw error;
+      setSpecialists(data || []);
+    } catch (error) {
+      // Silent fail for specialists loading
+    }
+  };
+
+  const handleAssign = async () => {
+    if (!selectedSpecialist || !selectedDate || !selectedCase) return;
     
-    toast({
-      title: 'Especialista atribuído',
-      description: 'O caso foi atribuído com sucesso ao especialista selecionado.',
-    });
-    
-    setIsDialogOpen(false);
-    setSelectedCase(null);
-    setSelectedSpecialist('');
+    try {
+      // Get case details
+      const { data: chatSession } = await supabase
+        .from('chat_sessions')
+        .select('user_id, pillar')
+        .eq('id', selectedCase)
+        .single();
+
+      if (!chatSession) throw new Error('Chat session not found');
+
+      // Create booking
+      const { data: booking, error: bookingError } = await supabase
+        .from('bookings')
+        .insert({
+          user_id: chatSession.user_id,
+          prestador_id: selectedSpecialist,
+          booking_date: new Date(selectedDate).toISOString(),
+          date: selectedDate,
+          start_time: '10:00',
+          end_time: '11:00',
+          pillar: chatSession.pillar,
+          meeting_type: 'phone',
+          status: 'scheduled',
+        })
+        .select()
+        .single();
+
+      if (bookingError) throw bookingError;
+
+      // Update chat session
+      await supabase
+        .from('chat_sessions')
+        .update({
+          session_booked_by_specialist: selectedSpecialist,
+          status: 'resolved'
+        })
+        .eq('id', selectedCase);
+
+      // Log specialist action
+      await supabase.from('specialist_call_logs').insert({
+        chat_session_id: selectedCase,
+        user_id: chatSession.user_id,
+        specialist_id: profile?.id,
+        booking_id: booking.id,
+        call_status: 'completed',
+        session_booked: true
+      });
+
+      // Admin log
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'specialist_assigned',
+          entity_type: 'chat_session',
+          entity_id: selectedCase,
+          details: { specialist_id: selectedSpecialist, booking_id: booking.id }
+        });
+      }
+
+      toast({
+        title: 'Sucesso',
+        description: 'Especialista atribuído com sucesso'
+      });
+
+      loadPendingCases();
+      setIsDialogOpen(false);
+      setSelectedCase(null);
+      setSelectedSpecialist('');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao atribuir especialista';
+      toast({
+        title: 'Erro',
+        description: errorMessage,
+        variant: 'destructive'
+      });
+    }
   };
 
   return (
@@ -117,35 +209,24 @@ export default function AdminMatchingTab() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockPendingCases.map((case_) => (
+              {pendingCases.map((case_) => (
                 <TableRow key={case_.id}>
-                  <TableCell className="font-medium">{case_.collaborator}</TableCell>
-                  <TableCell>{case_.company}</TableCell>
-                  <TableCell>{case_.pillar}</TableCell>
+                  <TableCell className="font-medium">{case_.user?.name || 'N/A'}</TableCell>
+                  <TableCell>{case_.pillar || 'N/A'}</TableCell>
+                  <TableCell>{case_.pillar || 'N/A'}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="gap-1">
-                      {case_.origin === 'Bot' ? (
-                        <>
-                          <Bot className="h-3 w-3" />
-                          Bot
-                        </>
-                      ) : (
-                        <>
-                          <UserCog className="h-3 w-3" />
-                          Especialista
-                        </>
-                      )}
+                      <Bot className="h-3 w-3" />
+                      Bot
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={priorityColors[case_.priority as keyof typeof priorityColors]}>
-                      {case_.priority === 'high' && 'Alta'}
-                      {case_.priority === 'medium' && 'Média'}
-                      {case_.priority === 'low' && 'Baixa'}
+                    <Badge className={priorityColors['high']}>
+                      Alta
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {case_.requestDate}
+                    {new Date(case_.created_at).toLocaleDateString('pt-PT')}
                   </TableCell>
                   <TableCell>
                     <Button
@@ -180,30 +261,40 @@ export default function AdminMatchingTab() {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <span className="text-muted-foreground">Colaborador:</span>
                     <span className="font-medium">
-                      {mockPendingCases.find(c => c.id === selectedCase)?.collaborator}
+                      {pendingCases.find(c => c.id === selectedCase)?.user?.name || 'N/A'}
                     </span>
                     <span className="text-muted-foreground">Pilar:</span>
                     <span className="font-medium">
-                      {mockPendingCases.find(c => c.id === selectedCase)?.pillar}
+                      {pendingCases.find(c => c.id === selectedCase)?.pillar || 'N/A'}
                     </span>
-                    <span className="text-muted-foreground">Sintomas:</span>
+                    <span className="text-muted-foreground">Email:</span>
                     <span className="font-medium">
-                      {mockPendingCases.find(c => c.id === selectedCase)?.symptoms}
+                      {pendingCases.find(c => c.id === selectedCase)?.user?.email || 'N/A'}
                     </span>
                   </div>
                 </div>
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Especialista</label>
+                <Label>Data da Sessão</Label>
+                <Input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Especialista</Label>
                 <Select value={selectedSpecialist} onValueChange={setSelectedSpecialist}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um especialista" />
                   </SelectTrigger>
                   <SelectContent>
-                    {mockSpecialists.map((specialist) => (
+                    {specialists.map((specialist) => (
                       <SelectItem key={specialist.id} value={specialist.id}>
-                        {specialist.name} - {specialist.specialty}
+                        {specialist.name || 'N/A'} - {specialist.specialties?.[0] || 'Especialista'}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -215,7 +306,7 @@ export default function AdminMatchingTab() {
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleAssign} disabled={!selectedSpecialist}>
+              <Button onClick={handleAssign} disabled={!selectedSpecialist || !selectedDate}>
                 Confirmar Atribuição
               </Button>
             </DialogFooter>

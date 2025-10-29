@@ -1,0 +1,5 @@
+export const PAGINATION_SIZE = 100;
+export const MAX_LOGS_DISPLAYED = 100;
+export const MAX_ADMIN_QUERY_LIMIT = 1000;
+export const CANCELLATION_POLICY_HOURS = 24;
+

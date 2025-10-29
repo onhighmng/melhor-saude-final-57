@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Calendar, 
   Clock, 
@@ -32,6 +33,7 @@ import { pt } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useTranslation } from 'react-i18next';
+import { emailService } from '@/services/emailService';
 
 interface SessionDetailData {
   id: string;
@@ -71,44 +73,84 @@ const pillarLabels = {
   juridica: 'Assistência Jurídica'
 };
 
-const mockSessionData: SessionDetailData = {
-  id: 'sess-1',
-  userName: 'Manuel Silva',
-  userAvatar: '/lovable-uploads/537ae6d8-8bad-4984-87ef-5165033fdc1c.png',
-  pillar: 'psicologica',
-  date: '2024-05-28',
-  time: '15:00',
-  duration: 50,
-  location: 'online',
-  status: 'confirmed',
-  deductionType: 'empresa',
-  companyName: 'TechCorp Lda.',
-  notes: 'Primeira consulta - questões de ansiedade laboral',
-  attachments: [
-    {
-      id: 'att-1',
-      name: 'avaliacao_inicial.pdf',
-      type: 'application/pdf',
-      size: 245760,
-      uploadedAt: '2024-05-27T10:30:00Z'
-    }
-  ]
-};
-
 export default function PrestadorSessionDetail() {
   const { id } = useParams();
   const { t } = useTranslation(['provider', 'user']);
-  const [session] = useState<SessionDetailData>(mockSessionData);
-  const [privateNotes, setPrivateNotes] = useState(session.notes || '');
+  const { toast } = useToast();
+  const [session, setSession] = useState<SessionDetailData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSession = async () => {
+      if (!id) return;
+
+      try {
+        const { data: booking, error } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles (name, avatar_url),
+            companies (company_name)
+          `)
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
+        if (booking) {
+          const pillarMap: Record<string, 'psicologica' | 'juridica' | 'financeira' | 'fisica'> = {
+            'saude_mental': 'psicologica',
+            'assistencia_juridica': 'juridica',
+            'assistencia_financeira': 'financeira',
+            'bem_estar_fisico': 'fisica'
+          };
+
+          setSession({
+            id: booking.id,
+            userName: (booking.profiles as any)?.name as string || 'Utilizador',
+            userAvatar: (booking.profiles as any)?.avatar_url as string,
+            pillar: pillarMap[booking.pillar] || 'psicologica',
+            date: booking.date,
+            time: booking.start_time || '00:00',
+            duration: 50,
+            location: booking.meeting_type === 'online' ? 'online' : 'presencial',
+            status: booking.status as SessionStatus,
+            deductionType: booking.company_id ? 'empresa' : 'pessoal',
+            companyName: (booking.companies as Record<string, unknown>)?.company_name as string,
+            notes: booking.notes,
+            chat_session_id: booking.chat_session_id,
+            topic: booking.topic,
+            attachments: []
+          });
+        }
+      } catch (error) {
+        // Silent fail for session loading
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSession();
+  }, [id]);
+  const [privateNotes, setPrivateNotes] = useState('');
   const [timeUntilSession, setTimeUntilSession] = useState<string>('');
   const [noShowReason, setNoShowReason] = useState('');
   const [noShowDescription, setNoShowDescription] = useState('');
   const [showNoShowDialog, setShowNoShowDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const [attachments, setAttachments] = useState(session.attachments);
+  const [attachments, setAttachments] = useState<Array<Record<string, unknown>>>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
+    if (session) {
+      setPrivateNotes(session.notes || '');
+      setAttachments(session.attachments || []);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (!session) return;
+
     const updateCountdown = () => {
       const sessionDateTime = new Date(`${session.date}T${session.time}`);
       const now = new Date();
@@ -135,10 +177,10 @@ export default function PrestadorSessionDetail() {
     updateCountdown();
 
     return () => clearInterval(interval);
-  }, [session.date, session.time]);
+  }, [session?.date, session?.time]);
 
   useEffect(() => {
-    if (session.chat_session_id) {
+    if (session?.chat_session_id) {
       const fetchChatMessages = async () => {
         const { data, error } = await supabase
           .from('chat_messages')
@@ -152,9 +194,10 @@ export default function PrestadorSessionDetail() {
       };
       fetchChatMessages();
     }
-  }, [session.chat_session_id]);
+  }, [session?.chat_session_id]);
 
   const formatSessionDateTime = () => {
+    if (!session) return { date: '', time: '', dayOfWeek: '' };
     const dateTime = new Date(`${session.date}T${session.time}`);
     return {
       date: format(dateTime, "dd 'de' MMMM 'de' yyyy", { locale: pt }),
@@ -163,32 +206,134 @@ export default function PrestadorSessionDetail() {
     };
   };
 
-  const savePrivateNotes = () => {
-    // Mock save functionality
-    console.log('Saving private notes:', privateNotes);
+  const savePrivateNotes = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ notes: privateNotes })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast({ title: "Notas guardadas", description: "Notas privadas atualizadas" });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao guardar notas", variant: "destructive" });
+    }
   };
 
-  const startSession = () => {
-    console.log('Starting session:', id);
+  const startSession = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'in-progress' })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast({ title: "Sessão iniciada", description: "Estado atualizado" });
+      if (session) setSession({ ...session, status: 'in-progress' as SessionStatus });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao iniciar sessão", variant: "destructive" });
+    }
   };
 
-  const completeSession = () => {
-    console.log('Completing session:', id);
+  const completeSession = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'completed' })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast({ title: "Sessão concluída", description: "Estado atualizado com sucesso" });
+      if (session) setSession({ ...session, status: 'completed' as SessionStatus });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao concluir sessão", variant: "destructive" });
+    }
   };
 
-  const markNoShow = () => {
-    console.log('Marking no-show:', { reason: noShowReason, description: noShowDescription });
-    setShowNoShowDialog(false);
+  const markNoShow = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'no_show',
+          notes: `No-show: ${noShowReason} - ${noShowDescription}`
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      setShowNoShowDialog(false);
+      toast({ title: "Marcado como faltoso", description: "Registo atualizado" });
+      if (session) setSession({ ...session, status: 'no_show' as SessionStatus });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao marcar falta", variant: "destructive" });
+    }
   };
 
-  const cancelSession = () => {
-    console.log('Cancelling session:', id);
-    setShowCancelDialog(false);
+  const cancelSession = async () => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Send cancellation email to user
+      try {
+        const { data: booking } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            profiles (name, email),
+            prestadores (name)
+          `)
+          .eq('id', id)
+          .single();
+
+        // Send cancellation email (method not implemented)
+        // const userProfile = Array.isArray(booking?.profiles) ? booking.profiles[0] : booking?.profiles;
+        // const providerProfile = Array.isArray(booking?.prestadores) ? booking.prestadores[0] : booking?.prestadores;
+        // 
+        // if (userProfile?.email && providerProfile?.name) {
+        //   await emailService.sendBookingCancellation(userProfile.email, {
+        //     userName: userProfile.name,
+        //     providerName: providerProfile.name,
+        //     date: booking.date,
+        //     time: booking.start_time,
+        //     pillar: booking.pillar
+        //   });
+        // }
+      } catch (emailError) {
+        // Don't block cancellation on email failure
+      }
+
+      setShowCancelDialog(false);
+      toast({ title: "Sessão cancelada", description: "Cancelamento registado" });
+      if (session) setSession({ ...session, status: 'cancelled' as SessionStatus });
+    } catch (error) {
+      toast({ title: "Erro", description: "Falha ao cancelar sessão", variant: "destructive" });
+    }
   };
 
   const removeAttachment = (attachmentId: string) => {
     setAttachments(attachments.filter(att => att.id !== attachmentId));
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+        <p>A carregar sessão...</p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+        <p>Sessão não encontrada</p>
+      </div>
+    );
+  }
 
   const { date, time, dayOfWeek } = formatSessionDateTime();
   const canCancel = session.status === 'scheduled' || session.status === 'confirmed';
@@ -403,20 +548,20 @@ export default function PrestadorSessionDetail() {
                 {attachments.length > 0 && (
                   <div className="space-y-2">
                     {attachments.map((attachment) => (
-                      <div key={attachment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={String(attachment.id)} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <FileText className="h-5 w-5 text-gray-600" />
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{attachment.name}</p>
+                            <p className="text-sm font-medium text-gray-900">{String(attachment.name)}</p>
                             <p className="text-xs text-gray-500">
-                              {(attachment.size / 1024).toFixed(1)} KB
+                              {(Number(attachment.size) / 1024).toFixed(1)} KB
                             </p>
                           </div>
                         </div>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeAttachment(attachment.id)}
+                          onClick={() => removeAttachment(String(attachment.id))}
                           className="text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="h-4 w-4" />

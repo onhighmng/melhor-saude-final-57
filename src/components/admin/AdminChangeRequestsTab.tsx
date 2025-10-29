@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Building2, Calendar, FileEdit, Check, Search } from 'lucide-react';
 import { formatDate } from '@/utils/dateFormatting';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ChangeRequest {
   id: string;
@@ -18,62 +20,145 @@ interface ChangeRequest {
   status: 'pendente' | 'em_analise' | 'resolvido';
   createdAt: string;
   requestedBy: string;
+  providerName?: string;
+  providerEmail?: string;
 }
 
-const mockRequests: ChangeRequest[] = [
-  {
-    id: '1',
-    company: 'Tech Solutions Lda',
-    requestType: 'Upgrade de Plano',
-    description: 'Alterar de plano Basic para Premium',
-    status: 'pendente',
-    createdAt: '2024-01-15T10:30:00Z',
-    requestedBy: 'João Silva',
-  },
-  {
-    id: '2',
-    company: 'Consulting Partners',
-    requestType: 'Adicionar Colaboradores',
-    description: 'Adicionar 10 novos colaboradores ao sistema',
-    status: 'em_analise',
-    createdAt: '2024-01-14T14:20:00Z',
-    requestedBy: 'Maria Costa',
-  },
-  {
-    id: '3',
-    company: 'Wellness Corp',
-    requestType: 'Alterar Sessões Alocadas',
-    description: 'Aumentar de 50 para 100 sessões mensais',
-    status: 'resolvido',
-    createdAt: '2024-01-10T09:15:00Z',
-    requestedBy: 'Pedro Santos',
-  },
-  {
-    id: '4',
-    company: 'Innovation Hub',
-    requestType: 'Cancelamento de Serviço',
-    description: 'Solicitar cancelamento do plano atual',
-    status: 'pendente',
-    createdAt: '2024-01-12T11:00:00Z',
-    requestedBy: 'Ana Oliveira',
-  },
-  {
-    id: '5',
-    company: 'Future Tech',
-    requestType: 'Mudança de Pilar',
-    description: 'Adicionar pilar de Bem-Estar Físico ao pacote',
-    status: 'em_analise',
-    createdAt: '2024-01-13T16:45:00Z',
-    requestedBy: 'Carlos Mendes',
-  },
-];
+// Mock data removed - using real database
 
 export default function AdminChangeRequestsTab() {
   const { t } = useTranslation('admin');
   const { toast } = useToast();
-  const [requests, setRequests] = useState<ChangeRequest[]>(mockRequests);
+  const { profile } = useAuth();
+  const [requests, setRequests] = useState<ChangeRequest[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const loadChangeRequests = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('change_requests')
+        .select(`
+          *,
+          prestador:prestadores!prestador_id(name, email)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const formatted: ChangeRequest[] = (data || []).map(req => ({
+        id: req.id,
+        company: (req.prestador as any)?.name || 'N/A',
+        requestType: req.request_type || 'profile_update',
+        description: JSON.stringify(req.requested_data || {}),
+        status: req.status === 'pending' ? 'pendente' : req.status === 'approved' ? 'resolvido' : 'em_analise',
+        createdAt: req.created_at,
+        requestedBy: (req.prestador as any)?.name || 'N/A',
+        providerName: (req.prestador as any)?.name || 'N/A',
+        providerEmail: (req.prestador as any)?.email || 'N/A'
+      }));
+
+      setRequests(formatted);
+    } catch (error: any) {
+      console.error('Error loading change requests:', error);
+      toast({
+        title: 'Erro',
+        description: 'Erro ao carregar pedidos de alteração',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApprove = async (requestId: string) => {
+    try {
+      const { data: request } = await supabase
+        .from('change_requests')
+        .select('prestador_id, requested_data')
+        .eq('id', requestId)
+        .single();
+
+      if (!request) throw new Error('Request not found');
+
+      await supabase
+        .from('change_requests')
+        .update({
+          status: 'approved',
+          reviewed_by: profile?.id,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', requestId);
+
+      await supabase
+        .from('prestadores')
+        .update(request.requested_data as any)
+        .eq('id', request.prestador_id);
+
+      await supabase.from('admin_logs').insert({
+        admin_id: profile?.id,
+        action: 'approve_change_request',
+        entity_type: 'change_request',
+        entity_id: requestId,
+        details: { changes: request.requested_data }
+      });
+
+      toast({
+        title: 'Aprovado',
+        description: 'Pedido aprovado com sucesso'
+      });
+
+      loadChangeRequests();
+    } catch (error: any) {
+      console.error('Error approving request:', error);
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao aprovar pedido',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleReject = async (requestId: string, reason: string) => {
+    try {
+      await supabase
+        .from('change_requests')
+        .update({
+          status: 'rejected',
+          reviewed_by: profile?.id,
+          reviewed_at: new Date().toISOString(),
+          rejection_reason: reason
+        })
+        .eq('id', requestId);
+
+      await supabase.from('admin_logs').insert({
+        admin_id: profile?.id,
+        action: 'reject_change_request',
+        entity_type: 'change_request',
+        entity_id: requestId,
+        details: { reason }
+      });
+
+      toast({
+        title: 'Rejeitado',
+        description: 'Pedido rejeitado'
+      });
+
+      loadChangeRequests();
+    } catch (error: any) {
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao rejeitar pedido',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  useEffect(() => {
+    loadChangeRequests();
+  }, []);
 
   const getStatusColor = (status: ChangeRequest['status']) => {
     switch (status) {

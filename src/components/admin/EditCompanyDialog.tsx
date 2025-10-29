@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Dialog,
   DialogContent,
@@ -21,7 +24,6 @@ import {
 interface Company {
   id: string;
   name: string;
-  nuit: string;
   contactEmail: string;
   contactPhone: string;
   planType: string;
@@ -42,17 +44,87 @@ export function EditCompanyDialog({
   company,
   onSave,
 }: EditCompanyDialogProps) {
+  const { toast } = useToast();
+  const { profile } = useAuth();
   const [formData, setFormData] = useState<Company>(company);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     setIsSaving(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
     
-    onSave(formData);
-    setIsSaving(false);
-    onOpenChange(false);
+    try {
+      // Fetch current values for change tracking
+      const { data: currentCompany } = await supabase
+        .from('companies')
+        .select('company_name, contact_email, contact_phone, sessions_allocated, plan_type, final_notes')
+        .eq('id', company.id)
+        .single();
+
+      // Update company in database with correct column names
+      const { error } = await supabase
+        .from('companies')
+        .update({
+          company_name: formData.name,
+          contact_email: formData.contactEmail,
+          contact_phone: formData.contactPhone,
+          sessions_allocated: formData.sessionsAllocated,
+          plan_type: formData.planType,
+          final_notes: formData.finalNotes,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', company.id);
+
+      if (error) throw error;
+
+      // Calculate actual changes for audit log
+      const changes = {
+        before: currentCompany,
+        after: {
+          company_name: formData.name,
+          contact_email: formData.contactEmail,
+          contact_phone: formData.contactPhone,
+          sessions_allocated: formData.sessionsAllocated,
+          plan_type: formData.planType,
+          final_notes: formData.finalNotes
+        },
+        modified_fields: Object.keys(formData).filter(key => {
+          const dbKey = key === 'name' ? 'company_name' : 
+                        key === 'contactEmail' ? 'contact_email' : 
+                        key === 'contactPhone' ? 'contact_phone' : 
+                        key === 'sessionsAllocated' ? 'sessions_allocated' : 
+                        key === 'planType' ? 'plan_type' : 
+                        key === 'finalNotes' ? 'final_notes' : key;
+          return currentCompany?.[dbKey as keyof typeof currentCompany] !== formData[key as keyof typeof formData];
+        })
+      };
+
+      // Log admin action with specific changes
+      if (profile?.id) {
+        await supabase.from('admin_logs').insert({
+          admin_id: profile.id,
+          action: 'company_updated',
+          entity_type: 'company',
+          entity_id: company.id,
+          details: changes
+        });
+      }
+
+      toast({
+        title: 'Empresa atualizada',
+        description: 'As alterações foram guardadas com sucesso.',
+      });
+
+      onSave(formData);
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao atualizar',
+        description: error.message || 'Ocorreu um erro ao atualizar a empresa',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -72,15 +144,6 @@ export function EditCompanyDialog({
               id="companyName"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="nuit">NUIT</Label>
-            <Input
-              id="nuit"
-              value={formData.nuit}
-              onChange={(e) => setFormData({ ...formData, nuit: e.target.value })}
             />
           </div>
 

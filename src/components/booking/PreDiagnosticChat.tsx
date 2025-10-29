@@ -61,9 +61,6 @@ export const PreDiagnosticChat = ({ pillar, topic, onBack, onComplete, legalCont
     setInitError(false);
     
     try {
-      console.log('[PreDiagnosticChat] Initializing chat (attempt', retryCount + 1, ') with user:', user);
-      console.log('[PreDiagnosticChat] Pillar:', pillar, 'Topic:', topic);
-      
       // Convert BookingPillar to topic pillar ID for database and translations
       const topicPillarId = getTopicPillarId(pillar);
       

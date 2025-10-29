@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,6 @@ import { SupportAssistant } from "@/components/support/SupportAssistant";
 import { SupportForm } from "@/components/support/SupportForm";
 
 export default function Support() {
-  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("assistant");
 
@@ -27,10 +25,10 @@ export default function Support() {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="font-['Baskervville'] text-3xl md:text-4xl font-semibold text-foreground mb-2">
-          {t('support.title')}
+          Como podemos ajudar?
         </h1>
         <p className="font-['Noto_Serif'] text-sm md:text-base text-black/60">
-          {t('support.subtitle')}
+          Escolha a melhor forma de obter suporte
         </p>
       </div>
 
@@ -42,14 +40,14 @@ export default function Support() {
             className="flex items-center gap-2 font-['Noto_Serif']"
           >
             <MessageCircle className="h-4 w-4" />
-            {t('support.virtualAssistant')}
+            Assistente Virtual
           </TabsTrigger>
           <TabsTrigger 
             value="human" 
             className="flex items-center gap-2 font-['Noto_Serif']"
           >
             <Headset className="h-4 w-4" />
-            {t('support.humanSupport')}
+            Suporte Humano
           </TabsTrigger>
         </TabsList>
 

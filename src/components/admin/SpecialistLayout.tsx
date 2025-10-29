@@ -6,6 +6,8 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useState } from 'react';
 import { ProviderSessionManagementModal } from '@/components/sessions/ProviderSessionManagementModal';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { LiveIndicator } from '@/components/ui/live-indicator';
 
 interface Case {
   id: string;
@@ -124,26 +126,78 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
     setShowManagementModal(true);
   };
 
-  const handleUpdateMeetingLink = (caseId: string, link: string) => {
-    toast({
-      title: "Link atualizado",
-      description: "O link da reunião foi atualizado com sucesso."
-    });
+  const handleUpdateMeetingLink = async (caseId: string, link: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ meeting_link: link })
+        .eq('id', caseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Link atualizado",
+        description: "O link da reunião foi atualizado com sucesso."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao atualizar link",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleReschedule = (caseId: string) => {
-    toast({
-      title: "Reagendar caso",
-      description: "Funcionalidade de reagendamento em desenvolvimento."
-    });
+  const handleReschedule = async (caseId: string) => {
+    try {
+      // Update booking status and add rescheduled flag
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'rescheduled',
+          rescheduled_from: caseId 
+        })
+        .eq('id', caseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Caso reagendado",
+        description: "O caso foi marcado para reagendamento."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao reagendar caso",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleCancel = (caseId: string) => {
-    toast({
-      title: "Caso cancelado",
-      description: "O caso foi cancelado com sucesso.",
-      variant: "destructive"
-    });
+  const handleCancel = async (caseId: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'cancelled',
+          cancellation_reason: 'Cancelado por especialista' 
+        })
+        .eq('id', caseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Caso cancelado",
+        description: "O caso foi cancelado com sucesso.",
+        variant: "destructive"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao cancelar caso",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -157,7 +211,10 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
         {/* Right Side - Cases List */}
         <Card>
           <CardHeader>
-            <CardTitle>Histórico de Casos</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+              <span>Histórico de Casos</span>
+              <LiveIndicator />
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

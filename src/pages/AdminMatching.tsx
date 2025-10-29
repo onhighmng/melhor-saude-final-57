@@ -31,6 +31,7 @@ import {
   UserPlus
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProviderInQueue {
   id: string;
@@ -76,52 +77,7 @@ const AdminMatching = () => {
   const [showSimulation, setShowSimulation] = useState(false);
   const [availableProviders, setAvailableProviders] = useState<ProviderInQueue[]>([]);
 
-  const mockProviders: ProviderInQueue[] = [
-    {
-      id: '1',
-      name: 'Dra. Maria Santos',
-      email: 'maria.santos@clinic.pt',
-      weight: 1.0,
-      status: 'active',
-      maxPerDay: 3,
-      maxPerWeek: 15,
-      currentUsage: { today: 2, thisWeek: 8 },
-      pillar: 'mental-health'
-    },
-    {
-      id: '2',
-      name: 'Dr. Paulo Reis',
-      email: 'paulo.reis@financial.pt',
-      weight: 1.5,
-      status: 'active',
-      maxPerDay: 4,
-      maxPerWeek: 20,
-      currentUsage: { today: 1, thisWeek: 12 },
-      pillar: 'mental-health'
-    },
-    {
-      id: '3',
-      name: 'Prof. Ana Rodrigues',
-      email: 'ana.rodrigues@wellness.pt',
-      weight: 0.5,
-      status: 'inactive',
-      maxPerDay: 2,
-      maxPerWeek: 8,
-      currentUsage: { today: 0, thisWeek: 0 },
-      pillar: 'physical-wellness'
-    },
-    {
-      id: '4',
-      name: 'Dra. Sofia Alves',
-      email: 'sofia.alves@legal.pt',
-      weight: 1.0,
-      status: 'active',
-      maxPerDay: 3,
-      maxPerWeek: 15,
-      currentUsage: { today: 3, thisWeek: 15 },
-      pillar: 'legal-assistance'
-    }
-  ];
+  // Mock providers removed - using real database queries
 
   const pillarConfig = {
     'mental-health': {
@@ -157,30 +113,99 @@ const AdminMatching = () => {
   const loadMatchingRules = async () => {
     setIsLoading(true);
     try {
-      setTimeout(() => {
-        const organizedPillars = { ...matchingRules.pillars };
-        
-        mockProviders.forEach(provider => {
-          if (organizedPillars[provider.pillar]) {
-            organizedPillars[provider.pillar].providers.push(provider);
-            organizedPillars[provider.pillar].totalWeight += provider.weight;
-          }
-        });
+      // Load real providers from database
+      const { data: providers, error } = await supabase
+        .from('prestadores')
+        .select('id, name, email, photo_url, pillar_specialties, is_active')
+        .eq('is_active', true);
 
-        setMatchingRules(prev => ({
-          ...prev,
-          pillars: organizedPillars
-        }));
+      if (error) throw error;
+
+      // Transform to ProviderInQueue format
+      const transformedProviders: ProviderInQueue[] = (providers || []).map(p => ({
+        id: p.id,
+        name: p.name,
+        email: p.email,
+        avatar: p.photo_url || undefined,
+        weight: 1.0,
+        status: p.is_active ? 'active' : 'inactive',
+        maxPerDay: 5,
+        maxPerWeek: 25,
+        currentUsage: { today: 0, thisWeek: 0 },
+        pillar: p.pillar_specialties?.[0] || 'mental-health'
+      }));
+
+      // Organize by pillar
+      const organizedPillars = { ...matchingRules.pillars };
+      
+      transformedProviders.forEach(provider => {
+        const pillarKey = provider.pillar.replace('saude_mental', 'mental-health')
+          .replace('bem_estar_fisico', 'physical-wellness')
+          .replace('assistencia_financeira', 'financial-assistance')
+          .replace('assistencia_juridica', 'legal-assistance');
         
-        setAvailableProviders(mockProviders.filter(p => 
-          !Object.values(organizedPillars).some(pillar => 
-            pillar.providers.some(pp => pp.id === p.id)
-          )
-        ));
-        
-        setIsLoading(false);
-      }, 1000);
+        if (organizedPillars[pillarKey]) {
+          organizedPillars[pillarKey].providers.push(provider);
+          organizedPillars[pillarKey].totalWeight += provider.weight;
+        }
+      });
+
+      setMatchingRules(prev => ({
+        ...prev,
+        pillars: organizedPillars
+      }));
+      
+      // Load current usage from bookings
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const weekStart = new Date(todayStart);
+      weekStart.setDate(weekStart.getDate() - 7);
+
+      const { data: todayBookings, error: todayError } = await supabase
+        .from('bookings')
+        .select('prestador_id')
+        .gte('created_at', todayStart.toISOString())
+        .eq('status', 'scheduled');
+
+      const { data: weekBookings, error: weekError } = await supabase
+        .from('bookings')
+        .select('prestador_id')
+        .gte('created_at', weekStart.toISOString())
+        .eq('status', 'scheduled');
+
+      if (todayError || weekError) {
+        console.error('Error loading booking statistics:', todayError || weekError);
+      }
+
+      // Calculate usage for each provider
+      const todayCount: Record<string, number> = {};
+      const weekCount: Record<string, number> = {};
+
+      todayBookings?.forEach(booking => {
+        if (booking.prestador_id) {
+          todayCount[booking.prestador_id] = (todayCount[booking.prestador_id] || 0) + 1;
+        }
+      });
+
+      weekBookings?.forEach(booking => {
+        if (booking.prestador_id) {
+          weekCount[booking.prestador_id] = (weekCount[booking.prestador_id] || 0) + 1;
+        }
+      });
+
+      // Update providers with usage data
+      const providersWithUsage = transformedProviders.map(p => ({
+        ...p,
+        currentUsage: {
+          today: todayCount[p.id] || 0,
+          thisWeek: weekCount[p.id] || 0
+        }
+      }));
+
+      setAvailableProviders(providersWithUsage);
+      setIsLoading(false);
     } catch (error) {
+      console.error('Error loading matching rules:', error);
       toast({
         title: "Erro",
         description: "Erro ao carregar regras de matching",
@@ -245,16 +270,58 @@ const AdminMatching = () => {
 
   const saveMatchingRules = async () => {
     try {
+      setIsLoading(true);
+
+      // Get current admin user ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Save provider assignments to specialist_assignments table
+      const assignmentsToSave = [];
+      
+      for (const [pillarKey, pillarData] of Object.entries(matchingRules.pillars)) {
+        for (const provider of pillarData.providers) {
+          assignmentsToSave.push({
+            pillar: pillarKey,
+            specialist_id: provider.id,
+            weight: provider.weight,
+            is_primary: provider.weight > 1.0,
+            assigned_by: user.id
+          });
+        }
+      }
+
+      // Delete existing assignments for these pillars
+      const pillarKeys = Object.keys(matchingRules.pillars);
+      const { error: deleteError } = await supabase
+        .from('specialist_assignments')
+        .delete()
+        .in('pillar', pillarKeys);
+
+      if (deleteError) throw deleteError;
+
+      // Insert new assignments
+      if (assignmentsToSave.length > 0) {
+        const { error: insertError } = await supabase
+          .from('specialist_assignments')
+          .insert(assignmentsToSave);
+
+        if (insertError) throw insertError;
+      }
+
       toast({
         title: "Regras guardadas",
         description: "Regras de matching atualizadas com sucesso"
       });
+      setIsLoading(false);
     } catch (error) {
+      console.error('Error saving matching rules:', error);
       toast({
         title: "Erro",
         description: "Erro ao guardar regras",
         variant: "destructive"
       });
+      setIsLoading(false);
     }
   };
 
