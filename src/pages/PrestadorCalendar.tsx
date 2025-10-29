@@ -1,786 +1,242 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useState, useMemo } from 'react';
+import { Card } from '@/components/ui/card';
+import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
+import { mockCalendarEvents, type PrestadorCalendarEvent } from '@/data/prestadorMetrics';
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { 
-  Calendar, 
-  Clock, 
-  Plus, 
-  Edit, 
-  Trash2,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Download,
-  Upload,
-  Settings,
-  Users,
-  BarChart3
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Pillar, PILLAR_DISPLAY_NAMES } from '@/integrations/supabase/types-unified';
+import { Button } from '@/components/ui/button';
+import { isSameDay } from 'date-fns';
+import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
 
-interface AvailabilitySlot {
-  id: string;
-  day_of_week: number; // 0 = Sunday, 1 = Monday, etc.
-  start_time: string;
-  end_time: string;
-  is_recurring?: boolean;
-  prestador_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface SpecificAvailability {
-  id: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  is_available: boolean;
-  reason?: string;
-  created_at: string;
-}
-
-interface Booking {
-  id: string;
-  user_id: string;
-  user_name: string;
-  pillar: Pillar;
-  date: string;
-  start_time: string;
-  end_time: string;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  session_type: 'virtual' | 'presential';
-  notes?: string;
-}
-
-interface CalendarStats {
-  total_slots: number;
-  available_slots: number;
-  booked_slots: number;
-  utilization_rate: number;
-  upcoming_sessions: number;
-}
-
-export const PrestadorCalendar: React.FC = () => {
-  const { t } = useTranslation('prestador');
+const PrestadorCalendar = () => {
   const { toast } = useToast();
-  const { profile } = useAuth();
-  
-  const [loading, setLoading] = useState(true);
-  const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([]);
-  const [specificAvailability, setSpecificAvailability] = useState<SpecificAvailability[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [stats, setStats] = useState<CalendarStats>({
-    total_slots: 0,
-    available_slots: 0,
-    booked_slots: 0,
-    utilization_rate: 0,
-    upcoming_sessions: 0
-  });
-  
-  const [isAddingSlot, setIsAddingSlot] = useState(false);
-  const [isAddingSpecific, setIsAddingSpecific] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedDay, setSelectedDay] = useState<number>(1);
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('17:00');
-  const [reason, setReason] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isDayEventsModalOpen, setIsDayEventsModalOpen] = useState(false);
+  const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
+  const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState(false);
 
-  const daysOfWeek = [
-    'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
-  ];
-
-  useEffect(() => {
-    if (profile?.id) {
-      loadCalendarData();
-    }
-  }, [profile?.id]);
-
-  const loadCalendarData = async () => {
-    if (!profile?.id) return;
-
-    setLoading(true);
-    try {
-      await Promise.all([
-        loadAvailabilitySlots(),
-        loadSpecificAvailability(),
-        loadBookings(),
-        loadStats()
-      ]);
-    } catch (error) {
-      console.error('Error loading calendar data:', error);
-      toast({
-        title: "Erro",
-        description: "Falha ao carregar dados do calendário",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadAvailabilitySlots = async () => {
-    if (!profile?.id) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('prestador_availability')
-        .select('*')
-        .eq('prestador_id', profile.id)
-        .order('day_of_week', { ascending: true });
-
-      if (error) throw error;
-      // Note: prestador_availability doesn't have is_available column
-      setAvailabilitySlots(data || []);
-    } catch (error) {
-      console.error('Error loading availability slots:', error);
-    }
-  };
-
-  const loadSpecificAvailability = async () => {
-    if (!profile?.id) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('prestador_schedule')
-        .select('*')
-        .eq('prestador_id', profile.id)
-        .gte('date', new Date().toISOString().split('T')[0])
-        .order('date', { ascending: true });
-
-      if (error) throw error;
+  // Transform calendar events to FullScreenCalendar format
+  const calendarData = useMemo(() => {
+    const groupedByDate = mockCalendarEvents.reduce((acc, event: PrestadorCalendarEvent) => {
+      const dateKey = event.date;
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
       
-      // prestador_schedule table structure doesn't match SpecificAvailability interface
-      // Commenting out until table is properly migrated
-      console.warn('[PrestadorCalendar] prestador_schedule table structure mismatch');
-      setSpecificAvailability([]);
-    } catch (error) {
-      console.error('Error loading specific availability:', error);
-    }
-  };
-
-  const loadBookings = async () => {
-    if (!profile?.id) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`
-          id,
-          user_id,
-          pillar,
-          date,
-          start_time,
-          end_time,
-          status,
-          session_type,
-          notes,
-          profiles!bookings_user_id_fkey(name)
-        `)
-        .eq('prestador_id', profile.id)
-        .gte('date', new Date().toISOString().split('T')[0])
-        .order('date', { ascending: true });
-
-      if (error) throw error;
-
-      const bookingData: Booking[] = (data || []).map(booking => {
-        // Handle profiles - could be array or single object
-        const profiles = booking.profiles as any;
-        const userName = Array.isArray(profiles) ? profiles[0]?.name : profiles?.name;
-        
-        return {
-          id: booking.id,
-          user_id: booking.user_id,
-          user_name: userName || 'Utilizador',
-          pillar: booking.pillar as Pillar,
-          date: booking.date,
-          start_time: booking.start_time,
-          end_time: booking.end_time,
-          status: booking.status as any,
-          session_type: booking.session_type as any,
-          notes: booking.notes
-        };
+      const [hours, minutes] = event.time.split(':').map(Number);
+      
+      let name = '';
+      switch (event.type) {
+        case 'available':
+          name = 'Disponível';
+          break;
+        case 'session':
+          name = event.clientName || 'Sessão';
+          break;
+        case 'blocked':
+          name = 'Indisponível';
+          break;
+      }
+      
+      acc[dateKey].push({
+        id: event.id,
+        name: event.clientName ? `${event.clientName} - ${event.company}` : name,
+        time: event.time,
+        datetime: `${event.date}T${event.time}`,
+        userName: event.clientName,
+        pillar: event.pillar,
       });
+      return acc;
+    }, {} as Record<string, any[]>);
 
-      setBookings(bookingData);
-    } catch (error) {
-      console.error('Error loading bookings:', error);
-    }
+    const result = Object.entries(groupedByDate).map(([date, events]) => ({
+      day: new Date(date),
+      events,
+    }));
+    
+    return result;
+  }, []);
+
+  // Get events for selected date
+  const selectedDateEvents = useMemo(() => {
+    if (!selectedDate) return [];
+    return mockCalendarEvents.filter(event => 
+      isSameDay(new Date(event.date), selectedDate)
+    ).sort((a, b) => a.time.localeCompare(b.time));
+  }, [selectedDate]);
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    setIsDayEventsModalOpen(true);
   };
 
-  const loadStats = async () => {
-    if (!profile?.id) return;
-
-    try {
-      const upcomingSessions = bookings.filter(b => 
-        b.status === 'confirmed' || b.status === 'pending'
-      ).length;
-
-      const totalSlots = availabilitySlots.length;
-      const availableSlots = availabilitySlots.length; // All slots are available since is_available column doesn't exist
-      const bookedSlots = bookings.filter(b => b.status === 'confirmed').length;
-      const utilizationRate = totalSlots > 0 ? (bookedSlots / totalSlots) * 100 : 0;
-
-      setStats({
-        total_slots: totalSlots,
-        available_slots: availableSlots,
-        booked_slots: bookedSlots,
-        utilization_rate: utilizationRate,
-        upcoming_sessions: upcomingSessions
-      });
-    } catch (error) {
-      console.error('Error loading stats:', error);
-    }
-  };
-
-  const addAvailabilitySlot = async () => {
-    if (!profile?.id) return;
-
-    try {
-      const { error } = await supabase
-        .from('prestador_availability')
-        .insert({
-          prestador_id: profile.id,
-          day_of_week: selectedDay,
-          start_time: startTime,
-          end_time: endTime
-        });
-
-      if (error) throw error;
-
+  const handleEventClick = (event: any) => {
+    const calendarEvent = mockCalendarEvents.find(e => e.id === event.id);
+    if (calendarEvent) {
       toast({
-        title: "Disponibilidade adicionada",
-        description: `${daysOfWeek[selectedDay]} das ${startTime} às ${endTime}`
-      });
-
-      setIsAddingSlot(false);
-      loadAvailabilitySlots();
-    } catch (error) {
-      console.error('Error adding availability slot:', error);
-      toast({
-        title: "Erro",
-        description: "Falha ao adicionar disponibilidade",
-        variant: "destructive"
+        title: calendarEvent.clientName || 'Evento',
+        description: `${calendarEvent.time} - ${calendarEvent.type}`,
       });
     }
   };
 
-  const addSpecificAvailability = async () => {
-    console.warn('[PrestadorCalendar] prestador_schedule table structure not compatible');
+  const handleAddSession = () => {
+    setIsAddSessionModalOpen(true);
+  };
+
+  const handleConfirmAddSession = () => {
     toast({
-      title: "Funcionalidade não disponível",
-      description: "A adição de disponibilidade específica ainda não está implementada",
-      variant: "destructive"
+      title: 'Sessão Adicionada',
+      description: 'Nova sessão adicionada ao calendário com sucesso.',
     });
+    setIsAddSessionModalOpen(false);
   };
 
-  const removeAvailabilitySlot = async (slotId: string) => {
-    try {
-      const { error } = await supabase
-        .from('prestador_availability')
-        .delete()
-        .eq('id', slotId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Disponibilidade removida",
-        description: "Slot de disponibilidade removido"
-      });
-
-      loadAvailabilitySlots();
-    } catch (error) {
-      console.error('Error removing availability slot:', error);
-      toast({
-        title: "Erro",
-        description: "Falha ao remover disponibilidade",
-        variant: "destructive"
-      });
-    }
+  const getPillarLabel = (pillar: string) => {
+    const labels = {
+      psychological: 'Saúde Mental',
+      physical: 'Bem-Estar Físico',
+      financial: 'Assistência Financeira',
+      legal: 'Assistência Jurídica'
+    };
+    return labels[pillar as keyof typeof labels] || pillar;
   };
 
-  const toggleAvailability = async (slotId: string, isAvailable: boolean) => {
-    console.warn('[PrestadorCalendar] Toggle availability not supported - is_available column missing');
-    toast({
-      title: "Funcionalidade não disponível",
-      description: "Alteração de disponibilidade não implementada",
-      variant: "destructive"
-    });
+  const getPillarColor = (pillar: string) => {
+    const colors = {
+      psychological: 'bg-blue-100 text-blue-700',
+      physical: 'bg-yellow-100 text-yellow-700',
+      financial: 'bg-green-100 text-green-700',
+      legal: 'bg-purple-100 text-purple-700'
+    };
+    return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700';
   };
 
-  const exportCalendar = () => {
-    const icalData = generateICalData();
-    const blob = new Blob([icalData], { type: 'text/calendar;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `calendario-${profile?.name || 'prestador'}.ics`;
-    link.click();
-    URL.revokeObjectURL(url);
-
-    toast({
-      title: "Calendário exportado",
-      description: "Ficheiro iCal descarregado"
-    });
+  const getTypeLabel = (type: string) => {
+    const labels = {
+      available: 'Disponível',
+      session: 'Sessão',
+      blocked: 'Bloqueio'
+    };
+    return labels[type as keyof typeof labels] || type;
   };
 
-  const generateICalData = (): string => {
-    const now = new Date();
-    const icalHeader = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//Melhor Saude//Prestador Calendar//PT',
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH'
-    ];
-
-    const icalEvents = bookings.map(booking => [
-      'BEGIN:VEVENT',
-      `UID:${booking.id}@melhorsaude.com`,
-      `DTSTART:${booking.date.replace(/-/g, '')}T${booking.start_time.replace(/:/g, '')}00`,
-      `DTEND:${booking.date.replace(/-/g, '')}T${booking.end_time.replace(/:/g, '')}00`,
-      `SUMMARY:Sessão com ${booking.user_name}`,
-      `DESCRIPTION:Sessão de ${PILLAR_DISPLAY_NAMES[booking.pillar]} - ${booking.session_type}`,
-      `STATUS:${booking.status === 'confirmed' ? 'CONFIRMED' : 'TENTATIVE'}`,
-      `CREATED:${now.toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
-      'END:VEVENT'
-    ]);
-
-    const icalFooter = ['END:VCALENDAR'];
-
-    return [...icalHeader, ...icalEvents.flat(), ...icalFooter].join('\r\n');
+  const getTypeColor = (type: string) => {
+    const colors = {
+      available: 'bg-green-100 text-green-700',
+      session: 'bg-blue-100 text-blue-700',
+      blocked: 'bg-gray-100 text-gray-700'
+    };
+    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-700';
   };
-
-  const getStatusBadge = (status: Booking['status']) => {
-    switch (status) {
-      case 'confirmed':
-        return <Badge className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" />Confirmada</Badge>;
-      case 'pending':
-        return <Badge variant="outline"><Clock className="h-3 w-3 mr-1" />Pendente</Badge>;
-      case 'completed':
-        return <Badge variant="secondary"><CheckCircle className="h-3 w-3 mr-1" />Concluída</Badge>;
-      case 'cancelled':
-        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Cancelada</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Calendário</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map(i => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Calendário</h2>
-          <p className="text-muted-foreground">
-            Gerir sua disponibilidade e sessões
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={exportCalendar} variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Exportar
-          </Button>
-          <Dialog open={isAddingSlot} onOpenChange={setIsAddingSlot}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Slot
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Adicionar Disponibilidade</DialogTitle>
-                <DialogDescription>
-                  Adicionar um slot de disponibilidade semanal
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="day">Dia da Semana</Label>
-                  <Select value={selectedDay.toString()} onValueChange={(value) => setSelectedDay(parseInt(value))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {daysOfWeek.map((day, index) => (
-                        <SelectItem key={index} value={index.toString()}>
-                          {day}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="start-time">Hora de Início</Label>
-                    <Input
-                      id="start-time"
-                      type="time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="end-time">Hora de Fim</Label>
-                    <Input
-                      id="end-time"
-                      type="time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setIsAddingSlot(false)}>
-                    Cancelar
-                  </Button>
-                  <Button onClick={addAvailabilitySlot}>
-                    Adicionar
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+    <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
+      <div>
+        <h1 className="text-4xl font-heading font-bold">
+          Calendário
+        </h1>
+        <p className="text-muted-foreground mt-1 text-base font-semibold">
+          Gerir sessões e disponibilidade
+        </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.total_slots}</p>
-              <p className="text-sm text-muted-foreground">Total Slots</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-500">{stats.available_slots}</p>
-              <p className="text-sm text-muted-foreground">Disponíveis</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-500">{stats.booked_slots}</p>
-              <p className="text-sm text-muted-foreground">Reservados</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-purple-500">{stats.utilization_rate.toFixed(1)}%</p>
-              <p className="text-sm text-muted-foreground">Utilização</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-orange-500">{stats.upcoming_sessions}</p>
-              <p className="text-sm text-muted-foreground">Próximas</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="p-0">
+        <FullScreenCalendar 
+          data={calendarData}
+          onEventClick={handleEventClick}
+          onDayClick={handleDateClick}
+          onSetAvailability={() => setIsAvailabilityModalOpen(true)}
+          onAddEvent={handleAddSession}
+        />
+      </Card>
 
-      {/* Main Content */}
-      <Tabs defaultValue="availability" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="availability">Disponibilidade</TabsTrigger>
-          <TabsTrigger value="bookings">Sessões</TabsTrigger>
-          <TabsTrigger value="specific">Específica</TabsTrigger>
-        </TabsList>
-
-        {/* Availability Tab */}
-        <TabsContent value="availability" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Disponibilidade Semanal</CardTitle>
-              <CardDescription>
-                Configure sua disponibilidade por dia da semana
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {daysOfWeek.map((day, index) => {
-                  const daySlots = availabilitySlots.filter(slot => slot.day_of_week === index);
-                  
-                  return (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded">
-                      <div className="flex items-center gap-4">
-                        <div className="w-24">
-                          <p className="font-medium">{day}</p>
-                        </div>
-                        
+      {/* Day Events Modal */}
+      <Dialog open={isDayEventsModalOpen} onOpenChange={setIsDayEventsModalOpen}>
+        <DialogContent className="max-w-5xl h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5" />
+              Eventos do dia {selectedDate && selectedDate.toLocaleDateString('pt-PT')}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="flex-1 overflow-auto">
+            <div className="space-y-3 pr-4">
+              {selectedDateEvents.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <CalendarIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>Sem eventos neste dia</p>
+                </div>
+              ) : (
+                selectedDateEvents.map((event) => (
+                  <Card key={event.id} className="p-4 hover:shadow-md transition-shadow">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          {daySlots.length > 0 ? (
-                            <div className="space-y-2">
-                              {daySlots.map((slot) => (
-                                <div key={slot.id} className="flex items-center gap-2">
-                                  <Badge variant="default">
-                                    {slot.start_time} - {slot.end_time}
-                                  </Badge>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => removeAvailabilitySlot(slot.id)}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-muted-foreground">Nenhum slot configurado</p>
+                          <h4 className="font-semibold text-sm mb-1">
+                            {event.clientName || getTypeLabel(event.type)}
+                          </h4>
+                          {event.company && (
+                            <p className="text-xs text-muted-foreground">{event.company}</p>
                           )}
                         </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Bookings Tab */}
-        <TabsContent value="bookings" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sessões Agendadas</CardTitle>
-              <CardDescription>
-                Suas próximas sessões com utilizadores
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {bookings.length > 0 ? (
-                  bookings.map((booking) => (
-                    <div key={booking.id} className="flex items-center justify-between p-4 border rounded">
-                      <div className="flex items-center gap-4">
-                        <Calendar className="h-8 w-8 text-muted-foreground" />
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-medium">{booking.user_name}</h3>
-                            {getStatusBadge(booking.status)}
-                          </div>
-                          
-                          <p className="text-sm text-muted-foreground mb-1">
-                            {PILLAR_DISPLAY_NAMES[booking.pillar]} • {booking.session_type}
-                          </p>
-                          
-                          <p className="text-sm">
-                            {new Date(booking.date).toLocaleDateString('pt-PT')} às {booking.start_time}
-                          </p>
-                          
-                          {booking.notes && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Notas: {booking.notes}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma sessão agendada</p>
-                    <p className="text-sm">Suas sessões aparecerão aqui quando forem agendadas</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Specific Availability Tab */}
-        <TabsContent value="specific" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Disponibilidade Específica
-                <Dialog open={isAddingSpecific} onOpenChange={setIsAddingSpecific}>
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Adicionar
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Adicionar Disponibilidade Específica</DialogTitle>
-                      <DialogDescription>
-                        Adicionar disponibilidade para uma data específica
-                      </DialogDescription>
-                    </DialogHeader>
-                    
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="specific-date">Data</Label>
-                        <Input
-                          id="specific-date"
-                          type="date"
-                          value={selectedDate}
-                          onChange={(e) => setSelectedDate(e.target.value)}
-                          min={new Date().toISOString().split('T')[0]}
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="specific-start-time">Hora de Início</Label>
-                          <Input
-                            id="specific-start-time"
-                            type="time"
-                            value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
-                          />
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="specific-end-time">Hora de Fim</Label>
-                          <Input
-                            id="specific-end-time"
-                            type="time"
-                            value={endTime}
-                            onChange={(e) => setEndTime(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="reason">Motivo (opcional)</Label>
-                        <Input
-                          id="reason"
-                          value={reason}
-                          onChange={(e) => setReason(e.target.value)}
-                          placeholder="Ex: Reunião, férias, etc."
-                        />
-                      </div>
-                      
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setIsAddingSpecific(false)}>
-                          Cancelar
-                        </Button>
-                        <Button onClick={addSpecificAvailability}>
-                          Adicionar
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </CardTitle>
-              <CardDescription>
-                Configure disponibilidade para datas específicas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {specificAvailability.length > 0 ? (
-                  specificAvailability.map((slot) => (
-                    <div key={slot.id} className="flex items-center justify-between p-4 border rounded">
-                      <div className="flex items-center gap-4">
-                        <Calendar className="h-8 w-8 text-muted-foreground" />
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-medium">
-                              {new Date(slot.date).toLocaleDateString('pt-PT', { 
-                                weekday: 'long', 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric' 
-                              })}
-                            </h3>
-                            <Badge variant={slot.is_available ? "default" : "secondary"}>
-                              {slot.is_available ? 'Disponível' : 'Indisponível'}
+                        <div className="flex flex-col gap-1">
+                          <Badge className={`text-xs ${getTypeColor(event.type)}`}>
+                            {getTypeLabel(event.type)}
+                          </Badge>
+                          {event.pillar && (
+                            <Badge className={`text-xs ${getPillarColor(event.pillar)}`}>
+                              {getPillarLabel(event.pillar)}
                             </Badge>
-                          </div>
-                          
-                          <p className="text-sm text-muted-foreground">
-                            {slot.start_time} - {slot.end_time}
-                          </p>
-                          
-                          {slot.reason && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Motivo: {slot.reason}
-                            </p>
                           )}
                         </div>
                       </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>{event.time}</span>
+                        </div>
+                        {event.status && (
+                          <Badge variant="outline" className="text-xs">
+                            {event.status === 'confirmed' ? 'Confirmada' : event.status === 'cancelled' ? 'Cancelada' : event.status}
+                          </Badge>
+                        )}
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma disponibilidade específica</p>
-                    <p className="text-sm">Adicione disponibilidade para datas específicas</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                  </Card>
+                ))
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Availability Settings Modal */}
+      <AvailabilitySettings 
+        open={isAvailabilityModalOpen}
+        onOpenChange={setIsAvailabilityModalOpen}
+      />
+
+      {/* Add Session Modal - Placeholder */}
+      <Dialog open={isAddSessionModalOpen} onOpenChange={setIsAddSessionModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adicionar Nova Sessão</DialogTitle>
+          </DialogHeader>
+          <div className="py-6 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Funcionalidade para adicionar nova sessão em breve.
+            </p>
+            <Button onClick={handleConfirmAddSession} className="w-full">
+              Confirmar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

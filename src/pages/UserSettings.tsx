@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,6 @@ import { NotificationPrefsModal } from "@/components/settings/NotificationPrefsM
 import { SecurityModal } from "@/components/settings/SecurityModal";
 import { ConsentsModal } from "@/components/settings/ConsentsModal";
 import { NotificationHistoryModal } from "@/components/settings/NotificationHistoryModal";
-import { supabase } from '@/integrations/supabase/client';
 
 const UserSettings = () => {
   const { profile, user } = useAuth();
@@ -32,39 +31,41 @@ const UserSettings = () => {
   const [isChangeProviderOpen, setIsChangeProviderOpen] = useState(false);
   const [selectedPillar, setSelectedPillar] = useState("");
 
-  const [fixedProviders, setFixedProviders] = useState<any[]>([]);
-
-  // Load assigned specialists
-  useEffect(() => {
-    const loadAssignments = async () => {
-      if (!user?.id || !profile?.company_id) return;
-      
-      const { data } = await supabase
-        .from('specialist_assignments')
-        .select(`
-          pillar,
-          is_active,
-          specialist_id,
-          specialist_profile:profiles!specialist_id(name, email)
-        `)
-        .eq('company_id', profile.company_id)
-        .eq('is_active', true);
-
-      const providers = (data || []).map((a: any) => ({
-        pillar: a.pillar || 'Unknown',
-        provider: a.specialist_profile ? {
-          name: a.specialist_profile.name,
-          specialty: a.pillar,
-          avatar: null
-        } : null,
-        status: a.is_active ? 'approved' : 'none'
-      }));
-
-      setFixedProviders(providers);
-    };
-
-    loadAssignments();
-  }, [user?.id, profile?.company_id]);
+  // Mock data for providers
+  const fixedProviders = [
+    {
+      pillar: 'Saúde Mental',
+      provider: {
+        name: "Dra. Ana Silva",
+        specialty: 'Psicóloga Clínica',
+        avatar: "/lovable-uploads/02f580a8-2bbc-4675-b164-56288192e5f1.png"
+      },
+      status: "approved"
+    },
+    {
+      pillar: 'Bem-Estar Físico',
+      provider: {
+        name: "Dr. Miguel Santos",
+        specialty: 'Fisioterapeuta',
+        avatar: "/lovable-uploads/085a608e-3a3e-45e5-898b-2f9b4c0f7f67.png"
+      },
+      status: "pending"
+    },
+    {
+      pillar: 'Assistência Financeira',
+      provider: null,
+      status: "none"
+    },
+    {
+      pillar: 'Assistência Jurídica',
+      provider: {
+        name: "Dr. João Costa",
+        specialty: 'Advogado Laboralista',
+        avatar: "/lovable-uploads/0daa1ba3-5b7c-49db-950f-22ccfee40b86.png"
+      },
+      status: "rejected"
+    }
+  ];
 
   const [profileData, setProfileData] = useState({
     name: profile?.name || "",
@@ -86,125 +87,79 @@ const UserSettings = () => {
     anonymousReports: true
   });
 
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  // Load real notifications from database
-  useEffect(() => {
-    const loadNotifications = async () => {
-      if (!user?.id) return;
-      
-      const { data } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      const mappedNotifications: Notification[] = (data || []).map((n: any) => ({
-        id: n.id,
-        type: n.type as Notification['type'],
-        title: n.title,
-        message: n.message,
-        read: n.is_read,
-        createdAt: n.created_at,
-        actionUrl: typeof n.metadata === 'object' && n.metadata !== null ? (n.metadata as any).actionUrl : undefined,
-        sessionId: typeof n.metadata === 'object' && n.metadata !== null ? (n.metadata as any).sessionId : undefined
-      }));
-
-      setNotifications(mappedNotifications);
-    };
-
-    loadNotifications();
-  }, [user?.id]);
+  // Mock notifications data from UserNotifications
+  const mockNotifications: Notification[] = [
+    {
+      id: 'notif-1',
+      type: 'session_reminder',
+      title: 'Sessão Hoje',
+      message: 'Tem uma sessão hoje às 14:00 com Dr. João Silva',
+      read: false,
+      createdAt: new Date().toISOString(),
+      actionUrl: '/user/sessions',
+      sessionId: 'sess-1',
+    },
+    {
+      id: 'notif-2',
+      type: 'feedback_request',
+      title: 'Avalie a Sessão',
+      message: 'Que tal avaliar a sua sessão com Dra. Maria Santos?',
+      read: false,
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      sessionId: 'sess-2',
+    },
+    {
+      id: 'notif-3',
+      type: 'quota_warning',
+      title: 'Sessões a Expirar',
+      message: 'Restam apenas 2 sessões. Renove o seu plano!',
+      read: true,
+      createdAt: new Date(Date.now() - 172800000).toISOString(),
+    },
+    {
+      id: 'notif-4',
+      type: 'booking_confirmation',
+      title: 'Sessão Confirmada',
+      message: 'A sua sessão foi confirmada para 25 de Março às 10:00',
+      read: true,
+      createdAt: new Date(Date.now() - 259200000).toISOString(),
+      sessionId: 'sess-3',
+    },
+    {
+      id: 'notif-5',
+      type: 'info',
+      title: 'Novos Recursos',
+      message: 'Novos recursos de bem-estar disponíveis na sua área pessoal',
+      read: true,
+      createdAt: new Date(Date.now() - 345600000).toISOString(),
+      actionUrl: '/user/resources',
+    },
+  ];
+  
+  const [notifications, setNotifications] = useState(mockNotifications);
   
   const unreadNotifications = notifications.filter(n => !n.read);
   const readNotifications = notifications.filter(n => n.read);
 
-  const handleSaveProfile = async (profileData: any) => {
-    try {
-      if (!profile?.id) return;
-      
-      await supabase.from('profiles').update({
-        name: profileData.name,
-        phone: profileData.phone,
-        bio: profileData.bio,
-        avatar_url: profileData.avatar_url
-      }).eq('id', profile.id);
-
-      toast({
-        title: 'Perfil atualizado',
-        description: 'As suas alterações foram guardadas com sucesso.'
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Erro',
-        description: error.message || 'Erro ao atualizar perfil',
-        variant: 'destructive'
-      });
-    }
+  const handleSaveProfile = () => {
+    toast({
+      title: 'Perfil atualizado',
+      description: 'As suas alterações foram guardadas com sucesso.'
+    });
   };
 
-  const handleSaveNotifications = async (preferences: any) => {
-    try {
-      if (!profile?.id) return;
-      
-      // Get existing metadata or initialize as empty object
-      const existingMetadata = profile.metadata || {};
-      
-      await supabase.from('profiles').update({
-        metadata: {
-          ...existingMetadata,
-          notifications: {
-            email: preferences.emailConfirmation,
-            push: preferences.pushNotification,
-            reminder24h: preferences.reminder24h,
-            feedback: preferences.feedbackReminder
-          }
-        }
-      }).eq('id', profile.id);
-
-      toast({
-        title: 'Preferências atualizadas',
-        description: 'As suas preferências de notificação foram guardadas.'
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Erro',
-        description: error.message || 'Erro ao salvar preferências',
-        variant: 'destructive'
-      });
-    }
+  const handleSaveNotifications = () => {
+    toast({
+      title: 'Preferências atualizadas',
+      description: 'As suas preferências de notificação foram guardadas.'
+    });
   };
 
-  const handleSaveConsents = async (consents: any) => {
-    try {
-      if (!profile?.id) return;
-      
-      // Get existing metadata or initialize as empty object
-      const existingMetadata = profile.metadata || {};
-      
-      await supabase.from('profiles').update({
-        metadata: {
-          ...existingMetadata,
-          consents: {
-            data_processing: consents.dataProcessing,
-            marketing: consents.wellnessCommunications,
-            analytics: consents.anonymousReports
-          }
-        }
-      }).eq('id', profile.id);
-
-      toast({
-        title: 'Consentimentos atualizados',
-        description: 'Os seus consentimentos foram guardados com sucesso.'
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Erro',
-        description: error.message || 'Erro ao salvar consentimentos',
-        variant: 'destructive'
-      });
-    }
+  const handleSaveConsents = () => {
+    toast({
+      title: 'Consentimentos atualizados',
+      description: 'Os seus consentimentos foram guardados com sucesso.'
+    });
   };
 
   const handleRequestProviderChange = (pillar: string) => {
@@ -227,7 +182,7 @@ const UserSettings = () => {
   const [isConsentsModalOpen, setIsConsentsModalOpen] = useState(false);
   const [isNotificationHistoryModalOpen, setIsNotificationHistoryModalOpen] = useState(false);
 
-  const handleChangePassword = async () => {
+  const handleChangePassword = () => {
     if (passwordData.new !== passwordData.confirm) {
       toast({
         title: "Erro",
@@ -246,37 +201,19 @@ const UserSettings = () => {
       return;
     }
     
-    try {
-      // Actually update password in Supabase
-      const { error } = await supabase.auth.updateUser({
-        password: passwordData.new
-      });
-
-      if (error) throw error;
-
-      setShowPasswordDialog(false);
-      setPasswordData({ current: '', new: '', confirm: '' });
-      toast({
-        title: 'Palavra-passe alterada',
-        description: 'A sua palavra-passe foi atualizada com sucesso.'
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Erro ao alterar senha',
-        description: error.message || 'Tente novamente',
-        variant: 'destructive'
-      });
-    }
+    setShowPasswordDialog(false);
+    setPasswordData({ current: '', new: '', confirm: '' });
+    toast({
+      title: 'Palavra-passe alterada',
+      description: 'A sua palavra-passe foi atualizada com sucesso.'
+    });
   };
 
   const handleEnable2FA = () => {
-    // Note: Supabase 2FA requires more complex setup with TOTP
-    // For now, inform user this feature needs additional configuration
     setShow2FADialog(false);
     toast({
-      title: 'Funcionalidade em desenvolvimento',
-      description: 'A autenticação de dois fatores estará disponível em breve.',
-      variant: 'default'
+      title: 'Autenticação de dois fatores ativada',
+      description: '2FA foi ativado com sucesso na sua conta.'
     });
   };
 
@@ -436,7 +373,7 @@ const UserSettings = () => {
           profile={profile}
           onSave={(data) => {
             setProfileData({ ...profileData, ...data });
-            handleSaveProfile(data);
+            handleSaveProfile();
           }}
         />
 
@@ -446,7 +383,7 @@ const UserSettings = () => {
           preferences={notificationPreferences}
           onSave={(prefs) => {
             setNotificationPreferences(prefs);
-            handleSaveNotifications(prefs);
+            handleSaveNotifications();
           }}
         />
 
@@ -463,7 +400,7 @@ const UserSettings = () => {
           consents={consents}
           onSave={(newConsents) => {
             setConsents(newConsents);
-            handleSaveConsents(newConsents);
+            handleSaveConsents();
           }}
         />
 

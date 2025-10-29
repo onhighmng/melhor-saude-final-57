@@ -32,6 +32,7 @@ export const useChatSession = (userId: string | undefined) => {
     }
 
     if (!isValidUUID(userId)) {
+      console.error('Invalid user ID format:', userId);
       toast({
         title: 'Error',
         description: 'Invalid user session. Please try logging in again.',
@@ -50,6 +51,7 @@ export const useChatSession = (userId: string | undefined) => {
       .single();
 
     if (error) {
+      console.error('Error creating chat session:', error);
       toast({
         title: 'Error',
         description: 'Failed to start chat session',
@@ -75,7 +77,7 @@ export const useChatSession = (userId: string | undefined) => {
       });
 
     if (error) {
-      // Message save failed - silently ignore for better UX
+      console.error('Error saving message:', error);
     }
   }, [sessionId]);
 
@@ -88,7 +90,7 @@ export const useChatSession = (userId: string | undefined) => {
       .eq('id', sessionId);
 
     if (error) {
-      // Session update failed - silently ignore for better UX
+      console.error('Error updating session:', error);
     }
   }, [sessionId]);
 

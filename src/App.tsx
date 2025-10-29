@@ -6,8 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { setNavigateFunction } from "@/services/redirectService";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useEffect } from "react";
+import { DemoAccessButton } from "@/components/DemoAccessButton";
 
 import ScrollIndicator from "@/components/ScrollIndicator";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
@@ -24,7 +24,6 @@ const PrestadorPerformance = lazy(() => import("./pages/PrestadorPerformance"));
 const PrestadorSettings = lazy(() => import("./pages/PrestadorSettings"));
 const Login = lazy(() => import("./pages/Login"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
 const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
 const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
 // Admin pages
@@ -48,7 +47,6 @@ const EspecialistaSessions = lazy(() => import("./pages/EspecialistaSessionsReva
 const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistory"));
 const EspecialistaStatsRevamped = lazy(() => import("./pages/EspecialistaStatsRevamped"));
 const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettings"));
-const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 
 // Company pages
 const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
@@ -56,17 +54,17 @@ const CompanyReportsImpact = lazy(() => import("./pages/CompanyReportsImpact"));
 const CompanyResources = lazy(() => import("./pages/CompanyResources"));
 const CompanySessions = lazy(() => import("./pages/CompanySessions"));
 const CompanyCollaborators = lazy(() => import("./pages/CompanyCollaborators"));
-const CompanySettings = lazy(() => import("./pages/CompanySettings"));
 const UserSessions = lazy(() => import("./pages/UserSessions"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const UserResources = lazy(() => import("./pages/UserResources"));
 const UserFeedback = lazy(() => import("./pages/UserFeedback"));
 const UserChat = lazy(() => import("./pages/UserChat"));
-const UserNotifications = lazy(() => import("./pages/UserNotifications"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const BookingRouter = lazy(() => import("./components/booking/BookingRouter"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Support = lazy(() => import("./pages/Support"));
+// Demo page - force reload
+const Demo = lazy(() => import("./pages/Demo"));
 import { Suspense } from "react";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
 import { PerformanceMonitor } from "@/components/ui/performance-monitor";
@@ -101,9 +99,13 @@ const AppWithTracking = () => {
       window.removeEventListener('languageChanged', handleLanguageChange);
     };
   }, []);
+  
+  const showDemoButton = location.pathname !== '/demo';
 
   return (
     <>
+      {showDemoButton && <DemoAccessButton />}
+      
       <Suspense fallback={
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
           <div className="text-center space-y-4">
@@ -113,80 +115,77 @@ const AppWithTracking = () => {
         </div>
       }>
         <Routes>
-          {/* Authentication callback - handles OAuth, magic links, email verification */}
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          
           {/* Authentication pages */}
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/auth/reset" element={<UpdatePassword />} />
           <Route path="/register/company" element={<RegisterCompany />} />
           <Route path="/register/employee" element={<RegisterEmployee />} />
           
           {/* Home page */}
           <Route path="/" element={<Index />} />
           
+          {/* Demo page */}
+          <Route path="/demo" element={<Demo />} />
+          
           {/* Static pages */}
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />
           
-          {/* User routes - PROTECTED */}
-          <Route path="/user/dashboard" element={<ProtectedRoute requiredRole="user"><UserLayout><UserDashboard /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/sessions" element={<ProtectedRoute requiredRole="user"><UserLayout><UserSessions /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/settings" element={<ProtectedRoute requiredRole="user"><UserLayout><UserSettings /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/resources" element={<ProtectedRoute requiredRole="user"><UserLayout><UserResources /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/feedback" element={<ProtectedRoute requiredRole="user"><UserLayout><UserFeedback /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/notifications" element={<ProtectedRoute requiredRole="user"><UserLayout><UserNotifications /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/chat" element={<ProtectedRoute requiredRole="user"><UserLayout><UserChat /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/book" element={<ProtectedRoute requiredRole="user"><UserLayout><BookingRouter /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/booking/:step" element={<ProtectedRoute requiredRole="user"><UserLayout><BookingFlow /></UserLayout></ProtectedRoute>} />
+          {/* User routes */}
+          <Route path="/user/dashboard" element={<UserLayout><UserDashboard /></UserLayout>} />
+          <Route path="/user/sessions" element={<UserLayout><UserSessions /></UserLayout>} />
+          <Route path="/user/settings" element={<UserLayout><UserSettings /></UserLayout>} />
+          <Route path="/user/resources" element={<UserLayout><UserResources /></UserLayout>} />
+          <Route path="/user/feedback" element={<UserLayout><UserFeedback /></UserLayout>} />
+          <Route path="/user/chat" element={<UserLayout><UserChat /></UserLayout>} />
+          <Route path="/user/book" element={<UserLayout><BookingRouter /></UserLayout>} />
+          <Route path="/user/booking/:step" element={<UserLayout><BookingFlow /></UserLayout>} />
           
-          {/* Prestador routes - PROTECTED */}
-          <Route path="/prestador/dashboard" element={<ProtectedRoute requiredRole="prestador"><PrestadorLayout><PrestadorDashboard /></PrestadorLayout></ProtectedRoute>} />
-          <Route path="/prestador/calendario" element={<ProtectedRoute requiredRole="prestador"><PrestadorLayout><PrestadorCalendar /></PrestadorLayout></ProtectedRoute>} />
-          <Route path="/prestador/sessoes" element={<ProtectedRoute requiredRole="prestador"><PrestadorLayout><PrestadorSessions /></PrestadorLayout></ProtectedRoute>} />
-          <Route path="/prestador/sessoes/:id" element={<ProtectedRoute requiredRole="prestador"><PrestadorLayout><PrestadorSessionDetail /></PrestadorLayout></ProtectedRoute>} />
-          <Route path="/prestador/desempenho" element={<ProtectedRoute requiredRole="prestador"><PrestadorLayout><PrestadorPerformance /></PrestadorLayout></ProtectedRoute>} />
-          <Route path="/prestador/configuracoes" element={<ProtectedRoute requiredRole="prestador"><PrestadorLayout><PrestadorSettings /></PrestadorLayout></ProtectedRoute>} />
+          {/* Prestador routes */}
+          <Route path="/prestador/dashboard" element={<PrestadorLayout><PrestadorDashboard /></PrestadorLayout>} />
+          <Route path="/prestador/calendario" element={<PrestadorLayout><PrestadorCalendar /></PrestadorLayout>} />
+          <Route path="/prestador/sessoes" element={<PrestadorLayout><PrestadorSessions /></PrestadorLayout>} />
+          <Route path="/prestador/sessoes/:id" element={<PrestadorLayout><PrestadorSessionDetail /></PrestadorLayout>} />
+          <Route path="/prestador/desempenho" element={<PrestadorLayout><PrestadorPerformance /></PrestadorLayout>} />
+          <Route path="/prestador/configuracoes" element={<PrestadorLayout><PrestadorSettings /></PrestadorLayout>} />
           
-          {/* Admin routes - PROTECTED WITH ADMIN ROLE */}
-          <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/users-management" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminUsersManagement /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/gestao-utilizadores" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminUsersManagement /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/providers" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminProviders /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/prestadores" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminProviders /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/provider-metrics/:providerId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminProviderDetailMetrics /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/provider-calendar/:providerId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminProviderCalendar /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/operations" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminOperations /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/operacoes" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminOperations /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/companies/:id" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanyDetail /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/empresas/:id" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanyDetail /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/resources" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminResources /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/recursos" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminResources /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/reports" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminReports /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/relatorios" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminReports /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/control-center" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminControlCenter /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/centro-controlo" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminControlCenter /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/support" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminSupport /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/suporte" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminSupport /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminSettings /></AdminLayout></ProtectedRoute>} />
-          <Route path="/admin/configuracoes" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminSettings /></AdminLayout></ProtectedRoute>} />
+          {/* Admin routes */}
+          <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
+          <Route path="/admin/users-management" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
+          <Route path="/admin/gestao-utilizadores" element={<AdminLayout><AdminUsersManagement /></AdminLayout>} />
+          <Route path="/admin/providers" element={<AdminLayout><AdminProviders /></AdminLayout>} />
+          <Route path="/admin/prestadores" element={<AdminLayout><AdminProviders /></AdminLayout>} />
+          <Route path="/admin/provider-metrics/:providerId" element={<AdminLayout><AdminProviderDetailMetrics /></AdminLayout>} />
+          <Route path="/admin/provider-calendar/:providerId" element={<AdminLayout><AdminProviderCalendar /></AdminLayout>} />
+          <Route path="/admin/operations" element={<AdminLayout><AdminOperations /></AdminLayout>} />
+          <Route path="/admin/operacoes" element={<AdminLayout><AdminOperations /></AdminLayout>} />
+          <Route path="/admin/companies/:id" element={<AdminLayout><AdminCompanyDetail /></AdminLayout>} />
+          <Route path="/admin/empresas/:id" element={<AdminLayout><AdminCompanyDetail /></AdminLayout>} />
+          <Route path="/admin/resources" element={<AdminLayout><AdminResources /></AdminLayout>} />
+          <Route path="/admin/recursos" element={<AdminLayout><AdminResources /></AdminLayout>} />
+          <Route path="/admin/reports" element={<AdminLayout><AdminReports /></AdminLayout>} />
+          <Route path="/admin/relatorios" element={<AdminLayout><AdminReports /></AdminLayout>} />
+          <Route path="/admin/control-center" element={<AdminLayout><AdminControlCenter /></AdminLayout>} />
+          <Route path="/admin/centro-controlo" element={<AdminLayout><AdminControlCenter /></AdminLayout>} />
+          <Route path="/admin/support" element={<AdminLayout><AdminSupport /></AdminLayout>} />
+          <Route path="/admin/suporte" element={<AdminLayout><AdminSupport /></AdminLayout>} />
+          <Route path="/admin/settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
+          <Route path="/admin/configuracoes" element={<AdminLayout><AdminSettings /></AdminLayout>} />
           
-          {/* Especialista Geral routes - PROTECTED */}
-          <Route path="/especialista/dashboard" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><SpecialistDashboard /></EspecialistaLayout></ProtectedRoute>} />
-          <Route path="/especialista/call-requests" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaCallRequests /></EspecialistaLayout></ProtectedRoute>} />
-          <Route path="/especialista/sessions" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaSessions /></EspecialistaLayout></ProtectedRoute>} />
-          <Route path="/especialista/user-history" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaUserHistory /></EspecialistaLayout></ProtectedRoute>} />
-          <Route path="/especialista/stats" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaStatsRevamped /></EspecialistaLayout></ProtectedRoute>} />
-          <Route path="/especialista/settings" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaSettings /></EspecialistaLayout></ProtectedRoute>} />
+          {/* Especialista Geral routes */}
+          <Route path="/especialista/dashboard" element={<EspecialistaLayout><SpecialistDashboard /></EspecialistaLayout>} />
+          <Route path="/especialista/call-requests" element={<EspecialistaLayout><EspecialistaCallRequests /></EspecialistaLayout>} />
+          <Route path="/especialista/sessions" element={<EspecialistaLayout><EspecialistaSessions /></EspecialistaLayout>} />
+          <Route path="/especialista/user-history" element={<EspecialistaLayout><EspecialistaUserHistory /></EspecialistaLayout>} />
+          <Route path="/especialista/stats" element={<EspecialistaLayout><EspecialistaStatsRevamped /></EspecialistaLayout>} />
+          <Route path="/especialista/settings" element={<EspecialistaLayout><EspecialistaSettings /></EspecialistaLayout>} />
           
-          {/* Company HR routes - PROTECTED */}
-          <Route path="/company/dashboard" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanyDashboard /></CompanyLayout></ProtectedRoute>} />
-          <Route path="/company/relatorios" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanyReportsImpact /></CompanyLayout></ProtectedRoute>} />
-          <Route path="/company/recursos" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanyResources /></CompanyLayout></ProtectedRoute>} />
-          <Route path="/company/sessions" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanySessions /></CompanyLayout></ProtectedRoute>} />
-          <Route path="/company/colaboradores" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanyCollaborators /></CompanyLayout></ProtectedRoute>} />
-          <Route path="/company/settings" element={<ProtectedRoute requiredRole="hr"><CompanyLayout><CompanySettings /></CompanyLayout></ProtectedRoute>} />
+          {/* Company HR routes */}
+          <Route path="/company/dashboard" element={<CompanyLayout><CompanyDashboard /></CompanyLayout>} />
+          <Route path="/company/relatorios" element={<CompanyLayout><CompanyReportsImpact /></CompanyLayout>} />
+          <Route path="/company/recursos" element={<CompanyLayout><CompanyResources /></CompanyLayout>} />
+          <Route path="/company/sessions" element={<CompanyLayout><CompanySessions /></CompanyLayout>} />
+          <Route path="/company/colaboradores" element={<CompanyLayout><CompanyCollaborators /></CompanyLayout>} />
           
           {/* Catch-all route - redirect to home */}
           <Route path="*" element={<Index />} />

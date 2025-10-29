@@ -1,20 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResourceGrid } from "@/components/resources/ResourceGrid";
 import { ResourceModal } from "@/components/resources/ResourceModal";
-import { UserResource } from "@/types/resources";
+import { mockResources, UserResource } from "@/data/userResourcesData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Edit, Trash2, Save } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 
 // Category to pillar color mapping for blog posts
 const getCategoryColors = (category: string) => {
@@ -43,77 +40,10 @@ const getCategoryColors = (category: string) => {
   return categoryMap[category] || { bg: 'bg-gray-500/80', text: 'text-white', border: 'border-gray-400' };
 };
 
-const pillarToCategoryMap: Record<string, string> = {
-  'saude_mental': 'Saúde Mental',
-  'bem_estar_fisico': 'Bem-Estar Físico',
-  'assistencia_financeira': 'Assistência Financeira',
-  'assistencia_juridica': 'Assistência Jurídica'
-};
-
 export function AdminResourcesTab() {
-  const { profile } = useAuth();
-  const [resources, setResources] = useState<UserResource[]>([]);
+  const [resources] = useState(mockResources);
   const [selectedResource, setSelectedResource] = useState<UserResource | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [resourceToDelete, setResourceToDelete] = useState<UserResource | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [addFormData, setAddFormData] = useState({
-    title: '',
-    pillar: 'saude_mental',
-    type: 'article',
-    description: '',
-    thumbnail: '',
-    content_url: ''
-  });
-  const [editFormData, setEditFormData] = useState({
-    title: '',
-    pillar: 'saude_mental',
-    type: 'article',
-    description: '',
-    thumbnail: '',
-    content_url: '',
-    isPremium: false
-  });
-  
-  useEffect(() => {
-    loadResources();
-  }, []);
-  
-  const loadResources = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('resources')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
-      const formattedResources: UserResource[] = (data || []).map(resource => ({
-        id: resource.id,
-        title: resource.title,
-        description: resource.description || '',
-        thumbnail: resource.thumbnail_url || '',
-        pillar: (resource.pillar || 'saude_mental') as 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica',
-        category: pillarToCategoryMap[resource.pillar || 'saude_mental'] || 'Saúde Mental',
-        type: (resource.resource_type || 'article') as 'pdf' | 'video' | 'article',
-        viewCount: 0,
-        rating: 0,
-        isPremium: false,
-        createdAt: resource.created_at
-      }));
-      
-      setResources(formattedResources);
-    } catch (error) {
-      console.error('Error loading resources:', error);
-      toast.error('Erro ao carregar recursos');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleView = (resource: UserResource) => {
     setSelectedResource(resource);
@@ -127,110 +57,6 @@ export function AdminResourcesTab() {
   const filterByPillar = (pillar: string) => {
     if (pillar === 'all') return resources;
     return resources.filter(r => r.pillar === pillar);
-  };
-
-  const handleEditClick = (resource: UserResource) => {
-    setSelectedResource(resource);
-    setEditFormData({
-      title: resource.title,
-      pillar: resource.pillar,
-      type: resource.type,
-      description: resource.description,
-      thumbnail: resource.thumbnail,
-      content_url: '',
-      isPremium: resource.isPremium || false
-    });
-    setShowEditDialog(true);
-  };
-
-  const handleEditSave = async () => {
-    if (!selectedResource) return;
-
-    // Validation
-    if (!editFormData.title?.trim()) {
-      toast.error('Título é obrigatório');
-      return;
-    }
-    if (!editFormData.pillar) {
-      toast.error('Selecione um pilar');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('resources')
-        .update({
-          title: editFormData.title,
-          description: editFormData.description,
-          pillar: editFormData.pillar,
-          type: editFormData.type,
-          is_premium: editFormData.isPremium,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', selectedResource.id);
-
-      if (error) throw error;
-
-      // Log admin action
-      if (profile?.id) {
-        await supabase.from('admin_logs').insert({
-          admin_id: profile.id,
-          action: 'resource_updated',
-          entity_type: 'resource',
-          entity_id: selectedResource.id,
-          details: { 
-            title: editFormData.title,
-            pillar: editFormData.pillar
-          }
-        });
-      }
-
-      toast.success('Recurso atualizado com sucesso');
-      setShowEditDialog(false);
-      setSelectedResource(null);
-      await loadResources();
-    } catch (error: any) {
-      console.error('Error updating resource:', error);
-      toast.error('Erro ao atualizar recurso: ' + (error.message || 'Erro desconhecido'));
-    }
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!resourceToDelete) return;
-
-    try {
-      const { error } = await supabase
-        .from('resources')
-        .delete()
-        .eq('id', resourceToDelete.id);
-
-      if (error) throw error;
-
-      // Log admin action
-      if (profile?.id) {
-        await supabase.from('admin_logs').insert({
-          admin_id: profile.id,
-          action: 'resource_deleted',
-          entity_type: 'resource',
-          entity_id: resourceToDelete.id,
-          details: { 
-            title: resourceToDelete.title,
-            pillar: resourceToDelete.pillar
-          }
-        });
-      }
-
-      toast.success('Recurso eliminado com sucesso');
-      setResourceToDelete(null);
-      await loadResources();
-    } catch (error) {
-      console.error('Error deleting resource:', error);
-      toast.error('Erro ao eliminar recurso');
-    }
-  };
-
-  const handleDeleteClick = (resource: UserResource) => {
-    setResourceToDelete(resource);
   };
 
   const resourcePosts = [
@@ -266,14 +92,6 @@ export function AdminResourcesTab() {
     }
   ];
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full space-y-6">
       <Tabs defaultValue="all" className="w-full">
@@ -284,7 +102,7 @@ export function AdminResourcesTab() {
               <h1 className="text-4xl font-semibold capitalize !leading-[1.4] md:text-5xl lg:text-6xl">
                 Recursos Mais Populares De 2025
               </h1>
-              <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+              <Dialog>
                 <DialogTrigger asChild>
                   <Button size="icon" variant="outline" className="rounded-full">
                     <Plus className="h-5 w-5" />
@@ -297,16 +115,12 @@ export function AdminResourcesTab() {
                   <div className="space-y-4">
                     <div>
                       <Label>Título</Label>
-                      <Input 
-                        placeholder="Nome do recurso" 
-                        value={addFormData.title}
-                        onChange={(e) => setAddFormData({ ...addFormData, title: e.target.value })}
-                      />
+                      <Input placeholder="Nome do recurso" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label>Pilar</Label>
-                        <Select value={addFormData.pillar} onValueChange={(value) => setAddFormData({ ...addFormData, pillar: value })}>
+                        <Select>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecionar pilar" />
                           </SelectTrigger>
@@ -320,7 +134,7 @@ export function AdminResourcesTab() {
                       </div>
                       <div>
                         <Label>Tipo</Label>
-                        <Select value={addFormData.type} onValueChange={(value) => setAddFormData({ ...addFormData, type: value })}>
+                        <Select>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecionar tipo" />
                           </SelectTrigger>
@@ -334,106 +148,13 @@ export function AdminResourcesTab() {
                     </div>
                     <div>
                       <Label>Descrição</Label>
-                      <Textarea 
-                        placeholder="Breve descrição do conteúdo" 
-                        rows={3} 
-                        value={addFormData.description}
-                        onChange={(e) => setAddFormData({ ...addFormData, description: e.target.value })}
-                      />
+                      <Textarea placeholder="Breve descrição do conteúdo" rows={3} />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="thumbnail-upload">Imagem</Label>
-                      <Input
-                        id="thumbnail-upload"
-                        type="file"
-                        accept="image/*"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          
-                          try {
-                            const fileExt = file.name.split('.').pop();
-                            const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
-                            const filePath = `thumbnails/${fileName}`;
-                            
-                            const { error: uploadError } = await supabase.storage
-                              .from('resources')
-                              .upload(filePath, file);
-                            
-                            if (uploadError) throw uploadError;
-                            
-                            const { data: { publicUrl } } = supabase.storage
-                              .from('resources')
-                              .getPublicUrl(filePath);
-                            
-                            setAddFormData(prev => ({ ...prev, thumbnail: publicUrl }));
-                            toast.success('Imagem carregada com sucesso');
-                          } catch (error) {
-                            console.error('Error uploading thumbnail:', error);
-                            toast.error('Erro ao carregar imagem');
-                          }
-                        }}
-                      />
-                      {addFormData.thumbnail && (
-                        <img src={addFormData.thumbnail} alt="Preview" className="w-32 h-32 object-cover rounded" />
-                      )}
+                    <div>
+                      <Label>URL da Imagem</Label>
+                      <Input placeholder="https://..." />
                     </div>
-                    <Button 
-                      className="w-full" 
-                      disabled={isSaving}
-                      onClick={async () => {
-                        // Validation
-                        if (!addFormData.title?.trim()) {
-                          toast.error('Título é obrigatório');
-                          return;
-                        }
-                        if (!addFormData.pillar) {
-                          toast.error('Selecione um pilar');
-                          return;
-                        }
-                        if (!addFormData.type) {
-                          toast.error('Selecione um tipo');
-                          return;
-                        }
-                        
-                        setIsSaving(true);
-                        
-                        try {
-                          const { error } = await supabase.from('resources').insert({
-                            title: addFormData.title,
-                            description: addFormData.description,
-                            pillar: addFormData.pillar,
-                            type: addFormData.type,
-                            thumbnail_url: addFormData.thumbnail,
-                            url: addFormData.content_url,
-                            is_public: true,
-                            is_premium: false,
-                            created_by: profile?.id
-                          });
-                          
-                          if (error) throw error;
-                          
-                          toast.success('Recurso criado com sucesso');
-                          setShowAddDialog(false);
-                          setAddFormData({
-                            title: '',
-                            pillar: 'saude_mental',
-                            type: 'article',
-                            description: '',
-                            thumbnail: '',
-                            content_url: ''
-                          });
-                          await loadResources();
-                        } catch (error: any) {
-                          console.error('Error creating resource:', error);
-                          toast.error('Erro ao criar recurso: ' + error.message);
-                        } finally {
-                          setIsSaving(false);
-                        }
-                      }}
-                    >
-                      {isSaving ? 'A guardar...' : 'Guardar Recurso'}
-                    </Button>
+                    <Button className="w-full">Guardar Recurso</Button>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -537,128 +258,27 @@ export function AdminResourcesTab() {
             })}
           </div>
           
-          <ResourceGrid resources={filterByPillar('all')} onView={handleView} onDownload={handleDownload} onEdit={handleEditClick} onDelete={handleDeleteClick} />
+          <ResourceGrid resources={filterByPillar('all')} onView={handleView} onDownload={handleDownload} />
         </TabsContent>
         
         <TabsContent value="saude_mental" className="mt-6">
-          <ResourceGrid resources={filterByPillar('saude_mental')} onView={handleView} onDownload={handleDownload} onEdit={handleEditClick} onDelete={handleDeleteClick} />
+          <ResourceGrid resources={filterByPillar('saude_mental')} onView={handleView} onDownload={handleDownload} />
         </TabsContent>
         
         <TabsContent value="bem_estar_fisico" className="mt-6">
-          <ResourceGrid resources={filterByPillar('bem_estar_fisico')} onView={handleView} onDownload={handleDownload} onEdit={handleEditClick} onDelete={handleDeleteClick} />
+          <ResourceGrid resources={filterByPillar('bem_estar_fisico')} onView={handleView} onDownload={handleDownload} />
         </TabsContent>
         
         <TabsContent value="assistencia_financeira" className="mt-6">
-          <ResourceGrid resources={filterByPillar('assistencia_financeira')} onView={handleView} onDownload={handleDownload} onEdit={handleEditClick} onDelete={handleDeleteClick} />
+          <ResourceGrid resources={filterByPillar('assistencia_financeira')} onView={handleView} onDownload={handleDownload} />
         </TabsContent>
         
         <TabsContent value="assistencia_juridica" className="mt-6">
-          <ResourceGrid resources={filterByPillar('assistencia_juridica')} onView={handleView} onDownload={handleDownload} onEdit={handleEditClick} onDelete={handleDeleteClick} />
+          <ResourceGrid resources={filterByPillar('assistencia_juridica')} onView={handleView} onDownload={handleDownload} />
         </TabsContent>
       </Tabs>
       
       <ResourceModal resource={selectedResource} open={modalOpen} onClose={() => setModalOpen(false)} onDownload={handleDownload} />
-
-      {/* Edit Dialog */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Editar Recurso</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Título</Label>
-              <Input
-                value={editFormData.title}
-                onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-                placeholder="Título do recurso"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Descrição</Label>
-              <Textarea
-                value={editFormData.description}
-                onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                placeholder="Descrição do recurso"
-                rows={4}
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Pilar</Label>
-                <Select
-                  value={editFormData.pillar}
-                  onValueChange={(value) => setEditFormData({ ...editFormData, pillar: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="saude_mental">Saúde Mental</SelectItem>
-                    <SelectItem value="bem_estar_fisico">Bem-Estar Físico</SelectItem>
-                    <SelectItem value="assistencia_financeira">Assistência Financeira</SelectItem>
-                    <SelectItem value="assistencia_juridica">Assistência Jurídica</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Tipo</Label>
-                <Select
-                  value={editFormData.type}
-                  onValueChange={(value) => setEditFormData({ ...editFormData, type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="article">Artigo</SelectItem>
-                    <SelectItem value="video">Vídeo</SelectItem>
-                    <SelectItem value="podcast">Podcast</SelectItem>
-                    <SelectItem value="guide">Guia</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShowEditDialog(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleEditSave}>
-              <Save className="h-4 w-4 mr-2" />
-              Guardar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!resourceToDelete} onOpenChange={(open) => !open && setResourceToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Eliminação</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem a certeza que deseja eliminar o recurso "{resourceToDelete?.title}"? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setResourceToDelete(null)}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

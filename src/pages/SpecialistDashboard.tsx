@@ -6,16 +6,15 @@ import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EscalatedChatCard } from '@/components/specialist/EscalatedChatCard';
 import { AnalyticsCard } from '@/components/specialist/AnalyticsCard';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import LoadingSpinner from '@/components/ui/loading-spinner';
 import { Phone, TrendingUp, Users, Calendar, ThumbsUp, MessageSquare, ArrowRight, Clock, Building2, AlertTriangle, Star, BookOpen, User, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-// Real data loaded via hooks: useEscalatedChats, useSpecialistAnalytics
+import { mockCallRequests, mockEspecialistaSessions, mockCompanies, mockReferrals, mockSpecialistPersonalStats } from '@/data/especialistaGeralMockData';
 import { useNavigate } from 'react-router-dom';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { getPillarColors } from '@/utils/pillarColors';
 
 export default function SpecialistDashboard() {
@@ -36,42 +35,15 @@ export default function SpecialistDashboard() {
     };
   }, []);
 
-  // State for real data
-  const [filteredSessions, setFilteredSessions] = useState<any[]>([]);
-  const [assignedCompanies, setAssignedCompanies] = useState<any[]>([]);
-  
-  // Use real data from hooks
-  const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'escalated');
-
-  // Load real sessions
-  useEffect(() => {
-    const loadSessions = async () => {
-      if (!profile?.id) return;
-      const { data } = await supabase
-        .from('bookings')
-        .select('*, profiles!bookings_user_id_fkey(name)')
-        .eq('booking_source', 'specialist_referral')
-        .order('booking_date', { ascending: false });
-      setFilteredSessions(data || []);
-    };
-    loadSessions();
-  }, [profile?.id]);
-
-  // Load assigned companies
-  useEffect(() => {
-    const loadCompanies = async () => {
-      if (!profile?.id) return;
-      const { data } = await supabase
-        .from('specialist_assignments')
-        .select('*, companies!specialist_assignments_company_id_fkey(*)')
-        .eq('specialist_id', profile.id)
-        .eq('is_active', true);
-      setAssignedCompanies(data?.map(a => a.companies) || []);
-    };
-    loadCompanies();
-  }, [profile?.id]);
-  
-  const monthlyCases = metrics?.totalChats || 0;
+  // Filter data based on role
+  const filteredCallRequests = filterByCompanyAccess(
+    mockCallRequests.filter(req => req.status === 'pending')
+  );
+  const filteredSessions = filterByCompanyAccess(
+    mockEspecialistaSessions.filter(s => s.date === new Date().toISOString().split('T')[0])
+  );
+  const assignedCompanies = filterByCompanyAccess(mockCompanies);
+  const filteredReferrals = filterByCompanyAccess(mockReferrals);
 
   const filteredChats = pillarFilter === 'all' 
     ? escalatedChats 
@@ -80,7 +52,7 @@ export default function SpecialistDashboard() {
   if (chatsLoading || analyticsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" text="A carregar..." />
       </div>
     );
   }
@@ -147,7 +119,7 @@ export default function SpecialistDashboard() {
               {/* Bottom Left - Personal Stats */}
               <BentoCard 
                 name="Desempenho Pessoal" 
-                description={`${monthlyCases} casos este mês`} 
+                description={`${mockSpecialistPersonalStats.monthly_cases} casos este mês`} 
                 Icon={TrendingUp} 
                 onClick={() => navigate('/especialista/stats')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
@@ -221,7 +193,7 @@ export default function SpecialistDashboard() {
                               <p className="text-xs text-gray-600 truncate">{request.company_name}</p>
                             </div>
                             <Badge variant="outline" className="text-xs">
-                              {new Date(request.created_at).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                              {Math.floor(request.wait_time / 60)}h
                             </Badge>
                           </div>
                         ))}

@@ -27,13 +27,10 @@ import {
   BarChart3
 } from 'lucide-react';
 import sessionsCardBg from '@/assets/sessions-card-bg.jpg';
+import { mockPrestadorSessions, mockPrestadorMetrics, mockPrestadorUser } from '@/data/mockData';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
-// Mock data removed - using real Supabase data
 
 const pillarIcons = {
   'saude_mental': Brain,
@@ -44,153 +41,9 @@ const pillarIcons = {
 
 export default function PrestadorDashboard() {
   const navigate = useNavigate();
-  const { profile } = useAuth();
   const [isOnline, setIsOnline] = useState(true);
   const [timeFilter, setTimeFilter] = useState<'hoje' | 'proximos7dias'>('hoje');
-  interface Session {
-    id: string;
-    user_id: string;
-    date: string;
-    start_time: string;
-    status: string;
-    pillar: string;
-    notes: string;
-    profiles?: { name: string; email: string };
-    user_name?: string;
-    userName?: string;
-    userEmail?: string;
-    userAvatar?: string;
-    companyName?: string;
-    time?: string;
-  }
-  interface Metrics {
-    todaySessions: number;
-    totalSessions: number;
-    completedSessions: number;
-    weekSessions: number;
-    uniqueUsers: number;
-    avgRating: string;
-    revenue: number;
-  }
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [metrics, setMetrics] = useState<Metrics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [prestadorName, setPrestadorName] = useState('');
-
-  useEffect(() => {
-    const loadData = async () => {
-      if (!profile?.id) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        // Get prestador ID and name
-        const { data: prestador } = await supabase
-          .from('prestadores')
-          .select('id, name')
-          .eq('user_id', profile.id)
-          .single();
-
-        if (!prestador) {
-          setLoading(false);
-          return;
-        }
-
-        setPrestadorName(prestador.name);
-
-        // Load bookings for this prestador
-        const { data: bookings } = await supabase
-          .from('bookings')
-          .select(`
-            *,
-            profiles (name, email, avatar_url),
-            companies (company_name)
-          `)
-          .eq('prestador_id', prestador.id)
-          .order('date', { ascending: true });
-
-        if (bookings) {
-          setSessions(bookings.map((b) => {
-            const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
-            const company = Array.isArray(b.companies) ? b.companies[0] : b.companies;
-            return {
-              ...b,
-              profiles: profile ? { name: profile.name || '', email: profile.email || '' } : undefined,
-              userName: profile?.name || '',
-              userEmail: profile?.email || '',
-              userAvatar: profile?.avatar_url || '',
-              companyName: company?.company_name || ''
-            };
-          }) as Session[]);
-        }
-
-        // Calculate metrics
-        const totalSessions = bookings?.length || 0;
-        const todaySessions = bookings?.filter(b => b.date === new Date().toISOString().split('T')[0]).length || 0;
-        const completedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
-        const thisWeekStart = new Date();
-        thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
-        const weekSessions = bookings?.filter(b => new Date(b.date) >= thisWeekStart).length || 0;
-        const uniqueUsers = new Set(bookings?.map(b => b.user_id)).size;
-        const avgRating = bookings?.filter(b => b.rating)
-          .reduce((sum, b) => sum + (b.rating || 0), 0) / (bookings?.filter(b => b.rating).length || 1);
-
-        // Load revenue data from prestador_pricing
-        const { data: pricing } = await supabase
-          .from('prestador_pricing')
-          .select('session_price')
-          .eq('prestador_id', prestador.id)
-          .single();
-
-        const revenue = completedSessions * (pricing?.session_price || 0);
-
-        setMetrics({
-          todaySessions,
-          totalSessions,
-          completedSessions,
-          weekSessions,
-          uniqueUsers,
-          avgRating: avgRating.toFixed(1),
-          revenue
-        });
-      } catch (error) {
-        toast.error('Erro ao carregar dados');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-
-    // Real-time subscription for bookings updates
-    const prestadorIdPromise = supabase
-      .from('prestadores')
-      .select('id')
-      .eq('user_id', profile.id)
-      .single();
-
-    prestadorIdPromise.then(({ data: prestador }) => {
-      if (prestador?.id) {
-        const channel = supabase
-          .channel('prestador-dashboard-updates')
-          .on('postgres_changes',
-            { 
-              event: '*', 
-              schema: 'public', 
-              table: 'bookings',
-              filter: `prestador_id=eq.${prestador.id}`
-            },
-            () => loadData()
-          )
-          .subscribe();
-
-        return () => {
-          supabase.removeChannel(channel);
-        };
-      }
-    });
-  }, [profile?.id]);
+  const [sessions, setSessions] = useState(mockPrestadorSessions);
 
   const pillarNames = {
     'saude_mental': 'Saúde Mental',
@@ -238,21 +91,17 @@ export default function PrestadorDashboard() {
     });
   };
 
-  const groupSessionsByDate = (sessions: Session[]) => {
+  const groupSessionsByDate = (sessions: typeof mockPrestadorSessions) => {
     const grouped = sessions.reduce((acc, session) => {
       const date = session.date;
       if (!acc[date]) acc[date] = [];
       acc[date].push(session);
       return acc;
-    }, {} as Record<string, any[]>);
+    }, {} as Record<string, typeof mockPrestadorSessions>);
 
     // Sort sessions within each date by time
     Object.keys(grouped).forEach(date => {
-      grouped[date].sort((a, b) => {
-        const timeA = a.start_time || a.time || '00:00';
-        const timeB = b.start_time || b.time || '00:00';
-        return timeA.localeCompare(timeB);
-      });
+      grouped[date].sort((a, b) => a.time.localeCompare(b.time));
     });
 
     return grouped;
@@ -274,7 +123,7 @@ export default function PrestadorDashboard() {
       ));
       toast.warning('Falta registada');
     } else if (action === 'detalhes') {
-      // Navigate to session details would go here
+      console.log(`Viewing details for session ${sessionId}`);
     }
   };
 
@@ -286,7 +135,7 @@ export default function PrestadorDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          Bem-vindo, {prestadorName.split(' ')[0] || profile?.name || 'Prestador'}
+          Bem-vindo, {mockPrestadorUser.name.split(' ')[0]}
         </h1>
         <p className="text-muted-foreground mt-1">
           Gerir as suas sessões e disponibilidade
@@ -350,14 +199,14 @@ export default function PrestadorDashboard() {
                           <CheckCircle className="w-3 h-3 text-green-600" />
                           <span className="text-xs text-muted-foreground">Sessões Concluídas</span>
                         </div>
-                        <p className="text-xl font-bold text-gray-900">{metrics?.weekSessions || 0}</p>
+                        <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.sessoesConcluidas}</p>
                       </div>
                       <div className="p-3 bg-white/70 rounded-lg border border-purple-100">
                         <div className="flex items-center gap-1 mb-1">
                           <Users className="w-3 h-3 text-blue-600" />
                           <span className="text-xs text-muted-foreground">Utilizadores Atendidos</span>
                         </div>
-                        <p className="text-xl font-bold text-gray-900">{metrics?.uniqueUsers || 0}</p>
+                        <p className="text-xl font-bold text-gray-900">{mockPrestadorMetrics.weekMetrics.utilizadoresAtendidos}</p>
                       </div>
                     </div>
 
@@ -365,15 +214,11 @@ export default function PrestadorDashboard() {
                     <div className="space-y-2 p-3 bg-white/70 rounded-lg border border-purple-100">
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Total Sessões</span>
-                        <span className="font-medium text-sm">{metrics?.totalSessions || 0}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-600">Receita Total</span>
-                        <span className="font-medium text-sm">{metrics?.revenue ? `${metrics.revenue.toFixed(2)} MZN` : '0 MZN'}</span>
+                        <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.totalSessoes}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Satisfação</span>
-                        <span className="font-medium text-sm">{metrics?.avgRating || '0.0'}/5</span>
+                        <span className="font-medium text-sm">{mockPrestadorMetrics.monthMetrics.satisfacao}/5</span>
                       </div>
                     </div>
                   </div>

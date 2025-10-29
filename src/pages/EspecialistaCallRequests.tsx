@@ -5,29 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone, CheckCircle, Clock, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useEscalatedChats } from '@/hooks/useEscalatedChats';
+import { mockCallRequests } from '@/data/especialistaGeralMockData';
+import { CallRequest } from '@/types/specialist';
 
 const EspecialistaCallRequests = () => {
   const { toast } = useToast();
-  const { escalatedChats, isLoading } = useEscalatedChats();
-  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [selectedRequest, setSelectedRequest] = useState<CallRequest | null>(null);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   
-  // Use real data from hook (already filters by company access)
-  const filteredRequests = escalatedChats.filter((chat: any) => chat.status === 'pending');
+  // Show all pending requests (no company filtering for demo purposes)
+  const filteredRequests = mockCallRequests.filter(req => req.status === 'pending');
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">A carregar pedidos...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const handleCallRequest = (request: any) => {
+  const handleCallRequest = (request: CallRequest) => {
     setSelectedRequest(request);
     setIsCallModalOpen(true);
   };
@@ -108,7 +97,8 @@ const EspecialistaCallRequests = () => {
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <p><strong>Email:</strong> {request.user_email}</p>
-                      <p><strong>Telefone:</strong> {request.user_phone || 'N/A'}</p>
+                      <p><strong>Telefone:</strong> {request.user_phone}</p>
+                      {request.notes && <p><strong>Notas:</strong> {request.notes}</p>}
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 items-end">
@@ -130,9 +120,9 @@ const EspecialistaCallRequests = () => {
                         Resolver
                       </Button>
                     </div>
-                    <div className={`text-sm font-medium text-muted-foreground flex items-center gap-1`}>
+                    <div className={`text-sm font-medium ${getWaitTimeColor(request.wait_time)} flex items-center gap-1`}>
                       <Clock className="h-4 w-4" />
-                      <span>{new Date(request.created_at).toLocaleString('pt-PT')}</span>
+                      <span>{Math.floor(request.wait_time / 60)}h {request.wait_time % 60}min</span>
                     </div>
                   </div>
                 </div>

@@ -22,23 +22,9 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  company: string;
-  department?: string;
-  companySessions: number;
-  personalSessions: number;
-  status: 'active' | 'inactive';
-  createdAt: string;
-}
+import { mockUsers, AdminUser as User } from '@/data/adminMockData';
 
 const AdminUsers = () => {
-  const { profile } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,7 +32,8 @@ const AdminUsers = () => {
   const [companyFilter, setCompanyFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const [companies, setCompanies] = useState<string[]>([]);
+
+  const companies = Array.from(new Set(mockUsers.map(user => user.company))).sort();
 
   useEffect(() => {
     loadUsers();
@@ -59,39 +46,17 @@ const AdminUsers = () => {
   const loadUsers = async () => {
     setIsLoading(true);
     try {
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('role', 'user')
-        .order('created_at', { ascending: false });
-
-      if (profilesError) throw profilesError;
-
-      const formattedUsers: User[] = (profiles || []).map(p => ({
-        id: p.id,
-        name: p.name,
-        email: p.email,
-        company: p.company_name || 'N/A',
-        department: p.department || '',
-        companySessions: 0,
-        personalSessions: 0,
-        status: p.is_active ? 'active' : 'inactive',
-        createdAt: p.created_at
-      }));
-
-      // Get unique companies
-      const uniqueCompanies = Array.from(new Set(formattedUsers.map(u => u.company))).sort();
-      setCompanies(uniqueCompanies);
-
-      setUsers(formattedUsers);
+      // Replace with actual API call
+      setTimeout(() => {
+        setUsers(mockUsers);
+        setIsLoading(false);
+      }, 1000);
     } catch (error) {
-      console.error('Error loading users:', error);
       toast({
         title: "Erro",
         description: "Erro ao carregar utilizadores",
         variant: "destructive"
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -122,31 +87,18 @@ const AdminUsers = () => {
 
   const handleStatusChange = async (userId: string, newStatus: 'active' | 'inactive') => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_active: newStatus === 'active' })
-        .eq('id', userId);
-
-      if (error) throw error;
-
-      // Log admin action
-      if (profile?.id) {
-        await supabase.from('admin_logs').insert({
-          admin_id: profile.id,
-          action: newStatus === 'active' ? 'user_activated' : 'user_deactivated',
-          entity_id: userId,
-          entity_type: 'user'
-        });
-      }
-
+      // Replace with actual API call
+      setUsers(prev => prev.map(user => 
+        user.id === userId 
+          ? { ...user, status: newStatus }
+          : user
+      ));
+      
       toast({
         title: newStatus === 'active' ? "Utilizador ativado" : "Utilizador suspenso",
         description: "Estado atualizado com sucesso"
       });
-
-      await loadUsers(); // Reload to get fresh data
     } catch (error) {
-      console.error('Error updating user status:', error);
       toast({
         title: "Erro",
         description: "Erro ao atualizar estado",
@@ -191,7 +143,7 @@ const AdminUsers = () => {
   // Calculate summary metrics
   const totalUsers = users.length;
   const activeUsers = users.filter(u => u.status === 'active').length;
-  const totalSessionsMTD = users.reduce((sum, u) => sum + u.companySessions + u.personalSessions, 0);
+  const totalSessionsMTD = users.reduce((sum, u) => sum + u.usedCompanySessions + u.usedPersonalSessions, 0);
   const pendingChangeRequests = 3; // Mock value
 
   const getStatusBadge = (status: string) => {
@@ -205,8 +157,7 @@ const AdminUsers = () => {
     }
   };
 
-  const formatProviders = (providers: any) => {
-    if (!providers || typeof providers !== 'object') return 'N/A';
+  const formatProviders = (providers: User['fixedProviders']) => {
     const providerList = Object.entries(providers)
       .filter(([_, name]) => name)
       .map(([pillar, name]) => {
@@ -412,27 +363,27 @@ const AdminUsers = () => {
                        <TableCell>
                          <p className="text-sm text-muted-foreground">{user.department || '—'}</p>
                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-muted-foreground">Empresa:</span>
-                              <Badge variant="outline" className="text-xs">
-                                {user.companySessions}/{user.companySessions}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-muted-foreground">Pessoal:</span>
-                              <Badge variant="outline" className="text-xs">
-                                {user.personalSessions}/{user.personalSessions}
-                              </Badge>
-                            </div>
-                          </div>
-                       </TableCell>
                        <TableCell>
-                         <div className="max-w-48 truncate text-sm text-muted-foreground">
-                           {formatProviders({})}
+                         <div className="space-y-1">
+                           <div className="flex items-center gap-2">
+                             <span className="text-xs text-muted-foreground">Empresa:</span>
+                             <Badge variant="outline" className="text-xs">
+                               {user.companySessions - user.usedCompanySessions}/{user.companySessions}
+                             </Badge>
+                           </div>
+                           <div className="flex items-center gap-2">
+                             <span className="text-xs text-muted-foreground">Pessoal:</span>
+                             <Badge variant="outline" className="text-xs">
+                               {user.personalSessions - user.usedPersonalSessions}/{user.personalSessions}
+                             </Badge>
+                           </div>
                          </div>
-                       </TableCell>
+                      </TableCell>
+                      <TableCell>
+                        <div className="max-w-48 truncate text-sm text-muted-foreground">
+                          {formatProviders(user.fixedProviders)}
+                        </div>
+                      </TableCell>
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,52 +6,19 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Users, Building2, TrendingUp } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-
-interface Company {
-  id: string;
-  company_name: string;
-  sessions_allocated: number;
-  sessions_used: number;
-  is_active: boolean;
-  plan_type: string;
-}
+import { mockCompanies } from '@/data/inviteCodesMockData';
 
 export default function AdminCompanies() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadCompanies();
-  }, []);
-
-  const loadCompanies = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('companies')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setCompanies(data || []);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar empresas';
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredCompanies = companies.filter(company =>
-    company.company_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCompanies = mockCompanies.filter(company =>
+    company.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalCompanies = companies.length;
-  const totalSeats = companies.reduce((sum, c) => sum + c.sessions_allocated, 0);
-  const usedSeats = companies.reduce((sum, c) => sum + c.sessions_used, 0);
-  const activeCompanies = companies.filter(c => c.is_active).length;
+  const totalCompanies = mockCompanies.length;
+  const totalSeats = mockCompanies.reduce((sum, c) => sum + c.seatsPurchased, 0);
+  const usedSeats = mockCompanies.reduce((sum, c) => sum + c.seatsUsed, 0);
+  const activeCompanies = mockCompanies.filter(c => c.isActive).length;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -141,64 +108,48 @@ export default function AdminCompanies() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
-                    Carregando...
-                  </TableCell>
-                </TableRow>
-              ) : filteredCompanies.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                    Nenhuma empresa encontrada
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredCompanies.map((company) => {
-                  const available = company.sessions_allocated - company.sessions_used;
-                  const usagePercent = company.sessions_allocated > 0 
-                    ? (company.sessions_used / company.sessions_allocated) * 100 
-                    : 0;
-                  
-                  return (
-                    <TableRow key={company.id}>
-                      <TableCell className="font-medium">{company.company_name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{company.plan_type}</Badge>
-                      </TableCell>
-                      <TableCell>{company.sessions_allocated}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {company.sessions_used}
-                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-primary transition-all"
-                              style={{ width: `${usagePercent}%` }}
-                            />
-                          </div>
+              {filteredCompanies.map((company) => {
+                const available = company.seatsPurchased - company.seatsUsed;
+                const usagePercent = (company.seatsUsed / company.seatsPurchased) * 100;
+                
+                return (
+                  <TableRow key={company.id}>
+                    <TableCell className="font-medium">{company.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{company.planType}</Badge>
+                    </TableCell>
+                    <TableCell>{company.seatsPurchased}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {company.seatsUsed}
+                        <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-primary transition-all"
+                            style={{ width: `${usagePercent}%` }}
+                          />
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className={available <= 2 ? 'text-destructive font-medium' : ''}>
-                          {available}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={company.is_active ? 'secondary' : 'destructive'}>
-                          {company.is_active ? 'Ativo' : 'Inativo'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Link to={`/admin/companies/${company.id}`}>
-                          <Button variant="outline" size="sm">
-                            Gerir Convites
-                          </Button>
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className={available <= 2 ? 'text-destructive font-medium' : ''}>
+                        {available}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={company.isActive ? 'secondary' : 'destructive'}>
+                        {company.isActive ? 'Ativo' : 'Inativo'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Link to={`/admin/companies/${company.id}`}>
+                        <Button variant="outline" size="sm">
+                          Gerir Convites
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>

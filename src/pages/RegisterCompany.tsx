@@ -9,8 +9,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, Building2, User, Target, FileText, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { getAuthCallbackUrl } from '@/utils/authRedirects';
 
 interface CompanyFormData {
   companyName: string;
@@ -59,7 +57,7 @@ export default function RegisterCompany() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const updateFormData = (field: keyof CompanyFormData, value: string | number | boolean) => {
+  const updateFormData = (field: keyof CompanyFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -88,78 +86,19 @@ export default function RegisterCompany() {
     setIsLoading(true);
 
     try {
-      // Create company
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .insert({
-          company_name: formData.companyName,
-          contact_email: formData.contactEmail,
-          contact_phone: formData.contactPhone,
-          plan_type: 'basic',
-          sessions_allocated: formData.totalSessions,
-          sessions_used: 0,
-          is_active: false // Needs approval
-        })
-        .select()
-        .single();
-
-      if (companyError) throw companyError;
-
-      // Generate random password for HR user
-      const randomPassword = Math.random().toString(36).slice(-12);
-
-      // Create HR user account using regular signUp (admin.createUser requires service role key)
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.contactEmail,
-        password: randomPassword,
-        options: {
-          data: {
-            name: formData.contactName,
-            company_name: formData.companyName
-          },
-          emailRedirectTo: getAuthCallbackUrl()
-        }
-      });
-
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Falha ao criar utilizador');
-
-      // Create HR profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          email: formData.contactEmail,
-          name: formData.contactName,
-          phone: formData.contactPhone,
-          company_id: company.id
-        });
-
-      if (profileError) throw profileError;
-
-      // Create role in user_roles table
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: authData.user.id,
-          role: 'hr',
-          created_by: null // Self-registration
-        });
-
-      if (roleError) throw roleError;
+      // Mock API call - replace with actual registration logic
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       toast({
         title: "Empresa registada com sucesso!",
-        description: `Credenciais: Email: ${formData.contactEmail}, Senha: ${randomPassword}`,
+        description: "Receberá um email de confirmação em breve.",
       });
 
       navigate('/login');
-      
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro. Tente novamente.";
+    } catch (error: any) {
       toast({
         title: "Erro no registo",
-        description: errorMessage,
+        description: "Ocorreu um erro. Tente novamente.",
         variant: "destructive",
       });
     } finally {

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PillarSelection from './PillarSelection';
+import { mockProviders } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
@@ -10,11 +11,6 @@ import MentalHealthAssessmentFlow from '@/components/mental-health-assessment/Me
 import PhysicalWellnessAssessmentFlow from '@/components/physical-wellness-assessment/PhysicalWellnessAssessmentFlow';
 import FinancialAssistanceAssessmentFlow from '@/components/financial-assistance-assessment/FinancialAssistanceAssessmentFlow';
 import PreDiagnosticChat from '@/components/legal-assessment/PreDiagnosticChat';
-import { getBookingConfirmationEmail } from '@/utils/emailTemplates';
-import { emailService } from '@/services/emailService';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { sanitizeInput } from '@/utils/sanitize';
 
 export type BookingPillar = 'psicologica' | 'financeira' | 'juridica' | 'fisica';
 
@@ -31,9 +27,7 @@ interface MockProvider {
 
 const BookingFlow = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { profile } = useAuth();
   const [currentStep, setCurrentStep] = useState<'pillar' | 'topic-selection' | 'symptom-selection' | 'assessment-result' | 'specialist-choice' | 'assessment' | 'datetime' | 'confirmation' | 'prediagnostic-cta' | 'prediagnostic-chat'>('pillar');
   const [selectedPillar, setSelectedPillar] = useState<BookingPillar | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MockProvider | null>(null);
@@ -43,85 +37,11 @@ const BookingFlow = () => {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState('');
-  
-  // Reschedule mode state
-  const [rescheduleBookingId, setRescheduleBookingId] = useState<string | null>(null);
-  const [originalBooking, setOriginalBooking] = useState<Record<string, unknown> | null>(null);
-  const isRescheduleMode = searchParams.get('mode') === 'reschedule';
 
   const timeSlots = [
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
     '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
   ];
-
-  // Load reschedule data on mount
-  useEffect(() => {
-    const loadRescheduleData = async () => {
-      const bookingId = sessionStorage.getItem('reschedule_booking_id');
-      if (bookingId && isRescheduleMode) {
-        setRescheduleBookingId(bookingId);
-        
-        // Load original booking
-        const { data: booking, error } = await supabase
-          .from('bookings')
-          .select(`
-            *,
-            prestadores!bookings_prestador_id_fkey (
-              id,
-              name,
-              photo_url
-            )
-          `)
-          .eq('id', bookingId)
-          .single();
-
-        if (booking && !error) {
-          setOriginalBooking(booking);
-          
-          // Reverse pillar mapping
-          const reversePillarMap: Record<string, BookingPillar> = {
-            'saude_mental': 'psicologica',
-            'bem_estar_fisico': 'fisica',
-            'assistencia_financeira': 'financeira',
-            'assistencia_juridica': 'juridica'
-          };
-          
-          setSelectedPillar(reversePillarMap[booking.pillar] || null);
-          
-          if (booking.prestadores) {
-            setSelectedProvider({
-              id: booking.prestadores.id,
-              name: booking.prestadores.name || '',
-              specialty: 'Especialista',
-              pillar: booking.pillar,
-              avatar_url: booking.prestadores.photo_url || '',
-              rating: 5,
-              experience: 'Anos de experiência',
-              availability: 'Disponível'
-            });
-          }
-          
-          // Pre-fill date and time
-          if (booking.date) {
-            setSelectedDate(new Date(booking.date));
-          }
-          if (booking.start_time) {
-            setSelectedTime(booking.start_time);
-          }
-          
-          // Show reschedule banner and go to datetime step
-          setCurrentStep('datetime');
-          
-          toast({
-            title: 'Reagendar Sessão',
-            description: 'Modifique a data, hora ou prestador conforme necessário.'
-          });
-        }
-      }
-    };
-
-    loadRescheduleData();
-  }, [isRescheduleMode]);
 
   const handlePillarSelect = (pillar: BookingPillar) => {
     setSelectedPillar(pillar);
@@ -153,7 +73,7 @@ const BookingFlow = () => {
     setCurrentStep('assessment');
   };
 
-  const handleChooseHuman = async () => {
+  const handleChooseHuman = () => {
     const pillarMapping = {
       'psicologica': 'saude_mental',
       'fisica': 'bem_estar_fisico',
@@ -162,41 +82,26 @@ const BookingFlow = () => {
     };
 
     const mappedPillar = pillarMapping[selectedPillar!];
-    
-    const { data: availableProviders, error } = await supabase
-      .from('prestadores')
-      .select('id, name, specialties, photo_url, pillar_specialties')
-      .contains('pillar_specialties', [mappedPillar])
-      .eq('is_active', true)
-      .limit(10);
+    const availableProviders = mockProviders.filter(provider => 
+      provider.pillar === mappedPillar
+    );
 
-    if (error || !availableProviders || availableProviders.length === 0) {
-      toast({
-        title: 'Erro',
-        description: 'Não há especialistas disponíveis no momento.',
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const assignedProvider = {
-      id: availableProviders[0].id,
-      name: availableProviders[0].name,
-      specialty: availableProviders[0].specialties?.[0] || 'Especialista',
-      pillar: mappedPillar,
-      avatar_url: availableProviders[0].photo_url || '',
-      rating: 5,
-      experience: 'Anos de experiência',
-      availability: 'Disponível'
-    };
-    
+    if (availableProviders.length > 0) {
+      const assignedProvider = availableProviders[0];
       setSelectedProvider(assignedProvider);
       setCurrentStep('datetime');
       
       toast({
         title: 'Especialista Atribuído',
-      description: `Foi-lhe atribuído ${assignedProvider.name}`,
-    });
+        description: `Foi-lhe atribuído o especialista ${assignedProvider.name} (${assignedProvider.specialty})`,
+      });
+    } else {
+      toast({
+        title: 'Erro',
+        description: 'Não há especialistas disponíveis no momento. Tente novamente mais tarde.',
+        variant: "destructive"
+      });
+    }
   };
 
 
@@ -212,236 +117,11 @@ const BookingFlow = () => {
     setCurrentStep('confirmation');
   };
 
-  const handleBookingConfirm = async () => {
-    try {
-      if (!profile?.id || !selectedProvider || !selectedDate || !selectedTime) {
-        toast({
-          title: 'Erro',
-          description: 'Informação em falta para criar agendamento',
-          variant: 'destructive'
-        });
-        return;
-      }
-
-      // Map pillar to database format
-      const pillarMap: Record<string, string> = {
-        'psicologica': 'saude_mental',
-        'fisica': 'bem_estar_fisico',
-        'financeira': 'assistencia_financeira',
-        'juridica': 'assistencia_juridica'
-      };
-
-      // RESCHEDULE FLOW
-      if (isRescheduleMode && rescheduleBookingId) {
-        // Calculate end time
-        const [hour, minute] = selectedTime.split(':');
-        const endTime = `${String((parseInt(hour) + 1)).padStart(2, '0')}:${minute}`;
-
-        // Update existing booking
-        const { error: updateError } = await supabase
-          .from('bookings')
-          .update({
-            date: selectedDate.toISOString().split('T')[0],
-            start_time: selectedTime,
-            end_time: endTime,
-            prestador_id: selectedProvider.id,
-            status: 'pending_confirmation',
-            rescheduled_from: (originalBooking as Record<string, unknown>).date as string,
-            rescheduled_at: new Date().toISOString()
-          })
-          .eq('id', rescheduleBookingId);
-
-        if (updateError) throw updateError;
-
-        // Notify original provider if changed
-        if (selectedProvider.id !== (originalBooking as Record<string, unknown>).prestador_id) {
-          const prestadores = (originalBooking as Record<string, unknown>).prestadores as Record<string, unknown>;
-          await supabase.from('notifications').insert({
-            user_id: prestadores.user_id as string,
-            type: 'booking_reassigned',
-            title: 'Sessão Reagendada',
-            message: `A sessão foi transferida para outro prestador.`,
-            related_booking_id: rescheduleBookingId,
-            priority: 'normal'
-          });
-        }
-
-        // Notify new provider
-        const prestadores = (originalBooking as Record<string, unknown>)?.prestadores as Record<string, unknown> | undefined;
-        const prestadorUserId = prestadores?.user_id as string | undefined;
-        if (prestadorUserId) {
-          await supabase.from('notifications').insert({
-            user_id: prestadorUserId,
-            type: 'booking_rescheduled',
-            title: isRescheduleMode ? 'Sessão Reagendada' : 'Nova Sessão',
-            message: `Nova sessão para ${selectedDate.toLocaleDateString('pt-PT')} às ${selectedTime}. Aguarda confirmação.`,
-            related_booking_id: rescheduleBookingId,
-            priority: 'high'
-          });
-        }
-
-        toast({
-          title: 'Sessão reagendada',
-          description: 'Aguarda confirmação do prestador.'
-        });
-
-        sessionStorage.removeItem('reschedule_booking_id');
-        navigate('/user/sessions');
-        return;
-      }
-
-      // NORMAL BOOKING FLOW
-      
-      // ========================================
-      // STEP 1: CHECK SESSION QUOTA
-      // ========================================
-      const { data: employee, error: quotaError } = await supabase
-        .from('company_employees')
-        .select('company_id, sessions_allocated, sessions_used')
-        .eq('user_id', profile.id)
-        .maybeSingle();
-      
-      if (quotaError) throw quotaError;
-      
-      const companyId = employee?.company_id || null;
-      
-      if (employee) {
-        const remaining = (employee.sessions_allocated || 0) - (employee.sessions_used || 0);
-        
-        // Block if no sessions remaining
-        if (remaining <= 0) {
-          toast({
-            title: 'Sem Sessões Disponíveis',
-            description: 'Não tem sessões disponíveis na sua quota. Contacte o seu RH para adicionar mais sessões.',
-            variant: 'destructive'
-          });
-          return;
-        }
-        
-        // Warn if running low (≤ 2 sessions)
-        if (remaining <= 2) {
-          toast({
-            title: `⚠️ ${remaining} sessão${remaining !== 1 ? 'ões' : ''} restante${remaining !== 1 ? 's' : ''}`,
-            description: 'A sua quota está quase esgotada. Considere solicitar mais sessões.',
-            variant: 'default'
-          });
-        }
-      }
-      
-      // ========================================
-      // STEP 2: CHECK PROVIDER AVAILABILITY
-      // ========================================
-      const { data: existingBooking } = await supabase
-        .from('bookings')
-        .select('id')
-        .eq('prestador_id', selectedProvider.id)
-        .eq('date', selectedDate.toISOString().split('T')[0])
-        .eq('start_time', selectedTime)
-        .neq('status', 'cancelled')
-        .maybeSingle();
-      
-      if (existingBooking) {
-        toast({
-          title: 'Horário Indisponível',
-          description: 'Este horário já está reservado. Por favor, escolha outro.',
-          variant: 'destructive'
-        });
-        return;
-      }
-
-      // Calculate end time (assuming 1 hour session)
-      const [hour, minute] = selectedTime.split(':');
-      const endTime = `${String((parseInt(hour) + 1)).padStart(2, '0')}:${minute}`;
-
-      // Create booking with sanitized inputs
-      const pillar = selectedPillar ? pillarMap[selectedPillar] : null;
-      const { data: booking, error } = await supabase
-        .from('bookings')
-        .insert({
-          user_id: profile.id,
-          booking_date: new Date().toISOString(),
-          company_id: companyId,
-          prestador_id: selectedProvider.id,
-          pillar: pillar,
-          topic: sanitizeInput(selectedTopics.join(', ')),
-          date: selectedDate.toISOString().split('T')[0],
-          start_time: selectedTime,
-          end_time: endTime,
-          status: 'pending',
-          session_type: meetingType === 'virtual' ? 'virtual' : meetingType === 'phone' ? 'phone' : 'presencial',
-          meeting_type: meetingType,
-          quota_type: 'employer',
-          meeting_link: meetingType === 'virtual' ? `https://meet.example.com/${profile.id}-${new Date().getTime()}` : null,
-          notes: additionalNotes ? sanitizeInput(additionalNotes) : null,
-          booking_source: 'direct'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Track booking in user_progress
-      await supabase.from('user_progress').insert({
-        user_id: profile.id,
-        pillar: pillar,
-        action_type: 'session_scheduled',
-        action_date: new Date().toISOString(),
-        metadata: {
-          booking_id: booking.id,
-          prestador_id: selectedProvider.id,
-          booking_date: booking.booking_date
-        }
-      });
-
-      // Get current sessions_used for user and increment
-      const { data: employeeData } = await supabase
-        .from('company_employees')
-        .select('sessions_used')
-        .eq('user_id', profile.id)
-        .single();
-
-      if (employeeData) {
-        await supabase
-          .from('company_employees')
-          .update({ sessions_used: employeeData.sessions_used + 1 })
-          .eq('user_id', profile.id);
-      }
-
-      // Get current sessions_used for company and increment
-      if (companyId) {
-        const { data: companyData } = await supabase
-          .from('companies')
-          .select('sessions_used')
-          .eq('id', companyId)
-          .single();
-
-        if (companyData) {
-          await supabase
-            .from('companies')
-            .update({ sessions_used: companyData.sessions_used + 1 })
-            .eq('id', companyId);
-        }
-      }
-
-      // Send confirmation email (method not implemented yet)
-      // try {
-      //   await emailService.sendBookingConfirmation(profile.email, {
-      //     userName: profile.name || 'Utilizador',
-      //     providerName: selectedProvider.name,
-      //     date: selectedDate.toISOString(),
-      //     time: selectedTime,
-      //     pillar: pillar,
-      //     meetingLink: booking.meeting_link || undefined,
-      //     meetingType: meetingType
-      //   });
-      // } catch (emailError) {
-      //   // Email send failed - silently continue, don't block booking
-      // }
-
-      toast({
-        title: 'Sessão Agendada',
-        description: `A sua sessão com ${selectedProvider.name} foi agendada para ${selectedDate.toLocaleDateString()} às ${selectedTime}`,
-      });
+  const handleBookingConfirm = () => {
+    toast({
+      title: 'Sessão Agendada',
+      description: `A sua sessão com ${selectedProvider?.name} foi agendada para ${selectedDate?.toLocaleDateString()} às ${selectedTime}`,
+    });
     
     // If juridica pillar, show pre-diagnostic CTA
     if (selectedPillar === 'juridica') {
@@ -453,14 +133,6 @@ const BookingFlow = () => {
       setTimeout(() => {
         navigate('/user/dashboard');
       }, 2000);
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao agendar a sessão';
-      toast({
-        title: 'Erro ao agendar',
-        description: errorMessage,
-        variant: 'destructive'
-      });
     }
   };
 

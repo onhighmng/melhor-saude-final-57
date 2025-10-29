@@ -34,7 +34,7 @@ async function createSupportTicket(ticket: {
   preference?: string;
   [key: string]: any;
 }) {
-  // Save to localStorage (fallback when offline)
+  // Save to localStorage for demo
   const tickets = JSON.parse(localStorage.getItem('support_tickets') || '[]');
   const newTicket = {
     id: `AS-2025-${String(Date.now()).slice(-6)}`,

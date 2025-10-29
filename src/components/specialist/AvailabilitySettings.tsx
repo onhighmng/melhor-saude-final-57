@@ -9,8 +9,6 @@ import { format } from 'date-fns';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface UnavailableSlot {
   id: string;
@@ -25,9 +23,6 @@ interface AvailabilitySettingsProps {
 
 export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySettingsProps) {
   const { toast } = useToast();
-  const { profile } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [prestadorId, setPrestadorId] = useState<string | null>(null);
   
   // Unavailable time slots
   const [unavailableSlots, setUnavailableSlots] = useState<UnavailableSlot[]>([]);
@@ -96,26 +91,7 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
     }
   };
 
-  const removeUnavailableSlot = async (id: string) => {
-    const slot = unavailableSlots.find(s => s.id === id);
-    if (slot && profile) {
-      try {
-        // Get prestador_id
-        const { data: prestador } = await supabase
-          .from('prestadores')
-          .select('id')
-          .eq('user_id', profile.id)
-          .single();
-
-        if (prestador) {
-          // Note: prestador_schedule table uses day_of_week, not date
-          // This is a simplified deletion - adjust based on actual schema
-        }
-      } catch (error) {
-        // Error removing slot - silently fail
-      }
-    }
-
+  const removeUnavailableSlot = (id: string) => {
     setUnavailableSlots(prev => prev.filter(slot => slot.id !== id));
     toast({
       title: "Horário removido",
@@ -233,32 +209,12 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={async () => {
-            if (unavailableSlots.length > 0 && profile) {
-              try {
-                // Get prestador_id
-                const { data: prestador } = await supabase
-                  .from('prestadores')
-                  .select('id')
-                  .eq('user_id', profile.id)
-                  .single();
-
-                if (prestador) {
-                  // Note: prestador_schedule schema mismatch - needs day_of_week and end_time
-                }
-
-                toast({
-                  title: "Indisponibilidade guardada",
-                  description: `${unavailableSlots.length} horário(s) marcado(s) como indisponível`,
-                });
-              } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Erro ao guardar indisponibilidade';
-                toast({
-                  title: "Erro",
-                  description: errorMessage,
-                  variant: 'destructive'
-                });
-              }
+          <Button onClick={() => {
+            if (unavailableSlots.length > 0) {
+              toast({
+                title: "Indisponibilidade guardada",
+                description: `${unavailableSlots.length} horário(s) marcado(s) como indisponível`,
+              });
             }
             onOpenChange(false);
           }}>

@@ -1,27 +1,30 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen, Bell } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface FirstStepsProps {
   onBookSession: () => void;
 }
 
 export function FirstSteps({ onBookSession }: FirstStepsProps) {
+  const { t } = useTranslation('common');
+  
   const steps = [
     {
       icon: Calendar,
-      title: 'Agendar Primeira Sessão',
-      description: 'Reserve uma sessão com um dos nossos especialistas',
+      titleKey: 'onboarding.steps.bookFirstSession.title',
+      descriptionKey: 'onboarding.steps.bookFirstSession.description',
     },
     {
       icon: BookOpen,
-      title: 'Explorar Recursos',
-      description: 'Aceda a materiais educativos e ferramentas de apoio',
+      titleKey: 'onboarding.steps.exploreResources.title',
+      descriptionKey: 'onboarding.steps.exploreResources.description',
     },
     {
       icon: Bell,
-      title: 'Ativar Notificações',
-      description: 'Mantenha-se informado sobre as suas sessões e objetivos',
+      titleKey: 'onboarding.steps.enableNotifications.title',
+      descriptionKey: 'onboarding.steps.enableNotifications.description',
     },
   ];
 
@@ -29,9 +32,9 @@ export function FirstSteps({ onBookSession }: FirstStepsProps) {
     <div className="max-w-2xl mx-auto p-6">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Próximos Passos</CardTitle>
+          <CardTitle className="text-2xl">{t('onboarding.nextSteps')}</CardTitle>
           <CardDescription>
-            Tudo pronto!
+            {t('onboarding.allReady')}
           </CardDescription>
         </CardHeader>
         
@@ -47,8 +50,8 @@ export function FirstSteps({ onBookSession }: FirstStepsProps) {
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-1">{step.title}</h4>
-                    <p className="text-sm text-muted-foreground">{step.description}</p>
+                    <h4 className="font-semibold mb-1">{t(step.titleKey)}</h4>
+                    <p className="text-sm text-muted-foreground">{t(step.descriptionKey)}</p>
                   </div>
                 </div>
               );
@@ -56,7 +59,7 @@ export function FirstSteps({ onBookSession }: FirstStepsProps) {
           </div>
           
           <Button onClick={onBookSession} size="lg" className="w-full">
-            Agendar Primeira Sessão
+            {t('onboarding.steps.bookFirstSession.title')}
           </Button>
         </CardContent>
       </Card>

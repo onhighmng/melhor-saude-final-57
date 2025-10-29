@@ -12,7 +12,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { UserBalance } from "@/types/sessionTypes";
+import { UserBalance } from "@/data/sessionMockData";
 
 interface ActivityData {
     label: string;

@@ -29,18 +29,14 @@ import {
   Building
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { mockPrestadorSessions } from '@/data/prestadorMetrics';
 import RuixenSection from '@/components/ui/ruixen-feature-section';
 import { ProviderSessionManagementModal } from '@/components/sessions/ProviderSessionManagementModal';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
 
 export default function PrestadorSessions() {
   const { toast } = useToast();
-  const { profile } = useAuth();
-  const [sessions, setSessions] = useState<any[]>([]);
-  const [filteredSessions, setFilteredSessions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [sessions, setSessions] = useState(mockPrestadorSessions);
+  const [filteredSessions, setFilteredSessions] = useState(mockPrestadorSessions);
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedSession, setSelectedSession] = useState<any>(null);
@@ -48,67 +44,8 @@ export default function PrestadorSessions() {
   const [sessionNotes, setSessionNotes] = useState('');
   const [showManagementModal, setShowManagementModal] = useState(false);
 
-  // Load sessions from Supabase
-  useEffect(() => {
-    const loadSessions = async () => {
-      if (!profile?.id) return;
-
-      try {
-        const { data: prestador } = await supabase
-          .from('prestadores')
-          .select('id')
-          .eq('user_id', profile.id)
-          .single();
-
-        if (!prestador) return;
-
-        const { data: bookings } = await supabase
-          .from('bookings')
-          .select(`
-            *,
-            profiles (name, email),
-            companies (company_name)
-          `)
-          .eq('prestador_id', prestador.id)
-          .order('date', { ascending: false });
-
-        if (bookings) {
-          setSessions(bookings.map((b: any) => ({
-            id: b.id,
-            clientName: (b.profiles as any)?.name || 'Utilizador',
-            date: b.date,
-            time: b.start_time || '00:00',
-            pillar: b.pillar === 'saude_mental' ? 'Saúde Mental' : 
-                   b.pillar === 'bem_estar_fisico' ? 'Bem-Estar Físico' :
-                   b.pillar === 'assistencia_financeira' ? 'Assistência Financeira' :
-                   'Assistência Jurídica',
-            status: b.status === 'completed' ? 'Concluída' : 
-                    b.status === 'scheduled' ? 'Agendada' :
-                    b.status === 'cancelled' ? 'Cancelada' : 'Agendada',
-            type: b.meeting_type === 'online' ? 'Virtual' : 'Presencial',
-            company: (b.companies as any)?.company_name,
-            rating: b.rating,
-            meetingLink: b.meeting_link,
-            notes: b.notes
-          })));
-        }
-      } catch (error) {
-        console.error('Error loading sessions:', error);
-        toast({
-          title: 'Erro',
-          description: 'Não foi possível carregar as sessões',
-          variant: 'destructive'
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSessions();
-  }, [profile?.id]);
-
   // Filter sessions
-  useEffect(() => {
+  React.useEffect(() => {
     let filtered = sessions;
 
     if (dateFilter !== 'all') {

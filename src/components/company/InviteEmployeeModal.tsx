@@ -7,14 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, User, Key, Eye, EyeOff, Building, Users } from 'lucide-react';
-import { Company } from "@/types/company";
-import { getAvailableSeats } from "@/utils/companyHelpers";
-
+import { Company } from "@/data/companyMockData";
 import { companyToasts } from "@/data/companyToastMessages";
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
 
 interface InviteEmployeeModalProps {
   isOpen: boolean;
@@ -33,8 +28,6 @@ interface InviteFormData {
 
 export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess }: InviteEmployeeModalProps) {
   const { t } = useTranslation('company');
-  const { profile } = useAuth();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<InviteFormData>({
@@ -69,45 +62,12 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
     setIsSubmitting(true);
 
     try {
-      // Call edge function to create employee securely
-      const { data, error } = await supabase.functions.invoke('create-employee', {
-        body: {
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-          company_id: profile?.company_id, // Use from AuthContext
-          role: formData.role,
-          sessions_allocated: formData.companySessions
-        }
-      });
-
-      if (error) throw error;
-      if (!data || !data.user_id) throw new Error('Failed to create user');
-
-      // Create invite record
-      if (profile?.id && profile?.company_id) {
-        await supabase.from('invites').insert({
-          invite_code: `inv_${Date.now()}`,
-          invited_by: profile.id,
-          company_id: profile.company_id,
-          email: formData.email,
-          role: formData.role,
-          status: 'accepted',
-          accepted_at: new Date().toISOString(),
-          accepted_by: data.user_id
-        });
-      }
-
-      // Copy credentials to clipboard
-      navigator.clipboard.writeText(`Email: ${formData.email}\nPassword: ${formData.password}`);
+      // Simulate API call to create company user
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      toast({
-        title: 'Colaborador convidado com sucesso',
-        description: `Credenciais copiadas para a área de transferência`,
-      });
-      
-      onInviteSuccess({
-        id: data.user_id,
+      // Create new user object
+      const newUser = {
+        id: `user_${Date.now()}`,
         name: formData.name,
         email: formData.email,
         role: formData.role,
@@ -115,16 +75,18 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
         companyQuota: formData.companySessions,
         usedQuota: 0,
         joinedAt: new Date().toISOString()
-      });
+      };
+
+      onInviteSuccess(newUser);
+      
+      // Copy credentials to clipboard
+      navigator.clipboard.writeText(`Email: ${formData.email}\nPassword: ${formData.password}`);
+      companyToasts.employeeInvited();
       
       resetForm();
       onClose();
-    } catch (error: any) {
-      toast({
-        title: 'Erro ao convidar colaborador',
-        description: error.message || t('company:errors.inviteFailed'),
-        variant: 'destructive',
-      });
+    } catch (error) {
+      companyToasts.actionFailed(t('company:errors.inviteFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -144,7 +106,7 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
             {t('invite.modal.title')}
           </DialogTitle>
           <DialogDescription>
-            Adicione um novo colaborador à {company.company_name}. As credenciais de acesso serão enviadas por email.
+            Adicione um novo colaborador à {company.name}. As credenciais de acesso serão enviadas por email.
           </DialogDescription>
         </DialogHeader>
 
@@ -155,14 +117,14 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
               <div className="flex items-center gap-3">
                 <Building className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="font-medium">{company.company_name}</p>
+                  <p className="font-medium">{company.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {getAvailableSeats(company.sessions_allocated, company.sessions_used)} sessões disponíveis de {company.sessions_allocated}
+                    {company.seatAvailable} vaga{company.seatAvailable !== 1 ? 's' : ''} disponível{company.seatAvailable !== 1 ? 's' : ''} de {company.seatLimit}
                   </p>
                 </div>
               </div>
               <Badge variant="secondary">
-                {company.plan_type}
+                {company.planType}
               </Badge>
             </div>
           </CardContent>

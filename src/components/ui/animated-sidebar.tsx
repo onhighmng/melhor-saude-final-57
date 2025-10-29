@@ -5,13 +5,11 @@ import { NavLink } from "react-router-dom";
 import React, { useState, createContext, useContext, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 interface Links {
   label: string;
   href: string;
   icon: React.JSX.Element | React.ReactNode;
-  badge?: string;
 }
 
 interface SidebarContextProps {
@@ -226,19 +224,6 @@ export const AnimatedSidebarLink = ({
       >
         {link.label}
       </motion.span>
-      {link.badge && (
-        <motion.span
-          animate={{
-            display: animate ? (open ? "inline-block" : "none") : "inline-block",
-            opacity: animate ? (open ? 1 : 0) : 0,
-          }}
-          className="ml-auto"
-        >
-          <Badge variant="destructive" className="h-5 px-1.5 text-xs">
-            {link.badge}
-          </Badge>
-        </motion.span>
-      )}
     </NavLink>
   );
 };

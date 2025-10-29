@@ -7,10 +7,6 @@ import { CheckCircle, ArrowRight, Clock, FileText, MessageSquare } from 'lucide-
 import { ReferralBookingFlow } from './ReferralBookingFlow';
 import { PreDiagnosticModal } from './PreDiagnosticModal';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { sanitizeInput } from '@/utils/sanitize';
-import { logErrorSecurely, getGenericErrorMessage } from '@/utils/errorHandling';
 
 interface SessionNoteModalProps {
   isOpen: boolean;
@@ -21,49 +17,16 @@ interface SessionNoteModalProps {
 
 export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNoteModalProps) => {
   const { toast } = useToast();
-  const { profile } = useAuth();
   const [notes, setNotes] = useState('');
   const [outcome, setOutcome] = useState('');
   const [showReferralFlow, setShowReferralFlow] = useState(false);
   const [showPreDiagnostic, setShowPreDiagnostic] = useState(false);
 
-  const handleSave = async () => {
-    try {
-      // Get prestador_id for current user
-      const { data: prestador } = await supabase
-        .from('prestadores')
-        .select('id')
-        .eq('user_id', profile?.id)
-        .single();
-
-      if (prestador) {
-        // Save to database (with sanitization)
-        await supabase.from('session_notes').insert({
-          booking_id: session.id,
-          prestador_id: prestador.id,
-          notes: sanitizeInput(notes),
-          outcome: sanitizeInput(outcome),
-          is_confidential: true
-        });
-
-        toast({
-          title: 'Nota guardada',
-          description: 'As notas da sessão foram guardadas com sucesso',
-        });
-      }
-
-      onSave(notes, outcome);
-      setNotes('');
-      setOutcome('');
-      onClose();
-    } catch (error: any) {
-      logErrorSecurely(error, 'saving_session_note');
-      toast({
-        title: 'Erro',
-        description: getGenericErrorMessage('saving'),
-        variant: 'destructive',
-      });
-    }
+  const handleSave = () => {
+    onSave(notes, outcome);
+    setNotes('');
+    setOutcome('');
+    onClose();
   };
 
   const getPillarColor = (pillar: string) => {

@@ -1,15 +1,13 @@
 import { ResourceCard } from "./ResourceCard";
-import { UserResource } from "@/types/resources";
+import { UserResource } from "@/data/userResourcesData";
 
 interface ResourceGridProps {
   resources: UserResource[];
   onView: (resource: UserResource) => void;
   onDownload?: (resource: UserResource) => void;
-  onEdit?: (resource: UserResource) => void;
-  onDelete?: (resource: UserResource) => void;
 }
 
-export function ResourceGrid({ resources, onView, onDownload, onEdit, onDelete }: ResourceGridProps) {
+export function ResourceGrid({ resources, onView, onDownload }: ResourceGridProps) {
   if (resources.length === 0) {
     return (
       <div className="text-center py-12">
@@ -26,8 +24,6 @@ export function ResourceGrid({ resources, onView, onDownload, onEdit, onDelete }
           resource={resource}
           onView={onView}
           onDownload={onDownload}
-          onEdit={onEdit}
-          onDelete={onDelete}
         />
       ))}
     </div>

@@ -10,11 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { supabase } from '@/integrations/supabase/client';
-import { EditUserDialog } from '@/components/admin/EditUserDialog';
 import { 
   ArrowLeft, 
-  Edit,
+  Edit, 
   Power, 
   PowerOff,
   Building2,
@@ -32,6 +30,7 @@ import {
   ArrowUpDown
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { getUserById, generateMockUserDetail } from '@/data/adminMockData';
 import { formatDate } from '@/utils/dateFormatting';
 
 interface UserDetail {
@@ -89,100 +88,32 @@ const AdminUserDetail = () => {
   }, [id]);
 
   const loadUser = async () => {
-    if (!id) return;
     setIsLoading(true);
-    
     try {
-      // Load profile
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (profileError) throw profileError;
-
-      // Load company employee record
-      const { data: employee, error: employeeError } = await supabase
-        .from('company_employees')
-        .select(`
-          *,
-          companies:company_id (name)
-        `)
-        .eq('user_id', id)
-        .maybeSingle();
-
-      if (employeeError) throw employeeError;
-
-      // Load bookings
-      const { data: bookings, error: bookingsError } = await supabase
-        .from('bookings')
-        .select(`
-          *,
-          prestadores:prestador_id (
-            profiles:user_id (name)
-          )
-        `)
-        .eq('user_id', id)
-        .order('date', { ascending: false });
-
-      if (bookingsError) throw bookingsError;
-
-      // Load progress
-      const { data: progress, error: progressError } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', id)
-        .order('action_date', { ascending: false });
-
-      if (progressError) throw progressError;
-
-      setUser({
-        ...(profile as any),
-        company: (employee as any)?.companies?.company_name || '',
-        sessionsAllocated: employee?.sessions_allocated || 0,
-        sessionsUsed: employee?.sessions_used || 0,
-        companySessions: employee?.sessions_allocated || 0,
-        personalSessions: 0,
-        usedCompanySessions: employee?.sessions_used || 0,
-        usedPersonalSessions: 0,
-        status: profile.is_active ? 'active' : 'inactive',
-        createdAt: profile.created_at,
-        fixedProviders: {},
-        changeRequests: [],
-        sessionHistory: bookings?.map(b => ({
-          id: b.id,
-          date: b.date,
-          pillar: b.pillar,
-          provider: '',
-          status: b.status as any,
-          type: 'company' as const
-        })) || [],
-        sessionUsageData: []
-      });
+      setTimeout(() => {
+        const baseUser = getUserById(id || '1');
+        
+        if (baseUser) {
+          const userDetail = generateMockUserDetail(baseUser);
+          setUser(userDetail as UserDetail);
+        }
+        
+        setIsLoading(false);
+      }, 800);
     } catch (error) {
-      console.error('Error loading user details:', error);
       toast({
-        title: 'Erro',
-        description: 'Erro ao carregar detalhes do utilizador',
-        variant: 'destructive'
+        title: "Erro",
+        description: "Erro ao carregar utilizador",
+        variant: "destructive"
       });
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleStatusChange = async (newStatus: 'active' | 'inactive') => {
-    if (!user || !id) return;
+    if (!user) return;
     
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_active: newStatus === 'active' })
-        .eq('id', id);
-
-      if (error) throw error;
-
       setUser(prev => prev ? { ...prev, status: newStatus } : null);
       
       toast({
@@ -190,7 +121,6 @@ const AdminUserDetail = () => {
         description: "Estado atualizado com sucesso"
       });
     } catch (error) {
-      console.error('Error updating user status:', error);
       toast({
         title: "Erro",
         description: "Erro ao atualizar estado",
@@ -228,10 +158,11 @@ const AdminUserDetail = () => {
     }
   };
 
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
   const handleEditProfile = () => {
-    setIsEditDialogOpen(true);
+    toast({
+      title: "Editar Perfil",
+      description: "Funcionalidade em desenvolvimento"
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -689,26 +620,6 @@ const AdminUserDetail = () => {
           </TabsContent>
         </Tabs>
       </div>
-
-    {/* Edit User Dialog */}
-    {user && isEditDialogOpen && (
-      <EditUserDialog
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        userId={user.id}
-        currentData={{
-          name: user.name,
-          email: user.email,
-          phone: '',
-          department: user.department,
-          bio: ''
-        }}
-        onSuccess={() => {
-          setIsEditDialogOpen(false);
-          loadUser();
-        }}
-      />
-    )}
     </div>
   );
 };

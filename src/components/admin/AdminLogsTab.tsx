@@ -1,11 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { MAX_LOGS_DISPLAYED } from '@/config/constants';
 import {
   Select,
   SelectContent,
@@ -35,55 +32,95 @@ interface LogEntry {
   status: 'success' | 'failed';
 }
 
-// Mock data removed - using real database
+const mockLogs: LogEntry[] = [
+  {
+    id: '1',
+    timestamp: '2024-10-13T10:45:00',
+    user: 'Ana Silva',
+    action: 'export',
+    resource: 'Relatório Mensal',
+    details: 'Exportou relatório de sessões de Outubro',
+    ipAddress: '192.168.1.100',
+    status: 'success',
+  },
+  {
+    id: '2',
+    timestamp: '2024-10-13T10:30:00',
+    user: 'Carlos Mendes',
+    action: 'edit',
+    resource: 'Empresa TechCorp',
+    details: 'Alterou limite de sessões de 300 para 400',
+    ipAddress: '192.168.1.105',
+    status: 'success',
+  },
+  {
+    id: '3',
+    timestamp: '2024-10-13T10:15:00',
+    user: 'Rita Costa',
+    action: 'view',
+    resource: 'Utilizador João Silva',
+    details: 'Visualizou perfil e histórico de sessões',
+    ipAddress: '192.168.1.110',
+    status: 'success',
+  },
+  {
+    id: '4',
+    timestamp: '2024-10-13T09:50:00',
+    user: 'João Ferreira',
+    action: 'login',
+    resource: 'Sistema',
+    details: 'Início de sessão bem sucedido',
+    ipAddress: '192.168.1.115',
+    status: 'success',
+  },
+  {
+    id: '5',
+    timestamp: '2024-10-13T09:30:00',
+    user: 'Ana Silva',
+    action: 'delete',
+    resource: 'Prestador Test User',
+    details: 'Removeu prestador de teste',
+    ipAddress: '192.168.1.100',
+    status: 'success',
+  },
+  {
+    id: '6',
+    timestamp: '2024-10-13T09:00:00',
+    user: 'Carlos Mendes',
+    action: 'edit',
+    resource: 'Configurações',
+    details: 'Tentativa de alterar configurações do sistema',
+    ipAddress: '192.168.1.105',
+    status: 'failed',
+  },
+  {
+    id: '7',
+    timestamp: '2024-10-13T08:45:00',
+    user: 'Rita Costa',
+    action: 'export',
+    resource: 'Lista de Utilizadores',
+    details: 'Exportou CSV com utilizadores ativos',
+    ipAddress: '192.168.1.110',
+    status: 'success',
+  },
+  {
+    id: '8',
+    timestamp: '2024-10-13T08:30:00',
+    user: 'Ana Silva',
+    action: 'view',
+    resource: 'Dashboard',
+    details: 'Acedeu ao dashboard administrativo',
+    ipAddress: '192.168.1.100',
+    status: 'success',
+  },
+];
 
 const AdminLogsTab = () => {
   const { t } = useTranslation('admin');
-  const { toast } = useToast();
-  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [logs] = useState(mockLogs);
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [loading, setLoading] = useState(true);
-
-  const loadLogs = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('admin_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(MAX_LOGS_DISPLAYED);
-
-      if (error) throw error;
-
-      const formatted: LogEntry[] = (data || []).map(log => ({
-        id: log.id,
-        timestamp: log.created_at,
-        user: 'Admin',
-        action: log.action as any,
-        resource: log.entity_type,
-        details: JSON.stringify(log.details),
-        ipAddress: log.ip_address || 'N/A',
-        status: 'success'
-      }));
-
-      setLogs(formatted);
-    } catch (error: any) {
-      console.error('Error loading logs:', error);
-      toast({
-        title: 'Erro',
-        description: 'Erro ao carregar registos',
-        variant: 'destructive'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadLogs();
-  }, []);
 
   const getActionBadge = (action: string) => {
     const variants = {

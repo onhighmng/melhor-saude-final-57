@@ -141,6 +141,3 @@ export const FollowPointer = ({
 
 
 
-
-
-

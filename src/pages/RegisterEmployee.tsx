@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,8 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Eye, EyeOff, User, Mail, Key, Lock, ArrowLeft, CheckCircle, AlertCircle, Copy, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { getAuthCallbackUrl } from '@/utils/authRedirects';
+import { getInviteCodeByCode, mockInviteCodes } from '@/data/inviteCodesMockData';
+import { generateUUID } from '@/utils/uuid';
 import heroFitness from '@/assets/hero-fitness.jpg';
 
 type FormStep = 'invite-code' | 'user-details';
@@ -44,48 +44,36 @@ export default function RegisterEmployee() {
 
     setIsValidating(true);
     
-    try {
-      const { data: invite, error } = await supabase
-        .from('invites')
-        .select('*, companies(company_name)')
-        .eq('invite_code', code.toUpperCase())
-        .single();
+    // Simulate API delay
+    setTimeout(() => {
+      const invite = getInviteCodeByCode(code);
       
-      if (error || !invite) {
+      if (!invite) {
         setCodeStatus('invalid');
       } else if (invite.status === 'used') {
         setCodeStatus('used');
       } else if (invite.status === 'revoked') {
         setCodeStatus('revoked');
-      } else if (invite.status === 'accepted' || invite.status === 'pending') {
-        setCompanyName(invite.companies?.company_name || 'Empresa');
+      } else if (invite.status === 'active') {
+        // Mock company name lookup
+        const companyNames = {
+          'company-1': 'Tech Solutions Lda',
+          'company-2': 'Startup Innovation'
+        };
+        setCompanyName(companyNames[invite.companyId as keyof typeof companyNames] || 'Empresa');
         setCodeStatus('valid');
       }
-    } catch (err) {
-      setCodeStatus('invalid');
-    } finally {
+      
       setIsValidating(false);
-    }
+    }, 800);
   };
-
-  const validateInviteCodeDebounced = React.useCallback(
-    async (code: string) => {
-      if (!code || code.length < 6) {
-        setCodeStatus('idle');
-        return;
-      }
-      await validateInviteCode(code);
-    },
-    []
-  );
 
   const handleInviteCodeChange = (value: string) => {
     const upperValue = value.toUpperCase();
     setInviteCode(upperValue);
     
     // Debounce validation
-    const timer = setTimeout(() => validateInviteCodeDebounced(upperValue), 500);
-    return () => clearTimeout(timer);
+    setTimeout(() => validateInviteCode(upperValue), 300);
   };
 
   const handleInviteCodeSubmit = (e: React.FormEvent) => {
@@ -125,78 +113,39 @@ export default function RegisterEmployee() {
     setIsLoading(true);
 
     try {
-      // Validate invite code one more time
-      const { data: invite } = await supabase
-        .from('invites')
-        .select('*, companies(id, company_name)')
-        .eq('invite_code', inviteCode.toUpperCase())
-        .single();
-
-      if (!invite || invite.status !== 'accepted' && invite.status !== 'pending') {
-        throw new Error('Código de convite inválido ou expirado');
+      // Simulate account creation API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Mark the code as used in mock data
+      const codeIndex = mockInviteCodes.findIndex(code => code.code === inviteCode);
+      if (codeIndex !== -1) {
+        const newUserId = generateUUID();
+        mockInviteCodes[codeIndex] = {
+          ...mockInviteCodes[codeIndex],
+          status: 'used',
+          issuedToUserId: newUserId,
+          issuedToUserName: email.split('@')[0],
+          issuedToUserEmail: email,
+          issuedAt: new Date().toISOString(),
+          redeemedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
       }
-
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: getAuthCallbackUrl()
-        }
-      });
-
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Falha ao criar utilizador');
-
-      // Create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          email,
-          name: email.split('@')[0],
-          role: 'user',
-          company_id: invite.companies?.id
-        });
-
-      if (profileError) throw profileError;
-
-      // Create company employee link
-      if (invite.companies?.id) {
-        const { error: employeeError } = await supabase
-          .from('company_employees')
-          .insert({
-            company_id: invite.companies.id,
-            user_id: authData.user.id,
-            sessions_allocated: 10
-          });
-
-        if (employeeError) throw employeeError;
-      }
-
-      // Mark invite code as used
-      await supabase
-        .from('invites')
-        .update({
-          status: 'accepted',
-          accepted_by: authData.user.id,
-          accepted_at: new Date().toISOString()
-        })
-        .eq('invite_code', inviteCode.toUpperCase());
 
       toast({
         title: "Conta criada com sucesso!",
-        description: "Bem-vindo à plataforma. Verifique o seu email para ativar a conta.",
+        description: "Bem-vindo à plataforma. A redireccionar para o dashboard...",
       });
 
-      // User must verify email first, then will be redirected via callback
-      navigate('/login?registered=employee');
+      // Redirect to user dashboard
+      setTimeout(() => {
+        navigate('/user/dashboard');
+      }, 1500);
       
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro inesperado.";
+    } catch (error: any) {
       toast({
         title: "Erro na criação da conta",
-        description: errorMessage,
+        description: error.message || "Ocorreu um erro inesperado.",
         variant: "destructive",
       });
     } finally {

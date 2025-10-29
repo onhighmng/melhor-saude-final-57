@@ -1,7 +1,5 @@
-import { UserResource, pillarNames, resourceTypeNames } from "@/types/resources";
+import { UserResource, pillarNames, resourceTypeNames } from "@/data/userResourcesData";
 import { cn } from "@/lib/utils";
-import { Edit, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 // Pillar color mapping
 const getPillarColors = (pillar: string) => {
@@ -34,11 +32,9 @@ interface ResourceCardProps {
   resource: UserResource;
   onView: (resource: UserResource) => void;
   onDownload?: (resource: UserResource) => void;
-  onEdit?: (resource: UserResource) => void;
-  onDelete?: (resource: UserResource) => void;
 }
 
-export function ResourceCard({ resource, onView, onDownload, onEdit, onDelete }: ResourceCardProps) {
+export function ResourceCard({ resource, onView, onDownload }: ResourceCardProps) {
   const getDurationDisplay = () => {
     if (resource.duration) {
       return `${resource.duration} min`;
@@ -57,38 +53,6 @@ export function ResourceCard({ resource, onView, onDownload, onEdit, onDelete }:
       onClick={() => onView(resource)}
     >
       <div className="absolute inset-0 -z-0 h-[130%] w-full bg-gradient-to-t from-black/80 to-transparent transition-all duration-500 group-hover:h-full" />
-      
-      {/* Action buttons - only show in admin context */}
-      {(onEdit || onDelete) && (
-        <div className="absolute top-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          {onEdit && (
-            <Button
-              size="icon"
-              variant="secondary"
-              className="h-8 w-8 rounded-full bg-white/90 hover:bg-white"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit?.(resource);
-              }}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-          )}
-          {onDelete && (
-            <Button
-              size="icon"
-              variant="destructive"
-              className="h-8 w-8 rounded-full bg-red-500/90 hover:bg-red-600"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete?.(resource);
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      )}
       
       <article className="relative z-0 flex items-end">
         <div className="flex flex-1 flex-col gap-3">

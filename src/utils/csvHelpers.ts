@@ -4,7 +4,6 @@ import { z } from 'zod';
 export interface CSVEmployee {
   name: string;
   email: string;
-  sessionsAllocated?: number;
 }
 
 export interface CSVValidationError {

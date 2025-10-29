@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Building2, 
@@ -16,121 +16,14 @@ import {
   Scale,
   BookOpen
 } from 'lucide-react';
+import { mockCompanyMetrics } from '@/data/companyMetrics';
 import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
-import { supabase } from '@/integrations/supabase/client';
-// Metrics loaded from database
 
 const CompanyDashboard = () => {
   const { profile } = useAuth();
   const navigate = useNavigate();
-  interface CompanyMetrics {
-    avgSatisfaction: string;
-    activeEmployees: number;
-    totalEmployees: number;
-    sessionsUsed: number;
-    sessionsAllocated: number;
-    mostUsedPillar: string;
-  }
-  const [metrics, setMetrics] = useState<CompanyMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadCompanyData = async () => {
-      if (!profile?.company_id) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        // Load company
-        const { data: company } = await supabase
-          .from('companies')
-          .select('*')
-          .eq('id', profile.company_id)
-          .single();
-
-        if (!company) return;
-
-        // Load employees
-        const { data: employees } = await supabase
-          .from('company_employees')
-          .select(`
-            *,
-            profiles (name, email, avatar_url)
-          `)
-          .eq('company_id', profile.company_id);
-
-        // Load bookings for stats
-        const { data: bookings } = await supabase
-          .from('bookings')
-          .select('pillar, status, rating')
-          .eq('company_id', profile.company_id);
-
-        // Calculate metrics
-        const activeEmployees = employees?.filter(e => e.is_active).length || 0;
-        const usedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
-        const totalSessions = company.sessions_allocated || 0;
-        const avgRating = bookings?.filter(b => b.rating)
-          .reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length || 0;
-
-        // Count bookings by pillar (handle null values)
-        const pillarCounts = bookings?.reduce((acc: Record<string, number>, b) => {
-          const pillarKey = b.pillar || 'unknown';
-          acc[pillarKey] = (acc[pillarKey] || 0) + 1;
-          return acc;
-        }, {}) || {};
-
-        const mostUsedPillar = Object.keys(pillarCounts).length > 0
-          ? Object.entries(pillarCounts).reduce((a, b) => 
-              (pillarCounts[a[0]] || 0) > (pillarCounts[b[0]] || 0) ? a : b)[0]
-          : 'N/A';
-
-        setMetrics({
-          avgSatisfaction: avgRating.toFixed(1),
-          activeEmployees,
-          totalEmployees: employees?.length || 0,
-          sessionsUsed: usedSessions,
-          sessionsAllocated: totalSessions,
-          mostUsedPillar: mostUsedPillar || 'Saúde Mental'
-        });
-      } catch (error) {
-        // Error loading company data - silently fail, show empty state
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCompanyData();
-
-    // Real-time subscription for bookings changes
-    const channel = supabase
-      .channel('company-dashboard-updates')
-      .on('postgres_changes',
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'bookings',
-          filter: `company_id=eq.${profile?.company_id}`
-        },
-        () => loadCompanyData()
-      )
-      .on('postgres_changes',
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'company_employees',
-          filter: `company_id=eq.${profile?.company_id}`
-        },
-        () => loadCompanyData()
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [profile?.company_id]);
 
   useEffect(() => {
     // Add company-page class to body for light blue background
@@ -157,7 +50,7 @@ const CompanyDashboard = () => {
     }
   };
 
-  const PillarIcon = getPillarIcon(metrics?.mostUsedPillar || 'Saúde Mental');
+  const PillarIcon = getPillarIcon(mockCompanyMetrics.mostUsedPillar);
 
   return (
     <div className="relative w-full min-h-screen h-full flex flex-col">
@@ -179,7 +72,7 @@ const CompanyDashboard = () => {
               {/* Top Left - Satisfaction */}
               <BentoCard 
                 name="Satisfação Média" 
-                description={`${metrics?.avgSatisfaction || 0}/10 - Avaliação dos colaboradores`}
+                description={`${mockCompanyMetrics.avgSatisfaction}/10 - Avaliação dos colaboradores`}
                 Icon={Star} 
                 onClick={() => navigate('/company/relatorios')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
@@ -196,7 +89,7 @@ const CompanyDashboard = () => {
               {/* Top Right - Sessions */}
               <BentoCard 
                 name="Sessões Este Mês" 
-                description={`${metrics.sessionsUsed} de ${metrics.sessionsAllocated} utilizadas`}
+                description={`${mockCompanyMetrics.usedSessions} de ${mockCompanyMetrics.contractedSessions} utilizadas`}
                 Icon={Calendar} 
                 onClick={() => navigate('/company/sessions')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
@@ -213,7 +106,7 @@ const CompanyDashboard = () => {
               {/* Bottom Left - Employee Registration Status */}
               <BentoCard 
                 name="Estado de Registo" 
-                description={`${metrics.totalEmployees} registados`}
+                description={`${mockCompanyMetrics.registeredEmployees} registados, ${mockCompanyMetrics.unregisteredEmployees} pendentes`}
                 Icon={Users} 
                 onClick={() => navigate('/company/colaboradores')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
@@ -285,19 +178,15 @@ const CompanyDashboard = () => {
                             <UserCheck className="h-4 w-4 text-green-600" />
                             <span className="text-gray-700">Ativos</span>
                           </div>
-                          <span className="font-mono text-xl font-semibold text-green-700">
-                            {metrics.activeEmployees ? Math.round((metrics.activeEmployees / metrics.totalEmployees) * 100) : 0}%
-                          </span>
+                          <span className="font-mono text-xl font-semibold text-green-700">{mockCompanyMetrics.activePercentage}%</span>
                         </div>
-                        <Progress value={metrics.activeEmployees ? Math.round((metrics.activeEmployees / metrics.totalEmployees) * 100) : 0} className="h-2" />
+                        <Progress value={mockCompanyMetrics.activePercentage} className="h-2" />
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center gap-2">
                             <UserX className="h-4 w-4 text-red-600" />
                             <span className="text-gray-700">Inativos</span>
                           </div>
-                          <span className="font-bold text-red-700">
-                            {metrics.activeEmployees ? Math.round(((metrics.totalEmployees - metrics.activeEmployees) / metrics.totalEmployees) * 100) : 0}%
-                          </span>
+                          <span className="font-bold text-red-700">{mockCompanyMetrics.inactivePercentage}%</span>
                         </div>
                       </div>
                     </div>
@@ -312,7 +201,7 @@ const CompanyDashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-lg font-medium text-gray-900">{metrics.mostUsedPillar}</span>
+                          <span className="text-lg font-medium text-gray-900">{mockCompanyMetrics.mostUsedPillar}</span>
                           <span className="font-mono text-xl font-semibold text-purple-700">42%</span>
                         </div>
                         <Progress value={42} className="h-2" />
@@ -332,15 +221,15 @@ const CompanyDashboard = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-700">Sessões utilizadas este mês</span>
                           <span className="font-mono text-xl font-semibold text-purple-700">
-                            {metrics.sessionsAllocated > 0 ? Math.round((metrics.sessionsUsed / metrics.sessionsAllocated) * 100) : 0}%
+                            {Math.round((mockCompanyMetrics.usedSessions / mockCompanyMetrics.contractedSessions) * 100)}%
                           </span>
                         </div>
                         <Progress 
-                          value={metrics.sessionsAllocated > 0 ? (metrics.sessionsUsed / metrics.sessionsAllocated) * 100 : 0} 
+                          value={(mockCompanyMetrics.usedSessions / mockCompanyMetrics.contractedSessions) * 100} 
                           className="h-2" 
                         />
                         <p className="text-sm text-gray-600">
-                          {metrics.sessionsUsed} de {metrics.sessionsAllocated} sessões
+                          {mockCompanyMetrics.usedSessions} de {mockCompanyMetrics.contractedSessions} sessões
                         </p>
                       </div>
                     </div>
