@@ -5,6 +5,9 @@ import { Building2, Users, UserCog } from 'lucide-react';
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
 import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import FeaturedSectionStats from '@/components/ui/featured-section-stats';
+import RuixenSection from '@/components/ui/ruixen-feature-section';
 import { EmployeeDetailModal } from '@/components/admin/EmployeeDetailModal';
 import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
 import { AddProviderModal } from '@/components/admin/AddProviderModal';
@@ -105,58 +108,30 @@ const AdminUsersManagement = () => {
     }
   };
 
+  const userStats = [
+    { value: "150+", label: "Empresas Ativas" },
+    { value: "5,000+", label: "Colaboradores" },
+    { value: "200+", label: "Prestadores" },
+    { value: "98%", label: "Taxa de Satisfação" },
+  ];
+
+  const chartData = [
+    { name: "Jan", value: 850 },
+    { name: "Fev", value: 1200 },
+    { name: "Mar", value: 1800 },
+    { name: "Abr", value: 2400 },
+    { name: "Mai", value: 3200 },
+    { name: "Jun", value: 4100 },
+    { name: "Jul", value: 5000 },
+  ];
+
   return (
     <div className="relative w-full min-h-screen h-full flex flex-col">
       <div className="relative z-10 h-full flex flex-col">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-6 h-full flex flex-col min-h-0">
-          {/* Page Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                Gestão de Utilizadores
-              </h1>
-              <p className="text-muted-foreground">
-                Gerir empresas, colaboradores e prestadores
-              </p>
-            </div>
-          </div>
+          {/* Feature Section */}
+          <RuixenSection />
 
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="companies" className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
-                Empresas
-              </TabsTrigger>
-              <TabsTrigger value="employees" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Colaboradores
-              </TabsTrigger>
-              <TabsTrigger value="providers" className="flex items-center gap-2">
-                <UserCog className="h-4 w-4" />
-                Prestadores
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="companies" className="mt-6">
-              <AdminCompaniesTab 
-                isAddCompanyModalOpen={isAddCompanyModalOpen}
-                setIsAddCompanyModalOpen={setIsAddCompanyModalOpen}
-              />
-            </TabsContent>
-
-            <TabsContent value="employees" className="mt-6">
-              <AdminEmployeesTab 
-                onEmployeeClick={handleEmployeeClick}
-              />
-            </TabsContent>
-
-            <TabsContent value="providers" className="mt-6">
-              <AdminProvidersTab 
-                onAddProvider={() => setIsAddProviderModalOpen(true)}
-              />
-            </TabsContent>
-          </Tabs>
         </div>
       </div>
 

@@ -120,7 +120,7 @@ const AdminDashboard = () => {
             name="Empresas Ativas" 
             description={`${analytics?.total_companies || 0} empresas ativas`}
             Icon={Building2} 
-            onClick={() => navigate('/admin/companies')} 
+            onClick={() => navigate('/admin/users-management?tab=companies')} 
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
             background={
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />

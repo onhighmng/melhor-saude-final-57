@@ -80,18 +80,8 @@ const AdminOperations = () => {
 
             {/* Content Area */}
             <div className="mt-6">
-              {activeTab === 'sessions' && (
-                <div className="p-6 bg-white rounded-lg border">
-                  <h3 className="text-lg font-semibold mb-4">Sessões Agendadas</h3>
-                  <p className="text-gray-600">Nenhuma sessão encontrada. Adicione dados através do painel de administração.</p>
-                </div>
-              )}
-              {activeTab === 'specialist' && (
-                <div className="p-6 bg-white rounded-lg border">
-                  <h3 className="text-lg font-semibold mb-4">Profissional de Permanência</h3>
-                  <p className="text-gray-600">Nenhum caso encontrado. Os casos aparecerão aqui quando houver dados.</p>
-                </div>
-              )}
+              {activeTab === 'sessions' && <AdminSessionsTab />}
+              {activeTab === 'specialist' && <AdminSpecialistTab />}
             </div>
           </div>
         </div>
