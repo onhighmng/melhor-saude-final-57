@@ -11,6 +11,7 @@ interface AnalyticsData {
   pending_change_requests: number;
   sessions_allocated: number;
   sessions_used: number;
+  avg_rating?: number;
   pillarTrends?: {
     weekly: Array<{ pillar: string; count: number; percentage: number }>;
     monthly: Array<{ pillar: string; count: number; percentage: number }>;
@@ -28,36 +29,78 @@ export const useAnalytics = () => {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      // Fetch basic counts directly from tables
-      const [usersResult, providersResult, companiesResult, bookingsResult, companiesData] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('prestadores').select('id', { count: 'exact', head: true }),
-        supabase.from('companies').select('id', { count: 'exact', head: true }),
-        supabase.from('bookings').select('id', { count: 'exact', head: true }),
-        supabase.from('companies').select('sessions_allocated, sessions_used')
-      ]);
-      
-      // Calculate session totals
-      const sessionTotals = (companiesData.data || []).reduce((acc, company) => ({
-        allocated: acc.allocated + (company.sessions_allocated || 0),
-        used: acc.used + (company.sessions_used || 0)
-      }), { allocated: 0, used: 0 });
-      
-      setData({
-        total_users: usersResult.count || 0,
-        active_users: usersResult.count || 0,
-        total_prestadores: providersResult.count || 0,
-        active_prestadores: providersResult.count || 0,
-        total_companies: companiesResult.count || 0,
-        total_bookings: bookingsResult.count || 0,
-        pending_change_requests: 0,
-        sessions_allocated: sessionTotals.allocated,
-        sessions_used: sessionTotals.used
-      });
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout after 10 seconds')), 10000)
+      );
+
+      const analyticsPromise = async () => {
+        // Fetch basic counts directly from tables with individual error handling
+        const results = await Promise.allSettled([
+          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('prestadores').select('id', { count: 'exact', head: true }),
+          supabase.from('companies').select('id', { count: 'exact', head: true }),
+          supabase.from('bookings').select('id', { count: 'exact', head: true }),
+          supabase.from('companies').select('sessions_allocated, sessions_used'),
+          supabase.from('bookings').select('rating').not('rating', 'is', null)
+        ]);
+
+        // Extract data with fallbacks
+        const usersResult = results[0].status === 'fulfilled' ? results[0].value : { count: 0 };
+        const providersResult = results[1].status === 'fulfilled' ? results[1].value : { count: 0 };
+        const companiesResult = results[2].status === 'fulfilled' ? results[2].value : { count: 0 };
+        const bookingsResult = results[3].status === 'fulfilled' ? results[3].value : { count: 0 };
+        const companiesData = results[4].status === 'fulfilled' ? results[4].value : { data: [] };
+        const ratingsData = results[5].status === 'fulfilled' ? results[5].value : { data: [] };
+
+        // Calculate session totals safely
+        const sessionTotals = (companiesData.data || []).reduce((acc, company) => ({
+          allocated: acc.allocated + (company.sessions_allocated || 0),
+          used: acc.used + (company.sessions_used || 0)
+        }), { allocated: 0, used: 0 });
+
+        // Calculate average rating safely
+        const ratings = (ratingsData.data || []).map(r => r.rating).filter(r => r !== null);
+        const avgRating = ratings.length > 0 
+          ? Math.round((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length) * 10) / 10
+          : 0;
+        
+        return {
+          total_users: usersResult.count || 0,
+          active_users: usersResult.count || 0,
+          total_prestadores: providersResult.count || 0,
+          active_prestadores: providersResult.count || 0,
+          total_companies: companiesResult.count || 0,
+          total_bookings: bookingsResult.count || 0,
+          pending_change_requests: 0,
+          sessions_allocated: sessionTotals.allocated,
+          sessions_used: sessionTotals.used,
+          avg_rating: avgRating
+        };
+      };
+
+      const analyticsData = await Promise.race([analyticsPromise(), timeoutPromise]);
+      setData(analyticsData as AnalyticsData);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch analytics';
-      setError(errorMessage);
+      console.warn('Analytics fetch error:', errorMessage);
+      
+      // Set default values to prevent infinite loading
+      setData({
+        total_users: 0,
+        active_users: 0,
+        total_prestadores: 0,
+        active_prestadores: 0,
+        total_companies: 0,
+        total_bookings: 0,
+        pending_change_requests: 0,
+        sessions_allocated: 0,
+        sessions_used: 0,
+        avg_rating: 0
+      });
+      setError(null); // Clear error since we have fallback data
     } finally {
       setLoading(false);
     }

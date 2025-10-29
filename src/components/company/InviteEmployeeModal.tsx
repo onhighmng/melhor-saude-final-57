@@ -93,8 +93,8 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
           email: formData.email,
           role: formData.role,
           status: 'accepted',
-          accepted_at: new Date().toISOString(),
-          accepted_by: data.user_id
+          accepted_at: new Date().toISOString()
+          // Note: Actual schema has 'accepted_at' but NOT 'accepted_by' - removed accepted_by
         });
       }
 

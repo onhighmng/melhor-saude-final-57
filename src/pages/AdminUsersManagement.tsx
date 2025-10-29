@@ -1,33 +1,20 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, Users, UserCog } from 'lucide-react';
+import { Building2, Users, UserCog, ChevronLeft, ChevronRight, User } from 'lucide-react';
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
-import { AdminEmployeesTab } from '@/components/admin/AdminEmployeesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
-import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
-import FeaturedSectionStats from '@/components/ui/featured-section-stats';
-import RuixenSection from '@/components/ui/ruixen-feature-section';
-import { EmployeeDetailModal } from '@/components/admin/EmployeeDetailModal';
-import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
-import { AddProviderModal } from '@/components/admin/AddProviderModal';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const AdminUsersManagement = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState('companies');
-  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
-  const [isAddProviderModalOpen, setIsAddProviderModalOpen] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
-  const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
-
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab && ['companies', 'employees', 'providers'].includes(tab)) {
-      setActiveTab(tab);
-    }
-  }, [searchParams]);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const { toast } = useToast();
+  
+  // Get real analytics data
+  const { data: analytics, isLoading: analyticsLoading } = useAnalytics();
 
   useEffect(() => {
     // Add admin-page class to body for gray background
@@ -39,121 +26,408 @@ const AdminUsersManagement = () => {
     };
   }, []);
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setSearchParams({ tab: value });
+  // Card data for left side animation
+  const cards = [
+    {
+      id: 'companies',
+      title: 'Empresas',
+      subtitle: 'Gerir empresas e códigos',
+      description: 'Gestão completa de empresas cadastradas, geração de códigos de acesso únicos e monitoramento de utilizações em tempo real.',
+      icon: Building2,
+      bgColor: 'bg-blue-50',
+      iconColor: 'text-blue-600',
+      textColor: 'text-blue-900',
+      accentColor: 'bg-yellow-400'
+    },
+    {
+      id: 'affiliates',
+      title: 'Affiliates',
+      subtitle: 'Gerir especialistas',
+      description: 'Administração de prestadores de serviços, atribuição de especialidades e controle de disponibilidade para agendamentos.',
+      icon: UserCog,
+      bgColor: 'bg-yellow-50',
+      iconColor: 'text-yellow-600',
+      textColor: 'text-yellow-900',
+      accentColor: 'bg-blue-400'
+    }
+  ];
+
+  const nextCard = () => {
+    const newIndex = (currentCardIndex + 1) % cards.length;
+    setCurrentCardIndex(newIndex);
   };
 
-  const handleEmployeeClick = async (employeeId: string) => {
+  const prevCard = () => {
+    const newIndex = (currentCardIndex - 1 + cards.length) % cards.length;
+    setCurrentCardIndex(newIndex);
+  };
+
+  const currentCard = cards[currentCardIndex];
+
+  return (
+    <div className="relative w-full min-h-screen h-full flex flex-col bg-gray-50">
+      <div className="relative z-10 h-full flex flex-col">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-6 h-full flex flex-col min-h-0">
+          {/* Main Content Grid */}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
+            
+            {/* Left Side - Animated Cards */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Animated Card */}
+              <div className="relative">
+                <Card className={`${currentCard.bgColor} border-0 shadow-lg transition-all duration-500 ease-in-out transform hover:scale-105`}>
+                  <div className={`absolute top-0 left-0 right-0 h-1 ${currentCard.accentColor} rounded-t-lg`} />
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`p-3 rounded-lg ${currentCard.bgColor} border border-white/20`}>
+                        <currentCard.icon className={`h-8 w-8 ${currentCard.iconColor}`} />
+                      </div>
+                      <div className="flex space-x-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={prevCard}
+                          className="h-8 w-8 p-0 rounded-full bg-white/20 hover:bg-white/30"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={nextCard}
+                          className="h-8 w-8 p-0 rounded-full bg-white/20 hover:bg-white/30"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h3 className={`text-2xl font-bold ${currentCard.textColor}`}>
+                        {currentCard.title}
+                      </h3>
+                      <p className={`text-lg font-medium ${currentCard.textColor}`}>
+                        {currentCard.subtitle}
+                      </p>
+                      <p className={`text-sm ${currentCard.textColor} opacity-80 leading-relaxed`}>
+                        {currentCard.description}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Platform Description */}
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold text-gray-900">
+                  Gestão Centralizada de Utilizadores{' '}
+                  <span className="text-blue-600">Wellness Platform</span>
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Controle completo sobre empresas e affiliates numa única plataforma integrada.
+                </p>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-gray-900">{analytics?.total_companies || 0}+</div>
+                  <div className="text-sm text-gray-600">Empresas</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-gray-900">{analytics?.total_prestadores || 0}+</div>
+                  <div className="text-sm text-gray-600">Affiliates</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Content Based on Card Selection */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {currentCard.id === 'companies' ? 'Empresas' : 'Affiliates'}
+                </h1>
+              </div>
+              
+              {/* Content Based on Card */}
+              {currentCard.id === 'companies' ? (
+                <div className="space-y-6">
+                  <AdminCompaniesTab />
+                  <CompaniesCodesSection toast={toast} />
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <AdminProvidersTab />
+                  <ProvidersCodesSection toast={toast} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Companies Codes Section Component
+const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['toast'] }) => {
+  const [codes, setCodes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    loadCodes();
+  }, []);
+
+  const loadCodes = async () => {
     try {
-      // Fetch employee data from database
-      const { data: employeeData, error } = await supabase
-        .from('company_employees')
-        .select(`
-          *,
-          company:companies(id, company_name)
-        `)
-        .eq('id', employeeId)
-        .single();
+      setLoading(true);
+      
+      // Query all invites, then filter in JavaScript to avoid column issues
+      const { data: allCodes, error } = await supabase
+        .from('invites')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      if (!employeeData) return;
-
-      // Get user profile separately
-      const { data: userData } = await supabase
-        .from('profiles')
-        .select('id, name, email, avatar_url')
-        .eq('id', employeeData.user_id)
-        .single();
-
-      // Get bookings for this employee
-      const { data: bookings } = await supabase
-        .from('bookings')
-        .select(`
-          *,
-          prestador:prestadores(id, name, photo_url)
-        `)
-        .eq('user_id', employeeData.user_id)
-        .order('booking_date', { ascending: false })
-        .limit(10);
-
-      const avgRating = bookings && bookings.length > 0
-        ? bookings.reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length
-        : 0;
-
-      // Transform to modal format
-      const employee = {
-        id: employeeData.id,
-        name: userData?.name || 'Unknown',
-        email: userData?.email || '',
-        company: employeeData.company?.company_name || '',
-        sessions: {
-          used: employeeData.sessions_used || 0,
-          total: employeeData.sessions_allocated || 0
-        },
-        rating: Math.round(avgRating * 10) / 10,
-        objectives: [],
-        sessionHistory: (bookings || []).map(b => ({
-          date: b.booking_date ? new Date(b.booking_date).toLocaleDateString('pt-PT') : 'N/A',
-          category: b.pillar || 'N/A',
-          provider: b.prestador?.name || 'N/A'
-        }))
-      };
-
-      setSelectedEmployee(employee);
-      setIsEmployeeModalOpen(true);
+      
+      // Filter by user_type in JavaScript (handles if column is null or doesn't exist)
+      const filteredCodes = (allCodes || []).filter((code: any) => 
+        code.user_type === 'hr' || code.user_type === 'user'
+      );
+      
+      setCodes(filteredCodes);
     } catch (error) {
-      console.error('Error loading employee:', error);
-      toast.error('Erro ao carregar dados do colaborador');
+      console.error('Error loading codes:', error);
+      toast({ title: 'Erro', description: 'Erro ao carregar códigos', variant: 'destructive' });
+      setCodes([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const userStats = [
-    { value: "150+", label: "Empresas Ativas" },
-    { value: "5,000+", label: "Colaboradores" },
-    { value: "200+", label: "Prestadores" },
-    { value: "98%", label: "Taxa de Satisfação" },
-  ];
+  const handleGenerateCode = async (userType: 'hr' | 'user') => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.rpc('generate_access_code' as any, {
+        p_user_type: userType,
+        p_company_id: null,
+        p_metadata: {},
+        p_expires_days: 30
+      });
 
-  const chartData = [
-    { name: "Jan", value: 850 },
-    { name: "Fev", value: 1200 },
-    { name: "Mar", value: 1800 },
-    { name: "Abr", value: 2400 },
-    { name: "Mai", value: 3200 },
-    { name: "Jun", value: 4100 },
-    { name: "Jul", value: 5000 },
-  ];
+      if (error) throw error;
+      toast({ title: 'Sucesso', description: `Código ${data} gerado com sucesso!` });
+      loadCodes();
+    } catch (error: any) {
+      console.error('Error generating code:', error);
+      toast({ 
+        title: 'Erro', 
+        description: error?.message || 'Erro ao gerar código. Verifique se a função está instalada corretamente.', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: 'Sucesso', description: 'Código copiado!' });
+  };
+
+  const getStatusBadge = (code: any) => {
+    if (code.status === 'accepted') return <Badge className="bg-blue-100 text-blue-700">Usado</Badge>;
+    if (code.status === 'revoked') return <Badge className="bg-red-100 text-red-700">Revogado</Badge>;
+    if (new Date(code.expires_at) < new Date()) return <Badge className="bg-gray-100 text-gray-700">Expirado</Badge>;
+    return <Badge className="bg-green-100 text-green-700">Ativo</Badge>;
+  };
+
+  const getUserTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      'hr': 'Responsável HR',
+      'user': 'Colaborador',
+      'personal': 'Pessoal',
+      'prestador': 'Prestador'
+    };
+    return labels[type] || type;
+  };
 
   return (
-    <div className="relative w-full min-h-screen h-full flex flex-col">
-      <div className="relative z-10 h-full flex flex-col">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 space-y-6 h-full flex flex-col min-h-0">
-          {/* Feature Section */}
-          <RuixenSection />
-
+    <Card className="border-0 shadow-sm">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Códigos de Acesso</h2>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => handleGenerateCode('hr')}
+              disabled={isGenerating}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Building2 className="h-4 w-4 mr-2" />
+              Gerar HR
+            </Button>
+            <Button
+              onClick={() => handleGenerateCode('user')}
+              disabled={isGenerating}
+              size="sm"
+              variant="outline"
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Gerar Colaborador
+            </Button>
+          </div>
         </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : codes.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>Nenhum código gerado</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="grid grid-cols-5 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b">
+              <div>Código</div>
+              <div>Estado</div>
+              <div>Tipo</div>
+              <div>Criado</div>
+              <div>Expira</div>
+            </div>
+            {codes.slice(0, 5).map((code) => (
+              <div key={code.id} className="grid grid-cols-5 gap-4 p-3 hover:bg-gray-50 rounded">
+                <div className="font-mono text-sm">{code.invite_code}</div>
+                <div>{getStatusBadge(code)}</div>
+                <div className="text-sm">{getUserTypeLabel(code.user_type)}</div>
+                <div className="text-sm text-gray-600">{new Date(code.created_at).toLocaleDateString('pt-PT')}</div>
+                <div className="text-sm text-gray-600">{new Date(code.expires_at).toLocaleDateString('pt-PT')}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// Providers Codes Section Component
+const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['toast'] }) => {
+  const [codes, setCodes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    loadCodes();
+  }, []);
+
+  const loadCodes = async () => {
+    try {
+      setLoading(true);
+      
+      // Query all invites, then filter in JavaScript to avoid column issues
+      const { data: allCodes, error } = await supabase
+        .from('invites')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Filter by user_type in JavaScript
+      const filteredCodes = (allCodes || []).filter((code: any) => code.user_type === 'prestador');
+      
+      setCodes(filteredCodes);
+    } catch (error) {
+      console.error('Error loading codes:', error);
+      toast({ title: 'Erro', description: 'Erro ao carregar códigos', variant: 'destructive' });
+      setCodes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateCode = async () => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.rpc('generate_access_code' as any, {
+        p_user_type: 'prestador',
+        p_company_id: null,
+        p_metadata: {},
+        p_expires_days: 30
+      });
+
+      if (error) throw error;
+      toast({ title: 'Sucesso', description: `Código ${data} gerado com sucesso!` });
+      loadCodes();
+    } catch (error: any) {
+      console.error('Error generating code:', error);
+      toast({ 
+        title: 'Erro', 
+        description: error?.message || 'Erro ao gerar código. Verifique se a função está instalada corretamente.', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const getStatusBadge = (code: any) => {
+    if (code.status === 'accepted') return <Badge className="bg-blue-100 text-blue-700">Usado</Badge>;
+    if (code.status === 'revoked') return <Badge className="bg-red-100 text-red-700">Revogado</Badge>;
+    if (new Date(code.expires_at) < new Date()) return <Badge className="bg-gray-100 text-gray-700">Expirado</Badge>;
+    return <Badge className="bg-green-100 text-green-700">Ativo</Badge>;
+  };
+
+  return (
+    <Card className="border-0 shadow-sm">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Códigos de Acesso</h2>
+          <Button
+            onClick={handleGenerateCode}
+            disabled={isGenerating}
+            size="sm"
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            <UserCog className="h-4 w-4 mr-2" />
+            {isGenerating ? 'Gerando...' : 'Gerar Código Prestador'}
+          </Button>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : codes.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            <UserCog className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>Nenhum código gerado</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="grid grid-cols-5 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b">
+              <div>Código</div>
+              <div>Estado</div>
+              <div>Tipo</div>
+              <div>Criado</div>
+              <div>Expira</div>
+            </div>
+            {codes.slice(0, 5).map((code) => (
+              <div key={code.id} className="grid grid-cols-5 gap-4 p-3 hover:bg-gray-50 rounded">
+                <div className="font-mono text-sm">{code.invite_code}</div>
+                <div>{getStatusBadge(code)}</div>
+                <div className="text-sm">Prestador</div>
+                <div className="text-sm text-gray-600">{new Date(code.created_at).toLocaleDateString('pt-PT')}</div>
+                <div className="text-sm text-gray-600">{new Date(code.expires_at).toLocaleDateString('pt-PT')}</div>
       </div>
-
-      {/* Employee Detail Modal */}
-      <EmployeeDetailModal
-        employee={selectedEmployee}
-        open={isEmployeeModalOpen}
-        onOpenChange={setIsEmployeeModalOpen}
-      />
-
-      {/* Add Company Modal */}
-      <AddCompanyModal
-        open={isAddCompanyModalOpen}
-        onOpenChange={setIsAddCompanyModalOpen}
-      />
-
-      {/* Add Provider Modal */}
-      <AddProviderModal
-        open={isAddProviderModalOpen}
-        onOpenChange={setIsAddProviderModalOpen}
-      />
+            ))}
     </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

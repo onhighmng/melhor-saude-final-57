@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Progress } from '@/components/ui/progress';
-import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
-import { DeleteCompanyDialog } from '@/components/admin/DeleteCompanyDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
@@ -15,21 +11,9 @@ import {
   Eye, 
   Building2, 
   Users, 
-  TrendingUp,
-  Calendar,
-  Euro,
   Plus,
   Trash2
 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
 
 interface Company {
   id: string;
@@ -43,24 +27,15 @@ interface Company {
   monthlyFee: number;
 }
 
-// Mock companies removed - using real data from database
+interface AdminCompaniesTabProps {
+  onAddCompany?: () => void;
+}
 
-export const AdminCompaniesTab = ({ 
-  isAddCompanyModalOpen: externalIsOpen,
-  setIsAddCompanyModalOpen: externalSetIsOpen
-}: {
-  isAddCompanyModalOpen?: boolean;
-  setIsAddCompanyModalOpen?: (open: boolean) => void;
-} = {}) => {
+export const AdminCompaniesTab = ({ onAddCompany }: AdminCompaniesTabProps) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const [companies, setCompanies] = useState<Array<Record<string, unknown>>>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [companyToDelete, setCompanyToDelete] = useState<{ id: string; name: string } | null>(null);
-  
-  // Use external state if provided, otherwise use internal state
-  const isAddCompanyModalOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
   useEffect(() => {
     loadCompanies();
@@ -82,131 +57,76 @@ export const AdminCompaniesTab = ({
   const loadCompanies = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data: companiesData, error: companiesError } = await supabase
         .from('companies')
-        .select(`
-          *,
-          company_employees (count)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (companiesError) throw companiesError;
 
-      if (data) {
-        const formattedCompanies = data.map(company => {
-          const employeeCount = company.company_employees?.length || 0;
-          const usagePercent = company.sessions_allocated > 0 
-            ? Math.round((company.sessions_used / company.sessions_allocated) * 100)
-            : 0;
-          
-          return {
-            id: company.id,
-            name: company.company_name,
-            nuit: '',
-            employees: employeeCount,
-            plan: `${company.sessions_allocated} sessões`,
-            totalSessions: company.sessions_allocated,
-            usedSessions: company.sessions_used,
-            status: company.is_active ? 'Ativa' : 'Em Onboarding',
-            monthlyFee: 0
-          };
-        });
+      if (companiesData) {
+        // Get employee counts for each company
+        const companiesWithEmployees = await Promise.all(
+          companiesData.map(async (company) => {
+            const { count, error: countError } = await supabase
+              .from('company_employees')
+              .select('*', { count: 'exact', head: true })
+              .eq('company_id', company.id);
 
-        setCompanies(formattedCompanies);
+            const employeeCount = countError ? 0 : (count || 0);
+
+            return {
+              id: company.id,
+              name: company.company_name || 'N/A',
+              nuit: company.nuit || 'N/A',
+              employees: employeeCount,
+              plan: company.plan_type || 'N/A',
+              totalSessions: company.sessions_allocated || 0,
+              usedSessions: company.sessions_used || 0,
+              status: company.is_active ? 'Ativa' : 'Em Onboarding',
+              monthlyFee: company.monthly_fee || 0,
+            };
+          })
+        );
+
+        setCompanies(companiesWithEmployees);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar empresas';
-      toast.error(errorMessage);
+      console.error('Error loading companies:', error);
+      toast.error('Erro ao carregar empresas');
+      setCompanies([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadCompanies();
-
-    // Real-time subscription
-    const channel = supabase
-      .channel('companies-changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'companies' },
-        () => loadCompanies()
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-  
-  const setIsAddCompanyModalOpen = externalSetIsOpen || setInternalIsOpen;
-
   const filteredCompanies = companies.filter(company =>
-    (company.name as string).toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (company.nuit as string).includes(searchQuery)
+    company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    company.nuit.includes(searchQuery)
   );
 
-  const navigate = useNavigate();
-
-  const handleViewDetails = (company: Company) => {
-    navigate(`/admin/companies/${company.id}`);
+  const getCompanyColor = (index: number) => {
+    const colors = [
+      'bg-blue-100 text-blue-800',
+      'bg-green-100 text-green-800', 
+      'bg-yellow-100 text-yellow-800',
+      'bg-purple-100 text-purple-800',
+      'bg-pink-100 text-pink-800',
+      'bg-indigo-100 text-indigo-800',
+    ];
+    return colors[index % colors.length];
   };
 
-  // Fetch monthly usage data
-  const [monthlyUsageData, setMonthlyUsageData] = useState<Array<{ month: string; sessions: number }>>([]);
-
-  useEffect(() => {
-    const fetchMonthlyUsage = async () => {
-      try {
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-
-        const { data, error } = await supabase
-          .from('bookings')
-          .select('booking_date')
-          .gte('booking_date', sixMonthsAgo.toISOString())
-          .order('booking_date', { ascending: true });
-
-        if (error) throw error;
-
-        // Group by month
-        const monthCounts: Record<string, number> = {};
-        data?.forEach(booking => {
-          const date = new Date(booking.booking_date);
-          const monthKey = date.toLocaleDateString('pt-PT', { month: 'short' });
-          monthCounts[monthKey] = (monthCounts[monthKey] || 0) + 1;
-        });
-
-        const chartData = Object.entries(monthCounts).map(([month, sessions]) => ({
-          month,
-          sessions
-        }));
-
-        setMonthlyUsageData(chartData);
-      } catch (error) {
-        // Silent fail for monthly usage fetching
-      }
-    };
-
-    fetchMonthlyUsage();
-  }, []);
-
-  // Real-time subscription for companies
-  useEffect(() => {
-    const channel = supabase
-      .channel('companies_changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'companies' },
-        () => {
-          loadCompanies();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'Ativa':
+        return <Badge className="bg-green-100 text-green-700 border-green-200">Ativa</Badge>;
+      case 'Em Onboarding':
+        return <Badge variant="outline" className="border-blue-200 text-blue-700">Em Onboarding</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
 
   if (loading) {
     return (
@@ -217,139 +137,102 @@ export const AdminCompaniesTab = ({
   }
 
   return (
-    <>
-      <div className="space-y-6">
-        {/* Header with Add Button */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground">Empresas</h2>
-            <p className="text-sm text-muted-foreground">Gerir empresas e planos de sessões</p>
-          </div>
-          
-          <Button onClick={() => setIsAddCompanyModalOpen(true)} size="lg">
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Empresa
-          </Button>
+    <div className="space-y-6">
+      {/* Search Bar */}
+      <div className="flex items-center space-x-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Pesquisar empresas..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
         </div>
-
-        {/* Search Bar */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Pesquisar por nome ou NUIT..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </div>
-
-        {/* Companies Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Empresas Ativas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-lg">Empresa</TableHead>
-                  <TableHead className="text-lg">NUIT</TableHead>
-                  <TableHead className="text-lg">Colaboradores</TableHead>
-                  <TableHead className="text-lg">Sessões</TableHead>
-                  <TableHead className="text-lg">Estado</TableHead>
-                  <TableHead className="text-lg text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredCompanies.map((company) => {
-                  const usagePercent = ((company.usedSessions as number) / (company.totalSessions as number)) * 100;
-                  return (
-                    <TableRow 
-                      key={company.id as string}
-                      className="hover:bg-muted/50"
-                    >
-                      <TableCell 
-                        className="font-medium text-lg py-4 cursor-pointer"
-                        onClick={() => handleViewDetails(company as unknown as Company)}
-                      >
-                        {company.name as string}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-lg py-4">{company.nuit as string}</TableCell>
-                      <TableCell className="text-lg py-4">
-                        <div className="flex items-center gap-2">
-                          <Users className="h-5 w-5 text-muted-foreground" />
-                          {company.employees as number}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-lg py-4">
-                        <span>
-                          {company.usedSessions as number}/{company.totalSessions as number}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-lg py-4">
-                        <Badge 
-                          variant={(company.status as string) === 'Ativa' ? 'default' : 'secondary'}
-                          className={(company.status as string) === 'Ativa' ? 'bg-emerald-600 text-white hover:bg-emerald-600 hover:text-white border-0 text-base' : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary text-base'}
-                        >
-                          {company.status as string}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewDetails(company as unknown as Company);
-                            }}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCompanyToDelete({ id: company.id as string, name: company.name as string });
-                              setDeleteDialogOpen(true);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
       </div>
 
-      {/* Add Company Modal */}
-      <AddCompanyModal
-        open={isAddCompanyModalOpen}
-        onOpenChange={setIsAddCompanyModalOpen}
-      />
+      {/* Companies List */}
+      <Card className="border-0 shadow-sm">
+        <CardContent className="p-0">
+          {/* Table Header */}
+          <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-medium text-sm text-gray-600">
+            <div>Empresa</div>
+            <div className="flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              Colaboradores
+            </div>
+            <div>Sessões</div>
+            <div>Estado</div>
+          </div>
 
-      {/* Delete Company Dialog */}
-      {companyToDelete && (
-        <DeleteCompanyDialog
-          open={deleteDialogOpen}
-          onOpenChange={setDeleteDialogOpen}
-          companyId={companyToDelete.id}
-          companyName={companyToDelete.name}
-          onSuccess={() => {
-            setDeleteDialogOpen(false);
-            setCompanyToDelete(null);
-            loadCompanies();
-          }}
-        />
-      )}
-    </>
+          {/* Companies Rows */}
+          <div className="divide-y">
+            {filteredCompanies.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">
+                <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Nenhuma empresa encontrada</p>
+              </div>
+            ) : (
+              filteredCompanies.map((company, index) => (
+                <div 
+                  key={company.id} 
+                  className="grid grid-cols-4 gap-4 p-4 hover:bg-gray-50 transition-colors"
+                >
+                  {/* Company Name */}
+                  <div className="flex items-center">
+                    <div className={`px-3 py-1 rounded-lg text-sm font-medium ${getCompanyColor(index)}`}>
+                      {company.name}
+                    </div>
+                  </div>
+
+                  {/* Employees */}
+                  <div className="flex items-center gap-2 text-sm">
+                    <Users className="h-4 w-4 text-gray-400" />
+                    <span>{company.employees}</span>
+                  </div>
+
+                  {/* Sessions */}
+                  <div className="text-sm">
+                    <span className="font-medium">{company.usedSessions}</span>
+                    <span className="text-gray-400">/{company.totalSessions}</span>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex items-center justify-between">
+                    {getStatusBadge(company.status)}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate(`/admin/companies/${company.id}`)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Helper Text */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <Building2 className="h-4 w-4 text-blue-600" />
+          </div>
+          <div>
+            <h4 className="font-medium text-blue-900">Como Adicionar Empresas</h4>
+            <p className="text-sm text-blue-700 mt-1">
+              Para permitir que novas empresas se registem, gere códigos HR no botão "Gerar HR" abaixo. 
+              Os responsáveis de empresa usarão esses códigos para registar a sua empresa na plataforma.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

@@ -135,7 +135,7 @@ const MobileMenu = ({ isOpen, onClose, menuItems }: MobileMenuProps) => {
               Entrar
             </button>
             <button 
-              onClick={() => handleNavigation('/register/company')}
+              onClick={() => handleNavigation('/register')}
               className="block w-full bg-bright-royal text-white rounded-3xl px-6 py-3 sm:px-8 sm:py-4 text-center text-base sm:text-lg font-medium transition-colors duration-300 hover:bg-navy-blue"
             >
               Registo

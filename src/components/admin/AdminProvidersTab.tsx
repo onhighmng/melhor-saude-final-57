@@ -1,738 +1,288 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { 
   Search, 
+  Eye, 
+  UserCog, 
+  Calendar, 
   Plus, 
-  Users, 
-  UserCheck,
-  Clock,
   Brain,
   Heart,
   DollarSign,
-  Scale,
-  Star,
-  TrendingUp,
-  Building,
-  Calendar,
-  BarChart3,
-  Video,
-  MapPin,
-  X,
-  Eye,
-  Phone,
-  Mail,
-  Globe,
-  Award,
-  BookOpen,
-  CheckCircle2
+  Scale
 } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import providerPlaceholder from '@/assets/provider-placeholder.jpg';
-import { BookingModal } from '@/components/admin/providers/BookingModal';
-import { InfoCard } from '@/components/ui/info-card';
-import type { CalendarSlot } from '@/types/adminProvider';
-import { LiveIndicator } from '@/components/ui/live-indicator';
 
 interface Provider {
   id: string;
   name: string;
   email: string;
-  avatar?: string;
   specialty: string;
   pillar: string;
-  status: string;
-  satisfaction: number;
-  sessionsThisMonth: number;
-  isApproved: boolean;
+  totalSessions: number;
+  scheduledSessions: number;
+  status: 'Ativo' | 'Inativo' | 'Pendente';
+  costPerSession: number;
 }
 
-const AdminProvidersTab = () => {
-  const { profile } = useAuth();
-  const [providers, setProviders] = useState<Provider[]>([]);
-  const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [pillarFilter, setPillarFilter] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
+interface AdminProvidersTabProps {
+  onAddProvider?: () => void;
+}
+
+export const AdminProvidersTab = ({ onAddProvider }: AdminProvidersTabProps) => {
   const navigate = useNavigate();
-
-  // Modal states
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | null>(null);
-
-  // Form states for new provider
-  const [newProvider, setNewProvider] = useState({
-    name: '',
-    email: '',
-    pillar: '',
-    costPerSession: '',
-    sessionType: '',
-    status: 'Ativo'
-  });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadProviders();
 
     // Real-time subscription
-    const subscription = supabase
-      .channel('admin-providers-updates')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'prestadores'
-      }, () => {
-        loadProviders();
-        toast({
-          title: 'Atualização',
-          description: 'Lista de prestadores atualizada',
-        });
-      })
+    const channel = supabase
+      .channel('providers-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'prestadores' },
+        () => loadProviders()
+      )
       .subscribe();
 
     return () => {
-      subscription.unsubscribe();
+      supabase.removeChannel(channel);
     };
   }, []);
 
-  useEffect(() => {
-    applyFilters();
-  }, [providers, searchQuery, pillarFilter, statusFilter]);
-
   const loadProviders = async () => {
-    setIsLoading(true);
     try {
-      // Load prestadores with profiles
-      const { data, error } = await supabase
+      setLoading(true);
+      const { data: providersData, error: providersError } = await supabase
         .from('prestadores')
         .select(`
           *,
-          profiles (name, email, avatar_url)
+          profiles!prestadores_user_id_fkey(name, email)
         `)
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (providersError) throw providersError;
 
-      if (data) {
-        // Get bookings for metrics
-        const { data: bookingsData } = await supabase
-          .from('bookings')
-          .select('prestador_id, rating')
-          .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+      if (providersData) {
+        // Get scheduled sessions count for each provider
+        const providersWithSessions = await Promise.all(
+          providersData.map(async (provider: any) => {
+            const profile = provider.profiles as any;
+            
+            // Count scheduled/confirmed bookings
+            const { count: scheduledCount } = await supabase
+              .from('bookings')
+              .select('*', { count: 'exact', head: true })
+              .eq('prestador_id', provider.id)
+              .in('status', ['pending', 'confirmed']);
+            
+            const scheduledSessions = scheduledCount || 0;
+            
+            // Get first pillar from array - try different possible column names
+            const pillarArray = provider.pillar_specialties || provider.pillars || [];
+            const pillar = Array.isArray(pillarArray) && pillarArray.length > 0
+              ? pillarArray[0]
+              : 'N/A';
+            
+            // Get specialty - try different possible column names
+            const specialtyArray = provider.specialization || provider.specialties || [];
+            const specialty = Array.isArray(specialtyArray) && specialtyArray.length > 0
+              ? specialtyArray[0]
+              : provider.specialty || 'N/A';
+            
+            return {
+              id: provider.id,
+              name: profile?.name || provider.name || 'N/A',
+              email: profile?.email || provider.email || 'N/A',
+              specialty: specialty,
+              pillar: pillar,
+              totalSessions: provider.total_sessions || 0,
+              scheduledSessions: scheduledSessions,
+              status: provider.is_active ? ('Ativo' as const) : ('Inativo' as const),
+              costPerSession: provider.cost_per_session || 0,
+            };
+          })
+        );
 
-        const bookingStats = bookingsData?.reduce((acc: any, b: any) => {
-          if (!acc[b.prestador_id]) {
-            acc[b.prestador_id] = { count: 0, ratings: [] };
-          }
-          acc[b.prestador_id].count++;
-          if (b.rating) acc[b.prestador_id].ratings.push(b.rating);
-          return acc;
-        }, {});
-
-        const formattedProviders = data.map((p: any) => {
-          const stats = bookingStats?.[p.id] || { count: 0, ratings: [] };
-          const avgSatisfaction = stats.ratings.length > 0
-            ? stats.ratings.reduce((sum: number, r: number) => sum + r, 0) / stats.ratings.length
-            : p.rating || 0;
-
-          return {
-            id: p.id,
-            name: p.profiles?.name || '',
-            email: p.profiles?.email || '',
-            avatar: p.profiles?.avatar_url || '',
-            specialty: p.specialty || '',
-            pillar: p.pillars?.[0] || '',
-            status: p.is_approved ? 'Aprovado' : 'Pendente',
-            satisfaction: Math.round(avgSatisfaction * 10) / 10,
-            sessionsThisMonth: stats.count,
-            isApproved: p.is_approved || false
-          };
-        });
-
-        setProviders(formattedProviders);
+        setProviders(providersWithSessions);
       }
-    } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: error.message || "Erro ao carregar prestadores",
-        variant: "destructive"
-      });
+    } catch (error) {
+      console.error('Error loading providers:', error);
+      toast.error('Erro ao carregar prestadores');
+      setProviders([]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const applyFilters = () => {
-    // If no pillar is selected, show no providers
-    if (!pillarFilter) {
-      setFilteredProviders([]);
-      return;
-    }
-
-    let filtered = providers.filter(provider => provider.pillar === pillarFilter);
-
-    if (searchQuery) {
-      filtered = filtered.filter(provider =>
+  const filteredProviders = providers.filter(provider =>
         provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        provider.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        provider.specialty.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+    provider.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    provider.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(provider => provider.status === statusFilter);
-    }
-
-    setFilteredProviders(filtered);
-  };
-
-  const handleAddProvider = () => {
-    // Validate form
-    if (!newProvider.name || !newProvider.email || !newProvider.pillar || !newProvider.costPerSession || !newProvider.sessionType) {
-      toast({
-        title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Prestador adicionado",
-      description: `${newProvider.name} foi adicionado com sucesso`
-    });
-
-    setShowAddModal(false);
-    setNewProvider({
-      name: '',
-      email: '',
-      pillar: '',
-      costPerSession: '',
-      sessionType: '',
-      status: 'Ativo'
-    });
-  };
-
-  const handleViewProvider = (provider: Provider) => {
-    navigate(`/admin/provider-metrics/${provider.id}`);
-  };
-
-  const handleApproveProvider = async (providerId: string) => {
-    try {
-      const { error } = await supabase
-        .from('prestadores')
-        .update({ is_approved: true, is_active: true })
-        .eq('id', providerId);
-
-      if (error) throw error;
-
-      // Fetch provider email and name via user_id
-      const { data: prestador } = await supabase
-        .from('prestadores')
-        .select('user_id, name')
-        .eq('id', providerId)
-        .single();
-
-      if (prestador?.user_id) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('email')
-          .eq('id', prestador.user_id)
-          .single();
-
-        if (profileData) {
-          // Send approval email
-          await supabase.functions.invoke('send-email', {
-            body: {
-              to: profileData.email,
-              subject: 'Aprovação de Prestador - Melhor Saúde',
-              html: `
-                <h2>Bem-vindo à Melhor Saúde!</h2>
-                <p>Olá ${prestador.name},</p>
-              <p>A sua candidatura foi <strong>aprovada</strong>. Pode agora aceder à plataforma e começar a agendar sessões.</p>
-              <p>Aceda à sua área de prestador em <a href="https://melhorsaude.pt">melhorsaude.pt</a></p>
-                <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
-              `,
-              type: 'provider_approved'
-            }
-          });
-        }
-      }
-
-      // Log admin action
-      if (profile?.id) {
-        await supabase.from('admin_logs').insert({
-          admin_id: profile.id,
-          action: 'provider_approved',
-          entity_id: providerId,
-          entity_type: 'prestador'
-        });
-      }
-
-      toast({
-        title: "Prestador aprovado",
-        description: "O prestador foi aprovado e foi notificado por email"
-      });
-
-      await loadProviders();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erro ao aprovar prestador";
-      toast({
-        title: "Erro",
-        description: errorMessage,
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleRejectProvider = async (providerId: string) => {
-    try {
-      const { error } = await supabase
-        .from('prestadores')
-        .update({ is_approved: false, is_active: false })
-        .eq('id', providerId);
-
-      if (error) throw error;
-
-      // Fetch provider email and name via user_id
-      const { data: prestador } = await supabase
-        .from('prestadores')
-        .select('user_id, name')
-        .eq('id', providerId)
-        .single();
-
-      if (prestador?.user_id) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('email')
-          .eq('id', prestador.user_id)
-          .single();
-
-        if (profileData) {
-          // Send rejection email
-          await supabase.functions.invoke('send-email', {
-            body: {
-              to: profileData.email,
-              subject: 'Candidatura de Prestador - Melhor Saúde',
-              html: `
-                <h2>Candidatura Recebida</h2>
-                <p>Olá ${prestador.name},</p>
-              <p>Obrigado pelo seu interesse em juntar-se à equipa Melhor Saúde.</p>
-              <p>Após avaliação, a sua candidatura não foi aprovada neste momento. Ficaremos em contacto se surgirem oportunidades futuras.</p>
-                <p>Atenciosamente,<br>Equipa Melhor Saúde</p>
-              `,
-              type: 'provider_rejected'
-            }
-          });
-        }
-      }
-
-      // Log admin action
-      if (profile?.id) {
-        await supabase.from('admin_logs').insert({
-          admin_id: profile.id,
-          action: 'provider_rejected',
-          entity_id: providerId,
-          entity_type: 'prestador'
-        });
-      }
-
-      toast({
-        title: "Prestador rejeitado",
-        description: "O prestador foi desativado e notificado por email",
-        variant: "destructive"
-      });
-
-      await loadProviders();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erro ao rejeitar prestador";
-      toast({
-        title: "Erro",
-        description: errorMessage,
-        variant: "destructive"
-      });
-    }
-  };
-
-
-  // Calculate summary metrics
-  const totalProviders = providers.length;
-  const activeProviders = providers.filter(p => p.isApproved).length;
-  const avgSatisfaction = providers.length > 0 
-    ? (providers.reduce((sum, p) => sum + p.satisfaction, 0) / providers.length).toFixed(1)
-    : '0.0';
-  const totalSessionsThisMonth = providers.reduce((sum, p) => sum + p.sessionsThisMonth, 0);
-
-  const getPillarBadgeColor = (pillar: string) => {
-    switch (pillar) {
-      case 'mental-health':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'physical-wellness':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'financial-assistance':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'legal-assistance':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  const getProviderColor = (index: number) => {
+    const colors = [
+      'bg-blue-100 text-blue-800',
+      'bg-green-100 text-green-800', 
+      'bg-yellow-100 text-yellow-800',
+      'bg-purple-100 text-purple-800',
+      'bg-pink-100 text-pink-800',
+      'bg-indigo-100 text-indigo-800',
+    ];
+    return colors[index % colors.length];
   };
 
   const getPillarIcon = (pillar: string) => {
     switch (pillar) {
-      case 'mental-health':
+      case 'saude_mental':
         return <Brain className="h-4 w-4" />;
-      case 'physical-wellness':
+      case 'bem_estar_fisico':
         return <Heart className="h-4 w-4" />;
-      case 'financial-assistance':
+      case 'assistencia_financeira':
         return <DollarSign className="h-4 w-4" />;
-      case 'legal-assistance':
+      case 'assistencia_juridica':
         return <Scale className="h-4 w-4" />;
       default:
-        return null;
+        return <UserCog className="h-4 w-4" />;
     }
   };
 
-  const getPillarName = (pillar: string) => {
-    switch (pillar) {
-      case 'mental-health':
-        return 'Saúde Mental';
-      case 'physical-wellness':
-        return 'Bem-Estar Físico';
-      case 'financial-assistance':
-        return 'Assistência Financeira';
-      case 'legal-assistance':
-        return 'Assistência Jurídica';
-      default:
-        return pillar;
-    }
+  const getSpecialtyLabel = (specialty: string) => {
+    const specialties: Record<string, string> = {
+      'psicologia': 'Psicologia',
+      'nutricao': 'Nutrição',
+      'consultoria_financeira': 'Consultoria Financeira',
+      'assistencia_legal': 'Assistência Legal',
+      'coaching': 'Coaching',
+      'terapia': 'Terapia',
+    };
+    return specialties[specialty] || specialty;
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Aprovado':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Aprovado</Badge>;
+      case 'Ativo':
+        return <Badge className="bg-green-100 text-green-700 border-green-200">Ativo</Badge>;
+      case 'Inativo':
+        return <Badge variant="outline" className="border-gray-200 text-gray-700">Inativo</Badge>;
       case 'Pendente':
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Pendente</Badge>;
+        return <Badge variant="outline" className="border-yellow-200 text-yellow-700">Pendente</Badge>;
       default:
-        return <Badge>{status}</Badge>;
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="space-y-8 animate-pulse">
-        <div className="h-8 bg-muted rounded w-48"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-32 bg-muted rounded-lg"></div>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="h-64 bg-muted rounded-lg"></div>
-          ))}
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header with Add Button */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground">Prestadores</h2>
-            <p className="text-sm text-muted-foreground">Gerir prestadores externos e suas métricas</p>
-          </div>
-          <LiveIndicator />
-        </div>
-        
-        <Button onClick={() => setShowAddModal(true)} size="lg">
-          <Plus className="h-4 w-4 mr-2" />
-          Adicionar Prestador
-        </Button>
-      </div>
-
-      {/* Pillar Cards - Clickable to filter */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card 
-          className={`hover-lift border-2 shadow-sm cursor-pointer transition-all ${
-            pillarFilter === 'mental-health' 
-              ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900' 
-              : 'border-transparent bg-gradient-to-br from-blue-50/50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/50 hover:border-blue-300'
-          }`}
-          onClick={() => setPillarFilter('mental-health')}
-        >
-          <CardContent className="p-6 text-center space-y-3">
-            <Brain className="h-12 w-12 mx-auto text-blue-600" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Saúde Mental</p>
-              <p className="font-mono text-xl font-semibold text-blue-700 dark:text-blue-300">
-                {providers.filter(p => p.pillar === 'mental-health').length}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card 
-          className={`hover-lift border-2 shadow-sm cursor-pointer transition-all ${
-            pillarFilter === 'physical-wellness' 
-              ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900' 
-              : 'border-transparent bg-gradient-to-br from-orange-50/50 to-orange-100/50 dark:from-orange-950/50 dark:to-orange-900/50 hover:border-orange-300'
-          }`}
-          onClick={() => setPillarFilter('physical-wellness')}
-        >
-          <CardContent className="p-6 text-center space-y-3">
-            <Heart className="h-12 w-12 mx-auto text-orange-600" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Bem-Estar Físico</p>
-              <p className="font-mono text-xl font-semibold text-orange-700 dark:text-orange-300">
-                {providers.filter(p => p.pillar === 'physical-wellness').length}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card 
-          className={`hover-lift border-2 shadow-sm cursor-pointer transition-all ${
-            pillarFilter === 'financial-assistance' 
-              ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900' 
-              : 'border-transparent bg-gradient-to-br from-green-50/50 to-green-100/50 dark:from-green-950/50 dark:to-green-900/50 hover:border-green-300'
-          }`}
-          onClick={() => setPillarFilter('financial-assistance')}
-        >
-          <CardContent className="p-6 text-center space-y-3">
-            <DollarSign className="h-12 w-12 mx-auto text-green-600" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Assistência Financeira</p>
-              <p className="font-mono text-xl font-semibold text-green-700 dark:text-green-300">
-                {providers.filter(p => p.pillar === 'financial-assistance').length}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card 
-          className={`hover-lift border-2 shadow-sm cursor-pointer transition-all ${
-            pillarFilter === 'legal-assistance' 
-              ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900' 
-              : 'border-transparent bg-gradient-to-br from-purple-50/50 to-purple-100/50 dark:from-purple-950/50 dark:to-purple-900/50 hover:border-purple-300'
-          }`}
-          onClick={() => setPillarFilter('legal-assistance')}
-        >
-          <CardContent className="p-6 text-center space-y-3">
-            <Scale className="h-12 w-12 mx-auto text-purple-600" />
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Assistência Jurídica</p>
-              <p className="font-mono text-xl font-semibold text-purple-700 dark:text-purple-300">
-                {providers.filter(p => p.pillar === 'legal-assistance').length}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Search and Status Filter - Only show when pillar is selected */}
-      {pillarFilter && (
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="relative flex-1 min-w-[300px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+    <div className="space-y-6">
+      {/* Search Bar */}
+      <div className="flex items-center space-x-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Procurar por nome, email ou especialidade..."
+            placeholder="Pesquisar prestadores..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>
-          
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filtrar por Estado" />
-            </SelectTrigger>
-            <SelectContent className="bg-background border border-border shadow-lg z-50">
-              <SelectItem value="all">Todos os Estados</SelectItem>
-              <SelectItem value="Aprovado">Aprovado</SelectItem>
-              <SelectItem value="Pendente">Pendente</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Button 
-            variant="outline" 
-            onClick={() => {
-              setPillarFilter('');
-              setSearchQuery('');
-              setStatusFilter('all');
-            }}
-          >
-            Limpar Filtros
-          </Button>
-        </div>
-      )}
-
-      {/* Providers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {!pillarFilter ? (
-          <div className="col-span-full text-center py-12 text-muted-foreground">
-            <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg font-medium">Selecione um pilar para ver os prestadores</p>
-          </div>
-        ) : filteredProviders.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-muted-foreground">
-            Nenhum prestador encontrado com os filtros aplicados
-          </div>
-        ) : (
-          filteredProviders.map((provider) => (
-            <InfoCard
-              key={provider.id}
-              name={provider.name}
-              title={provider.email}
-              subtitle={provider.status}
-              avatar={provider.avatar || providerPlaceholder}
-              specialty={provider.specialty}
-              rating={provider.satisfaction}
-              isPremium={provider.satisfaction >= 8}
-              variant="specialist"
-              type="provider"
-              onView={() => handleViewProvider(provider)}
-              onApprove={() => handleApproveProvider(provider.id)}
-              onReject={() => handleRejectProvider(provider.id)}
-              showActions={!provider.isApproved}
-              isApproved={provider.isApproved}
-              className="w-full"
-            />
-          ))
-        )}
       </div>
 
-      {/* Add Provider Modal */}
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Adicionar Prestador</DialogTitle>
-            <DialogDescription>
-              Preencha os dados do novo prestador. Cada prestador pertence a apenas um pilar.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome completo *</Label>
-                <Input
-                  id="name"
-                  value={newProvider.name}
-                  onChange={(e) => setNewProvider({ ...newProvider, name: e.target.value })}
-                  placeholder="Ex: Dra. Maria Santos"
-                />
+      {/* Providers List */}
+      <Card className="border-0 shadow-sm">
+        <CardContent className="p-0">
+          {/* Table Header */}
+          <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b font-medium text-sm text-gray-600">
+            <div>Affiliate</div>
+            <div>Especialidade</div>
+            <div>Sessões</div>
+            <div>Estado</div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newProvider.email}
-                  onChange={(e) => setNewProvider({ ...newProvider, email: e.target.value })}
-                  placeholder="email@example.com"
-                />
+          {/* Providers Rows */}
+          <div className="divide-y">
+            {filteredProviders.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">
+                <UserCog className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Nenhum prestador encontrado</p>
+              </div>
+            ) : (
+              filteredProviders.map((provider, index) => (
+                <div 
+                  key={provider.id} 
+                  className="grid grid-cols-4 gap-4 p-4 hover:bg-gray-50 transition-colors"
+                >
+                  {/* Provider Name */}
+                  <div className="flex items-center">
+                    <div className={`px-3 py-1 rounded-lg text-sm font-medium ${getProviderColor(index)}`}>
+                      {provider.name}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="pillar">Pilar (apenas um pilar por prestador) *</Label>
-              <Select value={newProvider.pillar} onValueChange={(value) => setNewProvider({ ...newProvider, pillar: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o pilar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mental-health">Saúde Mental</SelectItem>
-                  <SelectItem value="physical-wellness">Bem-Estar Físico</SelectItem>
-                  <SelectItem value="financial-assistance">Assistência Financeira</SelectItem>
-                  <SelectItem value="legal-assistance">Assistência Jurídica</SelectItem>
-                </SelectContent>
-              </Select>
+                  {/* Specialty */}
+                  <div className="flex items-center gap-2 text-sm">
+                    {getPillarIcon(provider.pillar)}
+                    <span>{getSpecialtyLabel(provider.specialty)}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="cost">Custo por sessão (MZN) *</Label>
-                <Input
-                  id="cost"
-                  type="number"
-                  value={newProvider.costPerSession}
-                  onChange={(e) => setNewProvider({ ...newProvider, costPerSession: e.target.value })}
-                  placeholder="350"
-                />
+                  {/* Sessions */}
+                  <div className="text-sm">
+                    <span className="font-medium">{provider.totalSessions}</span>
+                    <span className="text-gray-400"> / {provider.scheduledSessions} agendadas</span>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="sessionType">Tipo de sessão *</Label>
-                <Select value={newProvider.sessionType} onValueChange={(value) => setNewProvider({ ...newProvider, sessionType: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Virtual">Virtual</SelectItem>
-                    <SelectItem value="Presencial">Presencial</SelectItem>
-                    <SelectItem value="Ambos">Ambos</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {/* Status */}
+                  <div className="flex items-center justify-between">
+                    {getStatusBadge(provider.status)}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate(`/admin/providers/${provider.id}`)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Estado *</Label>
-              <Select value={newProvider.status} onValueChange={(value) => setNewProvider({ ...newProvider, status: value })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Ativo">Ativo</SelectItem>
-                  <SelectItem value="Inativo">Inativo</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
+              ))
+            )}
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShowAddModal(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleAddProvider}>
-              Adicionar Prestador
-            </Button>
+      {/* Helper Text */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <div className="p-2 bg-yellow-100 rounded-lg">
+            <UserCog className="h-4 w-4 text-yellow-600" />
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Booking Modal */}
-      {selectedSlot && (
-        <BookingModal
-          open={showBookingModal}
-          onOpenChange={setShowBookingModal}
-          provider={selectedProvider as any}
-          slot={selectedSlot}
-        />
-      )}
-
+          <div>
+            <h4 className="font-medium text-yellow-900">Como Adicionar Prestadores</h4>
+            <p className="text-sm text-yellow-700 mt-1">
+              Para permitir que novos prestadores se registem, gere códigos Prestador na aba "Gestão de Códigos". 
+              Os prestadores usarão esses códigos para registar-se na plataforma.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
-
-export { AdminProvidersTab };

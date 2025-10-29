@@ -96,7 +96,7 @@ const Navigation = () => {
   };
 
   const handleRegisterClick = () => {
-    navigate('/register/employee');
+    navigate('/register');
   };
 
 

@@ -149,40 +149,87 @@ export default function RegisterEmployee() {
       if (!authData.user) throw new Error('Falha ao criar utilizador');
 
       // Create profile
+      // NOTE: profiles table does NOT have role column (moved to user_roles table)
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: authData.user.id,
           email,
           name: email.split('@')[0],
-          role: 'user',
-          company_id: invite.companies?.id
+          company_id: invite.companies?.id || null,
+          is_active: true
         });
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        // If duplicate, try to update instead
+        if (profileError.code === '23505') {
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ company_id: invite.companies?.id || null })
+            .eq('id', authData.user.id);
+          if (updateError) throw updateError;
+        } else {
+          throw profileError;
+        }
+      }
+
+      // Create user role in user_roles table
+      try {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: authData.user.id,
+            role: 'user',
+            created_by: authData.user.id
+          } as any);
+        if (roleError && roleError.code !== '23505') {
+          console.error('Role creation error:', roleError);
+          // Don't throw - continue with registration
+        }
+      } catch (error: any) {
+        console.error('Error creating role:', error);
+        // Don't throw - continue with registration
+      }
 
       // Create company employee link
       if (invite.companies?.id) {
+        // NOTE: company_employees uses sessions_quota, not sessions_allocated
         const { error: employeeError } = await supabase
           .from('company_employees')
           .insert({
             company_id: invite.companies.id,
             user_id: authData.user.id,
-            sessions_allocated: 10
-          });
+            sessions_quota: 10,
+            sessions_used: 0,
+            status: 'active'
+          } as any);
 
-        if (employeeError) throw employeeError;
+        if (employeeError) {
+          console.error('Employee record creation error:', employeeError);
+          // Don't throw - profile was created successfully
+        }
       }
 
       // Mark invite code as used
-      await supabase
-        .from('invites')
-        .update({
-          status: 'accepted',
-          accepted_by: authData.user.id,
-          accepted_at: new Date().toISOString()
-        })
-        .eq('invite_code', inviteCode.toUpperCase());
+      try {
+        // Note: Actual schema has 'accepted_at' but NOT 'accepted_by'
+        const { error: inviteError } = await supabase
+          .from('invites')
+          .update({
+            status: 'accepted',
+            accepted_at: new Date().toISOString()
+          })
+          .eq('invite_code', inviteCode.toUpperCase())
+          .eq('status', 'pending'); // Only update if still pending
+        
+        if (inviteError) {
+          console.error('Error marking invite as used:', inviteError);
+          // Don't throw - registration was successful
+        }
+      } catch (error: any) {
+        console.error('Error updating invite status:', error);
+        // Don't throw - registration was successful
+      }
 
       toast({
         title: "Conta criada com sucesso!",

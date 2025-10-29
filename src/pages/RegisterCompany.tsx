@@ -89,17 +89,18 @@ export default function RegisterCompany() {
 
     try {
       // Create company
+      // NOTE: Actual schema uses 'company_name' (not 'name') and 'contact_email' (not 'email')
+      // Based on migration 20251026165114, the companies table has: company_name, contact_email, contact_phone
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .insert({
-          company_name: formData.companyName,
-          contact_email: formData.contactEmail,
-          contact_phone: formData.contactPhone,
-          plan_type: 'basic',
+          company_name: formData.companyName, // REQUIRED in actual schema
+          contact_email: formData.contactEmail, // REQUIRED in actual schema
+          contact_phone: formData.contactPhone, // Optional in actual schema
           sessions_allocated: formData.totalSessions,
           sessions_used: 0,
-          is_active: false // Needs approval
-        })
+          is_active: false // Needs admin approval
+        } as any)
         .select()
         .single();
 
@@ -125,6 +126,7 @@ export default function RegisterCompany() {
       if (!authData.user) throw new Error('Falha ao criar utilizador');
 
       // Create HR profile
+      // NOTE: profiles table does NOT have role column (moved to user_roles table)
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -132,21 +134,60 @@ export default function RegisterCompany() {
           email: formData.contactEmail,
           name: formData.contactName,
           phone: formData.contactPhone,
-          company_id: company.id
+          company_id: company.id,
+          is_active: true
         });
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        // If duplicate, try to update instead
+        if (profileError.code === '23505') {
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ company_id: company.id })
+            .eq('id', authData.user.id);
+          if (updateError) throw updateError;
+        } else {
+          throw profileError;
+        }
+      }
 
       // Create role in user_roles table
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: authData.user.id,
-          role: 'hr',
-          created_by: null // Self-registration
-        });
+      try {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: authData.user.id,
+            role: 'hr',
+            created_by: authData.user.id // Self-registration
+          } as any);
+        if (roleError && roleError.code !== '23505') {
+          console.error('Role creation error:', roleError);
+          // Don't throw - continue with registration
+        }
+      } catch (error: any) {
+        console.error('Error creating role:', error);
+        // Don't throw - continue with registration
+      }
 
-      if (roleError) throw roleError;
+      // Create company employee link for HR
+      try {
+        const { error: employeeError } = await supabase
+          .from('company_employees')
+          .insert({
+            company_id: company.id,
+            user_id: authData.user.id,
+            sessions_quota: 0, // HR doesn't get individual sessions
+            sessions_used: 0,
+            status: 'active'
+          } as any);
+        if (employeeError && employeeError.code !== '23505') {
+          console.error('Employee record creation error:', employeeError);
+          // Don't throw - profile was created successfully
+        }
+      } catch (error: any) {
+        console.error('Error creating employee record:', error);
+        // Don't throw - continue with registration
+      }
       
       toast({
         title: "Empresa registada com sucesso!",

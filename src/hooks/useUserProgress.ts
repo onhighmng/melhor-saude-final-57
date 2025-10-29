@@ -48,17 +48,33 @@ export const useUserProgress = () => {
   const pillars: Pillar[] = ['saude_mental', 'bem_estar_fisico', 'assistencia_financeira', 'assistencia_juridica'];
 
   const loadUserProgress = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     try {
-      await Promise.all([
-        loadProgressData(),
-        loadUserGoals(),
-        loadMilestones()
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout after 10 seconds')), 10000)
+      );
+
+      await Promise.race([
+        Promise.all([
+          loadProgressData(),
+          loadUserGoals(),
+          loadMilestones()
+        ]),
+        timeoutPromise
       ]);
     } catch (error) {
       console.error('Error loading user progress:', error);
+      // Set default values to prevent infinite loading
+      setProgress([]);
+      setGoals([]);
+      setMilestones([]);
+      setOverallProgress(0);
     } finally {
       setLoading(false);
     }
@@ -70,58 +86,94 @@ export const useUserProgress = () => {
     const progressData: UserProgress[] = [];
 
     for (const pillar of pillars) {
-      // Get sessions completed
-      const { count: sessionsCompleted } = await supabase
-        .from('bookings')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('pillar', pillar)
-        .eq('status', 'completed');
+      try {
+        // Get sessions completed
+        const { count: sessionsCompleted } = await supabase
+          .from('bookings')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('pillar', pillar)
+          .eq('status', 'completed');
 
-      // Get chat interactions
-      const { count: chatInteractions } = await supabase
-        .from('user_progress')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('pillar', pillar)
-        .eq('action_type', 'chat_interaction');
+        // Get chat interactions (with error handling)
+        let chatInteractions = 0;
+        try {
+          const { count } = await supabase
+            .from('user_progress')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('pillar', pillar)
+            .eq('action_type', 'chat_interaction');
+          chatInteractions = count || 0;
+        } catch (error) {
+          console.warn(`Error loading chat interactions for ${pillar}:`, error);
+          chatInteractions = 0;
+        }
 
-      // Get resources viewed
-      const { count: resourcesViewed } = await supabase
-        .from('user_progress')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('pillar', pillar)
-        .eq('action_type', 'resource_viewed');
+        // Get resources viewed (with error handling)
+        let resourcesViewed = 0;
+        try {
+          const { count } = await supabase
+            .from('user_progress')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('pillar', pillar)
+            .eq('action_type', 'resource_viewed');
+          resourcesViewed = count || 0;
+        } catch (error) {
+          console.warn(`Error loading resources viewed for ${pillar}:`, error);
+          resourcesViewed = 0;
+        }
 
-      // Get milestones achieved
-      const { count: milestonesAchieved } = await supabase
-        .from('user_progress')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('pillar', pillar)
-        .eq('action_type', 'milestone_achieved');
+        // Get milestones achieved (with error handling)
+        let milestonesAchieved = 0;
+        try {
+          const { count } = await supabase
+            .from('user_progress')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('pillar', pillar)
+            .eq('action_type', 'milestone_achieved');
+          milestonesAchieved = count || 0;
+        } catch (error) {
+          console.warn(`Error loading milestones for ${pillar}:`, error);
+          milestonesAchieved = 0;
+        }
 
-      // Calculate total points (weighted)
-      const totalPoints = 
-        (sessionsCompleted || 0) * 10 + // Sessions worth 10 points each
-        (chatInteractions || 0) * 2 +   // Chat interactions worth 2 points each
-        (resourcesViewed || 0) * 1 +    // Resources worth 1 point each
-        (milestonesAchieved || 0) * 5;  // Milestones worth 5 points each
+        // Calculate total points (weighted)
+        const totalPoints = 
+          (sessionsCompleted || 0) * 10 + // Sessions worth 10 points each
+          chatInteractions * 2 +   // Chat interactions worth 2 points each
+          resourcesViewed * 1 +    // Resources worth 1 point each
+          milestonesAchieved * 5;  // Milestones worth 5 points each
 
-      // Calculate progress percentage (max 100 points per pillar)
-      const progressPercentage = Math.min((totalPoints / 100) * 100, 100);
+        // Calculate progress percentage (max 100 points per pillar)
+        const progressPercentage = Math.min((totalPoints / 100) * 100, 100);
 
-      progressData.push({
-        pillar,
-        sessions_completed: sessionsCompleted || 0,
-        chats_interactions: chatInteractions || 0,
-        resources_viewed: resourcesViewed || 0,
-        milestones_achieved: milestonesAchieved || 0,
-        goals_completed: 0, // Will be calculated from goals
-        total_points: totalPoints,
-        progress_percentage: progressPercentage
-      });
+        progressData.push({
+          pillar,
+          sessions_completed: sessionsCompleted || 0,
+          chats_interactions: chatInteractions,
+          resources_viewed: resourcesViewed,
+          milestones_achieved: milestonesAchieved,
+          goals_completed: 0, // Will be calculated from goals
+          total_points: totalPoints,
+          progress_percentage: progressPercentage
+        });
+      } catch (error) {
+        console.warn(`Error loading progress data for ${pillar}:`, error);
+        // Add default values for this pillar
+        progressData.push({
+          pillar,
+          sessions_completed: 0,
+          chats_interactions: 0,
+          resources_viewed: 0,
+          milestones_achieved: 0,
+          goals_completed: 0,
+          total_points: 0,
+          progress_percentage: 0
+        });
+      }
     }
 
     setProgress(progressData);
@@ -142,90 +194,96 @@ export const useUserProgress = () => {
   const loadMilestones = async () => {
     if (!user?.id) return;
 
-    // Define milestone definitions
-    const milestoneDefinitions: Milestone[] = [
-      {
-        id: 'first_session',
-        pillar: 'saude_mental',
-        title: 'Primeira Sessão',
-        description: 'Complete sua primeira sessão de bem-estar',
-        target_value: 1,
-        current_value: 0,
-        achieved: false,
-        achieved_at: null
-      },
-      {
-        id: 'three_sessions',
-        pillar: 'saude_mental',
-        title: 'Três Sessões',
-        description: 'Complete três sessões em qualquer pilar',
-        target_value: 3,
-        current_value: 0,
-        achieved: false,
-        achieved_at: null
-      },
-      {
-        id: 'five_sessions',
-        pillar: 'bem_estar_fisico',
-        title: 'Cinco Sessões',
-        description: 'Complete cinco sessões em qualquer pilar',
-        target_value: 5,
-        current_value: 0,
-        achieved: false,
-        achieved_at: null
-      },
-      {
-        id: 'ten_sessions',
-        pillar: 'assistencia_financeira',
-        title: 'Dez Sessões',
-        description: 'Complete dez sessões em qualquer pilar',
-        target_value: 10,
-        current_value: 0,
-        achieved: false,
-        achieved_at: null
-      },
-      {
-        id: 'all_pillars',
-        pillar: 'assistencia_juridica',
-        title: 'Todos os Pilares',
-        description: 'Complete pelo menos uma sessão em cada pilar',
-        target_value: 4,
-        current_value: 0,
-        achieved: false,
-        achieved_at: null
-      }
-    ];
+    try {
+      // Define milestone definitions
+      const milestoneDefinitions: Milestone[] = [
+        {
+          id: 'first_session',
+          pillar: 'saude_mental',
+          title: 'Primeira Sessão',
+          description: 'Complete sua primeira sessão de bem-estar',
+          target_value: 1,
+          current_value: 0,
+          achieved: false,
+          achieved_at: null
+        },
+        {
+          id: 'three_sessions',
+          pillar: 'saude_mental',
+          title: 'Três Sessões',
+          description: 'Complete três sessões em qualquer pilar',
+          target_value: 3,
+          current_value: 0,
+          achieved: false,
+          achieved_at: null
+        },
+        {
+          id: 'five_sessions',
+          pillar: 'bem_estar_fisico',
+          title: 'Cinco Sessões',
+          description: 'Complete cinco sessões em qualquer pilar',
+          target_value: 5,
+          current_value: 0,
+          achieved: false,
+          achieved_at: null
+        },
+        {
+          id: 'ten_sessions',
+          pillar: 'assistencia_financeira',
+          title: 'Dez Sessões',
+          description: 'Complete dez sessões em qualquer pilar',
+          target_value: 10,
+          current_value: 0,
+          achieved: false,
+          achieved_at: null
+        },
+        {
+          id: 'all_pillars',
+          pillar: 'assistencia_juridica',
+          title: 'Todos os Pilares',
+          description: 'Complete pelo menos uma sessão em cada pilar',
+          target_value: 4,
+          current_value: 0,
+          achieved: false,
+          achieved_at: null
+        }
+      ];
 
-    // Calculate current values
-    const totalSessions = progress.reduce((sum, p) => sum + p.sessions_completed, 0);
-    const pillarsWithSessions = progress.filter(p => p.sessions_completed > 0).length;
+      // Calculate current values safely
+      const totalSessions = progress.reduce((sum, p) => sum + p.sessions_completed, 0);
+      const pillarsWithSessions = progress.filter(p => p.sessions_completed > 0).length;
 
-    const updatedMilestones = milestoneDefinitions.map(milestone => {
-      let currentValue = 0;
-      
-      switch (milestone.id) {
-        case 'first_session':
-        case 'three_sessions':
-        case 'five_sessions':
-        case 'ten_sessions':
-          currentValue = totalSessions;
-          break;
-        case 'all_pillars':
-          currentValue = pillarsWithSessions;
-          break;
-      }
+      const updatedMilestones = milestoneDefinitions.map(milestone => {
+        let currentValue = 0;
+        
+        switch (milestone.id) {
+          case 'first_session':
+          case 'three_sessions':
+          case 'five_sessions':
+          case 'ten_sessions':
+            currentValue = totalSessions;
+            break;
+          case 'all_pillars':
+            currentValue = pillarsWithSessions;
+            break;
+        }
 
-      const achieved = currentValue >= milestone.target_value;
-      
-      return {
-        ...milestone,
-        current_value: currentValue,
-        achieved,
-        achieved_at: achieved ? new Date().toISOString() : null
-      };
-    });
+        const achieved = currentValue >= milestone.target_value;
+        
+        return {
+          ...milestone,
+          current_value: currentValue,
+          achieved,
+          achieved_at: achieved ? new Date().toISOString() : null
+        };
+      });
 
-    setMilestones(updatedMilestones);
+      setMilestones(updatedMilestones);
+    } catch (error) {
+      console.warn('Error in loadMilestones:', error);
+      // Set default milestones to prevent infinite loading
+      setMilestones([]);
+    }
   };
 
   const trackProgress = async (

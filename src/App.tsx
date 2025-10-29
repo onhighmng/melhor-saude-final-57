@@ -25,6 +25,7 @@ const PrestadorSettings = lazy(() => import("./pages/PrestadorSettings"));
 const Login = lazy(() => import("./pages/Login"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
+const Register = lazy(() => import("./pages/Register"));
 const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
 const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
 // Admin pages
@@ -120,6 +121,7 @@ const AppWithTracking = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/auth/reset" element={<UpdatePassword />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/register/company" element={<RegisterCompany />} />
           <Route path="/register/employee" element={<RegisterEmployee />} />
           
