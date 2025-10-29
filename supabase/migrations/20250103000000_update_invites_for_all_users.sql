@@ -1,9 +1,9 @@
 -- Add user_type column to invites table for code-based registration system
--- This allows admin to generate codes for different user types: personal, hr, user, prestador
+-- This allows admin to generate codes for different user types: personal, hr, user, prestador, specialist
 
 -- Add user_type column
 ALTER TABLE invites ADD COLUMN IF NOT EXISTS user_type TEXT DEFAULT 'user' 
-  CHECK (user_type IN ('personal', 'hr', 'user', 'prestador'));
+  CHECK (user_type IN ('personal', 'hr', 'user', 'prestador', 'specialist'));
 
 -- Add metadata column for additional code information
 ALTER TABLE invites ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
@@ -12,6 +12,7 @@ ALTER TABLE invites ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
 UPDATE invites SET user_type = CASE 
   WHEN role = 'hr' THEN 'hr'
   WHEN role = 'prestador' THEN 'prestador'
+  WHEN role = 'especialista_geral' THEN 'specialist'
   ELSE 'user'
 END WHERE user_type IS NULL;
 
@@ -77,6 +78,7 @@ BEGIN
       WHEN p_user_type = 'hr' THEN 'hr'
       WHEN p_user_type = 'user' THEN 'user'
       WHEN p_user_type = 'prestador' THEN 'prestador'
+      WHEN p_user_type = 'specialist' THEN 'especialista_geral'
     END,
     'pending',
     v_expires_at,

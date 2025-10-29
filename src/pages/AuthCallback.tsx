@@ -1,68 +1,83 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { ROLE_REDIRECT_MAP, UserRole } from '@/utils/authRedirects';
 import { useToast } from '@/hooks/use-toast';
-import { ROLE_REDIRECT_MAP, type UserRole } from '@/utils/authRedirects';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAuthenticated, profile, isLoading } = useAuth();
 
   useEffect(() => {
-    // Wait for AuthContext to finish loading
-    if (isLoading) {
-      console.log('[AuthCallback] Waiting for AuthContext to finish loading...');
-      return;
-    }
+    const handleRedirect = async () => {
+      // First, get the session from Supabase.
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-    // If not authenticated, redirect to login
-    if (!isAuthenticated || !profile) {
-      console.log('[AuthCallback] Not authenticated, redirecting to login');
-      toast({
-        title: 'Erro de autenticação',
-        description: 'Por favor, faça login novamente',
-        variant: 'destructive'
-      });
-      navigate('/login', { replace: true });
-      return;
-    }
+      if (sessionError || !session) {
+        console.error('[AuthCallback] Session error or no session found. Redirecting to login.');
+        toast({ title: 'Erro de Sessão', description: 'Por favor, tente fazer login novamente.', variant: 'destructive' });
+        navigate('/login', { replace: true });
+        return;
+      }
 
-    // Use profile from AuthContext (already loaded, no DB query needed)
-    const primaryRole: UserRole = profile.role as UserRole;
-    const redirectPath = ROLE_REDIRECT_MAP[primaryRole] || '/user/dashboard';
-    
-    console.log('[AuthCallback] Primary role from AuthContext:', primaryRole, '-> Redirecting to:', redirectPath);
+      // Now, perform a fresh, direct query to get the user's role.
+      // This is the key fix: it bypasses any potential state lag from AuthContext.
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id);
 
-    toast({
-      title: 'Login bem-sucedido',
-      description: `Bem-vindo, ${profile.name || 'Utilizador'}!`
-    });
+      if (rolesError) {
+        console.error('[AuthCallback] Could not fetch user role:', rolesError.message);
+        toast({ title: 'Erro de Permissões', description: 'Não foi possível verificar as suas permissões. A redirecionar para o dashboard padrão.', variant: 'destructive' });
+        // Fallback to user dashboard on error
+        navigate('/user/dashboard', { replace: true });
+        return;
+      }
 
-    navigate(redirectPath, { replace: true });
-  }, [isLoading, isAuthenticated, profile, navigate, toast]);
+      const roles = rolesData?.map(r => r.role) || [];
+      
+      console.log(`%c[AuthCallback] Fetched roles from database:`, 'color: cyan; font-weight: bold;', roles);
+      console.log(`%c[AuthCallback] Raw roles data:`, 'color: cyan;', rolesData);
+      
+      // Determine the highest-priority role (admin > hr > prestador > specialist > user)
+      // Note: Database stores 'specialist', not 'especialista_geral'
+      let primaryRole: UserRole = 'user';
+      
+      // Check roles in priority order (admin > hr > prestador > specialist > user)
+      // The database enum uses: 'admin', 'user', 'hr', 'prestador', 'specialist'
+      if (roles.includes('admin')) {
+        primaryRole = 'admin';
+      } else if (roles.includes('hr')) {
+        primaryRole = 'hr';
+      } else if (roles.includes('prestador')) {
+        primaryRole = 'prestador';
+      } else if (roles.includes('specialist')) {
+        primaryRole = 'specialist';
+      } else {
+        primaryRole = 'user';
+      }
+        
+      const redirectPath = ROLE_REDIRECT_MAP[primaryRole] || '/user/dashboard';
 
-  // Show loading while AuthContext is loading
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-sm text-muted-foreground">
-            A processar autenticação...
-          </p>
-        </div>
-      </div>
-    );
-  }
+      console.log(`%c[AuthCallback] Fresh role check complete.`, 'color: green; font-weight: bold;');
+      console.log(`%c  - Roles found: [${roles.join(', ')}]`, 'color: green;');
+      console.log(`%c  - Primary role selected: ${primaryRole}`, 'color: green; font-weight: bold;');
+      console.log(`%c  - Redirecting to: ${redirectPath}`, 'color: green;');
+      
+      toast({ title: 'Login bem-sucedido!', description: 'Bem-vindo de volta.' });
+      navigate(redirectPath, { replace: true });
+    };
 
-  // If we get here, we should have redirected already, but show a message just in case
+    handleRedirect();
+  }, [navigate, toast]);
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
       <div className="text-center space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
         <p className="text-sm text-muted-foreground">
-          A redirecionar...
+          Finalizando autenticação...
         </p>
       </div>
     </div>

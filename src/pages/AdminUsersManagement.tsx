@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Building2, Users, UserCog, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { Building2, Users, UserCog, ChevronLeft, ChevronRight, User, Trash2 } from 'lucide-react';
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +8,9 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminUsersManagement = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -174,6 +177,20 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const [codes, setCodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCompanyCode, setSelectedCompanyCode] = useState<any | null>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [loadingEmployees, setLoadingEmployees] = useState(false);
+
+  // Filter codes based on search query
+  const filteredCodes = codes.filter(code => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      code.invite_code?.toLowerCase().includes(query) ||
+      code.email?.toLowerCase().includes(query)
+    );
+  });
 
   useEffect(() => {
     loadCodes();
@@ -191,9 +208,9 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
 
       if (error) throw error;
       
-      // Filter by user_type in JavaScript (handles if column is null or doesn't exist)
+      // Filter by role in JavaScript (only HR codes - employees are managed by HR)
       const filteredCodes = (allCodes || []).filter((code: any) => 
-        code.user_type === 'hr' || code.user_type === 'user'
+        code.role === 'hr'
       );
       
       setCodes(filteredCodes);
@@ -206,24 +223,28 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     }
   };
 
-  const handleGenerateCode = async (userType: 'hr' | 'user') => {
+  const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.rpc('generate_access_code' as any, {
-        p_user_type: userType,
+        p_user_type: 'hr',
         p_company_id: null,
         p_metadata: {},
         p_expires_days: 30
       });
 
       if (error) throw error;
-      toast({ title: 'Sucesso', description: `Código ${data} gerado com sucesso!` });
+      toast({ 
+        title: 'Código HR gerado!', 
+        description: `Código: ${data}`,
+        duration: 10000 // Show for 10 seconds so they can copy it
+      });
       loadCodes();
     } catch (error: any) {
-      console.error('Error generating code:', error);
+      console.error('Error generating HR code:', error);
       toast({ 
         title: 'Erro', 
-        description: error?.message || 'Erro ao gerar código. Verifique se a função está instalada corretamente.', 
+        description: error?.message || 'Erro ao gerar código HR.', 
         variant: 'destructive' 
       });
     } finally {
@@ -236,11 +257,113 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     toast({ title: 'Sucesso', description: 'Código copiado!' });
   };
 
+  const handleViewEmployees = async (code: any) => {
+    if (!code.accepted_at || !code.email) {
+      toast({ title: 'Aviso', description: 'Este código ainda não foi ativado', variant: 'default' });
+      return;
+    }
+
+    setSelectedCompanyCode(code);
+    setLoadingEmployees(true);
+    
+    try {
+      // Find the user who activated this code
+      const { data: userProfile, error: userError } = await Promise.race([
+        supabase
+          .from('profiles')
+          .select('id, company_id, name, email')
+          .eq('email', code.email)
+          .single(),
+        new Promise<any>((_, reject) => 
+          setTimeout(() => reject(new Error('Query timeout')), 3000)
+        )
+      ]);
+
+      if (userError || !userProfile || !userProfile.company_id) {
+        toast({ title: 'Aviso', description: 'Empresa não encontrada ou sem colaboradores', variant: 'default' });
+        setEmployees([]);
+        setLoadingEmployees(false);
+        return;
+      }
+
+      // Load employees for this company
+      const { data: companyEmployees, error: employeesError } = await Promise.race([
+        supabase
+          .from('company_employees')
+          .select(`
+            user_id,
+            sessions_allocated,
+            sessions_used,
+            is_active,
+            profiles!company_employees_user_id_fkey(name, email)
+          `)
+          .eq('company_id', userProfile.company_id),
+        new Promise<any>((_, reject) => 
+          setTimeout(() => reject(new Error('Query timeout')), 3000)
+        )
+      ]);
+
+      if (employeesError) {
+        console.warn('[AdminUsersManagement] Error loading employees:', employeesError);
+        setEmployees([]);
+      } else {
+        setEmployees(companyEmployees || []);
+      }
+    } catch (error) {
+      console.warn('[AdminUsersManagement] Error loading employees:', error);
+      setEmployees([]);
+    } finally {
+      setLoadingEmployees(false);
+    }
+  };
+
+  const handleDeleteCode = async (code: any, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the row click
+
+    if (!confirm('Tem certeza que deseja suspender este código e a conta associada?')) {
+      return;
+    }
+
+    try {
+      // If code was activated, suspend the user account
+      if (code.accepted_at && code.email) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ is_active: false })
+          .eq('email', code.email);
+
+        if (profileError) {
+          console.error('Error suspending user:', profileError);
+        }
+      }
+
+      // Revoke the code
+      const { error: codeError } = await supabase
+        .from('invites')
+        .update({ status: 'revoked' })
+        .eq('id', code.id);
+
+      if (codeError) throw codeError;
+
+      toast({ 
+        title: 'Código suspenso', 
+        description: 'Código revogado e conta suspensa com sucesso' 
+      });
+      loadCodes();
+    } catch (error: any) {
+      console.error('Error deleting code:', error);
+      toast({ 
+        title: 'Erro', 
+        description: error?.message || 'Erro ao suspender código', 
+        variant: 'destructive' 
+      });
+    }
+  };
+
   const getStatusBadge = (code: any) => {
-    if (code.status === 'accepted') return <Badge className="bg-blue-100 text-blue-700">Usado</Badge>;
+    if (code.accepted_at) return <Badge className="bg-blue-100 text-blue-700">Ativado</Badge>;
     if (code.status === 'revoked') return <Badge className="bg-red-100 text-red-700">Revogado</Badge>;
-    if (new Date(code.expires_at) < new Date()) return <Badge className="bg-gray-100 text-gray-700">Expirado</Badge>;
-    return <Badge className="bg-green-100 text-green-700">Ativo</Badge>;
+    return <Badge className="bg-green-100 text-green-700">Pendente</Badge>;
   };
 
   const getUserTypeLabel = (type: string) => {
@@ -257,28 +380,30 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     <Card className="border-0 shadow-sm">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Códigos de Acesso</h2>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => handleGenerateCode('hr')}
-              disabled={isGenerating}
-              size="sm"
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Building2 className="h-4 w-4 mr-2" />
-              Gerar HR
-            </Button>
-            <Button
-              onClick={() => handleGenerateCode('user')}
-              disabled={isGenerating}
-              size="sm"
-              variant="outline"
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Gerar Colaborador
-            </Button>
+          <div>
+            <h2 className="text-lg font-semibold">Códigos de Acesso para HR</h2>
+            <p className="text-sm text-muted-foreground">HR irá gerar códigos para os seus colaboradores</p>
           </div>
+          <Button
+            onClick={handleGenerateCode}
+            disabled={isGenerating}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Building2 className="h-4 w-4 mr-2" />
+            {isGenerating ? 'Gerando...' : 'Gerar Código HR'}
+          </Button>
         </div>
+
+        {/* Search Input */}
+        <div className="mb-4">
+          <Input
+            placeholder="Pesquisar por código ou email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-md"
+          />
+      </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -289,26 +414,99 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
             <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>Nenhum código gerado</p>
           </div>
+        ) : filteredCodes.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>Nenhum código encontrado para "{searchQuery}"</p>
+          </div>
         ) : (
           <div className="space-y-3">
-            <div className="grid grid-cols-5 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b">
+            <div className="grid grid-cols-7 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b">
               <div>Código</div>
-              <div>Estado</div>
               <div>Tipo</div>
+              <div>Email</div>
               <div>Criado</div>
-              <div>Expira</div>
+              <div>Ativado</div>
+              <div>Estado</div>
+              <div>Ações</div>
             </div>
-            {codes.slice(0, 5).map((code) => (
-              <div key={code.id} className="grid grid-cols-5 gap-4 p-3 hover:bg-gray-50 rounded">
+            {filteredCodes.slice(0, 10).map((code) => (
+              <div 
+                key={code.id} 
+                className="grid grid-cols-7 gap-4 p-3 hover:bg-blue-50 rounded cursor-pointer transition-colors"
+                onClick={() => handleViewEmployees(code)}
+              >
                 <div className="font-mono text-sm">{code.invite_code}</div>
+                <div className="text-sm">{getUserTypeLabel(code.role)}</div>
+                <div className="text-sm text-gray-600">{code.email || 'N/A'}</div>
+                <div className="text-sm text-gray-600">
+                  {new Date(code.created_at).toLocaleDateString('pt-PT')}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {code.accepted_at ? new Date(code.accepted_at).toLocaleDateString('pt-PT') : 'Não ativado'}
+                </div>
                 <div>{getStatusBadge(code)}</div>
-                <div className="text-sm">{getUserTypeLabel(code.user_type)}</div>
-                <div className="text-sm text-gray-600">{new Date(code.created_at).toLocaleDateString('pt-PT')}</div>
-                <div className="text-sm text-gray-600">{new Date(code.expires_at).toLocaleDateString('pt-PT')}</div>
+                <div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={(e) => handleDeleteCode(code, e)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
         )}
+
+        {/* Employee List Modal */}
+        <Dialog open={!!selectedCompanyCode} onOpenChange={() => setSelectedCompanyCode(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle>
+                Colaboradores - {selectedCompanyCode?.email || 'Empresa'}
+              </DialogTitle>
+            </DialogHeader>
+            <ScrollArea className="h-[60vh]">
+              {loadingEmployees ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : employees.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhum colaborador encontrado</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-5 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b sticky top-0">
+                    <div>Nome</div>
+                    <div>Email</div>
+                    <div>Sessões Usadas</div>
+                    <div>Sessões Alocadas</div>
+                    <div>Estado</div>
+                  </div>
+                  {employees.map((employee) => (
+                    <div key={employee.user_id} className="grid grid-cols-5 gap-4 p-3 hover:bg-gray-50 rounded">
+                      <div className="text-sm">{(employee.profiles as any)?.name || 'N/A'}</div>
+                      <div className="text-sm text-gray-600">{(employee.profiles as any)?.email || 'N/A'}</div>
+                      <div className="text-sm text-gray-600">{employee.sessions_used || 0}</div>
+                      <div className="text-sm text-gray-600">{employee.sessions_allocated || 0}</div>
+                      <div>
+                        {employee.is_active ? (
+                          <Badge className="bg-green-100 text-green-700">Ativo</Badge>
+                        ) : (
+                          <Badge className="bg-gray-100 text-gray-700">Inativo</Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
@@ -319,6 +517,18 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const [codes, setCodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter codes based on search query
+  const filteredCodes = codes.filter(code => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      code.invite_code?.toLowerCase().includes(query) ||
+      code.email?.toLowerCase().includes(query) ||
+      (code.role === 'prestador' ? 'prestador' : 'profesional de permanencia').includes(query)
+    );
+  });
 
   useEffect(() => {
     loadCodes();
@@ -336,8 +546,10 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
       
       if (error) throw error;
       
-      // Filter by user_type in JavaScript
-      const filteredCodes = (allCodes || []).filter((code: any) => code.user_type === 'prestador');
+      // Filter by role in JavaScript (both prestador and specialist)
+      const filteredCodes = (allCodes || []).filter((code: any) => 
+        code.role === 'prestador' || code.role === 'especialista_geral'
+      );
       
       setCodes(filteredCodes);
     } catch (error) {
@@ -349,24 +561,29 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     }
   };
 
-  const handleGenerateCode = async () => {
+  const handleGenerateCode = async (userType: 'prestador' | 'specialist') => {
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.rpc('generate_access_code' as any, {
-        p_user_type: 'prestador',
+        p_user_type: userType,
         p_company_id: null,
         p_metadata: {},
         p_expires_days: 30
       });
 
       if (error) throw error;
-      toast({ title: 'Sucesso', description: `Código ${data} gerado com sucesso!` });
+      const typeLabel = userType === 'prestador' ? 'Prestador' : 'Profesional de Permanencia';
+      toast({ 
+        title: 'Código gerado!', 
+        description: `Código ${typeLabel}: ${data}`,
+        duration: 10000
+      });
       loadCodes();
     } catch (error: any) {
       console.error('Error generating code:', error);
       toast({ 
         title: 'Erro', 
-        description: error?.message || 'Erro ao gerar código. Verifique se a função está instalada corretamente.', 
+        description: error?.message || 'Erro ao gerar código.', 
         variant: 'destructive' 
       });
     } finally {
@@ -374,11 +591,53 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     }
   };
 
+  const handleDeleteCode = async (code: any, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering any parent click handlers
+
+    if (!confirm('Tem certeza que deseja suspender este código e a conta associada?')) {
+      return;
+    }
+
+    try {
+      // If code was activated, suspend the user account
+      if (code.accepted_at && code.email) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ is_active: false })
+          .eq('email', code.email);
+
+        if (profileError) {
+          console.error('Error suspending user:', profileError);
+        }
+      }
+
+      // Revoke the code
+      const { error: codeError } = await supabase
+        .from('invites')
+        .update({ status: 'revoked' })
+        .eq('id', code.id);
+
+      if (codeError) throw codeError;
+
+      toast({ 
+        title: 'Código suspenso', 
+        description: 'Código revogado e conta suspensa com sucesso' 
+      });
+      loadCodes();
+    } catch (error: any) {
+      console.error('Error deleting code:', error);
+      toast({ 
+        title: 'Erro', 
+        description: error?.message || 'Erro ao suspender código', 
+        variant: 'destructive' 
+      });
+    }
+  };
+
   const getStatusBadge = (code: any) => {
-    if (code.status === 'accepted') return <Badge className="bg-blue-100 text-blue-700">Usado</Badge>;
+    if (code.accepted_at) return <Badge className="bg-blue-100 text-blue-700">Ativado</Badge>;
     if (code.status === 'revoked') return <Badge className="bg-red-100 text-red-700">Revogado</Badge>;
-    if (new Date(code.expires_at) < new Date()) return <Badge className="bg-gray-100 text-gray-700">Expirado</Badge>;
-    return <Badge className="bg-green-100 text-green-700">Ativo</Badge>;
+    return <Badge className="bg-green-100 text-green-700">Pendente</Badge>;
   };
 
   return (
@@ -386,16 +645,37 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Códigos de Acesso</h2>
-          <Button
-            onClick={handleGenerateCode}
-            disabled={isGenerating}
-            size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
-          >
-            <UserCog className="h-4 w-4 mr-2" />
-            {isGenerating ? 'Gerando...' : 'Gerar Código Prestador'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => handleGenerateCode('prestador')}
+              disabled={isGenerating}
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <UserCog className="h-4 w-4 mr-2" />
+              {isGenerating ? 'Gerando...' : 'Gerar Prestador'}
+            </Button>
+            <Button
+              onClick={() => handleGenerateCode('specialist')}
+              disabled={isGenerating}
+              size="sm"
+              className="bg-indigo-600 hover:bg-indigo-700"
+            >
+              <User className="h-4 w-4 mr-2" />
+              {isGenerating ? 'Gerando...' : 'Gerar Profesional de Permanencia'}
+            </Button>
+          </div>
         </div>
+
+        {/* Search Input */}
+        <div className="mb-4">
+          <Input
+            placeholder="Pesquisar por código, email ou tipo..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-md"
+      />
+    </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -406,25 +686,48 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
             <UserCog className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>Nenhum código gerado</p>
           </div>
+        ) : filteredCodes.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>Nenhum código encontrado para "{searchQuery}"</p>
+          </div>
         ) : (
           <div className="space-y-3">
-            <div className="grid grid-cols-5 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b">
+            <div className="grid grid-cols-7 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b">
               <div>Código</div>
-              <div>Estado</div>
               <div>Tipo</div>
+              <div>Email</div>
               <div>Criado</div>
-              <div>Expira</div>
+              <div>Ativado</div>
+              <div>Estado</div>
+              <div>Ações</div>
             </div>
-            {codes.slice(0, 5).map((code) => (
-              <div key={code.id} className="grid grid-cols-5 gap-4 p-3 hover:bg-gray-50 rounded">
+            {filteredCodes.slice(0, 10).map((code) => (
+              <div key={code.id} className="grid grid-cols-7 gap-4 p-3 hover:bg-gray-50 rounded transition-colors">
                 <div className="font-mono text-sm">{code.invite_code}</div>
+                <div className="text-sm">
+                  {code.role === 'prestador' ? 'Prestador' : 'Profesional de Permanencia'}
+                </div>
+                <div className="text-sm text-gray-600">{code.email || 'N/A'}</div>
+                <div className="text-sm text-gray-600">
+                  {new Date(code.created_at).toLocaleDateString('pt-PT')}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {code.accepted_at ? new Date(code.accepted_at).toLocaleDateString('pt-PT') : 'Não ativado'}
+                </div>
                 <div>{getStatusBadge(code)}</div>
-                <div className="text-sm">Prestador</div>
-                <div className="text-sm text-gray-600">{new Date(code.created_at).toLocaleDateString('pt-PT')}</div>
-                <div className="text-sm text-gray-600">{new Date(code.expires_at).toLocaleDateString('pt-PT')}</div>
-      </div>
+                <div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={(e) => handleDeleteCode(code, e)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             ))}
-    </div>
+          </div>
         )}
       </CardContent>
     </Card>

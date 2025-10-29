@@ -16,83 +16,155 @@ const PrestadorPerformance = () => {
 
   useEffect(() => {
     const loadPerformance = async () => {
-      if (!profile?.id) return;
+      if (!profile?.id) {
+        // No profile - set empty defaults
+        setPerformance({
+          sessionsThisMonth: 0,
+          avgSatisfaction: 0,
+          totalClients: 0,
+          retentionRate: 0
+        });
+        setSessionEvolution([]);
+        setFinancialData([]);
+        setLoading(false);
+        return;
+      }
 
       try {
-        const { data: prestador } = await supabase
+        // Get prestador ID with timeout
+        const prestadorQuery = supabase
           .from('prestadores')
           .select('id')
           .eq('user_id', profile.id)
           .single();
 
-        if (!prestador) return;
+        const { data: prestador, error: prestadorError } = await Promise.race([
+          prestadorQuery,
+          new Promise<any>((_, reject) => 
+            setTimeout(() => reject(new Error('Query timeout')), 3000)
+          )
+        ]);
 
-        const { data: bookings } = await supabase
+        if (prestadorError || !prestador) {
+          console.warn('[PrestadorPerformance] No prestador found, showing empty stats');
+          // Set empty defaults - no error shown
+          setPerformance({
+            sessionsThisMonth: 0,
+            avgSatisfaction: 0,
+            totalClients: 0,
+            retentionRate: 0
+          });
+          setSessionEvolution([]);
+          setFinancialData([]);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch bookings with timeout
+        const bookingsQuery = supabase
           .from('bookings')
           .select('*')
           .eq('prestador_id', prestador.id);
 
-        if (bookings) {
-          const total = bookings.length;
-          const completed = bookings.filter(b => b.status === 'completed').length;
-          const cancelled = bookings.filter(b => b.status === 'cancelled').length;
-          const noShow = bookings.filter(b => b.status === 'no_show').length;
-          const avgRating = bookings.filter(b => b.rating)
-            .reduce((sum, b) => sum + (b.rating || 0), 0) / (bookings.filter(b => b.rating).length || 1);
+        const { data: bookings } = await Promise.race([
+          bookingsQuery,
+          new Promise<any>((_, reject) => 
+            setTimeout(() => reject(new Error('Query timeout')), 3000)
+          )
+        ]).catch(() => ({ data: [] }));
+
+        // Calculate stats from bookings (or use empty array if failed)
+        const total = bookings?.length || 0;
+        const completed = bookings?.filter(b => b.status === 'completed').length || 0;
+        const cancelled = bookings?.filter(b => b.status === 'cancelled').length || 0;
+        const noShow = bookings?.filter(b => b.status === 'no_show').length || 0;
+        const avgRating = bookings?.filter(b => b.rating)
+          .reduce((sum, b) => sum + (b.rating || 0), 0) / (bookings?.filter(b => b.rating).length || 1) || 0;
+        
+        const completionRate = total > 0 ? (completed / total) * 100 : 0;
+
+        // Get current month sessions
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const currentMonthBookings = bookings?.filter(b => b.date?.startsWith(currentMonth)) || [];
+        const sessionsThisMonth = currentMonthBookings.length;
+
+        setPerformance({
+          sessionsThisMonth,
+          avgSatisfaction: Number(avgRating.toFixed(1)),
+          totalClients: new Set(bookings?.map(b => b.user_id)).size, // Unique clients
+          retentionRate: completionRate
+        });
+
+        // Calculate monthly evolution (last 6 months)
+        const evolution = [];
+        for (let i = 5; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(date.getMonth() - i);
+          const monthStr = date.toISOString().slice(0, 7);
           
-          const completionRate = total > 0 ? (completed / total) * 100 : 0;
-
-          setPerformance({
-            totalSessions: total,
-            completedSessions: completed,
-            cancelledSessions: cancelled,
-            noShowSessions: noShow,
-            averageRating: Number(avgRating.toFixed(1)),
-            completionRate: Number(completionRate.toFixed(1))
-          });
-
-          // Calculate monthly evolution (last 6 months)
-          const evolution = [];
-          for (let i = 5; i >= 0; i--) {
-            const date = new Date();
-            date.setMonth(date.getMonth() - i);
-            const monthStr = date.toISOString().slice(0, 7);
-            
-            const monthBookings = bookings.filter(b => b.date.startsWith(monthStr));
-            evolution.push({
-              month: date.toLocaleDateString('pt-PT', { month: 'short', year: 'numeric' }),
-              sessions: monthBookings.length,
-              completed: monthBookings.filter(b => b.status === 'completed').length
-            });
-          }
-          setSessionEvolution(evolution);
-
-          // Fetch pricing from prestador_pricing table
-          const { data: pricing } = await supabase
-            .from('prestador_pricing')
-            .select('session_price, platform_commission_rate')
-            .eq('prestador_id', prestador.id)
-            .single();
-
-          const sessionPrice = pricing?.session_price || 1500;
-          const commissionRate = pricing?.platform_commission_rate || 0.25;
-          const providerRevenue = sessionPrice * (1 - commissionRate);
-
-          const monthlyRevenue = completed * providerRevenue;
-          setFinancialData({
-            totalRevenue: completed * providerRevenue,
-            pendingRevenue: (total - completed) * providerRevenue,
-            monthlyRevenue,
-            sessionsValue: sessionPrice
+          const monthBookings = bookings?.filter(b => b.date?.startsWith(monthStr)) || [];
+          const monthCompleted = monthBookings.filter(b => b.status === 'completed');
+          const monthAvgRating = monthCompleted.filter(b => b.rating)
+            .reduce((sum, b) => sum + (b.rating || 0), 0) / (monthCompleted.filter(b => b.rating).length || 1) || 0;
+          
+          evolution.push({
+            month: date.toLocaleDateString('pt-PT', { month: 'short', year: 'numeric' }),
+            sessions: monthBookings.length,
+            satisfaction: Number(monthAvgRating.toFixed(1))
           });
         }
+        setSessionEvolution(evolution);
+
+        // Fetch pricing from prestador_pricing table (with timeout and fallback)
+        const pricingQuery = supabase
+          .from('prestador_pricing')
+          .select('session_price, platform_commission_rate')
+          .eq('prestador_id', prestador.id)
+          .single();
+
+        const { data: pricing } = await Promise.race([
+          pricingQuery,
+          new Promise<any>((_, reject) => 
+            setTimeout(() => reject(new Error('Query timeout')), 3000)
+          )
+        ]).catch(() => ({ data: null }));
+
+        const sessionPrice = pricing?.session_price || 1500;
+        const commissionRate = pricing?.platform_commission_rate || 0.25;
+
+        // Calculate financial data by month (last 6 months)
+        const financialByMonth = [];
+        for (let i = 5; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(date.getMonth() - i);
+          const monthStr = date.toISOString().slice(0, 7);
+          
+          const monthBookings = bookings?.filter(b => b.date?.startsWith(monthStr) && b.status === 'completed') || [];
+          const monthSessions = monthBookings.length;
+          const grossValue = monthSessions * sessionPrice;
+          const commission = grossValue * commissionRate;
+          const netValue = grossValue - commission;
+          
+          financialByMonth.push({
+            month: date.toLocaleDateString('pt-PT', { month: 'short', year: 'numeric' }),
+            sessions: monthSessions,
+            grossValue: Number(grossValue.toFixed(2)),
+            commission: Number(commission.toFixed(2)),
+            netValue: Number(netValue.toFixed(2))
+          });
+        }
+        setFinancialData(financialByMonth);
       } catch (error) {
-        console.error('Error loading performance:', error);
-        toast({
-          title: 'Erro',
-          description: 'Não foi possível carregar os dados de desempenho',
-          variant: 'destructive'
+        // Silently fail - show empty stats instead of error
+        console.warn('[PrestadorPerformance] Error loading performance data, showing empty stats:', error);
+        setPerformance({
+          sessionsThisMonth: 0,
+          avgSatisfaction: 0,
+          totalClients: 0,
+          retentionRate: 0
         });
+        setSessionEvolution([]);
+        setFinancialData([]);
       } finally {
         setLoading(false);
       }
@@ -105,9 +177,9 @@ const PrestadorPerformance = () => {
     setIsExporting(true);
     try {
       // Prepare CSV data
-      const csvHeader = 'Mês,Sessões,Completas,Avaliação Média\n';
+      const csvHeader = 'Mês,Sessões,Satisfação\n';
       const csvRows = sessionEvolution.map(row => 
-        `${row.month},${row.sessions},${row.completed},${performance.averageRating}`
+        `${row.month},${row.sessions},${row.satisfaction}`
       ).join('\n');
       const csvContent = csvHeader + csvRows;
 

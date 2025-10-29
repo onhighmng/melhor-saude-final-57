@@ -6,7 +6,7 @@ import MobileMenu from './MobileMenu';
 import LoginDialog from './LoginDialog';
 import DesktopMenu from './navigation/DesktopMenu';
 import NavigationActions from './navigation/NavigationActions';
-import { createMenuItems, createMobileMenuItems, createAdminMenuItems, createAdminMobileMenuItems, createHRMenuItems, createHRMobileMenuItems } from './navigation/menuData';
+import { createMenuItems, createMobileMenuItems, createAdminMenuItems, createAdminMobileMenuItems, createHRMenuItems, createHRMobileMenuItems, createPrestadorMenuItems, createPrestadorMobileMenuItems, createEspecialistaMenuItems, createEspecialistaMobileMenuItems } from './navigation/menuData';
 import { usePillarNavigation } from '@/hooks/usePillarNavigation';
 const Navigation = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -34,6 +34,8 @@ const Navigation = () => {
       isAuthenticated: false,
       isAdmin: false,
       isHR: false,
+      isPrestador: false,
+      isEspecialistaGeral: false,
       user: null,
       profile: null,
       logout: () => {}
@@ -43,6 +45,8 @@ const Navigation = () => {
     isAuthenticated,
     isAdmin,
     isHR,
+    isPrestador,
+    isEspecialistaGeral,
     user,
     profile,
     logout
@@ -100,9 +104,26 @@ const Navigation = () => {
   };
 
 
-  // Choose menu items based on user role
-  const menuItems = isAdmin ? createAdminMenuItems(handleNavigation) : isHR ? createHRMenuItems(handleNavigation) : createMenuItems(handleSobreNosClick, handlePillarClick, handleNavigation, isAuthenticated, handleAuthRedirect);
-  const mobileMenuItems = isAdmin ? createAdminMobileMenuItems() : isHR ? createHRMobileMenuItems() : createMobileMenuItems(isAuthenticated, handleAuthRedirect, handleSobreNosClick, handlePillarClick);
+  // Choose menu items based on user role (priority: admin > hr > prestador > especialista > user)
+  const menuItems = isAdmin 
+    ? createAdminMenuItems(handleNavigation)
+    : isHR 
+    ? createHRMenuItems(handleNavigation)
+    : isPrestador
+    ? createPrestadorMenuItems(handleNavigation)
+    : isEspecialistaGeral
+    ? createEspecialistaMenuItems(handleNavigation)
+    : createMenuItems(handleSobreNosClick, handlePillarClick, handleNavigation, isAuthenticated, handleAuthRedirect);
+  
+  const mobileMenuItems = isAdmin 
+    ? createAdminMobileMenuItems()
+    : isHR 
+    ? createHRMobileMenuItems()
+    : isPrestador
+    ? createPrestadorMobileMenuItems()
+    : isEspecialistaGeral
+    ? createEspecialistaMobileMenuItems()
+    : createMobileMenuItems(isAuthenticated, handleAuthRedirect, handleSobreNosClick, handlePillarClick);
   return <>
       <nav className="fixed top-2 left-0 right-0 z-50 w-full max-w-none">
         <div className="relative z-50 w-full max-w-[1500px] mx-auto px-2 sm:px-8 my-0 py-0">

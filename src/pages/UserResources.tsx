@@ -195,34 +195,21 @@ export default function UserResources() {
     if (pillar === 'all') return resources;
     return resources.filter(r => r.pillar === pillar);
   };
-  const resourcePosts = [{
-    id: 1,
-    title: "Guia Completo de Saúde Mental",
-    category: "Saúde Mental",
-    imageUrl: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070",
-    href: "#",
-    views: 2180,
-    readTime: 8,
-    rating: 5
-  }, {
-    id: 2,
-    title: "Planeamento Financeiro Pessoal",
-    category: "Assistência Financeira",
-    imageUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070",
-    href: "#",
-    views: 1456,
-    readTime: 12,
-    rating: 4
-  }, {
-    id: 3,
-    title: "Direitos do Trabalhador",
-    category: "Assistência Jurídica",
-    imageUrl: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070",
-    href: "#",
-    views: 987,
-    readTime: 6,
-    rating: 4
-  }];
+
+  // Get top 3 featured resources from database (most recent)
+  const featuredResources = resources.slice(0, 3);
+  const remainingResources = resources.slice(3);
+  
+  // Map pillar to readable category name
+  const getPillarCategoryName = (pillar: string): string => {
+    const pillarMap: Record<string, string> = {
+      'saude_mental': 'Saúde Mental',
+      'bem_estar_fisico': 'Bem-Estar Físico',
+      'assistencia_financeira': 'Assistência Financeira',
+      'assistencia_juridica': 'Assistência Jurídica'
+    };
+    return pillarMap[pillar] || pillar;
+  };
 
   if (loading) {
     return (
@@ -300,37 +287,59 @@ export default function UserResources() {
           
           {/* Tab Contents */}
           <TabsContent value="all" className="mt-6">
-            {/* Blog Cards - Only show in "Todos" tab */}
-            <div className="grid h-auto grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[1fr_0.5fr] mb-8">
-              {resourcePosts.map((post, index) => {
-              const isPrimary = index === 0;
-              const categoryColors = getCategoryColors(post.category);
-              return <div key={post.id} style={{
-                backgroundImage: `url(${post.imageUrl})`
-              }} className={`group relative row-span-1 flex size-full cursor-pointer flex-col justify-end overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat p-5 text-white max-md:h-[300px] transition-all duration-300 hover:scale-[0.99] ${isPrimary ? 'col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-1' : ''}`} onClick={() => toast.success(`A abrir: ${post.title}`)}>
-                <div className="absolute inset-0 -z-0 h-[130%] w-full bg-gradient-to-t from-black/80 to-transparent transition-all duration-300 group-hover:h-full" />
-                    <article className="relative z-0 flex items-end">
-                      <div className="flex flex-1 flex-col gap-3">
-                        <h1 className="text-3xl font-semibold md:text-4xl">{post.title}</h1>
-                        <div className="flex flex-col gap-3">
-                          <span className={cn(
-                            "text-base capitalize py-px px-2 rounded-md w-fit backdrop-blur-md border",
-                            categoryColors.bg,
-                            categoryColors.text,
-                            categoryColors.border
-                          )}>
-                            {post.category}
-                          </span>
-                          <div className="text-lg font-thin">({post.views} Views)</div>
-                          {post.readTime && <div className="text-xl font-semibold">{post.readTime} min read</div>}
+            {/* Featured Resources - Top 3 from database */}
+            {featuredResources.length > 0 && (
+              <div className="grid h-auto grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[1fr_0.5fr] mb-8">
+                {featuredResources.map((resource, index) => {
+                  const isPrimary = index === 0;
+                  const categoryColors = getCategoryColors(getPillarCategoryName(resource.pillar));
+                  const thumbnailUrl = resource.thumbnail_url || resource.file_url || 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=2070';
+                  
+                  return (
+                    <div 
+                      key={resource.id} 
+                      style={{
+                        backgroundImage: `url(${thumbnailUrl})`
+                      }} 
+                      className={`group relative row-span-1 flex size-full cursor-pointer flex-col justify-end overflow-hidden rounded-[20px] bg-cover bg-center bg-no-repeat p-5 text-white max-md:h-[300px] transition-all duration-300 hover:scale-[0.99] ${isPrimary ? 'col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-1' : ''}`} 
+                      onClick={() => handleView(resource)}
+                    >
+                      <div className="absolute inset-0 -z-0 h-[130%] w-full bg-gradient-to-t from-black/80 to-transparent transition-all duration-300 group-hover:h-full" />
+                      <article className="relative z-0 flex items-end">
+                        <div className="flex flex-1 flex-col gap-3">
+                          <h1 className="text-3xl font-semibold md:text-4xl">{resource.title}</h1>
+                          <div className="flex flex-col gap-3">
+                            <span className={cn(
+                              "text-base capitalize py-px px-2 rounded-md w-fit backdrop-blur-md border",
+                              categoryColors.bg,
+                              categoryColors.text,
+                              categoryColors.border
+                            )}>
+                              {getPillarCategoryName(resource.pillar)}
+                            </span>
+                            <div className="text-lg font-thin">{resource.type || 'Recurso'}</div>
+                          </div>
                         </div>
-                      </div>
-                    </article>
-                  </div>;
-            })}
-            </div>
+                      </article>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             
-            <ResourceGrid resources={filterByPillar('all')} onView={handleView} onDownload={handleDownload} />
+            {/* Empty state if no resources */}
+            {resources.length === 0 && (
+              <div className="text-center py-12">
+                <BookOpen className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Nenhum recurso disponível</h3>
+                <p className="text-muted-foreground">Novos recursos serão adicionados em breve.</p>
+              </div>
+            )}
+            
+            {/* Remaining resources in grid */}
+            {remainingResources.length > 0 && (
+              <ResourceGrid resources={remainingResources} onView={handleView} onDownload={handleDownload} />
+            )}
           </TabsContent>
           
           <TabsContent value="saude_mental" className="mt-6">

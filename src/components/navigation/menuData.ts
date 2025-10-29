@@ -253,6 +253,96 @@ export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
   }
 ];
 
+// Prestador Menu Items
+export const createPrestadorMenuItems = (
+  handleNavigation: (path: string) => void
+): MenuItem[] => [
+  {
+    title: 'Dashboard',
+    key: 'dashboard-prestador',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/prestador/dashboard')
+  },
+  {
+    title: 'Calendário',
+    key: 'calendario-prestador',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/prestador/calendario')
+  },
+  {
+    title: 'Sessões',
+    key: 'sessoes-prestador',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/prestador/sessoes')
+  },
+  {
+    title: 'Estatísticas',
+    key: 'stats-prestador',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/prestador/stats')
+  }
+];
+
+export const createPrestadorMobileMenuItems = (): MobileMenuItem[] => [
+  {
+    title: 'Dashboard',
+    key: 'dashboard-prestador',
+    hasDropdown: false,
+    path: '/prestador/dashboard'
+  },
+  {
+    title: 'Calendário',
+    key: 'calendario-prestador',
+    hasDropdown: false,
+    path: '/prestador/calendario'
+  },
+  {
+    title: 'Sessões',
+    key: 'sessoes-prestador',
+    hasDropdown: false,
+    path: '/prestador/sessoes'
+  }
+];
+
+// Especialista Menu Items
+export const createEspecialistaMenuItems = (
+  handleNavigation: (path: string) => void
+): MenuItem[] => [
+  {
+    title: 'Dashboard',
+    key: 'dashboard-especialista',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/especialista/dashboard')
+  },
+  {
+    title: 'Sessões',
+    key: 'sessoes-especialista',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/especialista/sessoes')
+  },
+  {
+    title: 'Pacientes',
+    key: 'pacientes-especialista',
+    hasDropdown: false,
+    onClick: () => handleNavigation('/especialista/pacientes')
+  }
+];
+
+export const createEspecialistaMobileMenuItems = (): MobileMenuItem[] => [
+  {
+    title: 'Dashboard',
+    key: 'dashboard-especialista',
+    hasDropdown: false,
+    path: '/especialista/dashboard'
+  },
+  {
+    title: 'Sessões',
+    key: 'sessoes-especialista',
+    hasDropdown: false,
+    path: '/especialista/sessoes'
+  }
+];
+
 export const createMobileMenuItems = (
   isAuthenticated: boolean,
   handleAuthRedirect: (section: string) => void,

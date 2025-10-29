@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -41,13 +41,16 @@ interface UseBookingsReturn {
 }
 
 export const useBookings = (): UseBookingsReturn => {
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth(); // Depend on the auth loading state
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
-  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchBookings = async () => {
-    if (!user) return;
+  const fetchBookings = useCallback(async () => {
+    // DO NOT run if auth is loading or there's no user. This is the key fix.
+    if (isAuthLoading || !user) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -76,42 +79,41 @@ export const useBookings = (): UseBookingsReturn => {
         }));
         
         setAllBookings(bookings);
-        setUpcomingBookings(bookings.filter(b => 
-          b.status === 'confirmed' && b.date && new Date(b.date) >= new Date()
-        ));
       }
-      
-      setLoading(false);
     } catch (err) {
-      // Error logged but no user-facing error needed for background fetch
-      const error = err instanceof Error ? err.message : 'Unknown error';
-      // Silently fail - bookings will remain empty array
+      console.error("useBookings Error:", err);
+    } finally {
       setLoading(false);
     }
-  };
+  }, [user, isAuthLoading]);
 
   useEffect(() => {
     fetchBookings();
 
-    if (!user) return;
+    if (user?.id) {
+      const subscription = supabase
+        .channel(`booking-updates-for-${user.id}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'bookings',
+          filter: `user_id=eq.${user.id}`
+        }, () => {
+          fetchBookings();
+        })
+        .subscribe();
 
-    // Real-time subscription
-    const subscription = supabase
-      .channel('booking-updates')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'bookings',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        fetchBookings();
-      })
-      .subscribe();
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+    return undefined;
+  }, [user, isAuthLoading, fetchBookings]);
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [user]);
+  const upcomingBookings = useMemo(() => 
+    allBookings.filter(b => 
+      (b.status === 'confirmed' || b.status === 'scheduled') && b.date && new Date(b.date) >= new Date()
+    ), [allBookings]);
 
   const bookingStats = useMemo(() => ({
     totalBookings: allBookings.length,
@@ -119,8 +121,6 @@ export const useBookings = (): UseBookingsReturn => {
     completedBookings: allBookings.filter(b => b.status === 'completed').length,
     nextAppointment: upcomingBookings[0]
   }), [allBookings, upcomingBookings]);
-
-  const refetch = fetchBookings;
 
   const formatPillarName = (pillar: string) => {
     const names = {
@@ -134,7 +134,7 @@ export const useBookings = (): UseBookingsReturn => {
 
   const getTimeUntilAppointment = (date: string, time?: string) => {
     const appointmentDateTime = time 
-      ? new Date(`${date} ${time}`) 
+      ? new Date(`${date}T${time}`) 
       : new Date(date);
     const now = new Date();
     const diff = appointmentDateTime.getTime() - now.getTime();
@@ -153,8 +153,8 @@ export const useBookings = (): UseBookingsReturn => {
     allBookings,
     upcomingBookings,
     bookingStats,
-    loading,
-    refetch,
+    loading: loading || isAuthLoading, // The hook is loading if auth is loading OR it is fetching
+    refetch: fetchBookings,
     formatPillarName,
     getTimeUntilAppointment
   };

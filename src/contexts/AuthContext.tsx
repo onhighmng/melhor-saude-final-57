@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -48,175 +48,64 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Guard to prevent duplicate background profile loads
+  const backgroundLoadAttemptedRef = useRef<Set<string>>(new Set());
 
-  // Helper function to load profile with roles - FIXED VERSION
+  // Helper function to load profile with roles - ONLY USES RPC (NO DATABASE QUERIES)
   const loadProfileWithRoles = useCallback(async (userId: string): Promise<UserProfile | null> => {
-    console.log(`%c[AuthContext] 🔍 userId passed to loadProfileWithRoles:`, 'color: blue; font-weight: bold;', userId);
-    console.log(`%c[AuthContext] Loading profile for user: ${userId}`, 'color: blue;');
+    console.log(`%c[AuthContext] 🔍 Loading profile for user: ${userId}`, 'color: blue; font-weight: bold;');
     
     try {
-      console.log('%c[AuthContext] Starting profile and roles queries...', 'color: blue;');
-      const startQueryTime = performance.now();
+      // Get user data from Supabase auth FIRST (instant, no database query)
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) {
+        console.error('%c[AuthContext] ❌ No auth user found', 'color: red;');
+      return null;
+    }
 
-      // DIAGNOSTIC: First try direct queries without timeout to see actual errors
-      console.log('%c[AuthContext] 🔍 Attempting direct profile query (no timeout)...', 'color: yellow;');
+      // Fetch role using RPC (bypasses RLS, always works)
+      console.log('%c[AuthContext] 🔄 Fetching role via RPC...', 'color: cyan;');
+      const rpcStart = performance.now();
+      const { data: role, error: rpcError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: userId });
+      const rpcTime = performance.now() - rpcStart;
       
-      let profileData: any = null;
-      let roles: string[] = [];
-
-      // Try profile query with a 5-second manual timeout - CRITICAL: Queries hang, so short timeout
-      const profileQueryStart = performance.now();
-      let profileTimeout = false;
-      try {
-        const profileQuery = supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
-        
-        // Add progress checker (will be cleared on timeout)
-        const progressInterval = setInterval(() => {
-          const elapsed = performance.now() - profileQueryStart;
-          console.log(`%c[AuthContext] ⏳ Profile query still running... ${(elapsed / 1000).toFixed(1)}s`, 'color: orange;');
-        }, 2000);
-
-        const profileResponse = await Promise.race([
-          profileQuery,
-          new Promise((_, reject) => {
-            setTimeout(() => {
-              profileTimeout = true;
-              clearInterval(progressInterval);
-              reject(new Error('Profile query timeout after 5s'));
-            }, 5000); // Reduced to 5 seconds - queries hang indefinitely
-          })
-        ]) as any;
-
-        clearInterval(progressInterval);
-
-        if (profileResponse && !profileResponse.error && profileResponse.data) {
-          profileData = profileResponse.data;
-          console.log(`%c[AuthContext] ✅ Profile found in ${(performance.now() - profileQueryStart).toFixed(0)}ms`, 'color: green; font-weight: bold;', profileData);
-        } else {
-          console.error('%c[AuthContext] ❌ Profile query error:', 'color: red;', profileResponse?.error);
-        }
-      } catch (profileError: any) {
-        if (profileTimeout) {
-          console.error('%c[AuthContext] ❌ Profile query TIMED OUT after 5s - database queries are hanging. Using fallback.', 'color: red; font-weight: bold;');
-          // Return immediately with minimal profile - don't wait for roles query
-          const queryTime = performance.now() - startQueryTime;
-          console.log(`%c[AuthContext] Queries aborted after ${queryTime.toFixed(0)}ms - returning minimal profile`, 'color: cyan;');
-          
-          return {
-            id: userId,
-            user_id: userId,
-            name: user?.user_metadata?.name || 'User',
-            email: user?.email || '',
-            role: 'user',
-            is_active: false,
-            metadata: {},
-          };
-        } else {
-          console.error('%c[AuthContext] ❌ Profile query failed:', 'color: red; font-weight: bold;', profileError);
-        }
+      if (rpcError) {
+        console.error(`%c[AuthContext] ❌ RPC error in ${rpcTime.toFixed(0)}ms:`, 'color: red;', rpcError);
+        return null;
       }
-
-      // Only try roles query if profile query succeeded (no point waiting if profile already failed)
-      if (!profileData) {
-        console.warn('%c[AuthContext] Skipping roles query - profile query failed', 'color: orange;');
-      } else {
-        const rolesQueryStart = performance.now();
-        let rolesTimeout = false;
-        try {
-          const rolesQuery = supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', userId);
-          
-          // Add progress checker
-          const progressInterval = setInterval(() => {
-            const elapsed = performance.now() - rolesQueryStart;
-            console.log(`%c[AuthContext] ⏳ Roles query still running... ${(elapsed / 1000).toFixed(1)}s`, 'color: orange;');
-          }, 2000);
-
-          const rolesResponse = await Promise.race([
-            rolesQuery,
-            new Promise((_, reject) => {
-              setTimeout(() => {
-                rolesTimeout = true;
-                clearInterval(progressInterval);
-                reject(new Error('Roles query timeout after 5s'));
-              }, 5000);
-            })
-          ]) as any;
-
-          clearInterval(progressInterval);
-
-          if (rolesResponse && !rolesResponse.error && rolesResponse.data) {
-            roles = rolesResponse.data.map((r: any) => r.role) || [];
-            console.log(`%c[AuthContext] ✅ Roles found in ${(performance.now() - rolesQueryStart).toFixed(0)}ms`, 'color: green; font-weight: bold;', roles);
-          } else {
-            console.error('%c[AuthContext] ❌ Roles query error:', 'color: red;', rolesResponse?.error);
-          }
-        } catch (rolesError: any) {
-          if (rolesTimeout) {
-            console.error('%c[AuthContext] ❌ Roles query TIMED OUT after 5s - but we have profile, continuing...', 'color: orange;');
-            // Continue with profile data, just use default 'user' role
-          } else {
-            console.error('%c[AuthContext] ❌ Roles query failed:', 'color: red; font-weight: bold;', rolesError);
-          }
-        }
+      
+      if (!role) {
+        console.warn(`%c[AuthContext] ⚠️ RPC returned no role in ${rpcTime.toFixed(0)}ms - defaulting to "user"`, 'color: orange;');
       }
-
-      const queryTime = performance.now() - startQueryTime;
-      console.log(`%c[AuthContext] All queries completed in ${queryTime.toFixed(0)}ms`, 'color: cyan;');
-
-      // If no profile found, return minimal profile to prevent complete failure
-      if (!profileData) {
-        console.warn(`%c[AuthContext] No profile found for user ${userId}, returning minimal profile`, 'color: orange;');
-        return {
-          id: userId,
-          user_id: userId,
-          name: 'User',
-          email: user?.email || '',
-          role: 'user',
-          is_active: false,
-          metadata: {},
-        };
-      }
-
-      const primaryRole = roles.includes('admin') ? 'admin' 
-        : roles.includes('hr') ? 'hr'
-        : roles.includes('prestador') ? 'prestador'
-        : roles.includes('especialista_geral') ? 'especialista_geral'
-        : 'user';
-
-      const finalProfile = {
-        ...profileData,
-        user_id: profileData.id,
-        is_active: profileData.is_active ?? true,
-        role: primaryRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
-        metadata: (profileData.metadata as Record<string, unknown>) || {},
-      };
-
-      console.log('%c[AuthContext] Final profile:', 'color: green; font-weight: bold;', finalProfile);
-      return finalProfile;
-    } catch (error) {
-      console.error('%c[AuthContext] Unexpected error loading profile:', 'color: red; font-weight: bold;', error);
-      // Return minimal profile instead of null to prevent auth failures
-      return {
+      
+      console.log(`%c[AuthContext] ✅ RPC succeeded in ${rpcTime.toFixed(0)}ms - role: ${role || 'user'}`, 'color: green; font-weight: bold;');
+      
+      // Build profile from auth user + role (NO DATABASE QUERIES)
+      const profile: UserProfile = {
         id: userId,
         user_id: userId,
-        name: 'User',
-        email: user?.email || '',
-        role: 'user',
-        is_active: false,
+        name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
+        email: authUser.email || '',
+        role: (role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
+        is_active: true,
         metadata: {},
       };
+      
+      console.log('%c[AuthContext] ✅ Profile built:', 'color: green; font-weight: bold;', profile);
+      return profile;
+    } catch (error) {
+      console.error('%c[AuthContext] ❌ Error loading profile:', 'color: red; font-weight: bold;', error);
+      return null;
     }
-  }, [user]);
+  }, []);
 
   // Real authentication methods
   const login = async (email: string, password: string) => {
+    // CRITICAL: Clear the background load guard to allow fresh profile load after login
+    backgroundLoadAttemptedRef.current.clear();
+    console.log('%c[AuthContext] 🔄 Cleared background load guard for fresh login', 'color: cyan;');
+    
     const startTime = performance.now();
     
     // Validate inputs before attempting login
@@ -250,13 +139,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       // Ensure session is properly set
       if (data.session) {
-        await supabase.auth.setSession(data.session);
+        // CRITICAL FIX: Load profile BEFORE setting session
+        // This ensures profile is ready when onAuthStateChange fires
+        console.log('%c[AuthContext] 🔄 Loading profile immediately after login...', 'color: cyan;');
+        const profileData = await loadProfileWithRoles(data.session.user.id);
+        
+        if (profileData) {
+          // Mark as loaded BEFORE setting session (so onAuthStateChange doesn't reload)
+          backgroundLoadAttemptedRef.current.add(data.session.user.id);
+          
+          // Set profile FIRST
+          setProfile(profileData);
+          setUser(data.session.user);
+          setSession(data.session);
+          console.log(`%c[AuthContext] ✅ Profile set during login:`, 'color: green; font-weight: bold;', profileData);
+          
+          // NOW set the session (this will trigger onAuthStateChange, but it will skip loading)
+          await supabase.auth.setSession(data.session);
+          
+          const authTime = performance.now() - startTime;
+          console.log(`%c[AuthContext] Login completed in ${authTime.toFixed(0)}ms`, 'color: green;');
+          
+          return { profile: profileData };
+        } else {
+          await supabase.auth.setSession(data.session);
+        }
       }
       
       const authTime = performance.now() - startTime;
-      console.log(`%c[AuthContext] Login completed in ${authTime.toFixed(0)}ms`, 'color: green;');
-      
-      // Let onAuthStateChange handle profile loading for consistency
+      console.log(`%c[AuthContext] Login completed in ${authTime.toFixed(0)}ms (no profile loaded)`, 'color: orange;');
       return {};
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Credenciais inválidas';
@@ -418,24 +329,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('%c[AuthContext] ✅ Initial fallback profile set from session (demo-ready):', 'color: green; font-weight: bold;', immediateFallbackProfile);
         
         // Try to load full profile in background (non-blocking)
-        queueMicrotask(async () => {
-          try {
-            console.log('%c[AuthContext] 🔄 Attempting background profile load on mount...', 'color: cyan;');
+        // CRITICAL: Use setTimeout(0) to defer outside the callback stack - prevents Supabase deadlock
+        // GUARD: Only attempt once per user ID to prevent resource exhaustion
+        // BUT: Only mark as attempted if it SUCCEEDS (so we retry on failure)
+        const hasAlreadySucceeded = backgroundLoadAttemptedRef.current.has(session.user.id);
+        
+        if (!hasAlreadySucceeded) {
+          setTimeout(async () => {
+            try {
+              console.log('%c[AuthContext] 🔄 Attempting background profile load on mount...', 'color: cyan;');
           const profileData = await loadProfileWithRoles(session.user.id);
-            // FIX: Always update if we got profile data (remove role check)
-            if (mounted && profileData) {
-              setProfile(profileData);
-              console.log('%c[AuthContext] ✅ Background profile loaded and updated:', 'color: green;', profileData);
-            }
+              // FIX: Always update if we got profile data (remove role check)
+              if (mounted && profileData) {
+                setProfile(profileData);
+                console.log('%c[AuthContext] ✅ Background profile loaded and updated:', 'color: green;', profileData);
+                // ONLY mark as attempted if successful
+                backgroundLoadAttemptedRef.current.add(session.user.id);
+              } else {
+                console.warn('%c[AuthContext] ⚠️ Background profile load returned null (will retry on next mount)', 'color: orange;');
+              }
         } catch (error) {
-            console.warn('%c[AuthContext] ⚠️ Background profile load failed (using fallback):', 'color: orange;', error);
-          }
-        });
+              console.warn('%c[AuthContext] ⚠️ Background profile load failed (will retry on next mount):', 'color: orange;', error);
+              // Don't mark as attempted so it can retry
+            }
+          }, 0);
+        } else {
+          console.log('%c[AuthContext] ⏭️ Background profile load already SUCCEEDED for this user, skipping...', 'color: gray;');
+        }
       } else {
         if (mounted) {
           setProfile(null);
           setIsLoading(false);
+          // Clear the background load guard when user logs out
+          backgroundLoadAttemptedRef.current.clear();
         }
+      }
+    }).catch((error) => {
+      // CRITICAL: Always set loading to false, even on error
+      console.error('%c[AuthContext] ❌ Error getting initial session:', 'color: red;', error);
+      if (mounted) {
+        setProfile(null);
+        setUser(null);
+        setSession(null);
+        setIsLoading(false);
       }
     });
 
@@ -451,42 +387,51 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
-      // FIX: Create profile immediately from session data (demo-ready, no DB wait)
+      // FIX: Don't set fallback profile - wait for login to set correct profile
       if (session?.user) {
-        // Create fallback profile immediately from session data (demo-ready)
-        const immediateFallbackProfile: UserProfile = {
-          id: session.user.id,
-          user_id: session.user.id,
-          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email || '',
-          role: 'user', // Will be updated if profile loads successfully in background
-          is_active: true,
-          metadata: {},
-        };
-        setProfile(immediateFallbackProfile);
-        setIsLoading(false); // Set loading false immediately - don't wait for DB
-        console.log('%c[AuthContext] ✅ Immediate fallback profile set from session (demo-ready):', 'color: green; font-weight: bold;', immediateFallbackProfile);
+        // CRITICAL: Don't await here - use setTimeout to defer (prevents Supabase deadlock)
+        // Check if profile already loaded by login function
+        const hasLoadedProfile = backgroundLoadAttemptedRef.current.has(session.user.id);
         
-        // Try to load full profile in background (non-blocking)
-        // Use queueMicrotask to defer execution outside the handler
-        queueMicrotask(async () => {
-          try {
-            console.log('%c[AuthContext] 🔄 Attempting background profile load...', 'color: cyan;');
-          const profileData = await loadProfileWithRoles(session.user.id);
-            // FIX: Always update if we got profile data (remove role check)
+        if (hasLoadedProfile) {
+          // Profile already loaded by login function - just set loading to false
+          console.log('%c[AuthContext] ⏭️ Profile already loaded by login, skipping background load', 'color: gray;');
+          setIsLoading(false);
+        } else {
+          // Load profile in background (non-blocking)
+          console.log('%c[AuthContext] 🔄 No profile yet, loading in background...', 'color: cyan;');
+          setTimeout(async () => {
+            const profileData = await loadProfileWithRoles(session.user.id);
             if (mounted && profileData) {
               setProfile(profileData);
-              console.log('%c[AuthContext] ✅ Background profile loaded and updated:', 'color: green;', profileData);
+              setIsLoading(false);
+              backgroundLoadAttemptedRef.current.add(session.user.id);
+              console.log('%c[AuthContext] ✅ Background profile loaded:', 'color: green;', profileData);
+            } else {
+              // Only set fallback if RPC also fails
+              if (mounted) {
+                const fallbackProfile: UserProfile = {
+                  id: session.user.id,
+                  user_id: session.user.id,
+                  name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                  email: session.user.email || '',
+                  role: 'user',
+                  is_active: true,
+                  metadata: {},
+                };
+                setProfile(fallbackProfile);
+                setIsLoading(false);
+                console.warn('%c[AuthContext] ⚠️ Using fallback profile', 'color: orange;');
+              }
             }
-        } catch (error) {
-            console.warn('%c[AuthContext] ⚠️ Background profile load failed (using fallback):', 'color: orange;', error);
-            // Keep the fallback profile - don't overwrite it
+          }, 0);
         }
-        });
       } else if (!session) {
         if (mounted) {
           setProfile(null);
           setIsLoading(false);
+          // Clear the background load guard when user logs out
+          backgroundLoadAttemptedRef.current.clear();
           console.log('%c[AuthContext] No session, profile cleared.', 'color: orange;');
         }
       }

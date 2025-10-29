@@ -15,7 +15,6 @@ import {
   Save, 
   Settings,
   Clock,
-  Euro,
   Lock,
   Brain,
   Heart,
@@ -39,34 +38,63 @@ const PrestadorSettings = () => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Load prestador settings
+  // Load prestador settings from both profiles and prestadores tables
   useEffect(() => {
     const loadSettings = async () => {
       if (!profile?.id) return;
 
       try {
-        const { data: prestador } = await supabase
+        // Load from profiles table (name, email, phone)
+        const profileQuery = supabase
+          .from('profiles')
+          .select('name, email, phone')
+          .eq('id', profile.id)
+          .single();
+
+        // Load from prestadores table (pillar, pricing)
+        const prestadorQuery = supabase
           .from('prestadores')
-          .select('*')
+          .select('pillars, id')
           .eq('user_id', profile.id)
           .single();
 
-        if (prestador) {
-          const pillarMap: Record<string, string> = {
-            'psychological': 'Saúde Mental',
-            'physical': 'Bem-Estar Físico',
-            'financial': 'Assistência Financeira',
-            'legal': 'Assistência Jurídica'
-          };
+        const [profileResult, prestadorResult] = await Promise.allSettled([
+          Promise.race([profileQuery, new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))]),
+          Promise.race([prestadorQuery, new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))])
+        ]);
 
-          setSettings({
-            name: prestador.name,
-            email: prestador.email,
-            pillar: pillarMap[prestador.pillar_specialties?.[0]] || 'Saúde Mental',
-            costPerSession: 1500, // Default value
-            preferredHours: '09:00 - 18:00'
-          });
+        const profileData = profileResult.status === 'fulfilled' ? (profileResult.value as any).data : null;
+        const prestadorData = prestadorResult.status === 'fulfilled' ? (prestadorResult.value as any).data : null;
+
+        const pillarMap: Record<string, string> = {
+          'psychological': 'Saúde Mental',
+          'physical': 'Bem-Estar Físico',
+          'financial': 'Assistência Financeira',
+          'legal': 'Assistência Jurídica'
+        };
+
+        // Load pricing if prestador exists
+        let pricing = 1500;
+        if (prestadorData?.id) {
+          const { data: pricingData } = await Promise.race([
+            supabase
+              .from('prestador_pricing')
+              .select('session_price')
+              .eq('prestador_id', prestadorData.id)
+              .single(),
+            new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
+          ]).catch(() => ({ data: null }));
+          
+          pricing = pricingData?.session_price || 1500;
         }
+
+        setSettings({
+          name: profileData?.name || profile?.name || '',
+          email: profileData?.email || profile?.email || '',
+          pillar: pillarMap[prestadorData?.pillars?.[0]] || 'Saúde Mental',
+          costPerSession: pricing,
+          preferredHours: '09:00 - 18:00'
+        });
       } catch (error) {
         console.error('Error loading settings:', error);
       } finally {
@@ -117,19 +145,38 @@ const PrestadorSettings = () => {
     }
   };
 
-  const handleSaveProfile = () => {
-    toast({
-      title: "Perfil atualizado",
-      description: "As suas informações pessoais foram salvas com sucesso"
-    });
-    setIsEditing(false);
+  const handleSaveProfile = async () => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: settings.name,
+          email: settings.email
+        })
+        .eq('id', profile?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Perfil atualizado",
+        description: "As suas informações pessoais foram salvas com sucesso"
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível guardar as alterações",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleOpenAvailability = () => {
     setIsAvailabilityModalOpen(true);
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (newPassword.new !== newPassword.confirm) {
       toast({
         title: "Erro",
@@ -139,16 +186,41 @@ const PrestadorSettings = () => {
       return;
     }
 
-    toast({
-      title: "Palavra-passe alterada",
-      description: "A sua palavra-passe foi alterada com sucesso"
-    });
+    if (newPassword.new.length < 6) {
+      toast({
+        title: "Erro",
+        description: "A palavra-passe deve ter pelo menos 6 caracteres",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    setNewPassword({
-      current: '',
-      new: '',
-      confirm: ''
-    });
+    try {
+      // Update password using Supabase Auth
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword.new
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Palavra-passe alterada",
+        description: "A sua palavra-passe foi alterada com sucesso"
+      });
+
+      setNewPassword({
+        current: '',
+        new: '',
+        confirm: ''
+      });
+    } catch (error: any) {
+      console.error('Error changing password:', error);
+      toast({
+        title: "Erro",
+        description: error?.message || "Não foi possível alterar a palavra-passe",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -193,7 +265,7 @@ const PrestadorSettings = () => {
           <BentoCard
             name="Informação Financeira"
             description={`${settings.costPerSession} MZN/sessão`}
-            Icon={Euro}
+            Icon={DollarSign}
             onClick={() => setIsFinancialInfoOpen(true)}
             className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2"
             background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100" />}
@@ -323,7 +395,7 @@ const PrestadorSettings = () => {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Euro className="h-5 w-5" />
+              <DollarSign className="h-5 w-5" />
               Informação Financeira
             </DialogTitle>
           </DialogHeader>
@@ -333,11 +405,11 @@ const PrestadorSettings = () => {
               <div className="relative mt-1">
                 <Input
                   id="costPerSession"
-                  value={settings.costPerSession}
+                  value={`${settings.costPerSession} MZN`}
                   disabled
-                  className="pl-8"
+                  className="pl-12"
                 />
-                <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm font-medium text-muted-foreground">MZN</span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Este valor é apenas para visualização e não pode ser alterado

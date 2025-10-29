@@ -25,6 +25,10 @@ export default function AdminResources() {
     thumbnail_url: '',
     is_active: true
   });
+  const [resourceFile, setResourceFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [uploadingResource, setUploadingResource] = useState(false);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
   useEffect(() => {
     loadResources();
@@ -47,10 +51,67 @@ export default function AdminResources() {
     }
   };
 
+  const uploadFile = async (file: File, bucket: string, path: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${path}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
+      let finalUrl = formData.url;
+      let finalThumbnailUrl = formData.thumbnail_url;
+
+      // Upload resource file if provided
+      if (resourceFile) {
+        setUploadingResource(true);
+        const uploadedUrl = await uploadFile(resourceFile, 'resources', 'resource');
+        if (uploadedUrl) {
+          finalUrl = uploadedUrl;
+        } else {
+          toast.error('Erro ao fazer upload do ficheiro');
+          setUploadingResource(false);
+          return;
+        }
+        setUploadingResource(false);
+      }
+
+      // Upload thumbnail file if provided
+      if (thumbnailFile) {
+        setUploadingThumbnail(true);
+        const uploadedUrl = await uploadFile(thumbnailFile, 'resources', 'thumbnail');
+        if (uploadedUrl) {
+          finalThumbnailUrl = uploadedUrl;
+        } else {
+          toast.error('Erro ao fazer upload da thumbnail');
+          setUploadingThumbnail(false);
+          return;
+        }
+        setUploadingThumbnail(false);
+      }
+
       const userData = await supabase.auth.getUser();
       
       if (editingResource) {
@@ -58,6 +119,8 @@ export default function AdminResources() {
           .from('resources')
           .update({
             ...formData,
+            url: finalUrl,
+            thumbnail_url: finalThumbnailUrl,
             updated_at: new Date().toISOString()
           })
           .eq('id', editingResource.id);
@@ -69,6 +132,8 @@ export default function AdminResources() {
           .from('resources')
           .insert({
             ...formData,
+            url: finalUrl,
+            thumbnail_url: finalThumbnailUrl,
             created_by: userData.data.user?.id
           });
 
@@ -128,6 +193,8 @@ export default function AdminResources() {
       thumbnail_url: '',
       is_active: true
     });
+    setResourceFile(null);
+    setThumbnailFile(null);
   };
 
   const getResourceIcon = (type: string) => {
@@ -253,20 +320,64 @@ export default function AdminResources() {
               </div>
             </div>
             <div>
-              <Label>URL</Label>
-              <Input
-                type="url"
-                value={formData.url}
-                onChange={(e) => setFormData({...formData, url: e.target.value})}
-              />
+              <Label>URL ou Upload de Ficheiro</Label>
+              <div className="space-y-2">
+                <Input
+                  type="url"
+                  placeholder="https://exemplo.com/recurso.pdf"
+                  value={formData.url}
+                  onChange={(e) => setFormData({...formData, url: e.target.value})}
+                  disabled={!!resourceFile}
+                />
+                <div className="text-sm text-muted-foreground text-center">ou</div>
+                <Input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.mp4,.mov,.avi"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setResourceFile(file);
+                      setFormData({...formData, url: ''});
+                    }
+                  }}
+                />
+                {resourceFile && (
+                  <p className="text-sm text-green-600">Ficheiro selecionado: {resourceFile.name}</p>
+                )}
+                {uploadingResource && (
+                  <p className="text-sm text-blue-600">A fazer upload...</p>
+                )}
+              </div>
             </div>
             <div>
-              <Label>URL da Thumbnail</Label>
-              <Input
-                type="url"
-                value={formData.thumbnail_url}
-                onChange={(e) => setFormData({...formData, thumbnail_url: e.target.value})}
-              />
+              <Label>Thumbnail (Upload de Imagem)</Label>
+              <div className="space-y-2">
+                <Input
+                  type="url"
+                  placeholder="https://exemplo.com/imagem.jpg (opcional)"
+                  value={formData.thumbnail_url}
+                  onChange={(e) => setFormData({...formData, thumbnail_url: e.target.value})}
+                  disabled={!!thumbnailFile}
+                />
+                <div className="text-sm text-muted-foreground text-center">ou</div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setThumbnailFile(file);
+                      setFormData({...formData, thumbnail_url: ''});
+                    }
+                  }}
+                />
+                {thumbnailFile && (
+                  <p className="text-sm text-green-600">Imagem selecionada: {thumbnailFile.name}</p>
+                )}
+                {uploadingThumbnail && (
+                  <p className="text-sm text-blue-600">A fazer upload...</p>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <input

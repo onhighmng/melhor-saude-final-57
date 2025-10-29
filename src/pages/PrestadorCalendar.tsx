@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { FullScreenCalendar } from '@/components/ui/fullscreen-calendar';
-import { usePrestadorCalendar, type PrestadorCalendarEvent } from '@/hooks/usePrestadorCalendar';
+import { usePrestadorCalendar } from '@/hooks/usePrestadorCalendar';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,7 +13,7 @@ import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettin
 
 const PrestadorCalendar = () => {
   const { toast } = useToast();
-  const { calendarEvents, loading, error, refetch } = usePrestadorCalendar();
+  const { calendarEvents, loading } = usePrestadorCalendar();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDayEventsModalOpen, setIsDayEventsModalOpen] = useState(false);
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
@@ -21,13 +21,13 @@ const PrestadorCalendar = () => {
 
   // Transform calendar events to FullScreenCalendar format
   const calendarData = useMemo(() => {
-    const groupedByDate = calendarEvents.reduce((acc, event: PrestadorCalendarEvent) => {
+    if (!calendarEvents || calendarEvents.length === 0) return [];
+    
+    const groupedByDate = calendarEvents.reduce((acc, event) => {
       const dateKey = event.date;
       if (!acc[dateKey]) {
         acc[dateKey] = [];
       }
-      
-      const [hours, minutes] = event.time.split(':').map(Number);
       
       let name = '';
       switch (event.type) {
@@ -53,17 +53,15 @@ const PrestadorCalendar = () => {
       return acc;
     }, {} as Record<string, any[]>);
 
-    const result = Object.entries(groupedByDate).map(([date, events]) => ({
+    return Object.entries(groupedByDate).map(([date, events]) => ({
       day: new Date(date),
       events,
     }));
-    
-    return result;
-  }, []);
+  }, [calendarEvents]);
 
   // Get events for selected date
   const selectedDateEvents = useMemo(() => {
-    if (!selectedDate) return [];
+    if (!selectedDate || !calendarEvents) return [];
     return calendarEvents.filter(event => 
       isSameDay(new Date(event.date), selectedDate)
     ).sort((a, b) => a.time.localeCompare(b.time));
@@ -134,13 +132,12 @@ const PrestadorCalendar = () => {
     return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-700';
   };
 
+  // Show loading state briefly
   if (loading) {
     return (
       <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
         <div>
-          <h1 className="text-4xl font-heading font-bold">
-            Calendário
-          </h1>
+          <h1 className="text-4xl font-heading font-bold">Calendário</h1>
           <p className="text-muted-foreground mt-1 text-base font-semibold">
             Gerir sessões e disponibilidade
           </p>
@@ -150,32 +147,6 @@ const PrestadorCalendar = () => {
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
               <p className="text-muted-foreground">A carregar calendário...</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
-        <div>
-          <h1 className="text-4xl font-heading font-bold">
-            Calendário
-          </h1>
-          <p className="text-muted-foreground mt-1 text-base font-semibold">
-            Gerir sessões e disponibilidade
-          </p>
-        </div>
-        <Card className="p-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <p className="text-red-600 mb-4">Erro ao carregar calendário</p>
-              <p className="text-muted-foreground mb-4">{error}</p>
-              <Button onClick={refetch} variant="outline">
-                Tentar Novamente
-              </Button>
             </div>
           </div>
         </Card>

@@ -5,6 +5,7 @@ import { SessionRatingDialog } from "@/components/sessions/SessionRatingDialog";
 import UserJourneySection from "@/components/ui/user-journey-section";
 import { useBookings } from "@/hooks/useBookings";
 import { useSessionBalance } from "@/hooks/useSessionBalance";
+import { useUserGoals } from "@/hooks/useUserGoals";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -17,7 +18,9 @@ export default function UserSessions() {
   const { profile } = useAuth();
   const { allBookings, upcomingBookings, refetch, loading: bookingsLoading } = useBookings();
   const { sessionBalance, loading: balanceLoading, refetch: refetchBalance } = useSessionBalance();
+  const { goals: userGoalsData, loading: goalsLoading } = useUserGoals();
   const toastHook = useToast();
+  
   interface UserGoal {
     id: string;
     title: string;
@@ -27,38 +30,41 @@ export default function UserSessions() {
     progressPercentage: number;
     progressEmojis: string[];
   }
+  
   const [userGoals, setUserGoals] = useState<UserGoal[]>([]);
   const [isPastSessionsModalOpen, setIsPastSessionsModalOpen] = useState(false);
   const [isFutureSessionsModalOpen, setIsFutureSessionsModalOpen] = useState(false);
   const [showRatingDialog, setShowRatingDialog] = useState(false);
   const [selectedSessionForRating, setSelectedSessionForRating] = useState<string | null>(null);
   
-  // Load user goals from onboarding data
+  // Transform user goals from database to display format
   useEffect(() => {
-    const loadGoals = async () => {
-      if (!profile?.id) return;
-      
-      const { data } = await supabase
-        .from('onboarding_data')
-        .select('health_goals, pillar_preferences')
-        .eq('user_id', profile.id)
-        .maybeSingle();
-      
-      if (data?.health_goals) {
-        setUserGoals(data.health_goals.map((goal: string, index: number) => ({
-          id: `${index}`,
-          title: goal,
-          pillar: data.pillar_preferences?.[index] || 'saude_mental',
-      targetSessions: 6,
-          completedSessions: allBookings.filter(b => b.status === 'completed').length,
-      progressPercentage: 70,
-      progressEmojis: ['😟', '🙂', '😄']
-        })));
-      }
-    };
+    if (!userGoalsData || userGoalsData.length === 0) return;
     
-    loadGoals();
-  }, [profile?.id, allBookings]);
+    const completedCount = allBookings.filter(b => b.status === 'completed').length;
+    
+    const transformed = userGoalsData
+      .filter(goal => goal.status === 'active')
+      .slice(0, 4) // Only show top 4 goals for animation cards
+      .map(goal => ({
+        id: goal.id,
+        title: goal.title,
+        pillar: goal.pillar,
+        targetSessions: goal.target_value || 5,
+        completedSessions: goal.current_value || 0,
+        progressPercentage: goal.progress_percentage,
+        progressEmojis: getProgressEmojis(goal.progress_percentage)
+      }));
+    
+    setUserGoals(transformed);
+  }, [userGoalsData, allBookings]);
+  
+  // Generate progress emojis based on percentage
+  const getProgressEmojis = (percentage: number): string[] => {
+    if (percentage < 33) return ['😟', '🙂', '😄'];
+    if (percentage < 66) return ['✅', '🙂', '😄'];
+    return ['✅', '✅', '😄'];
+  };
   
   // Convert bookings to sessions format
   const sessions = allBookings.map(booking => ({

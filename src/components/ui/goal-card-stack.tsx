@@ -20,19 +20,51 @@ export const GoalCardStack = ({
   offset?: number;
   scaleFactor?: number;
 }) => {
-  const [cards, setCards] = useState<GoalCard[]>(items);
+  // Filter out invalid items on initialization
+  const validInitialItems = items.filter((item): item is GoalCard => 
+    item != null && 
+    typeof item === 'object' && 
+    'id' in item && 
+    'title' in item && 
+    'pillar' in item &&
+    'progress' in item &&
+    'sessions' in item &&
+    'emojis' in item
+  );
+  const [cards, setCards] = useState<GoalCard[]>(validInitialItems);
+
+  // Update cards when items prop changes
+  useEffect(() => {
+    const validItems = items.filter((item): item is GoalCard => 
+      item != null && 
+      typeof item === 'object' && 
+      'id' in item && 
+      'title' in item && 
+      'pillar' in item &&
+      'progress' in item &&
+      'sessions' in item &&
+      'emojis' in item
+    );
+    setCards(validItems);
+  }, [items]);
 
   useEffect(() => {
+    if (cards.length === 0) return;
+    
     const interval = setInterval(() => {
       setCards((prevCards) => {
+        if (prevCards.length === 0) return prevCards;
         const newArray = [...prevCards];
-        newArray.unshift(newArray.pop()!);
+        const lastItem = newArray.pop();
+        if (lastItem) {
+          newArray.unshift(lastItem);
+        }
         return newArray;
       });
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [cards.length]);
 
   const getPillarColor = (pillar: string) => {
     switch (pillar) {
@@ -49,9 +81,29 @@ export const GoalCardStack = ({
     }
   };
 
+  // Filter out any undefined/null cards to prevent errors
+  const validCards = cards.filter((card): card is GoalCard => 
+    card != null && 
+    typeof card === 'object' && 
+    'id' in card && 
+    'title' in card && 
+    'pillar' in card &&
+    'progress' in card &&
+    'sessions' in card &&
+    'emojis' in card
+  );
+
+  if (validCards.length === 0) {
+    return (
+      <div className="relative mx-auto h-48 w-full md:h-48 md:w-96 my-4 flex items-center justify-center">
+        <p className="text-sm text-muted-foreground">Nenhum objetivo disponível</p>
+      </div>
+    );
+  }
+
   return (
     <div className="relative mx-auto h-48 w-full md:h-48 md:w-96 my-4">
-      {cards.map((card, index) => {
+      {validCards.map((card, index) => {
         return (
           <motion.div
             key={card.id}
@@ -62,7 +114,7 @@ export const GoalCardStack = ({
             animate={{
               top: index * -offset,
               scale: 1 - index * scaleFactor,
-              zIndex: cards.length - index,
+              zIndex: validCards.length - index,
             }}
             transition={{
               duration: 0.5,

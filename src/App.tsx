@@ -15,7 +15,22 @@ import { usePageTracking } from "@/hooks/usePageTracking";
 // Lazy load pages for better performance
 import { lazy } from "react";
 const Index = lazy(() => import("./pages/Index"));
-const UserSettings = lazy(() => import("./pages/UserSettings"));
+const UserSettings = lazy(() => 
+  import("./pages/UserSettings").catch((error) => {
+    console.error("Error loading UserSettings:", error);
+    // Return a simple error component as fallback
+    return {
+      default: () => (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-xl font-bold mb-2">Erro ao carregar página</h2>
+            <p className="text-muted-foreground">Por favor, recarregue a página.</p>
+          </div>
+        </div>
+      )
+    };
+  })
+);
 const PrestadorDashboard = lazy(() => import("./pages/PrestadorDashboard"));
 const PrestadorSessions = lazy(() => import("./pages/PrestadorSessions"));
 const PrestadorSessionDetail = lazy(() => import("./pages/PrestadorSessionDetail"));

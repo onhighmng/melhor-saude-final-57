@@ -145,7 +145,12 @@ export const SimplifiedOnboarding = ({
         frequency
       };
 
-      // Save to onboarding_data table (legacy)
+      // 1. Save to onboarding_data table
+      const pillarPreferences = mapDifficultyAreasAndGoalsToPillars(
+        onboardingData.difficultyAreas,
+        onboardingData.mainGoals
+      );
+
       const { error: onboardingError } = await supabase
         .from('onboarding_data')
         .upsert({
@@ -154,87 +159,64 @@ export const SimplifiedOnboarding = ({
           difficulty_areas: onboardingData.difficultyAreas,
           main_goals: onboardingData.mainGoals,
           improvement_signs: onboardingData.improvementSigns,
+          pillar_preferences: pillarPreferences,
           frequency: onboardingData.frequency,
           completed_at: new Date().toISOString()
         });
 
       if (onboardingError) throw onboardingError;
 
-      // Save structured goals to user_goals table
-      const goalsToCreate = [];
+      // 2. Update profiles.has_completed_onboarding flag
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ has_completed_onboarding: true })
+        .eq('id', user?.id);
 
-      // Create wellbeing score goal
-      goalsToCreate.push({
-        user_id: user?.id,
-        goal_type: 'wellbeing_score',
-        target_value: { target_score: onboardingData.wellbeingScore },
-        current_value: { current_score: onboardingData.wellbeingScore },
-        pillar: null,
-        status: 'completed',
-        priority: 1
-      });
+      if (profileError) console.error('Error updating profile:', profileError);
 
-      // Create difficulty area goals
-      onboardingData.difficultyAreas.forEach((area, index) => {
-        const pillar = mapDifficultyAreaToPillar(area);
-        goalsToCreate.push({
-          user_id: user?.id,
-          goal_type: 'difficulty_area',
-          target_value: { area, target_status: 'improved' },
-          current_value: { area, current_status: 'needs_work' },
-          pillar,
-          status: 'active',
-          priority: index + 2
+      // 3. Initialize user milestones
+      try {
+        await supabase.rpc('initialize_user_milestones', {
+          p_user_id: user?.id
         });
-      });
 
-      // Create main goal targets
-      onboardingData.mainGoals.forEach((goal, index) => {
-        const pillar = mapMainGoalToPillar(goal);
-        goalsToCreate.push({
-          user_id: user?.id,
-          goal_type: 'main_goal',
-          target_value: { goal, target_status: 'achieved' },
-          current_value: { goal, current_status: 'in_progress' },
-          pillar,
-          status: 'active',
-          priority: index + 2 + onboardingData.difficultyAreas.length
-        });
-      });
-
-      // Create improvement sign goals
-      onboardingData.improvementSigns.forEach((sign, index) => {
-        const pillar = mapImprovementSignToPillar(sign);
-        goalsToCreate.push({
-          user_id: user?.id,
-          goal_type: 'improvement_sign',
-          target_value: { sign, target_status: 'achieved' },
-          current_value: { sign, current_status: 'not_yet' },
-          pillar,
-          status: 'active',
-          priority: index + 2 + onboardingData.difficultyAreas.length + onboardingData.mainGoals.length
-        });
-      });
-
-      // Insert all goals (user_goals table not implemented)
-      if (goalsToCreate.length > 0) {
-        console.warn('[Onboarding] user_goals table not implemented, skipping goal creation');
+        // Mark onboarding milestone as completed
+        await supabase
+          .from('user_milestones')
+          .update({ 
+            completed: true, 
+            completed_at: new Date().toISOString() 
+          })
+          .eq('user_id', user?.id)
+          .eq('milestone_type', 'onboarding');
+      } catch (milestoneError) {
+        console.error('Error initializing milestones:', milestoneError);
       }
 
-      // Update user progress
-      await supabase
-        .from('user_progress')
-        .insert({
-          user_id: user?.id,
-          action_type: 'milestone_achieved',
-          metadata: {
-            milestone: 'onboarding_completed',
-            wellbeing_score: onboardingData.wellbeingScore,
-            goals_set: goalsToCreate.length
-          }
+      // 4. Generate goals from onboarding data
+      try {
+        await supabase.rpc('generate_goals_from_onboarding', {
+          p_user_id: user?.id
         });
+      } catch (goalError) {
+        console.error('Error generating goals:', goalError);
+      }
 
-      // Call the original completion handler
+      // 5. Create notification
+      try {
+        await supabase.rpc('create_notification', {
+          p_user_id: user?.id,
+          p_type: 'milestone_achieved',
+          p_title: 'Bem-vindo à Melhor Saúde!',
+          p_message: 'Onboarding concluído com sucesso. A sua jornada de bem-estar começa agora!',
+          p_action_url: '/user/dashboard',
+          p_metadata: { milestone: 'onboarding_completed' }
+        });
+      } catch (notifError) {
+        console.error('Error creating notification:', notifError);
+      }
+
+      // 6. Call the original completion handler
       onComplete(onboardingData);
 
     } catch (error) {
@@ -248,6 +230,32 @@ export const SimplifiedOnboarding = ({
         frequency
       });
     }
+  };
+
+  const mapDifficultyAreasAndGoalsToPillars = (
+    areas: string[],
+    goals: string[]
+  ): string[] => {
+    const pillars = new Set<string>();
+    
+    const allItems = [...areas, ...goals];
+    
+    allItems.forEach(item => {
+      if (['mental', 'stress', 'ansiedade', 'autoconfianca', 'relacionamentos', 'menos-stress', 'confiante', 'relacoes-saudaveis'].includes(item)) {
+        pillars.add('saude_mental');
+      }
+      if (['fisica', 'energia', 'exercicio', 'saude'].includes(item)) {
+        pillars.add('bem_estar_fisico');
+      }
+      if (['financeira', 'financas', 'poupar', 'dinheiro', 'investir'].includes(item)) {
+        pillars.add('assistencia_financeira');
+      }
+      if (['legal', 'juridico', 'direitos', 'contratos'].includes(item)) {
+        pillars.add('assistencia_juridica');
+      }
+    });
+    
+    return Array.from(pillars);
   };
 
   const mapDifficultyAreaToPillar = (area: string): string | null => {

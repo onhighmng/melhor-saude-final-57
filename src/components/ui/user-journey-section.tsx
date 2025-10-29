@@ -69,14 +69,25 @@ export default function UserJourneySection({
   onFutureSessionsClick
 }: UserJourneySectionProps) {
   
-  const CARDS: Card[] = goals.map((goal, index) => ({
-    id: index,
-    title: goal.title,
-    pillar: goal.pillar,
-    progress: goal.progressPercentage,
-    sessions: `${goal.completedSessions}/${goal.targetSessions} sessões completadas`,
-    emojis: goal.progressEmojis
-  }));
+  const CARDS: Card[] = goals
+    .filter((goal): goal is Goal => 
+      goal != null && 
+      goal.id != null &&
+      goal.title != null &&
+      goal.pillar != null &&
+      typeof goal.progressPercentage === 'number' &&
+      typeof goal.completedSessions === 'number' &&
+      typeof goal.targetSessions === 'number' &&
+      Array.isArray(goal.progressEmojis)
+    )
+    .map((goal, index) => ({
+      id: index,
+      title: goal.title || 'Objetivo',
+      pillar: goal.pillar || 'saude_mental',
+      progress: goal.progressPercentage || 0,
+      sessions: `${goal.completedSessions || 0}/${goal.targetSessions || 0} sessões completadas`,
+      emojis: goal.progressEmojis || []
+    }));
 
   const sessionStats = [
     {

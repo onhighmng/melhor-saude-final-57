@@ -28,6 +28,7 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
 
   const fetchCalendarData = async () => {
     if (!profile?.id) {
+      setCalendarEvents([]);
       setLoading(false);
       return;
     }
@@ -36,16 +37,24 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
       setLoading(true);
       setError(null);
 
-      // Get prestador ID from profile
-      const { data: prestador, error: prestadorError } = await supabase
+      // Get prestador ID from profile with timeout
+      const prestadorQuery = supabase
         .from('prestadores')
         .select('id')
         .eq('user_id', profile.id)
         .single();
 
-      if (prestadorError) throw prestadorError;
-      if (!prestador) {
-        setError('Prestador não encontrado');
+      const { data: prestador, error: prestadorError } = await Promise.race([
+        prestadorQuery,
+        new Promise<any>((_, reject) => 
+          setTimeout(() => reject(new Error('Query timeout')), 3000)
+        )
+      ]);
+
+      if (prestadorError || !prestador) {
+        // Silently fail - just show empty calendar
+        console.warn('[usePrestadorCalendar] No prestador found or query failed, showing empty calendar');
+        setCalendarEvents([]);
         setLoading(false);
         return;
       }
@@ -55,7 +64,7 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
       const endDate = new Date();
       endDate.setDate(startDate.getDate() + 30);
 
-      const { data: bookings, error: bookingsError } = await supabase
+      const bookingsQuery = supabase
         .from('bookings')
         .select(`
           id,
@@ -73,30 +82,34 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
         .order('date', { ascending: true })
         .order('start_time', { ascending: true });
 
-      if (bookingsError) throw bookingsError;
-
-      // Fetch availability slots
-      const { data: availability, error: availabilityError } = await supabase
+      const availabilityQuery = supabase
         .from('prestador_availability')
         .select('*')
         .eq('prestador_id', prestador.id);
 
-      if (availabilityError) throw availabilityError;
+      // Fetch both in parallel with timeout
+      const [bookingsResult, availabilityResult] = await Promise.allSettled([
+        Promise.race([bookingsQuery, new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))]),
+        Promise.race([availabilityQuery, new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))])
+      ]);
+
+      const bookings = bookingsResult.status === 'fulfilled' ? bookingsResult.value.data : [];
+      const availability = availabilityResult.status === 'fulfilled' ? availabilityResult.value.data : [];
 
       // Transform bookings to calendar events
-      const bookingEvents: PrestadorCalendarEvent[] = (bookings || []).map(booking => ({
+      const bookingEvents: PrestadorCalendarEvent[] = (bookings || []).map((booking: any) => ({
         id: booking.id,
         date: booking.date,
         time: booking.start_time || '09:00',
         type: 'session' as const,
-        clientName: (booking.profiles as any)?.name,
-        company: (booking.companies as any)?.company_name,
+        clientName: booking.profiles?.name,
+        company: booking.companies?.company_name,
         pillar: booking.pillar,
         status: booking.status as 'confirmed' | 'pending' | 'cancelled'
       }));
 
       // Transform availability to calendar events
-      const availabilityEvents: PrestadorCalendarEvent[] = (availability || []).map(slot => ({
+      const availabilityEvents: PrestadorCalendarEvent[] = (availability || []).map((slot: any) => ({
         id: `availability-${slot.id}`,
         date: slot.date,
         time: slot.start_time,
@@ -112,9 +125,10 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
 
       setCalendarEvents(allEvents);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar dados do calendário';
-      setError(errorMessage);
-      console.error('Error fetching prestador calendar data:', err);
+      // Silently fail - just show empty calendar, no error UI
+      console.warn('[usePrestadorCalendar] Error fetching calendar data, showing empty calendar:', err);
+      setCalendarEvents([]);
+      setError(null); // Don't show error to user, just empty calendar
     } finally {
       setLoading(false);
     }

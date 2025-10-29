@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings, Booking } from '@/hooks/useBookings';
+import { useMilestones } from '@/hooks/useMilestones';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
@@ -22,124 +23,78 @@ import { getPillarColors, cn } from '@/lib/utils';
 import DisplayCards from '@/components/ui/display-cards';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import cardBackground from '@/assets/card-background.png';
+import { supabase } from '@/integrations/supabase/client';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const { sessionBalance } = useSessionBalance();
   const { upcomingBookings, allBookings, formatPillarName } = useBookings();
+  const { milestones, loading: milestonesLoading, progress, reloadMilestones } = useMilestones();
   const { toast } = useToast();
   
-  const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(() => {
-    const stored = localStorage.getItem('onboardingData');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
-  // Check if this specific user has completed onboarding
-  const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
-  const hasCompletedOnboarding = localStorage.getItem(userOnboardingKey) === 'true';
+  // Check onboarding status from database
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!profile?.id || profile.role !== 'user') {
+        setCheckingOnboarding(false);
+        return;
+      }
 
-  // Only show onboarding for users with 'user' role who haven't completed it
-  const shouldShowOnboarding = profile?.role === 'user' && !hasCompletedOnboarding;
-  const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
+      try {
+        // Check has_completed_onboarding flag in profiles
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('has_completed_onboarding')
+          .eq('id', profile.id)
+          .single();
+
+        const hasCompleted = profileData?.has_completed_onboarding || false;
+        setShowOnboarding(!hasCompleted);
+        setCheckingOnboarding(false);
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        setCheckingOnboarding(false);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, [profile?.id, profile?.role]);
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
   
   // Session modal state
   const [selectedSession, setSelectedSession] = useState<Booking | null>(null);
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
 
-  // Default milestones structure
-  const defaultMilestones = [
-    {
-      id: 'onboarding',
-      label: 'Concluiu o onboarding',
-      points: 10,
-      completed: false
-    },
-    {
-      id: 'specialist',
-      label: 'Falou com um especialista',
-      points: 20,
-      completed: false
-    },
-    {
-      id: 'first_session',
-      label: 'Fez a primeira sessão',
-      points: 25,
-      completed: false
-    },
-    {
-      id: 'resources',
-      label: 'Usou recursos da plataforma',
-      points: 15,
-      completed: false
-    },
-    {
-      id: 'ratings',
-      label: 'Avaliou 3 sessões efetuadas',
-      points: 20,
-      completed: false
-    },
-    {
-      id: 'goal',
-      label: 'Atingiu 1 objetivo pessoal',
-      points: 10,
-      completed: false
-    }
-  ];
-
-  // Initialize default milestones if none exist
-  const initializeMilestones = () => {
-    const stored = localStorage.getItem('journeyMilestones');
-    if (!stored) {
-      localStorage.setItem('journeyMilestones', JSON.stringify(defaultMilestones));
-      return defaultMilestones;
-    }
-    return JSON.parse(stored);
-  };
-
-  // Get milestone progress from localStorage (persistent)
-  const getMilestoneProgress = (milestonesData: any[]) => {
-    return milestonesData.reduce((sum: number, m: any) => sum + (m.completed ? m.points : 0), 0);
-  };
-
-  // Initialize milestones from localStorage
-  const [milestones, setMilestones] = useState<any[]>(() => initializeMilestones());
-  const [milestoneProgress, setMilestoneProgress] = useState(getMilestoneProgress(milestones));
+  // Animated progress state
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const [animatedMilestoneProgress, setAnimatedMilestoneProgress] = useState(0);
   const [progressRef, isProgressVisible] = useScrollAnimation(0.3);
   const [hasAnimated, setHasAnimated] = useState(false);
 
-  const handleOnboardingComplete = (data: OnboardingData) => {
-    const userOnboardingKey = `onboarding_completed_${profile?.email || 'demo'}`;
-    localStorage.setItem('onboardingData', JSON.stringify(data));
-    localStorage.setItem(userOnboardingKey, 'true');
+  const handleOnboardingComplete = async (data: OnboardingData) => {
     setOnboardingData(data);
     setShowOnboarding(false);
     setJustCompletedOnboarding(true);
+    
+    // Reload milestones to get the updated data from database
+    await reloadMilestones();
+    
+    // Show success confetti
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
   };
-
-  // Listen for milestone completion events
-  useEffect(() => {
-    const handleMilestoneCompleted = () => {
-      const stored = localStorage.getItem('journeyMilestones');
-      if (stored) {
-        const updatedMilestones = JSON.parse(stored);
-        setMilestones(updatedMilestones);
-        const progress = getMilestoneProgress(updatedMilestones);
-        setMilestoneProgress(progress);
-      }
-    };
-    window.addEventListener('milestoneCompleted', handleMilestoneCompleted);
-    return () => {
-      window.removeEventListener('milestoneCompleted', handleMilestoneCompleted);
-    };
-  }, []);
 
   // Animate progress bar when scrolled into view with smooth 4-second animation
   useEffect(() => {
-    if (!isProgressVisible || hasAnimated || milestoneProgress === 0) return;
+    if (!isProgressVisible || hasAnimated || progress === 0) return;
     setHasAnimated(true);
     setAnimatedProgress(0);
     setAnimatedMilestoneProgress(0);
@@ -149,16 +104,16 @@ const UserDashboard = () => {
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
     const animate = () => {
       const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutCubic(progress);
-      setAnimatedProgress(milestoneProgress * easedProgress);
-      setAnimatedMilestoneProgress(milestoneProgress * easedProgress);
-      if (progress < 1) {
+      const progressValue = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progressValue);
+      setAnimatedProgress(progress * easedProgress);
+      setAnimatedMilestoneProgress(progress * easedProgress);
+      if (progressValue < 1) {
         requestAnimationFrame(animate);
       }
     };
     requestAnimationFrame(animate);
-  }, [isProgressVisible, milestoneProgress, hasAnimated]);
+  }, [isProgressVisible, progress, hasAnimated]);
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);

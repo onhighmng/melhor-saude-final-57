@@ -1,22 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import heroNeural from '@/assets/hero-neural.jpg';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { ROLE_REDIRECT_MAP } from '@/utils/authRedirects';
+import { supabase } from '@/integrations/supabase/client';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, profile } = useAuth();
+  const location = useLocation();
+  const { login, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { toast } = useToast();
+
+  // Get the path the user was trying to access
+  const from = location.state?.from?.pathname;
+
+  // Redirect if already authenticated (but NOT during active login)
+  useEffect(() => {
+    const redirectIfAuthenticated = async () => {
+      // Don't redirect if actively logging in or auth is still loading
+      if (!isAuthenticated || isAuthLoading || isLoading) {
+        return;
+      }
+
+      console.log('%c[Login] User already authenticated, fetching role for redirect...', 'color: cyan;');
+
+      try {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (!authUser) return;
+
+        const { data: role, error: roleError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: authUser.id });
+
+        if (roleError || !role) {
+          console.error('[Login] Error fetching role for redirect:', roleError);
+          navigate('/user/dashboard', { replace: true });
+          return;
+        }
+
+        const roleForRedirect = role === 'specialist' ? 'especialista_geral' : role;
+        const redirectPath = from || ROLE_REDIRECT_MAP[roleForRedirect as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
+        
+        console.log(`%c[Login] Already authenticated with role: ${role}, redirecting to: ${redirectPath}`, 'color: green; font-weight: bold;');
+        navigate(redirectPath, { replace: true });
+      } catch (error) {
+        console.error('[Login] Error during authenticated redirect:', error);
+      }
+    };
+
+    redirectIfAuthenticated();
+  }, [isAuthenticated, isAuthLoading, isLoading, navigate, from]);
 
   const getErrorMessage = (error: string) => {
     if (error.includes('Invalid login credentials')) {
@@ -25,10 +65,7 @@ const Login = () => {
     if (error.includes('Email not confirmed')) {
       return 'Por favor, confirme seu email primeiro';
     }
-    if (error.includes('Too many requests')) {
-      return 'Muitas tentativas. Aguarde alguns minutos.';
-    }
-    return error || 'Erro ao fazer login. Tente novamente.';
+    return 'Erro ao fazer login. Tente novamente.';
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -45,31 +82,40 @@ const Login = () => {
           variant: "destructive"
         });
         setIsLoading(false);
-        return;
-      }
-
-      // Wait a moment for AuthContext to update with fallback profile
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Get profile from AuthContext (should have fallback profile by now)
-      const { profile: currentProfile, isLoading: authLoading } = useAuth();
-      
-      // If we have a profile, redirect directly based on role
-      if (currentProfile && !authLoading) {
-        const redirectPath = ROLE_REDIRECT_MAP[currentProfile.role as UserRole] || '/user/dashboard';
-        console.log('[Login] Redirecting based on profile role:', currentProfile.role, 'to:', redirectPath);
-        toast({
-          title: "Login bem-sucedido",
-          description: `Bem-vindo de volta, ${currentProfile.name || 'Utilizador'}!`
-        });
-        navigate(redirectPath);
       } else {
-        // Fallback: redirect to auth callback (should be fast now with fallback profile)
         toast({
           title: "Login bem-sucedido",
           description: `Bem-vindo de volta!`
         });
-        navigate('/auth/callback');
+        
+        // CRITICAL FIX: Fetch role directly using RPC (bypasses RLS, returns in ~400ms)
+        // This ensures we redirect to the correct dashboard immediately
+        console.log('%c[Login] Fetching user role directly via RPC...', 'color: cyan; font-weight: bold;');
+        
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (!authUser) {
+          console.error('[Login] No user found after login');
+          setIsLoading(false);
+          return;
+        }
+        
+        const { data: role, error: roleError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: authUser.id });
+        
+        if (roleError || !role) {
+          console.error('[Login] Error fetching role:', roleError);
+          // Fallback to user dashboard
+          navigate('/user/dashboard', { replace: true });
+          return;
+        }
+        
+        console.log(`%c[Login] Role fetched: ${role}`, 'color: green; font-weight: bold;');
+        
+        // Map role to redirect path
+        const roleForRedirect = role === 'specialist' ? 'especialista_geral' : role;
+        const redirectPath = from || ROLE_REDIRECT_MAP[roleForRedirect as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
+        
+        console.log(`%c[Login] Redirecting to: ${redirectPath}`, 'color: green; font-weight: bold;');
+        navigate(redirectPath, { replace: true });
       }
     } catch (error) {
       toast({
@@ -80,6 +126,15 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+
+  // Show a loading spinner if a user lands on this page while the app is still figuring out if they're logged in.
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex">
@@ -102,7 +157,6 @@ const Login = () => {
       {/* Right side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
-          {/* Back to Home Button */}
           <div className="text-center lg:text-left">
             <Link
               to="/"
