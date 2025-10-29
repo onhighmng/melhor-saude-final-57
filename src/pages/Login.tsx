@@ -48,13 +48,29 @@ const Login = () => {
         return;
       }
 
-      toast({
-        title: "Login bem-sucedido",
-        description: `Bem-vindo de volta!`
-      });
+      // Wait a moment for AuthContext to update with fallback profile
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Redirect to auth callback to handle role-based navigation
-      navigate('/auth/callback');
+      // Get profile from AuthContext (should have fallback profile by now)
+      const { profile: currentProfile, isLoading: authLoading } = useAuth();
+      
+      // If we have a profile, redirect directly based on role
+      if (currentProfile && !authLoading) {
+        const redirectPath = ROLE_REDIRECT_MAP[currentProfile.role as UserRole] || '/user/dashboard';
+        console.log('[Login] Redirecting based on profile role:', currentProfile.role, 'to:', redirectPath);
+        toast({
+          title: "Login bem-sucedido",
+          description: `Bem-vindo de volta, ${currentProfile.name || 'Utilizador'}!`
+        });
+        navigate(redirectPath);
+      } else {
+        // Fallback: redirect to auth callback (should be fast now with fallback profile)
+        toast({
+          title: "Login bem-sucedido",
+          description: `Bem-vindo de volta!`
+        });
+        navigate('/auth/callback');
+      }
     } catch (error) {
       toast({
         title: "Erro ao entrar",

@@ -1,126 +1,68 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { ROLE_REDIRECT_MAP, type UserRole } from '@/utils/authRedirects';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = useState(true);
+  const { isAuthenticated, profile, isLoading } = useAuth();
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      try {
-        console.log('[AuthCallback] Starting authentication processing...');
+    // Wait for AuthContext to finish loading
+    if (isLoading) {
+      console.log('[AuthCallback] Waiting for AuthContext to finish loading...');
+      return;
+    }
 
-        // Get the session from URL params (handles OAuth and magic links)
-        const { data: { session }, error } = await supabase.auth.getSession();
-        console.log('[AuthCallback] Session fetch result:', { hasSession: !!session, error });
+    // If not authenticated, redirect to login
+    if (!isAuthenticated || !profile) {
+      console.log('[AuthCallback] Not authenticated, redirecting to login');
+      toast({
+        title: 'Erro de autenticação',
+        description: 'Por favor, faça login novamente',
+        variant: 'destructive'
+      });
+      navigate('/login', { replace: true });
+      return;
+    }
 
-        if (error) {
-          console.error('[AuthCallback] Session error:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-          toast({
-            title: 'Erro de autenticação',
-            description: errorMessage,
-            variant: 'destructive'
-          });
-          navigate('/login');
-          return;
-        }
+    // Use profile from AuthContext (already loaded, no DB query needed)
+    const primaryRole: UserRole = profile.role as UserRole;
+    const redirectPath = ROLE_REDIRECT_MAP[primaryRole] || '/user/dashboard';
+    
+    console.log('[AuthCallback] Primary role from AuthContext:', primaryRole, '-> Redirecting to:', redirectPath);
 
-        if (!session) {
-          console.warn('[AuthCallback] No session found');
-          toast({
-            title: 'Sessão expirada',
-            description: 'Por favor, faça login novamente',
-            variant: 'destructive'
-          });
-          navigate('/login');
-          return;
-        }
+    toast({
+      title: 'Login bem-sucedido',
+      description: `Bem-vindo, ${profile.name || 'Utilizador'}!`
+    });
 
-        // Get user profile
-        console.log('[AuthCallback] Fetching profile for user:', session.user.id);
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+    navigate(redirectPath, { replace: true });
+  }, [isLoading, isAuthenticated, profile, navigate, toast]);
 
-        console.log('[AuthCallback] Profile fetch result:', { hasProfile: !!profileData, error: profileError });
+  // Show loading while AuthContext is loading
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-sm text-muted-foreground">
+            A processar autenticação...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-        if (profileError) {
-          console.error('[AuthCallback] Profile error:', profileError);
-          toast({
-            title: 'Erro de perfil',
-            description: 'Não foi possível carregar o perfil',
-            variant: 'destructive'
-          });
-          navigate('/login');
-          return;
-        }
-
-        // Get user roles
-        console.log('[AuthCallback] Fetching roles for user:', session.user.id);
-        const { data: rolesData, error: rolesError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', session.user.id);
-
-        console.log('[AuthCallback] Roles fetch result:', { 
-          roles: rolesData, 
-          error: rolesError,
-          rolesCount: rolesData?.length 
-        });
-
-        if (rolesError) {
-          console.error('[AuthCallback] Error fetching roles:', rolesError);
-        }
-
-        const roles = rolesData?.map(r => r.role) || [];
-        console.log('[AuthCallback] Mapped user roles:', roles, 'Length:', roles.length);
-
-        // Determine primary role (priority order: admin > hr > prestador > specialist > user)
-        const primaryRole: UserRole = roles.includes('admin') ? 'admin'
-          : roles.includes('hr') ? 'hr'
-          : roles.includes('prestador') ? 'prestador'
-          : roles.includes('specialist') ? 'specialist'
-          : 'user';
-
-        const redirectPath = ROLE_REDIRECT_MAP[primaryRole];
-        console.log('[AuthCallback] Primary role:', primaryRole, '-> Redirecting to:', redirectPath);
-
-        toast({
-          title: 'Login bem-sucedido',
-          description: `Bem-vindo, ${profileData.name || 'Utilizador'}!`
-        });
-
-        navigate(redirectPath);
-      } catch (error) {
-        console.error('[AuthCallback] Unexpected error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Erro ao processar autenticação';
-        toast({
-          title: 'Erro inesperado',
-          description: errorMessage,
-          variant: 'destructive'
-        });
-        navigate('/login');
-      } finally {
-        setIsProcessing(false);
-      }
-    };
-
-    handleAuthCallback();
-  }, [navigate, toast]);
-
+  // If we get here, we should have redirected already, but show a message just in case
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
       <div className="text-center space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
         <p className="text-sm text-muted-foreground">
-          {isProcessing ? 'A processar autenticação...' : 'A redirecionar...'}
+          A redirecionar...
         </p>
       </div>
     </div>
