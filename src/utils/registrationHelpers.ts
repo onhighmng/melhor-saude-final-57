@@ -143,17 +143,21 @@ export const createUserFromCode = async (
       return await createEmployeeUser(userId, userData as EmployeeUserData, invite.company_id);
     case 'prestador':
       return await createPrestadorUser(userId, userData as PrestadorUserData);
+    case 'specialist':
+      // Specialist is similar to prestador but with different role
+      return await createSpecialistUser(userId, userData as PrestadorUserData);
     default:
       throw new Error('Tipo de utilizador inválido');
   }
 };
 
 export const assignUserRole = async (userId: string, userType: UserType) => {
-  const roleMap: Record<UserType, 'user' | 'hr' | 'prestador' | 'admin' | 'specialist'> = {
+  const roleMap: Record<UserType, 'user' | 'hr' | 'prestador' | 'admin' | 'especialista_geral'> = {
     'personal': 'user',
     'hr': 'hr',
     'user': 'user',
-    'prestador': 'prestador'
+    'prestador': 'prestador',
+    'specialist': 'especialista_geral'  // Map to database role
   };
 
   const targetRole = roleMap[userType];
@@ -340,4 +344,14 @@ export const createPrestadorUser = async (userId: string, userData: PrestadorUse
   if (prestadorError) throw prestadorError;
 
   return { userId, type: 'prestador' };
+};
+
+export const createSpecialistUser = async (userId: string, userData: PrestadorUserData) => {
+  // Specialist registration - creates a profile with specialist role
+  // Specialists are internal employees, not external providers like prestadores
+  // They don't need a prestador record, just the user_roles entry
+  
+  // The profile and role were already created in createUserFromCode
+  // Just return success
+  return { userId, type: 'specialist' };
 };

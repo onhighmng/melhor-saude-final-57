@@ -40,20 +40,20 @@ const AuthCallback = () => {
       console.log(`%c[AuthCallback] Fetched roles from database:`, 'color: cyan; font-weight: bold;', roles);
       console.log(`%c[AuthCallback] Raw roles data:`, 'color: cyan;', rolesData);
       
-      // Determine the highest-priority role (admin > hr > prestador > specialist > user)
-      // Note: Database stores 'specialist', not 'especialista_geral'
+      // Determine the highest-priority role (admin > hr > prestador > especialista_geral > user)
+      // Note: Database stores 'especialista_geral', not 'specialist'
       let primaryRole: UserRole = 'user';
       
-      // Check roles in priority order (admin > hr > prestador > specialist > user)
-      // The database enum uses: 'admin', 'user', 'hr', 'prestador', 'specialist'
+      // Check roles in priority order (admin > hr > prestador > especialista_geral > user)
+      // The database enum uses: 'admin', 'user', 'hr', 'prestador', 'especialista_geral'
       if (roles.includes('admin')) {
         primaryRole = 'admin';
       } else if (roles.includes('hr')) {
         primaryRole = 'hr';
       } else if (roles.includes('prestador')) {
         primaryRole = 'prestador';
-      } else if (roles.includes('specialist')) {
-        primaryRole = 'specialist';
+      } else if (roles.includes('especialista_geral')) {
+        primaryRole = 'specialist';  // Map to frontend role name
       } else {
         primaryRole = 'user';
       }

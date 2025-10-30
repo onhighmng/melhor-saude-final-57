@@ -173,10 +173,10 @@ const UserDashboard = () => {
 
   // Transform booking to session card data
   const transformBookingToSession = (booking: Booking): SessionCardData => {
-    return {
-      id: booking.id,
+        return {
+          id: booking.id,
       pillar: booking.pillar,
-      date: booking.date,
+          date: booking.date,
       time: booking.time,
       duration: 60,
       prestador: booking.provider_name,
@@ -313,8 +313,8 @@ const UserDashboard = () => {
               <CardContent className="pt-8 pb-6 flex flex-col items-center text-center space-y-4 relative z-10">
                 <div className="w-16 h-16 rounded-3xl bg-[#4A90E2] flex items-center justify-center">
                   <Calendar className="w-8 h-8 text-white" />
-                </div>
-                
+              </div>
+              
                 <div className="w-full max-w-md space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-slate-50 font-bold">Progresso Pessoal</span>
@@ -333,8 +333,8 @@ const UserDashboard = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-
+              </div>
+              
           {/* Bento Grid Layout */}
           <div className="flex-1 min-h-0">
             <BentoGrid className="lg:grid-rows-3 h-full grid-rows-[10rem] lg:auto-rows-[minmax(14rem,1fr)]">
@@ -385,7 +385,7 @@ const UserDashboard = () => {
                           <div className="flex items-center justify-between">
                             <span className="text-base font-medium">Progresso</span>
                             <span className="font-mono text-xl font-semibold text-[#4A90E2]">{Math.round(animatedMilestoneProgress)}%</span>
-                          </div>
+                  </div>
                           <Progress value={animatedMilestoneProgress} className="h-3" />
                         </div>
                         
@@ -398,18 +398,18 @@ const UserDashboard = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                   </svg>
                                 )}
-                              </div>
+                  </div>
                               <span className={`flex-1 ${milestone.completed ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
                                 {milestone.label}
                               </span>
                               <span className={`text-sm font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
                                 +{milestone.points}%
                               </span>
-                            </div>
-                          ))}
+                      </div>
+                    ))}
                         </div>
                       </div>
-                    </div>
+                  </div>
                   </div>
                 } 
               />

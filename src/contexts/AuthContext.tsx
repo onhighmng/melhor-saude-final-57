@@ -64,22 +64,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return null;
     }
 
-      // Fetch role using RPC (bypasses RLS, always works)
-      console.log('%c[AuthContext] 🔄 Fetching role via RPC...', 'color: cyan;');
-      const rpcStart = performance.now();
-      const { data: role, error: rpcError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: userId });
-      const rpcTime = performance.now() - rpcStart;
-      
-      if (rpcError) {
-        console.error(`%c[AuthContext] ❌ RPC error in ${rpcTime.toFixed(0)}ms:`, 'color: red;', rpcError);
+      // TEMPORARY FIX: Use direct database query instead of broken RPC
+      console.log('%c[AuthContext] 🔄 Fetching role via direct query...', 'color: cyan;');
+      const queryStart = performance.now();
+
+      // Direct query to user_roles table to get primary role
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId);
+
+      const queryTime = performance.now() - queryStart;
+
+      if (rolesError) {
+        console.error(`%c[AuthContext] ❌ Query error in ${queryTime.toFixed(0)}ms:`, 'color: red;', rolesError);
         return null;
       }
-      
-      if (!role) {
-        console.warn(`%c[AuthContext] ⚠️ RPC returned no role in ${rpcTime.toFixed(0)}ms - defaulting to "user"`, 'color: orange;');
+
+      // Determine primary role (priority: admin > hr > prestador > especialista_geral > user)
+      const roles = rolesData?.map(r => r.role) || [];
+      let primaryRole: 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral' = 'user';
+
+      if (roles.includes('admin')) {
+        primaryRole = 'admin';
+      } else if (roles.includes('hr')) {
+        primaryRole = 'hr';
+      } else if (roles.includes('prestador')) {
+        primaryRole = 'prestador';
+      } else if (roles.includes('especialista_geral')) {
+        primaryRole = 'especialista_geral';
+      } else {
+        primaryRole = 'user';
       }
-      
-      console.log(`%c[AuthContext] ✅ RPC succeeded in ${rpcTime.toFixed(0)}ms - role: ${role || 'user'}`, 'color: green; font-weight: bold;');
+
+      console.log(`%c[AuthContext] ✅ Query succeeded in ${queryTime.toFixed(0)}ms - roles: [${roles.join(', ')}] → primary: ${primaryRole}`, 'color: green; font-weight: bold;');
       
       // Build profile from auth user + role (NO DATABASE QUERIES)
       const profile: UserProfile = {

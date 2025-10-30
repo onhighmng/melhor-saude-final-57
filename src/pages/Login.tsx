@@ -37,18 +37,35 @@ const Login = () => {
         const { data: { user: authUser } } = await supabase.auth.getUser();
         if (!authUser) return;
 
-        const { data: role, error: roleError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: authUser.id });
+        // TEMPORARY FIX: Use direct query instead of broken RPC
+        const { data: rolesData, error: rolesError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', authUser.id);
 
-        if (roleError || !role) {
-          console.error('[Login] Error fetching role for redirect:', roleError);
+        if (rolesError || !rolesData || rolesData.length === 0) {
+          console.error('[Login] Error fetching roles for redirect:', rolesError);
           navigate('/user/dashboard', { replace: true });
           return;
         }
 
-        const roleForRedirect = role === 'specialist' ? 'especialista_geral' : role;
-        const redirectPath = from || ROLE_REDIRECT_MAP[roleForRedirect as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
-        
-        console.log(`%c[Login] Already authenticated with role: ${role}, redirecting to: ${redirectPath}`, 'color: green; font-weight: bold;');
+        // Determine primary role (priority: admin > hr > prestador > especialista_geral > user)
+        const roles = rolesData.map(r => r.role);
+        let primaryRole: keyof typeof ROLE_REDIRECT_MAP = 'user';
+
+        if (roles.includes('admin')) {
+          primaryRole = 'admin';
+        } else if (roles.includes('hr')) {
+          primaryRole = 'hr';
+        } else if (roles.includes('prestador')) {
+          primaryRole = 'prestador';
+        } else if (roles.includes('especialista_geral')) {
+          primaryRole = 'specialist';
+        }
+
+        const redirectPath = from || ROLE_REDIRECT_MAP[primaryRole] || '/user/dashboard';
+
+        console.log(`%c[Login] Already authenticated with roles: [${roles.join(', ')}] → primary: ${primaryRole}, redirecting to: ${redirectPath}`, 'color: green; font-weight: bold;');
         navigate(redirectPath, { replace: true });
       } catch (error) {
         console.error('[Login] Error during authenticated redirect:', error);
@@ -90,31 +107,45 @@ const Login = () => {
         
         // CRITICAL FIX: Fetch role directly using RPC (bypasses RLS, returns in ~400ms)
         // This ensures we redirect to the correct dashboard immediately
-        console.log('%c[Login] Fetching user role directly via RPC...', 'color: cyan; font-weight: bold;');
-        
+        console.log('%c[Login] Fetching user role directly via database query...', 'color: cyan; font-weight: bold;');
+
         const { data: { user: authUser } } = await supabase.auth.getUser();
         if (!authUser) {
           console.error('[Login] No user found after login');
           setIsLoading(false);
           return;
         }
-        
-        const { data: role, error: roleError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: authUser.id });
-        
-        if (roleError || !role) {
-          console.error('[Login] Error fetching role:', roleError);
+
+        // TEMPORARY FIX: Use direct query instead of broken RPC
+        const { data: rolesData, error: rolesError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', authUser.id);
+
+        if (rolesError || !rolesData || rolesData.length === 0) {
+          console.error('[Login] Error fetching roles:', rolesError);
           // Fallback to user dashboard
           navigate('/user/dashboard', { replace: true });
           return;
         }
-        
-        console.log(`%c[Login] Role fetched: ${role}`, 'color: green; font-weight: bold;');
-        
-        // Map role to redirect path
-        const roleForRedirect = role === 'specialist' ? 'especialista_geral' : role;
-        const redirectPath = from || ROLE_REDIRECT_MAP[roleForRedirect as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
-        
-        console.log(`%c[Login] Redirecting to: ${redirectPath}`, 'color: green; font-weight: bold;');
+
+        // Determine primary role (priority: admin > hr > prestador > especialista_geral > user)
+        const roles = rolesData.map(r => r.role);
+        let primaryRole: keyof typeof ROLE_REDIRECT_MAP = 'user';
+
+        if (roles.includes('admin')) {
+          primaryRole = 'admin';
+        } else if (roles.includes('hr')) {
+          primaryRole = 'hr';
+        } else if (roles.includes('prestador')) {
+          primaryRole = 'prestador';
+        } else if (roles.includes('especialista_geral')) {
+          primaryRole = 'specialist';
+        }
+
+        const redirectPath = from || ROLE_REDIRECT_MAP[primaryRole] || '/user/dashboard';
+
+        console.log(`%c[Login] Roles fetched: [${roles.join(', ')}] → primary: ${primaryRole}, redirecting to: ${redirectPath}`, 'color: green; font-weight: bold;');
         navigate(redirectPath, { replace: true });
       }
     } catch (error) {

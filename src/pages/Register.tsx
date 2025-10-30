@@ -10,8 +10,8 @@ import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, User, Building2, UserCog, CheckCircle, X, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccessCodeValidation } from '@/hooks/useAccessCodeValidation';
-import { createUserFromCode } from '@/utils/registrationHelpers';
-import { UserType, PersonalUserData, HRUserData, EmployeeUserData, PrestadorUserData } from '@/types/accessCodes';
+import { createUserFromCode, PersonalUserData, HRUserData, EmployeeUserData, PrestadorUserData } from '@/utils/registrationHelpers';
+import { UserType } from '@/types/accessCodes';
 import { getAuthCallbackUrl } from '@/utils/authRedirects';
 
 const steps = [
@@ -171,6 +171,21 @@ export default function Register() {
             availability: formData.availability,
             address: formData.prestadorAddress
           };
+          break;
+        case 'specialist':
+          // Specialist uses basic user data since they're internal staff
+          // Note: createSpecialistUser expects PrestadorUserData but doesn't use most fields
+          userData = {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            phone: formData.phone,
+            specialty: 'general',  // Default for specialists
+            pillar: formData.pillar || 'saude_mental',
+            costPerSession: 0,  // Not applicable for internal staff
+            sessionType: 'both',
+            availability: 'flexible'
+          } as PrestadorUserData;
           break;
         default:
           throw new Error('Tipo de utilizador inválido');
@@ -334,7 +349,7 @@ export default function Register() {
                 />
               </div>
 
-              {(userType === 'personal' || userType === 'prestador') && (
+              {(userType === 'personal' || userType === 'prestador' || userType === 'specialist') && (
                 <div>
                   <Label htmlFor="pillar">Pilar de Interesse</Label>
                   <Select value={formData.pillar} onValueChange={(value) => updateFormData('pillar', value)}>
@@ -361,12 +376,14 @@ export default function Register() {
             <div className="text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 {userType === 'hr' ? 'Dados da Empresa' : 
-                 userType === 'prestador' ? 'Informações Profissionais' : 
+                 userType === 'prestador' ? 'Informações Profissionais' :
+                 userType === 'specialist' ? 'Confirmação de Dados' :
                  'Informações Adicionais'}
               </h2>
               <p className="text-gray-600">
                 {userType === 'hr' ? 'Preencha os dados da sua empresa' :
                  userType === 'prestador' ? 'Preencha as suas informações profissionais' :
+                 userType === 'specialist' ? 'Está quase pronto! Revise seus dados antes de continuar' :
                  'Informações adicionais sobre si'}
               </p>
             </div>

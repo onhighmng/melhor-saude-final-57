@@ -43,16 +43,50 @@ export default function SpecialistDashboard() {
   // Use real data from hooks
   const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'escalated');
 
-  // Load real sessions
+  // Load today's sessions for the logged specialist (by prestador_id)
   useEffect(() => {
     const loadSessions = async () => {
       if (!profile?.id) return;
+
+      // Resolve prestador_id for this specialist user
+      const { data: prestador } = await supabase
+        .from('prestadores')
+        .select('id')
+        .eq('user_id', profile.id)
+        .single();
+
+      if (!prestador?.id) {
+        setFilteredSessions([]);
+        return;
+      }
+
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+
       const { data } = await supabase
         .from('bookings')
-        .select('*, profiles!bookings_user_id_fkey(name)')
-        .eq('booking_source', 'specialist_referral')
-        .order('booking_date', { ascending: false });
-      setFilteredSessions(data || []);
+        .select(`
+          id,
+          date,
+          start_time,
+          session_type,
+          status,
+          profiles!bookings_user_id_fkey(name) as user_profile
+        `)
+        .eq('prestador_id', prestador.id)
+        .eq('date', todayStr)
+        .in('status', ['pending','pending_confirmation','confirmed','rescheduled'])
+        .order('date', { ascending: true })
+        .order('start_time', { ascending: true });
+
+      const transformed = (data || []).map((b: any) => ({
+        id: b.id,
+        user_name: b.user_profile?.name ?? 'Utilizador',
+        time: b.start_time,
+        type: b.session_type,
+      }));
+
+      setFilteredSessions(transformed);
     };
     loadSessions();
   }, [profile?.id]);

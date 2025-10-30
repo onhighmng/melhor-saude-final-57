@@ -18,19 +18,51 @@ const EspecialistaSessions = () => {
       if (!profile?.id) return;
       
       setLoading(true);
-      try {
-        const { data: sessions } = await supabase
+    try {
+        // Resolve prestador_id for this specialist user
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
+
+        if (!prestador?.id) {
+          setFilteredSessions([]);
+          return;
+        }
+
+        const { data } = await supabase
           .from('bookings')
           .select(`
-            *,
-            profiles(name, email),
-            companies(company_name),
-            prestadores(name, specialties)
+            id,
+            user_id,
+            prestador_id,
+            date,
+            start_time,
+            session_type,
+            status,
+            pillar,
+            profiles!bookings_user_id_fkey(name, email) as user_profile,
+            companies!bookings_company_id_fkey(company_name)
           `)
-          .eq('status', 'scheduled')
-          .order('booking_date', { ascending: true });
+          .eq('prestador_id', prestador.id)
+          .in('status', ['pending','pending_confirmation','confirmed','rescheduled'])
+          .order('date', { ascending: true })
+          .order('start_time', { ascending: true });
 
-        setFilteredSessions(sessions || []);
+        const transformed = (data || []).map((b: any) => ({
+          id: b.id,
+          user_name: b.user_profile?.name ?? 'Utilizador',
+          company_name: b.companies?.company_name ?? 'Empresa',
+          date: b.date,
+          time: b.start_time,
+          type: b.session_type,
+          status: b.status,
+          pillar: b.pillar,
+          notes: undefined,
+        }));
+
+        setFilteredSessions(transformed);
       } catch (error) {
         console.error('Error loading sessions:', error);
       } finally {

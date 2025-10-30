@@ -83,8 +83,8 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
         .order('start_time', { ascending: true });
 
       const availabilityQuery = supabase
-        .from('prestador_availability')
-        .select('*')
+        .from('prestador_schedule')
+        .select('id, date, start_time, end_time, is_available')
         .eq('prestador_id', prestador.id);
 
       // Fetch both in parallel with timeout
