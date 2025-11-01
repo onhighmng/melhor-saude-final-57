@@ -66,6 +66,17 @@ const getMenuItemsByRole = (role: string): MenuItem[] => {
         { title: 'Perfil', url: "/prestador/profile", icon: User },
       ];
     
+    case 'specialist':
+    case 'especialista_geral':
+      return [
+        { title: 'Dashboard', url: "/especialista/dashboard", icon: LayoutDashboard },
+        { title: 'Clientes', url: "/especialista/clients", icon: Users },
+        { title: 'Sessões', url: "/especialista/sessions", icon: ClipboardList },
+        { title: 'Disponibilidade', url: "/especialista/availability", icon: Clock },
+        { title: 'Relatórios', url: "/especialista/reports", icon: BarChart3 },
+        { title: 'Perfil', url: "/especialista/profile", icon: User },
+      ];
+    
     case 'admin':
       return [
         { title: 'Dashboard', url: "/admin/dashboard", icon: LayoutDashboard },
@@ -123,6 +134,8 @@ export function UnifiedSidebar() {
     switch (role) {
       case 'user': return 'Utilizador';
       case 'prestador': return 'Affiliate';
+      case 'specialist':
+      case 'especialista_geral': return 'Especialista';
       case 'admin': return 'Administrador';
       case 'hr': return 'RH';
       default: return 'Sistema';

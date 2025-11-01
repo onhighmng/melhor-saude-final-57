@@ -5,7 +5,7 @@ import { ROLE_REDIRECT_MAP } from '@/utils/authRedirects';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'admin' | 'hr' | 'prestador' | 'user' | 'especialista_geral';
+  requiredRole?: 'admin' | 'hr' | 'prestador' | 'user' | 'specialist' | 'especialista_geral';
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
@@ -16,7 +16,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const location = useLocation();
 
   // 1. Show a full-page loading spinner while the auth state is being determined.
-  // This is the key fix that prevents all race conditions.
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -30,18 +29,25 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // 3. If a specific role is required and the user doesn't have it, BLOCK ACCESS
-  if (requiredRole && profile.role !== requiredRole) {
-    console.warn(`%c[ProtectedRoute] ❌ ACCESS DENIED`, 'color: red; font-weight: bold;');
-    console.warn(`%c  Required role: ${requiredRole}`, 'color: red;');
-    console.warn(`%c  User has role: ${profile.role}`, 'color: red;');
-    console.warn(`%c  Redirecting to correct dashboard...`, 'color: orange;');
+  // 3. If a specific role is required, check if user has it
+  // Handle both 'specialist' and 'especialista_geral' for backward compatibility
+  if (requiredRole) {
+    const rolesMatch = profile.role === requiredRole || 
+      (requiredRole === 'specialist' && profile.role === 'especialista_geral') ||
+      (requiredRole === 'especialista_geral' && profile.role === 'specialist');
     
-    // Redirect to the user's correct dashboard based on their actual role
-    const correctDashboard = ROLE_REDIRECT_MAP[profile.role as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
-    
-    console.warn(`%c  Redirecting to: ${correctDashboard}`, 'color: orange; font-weight: bold;');
-    return <Navigate to={correctDashboard} replace />;
+    if (!rolesMatch) {
+      console.warn(`%c[ProtectedRoute] ❌ ACCESS DENIED`, 'color: red; font-weight: bold;');
+      console.warn(`%c  Required role: ${requiredRole}`, 'color: red;');
+      console.warn(`%c  User has role: ${profile.role}`, 'color: red;');
+      console.warn(`%c  Redirecting to correct dashboard...`, 'color: orange;');
+      
+      // Redirect to the user's correct dashboard based on their actual role
+      const correctDashboard = ROLE_REDIRECT_MAP[profile.role as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
+      
+      console.warn(`%c  Redirecting to: ${correctDashboard}`, 'color: orange; font-weight: bold;');
+      return <Navigate to={correctDashboard} replace />;
+    }
   }
 
   // 4. If all checks pass, render the requested page.

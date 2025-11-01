@@ -7,7 +7,7 @@ interface UserProfile {
   user_id: string;
   name: string;
   email: string;
-  role: 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral';
+  role: 'admin' | 'user' | 'hr' | 'prestador' | 'specialist' | 'especialista_geral';
   company?: string;
   company_id?: string | null;
   phone?: string;
@@ -76,20 +76,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       if (!role) {
-        console.warn(`%c[AuthContext] ⚠️ RPC returned no role in ${rpcTime.toFixed(0)}ms - defaulting to "user"`, 'color: orange;');
+        console.warn(`%c[AuthContext] ⚠️ RPC returned no role - using "user" as fallback`, 'color: orange;');
+        role = 'user';
       }
       
-      console.log(`%c[AuthContext] ✅ RPC succeeded in ${rpcTime.toFixed(0)}ms - role: ${role || 'user'}`, 'color: green; font-weight: bold;');
+      console.log(`%c[AuthContext] ✅ RPC succeeded in ${rpcTime.toFixed(0)}ms - role: ${role}`, 'color: green; font-weight: bold;');
       
       // Build profile from auth user + role (NO DATABASE QUERIES)
-      // Convert database 'specialist' role to frontend 'especialista_geral'
-      const frontendRole = role === 'specialist' ? 'especialista_geral' : (role || 'user');
+      // RPC already handles role mapping (especialista_geral → specialist), so use role directly
       const profile: UserProfile = {
         id: userId,
         user_id: userId,
         name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
         email: authUser.email || '',
-        role: frontendRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
+        role: (role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'specialist',
         is_active: true,
         metadata: {},
       };
@@ -316,21 +316,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // FIX: Set fallback profile immediately from session (demo-ready)
-        const immediateFallbackProfile: UserProfile = {
-          id: session.user.id,
-          user_id: session.user.id,
-          name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email || '',
-          role: 'user',
-          is_active: true,
-          metadata: {},
-        };
-        setProfile(immediateFallbackProfile);
-        setIsLoading(false); // Set loading false immediately
-        console.log('%c[AuthContext] ✅ Initial fallback profile set from session (demo-ready):', 'color: green; font-weight: bold;', immediateFallbackProfile);
+        // FIX: Don't set fallback profile with 'user' role - wait for actual role from DB
+        // This prevents race condition where specialists initially see 'user' role
+        // setProfile is now only called after actual role is fetched
+        console.log('%c[AuthContext] Session found, fetching actual role...', 'color: cyan;');
         
-        // Try to load full profile in background (non-blocking)
+        // Load profile in background (non-blocking)
         // CRITICAL: Use setTimeout(0) to defer outside the callback stack - prevents Supabase deadlock
         // GUARD: Only attempt once per user ID to prevent resource exhaustion
         // BUT: Only mark as attempted if it SUCCEEDS (so we retry on failure)
