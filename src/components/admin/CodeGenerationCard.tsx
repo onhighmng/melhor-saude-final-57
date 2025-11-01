@@ -40,10 +40,10 @@ export const CodeGenerationCard = ({
   const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
-      console.log('🔍 Calling generate_access_code with userType:', userType);
+      console.log('🔍 Calling create_invite_code with userType:', userType);
       
-      const { data, error } = await supabase.rpc('generate_access_code', {
-        p_user_type: userType
+      const { data, error } = await supabase.rpc('create_invite_code', {
+        user_type: userType
       });
 
       console.log('📨 RPC Response:', { data, error });
@@ -57,7 +57,7 @@ export const CodeGenerationCard = ({
         throw new Error('No data returned from RPC');
       }
 
-      // Parse JSONB response - handle both direct object and stringified JSON
+      // Parse JSONB response
       const codeData = typeof data === 'string' ? JSON.parse(data) : data;
       const inviteCode = codeData?.invite_code;
       

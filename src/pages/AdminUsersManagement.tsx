@@ -226,10 +226,10 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
-      console.log('🔍 Calling generate_access_code RPC for HR...');
+      console.log('🔍 Calling create_invite_code RPC for HR...');
       
-      const { data, error } = await supabase.rpc('generate_access_code', {
-        p_user_type: 'hr'
+      const { data, error } = await supabase.rpc('create_invite_code', {
+        user_type: 'hr'
       });
 
       console.log('📨 RPC Response:', { data, error });
@@ -576,10 +576,10 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const handleGenerateCode = async (userType: 'prestador' | 'specialist') => {
     setIsGenerating(true);
     try {
-      console.log('🔍 Calling generate_access_code RPC for', userType);
+      console.log('🔍 Calling create_invite_code RPC for', userType);
       
-      const { data, error } = await supabase.rpc('generate_access_code', {
-        p_user_type: userType
+      const { data, error } = await supabase.rpc('create_invite_code', {
+        user_type: userType
       });
 
       console.log('📨 RPC Response:', { data, error });
