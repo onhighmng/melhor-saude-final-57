@@ -1,11 +1,20 @@
 // Supabase Edge Function for Support Chat Assistant
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+
+// Input validation schema
+const chatAssistantSchema = z.object({
+  sessionId: z.string().uuid(),
+  message: z.string().min(1).max(5000),
+  userId: z.string().uuid(),
+  pillar: z.enum(['saude_mental', 'saude_fisica', 'apoio_juridico', 'apoio_financeiro']).optional()
+})
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -14,7 +23,9 @@ serve(async (req) => {
   }
 
   try {
-    const { sessionId, message, userId, pillar } = await req.json()
+    // Validate and parse input
+    const body = await req.json()
+    const { sessionId, message, userId, pillar } = chatAssistantSchema.parse(body)
 
     console.log(`[CHAT ASSISTANT] Session: ${sessionId}, User: ${userId}, Pillar: ${pillar}`)
 
@@ -70,9 +81,24 @@ serve(async (req) => {
     )
   } catch (error: any) {
     console.error('Error in chat-assistant:', error)
-    
+
+    // Handle validation errors
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid input',
+          details: error.errors,
+          message: 'Dados inválidos. Verifique os campos e tente novamente.'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400
+        }
+      )
+    }
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message,
         message: 'Desculpe, ocorreu um erro. Tente novamente.',
         confidence: 0

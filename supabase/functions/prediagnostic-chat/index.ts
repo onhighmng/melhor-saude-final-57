@@ -1,9 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Input validation schema
+const messageSchema = z.object({
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string().max(10000)
+});
+
+const prediagnosticChatSchema = z.object({
+  messages: z.array(messageSchema).min(1).max(100),
+  pillar: z.string().min(1).max(100),
+  topic: z.string().min(1).max(200),
+  context: z.string().max(2000).optional()
+});
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -12,7 +26,9 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, pillar, topic, context } = await req.json();
+    // Validate and parse input
+    const body = await req.json();
+    const { messages, pillar, topic, context } = prediagnosticChatSchema.parse(body);
     
     // Get Lovable AI key from environment
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -102,9 +118,24 @@ Remember:
 
   } catch (error) {
     console.error("Chat error:", error);
+
+    // Handle validation errors
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid input',
+          details: error.errors
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : "Unknown error occurred" 
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Unknown error occurred"
       }),
       {
         status: 500,
