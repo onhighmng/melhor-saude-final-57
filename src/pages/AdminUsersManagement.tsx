@@ -239,13 +239,17 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
         console.error('❌ RPC error:', error);
         throw error;
       }
-      
-      // Handle JSONB response
-      const codeData = typeof data === 'string' ? JSON.parse(data) : data;
-      const inviteCode = codeData?.invite_code || codeData;
-      
-      toast({ 
-        title: 'Código HR gerado!', 
+
+      // Parse JSONB response from canonical function
+      // Function returns: { success: true, invite_code: "MS-...", invite_id: "...", ... }
+      const inviteCode = data?.invite_code;
+
+      if (!inviteCode || !data?.success) {
+        throw new Error('Failed to generate code - invalid response format');
+      }
+
+      toast({
+        title: 'Código HR gerado!',
         description: `Código: ${inviteCode}`,
         duration: 10000 // Show for 10 seconds so they can copy it
       });
@@ -587,13 +591,18 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
         console.error('❌ RPC error:', error);
         throw error;
       }
-      
-      // Handle JSONB response
-      const codeData = typeof data === 'string' ? JSON.parse(data) : data;
-      const inviteCode = codeData?.invite_code || codeData;
+
+      // Parse JSONB response from canonical function
+      // Function returns: { success: true, invite_code: "MS-...", invite_id: "...", ... }
+      const inviteCode = data?.invite_code;
+
+      if (!inviteCode || !data?.success) {
+        throw new Error('Failed to generate code - invalid response format');
+      }
+
       const typeLabel = userType === 'prestador' ? 'Prestador' : 'Profesional de Permanencia';
-      toast({ 
-        title: 'Código gerado!', 
+      toast({
+        title: 'Código gerado!',
         description: `Código ${typeLabel}: ${inviteCode}`,
         duration: 10000
       });

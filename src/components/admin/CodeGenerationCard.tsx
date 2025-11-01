@@ -54,20 +54,15 @@ export const CodeGenerationCard = ({
         throw error;
       }
       
-      console.log('✅ Code generated:', data?.invite_code);
-      
-      // Handle JSONB response
-      let codeData;
-      if (typeof data === 'string') {
-        codeData = JSON.parse(data);
-      } else if (Array.isArray(data) && data.length > 0) {
-        codeData = data[0];
-      } else {
-        codeData = data;
+      // Parse JSONB response from canonical function
+      // Function returns: { success: true, invite_code: "MS-...", invite_id: "...", ... }
+      const inviteCode = data?.invite_code;
+
+      if (!inviteCode || !data?.success) {
+        throw new Error('Failed to generate code - invalid response format');
       }
-      
-      const inviteCode = codeData?.invite_code || codeData;
-      if (!inviteCode) throw new Error('Failed to generate code');
+
+      console.log('✅ Code generated:', inviteCode);
       
       setGeneratedCode(inviteCode);
       setIsCodeModalOpen(true);
