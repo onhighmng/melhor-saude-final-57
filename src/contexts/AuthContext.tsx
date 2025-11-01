@@ -82,12 +82,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log(`%c[AuthContext] ✅ RPC succeeded in ${rpcTime.toFixed(0)}ms - role: ${role || 'user'}`, 'color: green; font-weight: bold;');
       
       // Build profile from auth user + role (NO DATABASE QUERIES)
+      // Convert database 'specialist' role to frontend 'especialista_geral'
+      const frontendRole = role === 'specialist' ? 'especialista_geral' : (role || 'user');
       const profile: UserProfile = {
         id: userId,
         user_id: userId,
         name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
         email: authUser.email || '',
-        role: (role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
+        role: frontendRole as 'admin' | 'user' | 'hr' | 'prestador' | 'especialista_geral',
         is_active: true,
         metadata: {},
       };
