@@ -45,8 +45,7 @@ const Login = () => {
           return;
         }
 
-        const roleForRedirect = role === 'especialista_geral' ? 'specialist' : role;
-        const redirectPath = from || ROLE_REDIRECT_MAP[roleForRedirect as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
+        const redirectPath = from || ROLE_REDIRECT_MAP[role as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
         
         console.log(`%c[Login] Already authenticated with role: ${role}, redirecting to: ${redirectPath}`, 'color: green; font-weight: bold;');
         navigate(redirectPath, { replace: true });
@@ -111,8 +110,7 @@ const Login = () => {
         console.log(`%c[Login] Role fetched: ${role}`, 'color: green; font-weight: bold;');
         
         // Map role to redirect path
-        const roleForRedirect = role === 'especialista_geral' ? 'specialist' : role;
-        const redirectPath = from || ROLE_REDIRECT_MAP[roleForRedirect as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
+        const redirectPath = from || ROLE_REDIRECT_MAP[role as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
         
         console.log(`%c[Login] Redirecting to: ${redirectPath}`, 'color: green; font-weight: bold;');
         navigate(redirectPath, { replace: true });

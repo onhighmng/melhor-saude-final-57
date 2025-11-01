@@ -43,7 +43,7 @@ export const ROLE_REDIRECT_MAP = {
   admin: '/admin/dashboard',
   hr: '/company/dashboard',
   prestador: '/prestador/dashboard',
-  especialista_geral: '/especialista/dashboard',
+  specialist: '/especialista/dashboard',
   user: '/user/dashboard'
 } as const;
 
