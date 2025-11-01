@@ -83,3 +83,24 @@ verify_jwt = true
 
 [functions.send-auth-email]
 verify_jwt = false
+
+[functions.request-password-reset]
+verify_jwt = false
+
+[functions.verify-reset-token]
+verify_jwt = false
+
+[functions.reset-password]
+verify_jwt = false
+
+[functions.record-login-attempt]
+verify_jwt = false
+
+[functions.manage-sessions]
+verify_jwt = true
+
+[functions.process-booking-reminders]
+verify_jwt = false
+
+[functions.manage-availability]
+verify_jwt = true
