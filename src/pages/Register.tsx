@@ -11,7 +11,8 @@ import { ArrowLeft, ArrowRight, User, Building2, UserCog, CheckCircle, X, Eye, E
 import { useToast } from '@/hooks/use-toast';
 import { useAccessCodeValidation } from '@/hooks/useAccessCodeValidation';
 import { createUserFromCode } from '@/utils/registrationHelpers';
-import { UserType, PersonalUserData, HRUserData, EmployeeUserData, PrestadorUserData } from '@/types/accessCodes';
+import { UserType } from '@/types/accessCodes';
+import { PersonalUserData, HRUserData, EmployeeUserData, PrestadorUserData, EspecialistaGeralUserData } from '@/utils/registrationHelpers';
 import { getAuthCallbackUrl } from '@/utils/authRedirects';
 
 const steps = [
@@ -123,7 +124,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      let userData: PersonalUserData | HRUserData | EmployeeUserData | PrestadorUserData;
+      let userData: PersonalUserData | HRUserData | EmployeeUserData | PrestadorUserData | EspecialistaGeralUserData;
 
       switch (userType) {
         case 'personal':
@@ -156,6 +157,7 @@ export default function Register() {
           };
           break;
         case 'prestador':
+        case 'especialista_geral':
           userData = {
             name: formData.name,
             email: formData.email,
@@ -334,7 +336,7 @@ export default function Register() {
                 />
               </div>
 
-              {(userType === 'personal' || userType === 'prestador') && (
+              {(userType === 'personal' || userType === 'prestador' || userType === 'especialista_geral') && (
                 <div>
                   <Label htmlFor="pillar">Pilar de Interesse</Label>
                   <Select value={formData.pillar} onValueChange={(value) => updateFormData('pillar', value)}>
@@ -360,13 +362,13 @@ export default function Register() {
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {userType === 'hr' ? 'Dados da Empresa' : 
-                 userType === 'prestador' ? 'Informações Profissionais' : 
+                {userType === 'hr' ? 'Dados da Empresa' :
+                 (userType === 'prestador' || userType === 'especialista_geral') ? 'Informações Profissionais' :
                  'Informações Adicionais'}
               </h2>
               <p className="text-gray-600">
                 {userType === 'hr' ? 'Preencha os dados da sua empresa' :
-                 userType === 'prestador' ? 'Preencha as suas informações profissionais' :
+                 (userType === 'prestador' || userType === 'especialista_geral') ? 'Preencha as suas informações profissionais' :
                  'Informações adicionais sobre si'}
               </p>
             </div>
@@ -414,7 +416,7 @@ export default function Register() {
                 </>
               )}
 
-              {userType === 'prestador' && (
+              {(userType === 'prestador' || userType === 'especialista_geral') && (
                 <>
                   <div>
                     <Label htmlFor="specialty">Especialidade *</Label>
@@ -537,7 +539,7 @@ export default function Register() {
                 </div>
               )}
 
-              {userType === 'prestador' && (
+              {(userType === 'prestador' || userType === 'especialista_geral') && (
                 <div className="bg-purple-50 p-4 rounded-lg">
                   <h3 className="font-semibold mb-2">Informações Profissionais</h3>
                   <p><strong>Especialidade:</strong> {specialties.find(s => s.value === formData.specialty)?.label}</p>

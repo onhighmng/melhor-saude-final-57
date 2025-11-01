@@ -43,9 +43,25 @@ export interface PrestadorUserData {
   address?: string;
 }
 
+export interface EspecialistaGeralUserData {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  specialty: string;
+  pillar: string;
+  bio?: string;
+  qualifications?: string;
+  experience?: number;
+  costPerSession: number;
+  sessionType: string;
+  availability: string;
+  address?: string;
+}
+
 export const createUserFromCode = async (
   code: string,
-  userData: PersonalUserData | HRUserData | EmployeeUserData | PrestadorUserData,
+  userData: PersonalUserData | HRUserData | EmployeeUserData | PrestadorUserData | EspecialistaGeralUserData,
   userType: UserType
 ) => {
   // First validate the code
@@ -143,17 +159,20 @@ export const createUserFromCode = async (
       return await createEmployeeUser(userId, userData as EmployeeUserData, invite.company_id);
     case 'prestador':
       return await createPrestadorUser(userId, userData as PrestadorUserData);
+    case 'especialista_geral':
+      return await createEspecialistaGeralUser(userId, userData as EspecialistaGeralUserData);
     default:
       throw new Error('Tipo de utilizador inválido');
   }
 };
 
 export const assignUserRole = async (userId: string, userType: UserType) => {
-  const roleMap: Record<UserType, 'user' | 'hr' | 'prestador' | 'admin' | 'specialist'> = {
+  const roleMap: Record<UserType, 'user' | 'hr' | 'prestador' | 'admin' | 'especialista_geral'> = {
     'personal': 'user',
     'hr': 'hr',
     'user': 'user',
-    'prestador': 'prestador'
+    'prestador': 'prestador',
+    'especialista_geral': 'especialista_geral'
   };
 
   const targetRole = roleMap[userType];
@@ -340,4 +359,30 @@ export const createPrestadorUser = async (userId: string, userData: PrestadorUse
   if (prestadorError) throw prestadorError;
 
   return { userId, type: 'prestador' };
+};
+
+export const createEspecialistaGeralUser = async (userId: string, userData: EspecialistaGeralUserData) => {
+  // Create especialista_geral record in prestadores table
+  // Especialista geral is a type of specialist, so we use the same table as prestadores
+  const { error: especialistaError } = await supabase
+    .from('prestadores')
+    .insert({
+      user_id: userId,
+      specialty: userData.specialty || null,
+      specialization: userData.specialty ? [userData.specialty] : [],
+      pillars: userData.pillar ? [userData.pillar] : [],
+      bio: userData.bio || null,
+      qualifications: userData.qualifications ? [userData.qualifications] : [],
+      experience_years: userData.experience || 0,
+      cost_per_session: userData.costPerSession || 0,
+      hourly_rate: userData.costPerSession || 0,
+      session_type: userData.sessionType || 'both',
+      availability: userData.availability ? JSON.parse(JSON.stringify(userData.availability)) : {},
+      is_approved: true, // Admin-generated codes are pre-approved
+      is_active: true
+    } as any);
+
+  if (especialistaError) throw especialistaError;
+
+  return { userId, type: 'especialista_geral' };
 };
