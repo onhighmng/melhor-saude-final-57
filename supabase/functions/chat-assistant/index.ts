@@ -2,11 +2,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { corsHeaders } from "../_shared/auth.ts";
+import { checkRateLimit, getClientIP, RATE_LIMITS } from "../_shared/rateLimit.ts";
+import {
+  withErrorHandling,
+  handleRateLimitError,
+  successResponse
+} from "../_shared/errors.ts";
 
 // Input validation schema
 const chatAssistantSchema = z.object({
@@ -16,100 +18,98 @@ const chatAssistantSchema = z.object({
   pillar: z.enum(['saude_mental', 'saude_fisica', 'apoio_juridico', 'apoio_financeiro']).optional()
 })
 
-serve(async (req) => {
+async function handler(req: Request): Promise<Response> {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
-  try {
-    // Validate and parse input
-    const body = await req.json()
-    const { sessionId, message, userId, pillar } = chatAssistantSchema.parse(body)
-
-    console.log(`[CHAT ASSISTANT] Session: ${sessionId}, User: ${userId}, Pillar: ${pillar}`)
-
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    )
-
-    // Save user message to database
-    const { error: userMsgError } = await supabase
-      .from('chat_messages')
-      .insert({
-        session_id: sessionId,
-        role: 'user',
-        content: message
-      })
-
-    if (userMsgError) {
-      console.error('Error saving user message:', userMsgError)
-    }
-
-    // Generate response using rule-based logic
-    const response = generateResponse(message, pillar)
-
-    // Save bot response to database
-    const { error: botMsgError } = await supabase
-      .from('chat_messages')
-      .insert({
-        session_id: sessionId,
-        role: 'assistant',
-        content: response.message,
-        metadata: { confidence: response.confidence, pillar }
-      })
-
-    if (botMsgError) {
-      console.error('Error saving bot message:', botMsgError)
-    }
-
-    // Update chat session if needed
-    if (response.suggestEscalation) {
-      await supabase
-        .from('chat_sessions')
-        .update({ status: 'needs_escalation' })
-        .eq('id', sessionId)
-    }
-
+  // Only allow POST
+  if (req.method !== 'POST') {
     return new Response(
-      JSON.stringify(response),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
-      }
-    )
-  } catch (error: any) {
-    console.error('Error in chat-assistant:', error)
-
-    // Handle validation errors
-    if (error instanceof z.ZodError) {
-      return new Response(
-        JSON.stringify({
-          error: 'Invalid input',
-          details: error.errors,
-          message: 'Dados inválidos. Verifique os campos e tente novamente.'
-        }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400
-        }
-      )
-    }
-
-    return new Response(
-      JSON.stringify({
-        error: error.message,
-        message: 'Desculpe, ocorreu um erro. Tente novamente.',
-        confidence: 0
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500
-      }
-    )
+      JSON.stringify({ error: 'Method not allowed' }),
+      { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
-})
+
+  // IP-based rate limiting (since this endpoint is public/pre-auth)
+  const clientIP = getClientIP(req);
+  const rateLimitResult = checkRateLimit(
+    `chat-assistant:${clientIP}`,
+    RATE_LIMITS.MODERATE // 20 requests per minute per IP
+  );
+
+  if (!rateLimitResult.allowed) {
+    return handleRateLimitError(rateLimitResult.resetAt);
+  }
+
+  // Also add hourly limit to prevent sustained abuse
+  const hourlyRateLimitResult = checkRateLimit(
+    `chat-assistant:hourly:${clientIP}`,
+    RATE_LIMITS.HOURLY_STRICT // 50 per hour
+  );
+
+  if (!hourlyRateLimitResult.allowed) {
+    return handleRateLimitError(hourlyRateLimitResult.resetAt);
+  }
+
+  // Validate and parse input
+  const body = await req.json()
+  const { sessionId, message, userId, pillar } = chatAssistantSchema.parse(body)
+
+  console.log(`[CHAT ASSISTANT] Session: ${sessionId}, User: ${userId}, Pillar: ${pillar}`)
+
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  )
+
+  // Save user message to database
+  const { error: userMsgError } = await supabase
+    .from('chat_messages')
+    .insert({
+      session_id: sessionId,
+      role: 'user',
+      content: message
+    })
+
+  if (userMsgError) {
+    console.error('Error saving user message:', userMsgError)
+  }
+
+  // Generate response using rule-based logic
+  const response = generateResponse(message, pillar)
+
+  // Save bot response to database
+  const { error: botMsgError } = await supabase
+    .from('chat_messages')
+    .insert({
+      session_id: sessionId,
+      role: 'assistant',
+      content: response.message,
+      metadata: { confidence: response.confidence, pillar }
+    })
+
+  if (botMsgError) {
+    console.error('Error saving bot message:', botMsgError)
+  }
+
+  // Update chat session if needed
+  if (response.suggestEscalation) {
+    await supabase
+      .from('chat_sessions')
+      .update({ status: 'needs_escalation' })
+      .eq('id', sessionId)
+  }
+
+  return successResponse({
+    ...response,
+    rateLimitRemaining: rateLimitResult.remaining,
+    timestamp: new Date().toISOString()
+  });
+}
+
+serve(withErrorHandling(handler));
 
 function generateResponse(message: string, pillar?: string) {
   const lowerMessage = message.toLowerCase()

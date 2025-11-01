@@ -1,11 +1,13 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders } from "../_shared/auth.ts";
+import { checkRateLimit, getClientIP, RATE_LIMITS } from "../_shared/rateLimit.ts";
+import {
+  withErrorHandling,
+  handleRateLimitError,
+  successResponse
+} from "../_shared/errors.ts";
 
 // Input validation schema
 const messageSchema = z.object({
@@ -25,26 +27,56 @@ const legalChatSchema = z.object({
   mode: z.enum(['prediagnostic', 'general']).optional()
 });
 
-serve(async (req) => {
+async function handler(req: Request): Promise<Response> {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    // Validate and parse input
-    const body = await req.json();
-    const { messages, assessment, mode } = legalChatSchema.parse(body);
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  // Only allow POST
+  if (req.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }),
+      { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
-    }
+  // IP-based rate limiting (since this endpoint is public/pre-auth)
+  const clientIP = getClientIP(req);
+  const rateLimitResult = checkRateLimit(
+    `legal-chat:${clientIP}`,
+    RATE_LIMITS.MODERATE // 20 requests per minute per IP
+  );
 
-    let systemPrompt: string;
+  if (!rateLimitResult.allowed) {
+    return handleRateLimitError(rateLimitResult.resetAt);
+  }
 
-    if (mode === 'prediagnostic') {
-      // Pre-diagnostic mode: Act as a diagnostician to help prepare for human consultation
-      systemPrompt = `Você é um assistente de pré-diagnóstico jurídico especializado. Sua função é ajudar o utilizador a organizar e entender sua situação jurídica ANTES da consulta com um especialista humano.
+  // Also add hourly limit to prevent sustained abuse
+  const hourlyRateLimitResult = checkRateLimit(
+    `legal-chat:hourly:${clientIP}`,
+    RATE_LIMITS.HOURLY_STRICT // 50 per hour
+  );
+
+  if (!hourlyRateLimitResult.allowed) {
+    return handleRateLimitError(hourlyRateLimitResult.resetAt);
+  }
+
+  // Validate and parse input
+  const body = await req.json();
+  const { messages, assessment, mode } = legalChatSchema.parse(body);
+
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
+  if (!LOVABLE_API_KEY) {
+    throw new Error('LOVABLE_API_KEY is not configured');
+  }
+
+  let systemPrompt: string;
+
+  if (mode === 'prediagnostic') {
+    // Pre-diagnostic mode: Act as a diagnostician to help prepare for human consultation
+    systemPrompt = `Você é um assistente de pré-diagnóstico jurídico especializado. Sua função é ajudar o utilizador a organizar e entender sua situação jurídica ANTES da consulta com um especialista humano.
 
 Seu objetivo é:
 1. Fazer perguntas diagnósticas relevantes para entender a situação completa
@@ -60,14 +92,14 @@ IMPORTANTE:
 - Não forneça aconselhamento jurídico específico - seu papel é preparatório
 - Ao final, resuma os principais pontos discutidos
 - Mantenha um tom profissional mas acessível`;
-    } else {
-      // Full assessment mode: Provide legal guidance based on assessment
-      const topicContext = assessment?.selectedTopics?.join(', ') || '';
-      const symptomContext = assessment?.selectedSymptoms?.join(', ') || '';
-      const notesContext = assessment?.additionalNotes || 'Nenhuma informação adicional';
+  } else {
+    // Full assessment mode: Provide legal guidance based on assessment
+    const topicContext = assessment?.selectedTopics?.join(', ') || '';
+    const symptomContext = assessment?.selectedSymptoms?.join(', ') || '';
+    const notesContext = assessment?.additionalNotes || 'Nenhuma informação adicional';
 
-      systemPrompt = `Você é um assistente jurídico especializado em fornecer orientações gerais sobre questões legais em Portugal. 
-    
+    systemPrompt = `Você é um assistente jurídico especializado em fornecer orientações gerais sobre questões legais em Portugal.
+
 O utilizador forneceu as seguintes informações sobre sua situação:
 
 Áreas jurídicas de interesse: ${topicContext}
@@ -81,65 +113,70 @@ Sua função é:
 4. Recomendar quando procurar um advogado especializado
 5. Usar linguagem acessível e evitar jargão jurídico complexo
 
-IMPORTANTE: 
+IMPORTANTE:
 - Sempre deixe claro que você fornece orientações gerais, não aconselhamento jurídico específico
 - Recomende consultar um advogado para casos específicos
 - Seja empático e compreensivo
 - Adapte suas respostas ao contexto fornecido pelo utilizador
 - Mantenha respostas concisas mas informativas`;
-    }
+  }
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages
-        ],
-      }),
-    });
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-2.5-flash',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages
+      ],
+    }),
+  });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
-      throw new Error(`AI Gateway error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const aiMessage = data.choices[0].message.content;
-
-    return new Response(
-      JSON.stringify({ response: aiMessage }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (error) {
-    console.error('Error in legal-chat function:', error);
-
-    // Handle validation errors
-    if (error instanceof z.ZodError) {
+  if (!response.ok) {
+    // Handle rate limiting from AI provider
+    if (response.status === 429) {
       return new Response(
         JSON.stringify({
-          error: 'Invalid input',
-          details: error.errors
+          error: 'Rate limit exceeded. Please wait a moment and try again.',
+          code: 'AI_RATE_LIMIT'
         }),
         {
-          status: 400,
+          status: 429,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
 
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+    if (response.status === 402) {
+      return new Response(
+        JSON.stringify({
+          error: 'Service temporarily unavailable. Please contact support.',
+          code: 'AI_PAYMENT_REQUIRED'
+        }),
+        {
+          status: 503,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    const errorText = await response.text();
+    console.error('AI Gateway error:', response.status, errorText);
+    throw new Error(`AI Gateway error: ${response.status}`);
   }
-});
+
+  const data = await response.json();
+  const aiMessage = data.choices[0].message.content;
+
+  return successResponse({
+    response: aiMessage,
+    rateLimitRemaining: rateLimitResult.remaining,
+    timestamp: new Date().toISOString()
+  });
+}
+
+serve(withErrorHandling(handler));

@@ -72,8 +72,14 @@ verify_jwt = false
 [functions.chat-assistant]
 verify_jwt = false
 
+[functions.create-employee]
+verify_jwt = true
+
+[functions.send-email]
+verify_jwt = true
+
 [functions.send-booking-email]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-auth-email]
 verify_jwt = false
