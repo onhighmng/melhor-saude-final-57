@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
@@ -7,12 +8,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface EmailRequest {
-  to: string;
-  subject: string;
-  html: string;
-  type?: 'booking_confirmation' | 'booking_cancellation' | 'booking_reminder';
-}
+// Input validation schema
+const sendBookingEmailSchema = z.object({
+  to: z.string().email(),
+  subject: z.string().min(1).max(200),
+  html: z.string().min(1).refine(html => !html.includes('<script>'), {
+    message: 'Scripts are not allowed in email HTML'
+  }),
+  type: z.enum(['booking_confirmation', 'booking_cancellation', 'booking_reminder']).optional()
+});
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -21,7 +25,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { to, subject, html, type }: EmailRequest = await req.json();
+    // Validate and parse input
+    const body = await req.json();
+    const { to, subject, html, type } = sendBookingEmailSchema.parse(body);
 
     console.log(`Sending ${type || 'generic'} email to ${to}`);
 
@@ -75,10 +81,26 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: any) {
     console.error('Error in send-booking-email function:', error);
+
+    // Handle validation errors
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Invalid input',
+          details: error.errors
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message 
+      JSON.stringify({
+        success: false,
+        error: error.message
       }),
       {
         status: 500,

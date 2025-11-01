@@ -1,5 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
+
+// Input validation schema
+const createEmployeeSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(100),
+  name: z.string().min(2).max(200),
+  company_id: z.string().uuid(),
+  role: z.enum(['user', 'admin', 'hr', 'prestador', 'especialista_geral']),
+  sessions_allocated: z.number().int().min(0).max(1000).optional()
+})
 
 serve(async (req) => {
   try {
@@ -8,15 +19,9 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { email, password, name, company_id, role, sessions_allocated } = await req.json()
-
-    // Validate inputs
-    if (!email || !password || !name || !company_id || !role) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      )
-    }
+    // Validate and parse input
+    const body = await req.json()
+    const { email, password, name, company_id, role, sessions_allocated } = createEmployeeSchema.parse(body)
 
     // Create user with admin client
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -61,6 +66,20 @@ serve(async (req) => {
       { headers: { 'Content-Type': 'application/json' } }
     )
   } catch (error: any) {
+    // Handle validation errors
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid input',
+          details: error.errors
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
