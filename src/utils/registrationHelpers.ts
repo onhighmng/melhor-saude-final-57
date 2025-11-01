@@ -142,9 +142,11 @@ export const createUserFromCode = async (
     case 'user':
       return await createEmployeeUser(userId, userData as EmployeeUserData, invite.company_id);
     case 'prestador':
+    case 'specialist':
       return await createPrestadorUser(userId, userData as PrestadorUserData);
     default:
-      throw new Error('Tipo de utilizador inválido');
+      console.error('Invalid user type:', userType);
+      throw new Error('Tipo de utilizador inválido: ' + userType);
   }
 };
 
@@ -153,7 +155,8 @@ export const assignUserRole = async (userId: string, userType: UserType) => {
     'personal': 'user',
     'hr': 'hr',
     'user': 'user',
-    'prestador': 'prestador'
+    'prestador': 'prestador',
+    'specialist': 'specialist'
   };
 
   const targetRole = roleMap[userType];

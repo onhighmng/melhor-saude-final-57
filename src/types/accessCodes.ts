@@ -1,4 +1,4 @@
-export type UserType = 'personal' | 'hr' | 'user' | 'prestador';
+export type UserType = 'personal' | 'hr' | 'user' | 'prestador' | 'specialist';
 
 export interface AccessCode {
   id: string;
