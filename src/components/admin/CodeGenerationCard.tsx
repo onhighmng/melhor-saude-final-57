@@ -48,15 +48,26 @@ export const CodeGenerationCard = ({
       });
 
       if (error) throw error;
-      if (!data || data.length === 0) throw new Error('Failed to generate code');
-
-      const result = data[0];
-      setGeneratedCode(result.invite_code);
+      
+      // Handle JSONB response
+      let codeData;
+      if (typeof data === 'string') {
+        codeData = JSON.parse(data);
+      } else if (Array.isArray(data) && data.length > 0) {
+        codeData = data[0];
+      } else {
+        codeData = data;
+      }
+      
+      const inviteCode = codeData?.invite_code || codeData;
+      if (!inviteCode) throw new Error('Failed to generate code');
+      
+      setGeneratedCode(inviteCode);
       setIsCodeModalOpen(true);
       
       toast({
         title: 'Código Gerado',
-        description: `Código ${result.invite_code} criado com sucesso!`,
+        description: `Código ${inviteCode} criado com sucesso!`,
       });
 
       // Refresh stats

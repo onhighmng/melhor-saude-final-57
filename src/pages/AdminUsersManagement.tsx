@@ -234,9 +234,14 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
       });
 
       if (error) throw error;
+      
+      // Handle JSONB response
+      const codeData = typeof data === 'string' ? JSON.parse(data) : data;
+      const inviteCode = codeData?.invite_code || codeData;
+      
       toast({ 
         title: 'Código HR gerado!', 
-        description: `Código: ${data}`,
+        description: `Código: ${inviteCode}`,
         duration: 10000 // Show for 10 seconds so they can copy it
       });
       loadCodes();
@@ -572,10 +577,14 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
       });
 
       if (error) throw error;
+      
+      // Handle JSONB response
+      const codeData = typeof data === 'string' ? JSON.parse(data) : data;
+      const inviteCode = codeData?.invite_code || codeData;
       const typeLabel = userType === 'prestador' ? 'Prestador' : 'Profesional de Permanencia';
       toast({ 
         title: 'Código gerado!', 
-        description: `Código ${typeLabel}: ${data}`,
+        description: `Código ${typeLabel}: ${inviteCode}`,
         duration: 10000
       });
       loadCodes();
