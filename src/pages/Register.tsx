@@ -156,6 +156,7 @@ export default function Register() {
           };
           break;
         case 'prestador':
+        case 'specialist':
           userData = {
             name: formData.name,
             email: formData.email,
@@ -173,7 +174,8 @@ export default function Register() {
           };
           break;
         default:
-          throw new Error('Tipo de utilizador inválido');
+          console.error('Invalid user type:', userType);
+          throw new Error('Tipo de utilizador inválido: ' + userType);
       }
 
       await createUserFromCode(accessCode, userData, userType!);
