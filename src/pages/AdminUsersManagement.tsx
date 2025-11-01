@@ -226,11 +226,9 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.rpc('generate_access_code' as any, {
-        p_user_type: 'hr',
-        p_company_id: null,
-        p_metadata: {},
-        p_expires_days: 30
+      // Use Edge Function instead of RPC to bypass PostgREST cache issues
+      const { data, error } = await supabase.functions.invoke('generate_access_code', {
+        body: { p_user_type: 'hr' }
       });
 
       if (error) throw error;
@@ -569,11 +567,9 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const handleGenerateCode = async (userType: 'prestador' | 'specialist') => {
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.rpc('generate_access_code' as any, {
-        p_user_type: userType,
-        p_company_id: null,
-        p_metadata: {},
-        p_expires_days: 30
+      // Use Edge Function instead of RPC to bypass PostgREST cache issues
+      const { data, error } = await supabase.functions.invoke('generate_access_code', {
+        body: { p_user_type: userType }
       });
 
       if (error) throw error;
