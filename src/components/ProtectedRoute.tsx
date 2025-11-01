@@ -38,9 +38,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     console.warn(`%c  Redirecting to correct dashboard...`, 'color: orange;');
     
     // Redirect to the user's correct dashboard based on their actual role
-    // Map 'especialista_geral' to 'specialist' for redirect map compatibility
-    const roleForRedirect = profile.role === 'especialista_geral' ? 'specialist' : profile.role;
-    const correctDashboard = ROLE_REDIRECT_MAP[roleForRedirect as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
+    const correctDashboard = ROLE_REDIRECT_MAP[profile.role as keyof typeof ROLE_REDIRECT_MAP] || '/user/dashboard';
     
     console.warn(`%c  Redirecting to: ${correctDashboard}`, 'color: orange; font-weight: bold;');
     return <Navigate to={correctDashboard} replace />;
