@@ -226,36 +226,38 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
-      console.log('🔍 Calling generate_access_code RPC...');
+      console.log('🔍 Calling generate_access_code RPC for HR...');
       
-      // Call RPC function directly
       const { data, error } = await supabase.rpc('generate_access_code', {
         p_user_type: 'hr'
       });
 
-      console.log('📨 RPC response:', { data, error });
+      console.log('📨 RPC Response:', { data, error });
 
       if (error) {
-        console.error('❌ RPC error:', error);
-        throw error;
+        console.error('❌ RPC Error:', error);
+        throw new Error(error.message || 'Failed to generate HR code');
       }
-      
-      // Handle JSONB response
+
       const codeData = typeof data === 'string' ? JSON.parse(data) : data;
-      const inviteCode = codeData?.invite_code || codeData;
+      const inviteCode = codeData?.invite_code;
       
-      toast({ 
-        title: 'Código HR gerado!', 
+      if (!inviteCode) {
+        throw new Error('No invite code in response');
+      }
+
+      toast({
+        title: 'Código HR gerado!',
         description: `Código: ${inviteCode}`,
-        duration: 10000 // Show for 10 seconds so they can copy it
+        duration: 10000
       });
       loadCodes();
-    } catch (error: any) {
-      console.error('Error generating HR code:', error);
-      toast({ 
-        title: 'Erro', 
-        description: error?.message || 'Erro ao gerar código HR.', 
-        variant: 'destructive' 
+    } catch (error) {
+      console.error('❌ Error generating HR code:', error);
+      toast({
+        title: 'Erro',
+        description: error instanceof Error ? error.message : 'Erro ao gerar código HR.',
+        variant: 'destructive'
       });
     } finally {
       setIsGenerating(false);
@@ -574,36 +576,38 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const handleGenerateCode = async (userType: 'prestador' | 'specialist') => {
     setIsGenerating(true);
     try {
-      console.log('🔍 Calling generate_access_code RPC...');
+      console.log('🔍 Calling generate_access_code RPC for', userType);
       
-      // Call RPC function directly
       const { data, error } = await supabase.rpc('generate_access_code', {
         p_user_type: userType
       });
 
-      console.log('📨 RPC response:', { data, error });
+      console.log('📨 RPC Response:', { data, error });
 
       if (error) {
-        console.error('❌ RPC error:', error);
-        throw error;
+        console.error('❌ RPC Error:', error);
+        throw new Error(error.message || `Failed to generate ${userType} code`);
       }
-      
-      // Handle JSONB response
+
       const codeData = typeof data === 'string' ? JSON.parse(data) : data;
-      const inviteCode = codeData?.invite_code || codeData;
-      const typeLabel = userType === 'prestador' ? 'Prestador' : 'Profesional de Permanencia';
-      toast({ 
-        title: 'Código gerado!', 
-        description: `Código ${typeLabel}: ${inviteCode}`,
+      const inviteCode = codeData?.invite_code;
+      
+      if (!inviteCode) {
+        throw new Error('No invite code in response');
+      }
+
+      toast({
+        title: 'Código Gerado',
+        description: `Código ${userType}: ${inviteCode}`,
         duration: 10000
       });
       loadCodes();
-    } catch (error: any) {
-      console.error('Error generating code:', error);
-      toast({ 
-        title: 'Erro', 
-        description: error?.message || 'Erro ao gerar código.', 
-        variant: 'destructive' 
+    } catch (error) {
+      console.error('❌ Error generating code:', error);
+      toast({
+        title: 'Erro',
+        description: error instanceof Error ? error.message : 'Erro ao gerar código.',
+        variant: 'destructive'
       });
     } finally {
       setIsGenerating(false);

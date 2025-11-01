@@ -40,50 +40,45 @@ export const CodeGenerationCard = ({
   const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
-      console.log('🔍 Calling generate_access_code...');
+      console.log('🔍 Calling generate_access_code with userType:', userType);
       
-      // Call RPC function directly
       const { data, error } = await supabase.rpc('generate_access_code', {
         p_user_type: userType
       });
 
-      console.log('📨 RPC response:', { data, error });
+      console.log('📨 RPC Response:', { data, error });
 
       if (error) {
-        console.error('❌ RPC error:', error);
-        throw error;
+        console.error('❌ RPC Error:', error);
+        throw new Error(error.message || 'Failed to generate code');
       }
-      
-      console.log('✅ Code generated:', data?.invite_code);
-      
-      // Handle JSONB response
-      let codeData;
-      if (typeof data === 'string') {
-        codeData = JSON.parse(data);
-      } else if (Array.isArray(data) && data.length > 0) {
-        codeData = data[0];
-      } else {
-        codeData = data;
+
+      if (!data) {
+        throw new Error('No data returned from RPC');
       }
+
+      // Parse JSONB response - handle both direct object and stringified JSON
+      const codeData = typeof data === 'string' ? JSON.parse(data) : data;
+      const inviteCode = codeData?.invite_code;
       
-      const inviteCode = codeData?.invite_code || codeData;
-      if (!inviteCode) throw new Error('Failed to generate code');
-      
+      if (!inviteCode) {
+        throw new Error('No invite code in response');
+      }
+
       setGeneratedCode(inviteCode);
       setIsCodeModalOpen(true);
-      
+
       toast({
         title: 'Código Gerado',
         description: `Código ${inviteCode} criado com sucesso!`,
       });
 
-      // Refresh stats
       onStatsUpdate();
     } catch (error) {
-      console.error('Error generating code:', error);
+      console.error('❌ Error generating code:', error);
       toast({
         title: 'Erro',
-        description: 'Erro ao gerar código. Tente novamente.',
+        description: error instanceof Error ? error.message : 'Erro ao gerar código. Tente novamente.',
         variant: 'destructive'
       });
     } finally {
