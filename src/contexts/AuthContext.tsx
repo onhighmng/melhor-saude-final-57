@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Fetch role using RPC (bypasses RLS, always works)
       console.log('%c[AuthContext] 🔄 Fetching role via RPC...', 'color: cyan;');
       const rpcStart = performance.now();
-      const { data: role, error: rpcError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: userId });
+      let { data: role, error: rpcError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: userId });
       const rpcTime = performance.now() - rpcStart;
       
       if (rpcError) {

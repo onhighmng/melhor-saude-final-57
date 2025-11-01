@@ -1,7 +1,11 @@
 // Supabase Edge Function for Support Chat Assistant
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+<<<<<<< Updated upstream
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
+=======
+import { captureException, captureMessage } from "../_shared/sentry.ts"
+>>>>>>> Stashed changes
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -45,6 +49,12 @@ serve(async (req) => {
 
     if (userMsgError) {
       console.error('Error saving user message:', userMsgError)
+      await captureException(new Error(`Failed to save user message: ${userMsgError.message}`), {
+        sessionId,
+        userId,
+        pillar,
+        errorDetails: userMsgError,
+      })
     }
 
     // Generate response using rule-based logic
@@ -62,15 +72,37 @@ serve(async (req) => {
 
     if (botMsgError) {
       console.error('Error saving bot message:', botMsgError)
+      await captureException(new Error(`Failed to save bot message: ${botMsgError.message}`), {
+        sessionId,
+        userId,
+        pillar,
+        errorDetails: botMsgError,
+      })
     }
 
     // Update chat session if needed
     if (response.suggestEscalation) {
-      await supabase
+      const { error: updateError } = await supabase
         .from('chat_sessions')
         .update({ status: 'needs_escalation' })
         .eq('id', sessionId)
+
+      if (updateError) {
+        await captureException(new Error(`Failed to update chat session: ${updateError.message}`), {
+          sessionId,
+          userId,
+          pillar,
+          errorDetails: updateError,
+        })
+      }
     }
+
+    await captureMessage('Chat message processed successfully', 'info', {
+      sessionId,
+      userId,
+      pillar,
+      messageLength: message.length,
+    })
 
     return new Response(
       JSON.stringify(response),
@@ -81,6 +113,7 @@ serve(async (req) => {
     )
   } catch (error: any) {
     console.error('Error in chat-assistant:', error)
+<<<<<<< Updated upstream
 
     // Handle validation errors
     if (error instanceof z.ZodError) {
@@ -103,6 +136,18 @@ serve(async (req) => {
         message: 'Desculpe, ocorreu um erro. Tente novamente.',
         confidence: 0
       }),
+=======
+    
+    await captureException(error, {
+      function: 'chat-assistant',
+      timestamp: new Date().toISOString(),
+      errorType: error.name,
+      errorMessage: error.message,
+    })
+
+    return new Response(
+      JSON.stringify({ error: error.message }),
+>>>>>>> Stashed changes
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500

@@ -8,6 +8,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { setNavigateFunction } from "@/services/redirectService";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useEffect } from "react";
+import * as Sentry from "@sentry/react";
+import "@/sentry.config";
 
 import ScrollIndicator from "@/components/ScrollIndicator";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
@@ -217,18 +219,20 @@ const App = () => (
   <TooltipProvider>
     <BrowserRouter>
       <AuthProvider>
-        <ErrorBoundary>
-          <SkipLink />
-          <Toaster />
-          <Sonner />
-          <AppWithTracking />
-          <ScrollIndicator />
-          <PWAInstallPrompt />
-          <PerformanceMonitor />
-        </ErrorBoundary>
+        <Sentry.Profiler>
+          <ErrorBoundary>
+            <SkipLink />
+            <Toaster />
+            <Sonner />
+            <AppWithTracking />
+            <ScrollIndicator />
+            <PWAInstallPrompt />
+            <PerformanceMonitor />
+          </ErrorBoundary>
+        </Sentry.Profiler>
       </AuthProvider>
     </BrowserRouter>
   </TooltipProvider>
 );
 
-export default App;
+export default Sentry.withProfiler(App);
