@@ -3,13 +3,53 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 
-serve(async (req) => {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+// JWT parsing helper
+function parseJWT(authHeader: string | null): { userId: string; role: string } | null {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null
   }
 
   try {
+    const token = authHeader.substring(7) // Remove 'Bearer '
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+
+    const payload = JSON.parse(atob(parts[1]))
+    return {
+      userId: payload.sub,
+      role: payload.user_role || payload.role || 'user'
+    }
+  } catch {
+    return null
+  }
+}
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+
+  try {
+    // ✅ Parse JWT properly
+    const authHeader = req.headers.get('Authorization')
+    const jwt = parseJWT(authHeader)
+
+    if (!jwt) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid or missing JWT' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
     const { to, subject, html, type } = await req.json()
 
     console.log(`[EMAIL ${type}]`, { to, subject })
