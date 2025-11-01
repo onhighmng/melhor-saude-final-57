@@ -40,12 +40,21 @@ export const CodeGenerationCard = ({
   const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
-      // Use Edge Function instead of RPC to bypass PostgREST cache issues
-      const { data, error } = await supabase.functions.invoke('generate_access_code', {
-        body: { p_user_type: userType }
+      console.log('🔍 Calling generate_access_code...');
+      
+      // Call RPC function directly
+      const { data, error } = await supabase.rpc('generate_access_code', {
+        p_user_type: userType
       });
 
-      if (error) throw error;
+      console.log('📨 RPC response:', { data, error });
+
+      if (error) {
+        console.error('❌ RPC error:', error);
+        throw error;
+      }
+      
+      console.log('✅ Code generated:', data?.invite_code);
       
       // Handle JSONB response
       let codeData;

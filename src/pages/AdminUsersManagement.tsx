@@ -226,12 +226,19 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
-      // Use Edge Function instead of RPC to bypass PostgREST cache issues
-      const { data, error } = await supabase.functions.invoke('generate_access_code', {
-        body: { p_user_type: 'hr' }
+      console.log('🔍 Calling generate_access_code RPC...');
+      
+      // Call RPC function directly
+      const { data, error } = await supabase.rpc('generate_access_code', {
+        p_user_type: 'hr'
       });
 
-      if (error) throw error;
+      console.log('📨 RPC response:', { data, error });
+
+      if (error) {
+        console.error('❌ RPC error:', error);
+        throw error;
+      }
       
       // Handle JSONB response
       const codeData = typeof data === 'string' ? JSON.parse(data) : data;
@@ -567,12 +574,19 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const handleGenerateCode = async (userType: 'prestador' | 'specialist') => {
     setIsGenerating(true);
     try {
-      // Use Edge Function instead of RPC to bypass PostgREST cache issues
-      const { data, error } = await supabase.functions.invoke('generate_access_code', {
-        body: { p_user_type: userType }
+      console.log('🔍 Calling generate_access_code RPC...');
+      
+      // Call RPC function directly
+      const { data, error } = await supabase.rpc('generate_access_code', {
+        p_user_type: userType
       });
 
-      if (error) throw error;
+      console.log('📨 RPC response:', { data, error });
+
+      if (error) {
+        console.error('❌ RPC error:', error);
+        throw error;
+      }
       
       // Handle JSONB response
       const codeData = typeof data === 'string' ? JSON.parse(data) : data;
