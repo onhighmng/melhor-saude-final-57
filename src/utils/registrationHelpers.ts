@@ -53,11 +53,29 @@ export const createUserFromCode = async (
     p_code: code.toUpperCase()
   });
 
-  if (codeError || !codeData || (Array.isArray(codeData) && codeData.length === 0)) {
+  if (codeError) {
+    console.error('Code validation error:', codeError);
+    throw new Error('Erro ao validar código. Tente novamente.');
+  }
+
+  if (!codeData || (Array.isArray(codeData) && codeData.length === 0)) {
     throw new Error('Código inválido ou expirado');
   }
 
   const invite = codeData[0];
+
+  // Check if code is valid
+  if (!invite.is_valid) {
+    throw new Error('Código inválido ou expirado');
+  }
+
+  // Map user_type to role for user metadata
+  const roleMap: Record<UserType, string> = {
+    'personal': 'user',
+    'hr': 'hr',
+    'user': 'user',
+    'prestador': 'prestador'
+  };
 
   // Create auth user
   const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -66,19 +84,23 @@ export const createUserFromCode = async (
     options: {
       data: {
         name: userData.name,
-        user_type: userType
+        role: roleMap[userType], // Use 'role' instead of 'user_type'
+        company_id: invite.company_id || null
       }
     }
   });
 
-  if (authError) throw authError;
+  if (authError) {
+    console.error('Auth error:', authError);
+    throw new Error(`Erro ao criar conta: ${authError.message}`);
+  }
   if (!authData.user) throw new Error('Falha ao criar utilizador');
 
   const userId = authData.user.id;
-  
-  // Wait a moment for session to be established
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
+
+  // Wait a moment for session to be established and trigger to run
+  await new Promise(resolve => setTimeout(resolve, 500));
+
   // Ensure session is available
   const { data: { session } } = await supabase.auth.getSession();
   if (!session && authData.session) {
@@ -86,31 +108,47 @@ export const createUserFromCode = async (
     await supabase.auth.setSession(authData.session);
   }
 
-  // Create profile with error handling
-  // NOTE: profiles table does NOT have a role column (migrated to user_roles table)
-  const profileData: any = {
-    id: userId,
-    email: userData.email,
-    name: userData.name,
-    phone: userData.phone || null,
-    company_id: invite.company_id || null,
-    is_active: true
-  };
-
-  const { error: profileError } = await supabase
+  // Check if profile already exists (created by handle_new_user trigger)
+  const { data: existingProfile } = await supabase
     .from('profiles')
-    .insert(profileData);
+    .select('id')
+    .eq('id', userId)
+    .maybeSingle();
 
-  if (profileError) {
-    // If duplicate, try to update instead
-    if (profileError.code === '23505') {
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update(profileData)
-        .eq('id', userId);
-      if (updateError) throw updateError;
-    } else {
+  if (!existingProfile) {
+    // Create profile if it doesn't exist
+    // NOTE: profiles table does NOT have a role column (migrated to user_roles table)
+    const profileData: any = {
+      id: userId,
+      email: userData.email,
+      name: userData.name,
+      phone: userData.phone || null,
+      company_id: invite.company_id || null,
+      is_active: true
+    };
+
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert(profileData);
+
+    if (profileError && profileError.code !== '23505') {
+      // If not a duplicate error, throw
+      console.error('Profile creation error:', profileError);
       throw new Error(`Erro ao criar perfil: ${profileError.message}`);
+    }
+  } else {
+    // Update existing profile with additional data
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({
+        phone: userData.phone || null,
+        company_id: invite.company_id || null
+      })
+      .eq('id', userId);
+
+    if (updateError) {
+      console.error('Profile update error:', updateError);
+      // Don't throw - profile exists, which is good enough
     }
   }
 
@@ -316,28 +354,49 @@ export const createEmployeeUser = async (userId: string, userData: EmployeeUserD
 };
 
 export const createPrestadorUser = async (userId: string, userData: PrestadorUserData) => {
+  // Check if prestador record already exists
+  const { data: existingPrestador } = await supabase
+    .from('prestadores')
+    .select('id')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (existingPrestador) {
+    // Already exists, just return
+    return { userId, type: 'prestador' };
+  }
+
   // Create prestador record
   // NOTE: prestadores table uses pillars (array), not pillar (single)
   // And uses specialization (array), not specialty (single)
+  const prestadorData: any = {
+    user_id: userId,
+    specialty: userData.specialty || null,
+    specialization: userData.specialty ? [userData.specialty] : [],
+    pillars: userData.pillar ? [userData.pillar] : [],
+    bio: userData.bio || null,
+    qualifications: userData.qualifications ? [userData.qualifications] : [],
+    experience_years: userData.experience || 0,
+    cost_per_session: userData.costPerSession || 0,
+    hourly_rate: userData.costPerSession || 0,
+    session_type: userData.sessionType || 'both',
+    availability: userData.availability ? JSON.parse(JSON.stringify(userData.availability)) : {},
+    is_approved: true, // Admin-generated codes are pre-approved
+    is_active: true
+  };
+
   const { error: prestadorError } = await supabase
     .from('prestadores')
-    .insert({
-      user_id: userId,
-      specialty: userData.specialty || null,
-      specialization: userData.specialty ? [userData.specialty] : [],
-      pillars: userData.pillar ? [userData.pillar] : [],
-      bio: userData.bio || null,
-      qualifications: userData.qualifications ? [userData.qualifications] : [],
-      experience_years: userData.experience || 0,
-      cost_per_session: userData.costPerSession || 0,
-      hourly_rate: userData.costPerSession || 0,
-      session_type: userData.sessionType || 'both',
-      availability: userData.availability ? JSON.parse(JSON.stringify(userData.availability)) : {},
-      is_approved: true, // Admin-generated codes are pre-approved
-      is_active: true
-    } as any);
+    .insert(prestadorData);
 
-  if (prestadorError) throw prestadorError;
+  if (prestadorError) {
+    console.error('Prestador creation error:', prestadorError);
+    // Provide more helpful error message
+    if (prestadorError.code === 'PGRST116' || prestadorError.code === '42501') {
+      throw new Error('Erro de permissão ao criar perfil de prestador. Por favor, contacte o suporte.');
+    }
+    throw new Error(`Erro ao criar perfil de prestador: ${prestadorError.message}`);
+  }
 
   return { userId, type: 'prestador' };
 };
