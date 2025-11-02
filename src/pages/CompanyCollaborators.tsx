@@ -45,23 +45,34 @@ const CompanyCollaborators = () => {
           .eq('id', profile.company_id)
           .single();
 
-        if (companyError) throw companyError;
+        if (companyError) {
+          console.error('Company error:', companyError);
+          throw companyError;
+        }
 
+        // Use left join instead of inner join to avoid missing data
         const { data: employees, error: empError } = await supabase
           .from('company_employees')
           .select(`
             *,
-            profiles!inner(name, email, avatar_url)
+            profiles(name, email, avatar_url)
           `)
           .eq('company_id', profile.company_id);
         
+        if (empError) {
+          console.error('Employees error:', empError);
+          throw empError;
+        }
+
         // Get bookings separately
-        const { data: bookings } = await supabase
+        const { data: bookings, error: bookingsError } = await supabase
           .from('bookings')
           .select('id, user_id, status, rating')
           .eq('company_id', profile.company_id);
 
-        if (empError) throw empError;
+        if (bookingsError) {
+          console.error('Bookings error:', bookingsError);
+        }
 
         // Merge bookings with employees
         const enrichedEmployees = employees?.map(emp => ({
@@ -91,6 +102,7 @@ const CompanyCollaborators = () => {
           description: 'Erro ao carregar dados da empresa',
           variant: 'destructive'
         });
+        setCompanyData(null);
       } finally {
         setLoading(false);
       }
