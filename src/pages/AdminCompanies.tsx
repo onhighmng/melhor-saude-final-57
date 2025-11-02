@@ -5,23 +5,39 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Users, Building2, TrendingUp } from 'lucide-react';
+import { Search, Users, Building2, TrendingUp, Edit2, Check, X, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface Company {
   id: string;
   name: string;
+  email: string;
+  employee_seats: number;
   sessions_allocated: number;
   sessions_used: number;
   is_active: boolean;
   plan_type: string;
+  created_at: string;
+}
+
+interface CompanySeatStats {
+  employee_seats: number;
+  active_employees: number;
+  pending_invites: number;
+  total_used_seats: number;
+  available_seats: number;
+  sessions_allocated: number;
+  sessions_used: number;
+  sessions_available: number;
 }
 
 export default function AdminCompanies() {
   const [searchQuery, setSearchQuery] = useState('');
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [companySeatStats, setCompanySeatStats] = useState<Map<string, CompanySeatStats>>(new Map());
   const [loading, setLoading] = useState(true);
+  const [editingCompany, setEditingCompany] = useState<{ id: string; seats: number } | null>(null);
 
   useEffect(() => {
     loadCompanies();
@@ -35,7 +51,25 @@ export default function AdminCompanies() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCompanies(data || []);
+      setCompanies((data || []) as unknown as Company[]);
+
+      // Load seat stats for each company using RPC function
+      const statsMap = new Map<string, CompanySeatStats>();
+      for (const company of data || []) {
+        try {
+          const { data: stats } = await supabase
+            .rpc('get_company_seat_stats' as any, { p_company_id: company.id })
+            .single();
+          
+          if (stats) {
+            statsMap.set(company.id, stats as CompanySeatStats);
+          }
+        } catch (err) {
+          // Continue if one company fails
+          console.error(`Failed to load stats for company ${company.id}:`, err);
+        }
+      }
+      setCompanySeatStats(statsMap);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao carregar empresas';
       toast.error(errorMessage);
@@ -44,13 +78,37 @@ export default function AdminCompanies() {
     }
   };
 
+  const handleUpdateSeats = async (companyId: string, newSeats: number) => {
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .update({ 
+          employee_seats: newSeats,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', companyId);
+
+      if (error) throw error;
+
+      // Reload companies to get fresh data
+      await loadCompanies();
+      
+      toast.success('Limite de lugares atualizado com sucesso');
+      setEditingCompany(null);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar limite';
+      toast.error(errorMessage);
+    }
+  };
+
   const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalCompanies = companies.length;
-  const totalSeats = companies.reduce((sum, c) => sum + c.sessions_allocated, 0);
-  const usedSeats = companies.reduce((sum, c) => sum + c.sessions_used, 0);
+  const totalEmployeeSeats = companies.reduce((sum, c) => sum + (c.employee_seats || 0), 0);
+  const totalActiveEmployees = Array.from(companySeatStats.values()).reduce((sum, stats) => sum + (stats.active_employees || 0), 0);
+  const totalPendingInvites = Array.from(companySeatStats.values()).reduce((sum, stats) => sum + (stats.pending_invites || 0), 0);
   const activeCompanies = companies.filter(c => c.is_active).length;
 
   return (
@@ -72,6 +130,33 @@ export default function AdminCompanies() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalCompanies}</div>
+            <p className="text-xs text-muted-foreground mt-1">{activeCompanies} ativas</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Total de Lugares
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{totalEmployeeSeats}</div>
+            <p className="text-xs text-muted-foreground mt-1">Capacidade total</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Colaboradores Ativos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{totalActiveEmployees}</div>
+            <p className="text-xs text-muted-foreground mt-1">Contas criadas</p>
           </CardContent>
         </Card>
 
@@ -79,35 +164,12 @@ export default function AdminCompanies() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Empresas Ativas
+              Convites Pendentes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{activeCompanies}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Vagas Compradas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalSeats}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Vagas Usadas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{usedSeats}</div>
+            <div className="text-2xl font-bold text-amber-600">{totalPendingInvites}</div>
+            <p className="text-xs text-muted-foreground mt-1">Códigos gerados</p>
           </CardContent>
         </Card>
       </div>
@@ -132,10 +194,11 @@ export default function AdminCompanies() {
             <TableHeader>
               <TableRow>
                 <TableHead>Empresa</TableHead>
-                <TableHead>Plano</TableHead>
-                <TableHead>Vagas Compradas</TableHead>
-                <TableHead>Vagas Usadas</TableHead>
-                <TableHead>Vagas Disponíveis</TableHead>
+                <TableHead>Lugares (Limite)</TableHead>
+                <TableHead>Ativos</TableHead>
+                <TableHead>Pendentes</TableHead>
+                <TableHead>Disponíveis</TableHead>
+                <TableHead>Utilização</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
@@ -143,55 +206,119 @@ export default function AdminCompanies() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filteredCompanies.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     Nenhuma empresa encontrada
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredCompanies.map((company) => {
-                  const available = company.sessions_allocated - company.sessions_used;
-                  const usagePercent = company.sessions_allocated > 0 
-                    ? (company.sessions_used / company.sessions_allocated) * 100 
+                  const stats = companySeatStats.get(company.id);
+                  const usagePercent = stats && stats.employee_seats > 0 
+                    ? Math.round((stats.total_used_seats / stats.employee_seats) * 100)
                     : 0;
+                  const isLowSeats = stats && stats.available_seats <= 5 && stats.available_seats > 0;
+                  const isZeroSeats = stats && stats.available_seats <= 0;
+                  const isEditing = editingCompany?.id === company.id;
                   
                   return (
                     <TableRow key={company.id}>
-                      <TableCell className="font-medium">{company.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{company.plan_type}</Badge>
+                      <TableCell className="font-medium">
+                        <div>
+                          <div className="font-medium">{company.name}</div>
+                          <div className="text-xs text-muted-foreground">{company.email}</div>
+                        </div>
                       </TableCell>
-                      <TableCell>{company.sessions_allocated}</TableCell>
+                      
+                      <TableCell>
+                        {isEditing ? (
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              min="0"
+                              value={editingCompany.seats}
+                              onChange={(e) => setEditingCompany({ ...editingCompany, seats: parseInt(e.target.value) || 0 })}
+                              className="w-20"
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleUpdateSeats(company.id, editingCompany.seats)}
+                            >
+                              <Check className="h-4 w-4 text-green-600" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setEditingCompany(null)}
+                            >
+                              <X className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">{company.employee_seats || 0}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setEditingCompany({ id: company.id, seats: company.employee_seats || 0 })}
+                            >
+                              <Edit2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                      
+                      <TableCell>
+                        <div className="font-medium text-green-600">
+                          {stats?.active_employees || 0}
+                        </div>
+                      </TableCell>
+                      
+                      <TableCell>
+                        <div className="font-medium text-amber-600">
+                          {stats?.pending_invites || 0}
+                        </div>
+                      </TableCell>
+                      
+                      <TableCell>
+                        <div className={`font-medium ${isZeroSeats ? 'text-red-600' : isLowSeats ? 'text-amber-600' : 'text-blue-600'}`}>
+                          {stats?.available_seats || 0}
+                          {isZeroSeats && <AlertCircle className="h-3 w-3 inline ml-1" />}
+                        </div>
+                      </TableCell>
+                      
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {company.sessions_used}
+                          <span className="text-sm font-medium">{usagePercent}%</span>
                           <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-primary transition-all"
-                              style={{ width: `${usagePercent}%` }}
+                              className={`h-full transition-all ${
+                                usagePercent >= 90 ? 'bg-red-500' :
+                                usagePercent >= 70 ? 'bg-amber-500' :
+                                'bg-green-500'
+                              }`}
+                              style={{ width: `${Math.min(usagePercent, 100)}%` }}
                             />
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <span className={available <= 2 ? 'text-destructive font-medium' : ''}>
-                          {available}
-                        </span>
-                      </TableCell>
+                      
                       <TableCell>
                         <Badge variant={company.is_active ? 'secondary' : 'destructive'}>
-                          {company.is_active ? 'Ativo' : 'Inativo'}
+                          {company.is_active ? 'Ativa' : 'Inativa'}
                         </Badge>
                       </TableCell>
+                      
                       <TableCell>
                         <Link to={`/admin/companies/${company.id}`}>
                           <Button variant="outline" size="sm">
-                            Gerir Convites
+                            Detalhes
                           </Button>
                         </Link>
                       </TableCell>

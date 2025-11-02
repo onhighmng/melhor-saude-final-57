@@ -205,12 +205,52 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
         sessionPillar={session?.pillar}
         userName={session?.user_name || ''}
         userId={session?.user_id || ''}
-        onBookingComplete={(prestadorId, date, referralNotes) => {
-          toast({
-            title: 'Encaminhamento Confirmado',
-            description: `Sessão agendada para ${date.toLocaleDateString('pt-PT')} às ${date.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`,
-          });
-          setShowReferralFlow(false);
+        onBookingComplete={async (prestadorId, dateTime, referralNotes) => {
+          try {
+            // Create booking with specialist_referral source
+            const { data: booking, error: bookingError } = await supabase
+              .from('bookings')
+              .insert({
+                user_id: session?.user_id,
+                prestador_id: prestadorId,
+                scheduled_at: dateTime.toISOString(),
+                booking_date: dateTime.toISOString().split('T')[0],
+                start_time: dateTime.toTimeString().split(' ')[0].substring(0, 5),
+                pillar: session?.pillar,
+                status: 'scheduled',
+                booking_source: 'specialist_referral',
+                notes: referralNotes
+              })
+              .select()
+              .single();
+
+            if (bookingError) throw bookingError;
+
+            // Update chat session to mark as resolved and referred
+            if (session?.chat_session_id) {
+              await supabase
+                .from('chat_sessions')
+                .update({
+                  status: 'resolved',
+                  session_booked_by_specialist: prestadorId
+                })
+                .eq('id', session.chat_session_id);
+            }
+
+            toast({
+              title: 'Encaminhamento Confirmado',
+              description: `Sessão agendada para ${dateTime.toLocaleDateString('pt-PT')} às ${dateTime.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`,
+            });
+            setShowReferralFlow(false);
+            onSave(notes, 'escalated'); // Save notes with escalated outcome
+          } catch (error) {
+            logErrorSecurely(error, 'referral_booking_complete');
+            toast({
+              title: 'Erro',
+              description: getGenericErrorMessage('creating'),
+              variant: 'destructive'
+            });
+          }
         }}
       />
 

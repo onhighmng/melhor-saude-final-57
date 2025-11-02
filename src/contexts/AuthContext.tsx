@@ -82,19 +82,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       console.log(`%c[AuthContext] ✅ RPC succeeded in ${rpcTime.toFixed(0)}ms - role: ${role}`, 'color: green; font-weight: bold;');
       
-      // Build profile from auth user + role (NO DATABASE QUERIES)
-      // RPC already handles role mapping (especialista_geral → specialist), so use role directly
+      // Query profiles table to get company_id and other data
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, email, name, company_id, is_active')
+        .eq('id', userId)
+        .single();
+      
+      if (profileError) {
+        console.error('%c[AuthContext] ⚠️ Could not fetch profile data, using fallback', 'color: orange;', profileError);
+      }
+      
+      // Build profile from auth user + role + database profile
       const profile: UserProfile = {
         id: userId,
         user_id: userId,
-        full_name: authUser.user_metadata?.name || authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
+        full_name: profileData?.name || authUser.user_metadata?.name || authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
         email: authUser.email || '',
         role: (role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'specialist',
-        is_active: true,
+        is_active: profileData?.is_active ?? true,
+        company_id: profileData?.company_id || undefined,
         metadata: {},
       };
       
-      console.log('%c[AuthContext] ✅ Profile built:', 'color: green; font-weight: bold;', profile);
+      console.log('%c[AuthContext] ✅ Profile built with company_id:', 'color: green; font-weight: bold;', profile);
       return profile;
     } catch (error) {
       console.error('%c[AuthContext] ❌ Error loading profile:', 'color: red; font-weight: bold;', error);

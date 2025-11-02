@@ -20,6 +20,7 @@ import { Progress } from '@/components/ui/progress';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import { supabase } from '@/integrations/supabase/client';
+import { CompanySubscriptionBanner } from '@/components/company/CompanySubscriptionBanner';
 // Metrics loaded from database
 
 const CompanyDashboard = () => {
@@ -193,6 +194,9 @@ const CompanyDashboard = () => {
               Visão geral do programa de bem-estar e utilização dos serviços
             </p>
           </div>
+
+          {/* Subscription Banner */}
+          <CompanySubscriptionBanner compact={true} />
           
           {/* Bento Grid Layout - Similar to User & Admin Dashboards */}
           <div className="h-[calc(100vh-200px)]">

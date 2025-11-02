@@ -28,7 +28,7 @@ export function FeaturesGrid({
     seatUsagePercent = 0
 }: FeaturesGridProps) {
     return (
-        <section className="py-0 md:py-0 h-screen flex items-center">
+        <section className="py-8 md:py-12">
             <div className="mx-auto w-full px-6 max-w-[95%]">
                 <div className="mx-auto grid gap-2 sm:grid-cols-5">
                     <Card className="group overflow-hidden shadow-black/5 sm:col-span-3 sm:rounded-none sm:rounded-tl-xl hover-lift">
@@ -55,7 +55,10 @@ export function FeaturesGrid({
                                         className="gap-2"
                                     >
                                         <Key className="h-4 w-4" />
-                                        Gerar Código ({codesGenerated}/{seatsAvailable})
+                                        {canGenerateMore 
+                                          ? `Gerar Código (${seatsAvailable} disponíveis)`
+                                          : 'Limite do Plano Atingido'
+                                        }
                                     </Button>
 
                                     {generatedCodes.length > 0 && (
@@ -71,12 +74,14 @@ export function FeaturesGrid({
                                     )}
                                 </div>
 
-                                {codesGenerated >= seatsAvailable && seatsAvailable > 0 && (
-                                    <div className="flex items-start gap-2 p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950/20">
-                                        <XCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                                        <p className="text-sm text-amber-800 dark:text-amber-200">
-                                            Limite de códigos atingido. Já foram gerados {seatsAvailable} códigos disponíveis.
-                                        </p>
+                                {!canGenerateMore && (
+                                    <div className="flex items-start gap-2 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-950/20">
+                                        <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                                        <div className="text-sm text-red-800 dark:text-red-200">
+                                            <p className="font-semibold mb-1">Limite do plano atingido</p>
+                                            <p>O seu plano permite {seatLimit} colaboradores. Todos os lugares estão ocupados (ativos + códigos pendentes).</p>
+                                            <p className="mt-1">💡 Para adicionar mais colaboradores, entre em contato para fazer upgrade do plano.</p>
+                                        </div>
                                     </div>
                                 )}
 

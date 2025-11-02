@@ -599,7 +599,9 @@ export default function AdminCompanyDetail() {
         totalSessions: company?.sessions_allocated || 0,
         usedSessions: company?.sessions_used || 0,
         plan: `${company?.sessions_allocated || 0} sessões`,
-        status: company?.is_active ? 'Ativa' : 'Em Onboarding'
+        status: company?.is_active ? 'Ativa' : 'Em Onboarding',
+        contactEmail: company?.contact_email,
+        contactPhone: company?.contact_phone
       }} />
 
         </div>

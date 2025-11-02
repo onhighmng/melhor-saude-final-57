@@ -45,6 +45,9 @@ const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
 const Register = lazy(() => import("./pages/Register"));
 const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
 const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
+const SetupHRAccount = lazy(() => import("./pages/SetupHRAccount"));
+const CreateMyCompany = lazy(() => import("./pages/CreateMyCompany"));
+const QuickSetup = lazy(() => import("./pages/QuickSetup"));
 // Admin pages
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminUsersManagement = lazy(() => import("./pages/AdminUsersManagement"));
@@ -57,7 +60,9 @@ const AdminReports = lazy(() => import("./pages/AdminReports"));
 const AdminControlCenter = lazy(() => import("./pages/AdminControlCenter"));
 const AdminSupport = lazy(() => import("./pages/AdminSupport"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
+const AdminCompanies = lazy(() => import("./pages/AdminCompanies"));
 const AdminCompanyDetail = lazy(() => import("./pages/AdminCompanyDetail"));
+const AdminPerformanceSupervision = lazy(() => import("./pages/AdminPerformanceSupervision"));
 
 // Specialist pages
 const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboard"));
@@ -141,6 +146,9 @@ const AppWithTracking = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/register/company" element={<RegisterCompany />} />
           <Route path="/register/employee" element={<RegisterEmployee />} />
+          <Route path="/setup-hr" element={<ProtectedRoute><SetupHRAccount /></ProtectedRoute>} />
+          <Route path="/create-company" element={<ProtectedRoute><CreateMyCompany /></ProtectedRoute>} />
+          <Route path="/quick-setup" element={<ProtectedRoute><QuickSetup /></ProtectedRoute>} />
           
           {/* Home page */}
           <Route path="/" element={<Index />} />
@@ -178,6 +186,8 @@ const AppWithTracking = () => {
           <Route path="/admin/provider-calendar/:providerId" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminProviderCalendar /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/operations" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminOperations /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/operacoes" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminOperations /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/companies" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanies /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/empresas" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanies /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/companies/:id" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanyDetail /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/empresas/:id" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminCompanyDetail /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/resources" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminResources /></AdminLayout></ProtectedRoute>} />
@@ -190,6 +200,8 @@ const AppWithTracking = () => {
           <Route path="/admin/suporte" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminSupport /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminSettings /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/configuracoes" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminSettings /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/performance" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminPerformanceSupervision /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/desempenho" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminPerformanceSupervision /></AdminLayout></ProtectedRoute>} />
           
           {/* Especialista Geral routes - PROTECTED */}
           <Route path="/especialista/dashboard" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><SpecialistDashboard /></EspecialistaLayout></ProtectedRoute>} />

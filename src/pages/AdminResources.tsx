@@ -98,6 +98,12 @@ export default function AdminResources() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate required fields
+    if (!formData.title || formData.title.trim() === '') {
+      toast.error('Título é obrigatório');
+      return;
+    }
+
     try {
       let finalUrl = formData.url;
       let finalThumbnailUrl = formData.thumbnail_url;
@@ -129,8 +135,6 @@ export default function AdminResources() {
         }
         setUploadingThumbnail(false);
       }
-
-      const userData = await supabase.auth.getUser();
       
       if (editingResource) {
         const { error } = await supabase
@@ -146,16 +150,26 @@ export default function AdminResources() {
         if (error) throw error;
         toast.success('Recurso atualizado');
       } else {
+        const insertData = {
+          ...formData,
+          url: finalUrl,
+          thumbnail_url: finalThumbnailUrl
+        };
+        
+        console.log('=== INSERTING RESOURCE ===');
+        console.log('Data being sent:', insertData);
+        console.log('resource_type:', insertData.resource_type);
+        console.log('=========================');
+        
         const { error } = await supabase
           .from('resources')
-          .insert({
-            ...formData,
-            url: finalUrl,
-            thumbnail_url: finalThumbnailUrl,
-            created_by: userData.data.user?.id
-          });
+          .insert(insertData);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error saving resource:', error);
+          console.error('Data that failed:', insertData);
+          throw error;
+        }
         toast.success('Recurso criado');
       }
 
@@ -170,11 +184,18 @@ export default function AdminResources() {
 
   const handleEdit = (resource: any) => {
     setEditingResource(resource);
+    
+    // Convert old 'pdf' type to 'guide'
+    let resourceType = resource.resource_type;
+    if (resourceType === 'pdf') {
+      resourceType = 'guide';
+    }
+    
     setFormData({
       title: resource.title,
       description: resource.description || '',
       pillar: resource.pillar,
-      resource_type: resource.resource_type,
+      resource_type: resourceType,
       url: resource.url || '',
       thumbnail_url: resource.thumbnail_url || '',
       is_active: resource.is_active
@@ -218,7 +239,10 @@ export default function AdminResources() {
   const getResourceIcon = (type: string) => {
     switch (type) {
       case 'video': return <Video className="h-4 w-4" />;
-      case 'pdf': return <File className="h-4 w-4" />;
+      case 'guide': return <File className="h-4 w-4" />;
+      case 'worksheet': return <File className="h-4 w-4" />;
+      case 'exercise': return <FileText className="h-4 w-4" />;
+      case 'article': return <FileText className="h-4 w-4" />;
       default: return <FileText className="h-4 w-4" />;
     }
   };
@@ -330,9 +354,11 @@ export default function AdminResources() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="article">Artigo</SelectItem>
-                    <SelectItem value="video">Vídeo</SelectItem>
-                    <SelectItem value="pdf">PDF</SelectItem>
+                    <SelectItem value="article">Artigo (PDF, DOC, DOCX)</SelectItem>
+                    <SelectItem value="video">Vídeo (MP4, MOV, AVI)</SelectItem>
+                    <SelectItem value="guide">Guia (PDF, DOC, DOCX)</SelectItem>
+                    <SelectItem value="exercise">Exercício (PDF, DOC, DOCX)</SelectItem>
+                    <SelectItem value="worksheet">Folha de Trabalho (PDF, DOC, DOCX)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -359,8 +385,11 @@ export default function AdminResources() {
                     }
                   }}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Formatos aceites: PDF, DOC, DOCX (documentos) | MP4, MOV, AVI (vídeos)
+                </p>
                 {resourceFile && (
-                  <p className="text-sm text-green-600">Ficheiro selecionado: {resourceFile.name}</p>
+                  <p className="text-sm text-green-600">✓ Ficheiro selecionado: {resourceFile.name}</p>
                 )}
                 {uploadingResource && (
                   <p className="text-sm text-blue-600">A fazer upload...</p>
@@ -389,8 +418,11 @@ export default function AdminResources() {
                     }
                   }}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Formatos aceites: JPG, PNG, WEBP, GIF (imagens)
+                </p>
                 {thumbnailFile && (
-                  <p className="text-sm text-green-600">Imagem selecionada: {thumbnailFile.name}</p>
+                  <p className="text-sm text-green-600">✓ Imagem selecionada: {thumbnailFile.name}</p>
                 )}
                 {uploadingThumbnail && (
                   <p className="text-sm text-blue-600">A fazer upload...</p>

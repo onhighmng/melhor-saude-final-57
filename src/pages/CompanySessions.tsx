@@ -22,6 +22,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/empty-state';
+import { CompanySubscriptionBanner } from '@/components/company/CompanySubscriptionBanner';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -281,6 +282,14 @@ const CompanySessions = () => {
         <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
           Análise detalhada da utilização de sessões por pilar e especialista
         </p>
+      </div>
+
+      {/* Subscription Banner */}
+      <div className="mb-8">
+        <CompanySubscriptionBanner compact={true} />
+      </div>
+
+      <div>
         <Button 
           onClick={handleExportSessions}
           size="lg"

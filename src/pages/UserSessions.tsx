@@ -61,6 +61,32 @@ export default function UserSessions() {
     setUserGoals(transformed);
   }, [userGoalsData, allBookings]);
   
+  // Auto-trigger rating dialog for recently completed, unrated sessions
+  useEffect(() => {
+    if (!allBookings || allBookings.length === 0) return;
+    
+    // Find recently completed sessions without rating (within last 24 hours)
+    const now = new Date().getTime();
+    const oneDayAgo = now - (24 * 60 * 60 * 1000);
+    
+    const unratedSessions = allBookings.filter(booking => {
+      const bookingTime = new Date(booking.booking_date).getTime();
+      return (
+        booking.status === 'completed' &&
+        !booking.rating &&
+        bookingTime >= oneDayAgo &&
+        bookingTime <= now
+      );
+    });
+    
+    // Trigger rating dialog for the most recent unrated session
+    if (unratedSessions.length > 0 && !selectedSessionForRating) {
+      const mostRecent = unratedSessions[0];
+      setSelectedSessionForRating(mostRecent.id);
+      setShowRatingDialog(true);
+    }
+  }, [allBookings, selectedSessionForRating]);
+  
   // Generate progress emojis based on percentage
   const getProgressEmojis = (percentage: number): string[] => {
     if (percentage < 33) return ['😟', '🙂', '😄'];
@@ -107,6 +133,28 @@ export default function UserSessions() {
   // Get summary stats
   const completedSessionsCount = pastSessions.filter(s => s.status === 'completed').length;
   const futureSessionsCount = futureSessions.length;
+
+  // Auto-trigger rating dialog for recently completed, unrated sessions
+  useEffect(() => {
+    if (bookingsLoading || !sessions.length) return;
+    
+    const now = new Date().getTime();
+    const oneDayAgo = now - (24 * 60 * 60 * 1000);
+    
+    // Find unrated completed sessions from last 24 hours
+    const unratedSessions = sessions.filter(s => {
+      if (s.status !== 'completed' || s.rating) return false;
+      
+      const sessionTime = new Date(s.date).getTime();
+      return sessionTime > oneDayAgo && sessionTime < now;
+    });
+    
+    // Auto-open dialog for first unrated session
+    if (unratedSessions.length > 0 && !selectedSessionForRating) {
+      setSelectedSessionForRating(unratedSessions[0].id);
+      setShowRatingDialog(true);
+    }
+  }, [sessions, bookingsLoading, selectedSessionForRating]);
 
   // Show empty state if no bookings
   if (!bookingsLoading && allBookings.length === 0) {

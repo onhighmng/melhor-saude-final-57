@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight, Building2, User, Target, FileText, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,6 +20,9 @@ interface CompanyFormData {
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  password: string;
+  packageType: 'starter' | 'business' | 'professional' | 'enterprise';
+  employeeSeats: number;
   totalSessions: number;
   acceptTerms: boolean;
   acceptPrivacy: boolean;
@@ -38,8 +42,44 @@ const sectors = [
 const steps = [
   { id: 1, title: 'Dados da Empresa', icon: Building2 },
   { id: 2, title: 'Contacto Principal', icon: User },
-  { id: 3, title: 'Quotas de Sessões', icon: Target },
+  { id: 3, title: 'Pacote e Limites', icon: Target },
   { id: 4, title: 'Consentimento', icon: FileText }
+];
+
+const packageOptions = [
+  { 
+    id: 'starter', 
+    name: 'Starter', 
+    seats: 10, 
+    sessions: 40,
+    description: 'Ideal para pequenas equipas',
+    price: '€99/mês'
+  },
+  { 
+    id: 'business', 
+    name: 'Business', 
+    seats: 50, 
+    sessions: 200,
+    description: 'Para empresas em crescimento',
+    price: '€399/mês',
+    popular: true
+  },
+  { 
+    id: 'professional', 
+    name: 'Professional', 
+    seats: 100, 
+    sessions: 400,
+    description: 'Para organizações maiores',
+    price: '€699/mês'
+  },
+  { 
+    id: 'enterprise', 
+    name: 'Enterprise', 
+    seats: 200, 
+    sessions: 1000,
+    description: 'Solução completa para grandes empresas',
+    price: 'Personalizado'
+  }
 ];
 
 export default function RegisterCompany() {
@@ -52,7 +92,10 @@ export default function RegisterCompany() {
     contactName: '',
     contactEmail: '',
     contactPhone: '',
-    totalSessions: 100,
+    password: '',
+    packageType: 'business',
+    employeeSeats: 50,
+    totalSessions: 200,
     acceptTerms: false,
     acceptPrivacy: false
   });
@@ -85,34 +128,22 @@ export default function RegisterCompany() {
       return;
     }
 
+    if (!formData.password || formData.password.length < 8) {
+      toast({
+        title: "Erro",
+        description: "A password deve ter pelo menos 8 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // Create company
-      // NOTE: Actual schema uses 'name' (not 'company_name') and 'contact_email' (not 'email')
-      // The companies table has: name, contact_email, contact_phone
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .insert({
-          name: formData.companyName, // REQUIRED in actual schema
-          contact_email: formData.contactEmail, // REQUIRED in actual schema
-          contact_phone: formData.contactPhone, // Optional in actual schema
-          sessions_allocated: formData.totalSessions,
-          sessions_used: 0,
-          is_active: false // Needs admin approval
-        } as any)
-        .select()
-        .single();
-
-      if (companyError) throw companyError;
-
-      // Generate random password for HR user
-      const randomPassword = Math.random().toString(36).slice(-12);
-
-      // Create HR user account using regular signUp (admin.createUser requires service role key)
+      // STEP 1: Create HR user account FIRST
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.contactEmail,
-        password: randomPassword,
+        password: formData.password,
         options: {
           data: {
             name: formData.contactName,
@@ -125,75 +156,63 @@ export default function RegisterCompany() {
       if (authError) throw authError;
       if (!authData.user) throw new Error('Falha ao criar utilizador');
 
-      // Create HR profile
-      // NOTE: profiles table uses 'name' column (not 'full_name')
+      // STEP 2: Create company with employee_seats from selected package
+      const { data: company, error: companyError } = await supabase
+        .from('companies')
+        .insert({
+          name: formData.companyName,
+          email: formData.contactEmail,
+          phone: formData.contactPhone,
+          employee_seats: formData.employeeSeats, // ⭐ KEY: Set package limit
+          sessions_allocated: formData.totalSessions,
+          sessions_used: 0,
+          plan_type: formData.packageType,
+          is_active: true // ⭐ Active immediately - no approval needed
+        } as any)
+        .select()
+        .single();
+
+      if (companyError) throw companyError;
+
+      // STEP 3: Create HR profile with company link
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: authData.user.id,
           email: formData.contactEmail,
-          name: formData.contactName, // FIXED: Use 'name' not 'full_name'
+          name: formData.contactName,
           phone: formData.contactPhone,
-          company_id: company.id,
+          role: 'hr', // ⭐ KEY: Set HR role
+          company_id: company.id, // ⭐ KEY: Link to company
           is_active: true
         });
 
-      if (profileError) {
-        // If duplicate, try to update instead
-        if (profileError.code === '23505') {
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ company_id: company.id })
-            .eq('id', authData.user.id);
-          if (updateError) throw updateError;
-        } else {
-          throw profileError;
-        }
+      if (profileError && profileError.code !== '23505') {
+        throw profileError;
       }
 
-      // Create role in user_roles table
-      try {
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: authData.user.id,
-            role: 'hr'
-          } as any);
-        if (roleError && roleError.code !== '23505') {
-          console.error('Role creation error:', roleError);
-          // Don't throw - continue with registration
-        }
-      } catch (error: any) {
-        console.error('Error creating role:', error);
-        // Don't throw - continue with registration
-      }
-
-      // Create company employee link for HR
-      try {
-        const { error: employeeError } = await supabase
-          .from('company_employees')
-          .insert({
-            company_id: company.id,
-            user_id: authData.user.id,
-            sessions_quota: 0, // HR doesn't get individual sessions
-            sessions_used: 0,
-            status: 'active'
-          } as any);
-        if (employeeError && employeeError.code !== '23505') {
-          console.error('Employee record creation error:', employeeError);
-          // Don't throw - profile was created successfully
-        }
-      } catch (error: any) {
-        console.error('Error creating employee record:', error);
-        // Don't throw - continue with registration
-      }
+      // STEP 4: Add HR role to user_roles table
+      await supabase
+        .from('user_roles')
+        .insert({
+          user_id: authData.user.id,
+          role: 'hr'
+        } as any)
+        .then(res => {
+          if (res.error && res.error.code !== '23505') {
+            console.error('Role creation error:', res.error);
+          }
+        });
       
       toast({
-        title: "Empresa registada com sucesso!",
-        description: `Credenciais: Email: ${formData.contactEmail}, Senha: ${randomPassword}`,
+        title: "✅ Empresa registada com sucesso!",
+        description: `Você agora tem ${formData.employeeSeats} lugares para colaboradores. Faça login para começar.`,
       });
 
-      navigate('/login');
+      // Redirect to login
+      setTimeout(() => {
+        navigate('/login?registered=company');
+      }, 2000);
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro. Tente novamente.";
@@ -212,9 +231,9 @@ export default function RegisterCompany() {
       case 1:
         return formData.companyName && formData.sector;
       case 2:
-        return formData.contactName && formData.contactEmail && formData.contactPhone;
+        return formData.contactName && formData.contactEmail && formData.contactPhone && formData.password && formData.password.length >= 8;
       case 3:
-        return formData.totalSessions > 0;
+        return formData.employeeSeats > 0 && formData.totalSessions > 0;
       case 4:
         return formData.acceptTerms && formData.acceptPrivacy;
       default:
@@ -304,6 +323,20 @@ export default function RegisterCompany() {
                 className="h-12"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password *</Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => updateFormData('password', e.target.value)}
+                placeholder="Crie uma password segura"
+                className="h-12"
+                minLength={8}
+              />
+              <p className="text-xs text-gray-500">Mínimo 8 caracteres</p>
+            </div>
           </div>
         );
 
@@ -311,37 +344,43 @@ export default function RegisterCompany() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold mb-2">Definir Quotas de Sessões</h3>
-              <p className="text-gray-600">Quantas sessões mensais pretende disponibilizar para a empresa?</p>
+              <h3 className="text-lg font-semibold mb-2">Escolha o Seu Pacote</h3>
+              <p className="text-gray-600">Selecione o plano que melhor se adequa à sua empresa</p>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="totalSessions">Total de Sessões Mensais</Label>
-                <Input
-                  id="totalSessions"
-                  type="number"
-                  value={formData.totalSessions}
-                  onChange={(e) => updateFormData('totalSessions', parseInt(e.target.value))}
-                  min="1"
-                  max="10000"
-                  className="h-12 text-center text-lg"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                {[50, 100, 250, 500].map((sessions) => (
-                  <Button
-                    key={sessions}
-                    type="button"
-                    variant={formData.totalSessions === sessions ? "default" : "outline"}
-                    onClick={() => updateFormData('totalSessions', sessions)}
-                    className="h-16 text-lg"
-                  >
-                    {sessions} sessões
-                  </Button>
-                ))}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {packageOptions.map((pkg) => (
+                <button
+                  key={pkg.id}
+                  type="button"
+                  onClick={() => {
+                    updateFormData('packageType', pkg.id as any);
+                    updateFormData('employeeSeats', pkg.seats);
+                    updateFormData('totalSessions', pkg.sessions);
+                  }}
+                  className={`relative p-6 border-2 rounded-lg text-left transition-all ${
+                    formData.packageType === pkg.id
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  {pkg.popular && (
+                    <div className="absolute -top-3 right-4">
+                      <Badge className="bg-primary">Popular</Badge>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <h4 className="text-xl font-bold">{pkg.name}</h4>
+                    <p className="text-2xl font-bold text-primary">{pkg.price}</p>
+                    <p className="text-sm text-gray-600">{pkg.description}</p>
+                    <div className="mt-4 pt-4 border-t space-y-1">
+                      <p className="text-sm font-medium">✓ {pkg.seats} Lugares para Colaboradores</p>
+                      <p className="text-sm font-medium">✓ {pkg.sessions} Sessões de Terapia</p>
+                      <p className="text-sm text-gray-500">✓ Todos os 4 Pilares de Bem-Estar</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         );

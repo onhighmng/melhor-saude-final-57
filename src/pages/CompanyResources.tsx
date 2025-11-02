@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CompanySubscriptionBanner } from "@/components/company/CompanySubscriptionBanner";
 // Pillar color mapping
 const getPillarColors = (pillar: string) => {
   const colorMap: Record<string, { bg: string; text: string; border: string; hover: string }> = {
@@ -209,18 +210,23 @@ export default function CompanyResources() {
 
   // Show empty state if no resources
   if (resources.length === 0) {
-    return (
-      <div className="w-full min-h-screen">
-        <div className="max-w-7xl mx-auto px-6 pt-6">
-          <div className="flex items-center gap-4 mb-12">
-            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-              <BookOpen className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold text-foreground">Recursos de Bem-Estar</h1>
-              <p className="text-base text-muted-foreground mt-1">Aceda a guias, vídeos e artigos sobre saúde e bem-estar</p>
-            </div>
+  return (
+    <div className="w-full min-h-screen">
+      <div className="max-w-7xl mx-auto px-6 pt-6">
+        <div className="flex items-center gap-4 mb-12">
+          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+            <BookOpen className="h-6 w-6 text-blue-600" />
           </div>
+          <div>
+            <h1 className="text-4xl font-bold text-foreground">Recursos de Bem-Estar</h1>
+            <p className="text-base text-muted-foreground mt-1">Aceda a guias, vídeos e artigos sobre saúde e bem-estar</p>
+          </div>
+        </div>
+
+        {/* Subscription Banner */}
+        <div className="mb-8">
+          <CompanySubscriptionBanner compact={true} />
+        </div>
           <EmptyState
             icon={BookOpen}
             title="Recursos disponíveis em breve"

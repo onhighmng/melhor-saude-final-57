@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { sanitizeInput } from '@/utils/sanitize';
+import { CompanySubscriptionBanner } from '@/components/company/CompanySubscriptionBanner';
 
 export default function CompanySettings() {
   const { profile } = useAuth();
@@ -74,6 +75,11 @@ export default function CompanySettings() {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Definições da Empresa</h1>
+      
+      {/* Subscription Banner */}
+      <div className="mb-6">
+        <CompanySubscriptionBanner compact={true} />
+      </div>
       
       <Card>
         <CardHeader>
