@@ -275,14 +275,18 @@ export default function AdminCompanyDetail() {
       
       const existingEmails = new Set(existingProfiles?.map(p => p.email) || []);
       
-      // Check available sessions
-      const { data: company } = await supabase
-        .from('companies')
-        .select('sessions_allocated, sessions_used')
-        .eq('id', id)
+      // Check available sessions using RPC function
+      const { data: seatStats, error: seatStatsError } = await supabase
+        .rpc('get_company_seat_stats' as any, { p_company_id: id })
         .single();
+      
+      if (seatStatsError) {
+        console.error('Error loading seat stats:', seatStatsError);
+        throw seatStatsError;
+      }
         
-      const availableSeats = (company?.sessions_allocated || 0) - (company?.sessions_used || 0);
+      const stats = seatStats as any;
+      const availableSeats = stats.sessions_available || 0;
       const newEmployeesCount = csvPreview.filter(e => !existingEmails.has(e.email)).length;
       
       // Block duplicates
@@ -377,7 +381,7 @@ export default function AdminCompanyDetail() {
         await supabase
           .from('companies')
           .update({ 
-            sessions_used: (company?.sessions_used || 0) + createdEmployees.length,
+            sessions_used: (stats.sessions_used || 0) + createdEmployees.length,
             updated_at: new Date().toISOString()
           })
           .eq('id', id);
@@ -640,14 +644,8 @@ export default function AdminCompanyDetail() {
 
                   if (error) throw error;
 
-                  // Deactivate all company employees
-                  await supabase
-                    .from('company_employees')
-                    .update({ 
-                      is_active: false,
-                      updated_at: new Date().toISOString()
-                    })
-                    .eq('company_id', id);
+                  // Note: Employee deactivation is handled at the profile level
+                  // The company_employees records remain but company is marked inactive
 
                   // Log admin action
                   if (profile?.id) {

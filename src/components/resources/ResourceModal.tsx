@@ -42,11 +42,13 @@ export function ResourceModal({ resource, open, onClose, onDownload }: ResourceM
           {resource.type === 'pdf' && (
             <div className="border rounded-lg p-8 text-center">
               <p className="text-muted-foreground mb-4">Pré-visualização do PDF</p>
-              {onDownload && (
+              {onDownload && (resource.file_url || resource.content_url) ? (
                 <Button onClick={() => onDownload(resource)}>
                   <Download className="mr-2 h-4 w-4" />
                   Descarregar PDF
                 </Button>
+              ) : (
+                <p className="text-sm text-muted-foreground">Ficheiro não disponível</p>
               )}
             </div>
           )}

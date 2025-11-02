@@ -55,34 +55,30 @@ const CompanyDashboard = () => {
       }
 
       try {
-        // Load company
-        const { data: company } = await supabase
-          .from('companies')
-          .select('*')
-          .eq('id', profile.company_id)
+        // Get company seat and session stats using RPC function
+        const { data: seatStats, error: seatError } = await supabase
+          .rpc('get_company_seat_stats' as any, { p_company_id: profile.company_id })
           .single();
 
-        if (!company) return;
+        if (seatError) {
+          console.error('Error loading seat stats:', seatError);
+          throw seatError;
+        }
 
-        // Load employees
-        const { data: employees } = await supabase
-          .from('company_employees')
-          .select(`
-            *,
-            profiles (name, email, avatar_url)
-          `)
-          .eq('company_id', profile.company_id);
+        const stats = seatStats as any;
+        const activeEmployees = stats.active_employees || 0;
+        const totalEmployees = activeEmployees + (stats.pending_invites || 0);
+        const sessionsAllocated = stats.sessions_allocated || 0;
+        const sessionsUsed = stats.sessions_used || 0;
 
-        // Load bookings for stats
+        // Load bookings for pillar analysis and ratings
         const { data: bookings } = await supabase
           .from('bookings')
           .select('pillar, status, rating')
           .eq('company_id', profile.company_id);
 
         // Calculate metrics
-        const activeEmployees = employees?.filter(e => e.is_active).length || 0;
         const usedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
-        const totalSessions = company.sessions_allocated || 0;
         const avgRating = bookings?.filter(b => b.rating)
           .reduce((sum, b) => sum + (b.rating || 0), 0) / bookings.filter(b => b.rating).length || 0;
 
@@ -108,9 +104,9 @@ const CompanyDashboard = () => {
         setMetrics({
           avgSatisfaction: avgRating.toFixed(1),
           activeEmployees,
-          totalEmployees: employees?.length || 0,
-          sessionsUsed: usedSessions,
-          sessionsAllocated: totalSessions,
+          totalEmployees,
+          sessionsUsed,
+          sessionsAllocated,
           mostUsedPillar: mostUsedPillar || 'Saúde Mental'
         });
       } catch (error) {
@@ -298,34 +294,34 @@ const CompanyDashboard = () => {
                 onClick={() => navigate('/company/relatorios')}
               >
                 <div className="relative z-30 flex flex-col h-full p-6">
-                  <div className="mb-4">
-                    <h3 className="text-3xl font-semibold text-gray-900 mb-2">Visão Geral de Utilização</h3>
-                    <p className="text-gray-600">Principais métricas de envolvimento dos colaboradores</p>
+                  <div className="mb-3">
+                    <h3 className="text-2xl font-semibold text-gray-900 mb-1">Visão Geral de Utilização</h3>
+                    <p className="text-sm text-gray-600">Principais métricas de envolvimento dos colaboradores</p>
                   </div>
                   
-                  <div className="flex-1 space-y-6">
+                  <div className="flex-1 space-y-3">
                     {/* Active vs Inactive */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                      <div className="flex items-center justify-between mb-3">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 shadow-sm">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <Activity className="h-5 w-5 text-purple-700" />
-                          <span className="font-semibold text-gray-900">Atividade dos Colaboradores</span>
+                          <Activity className="h-4 w-4 text-purple-700" />
+                          <span className="text-sm font-semibold text-gray-900">Atividade dos Colaboradores</span>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="flex items-center gap-2">
-                            <UserCheck className="h-4 w-4 text-green-600" />
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <UserCheck className="h-3 w-3 text-green-600" />
                             <span className="text-gray-700">Ativos</span>
                           </div>
-                          <span className="font-mono text-xl font-semibold text-green-700">
+                          <span className="font-mono text-lg font-semibold text-green-700">
                             {metrics?.activeEmployees && metrics?.totalEmployees ? Math.round((metrics.activeEmployees / metrics.totalEmployees) * 100) : 0}%
                           </span>
                         </div>
-                        <Progress value={metrics?.activeEmployees && metrics?.totalEmployees ? Math.round((metrics.activeEmployees / metrics.totalEmployees) * 100) : 0} className="h-2" />
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="flex items-center gap-2">
-                            <UserX className="h-4 w-4 text-red-600" />
+                        <Progress value={metrics?.activeEmployees && metrics?.totalEmployees ? Math.round((metrics.activeEmployees / metrics.totalEmployees) * 100) : 0} className="h-1.5" />
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <UserX className="h-3 w-3 text-red-600" />
                             <span className="text-gray-700">Inativos</span>
                           </div>
                           <span className="font-bold text-red-700">
@@ -336,50 +332,50 @@ const CompanyDashboard = () => {
                     </div>
 
                     {/* Most Used Pillar */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                      <div className="flex items-center justify-between mb-3">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 shadow-sm">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <PillarIcon className="h-5 w-5 text-purple-700" />
-                          <span className="font-semibold text-gray-900">Pilar Mais Utilizado</span>
+                          <PillarIcon className="h-4 w-4 text-purple-700" />
+                          <span className="text-sm font-semibold text-gray-900">Pilar Mais Utilizado</span>
                         </div>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-lg font-medium text-gray-900">{metrics?.mostUsedPillar || 'N/A'}</span>
-                          <span className="font-mono text-xl font-semibold text-purple-700">{mostUsedPillarPercentage}%</span>
+                          <span className="text-sm font-medium text-gray-900">{metrics?.mostUsedPillar || 'N/A'}</span>
+                          <span className="font-mono text-lg font-semibold text-purple-700">{mostUsedPillarPercentage}%</span>
                         </div>
-                        <Progress value={mostUsedPillarPercentage} className="h-2" />
-                        <p className="text-sm text-gray-600">das sessões totais</p>
+                        <Progress value={mostUsedPillarPercentage} className="h-1.5" />
+                        <p className="text-xs text-gray-600">das sessões totais</p>
                       </div>
                     </div>
 
                     {/* Session Usage */}
-                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
-                      <div className="flex items-center justify-between mb-3">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 shadow-sm">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-5 w-5 text-purple-700" />
-                          <span className="font-semibold text-gray-900">Taxa de Utilização</span>
+                          <Calendar className="h-4 w-4 text-purple-700" />
+                          <span className="text-sm font-semibold text-gray-900">Taxa de Utilização</span>
                         </div>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-700">Sessões utilizadas este mês</span>
-                          <span className="font-mono text-xl font-semibold text-purple-700">
+                          <span className="text-xs text-gray-700">Sessões utilizadas</span>
+                          <span className="font-mono text-lg font-semibold text-purple-700">
                             {(metrics?.sessionsAllocated || 0) > 0 ? Math.round(((metrics?.sessionsUsed || 0) / (metrics?.sessionsAllocated || 1)) * 100) : 0}%
                           </span>
                         </div>
                         <Progress 
                           value={(metrics?.sessionsAllocated || 0) > 0 ? ((metrics?.sessionsUsed || 0) / (metrics?.sessionsAllocated || 1)) * 100 : 0} 
-                          className="h-2" 
+                          className="h-1.5" 
                         />
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs text-gray-600">
                           {metrics?.sessionsUsed || 0} de {metrics?.sessionsAllocated || 0} sessões
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4">
+                  <div className="mt-3">
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();

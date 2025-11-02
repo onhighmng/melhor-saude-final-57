@@ -117,7 +117,7 @@ export default function PrestadorDashboard() {
             companies (company_name)
           `)
           .eq('prestador_id', prestador.id)
-          .order('date', { ascending: true });
+          .order('booking_date', { ascending: true });
 
         if (bookings) {
           setSessions(bookings.map((b) => {
@@ -125,6 +125,7 @@ export default function PrestadorDashboard() {
             const company = Array.isArray(b.companies) ? b.companies[0] : b.companies;
             return {
               ...b,
+              date: b.booking_date || '', // Map booking_date to date
               profiles: profile ? { name: profile.name || '', email: profile.email || '' } : undefined,
               userName: profile?.name || '',
               userEmail: profile?.email || '',
@@ -136,11 +137,11 @@ export default function PrestadorDashboard() {
 
         // Calculate metrics
         const totalSessions = bookings?.length || 0;
-        const todaySessions = bookings?.filter(b => b.date === new Date().toISOString().split('T')[0]).length || 0;
+        const todaySessions = bookings?.filter(b => b.booking_date === new Date().toISOString().split('T')[0]).length || 0;
         const completedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
         const thisWeekStart = new Date();
         thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
-        const weekSessions = bookings?.filter(b => new Date(b.date) >= thisWeekStart).length || 0;
+        const weekSessions = bookings?.filter(b => new Date(b.booking_date || '') >= thisWeekStart).length || 0;
         const uniqueUsers = new Set(bookings?.map(b => b.user_id)).size;
         const avgRating = bookings?.filter(b => b.rating)
           .reduce((sum, b) => sum + (b.rating || 0), 0) / (bookings?.filter(b => b.rating).length || 1);
@@ -291,31 +292,12 @@ export default function PrestadorDashboard() {
   const filteredSessions = getFilteredSessions();
   const groupedSessions = groupSessionsByDate(filteredSessions);
 
-  // Show empty state if no prestador record or no sessions
-  if (!loading && metrics && metrics.totalSessions === 0) {
-    return (
-      <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            Bem-vindo, {prestadorName.split(' ')[0] || profile?.name || 'Prestador'}
-          </h1>
-          <p className="text-muted-foreground">Dashboard de gestão de sessões</p>
-        </div>
-        <EmptyState
-          icon={Activity}
-          title="Nenhuma sessão atribuída ainda"
-          description="Quando os colaboradores agendarem sessões consigo, elas aparecerão aqui. Mantenha o seu calendário atualizado para receber atribuições."
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          Bem-vindo, {prestadorName.split(' ')[0] || profile?.name || 'Prestador'}
+          Bem-vindo, {prestadorName.split(' ')[0] || 'Prestador'}
         </h1>
         <p className="text-muted-foreground mt-1">
           Gerir as suas sessões e disponibilidade

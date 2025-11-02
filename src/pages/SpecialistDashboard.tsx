@@ -40,18 +40,24 @@ export default function SpecialistDashboard() {
   const [filteredSessions, setFilteredSessions] = useState<any[]>([]);
   const [assignedCompanies, setAssignedCompanies] = useState<any[]>([]);
   
-  // Use real data from hooks
-  const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'escalated');
+  // Use real data from hooks - filter by phone_escalated status
+  const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'phone_escalated');
 
-  // Load real sessions
+  // Load real sessions - get bookings assigned to this specialist
   useEffect(() => {
     const loadSessions = async () => {
       if (!profile?.id) return;
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
       const { data } = await supabase
         .from('bookings')
         .select('*, profiles!bookings_user_id_fkey(name)')
-        .eq('booking_source', 'specialist_referral')
-        .order('booking_date', { ascending: false });
+        .eq('prestador_id', profile.id)
+        .gte('booking_date', today.toISOString())
+        .order('booking_date', { ascending: true })
+        .order('start_time', { ascending: true });
       setFilteredSessions(data || []);
     };
     loadSessions();

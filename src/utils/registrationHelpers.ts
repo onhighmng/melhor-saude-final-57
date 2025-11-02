@@ -338,17 +338,31 @@ export const createHRUser = async (userId: string, userData: HRUserData, company
     }
   }
 
-  // Create company employee link
-  // NOTE: company_employees uses sessions_quota, not sessions_allocated
-  // And might not have a role field (role is in user_roles table)
+  // Create company employee link with calculated session allocation
+  // If sessionsAllocated not provided, calculate based on company seats
+  let finalSessionsAllocated = sessionsAllocated;
+  
+  if (!finalSessionsAllocated) {
+    const { data: company } = await supabase
+      .from('companies')
+      .select('sessions_allocated, employee_seats')
+      .eq('id', finalCompanyId)
+      .single();
+    
+    // Calculate sessions per employee: total sessions / employee seats
+    finalSessionsAllocated = company 
+      ? Math.floor(((company as any).sessions_allocated || 0) / ((company as any).employee_seats || 1))
+      : 0;
+  }
+
   const { error: employeeError } = await supabase
     .from('company_employees')
     .insert({
       company_id: finalCompanyId,
       user_id: userId,
-      sessions_quota: sessionsAllocated || 100, // Use sessions from invite or default to 100
+      sessions_allocated: finalSessionsAllocated,
       sessions_used: 0,
-      status: 'active'
+      is_active: true
     } as any);
 
   if (employeeError) throw employeeError;
@@ -357,16 +371,26 @@ export const createHRUser = async (userId: string, userData: HRUserData, company
 };
 
 export const createEmployeeUser = async (userId: string, userData: EmployeeUserData, companyId: string) => {
-  // Create company employee link
-  // NOTE: company_employees uses sessions_quota, not sessions_allocated
+  // Fetch company details to calculate fair share of sessions
+  const { data: company } = await supabase
+    .from('companies')
+    .select('sessions_allocated, employee_seats')
+    .eq('id', companyId)
+    .single();
+  
+  // Calculate sessions per employee: total sessions / employee seats
+  const sessionsPerEmployee = company 
+    ? Math.floor(((company as any).sessions_allocated || 0) / ((company as any).employee_seats || 1))
+    : 0;
+
   const { error: employeeError } = await supabase
     .from('company_employees')
     .insert({
       company_id: companyId,
       user_id: userId,
-      sessions_quota: 10, // Default quota
+      sessions_allocated: sessionsPerEmployee,
       sessions_used: 0,
-      status: 'active'
+      is_active: true
     } as any);
 
   if (employeeError) throw employeeError;

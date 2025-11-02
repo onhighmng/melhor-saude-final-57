@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { SessionModal } from "@/components/sessions/SessionModal";
 import { SessionRatingDialog } from "@/components/sessions/SessionRatingDialog";
 import UserJourneySection from "@/components/ui/user-journey-section";
+import { JourneyProgressBar } from "@/components/progress/JourneyProgressBar";
 import { useBookings } from "@/hooks/useBookings";
 import { useSessionBalance } from "@/hooks/useSessionBalance";
 import { useUserGoals } from "@/hooks/useUserGoals";
@@ -13,7 +14,8 @@ import { emailService } from '@/services/emailService';
 import { CANCELLATION_POLICY_HOURS } from "@/config/constants";
 import { useToast } from '@/hooks/use-toast';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Calendar } from "lucide-react";
+import { Calendar, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function UserSessions() {
   const navigate = useNavigate();
@@ -156,23 +158,7 @@ export default function UserSessions() {
     }
   }, [sessions, bookingsLoading, selectedSessionForRating]);
 
-  // Show empty state if no bookings
-  if (!bookingsLoading && allBookings.length === 0) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">Meu Percurso</h1>
-          <p className="text-muted-foreground">Acompanhe as suas sessões, objetivos e progresso</p>
-        </div>
-        <EmptyState
-          icon={Calendar}
-          title="Ainda não tens sessões agendadas"
-          description="Começa por agendar a tua primeira sessão de bem-estar para iniciar o teu percurso."
-          action={{ label: "Agendar Sessão", onClick: () => navigate('/user/book') }}
-        />
-      </div>
-    );
-  }
+  // Note: Always show journey data even if user has no bookings yet
 
   const handleViewDetails = (sessionId: string) => {
     navigate(`/user/sessions`);
@@ -294,6 +280,22 @@ export default function UserSessions() {
           </div>
         </div>
 
+        {/* Welcome message for new users with no bookings */}
+        {allBookings.length === 0 && (
+          <div className="container mx-auto px-6 mb-6">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl p-8 text-center">
+              <Sparkles className="w-12 h-12 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-foreground mb-2">Bem-vindo ao seu Percurso de Bem-Estar!</h2>
+              <p className="text-muted-foreground mb-6">
+                Comece a sua jornada agendando a primeira sessão. Acompanhe os seus objetivos, progresso e conquiste marcos importantes.
+              </p>
+              <Button onClick={() => navigate('/user/book')} size="lg">
+                Agendar Primeira Sessão
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* User Journey Section */}
         <div className="container mx-auto px-6">
           <UserJourneySection
@@ -312,6 +314,11 @@ export default function UserSessions() {
             onHistoryClick={() => setIsPastSessionsModalOpen(true)}
             onFutureSessionsClick={() => setIsFutureSessionsModalOpen(true)}
           />
+        </div>
+
+        {/* Milestones & Progress Section */}
+        <div className="container mx-auto px-6 mt-8">
+          <JourneyProgressBar onboardingCompleted={profile?.has_completed_onboarding || false} />
         </div>
 
         {/* Session Modals */}

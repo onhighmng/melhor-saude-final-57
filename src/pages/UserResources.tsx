@@ -83,6 +83,31 @@ export default function UserResources() {
   const [viewStartTime, setViewStartTime] = useState<number | null>(null);
   const { user, profile } = useAuth();
 
+  // Mark resources milestone as complete on first visit
+  useEffect(() => {
+    const markResourcesMilestone = async () => {
+      if (!profile?.id) return;
+
+      try {
+        // Update milestone to mark it as complete
+        await supabase
+          .from('user_milestones')
+          .update({ 
+            completed: true, 
+            completed_at: new Date().toISOString(),
+            metadata: { visited_at: new Date().toISOString() }
+          })
+          .eq('user_id', profile.id)
+          .eq('milestone_type', 'resources')
+          .eq('completed', false); // Only update if not already completed
+      } catch (error) {
+        console.error('Error marking resources milestone:', error);
+      }
+    };
+
+    markResourcesMilestone();
+  }, [profile?.id]);
+
   useEffect(() => {
     const loadResources = async () => {
       try {
@@ -175,21 +200,36 @@ export default function UserResources() {
   }, [modalOpen]);
   
   const handleDownload = async (resource: any) => {
-    if (resource.file_url) {
-      window.open(resource.file_url, '_blank');
+    // Check if resource has a downloadable file
+    const downloadUrl = resource.file_url || resource.content_url;
+    
+    if (!downloadUrl) {
+      // Resource doesn't have a file to download
+      if (resource.resource_type === 'article') {
+        toast.error('Este artigo não tem ficheiro para descarregar. Por favor, visualize o conteúdo.');
+      } else if (resource.resource_type === 'video') {
+        toast.error('Este vídeo deve ser visualizado na plataforma.');
+      } else {
+        toast.error('Este recurso não tem ficheiro disponível para descarregar.');
+      }
+      return;
+    }
+
+    try {
+      // Open the file in a new tab
+      window.open(downloadUrl, '_blank');
       
       // Log download
-      try {
-        await supabase.from('resource_access_log').insert({
-          user_id: user?.id,
-          resource_id: resource.id,
-          completed: true
-        });
-      } catch (error) {
-        console.error('Error tracking download:', error);
-      }
+      await supabase.from('resource_access_log').insert({
+        user_id: user?.id,
+        resource_id: resource.id,
+        completed: true
+      });
 
       toast.success(`${resource.title} será descarregado`);
+    } catch (error) {
+      console.error('Error downloading resource:', error);
+      toast.error('Erro ao descarregar recurso. Por favor, tente novamente.');
     }
   };
   const filterByPillar = (pillar: string) => {

@@ -24,6 +24,24 @@ const EspecialistaUserHistory = () => {
       
       setLoading(true);
       try {
+        // Get chat sessions where this specialist actually handled a call
+        const { data: callLogs } = await supabase
+          .from('specialist_call_logs')
+          .select('chat_session_id, user_id, created_at, call_notes')
+          .eq('specialist_id', profile.id)
+          .not('chat_session_id', 'is', null)
+          .order('created_at', { ascending: false });
+
+        if (!callLogs || callLogs.length === 0) {
+          setFilteredUsers([]);
+          setLoading(false);
+          return;
+        }
+
+        // Get unique session IDs
+        const sessionIds = [...new Set(callLogs.map(log => log.chat_session_id).filter(Boolean))];
+
+        // Fetch sessions with user profile and company info in one query
         const { data: sessions } = await supabase
           .from('chat_sessions')
           .select(`
@@ -32,42 +50,50 @@ const EspecialistaUserHistory = () => {
             pillar,
             status,
             created_at,
-            satisfaction_rating
+            satisfaction_rating,
+            profiles!chat_sessions_user_id_fkey(
+              name,
+              email,
+              company_id,
+              companies!profiles_company_id_fkey(company_name)
+            )
           `)
-          .order('created_at', { ascending: false });
+          .in('id', sessionIds);
 
-        // Enrich with user and company data
-        const enrichedSessions = await Promise.all(
-          (sessions || []).map(async (session) => {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('name, email, company_id')
-              .eq('id', session.user_id)
-              .single();
+        // Get chat messages for these sessions
+        const { data: messages } = await supabase
+          .from('chat_messages')
+          .select('session_id, role, content, created_at')
+          .in('session_id', sessionIds)
+          .order('created_at', { ascending: true });
 
-            let companyName = null;
-            if (profile?.company_id) {
-              const { data: company } = await supabase
-                .from('companies')
-                .select('company_name')
-                .eq('id', profile.company_id)
-                .single();
-              companyName = company?.company_name;
-            }
+        // Map to enriched sessions
+        const enrichedSessions = (sessions || []).map((session: any) => {
+          const userProfile = session.profiles;
+          const sessionMessages = messages?.filter(m => m.session_id === session.id) || [];
+          const callLog = callLogs.find(log => log.chat_session_id === session.id);
 
-            return {
-              ...session,
-              user_name: profile?.name || 'Unknown',
-              user_email: profile?.email || 'Unknown',
-              company_name: companyName || 'Unknown',
-              pillar_attended: session.pillar,
-              last_session_date: session.created_at,
-              average_rating: session.satisfaction_rating === 'satisfied' ? 10 : 5,
-              internal_notes: [],
-              chat_history: []
-            };
-          })
-        );
+          return {
+            ...session,
+            user_name: userProfile?.name || 'Utilizador Desconhecido',
+            user_email: userProfile?.email || 'Email não disponível',
+            company_name: userProfile?.companies?.company_name || 'Empresa não disponível',
+            pillar_attended: session.pillar,
+            last_session_date: session.created_at,
+            average_rating: session.satisfaction_rating === 'satisfied' ? 10 : (session.satisfaction_rating === 'unsatisfied' ? 3 : null),
+            internal_notes: callLog?.call_notes ? [{ 
+              id: callLog.chat_session_id, 
+              content: callLog.call_notes,
+              specialist_name: profile.full_name || 'Especialista',
+              created_at: callLog.created_at
+            }] : [],
+            chat_history: sessionMessages.map(m => ({
+              role: m.role,
+              content: m.content,
+              timestamp: m.created_at
+            }))
+          };
+        });
 
         setFilteredUsers(enrichedSessions);
       } catch (error) {
@@ -170,10 +196,14 @@ const EspecialistaUserHistory = () => {
                     {new Date(user.last_session_date).toLocaleDateString('pt-PT')}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                      <span className="font-medium">{user.average_rating}/10</span>
-                    </div>
+                    {user.average_rating ? (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                        <span className="font-medium">{user.average_rating}/10</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Sem avaliação</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="max-w-md">

@@ -31,6 +31,7 @@ const PrestadorSettings = () => {
   const [settings, setSettings] = useState({
     name: '',
     email: '',
+    phone: '',
     pillar: '',
     costPerSession: 0,
     preferredHours: ''
@@ -73,24 +74,13 @@ const PrestadorSettings = () => {
           'legal': 'Assistência Jurídica'
         };
 
-        // Load pricing if prestador exists
-        let pricing = 1500;
-        if (prestadorData?.id) {
-          const { data: pricingData } = await Promise.race([
-            supabase
-              .from('prestador_pricing')
-              .select('session_price')
-              .eq('prestador_id', prestadorData.id)
-              .single(),
-            new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
-          ]).catch(() => ({ data: null }));
-          
-          pricing = pricingData?.session_price || 1500;
-        }
+        // PAYMENT FEATURE DISABLED - Use default pricing value
+        const pricing = 1500;
 
         setSettings({
-          name: profileData?.name || profile?.name || '',
-          email: profileData?.email || profile?.email || '',
+          name: profileData?.name || '',
+          email: profileData?.email || '',
+          phone: profileData?.phone || '',
           pillar: pillarMap[prestadorData?.pillars?.[0]] || 'Saúde Mental',
           costPerSession: pricing,
           preferredHours: '09:00 - 18:00'

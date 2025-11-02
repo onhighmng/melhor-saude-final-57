@@ -52,7 +52,7 @@ const CompanyReportsImpact = () => {
   const loadMetrics = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc('get_company_monthly_metrics', {
+      const { data, error } = await supabase.rpc('get_company_monthly_metrics' as any, {
         p_company_id: profile?.company_id,
         p_start_date: dateRange.start,
         p_end_date: dateRange.end
@@ -60,14 +60,28 @@ const CompanyReportsImpact = () => {
       
       if (error) throw error;
       
-      setMetrics(data);
+      const metricsData = data as any;
+      setMetrics(metricsData);
       
       // Transform pillar breakdown for chart
-      if (data?.pillar_breakdown) {
-        setPillarDistribution(data.pillar_breakdown.map((p: any) => ({
+      if (metricsData?.pillar_breakdown) {
+        const getPillarColor = (pillar: string) => {
+          switch (pillar) {
+            case 'Saúde Mental': return '#3b82f6'; // blue-500
+            case 'Bem-Estar Físico': return '#eab308'; // yellow-500
+            case 'Assistência Financeira': return '#22c55e'; // green-500
+            case 'Assistência Jurídica': return '#a855f7'; // purple-500
+            default: return '#6b7280'; // gray-500
+          }
+        };
+        
+        setPillarDistribution(metricsData.pillar_breakdown.map((p: any) => ({
+          pillar: p.pillar,
           name: p.pillar,
           value: p.sessions,
-          percentage: p.percentage
+          sessions: p.sessions,
+          percentage: p.percentage,
+          color: getPillarColor(p.pillar)
         })));
       } else {
         setPillarDistribution([]);
@@ -183,7 +197,7 @@ const CompanyReportsImpact = () => {
   }
 
   // Show empty state if no sessions or employees
-  if (companyMetrics.totalSessions === 0 && companyMetrics.activeEmployees === 0) {
+  if (metrics?.subscription?.period_sessions_used === 0 && metrics?.employees?.active === 0) {
     return (
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-12">

@@ -347,77 +347,6 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     }
   };
 
-  // Generate Prestador code (platform-wide, no company)
-  const handleGeneratePrestadorCode = async () => {
-    setIsGenerating(true);
-    try {
-      const code = generateAccessCode();
-      const { error } = await supabase
-        .from('invites')
-        .insert({
-          invite_code: code,
-          role: 'prestador',
-          user_type: 'prestador',
-          company_id: null, // Platform-wide
-          status: 'pending',
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-        });
-      
-      if (error) throw error;
-
-      toast({
-        title: 'Código Prestador gerado!',
-        description: `Código: ${code}`,
-        duration: 10000
-      });
-      loadCodes();
-    } catch (error) {
-      console.error('Error generating Prestador code:', error);
-      toast({
-        title: 'Erro',
-        description: error instanceof Error ? error.message : 'Erro ao gerar código Prestador.',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  // Generate Especialista Geral code (platform-wide, no company)
-  const handleGenerateEspecialistaCode = async () => {
-    setIsGenerating(true);
-    try {
-      const code = generateAccessCode();
-      const { error } = await supabase
-        .from('invites')
-        .insert({
-          invite_code: code,
-          role: 'especialista_geral',
-          user_type: 'specialist',
-          company_id: null, // Platform-wide
-          status: 'pending',
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-        });
-      
-      if (error) throw error;
-
-      toast({
-        title: 'Código Especialista gerado!',
-        description: `Código: ${code}`,
-        duration: 10000
-      });
-      loadCodes();
-    } catch (error) {
-      console.error('Error generating Especialista code:', error);
-      toast({
-        title: 'Erro',
-        description: error instanceof Error ? error.message : 'Erro ao gerar código Especialista.',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -528,7 +457,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   };
 
   const getStatusBadge = (code: any) => {
-    if (code.accepted_at) return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
+    if (code.status === 'accepted' || code.accepted_at) return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
     if (code.status === 'revoked') return <Badge className="bg-red-100 text-red-800 border-red-300 font-medium">✕ Revogado</Badge>;
     return <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">✓ Pendente</Badge>;
   };
@@ -551,7 +480,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-semibold">Códigos de Acesso</h2>
-            <p className="text-sm text-muted-foreground">Gere códigos para HR, Prestadores e Especialistas</p>
+            <p className="text-sm text-muted-foreground">Gere códigos para HR</p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -561,25 +490,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Building2 className="h-4 w-4 mr-2" />
-              HR
-            </Button>
-            <Button
-              onClick={handleGeneratePrestadorCode}
-              disabled={isGenerating}
-              size="sm"
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              <User className="h-4 w-4 mr-2" />
-              Prestador
-            </Button>
-            <Button
-              onClick={handleGenerateEspecialistaCode}
-              disabled={isGenerating}
-              size="sm"
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <Shield className="h-4 w-4 mr-2" />
-              Especialista
+              Gerar HR
             </Button>
           </div>
         </div>
@@ -940,7 +851,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   };
 
   const getStatusBadge = (code: any) => {
-    if (code.accepted_at) return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
+    if (code.status === 'accepted' || code.accepted_at) return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
     if (code.status === 'revoked') return <Badge className="bg-red-100 text-red-800 border-red-300 font-medium">✕ Revogado</Badge>;
     return <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">✓ Pendente</Badge>;
   };

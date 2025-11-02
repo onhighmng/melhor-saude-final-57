@@ -68,7 +68,7 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
         .from('bookings')
         .select(`
           id,
-          date,
+          booking_date,
           start_time,
           status,
           pillar,
@@ -77,29 +77,31 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
           companies!bookings_company_id_fkey(company_name)
         `)
         .eq('prestador_id', prestador.id)
-        .gte('date', startDate.toISOString().split('T')[0])
-        .lte('date', endDate.toISOString().split('T')[0])
-        .order('date', { ascending: true })
+        .gte('booking_date', startDate.toISOString().split('T')[0])
+        .lte('booking_date', endDate.toISOString().split('T')[0])
+        .order('booking_date', { ascending: true })
         .order('start_time', { ascending: true });
 
-      const availabilityQuery = supabase
-        .from('prestador_availability')
-        .select('*')
-        .eq('prestador_id', prestador.id);
+      // Fetch prestador data to get blocked_dates
+      const prestadorDataQuery = supabase
+        .from('prestadores')
+        .select('blocked_dates')
+        .eq('id', prestador.id)
+        .single();
 
       // Fetch both in parallel with timeout
-      const [bookingsResult, availabilityResult] = await Promise.allSettled([
+      const [bookingsResult, prestadorDataResult] = await Promise.allSettled([
         Promise.race([bookingsQuery, new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))]),
-        Promise.race([availabilityQuery, new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))])
+        Promise.race([prestadorDataQuery, new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))])
       ]);
 
       const bookings = bookingsResult.status === 'fulfilled' ? bookingsResult.value.data : [];
-      const availability = availabilityResult.status === 'fulfilled' ? availabilityResult.value.data : [];
+      const prestadorData = prestadorDataResult.status === 'fulfilled' ? prestadorDataResult.value.data : null;
 
       // Transform bookings to calendar events
       const bookingEvents: PrestadorCalendarEvent[] = (bookings || []).map((booking: any) => ({
         id: booking.id,
-        date: booking.date,
+        date: booking.booking_date,
         time: booking.start_time || '09:00',
         type: 'session' as const,
         clientName: booking.profiles?.name,
@@ -108,16 +110,28 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
         status: booking.status as 'confirmed' | 'pending' | 'cancelled'
       }));
 
-      // Transform availability to calendar events
-      const availabilityEvents: PrestadorCalendarEvent[] = (availability || []).map((slot: any) => ({
-        id: `availability-${slot.id}`,
-        date: slot.date,
-        time: slot.start_time,
-        type: slot.is_available ? 'available' as const : 'blocked' as const
-      }));
+      // Transform blocked dates from prestadores table to calendar events
+      // Format: [{"date": "2024-01-15", "times": ["10:00", "14:00"]}, ...]
+      const blockedDates = prestadorData?.blocked_dates || [];
+      const blockedEvents: PrestadorCalendarEvent[] = [];
+      
+      if (Array.isArray(blockedDates)) {
+        blockedDates.forEach((blockedSlot: any) => {
+          if (blockedSlot.date && Array.isArray(blockedSlot.times)) {
+            blockedSlot.times.forEach((time: string) => {
+              blockedEvents.push({
+                id: `blocked-${blockedSlot.date}-${time}`,
+                date: blockedSlot.date,
+                time: time,
+                type: 'blocked' as const
+              });
+            });
+          }
+        });
+      }
 
       // Combine and sort events
-      const allEvents = [...bookingEvents, ...availabilityEvents].sort((a, b) => {
+      const allEvents = [...bookingEvents, ...blockedEvents].sort((a, b) => {
         const dateCompare = a.date.localeCompare(b.date);
         if (dateCompare !== 0) return dateCompare;
         return a.time.localeCompare(b.time);

@@ -86,7 +86,17 @@ const EspecialistaStatsRevamped = () => {
         const totalCases = monthlyCases?.length || 0;
         const resolvedCases = monthlyCases?.filter(c => c.status === 'resolved').length || 0;
         const internalResolutionRate = totalCases > 0 ? Math.round((resolvedCases / totalCases) * 100) : 0;
-        const referralRate = totalCases > 0 ? Math.round(((totalCases - resolvedCases) / totalCases) * 100) : 0;
+        
+        // Calculate actual referrals from specialist call logs
+        const { data: referralLogs } = await supabase
+          .from('specialist_call_logs')
+          .select('id')
+          .eq('session_booked', true)
+          .eq('specialist_id', profile.id)
+          .gte('created_at', startOfMonth.toISOString());
+        
+        const actualReferrals = referralLogs?.length || 0;
+        const referralRate = totalCases > 0 ? Math.round((actualReferrals / totalCases) * 100) : 0;
 
         // Get recent feedback from users
         const { data: recentFeedback } = await supabase

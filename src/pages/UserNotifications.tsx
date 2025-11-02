@@ -13,9 +13,13 @@ export default function UserNotifications() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
 
     const fetchNotifications = async () => {
       try {
@@ -25,11 +29,43 @@ export default function UserNotifications() {
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching notifications:', error);
+          setError(error.message);
+          throw error;
+        }
 
-        if (data) setNotifications(data);
-      } catch (error) {
+        if (data) {
+          setNotifications(data);
+          
+          // If user has no notifications, create a welcome notification
+          if (data.length === 0) {
+            const { error: insertError } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: user.id,
+                type: 'system_alert',
+                title: 'Bem-vindo à Plataforma!',
+                message: 'Obrigado por se juntar a nós. Aqui receberá notificações sobre as suas sessões, mensagens e atualizações importantes.',
+                priority: 'normal',
+                is_read: false
+              });
+            
+            if (!insertError) {
+              // Refetch to show the welcome notification
+              const { data: newData } = await supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+              
+              if (newData) setNotifications(newData);
+            }
+          }
+        }
+      } catch (error: any) {
         console.error('Error fetching notifications:', error);
+        setError(error?.message || 'Erro ao carregar notificações');
       } finally {
         setLoading(false);
       }
@@ -118,10 +154,10 @@ export default function UserNotifications() {
         <div>
           <h1 className="text-3xl font-bold">Notificações</h1>
           <p className="text-muted-foreground">
-            {unreadCount > 0 ? `${unreadCount} não lida${unreadCount > 1 ? 's' : ''}` : 'Tudo lido'}
+            {error ? 'Erro ao carregar' : unreadCount > 0 ? `${unreadCount} não lida${unreadCount > 1 ? 's' : ''}` : 'Tudo lido'}
           </p>
         </div>
-        {unreadCount > 0 && (
+        {unreadCount > 0 && !error && (
           <Button onClick={markAllAsRead} variant="outline">
             <Check className="mr-2 h-4 w-4" />
             Marcar todas como lidas
@@ -129,15 +165,29 @@ export default function UserNotifications() {
         )}
       </div>
 
+      {error && (
+        <Card className="border-destructive">
+          <CardContent className="p-6">
+            <p className="text-destructive">Erro: {error}</p>
+            <Button onClick={() => window.location.reload()} className="mt-4" variant="outline">
+              Tentar novamente
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="space-y-4">
-        {notifications.length === 0 ? (
+        {!error && notifications.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
               <Bell className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg text-muted-foreground">Nenhuma notificação</p>
+              <p className="text-lg text-muted-foreground">Nenhuma notificação por enquanto</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Receberá notificações sobre sessões, mensagens e atualizações
+              </p>
             </CardContent>
           </Card>
-        ) : (
+        ) : !error ? (
           notifications.map(notification => (
             <Card key={notification.id} className={notification.is_read ? 'opacity-60' : ''}>
               <CardContent className="p-4">
@@ -183,7 +233,7 @@ export default function UserNotifications() {
               </CardContent>
             </Card>
           ))
-        )}
+        ) : null}
       </div>
     </div>
   );

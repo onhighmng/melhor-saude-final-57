@@ -47,7 +47,7 @@ export default function RegisterEmployee() {
     try {
       const { data: invite, error } = await supabase
         .from('invites')
-        .select('*, companies(company_name)')
+        .select('*, companies(name)')
         .eq('invite_code', code.toUpperCase())
         .single();
       
@@ -58,7 +58,7 @@ export default function RegisterEmployee() {
       } else if (invite.status === 'revoked') {
         setCodeStatus('revoked');
       } else if (invite.status === 'accepted' || invite.status === 'pending') {
-        setCompanyName(invite.companies?.company_name || 'Empresa');
+        setCompanyName((invite.companies as any)?.name || 'Empresa');
         setCodeStatus('valid');
       }
     } catch (err) {
@@ -128,7 +128,7 @@ export default function RegisterEmployee() {
       // Validate invite code one more time
       const { data: invite } = await supabase
         .from('invites')
-        .select('*, companies(id, company_name)')
+        .select('*, companies(id, name)')
         .eq('invite_code', inviteCode.toUpperCase())
         .single();
 
@@ -191,17 +191,28 @@ export default function RegisterEmployee() {
         // Don't throw - continue with registration
       }
 
-      // Create company employee link
-      if (invite.companies?.id) {
-        // NOTE: company_employees uses sessions_quota, not sessions_allocated
+      // Create company employee link with calculated session allocation
+      if ((invite.companies as any)?.id) {
+        // Fetch company details to calculate fair share of sessions
+        const { data: company } = await supabase
+          .from('companies')
+          .select('sessions_allocated, employee_seats')
+          .eq('id', (invite.companies as any).id)
+          .single();
+
+        // Calculate sessions per employee: total sessions / employee seats
+        const sessionsPerEmployee = company 
+          ? Math.floor(((company as any).sessions_allocated || 0) / ((company as any).employee_seats || 1))
+          : 0;
+
         const { error: employeeError } = await supabase
           .from('company_employees')
           .insert({
-            company_id: invite.companies.id,
+            company_id: (invite.companies as any).id,
             user_id: authData.user.id,
-            sessions_quota: 10,
+            sessions_allocated: sessionsPerEmployee,
             sessions_used: 0,
-            status: 'active'
+            is_active: true
           } as any);
 
         if (employeeError) {

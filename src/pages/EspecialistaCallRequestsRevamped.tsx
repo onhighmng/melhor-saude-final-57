@@ -30,13 +30,13 @@ const EspecialistaCallRequestsRevamped = () => {
   const allRequests = filterByCompanyAccess(escalatedChats);
   const requestsToShow = allRequests;
 
-  // Filter by status
+  // Filter by status - use phone_escalated for pending requests
   const pendingRequests = useMemo(() => {
-    return requestsToShow.filter(r => r.status === 'escalated');
+    return requestsToShow.filter(r => r.status === 'phone_escalated');
   }, [requestsToShow]);
 
   const resolvedRequests = useMemo(() => {
-    return requestsToShow.filter(r => r.status === 'resolved' || r.status === 'escalated');
+    return requestsToShow.filter(r => r.status === 'resolved');
   }, [requestsToShow]);
 
   // Sort by wait time (priority)

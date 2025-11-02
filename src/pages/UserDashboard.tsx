@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings, Booking } from '@/hooks/useBookings';
 import { useMilestones } from '@/hooks/useMilestones';
+import { useMilestoneTracker } from '@/hooks/useMilestoneTracker';
 import { ProgressBar } from '@/components/progress/ProgressBar';
 import { JourneyProgressBar } from '@/components/progress/JourneyProgressBar';
 import { SimplifiedOnboarding, OnboardingData } from '@/components/onboarding/SimplifiedOnboarding';
@@ -32,6 +33,7 @@ const UserDashboard = () => {
   const { sessionBalance } = useSessionBalance();
   const { upcomingBookings, allBookings, formatPillarName } = useBookings();
   const { milestones, loading: milestonesLoading, progress, reloadMilestones } = useMilestones();
+  const { celebratingMilestone } = useMilestoneTracker();
   const { toast } = useToast();
   
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null);
@@ -391,23 +393,37 @@ const UserDashboard = () => {
                         </div>
                         
                         <div className="space-y-3 overflow-y-auto pr-2">
-                          {milestones.map((milestone: any) => (
-                            <div key={milestone.id} className={`flex items-center gap-3 p-3.5 rounded-lg border text-sm ${milestone.completed ? 'bg-green-50 border-green-200' : 'bg-white/50 border-gray-200'}`}>
-                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300'}`}>
-                                {milestone.completed && (
-                                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                  </svg>
+                          {milestones.map((milestone: any) => {
+                            const isCelebrating = celebratingMilestone === milestone.milestone_type;
+                            return (
+                              <div 
+                                key={milestone.id} 
+                                className={cn(
+                                  "flex items-center gap-3 p-3.5 rounded-lg border text-sm transition-all duration-500",
+                                  milestone.completed ? 'bg-green-50 border-green-200' : 'bg-white/50 border-gray-200',
+                                  isCelebrating && 'scale-105 shadow-lg ring-2 ring-green-400 ring-opacity-50'
                                 )}
+                              >
+                                <div className={cn(
+                                  "w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-300",
+                                  milestone.completed ? 'border-green-600 bg-green-600' : 'border-gray-300',
+                                  isCelebrating && 'animate-pulse'
+                                )}>
+                                  {milestone.completed && (
+                                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span className={`flex-1 ${milestone.completed ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
+                                  {milestone.label}
+                                </span>
+                                <span className={`text-sm font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
+                                  +{milestone.points}%
+                                </span>
                               </div>
-                              <span className={`flex-1 ${milestone.completed ? 'text-green-700 font-medium' : 'text-gray-700'}`}>
-                                {milestone.label}
-                              </span>
-                              <span className={`text-sm font-semibold ${milestone.completed ? 'text-green-600' : 'text-gray-500'}`}>
-                                +{milestone.points}%
-                              </span>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     </div>

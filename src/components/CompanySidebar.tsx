@@ -27,48 +27,50 @@ import { Badge } from "@/components/ui/badge";
 const CompanySidebar = () => {
   const { open } = useAnimatedSidebar();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, profile } = useAuth();
   const [seatData, setSeatData] = useState({ used: 0, limit: 0 });
 
   useEffect(() => {
     const fetchSeatData = async () => {
-      if (!user?.id) return;
+      if (!profile?.company_id) return;
 
       try {
-        // Get company employee data
-        const { data: employeeData } = await supabase
-          .from('company_employees')
-          .select('company_id')
-          .eq('user_id', user.id)
+        // Use RPC function to get seat statistics
+        const { data: seatStats, error } = await supabase
+          .rpc('get_company_seat_stats' as any, { p_company_id: profile.company_id })
           .single();
 
-        if (employeeData?.company_id) {
-          // Get company data with seat information
-          const { data: companyData } = await supabase
-            .from('companies')
-            .select('sessions_allocated, sessions_used')
-            .eq('id', employeeData.company_id)
-            .single();
+        if (error) {
+          console.error('Error fetching seat stats:', error);
+          return;
+        }
 
-          if (companyData) {
-            setSeatData({
-              used: companyData.sessions_used || 0,
-              limit: companyData.sessions_allocated || 0
-            });
-          }
+        if (seatStats) {
+          const stats = seatStats as any;
+          setSeatData({
+            used: stats.active_employees || 0,
+            limit: stats.employee_seats || 0
+          });
         }
       } catch (error) {
         // Error fetching seat data - silently fail
+        console.error('Error in fetchSeatData:', error);
       }
     };
 
     fetchSeatData();
 
-    // Real-time subscription for seat updates
+    // Real-time subscription for employee and company changes
     const channel = supabase
       .channel('company_seat_changes')
       .on('postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'companies' },
+        { event: '*', schema: 'public', table: 'company_employees', filter: `company_id=eq.${profile?.company_id}` },
+        () => {
+          fetchSeatData();
+        }
+      )
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'companies', filter: `id=eq.${profile?.company_id}` },
         () => {
           fetchSeatData();
         }
@@ -78,7 +80,7 @@ const CompanySidebar = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id]);
+  }, [profile?.company_id]);
 
   const mainLinks = [
     {

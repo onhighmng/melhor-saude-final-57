@@ -67,7 +67,7 @@ const UserSettings = () => {
   }, [user?.id, profile?.company_id]);
 
   const [profileData, setProfileData] = useState({
-    name: profile?.name || "",
+    name: (profile as any)?.name || "",
     phone: profile?.phone || "",
     language: "pt",
     timezone: "Europe/Lisbon"
@@ -123,23 +123,35 @@ const UserSettings = () => {
   const handleSaveProfile = async (profileData: any) => {
     try {
       if (!profile?.id) {
+        console.error('[UserSettings] No profile ID found');
         toast({
           title: 'Erro',
-          description: 'ID de utilizador não encontrado',
+          description: 'ID de utilizador não encontrado. Por favor, faça login novamente.',
           variant: 'destructive'
         });
         return;
       }
-      
-      const { error } = await supabase.from('profiles').update({
-        name: profileData.name,
-        phone: profileData.phone,
-        bio: profileData.bio,
-        avatar_url: profileData.avatar_url,
-        updated_at: new Date().toISOString()
-      }).eq('id', profile.id);
 
-      if (error) throw error;
+      console.log('[UserSettings] Updating profile:', { profileId: profile.id, data: profileData });
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({
+          name: profileData.name,
+          phone: profileData.phone,
+          bio: profileData.bio,
+          avatar_url: profileData.avatar_url,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', profile.id)
+        .select();
+
+      if (error) {
+        console.error('[UserSettings] Update error:', error);
+        throw error;
+      }
+
+      console.log('[UserSettings] Profile updated successfully:', data);
 
       toast({
         title: 'Perfil atualizado',
@@ -149,10 +161,10 @@ const UserSettings = () => {
       // Reload to update context
       setTimeout(() => window.location.reload(), 1000);
     } catch (error: any) {
-      console.error('Error updating profile:', error);
+      console.error('[UserSettings] Error updating profile:', error);
       toast({
-        title: 'Erro',
-        description: error.message || 'Erro ao atualizar perfil',
+        title: 'Erro ao atualizar perfil',
+        description: error?.message || error?.details || 'Erro desconhecido. Por favor, tente novamente.',
         variant: 'destructive'
       });
     }
@@ -161,41 +173,53 @@ const UserSettings = () => {
   const handleSaveNotifications = async (preferences: any) => {
     try {
       if (!profile?.id) {
+        console.error('[UserSettings] No profile ID found for notifications');
         toast({
           title: 'Erro',
-          description: 'ID de utilizador não encontrado',
+          description: 'ID de utilizador não encontrado. Por favor, faça login novamente.',
           variant: 'destructive'
         });
         return;
       }
+
+      console.log('[UserSettings] Updating notification preferences:', preferences);
       
       // Get existing metadata or initialize as empty object
       const existingMetadata = profile.metadata || {};
       
-      const { error } = await supabase.from('profiles').update({
-        metadata: {
-          ...existingMetadata,
-          notifications: {
-            email: preferences.emailConfirmation,
-            push: preferences.pushNotification,
-            reminder24h: preferences.reminder24h,
-            feedback: preferences.feedbackReminder
-          }
-        },
-        updated_at: new Date().toISOString()
-      }).eq('id', profile.id);
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({
+          metadata: {
+            ...existingMetadata,
+            notifications: {
+              email: preferences.emailConfirmation,
+              push: preferences.pushNotification,
+              reminder24h: preferences.reminder24h,
+              feedback: preferences.feedbackReminder
+            }
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', profile.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[UserSettings] Notification preferences update error:', error);
+        throw error;
+      }
+
+      console.log('[UserSettings] Notification preferences updated:', data);
 
       toast({
         title: 'Preferências atualizadas',
         description: 'As suas preferências de notificação foram guardadas.'
       });
     } catch (error: any) {
-      console.error('Error saving notifications:', error);
+      console.error('[UserSettings] Error saving notifications:', error);
       toast({
-        title: 'Erro',
-        description: error.message || 'Erro ao salvar preferências',
+        title: 'Erro ao guardar preferências',
+        description: error?.message || error?.details || 'Erro desconhecido. Por favor, tente novamente.',
         variant: 'destructive'
       });
     }
@@ -215,29 +239,40 @@ const UserSettings = () => {
       // Get existing metadata or initialize as empty object
       const existingMetadata = profile.metadata || {};
       
-      const { error } = await supabase.from('profiles').update({
-        metadata: {
-          ...existingMetadata,
-          consents: {
-            data_processing: consents.dataProcessing,
-            marketing: consents.wellnessCommunications,
-            analytics: consents.anonymousReports
-          }
-        },
-        updated_at: new Date().toISOString()
-      }).eq('id', profile.id);
+      console.log('[UserSettings] Updating consents:', consents);
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({
+          metadata: {
+            ...existingMetadata,
+            consents: {
+              data_processing: consents.dataProcessing,
+              marketing: consents.wellnessCommunications,
+              analytics: consents.anonymousReports
+            }
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', profile.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[UserSettings] Consents update error:', error);
+        throw error;
+      }
+
+      console.log('[UserSettings] Consents updated:', data);
 
       toast({
         title: 'Consentimentos atualizados',
         description: 'Os seus consentimentos foram guardados com sucesso.'
       });
     } catch (error: any) {
-      console.error('Error saving consents:', error);
+      console.error('[UserSettings] Error saving consents:', error);
       toast({
-        title: 'Erro',
-        description: error.message || 'Erro ao salvar consentimentos',
+        title: 'Erro ao guardar consentimentos',
+        description: error?.message || error?.details || 'Erro desconhecido. Por favor, tente novamente.',
         variant: 'destructive'
       });
     }
@@ -411,7 +446,7 @@ const UserSettings = () => {
         <BentoGrid className="lg:grid-rows-2">
           <BentoCard
             name="Perfil"
-            description={profile?.name || "Utilizador"}
+            description={(profile as any)?.name || "Utilizador"}
             Icon={Users}
             href="#"
             cta="Editar"

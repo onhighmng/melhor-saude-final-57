@@ -96,7 +96,7 @@ export default function AdminSpecialistTab() {
           resolution: booking.status === 'completed' ? 'Sessão concluída' 
                       : booking.status === 'confirmed' ? 'Em acompanhamento'
                       : 'Aguarda confirmação',
-          date: booking.date,
+          date: booking.booking_date,
           email: profile?.email,
           phone: profile?.phone,
           priority: booking.notes ? 'Alta' : 'Média',

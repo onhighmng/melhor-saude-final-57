@@ -47,41 +47,40 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
     try {
       setLoading(true);
       
-      // Get prestador_id
-      const { data: prestador } = await supabase
+      // Get prestador data including blocked_dates
+      const { data: prestador, error } = await supabase
         .from('prestadores')
-        .select('id')
+        .select('id, blocked_dates')
         .eq('user_id', profile?.id)
         .single();
 
-      if (!prestador) {
+      if (error || !prestador) {
+        console.error('Error loading prestador:', error);
         setLoading(false);
         return;
       }
 
       setPrestadorId(prestador.id);
 
-      // Load unavailable slots from prestador_schedule (where is_available = false)
-      const { data: scheduleData, error } = await supabase
-        .from('prestador_schedule')
-        .select('id, date, start_time')
-        .eq('prestador_id', prestador.id)
-        .eq('is_available', false)
-        .order('date', { ascending: false });
-
-      if (error) {
-        console.error('Error loading unavailable slots:', error);
-        setLoading(false);
-        return;
+      // Load blocked dates from prestadores.blocked_dates jsonb column
+      // Format: [{"date": "2024-01-15", "times": ["10:00", "14:00"]}, ...]
+      const blockedDates = prestador.blocked_dates || [];
+      const slots: UnavailableSlot[] = [];
+      
+      if (Array.isArray(blockedDates)) {
+        blockedDates.forEach((blockedSlot: any) => {
+          if (blockedSlot.date && Array.isArray(blockedSlot.times)) {
+            blockedSlot.times.forEach((time: string) => {
+              slots.push({
+                id: `${blockedSlot.date}-${time}`,
+                date: new Date(blockedSlot.date),
+                time: time,
+                dbId: `${blockedSlot.date}-${time}` // Mark as existing in DB
+              });
+            });
+          }
+        });
       }
-
-      // Transform database data to component format
-      const slots: UnavailableSlot[] = (scheduleData || []).map(slot => ({
-        id: slot.id,
-        date: new Date(slot.date),
-        time: slot.start_time || '00:00',
-        dbId: slot.id
-      }));
 
       setUnavailableSlots(slots);
     } catch (error) {
@@ -178,31 +177,35 @@ export function AvailabilitySettings({ open, onOpenChange }: AvailabilitySetting
 
     setIsSaving(true);
     try {
-      // First, delete all existing unavailable slots for this prestador
-      await supabase
-        .from('prestador_schedule')
-        .delete()
-        .eq('prestador_id', prestadorId)
-        .eq('is_available', false);
+      // Group slots by date and times
+      // Format: [{"date": "2024-01-15", "times": ["10:00", "14:00"]}, ...]
+      const groupedByDate: Record<string, string[]> = {};
+      
+      unavailableSlots.forEach(slot => {
+        const dateStr = format(slot.date, 'yyyy-MM-dd');
+        if (!groupedByDate[dateStr]) {
+          groupedByDate[dateStr] = [];
+        }
+        if (!groupedByDate[dateStr].includes(slot.time)) {
+          groupedByDate[dateStr].push(slot.time);
+        }
+      });
 
-      // Then, insert new unavailable slots
-      const slotsToInsert = unavailableSlots
-        .filter(slot => !slot.dbId) // Only insert new ones (not already in DB)
-        .map(slot => ({
-          prestador_id: prestadorId,
-          date: format(slot.date, 'yyyy-MM-dd'),
-          start_time: slot.time,
-          end_time: slot.time, // Use same time for now (can be enhanced to support time ranges)
-          is_available: false
-        }));
+      // Convert to array format for jsonb
+      const blockedDatesArray = Object.entries(groupedByDate).map(([date, times]) => ({
+        date,
+        times: times.sort() // Sort times for consistency
+      }));
 
-      if (slotsToInsert.length > 0) {
-        const { error: insertError } = await supabase
-          .from('prestador_schedule')
-          .insert(slotsToInsert);
+      // Update prestadores table with new blocked_dates
+      const { error: updateError } = await supabase
+        .from('prestadores')
+        .update({ 
+          blocked_dates: blockedDatesArray
+        })
+        .eq('id', prestadorId);
 
-        if (insertError) throw insertError;
-      }
+      if (updateError) throw updateError;
 
       toast({
         title: "Indisponibilidade guardada",

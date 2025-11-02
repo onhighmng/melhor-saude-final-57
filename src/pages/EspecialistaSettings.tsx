@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,13 +20,26 @@ const EspecialistaSettings = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false);
   
-  // Profile data
+  // Profile data - update when profile changes
   const [profileData, setProfileData] = useState({
-    name: profile?.name || '',
+    name: profile?.full_name || '',
     email: profile?.email || '',
     phone: profile?.phone || '',
     avatar_url: profile?.avatar_url || ''
   });
+
+  // Update profile data when profile context changes
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        name: profile.full_name || '',
+        email: profile.email || '',
+        phone: profile.phone || '',
+        avatar_url: profile.avatar_url || ''
+      });
+      setAvatarPreview(profile.avatar_url || '');
+    }
+  }, [profile]);
 
   // Notification preferences
   const [notificationSettings, setNotificationSettings] = useState({
@@ -103,9 +116,6 @@ const EspecialistaSettings = () => {
       // Clear avatar file after successful upload
       setAvatarFile(null);
       setIsProfileModalOpen(false);
-      
-      // Reload page to refresh auth context
-      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Não foi possível guardar as alterações.';
       console.error('Error saving profile:', error);
@@ -172,7 +182,7 @@ const EspecialistaSettings = () => {
         <BentoGrid className="h-full grid-cols-2" style={{ gridAutoRows: '1fr', gridTemplateColumns: '1fr 1fr' }}>
           <BentoCard
             name="Perfil"
-            description={profile?.name || "Especialista"}
+            description={profile?.full_name || "Especialista"}
             Icon={User}
             href="#"
             cta="Editar"

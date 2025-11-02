@@ -18,31 +18,32 @@ export const useCompanyMetrics = (companyId?: string) => {
       setError(null);
 
       try {
-        // Get company data
-        const { data: company, error: companyError } = await supabase
-          .from('companies')
-          .select('sessions_allocated, sessions_used')
-          .eq('id', companyId)
+        // Get company seat and session stats using RPC function
+        const { data: seatStats, error: seatError } = await supabase
+          .rpc('get_company_seat_stats' as any, { p_company_id: companyId })
           .single();
 
-        if (companyError) throw companyError;
+        if (seatError) throw seatError;
 
-        // Get employee count
+        const stats = seatStats as any;
+        const activeEmployees = stats.active_employees || 0;
+        const totalEmployees = activeEmployees + (stats.pending_invites || 0);
+        const sessionsAllocated = stats.sessions_allocated || 0;
+        const sessionsUsed = stats.sessions_used || 0;
+
+        // Get employee IDs for booking queries
         const { data: employees, error: employeesError } = await supabase
           .from('company_employees')
-          .select('id, is_active')
+          .select('user_id')
           .eq('company_id', companyId);
 
         if (employeesError) throw employeesError;
 
-        const activeEmployees = employees?.filter(e => e.is_active).length || 0;
-        const totalEmployees = employees?.length || 0;
-
-        // Get session data
+        // Get session data for employees of this company
         const { data: bookings, error: bookingsError } = await supabase
           .from('bookings')
-          .select('status, pillar')
-          .in('user_id', employees?.map(e => e.id) || []);
+          .select('status, pillar, rating')
+          .eq('company_id', companyId);
 
         if (bookingsError) throw bookingsError;
 
@@ -67,9 +68,9 @@ export const useCompanyMetrics = (companyId?: string) => {
         const mostUsedPillar = Object.entries(pillarCounts)
           .sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
 
-        // Calculate utilization
-        const utilizationRate = company.sessions_allocated > 0
-          ? Math.round((company.sessions_used / company.sessions_allocated) * 100)
+        // Calculate utilization using data from RPC
+        const utilizationRate = sessionsAllocated > 0
+          ? Math.round((sessionsUsed / sessionsAllocated) * 100)
           : 0;
 
         setMetrics({
@@ -77,11 +78,11 @@ export const useCompanyMetrics = (companyId?: string) => {
           totalSessions,
           avgSatisfaction: Math.round(avgSatisfaction * 10) / 10,
           utilizationRate,
-          totalEmployeesInPlan: company.sessions_allocated || 0,
+          totalEmployeesInPlan: stats.employee_seats || 0,
           registeredEmployees: activeEmployees,
-          unregisteredEmployees: (company.sessions_allocated || 0) - activeEmployees,
-          contractedSessions: company.sessions_allocated || 0,
-          usedSessions: company.sessions_used || 0,
+          unregisteredEmployees: (stats.employee_seats || 0) - activeEmployees,
+          contractedSessions: sessionsAllocated,
+          usedSessions: sessionsUsed,
           mostUsedPillar,
           activePercentage: Math.round((activeEmployees / totalEmployees) * 100) || 0,
           inactivePercentage: Math.round(((totalEmployees - activeEmployees) / totalEmployees) * 100) || 0

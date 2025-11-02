@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Filter, FileText } from 'lucide-react';
+import { Search, Filter, FileText, ClipboardList } from 'lucide-react';
 import { LiveIndicator } from '@/components/ui/live-indicator';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -59,8 +59,8 @@ export default function AdminSessionsTab() {
         const { data, error} = await supabase
           .from('bookings')
           .select('*')
-          .gte('date', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
-          .order('date', { ascending: false });
+          .order('booking_date', { ascending: false })
+          .limit(100);
 
         if (error) throw error;
 
@@ -76,7 +76,7 @@ export default function AdminSessionsTab() {
             // Get company
             const { data: company } = await supabase
               .from('companies')
-              .select('company_name')
+              .select('name')
               .eq('id', booking.company_id)
               .maybeSingle();
             
@@ -90,13 +90,14 @@ export default function AdminSessionsTab() {
             return {
               id: booking.id,
               collaborator: userProfile?.name || '',
-              company: company?.company_name || '',
+              company: company?.name || '',
               pillar: booking.pillar,
               specialist: prestador?.name || '',
-              date: booking.date,
+              date: booking.booking_date,
               time: booking.start_time,
               status: booking.status,
-              rating: booking.rating
+              rating: booking.rating,
+              type: booking.meeting_type || 'online'
             };
           }));
 
@@ -242,7 +243,6 @@ export default function AdminSessionsTab() {
                       description={statusFilter !== 'all' || pillarFilter !== 'all' || companyFilter !== 'all' || searchTerm
                         ? "Não foram encontradas sessões com os filtros aplicados"
                         : "Ainda não existem sessões registadas"}
-                      variant="compact"
                     />
                   </TableCell>
                 </TableRow>

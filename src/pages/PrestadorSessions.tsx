@@ -34,7 +34,7 @@ import { ProviderSessionManagementModal } from '@/components/sessions/ProviderSe
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
-import { EmptyState } from '@/components/ui/empty-state';
+import { getMeetingLinkEmail } from '@/utils/emailTemplates';
 
 export default function PrestadorSessions() {
   const { toast } = useToast();
@@ -71,13 +71,13 @@ export default function PrestadorSessions() {
             companies (company_name)
           `)
           .eq('prestador_id', prestador.id)
-          .order('date', { ascending: false });
+          .order('booking_date', { ascending: false });
 
         if (bookings) {
           setSessions(bookings.map((b: any) => ({
             id: b.id,
             clientName: (b.profiles as any)?.name || 'Utilizador',
-            date: b.date,
+            date: b.booking_date,
             time: b.start_time || '00:00',
             pillar: b.pillar === 'saude_mental' ? 'Saúde Mental' : 
                    b.pillar === 'bem_estar_fisico' ? 'Bem-Estar Físico' :
@@ -211,14 +211,81 @@ export default function PrestadorSessions() {
     setShowManagementModal(true);
   };
 
-  const handleUpdateMeetingLink = (sessionId: string, link: string) => {
-    setSessions(prev => prev.map(s => 
-      s.id === sessionId ? { ...s, meetingLink: link } : s
-    ));
-    toast({
-      title: "Link atualizado",
-      description: "O link da reunião foi atualizado com sucesso."
-    });
+  const handleUpdateMeetingLink = async (sessionId: string, link: string) => {
+    try {
+      // Update database first
+      const { error: updateError } = await supabase
+        .from('bookings')
+        .update({ meeting_link: link })
+        .eq('id', sessionId);
+
+      if (updateError) throw updateError;
+
+      // Get booking details to send notification
+      const { data: booking, error: bookingError } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          profiles!bookings_user_id_fkey(name, email),
+          prestadores!bookings_prestador_id_fkey(
+            profiles!prestadores_user_id_fkey(name)
+          )
+        `)
+        .eq('id', sessionId)
+        .single();
+
+      if (bookingError) {
+        console.error('Error fetching booking details:', bookingError);
+      }
+
+      // Update local state
+      setSessions(prev => prev.map(s => 
+        s.id === sessionId ? { ...s, meetingLink: link } : s
+      ));
+
+      // Send notification to user
+      if (booking && booking.profiles?.email) {
+        await supabase.from('notifications').insert({
+          user_id: booking.user_id,
+          type: 'meeting_link_added',
+          title: 'Link de Reunião Disponível',
+          message: `O link da sua sessão de ${booking.pillar} foi adicionado e está disponível.`,
+          related_booking_id: sessionId,
+          priority: 'high'
+        });
+
+        // Send email notification (async, no need to await)
+        supabase.functions.invoke('send-booking-email', {
+          body: {
+            to: booking.profiles.email,
+            subject: 'Link da Sua Sessão Disponível',
+            html: getMeetingLinkEmail({
+              userName: booking.profiles.name || 'Utilizador',
+              providerName: booking.prestadores?.profiles?.name || 'Prestador',
+              date: booking.booking_date || new Date().toISOString(),
+              time: booking.start_time || '00:00',
+              pillar: booking.pillar,
+              meetingLink: link,
+              meetingType: booking.meeting_type || 'virtual'
+            }),
+            type: 'booking_update',
+            booking_id: sessionId
+          }
+        }).catch(err => console.error('Error sending email:', err));
+      }
+
+      toast({
+        title: "Link atualizado",
+        description: "O link da reunião foi atualizado e o utilizador foi notificado."
+      });
+    } catch (error: any) {
+      console.error('Error updating meeting link:', error);
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao atualizar link da reunião",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleRescheduleSession = (sessionId: string) => {
@@ -268,23 +335,6 @@ export default function PrestadorSessions() {
       description: "Lista de sessões foi exportada com sucesso"
     });
   };
-
-  // Show empty state if no sessions
-  if (!loading && sessions.length === 0) {
-    return (
-      <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Sessões</h1>
-          <p className="text-muted-foreground">Gerir e acompanhar as suas sessões com colaboradores</p>
-        </div>
-        <EmptyState
-          icon={Calendar}
-          title="Nenhuma sessão atribuída ainda"
-          description="Quando os colaboradores agendarem sessões consigo, elas aparecerão aqui. Certifique-se de que o seu perfil está ativo e disponível."
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
