@@ -15,6 +15,7 @@ interface UserProfile {
   bio?: string;
   metadata?: Record<string, unknown>;
   is_active: boolean;
+  has_completed_onboarding?: boolean;
 }
 
 interface AuthContextType {
@@ -85,7 +86,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Query profiles table to get company_id and other data
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('id, email, name, company_id, is_active')
+        .select('id, email, name, company_id, is_active, has_completed_onboarding')
         .eq('id', userId)
         .single();
       
@@ -102,6 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         role: (role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'specialist',
         is_active: profileData?.is_active ?? true,
         company_id: profileData?.company_id || undefined,
+        has_completed_onboarding: profileData?.has_completed_onboarding ?? false,
         metadata: {},
       };
       

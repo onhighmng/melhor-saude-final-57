@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare, BookOpen, Bell, Brain, Heart, DollarSign, Scale } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -37,35 +37,29 @@ const UserDashboard = () => {
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
-
-  // Check onboarding status from database
-  useEffect(() => {
-    const checkOnboardingStatus = async () => {
-      if (!profile?.id || profile.role !== 'user') {
-        setCheckingOnboarding(false);
-        return;
-      }
-
-      try {
-        // Check has_completed_onboarding flag in profiles
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('has_completed_onboarding')
-          .eq('id', profile.id)
-          .single();
-
-        const hasCompleted = profileData?.has_completed_onboarding || false;
-        setShowOnboarding(!hasCompleted);
-        setCheckingOnboarding(false);
-      } catch (error) {
-        console.error('Error checking onboarding status:', error);
-        setCheckingOnboarding(false);
-      }
-    };
-
-    checkOnboardingStatus();
-  }, [profile?.id, profile?.role]);
+  const hasCheckedOnboarding = useRef(false); // Track if we've checked onboarding to prevent re-checks
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
+
+  // Check onboarding status ONCE on mount from profile context
+  useEffect(() => {
+    // Only check once when profile is loaded and we haven't checked before
+    if (!profile?.id || profile.role !== 'user' || hasCheckedOnboarding.current) {
+      if (hasCheckedOnboarding.current) {
+        setCheckingOnboarding(false);
+      }
+      return;
+    }
+
+    // Mark as checked immediately to prevent duplicate checks
+    hasCheckedOnboarding.current = true;
+    
+    // Check the has_completed_onboarding flag from profile (already loaded by AuthContext)
+    const hasCompleted = profile.has_completed_onboarding ?? false;
+    console.log(`[UserDashboard] Onboarding status for ${profile.id}: ${hasCompleted ? 'completed' : 'not completed'}`);
+    
+    setShowOnboarding(!hasCompleted);
+    setCheckingOnboarding(false);
+  }, [profile?.id, profile?.role, profile?.has_completed_onboarding]);
   
   // Session modal state
   const [selectedSession, setSelectedSession] = useState<Booking | null>(null);
@@ -81,6 +75,12 @@ const UserDashboard = () => {
     setOnboardingData(data);
     setShowOnboarding(false);
     setJustCompletedOnboarding(true);
+    
+    // Update the profile in context to reflect onboarding completion
+    // This prevents onboarding from showing again if the component re-renders
+    if (profile) {
+      profile.has_completed_onboarding = true;
+    }
     
     // Reload milestones to get the updated data from database
     await reloadMilestones();

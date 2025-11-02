@@ -20,9 +20,10 @@ const EspecialistaStatsRevamped = () => {
         startOfMonth.setDate(1);
         startOfMonth.setHours(0, 0, 0, 0);
 
+        // Get current month cases
         const { data: monthlyCases } = await supabase
           .from('chat_sessions')
-          .select('id, satisfaction_rating, pillar, status')
+          .select('id, satisfaction_rating, pillar, status, created_at')
           .gte('created_at', startOfMonth.toISOString());
 
         const { data: callLogs } = await supabase
@@ -49,18 +50,56 @@ const EspecialistaStatsRevamped = () => {
           return acc;
         }, {}) || {};
 
-        // Mock evolution data (replace with real historical data later)
-        const evolutionData = [
-          { month: 'Jan', cases: 45 },
-          { month: 'Fev', cases: 52 },
-          { month: 'Mar', cases: 61 },
-          { month: 'Abr', cases: monthlyCases?.length || 0 }
-        ];
+        // Get historical data for the last 6 months
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+        
+        const { data: historicalCases } = await supabase
+          .from('chat_sessions')
+          .select('created_at')
+          .gte('created_at', sixMonthsAgo.toISOString())
+          .order('created_at', { ascending: true });
+
+        // Group cases by month
+        const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const monthlyCaseCounts: { [key: string]: number } = {};
+        
+        historicalCases?.forEach(caseItem => {
+          const date = new Date(caseItem.created_at);
+          const monthYear = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+          monthlyCaseCounts[monthYear] = (monthlyCaseCounts[monthYear] || 0) + 1;
+        });
+
+        // Get last 4 months for display
+        const evolutionData = [];
+        for (let i = 3; i >= 0; i--) {
+          const date = new Date();
+          date.setMonth(date.getMonth() - i);
+          const monthYear = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+          const shortMonth = monthNames[date.getMonth()];
+          evolutionData.push({
+            month: shortMonth,
+            cases: monthlyCaseCounts[monthYear] || 0
+          });
+        }
 
         const totalCases = monthlyCases?.length || 0;
         const resolvedCases = monthlyCases?.filter(c => c.status === 'resolved').length || 0;
         const internalResolutionRate = totalCases > 0 ? Math.round((resolvedCases / totalCases) * 100) : 0;
         const referralRate = totalCases > 0 ? Math.round(((totalCases - resolvedCases) / totalCases) * 100) : 0;
+
+        // Get recent feedback from users
+        const { data: recentFeedback } = await supabase
+          .from('feedback')
+          .select(`
+            rating,
+            message,
+            created_at,
+            profiles!feedback_user_id_fkey(name)
+          `)
+          .not('rating', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(3);
 
         setStats({
           total_cases: totalCases,
@@ -70,7 +109,8 @@ const EspecialistaStatsRevamped = () => {
           top_pillars: Object.entries(pillarCounts).map(([pillar, count]) => ({ pillar, count })),
           evolution_data: evolutionData,
           internal_resolution_rate: internalResolutionRate,
-          referral_rate: referralRate
+          referral_rate: referralRate,
+          recent_feedback: recentFeedback || []
         });
       } catch (error) {
         console.error('Error calculating stats:', error);
@@ -251,26 +291,32 @@ const EspecialistaStatsRevamped = () => {
           cta=""
         >
           <div className="p-6 space-y-3">
-            {[
-              { user: 'Ana Silva', rating: 9, comment: 'Excelente atendimento, muito profissional e atencioso.' },
-              { user: 'Carlos Santos', rating: 8, comment: 'Ajudou-me bastante, recomendo!' },
-              { user: 'Maria Costa', rating: 10, comment: 'Perfeito! Resolveu o meu problema rapidamente.' }
-            ].map((feedback, index) => (
-              <Card key={index} className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-medium text-sm">{feedback.user}</span>
-                      <div className="flex items-center gap-1">
-                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-semibold">{feedback.rating}/10</span>
+            {stats.recent_feedback && stats.recent_feedback.length > 0 ? (
+              stats.recent_feedback.map((feedback: any, index: number) => (
+                <Card key={index} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium text-sm">
+                          {feedback.profiles?.name || 'Utilizador Anónimo'}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          <span className="text-sm font-semibold">{feedback.rating}/10</span>
+                        </div>
                       </div>
+                      {feedback.message && (
+                        <p className="text-xs text-muted-foreground italic">"{feedback.message}"</p>
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground italic">"{feedback.comment}"</p>
                   </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-32 text-muted-foreground">
+                <p className="text-sm">Ainda não há feedback disponível</p>
+              </div>
+            )}
           </div>
         </BentoCard>
       </BentoGrid>
