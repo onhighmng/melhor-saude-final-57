@@ -202,7 +202,7 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       await supabase.from('profiles').insert({
         id: authData.user.id,
         email: data.email,
-        name: data.fullName,
+        full_name: data.fullName,
         company_id: company.id
       });
 

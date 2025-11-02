@@ -204,7 +204,7 @@ const AdminProviderNew = () => {
         .insert({
           id: authData.user.id,
           email: formData.email,
-          name: formData.name,
+          full_name: formData.name,
           bio: formData.bio,
           metadata: {
             languages: formData.languages,

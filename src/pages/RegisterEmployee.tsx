@@ -155,7 +155,7 @@ export default function RegisterEmployee() {
         .insert({
           id: authData.user.id,
           email,
-          name: email.split('@')[0],
+          full_name: email.split('@')[0],
           company_id: invite.companies?.id || null,
           is_active: true
         });

@@ -136,23 +136,9 @@ BEGIN
           );
         END IF;
         
-        -- If there's a company, create specialist assignment
-        IF NEW.company_id IS NOT NULL THEN
-          INSERT INTO specialist_assignments (
-            specialist_id,
-            company_id,
-            assigned_by,
-            pillars,
-            is_active
-          ) VALUES (
-            v_user_id,
-            NEW.company_id,
-            NEW.invited_by,
-            ARRAY['saude_mental', 'bem_estar_fisico', 'assistencia_financeira', 'assistencia_juridica'],
-            true
-          )
-          ON CONFLICT DO NOTHING;
-        END IF;
+        -- NOTE: Specialists are PLATFORM-WIDE, not company-specific
+        -- They serve ALL users across ALL companies
+        -- Do NOT create specialist_assignments (that's for manual admin assignments only)
       END IF;
       
     END IF;
@@ -200,7 +186,7 @@ BEGIN
     i.user_type,
     i.role,
     i.company_id,
-    c.company_name,
+    c.name as company_name,  -- Fixed: companies table uses 'name', not 'company_name'
     i.expires_at,
     i.status,
     i.metadata

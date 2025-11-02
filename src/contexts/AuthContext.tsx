@@ -5,7 +5,7 @@ import type { User, Session } from '@supabase/supabase-js';
 interface UserProfile {
   id: string;
   user_id: string;
-  name: string;
+  full_name: string;
   email: string;
   role: 'admin' | 'user' | 'hr' | 'prestador' | 'specialist' | 'especialista_geral';
   company?: string;
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const profile: UserProfile = {
         id: userId,
         user_id: userId,
-        name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
+        full_name: authUser.user_metadata?.name || authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
         email: authUser.email || '',
         role: (role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'specialist',
         is_active: true,
@@ -406,7 +406,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 const fallbackProfile: UserProfile = {
                   id: session.user.id,
                   user_id: session.user.id,
-                  name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                  full_name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
                   email: session.user.email || '',
                   role: 'user',
                   is_active: true,

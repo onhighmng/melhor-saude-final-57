@@ -20,8 +20,7 @@ export type Database = {
           admin_id: string
           created_at: string | null
           details: Json | null
-          entity_id: string | null
-          entity_type: string
+          entity_type: string | null
           id: string
           ip_address: string | null
           user_agent: string | null
@@ -31,8 +30,7 @@ export type Database = {
           admin_id: string
           created_at?: string | null
           details?: Json | null
-          entity_id?: string | null
-          entity_type: string
+          entity_type?: string | null
           id?: string
           ip_address?: string | null
           user_agent?: string | null
@@ -42,17 +40,24 @@ export type Database = {
           admin_id?: string
           created_at?: string | null
           details?: Json | null
-          entity_id?: string | null
-          entity_type?: string
+          entity_type?: string | null
           id?: string
           ip_address?: string | null
           user_agent?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "admin_logs_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bookings: {
         Row: {
-          booking_date: string
+          booking_date: string | null
           booking_source: string | null
           cancellation_reason: string | null
           cancelled_at: string | null
@@ -60,11 +65,10 @@ export type Database = {
           chat_session_id: string | null
           company_id: string | null
           created_at: string | null
-          date: string | null
           end_time: string | null
+          feedback: string | null
           id: string
           meeting_link: string | null
-          meeting_platform: string | null
           meeting_type: string | null
           notes: string | null
           pillar: string | null
@@ -75,15 +79,16 @@ export type Database = {
           rating: number | null
           rescheduled_at: string | null
           rescheduled_from: string | null
+          scheduled_at: string
           session_type: string | null
           start_time: string | null
           status: string | null
           topic: string | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
-          booking_date: string
+          booking_date?: string | null
           booking_source?: string | null
           cancellation_reason?: string | null
           cancelled_at?: string | null
@@ -91,11 +96,10 @@ export type Database = {
           chat_session_id?: string | null
           company_id?: string | null
           created_at?: string | null
-          date?: string | null
           end_time?: string | null
+          feedback?: string | null
           id?: string
           meeting_link?: string | null
-          meeting_platform?: string | null
           meeting_type?: string | null
           notes?: string | null
           pillar?: string | null
@@ -106,15 +110,16 @@ export type Database = {
           rating?: number | null
           rescheduled_at?: string | null
           rescheduled_from?: string | null
+          scheduled_at: string
           session_type?: string | null
           start_time?: string | null
           status?: string | null
           topic?: string | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
-          booking_date?: string
+          booking_date?: string | null
           booking_source?: string | null
           cancellation_reason?: string | null
           cancelled_at?: string | null
@@ -122,11 +127,10 @@ export type Database = {
           chat_session_id?: string | null
           company_id?: string | null
           created_at?: string | null
-          date?: string | null
           end_time?: string | null
+          feedback?: string | null
           id?: string
           meeting_link?: string | null
-          meeting_platform?: string | null
           meeting_type?: string | null
           notes?: string | null
           pillar?: string | null
@@ -137,12 +141,13 @@ export type Database = {
           rating?: number | null
           rescheduled_at?: string | null
           rescheduled_from?: string | null
+          scheduled_at?: string
           session_type?: string | null
           start_time?: string | null
           status?: string | null
           topic?: string | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -173,6 +178,13 @@ export type Database = {
             referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       change_requests: {
@@ -180,7 +192,7 @@ export type Database = {
           created_at: string | null
           current_data: Json | null
           id: string
-          prestador_id: string
+          prestador_id: string | null
           reason: string | null
           request_type: string
           requested_data: Json
@@ -194,7 +206,7 @@ export type Database = {
           created_at?: string | null
           current_data?: Json | null
           id?: string
-          prestador_id: string
+          prestador_id?: string | null
           reason?: string | null
           request_type: string
           requested_data: Json
@@ -208,7 +220,7 @@ export type Database = {
           created_at?: string | null
           current_data?: Json | null
           id?: string
-          prestador_id?: string
+          prestador_id?: string | null
           reason?: string | null
           request_type?: string
           requested_data?: Json
@@ -226,6 +238,13 @@ export type Database = {
             referencedRelation: "prestadores"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "change_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       chat_messages: {
@@ -234,7 +253,9 @@ export type Database = {
           created_at: string | null
           id: string
           metadata: Json | null
-          role: string
+          role: string | null
+          sender_id: string | null
+          sender_role: string | null
           session_id: string | null
         }
         Insert: {
@@ -242,7 +263,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           metadata?: Json | null
-          role: string
+          role?: string | null
+          sender_id?: string | null
+          sender_role?: string | null
           session_id?: string | null
         }
         Update: {
@@ -250,7 +273,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           metadata?: Json | null
-          role?: string
+          role?: string | null
+          sender_id?: string | null
+          sender_role?: string | null
           session_id?: string | null
         }
         Relationships: [
@@ -272,9 +297,12 @@ export type Database = {
           phone_contact_made: boolean | null
           phone_escalation_reason: string | null
           pillar: string | null
+          provider_id: string | null
           satisfaction_rating: string | null
           session_booked_by_specialist: string | null
           status: string | null
+          title: string | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
@@ -285,9 +313,12 @@ export type Database = {
           phone_contact_made?: boolean | null
           phone_escalation_reason?: string | null
           pillar?: string | null
+          provider_id?: string | null
           satisfaction_rating?: string | null
           session_booked_by_specialist?: string | null
           status?: string | null
+          title?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
@@ -298,48 +329,77 @@ export type Database = {
           phone_contact_made?: boolean | null
           phone_escalation_reason?: string | null
           pillar?: string | null
+          provider_id?: string | null
           satisfaction_rating?: string | null
           session_booked_by_specialist?: string | null
           status?: string | null
+          title?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chat_sessions_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       companies: {
         Row: {
-          company_name: string
-          contact_email: string
+          address: string | null
+          contact_email: string | null
           contact_phone: string | null
           created_at: string | null
+          email: string
           final_notes: string | null
           id: string
+          industry: string | null
           is_active: boolean | null
+          logo_url: string | null
+          name: string
+          nuit: string | null
+          phone: string | null
           plan_type: string | null
           sessions_allocated: number | null
           sessions_used: number | null
           updated_at: string | null
         }
         Insert: {
-          company_name: string
-          contact_email: string
+          address?: string | null
+          contact_email?: string | null
           contact_phone?: string | null
           created_at?: string | null
+          email: string
           final_notes?: string | null
           id?: string
+          industry?: string | null
           is_active?: boolean | null
+          logo_url?: string | null
+          name: string
+          nuit?: string | null
+          phone?: string | null
           plan_type?: string | null
           sessions_allocated?: number | null
           sessions_used?: number | null
           updated_at?: string | null
         }
         Update: {
-          company_name?: string
-          contact_email?: string
+          address?: string | null
+          contact_email?: string | null
           contact_phone?: string | null
           created_at?: string | null
+          email?: string
           final_notes?: string | null
           id?: string
+          industry?: string | null
           is_active?: boolean | null
+          logo_url?: string | null
+          name?: string
+          nuit?: string | null
+          phone?: string | null
           plan_type?: string | null
           sessions_allocated?: number | null
           sessions_used?: number | null
@@ -349,37 +409,28 @@ export type Database = {
       }
       company_employees: {
         Row: {
-          company_id: string
-          created_at: string | null
+          company_id: string | null
           id: string
-          is_active: boolean | null
           joined_at: string | null
           sessions_allocated: number | null
           sessions_used: number | null
-          updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
-          company_id: string
-          created_at?: string | null
+          company_id?: string | null
           id?: string
-          is_active?: boolean | null
           joined_at?: string | null
           sessions_allocated?: number | null
           sessions_used?: number | null
-          updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
-          company_id?: string
-          created_at?: string | null
+          company_id?: string | null
           id?: string
-          is_active?: boolean | null
           joined_at?: string | null
           sessions_allocated?: number | null
           sessions_used?: number | null
-          updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -393,43 +444,22 @@ export type Database = {
       }
       company_organizations: {
         Row: {
-          company_name: string
-          contact_email: string | null
-          contact_phone: string | null
           created_at: string | null
-          final_notes: string | null
+          domain: string | null
           id: string
-          is_active: boolean | null
-          plan_type: string | null
-          sessions_allocated: number | null
-          sessions_used: number | null
-          updated_at: string | null
+          name: string
         }
         Insert: {
-          company_name: string
-          contact_email?: string | null
-          contact_phone?: string | null
           created_at?: string | null
-          final_notes?: string | null
+          domain?: string | null
           id?: string
-          is_active?: boolean | null
-          plan_type?: string | null
-          sessions_allocated?: number | null
-          sessions_used?: number | null
-          updated_at?: string | null
+          name: string
         }
         Update: {
-          company_name?: string
-          contact_email?: string | null
-          contact_phone?: string | null
           created_at?: string | null
-          final_notes?: string | null
+          domain?: string | null
           id?: string
-          is_active?: boolean | null
-          plan_type?: string | null
-          sessions_allocated?: number | null
-          sessions_used?: number | null
-          updated_at?: string | null
+          name?: string
         }
         Relationships: []
       }
@@ -467,70 +497,84 @@ export type Database = {
       }
       feedback: {
         Row: {
-          category: string | null
           comment: string | null
           created_at: string | null
           id: string
           rating: number | null
-          user_id: string
+          session_id: string | null
+          user_id: string | null
         }
         Insert: {
-          category?: string | null
           comment?: string | null
           created_at?: string | null
           id?: string
           rating?: number | null
-          user_id: string
+          session_id?: string | null
+          user_id?: string | null
         }
         Update: {
-          category?: string | null
           comment?: string | null
           created_at?: string | null
           id?: string
           rating?: number | null
-          user_id?: string
+          session_id?: string | null
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "feedback_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invites: {
         Row: {
           accepted_at: string | null
-          company_id: string
+          company_id: string | null
           created_at: string | null
-          email: string
+          email: string | null
           expires_at: string | null
           id: string
           invite_code: string
           invited_by: string | null
+          role: string | null
           sent_at: string | null
           sessions_allocated: number | null
-          status: string | null
+          status: string
+          user_type: string | null
         }
         Insert: {
           accepted_at?: string | null
-          company_id: string
+          company_id?: string | null
           created_at?: string | null
-          email: string
+          email?: string | null
           expires_at?: string | null
           id?: string
           invite_code: string
           invited_by?: string | null
+          role?: string | null
           sent_at?: string | null
           sessions_allocated?: number | null
-          status?: string | null
+          status?: string
+          user_type?: string | null
         }
         Update: {
           accepted_at?: string | null
-          company_id?: string
+          company_id?: string | null
           created_at?: string | null
-          email?: string
+          email?: string | null
           expires_at?: string | null
           id?: string
           invite_code?: string
           invited_by?: string | null
+          role?: string | null
           sent_at?: string | null
           sessions_allocated?: number | null
-          status?: string | null
+          status?: string
+          user_type?: string | null
         }
         Relationships: [
           {
@@ -540,82 +584,11 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      invoices: {
-        Row: {
-          amount_due: number
-          amount_paid: number | null
-          company_id: string
-          created_at: string | null
-          currency: string | null
-          due_date: string
-          id: string
-          invoice_date: string
-          invoice_number: string
-          notes: string | null
-          paid_at: string | null
-          pdf_url: string | null
-          status: string | null
-          stripe_invoice_id: string | null
-          subscription_id: string | null
-          tax_amount: number | null
-          total_amount: number
-          updated_at: string | null
-        }
-        Insert: {
-          amount_due: number
-          amount_paid?: number | null
-          company_id: string
-          created_at?: string | null
-          currency?: string | null
-          due_date: string
-          id?: string
-          invoice_date: string
-          invoice_number: string
-          notes?: string | null
-          paid_at?: string | null
-          pdf_url?: string | null
-          status?: string | null
-          stripe_invoice_id?: string | null
-          subscription_id?: string | null
-          tax_amount?: number | null
-          total_amount: number
-          updated_at?: string | null
-        }
-        Update: {
-          amount_due?: number
-          amount_paid?: number | null
-          company_id?: string
-          created_at?: string | null
-          currency?: string | null
-          due_date?: string
-          id?: string
-          invoice_date?: string
-          invoice_number?: string
-          notes?: string | null
-          paid_at?: string | null
-          pdf_url?: string | null
-          status?: string | null
-          stripe_invoice_id?: string | null
-          subscription_id?: string | null
-          tax_amount?: number | null
-          total_amount?: number
-          updated_at?: string | null
-        }
-        Relationships: [
           {
-            foreignKeyName: "invoices_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "invites_invited_by_fkey"
+            columns: ["invited_by"]
             isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "invoices_subscription_id_fkey"
-            columns: ["subscription_id"]
-            isOneToOne: false
-            referencedRelation: "subscriptions"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -630,9 +603,9 @@ export type Database = {
           priority: string | null
           read_at: string | null
           related_booking_id: string | null
-          title: string
-          type: string
-          user_id: string
+          title: string | null
+          type: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -643,9 +616,9 @@ export type Database = {
           priority?: string | null
           read_at?: string | null
           related_booking_id?: string | null
-          title: string
-          type: string
-          user_id: string
+          title?: string | null
+          type?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -656,9 +629,9 @@ export type Database = {
           priority?: string | null
           read_at?: string | null
           related_booking_id?: string | null
-          title?: string
-          type?: string
-          user_id?: string
+          title?: string | null
+          type?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -683,7 +656,7 @@ export type Database = {
           preferred_session_time: string | null
           referral_source: string | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
           work_stress_level: number | null
         }
         Insert: {
@@ -698,7 +671,7 @@ export type Database = {
           preferred_session_time?: string | null
           referral_source?: string | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
           work_stress_level?: number | null
         }
         Update: {
@@ -713,270 +686,69 @@ export type Database = {
           preferred_session_time?: string | null
           referral_source?: string | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
           work_stress_level?: number | null
         }
         Relationships: []
-      }
-      platform_settings: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          is_public: boolean | null
-          setting_key: string
-          setting_type: string | null
-          setting_value: Json
-          updated_at: string | null
-          updated_by: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_public?: boolean | null
-          setting_key: string
-          setting_type?: string | null
-          setting_value: Json
-          updated_at?: string | null
-          updated_by?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_public?: boolean | null
-          setting_key?: string
-          setting_type?: string | null
-          setting_value?: Json
-          updated_at?: string | null
-          updated_by?: string | null
-        }
-        Relationships: []
-      }
-      prestador_availability: {
-        Row: {
-          created_at: string | null
-          day_of_week: number
-          end_time: string
-          id: string
-          is_recurring: boolean | null
-          prestador_id: string
-          start_time: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          day_of_week: number
-          end_time: string
-          id?: string
-          is_recurring?: boolean | null
-          prestador_id: string
-          start_time: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          day_of_week?: number
-          end_time?: string
-          id?: string
-          is_recurring?: boolean | null
-          prestador_id?: string
-          start_time?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prestador_availability_prestador_id_fkey"
-            columns: ["prestador_id"]
-            isOneToOne: false
-            referencedRelation: "prestadores"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      prestador_performance: {
-        Row: {
-          avg_rating: number | null
-          cancelled_sessions: number | null
-          completed_sessions: number | null
-          created_at: string | null
-          id: string
-          month: string
-          no_show_sessions: number | null
-          prestador_id: string
-          total_hours: number | null
-          total_revenue: number | null
-          total_sessions: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          avg_rating?: number | null
-          cancelled_sessions?: number | null
-          completed_sessions?: number | null
-          created_at?: string | null
-          id?: string
-          month: string
-          no_show_sessions?: number | null
-          prestador_id: string
-          total_hours?: number | null
-          total_revenue?: number | null
-          total_sessions?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          avg_rating?: number | null
-          cancelled_sessions?: number | null
-          completed_sessions?: number | null
-          created_at?: string | null
-          id?: string
-          month?: string
-          no_show_sessions?: number | null
-          prestador_id?: string
-          total_hours?: number | null
-          total_revenue?: number | null
-          total_sessions?: number | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prestador_performance_prestador_id_fkey"
-            columns: ["prestador_id"]
-            isOneToOne: false
-            referencedRelation: "prestadores"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      prestador_pricing: {
-        Row: {
-          created_at: string | null
-          currency: string
-          id: string
-          platform_commission_rate: number
-          prestador_id: string
-          session_price: number
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          currency?: string
-          id?: string
-          platform_commission_rate?: number
-          prestador_id: string
-          session_price?: number
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          currency?: string
-          id?: string
-          platform_commission_rate?: number
-          prestador_id?: string
-          session_price?: number
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prestador_pricing_prestador_id_fkey"
-            columns: ["prestador_id"]
-            isOneToOne: true
-            referencedRelation: "prestadores"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      prestador_schedule: {
-        Row: {
-          created_at: string | null
-          day_of_week: number
-          end_time: string
-          id: string
-          is_available: boolean | null
-          prestador_id: string
-          start_time: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          day_of_week: number
-          end_time: string
-          id?: string
-          is_available?: boolean | null
-          prestador_id: string
-          start_time: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          day_of_week?: number
-          end_time?: string
-          id?: string
-          is_available?: boolean | null
-          prestador_id?: string
-          start_time?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prestador_schedule_prestador_id_fkey"
-            columns: ["prestador_id"]
-            isOneToOne: false
-            referencedRelation: "prestadores"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       prestadores: {
         Row: {
           biography: string | null
           created_at: string | null
-          email: string
+          email: string | null
           id: string
           is_active: boolean | null
           languages: string[] | null
-          name: string
+          name: string | null
           photo_url: string | null
           pillar_specialties: string[] | null
           session_duration: number | null
           specialties: string[] | null
-          updated_at: string | null
+          specialty: string | null
           user_id: string | null
           video_url: string | null
         }
         Insert: {
           biography?: string | null
           created_at?: string | null
-          email: string
+          email?: string | null
           id?: string
           is_active?: boolean | null
           languages?: string[] | null
-          name: string
+          name?: string | null
           photo_url?: string | null
           pillar_specialties?: string[] | null
           session_duration?: number | null
           specialties?: string[] | null
-          updated_at?: string | null
+          specialty?: string | null
           user_id?: string | null
           video_url?: string | null
         }
         Update: {
           biography?: string | null
           created_at?: string | null
-          email?: string
+          email?: string | null
           id?: string
           is_active?: boolean | null
           languages?: string[] | null
-          name?: string
+          name?: string | null
           photo_url?: string | null
           pillar_specialties?: string[] | null
           session_duration?: number | null
           specialties?: string[] | null
-          updated_at?: string | null
+          specialty?: string | null
           user_id?: string | null
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "prestadores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -987,6 +759,7 @@ export type Database = {
           created_at: string | null
           department: string | null
           email: string | null
+          has_completed_onboarding: boolean | null
           id: string
           is_active: boolean | null
           metadata: Json | null
@@ -1003,6 +776,7 @@ export type Database = {
           created_at?: string | null
           department?: string | null
           email?: string | null
+          has_completed_onboarding?: boolean | null
           id: string
           is_active?: boolean | null
           metadata?: Json | null
@@ -1019,6 +793,7 @@ export type Database = {
           created_at?: string | null
           department?: string | null
           email?: string | null
+          has_completed_onboarding?: boolean | null
           id?: string
           is_active?: boolean | null
           metadata?: Json | null
@@ -1027,15 +802,7 @@ export type Database = {
           role?: string | null
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       psychological_tests: {
         Row: {
@@ -1076,147 +843,13 @@ export type Database = {
         }
         Relationships: []
       }
-      resource_access_log: {
-        Row: {
-          access_type: string | null
-          company_id: string | null
-          created_at: string | null
-          device_type: string | null
-          duration_seconds: number | null
-          id: string
-          ip_address: string | null
-          resource_id: string
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          access_type?: string | null
-          company_id?: string | null
-          created_at?: string | null
-          device_type?: string | null
-          duration_seconds?: number | null
-          id?: string
-          ip_address?: string | null
-          resource_id: string
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          access_type?: string | null
-          company_id?: string | null
-          created_at?: string | null
-          device_type?: string | null
-          duration_seconds?: number | null
-          id?: string
-          ip_address?: string | null
-          resource_id?: string
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "resource_access_log_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "resource_access_log_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "resources"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      resource_recommendations: {
-        Row: {
-          confidence_score: number
-          created_at: string
-          id: string
-          reason: string
-          recommended_by: string | null
-          resource_id: string
-          sent_at: string | null
-          status: string
-          updated_at: string
-          user_id: string
-          viewed_at: string | null
-        }
-        Insert: {
-          confidence_score: number
-          created_at?: string
-          id?: string
-          reason: string
-          recommended_by?: string | null
-          resource_id: string
-          sent_at?: string | null
-          status?: string
-          updated_at?: string
-          user_id: string
-          viewed_at?: string | null
-        }
-        Update: {
-          confidence_score?: number
-          created_at?: string
-          id?: string
-          reason?: string
-          recommended_by?: string | null
-          resource_id?: string
-          sent_at?: string | null
-          status?: string
-          updated_at?: string
-          user_id?: string
-          viewed_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "resource_recommendations_recommended_by_fkey"
-            columns: ["recommended_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "resource_recommendations_recommended_by_fkey"
-            columns: ["recommended_by"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "resource_recommendations_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "resources"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "resource_recommendations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "resource_recommendations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       resources: {
         Row: {
           content: string | null
           created_at: string | null
-          created_by: string | null
           description: string | null
           id: string
           is_active: boolean | null
-          is_featured: boolean | null
           pillar: string | null
           resource_type: string | null
           thumbnail_url: string | null
@@ -1227,11 +860,9 @@ export type Database = {
         Insert: {
           content?: string | null
           created_at?: string | null
-          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
-          is_featured?: boolean | null
           pillar?: string | null
           resource_type?: string | null
           thumbnail_url?: string | null
@@ -1242,11 +873,9 @@ export type Database = {
         Update: {
           content?: string | null
           created_at?: string | null
-          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
-          is_featured?: boolean | null
           pillar?: string | null
           resource_type?: string | null
           thumbnail_url?: string | null
@@ -1308,34 +937,42 @@ export type Database = {
           updated_at?: string | null
           view_count?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "self_help_content_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       session_notes: {
         Row: {
-          booking_id: string
+          booking_id: string | null
           created_at: string | null
           id: string
           is_private: boolean | null
           notes: string
-          prestador_id: string
+          prestador_id: string | null
           updated_at: string | null
         }
         Insert: {
-          booking_id: string
+          booking_id?: string | null
           created_at?: string | null
           id?: string
           is_private?: boolean | null
           notes: string
-          prestador_id: string
+          prestador_id?: string | null
           updated_at?: string | null
         }
         Update: {
-          booking_id?: string
+          booking_id?: string | null
           created_at?: string | null
           id?: string
           is_private?: boolean | null
           notes?: string
-          prestador_id?: string
+          prestador_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -1355,143 +992,72 @@ export type Database = {
           },
         ]
       }
-      session_recordings: {
+      specialist_analytics: {
         Row: {
-          booking_id: string
+          ai_resolved: number | null
           created_at: string | null
-          deleted_at: string | null
-          duration_minutes: number | null
-          encryption_key_id: string | null
-          expires_at: string | null
-          file_size_mb: number | null
+          date: string
           id: string
-          is_encrypted: boolean | null
-          prestador_id: string
-          recording_url: string | null
-          transcription_url: string | null
-          user_id: string
+          phone_escalated: number | null
+          pillar: string | null
+          satisfied_users: number | null
+          sessions_booked: number | null
+          total_chats: number | null
+          unsatisfied_users: number | null
         }
         Insert: {
-          booking_id: string
+          ai_resolved?: number | null
           created_at?: string | null
-          deleted_at?: string | null
-          duration_minutes?: number | null
-          encryption_key_id?: string | null
-          expires_at?: string | null
-          file_size_mb?: number | null
+          date: string
           id?: string
-          is_encrypted?: boolean | null
-          prestador_id: string
-          recording_url?: string | null
-          transcription_url?: string | null
-          user_id: string
+          phone_escalated?: number | null
+          pillar?: string | null
+          satisfied_users?: number | null
+          sessions_booked?: number | null
+          total_chats?: number | null
+          unsatisfied_users?: number | null
         }
         Update: {
-          booking_id?: string
+          ai_resolved?: number | null
           created_at?: string | null
-          deleted_at?: string | null
-          duration_minutes?: number | null
-          encryption_key_id?: string | null
-          expires_at?: string | null
-          file_size_mb?: number | null
+          date?: string
           id?: string
-          is_encrypted?: boolean | null
-          prestador_id?: string
-          recording_url?: string | null
-          transcription_url?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "session_recordings_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: true
-            referencedRelation: "bookings"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      sessions: {
-        Row: {
-          created_at: string | null
-          id: string
-          prestador_id: string | null
-          session_date: string | null
-          session_type: string | null
-          status: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          prestador_id?: string | null
-          session_date?: string | null
-          session_type?: string | null
-          status?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          prestador_id?: string | null
-          session_date?: string | null
-          session_type?: string | null
-          status?: string | null
-          user_id?: string | null
+          phone_escalated?: number | null
+          pillar?: string | null
+          satisfied_users?: number | null
+          sessions_booked?: number | null
+          total_chats?: number | null
+          unsatisfied_users?: number | null
         }
         Relationships: []
       }
       specialist_assignments: {
         Row: {
           assigned_by: string | null
-          company_id: string
-          contract_end_date: string | null
-          contract_start_date: string | null
+          company_id: string | null
           created_at: string | null
-          hourly_rate: number | null
           id: string
           is_active: boolean | null
-          is_primary: boolean | null
-          max_hours_per_week: number | null
-          notes: string | null
-          pillar: string | null
+          pillars: string[] | null
           specialist_id: string
-          updated_at: string | null
-          weight: number | null
         }
         Insert: {
           assigned_by?: string | null
-          company_id: string
-          contract_end_date?: string | null
-          contract_start_date?: string | null
+          company_id?: string | null
           created_at?: string | null
-          hourly_rate?: number | null
           id?: string
           is_active?: boolean | null
-          is_primary?: boolean | null
-          max_hours_per_week?: number | null
-          notes?: string | null
-          pillar?: string | null
+          pillars?: string[] | null
           specialist_id: string
-          updated_at?: string | null
-          weight?: number | null
         }
         Update: {
           assigned_by?: string | null
-          company_id?: string
-          contract_end_date?: string | null
-          contract_start_date?: string | null
+          company_id?: string | null
           created_at?: string | null
-          hourly_rate?: number | null
           id?: string
           is_active?: boolean | null
-          is_primary?: boolean | null
-          max_hours_per_week?: number | null
-          notes?: string | null
-          pillar?: string | null
+          pillars?: string[] | null
           specialist_id?: string
-          updated_at?: string | null
-          weight?: number | null
         }
         Relationships: [
           {
@@ -1499,13 +1065,6 @@ export type Database = {
             columns: ["assigned_by"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "specialist_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
             referencedColumns: ["id"]
           },
           {
@@ -1515,287 +1074,11 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      specialist_call_logs: {
-        Row: {
-          booking_id: string | null
-          call_notes: string | null
-          call_status: string | null
-          chat_session_id: string | null
-          completed_at: string | null
-          created_at: string | null
-          id: string
-          outcome: string | null
-          session_booked: boolean | null
-          specialist_id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          booking_id?: string | null
-          call_notes?: string | null
-          call_status?: string | null
-          chat_session_id?: string | null
-          completed_at?: string | null
-          created_at?: string | null
-          id?: string
-          outcome?: string | null
-          session_booked?: boolean | null
-          specialist_id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          booking_id?: string | null
-          call_notes?: string | null
-          call_status?: string | null
-          chat_session_id?: string | null
-          completed_at?: string | null
-          created_at?: string | null
-          id?: string
-          outcome?: string | null
-          session_booked?: boolean | null
-          specialist_id?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
           {
-            foreignKeyName: "specialist_call_logs_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "bookings"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "specialist_call_logs_chat_session_id_fkey"
-            columns: ["chat_session_id"]
-            isOneToOne: false
-            referencedRelation: "chat_sessions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "specialist_call_logs_specialist_id_fkey"
+            foreignKeyName: "specialist_assignments_specialist_id_fkey"
             columns: ["specialist_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "specialist_call_logs_specialist_id_fkey"
-            columns: ["specialist_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "specialist_call_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "specialist_call_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      subscriptions: {
-        Row: {
-          billing_cycle: string | null
-          cancel_at_period_end: boolean | null
-          cancelled_at: string | null
-          company_id: string
-          created_at: string | null
-          current_period_end: string
-          current_period_start: string
-          id: string
-          plan_type: string
-          price_per_month: number
-          seats_included: number | null
-          sessions_per_seat: number | null
-          status: string | null
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          billing_cycle?: string | null
-          cancel_at_period_end?: boolean | null
-          cancelled_at?: string | null
-          company_id: string
-          created_at?: string | null
-          current_period_end: string
-          current_period_start: string
-          id?: string
-          plan_type: string
-          price_per_month: number
-          seats_included?: number | null
-          sessions_per_seat?: number | null
-          status?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          billing_cycle?: string | null
-          cancel_at_period_end?: boolean | null
-          cancelled_at?: string | null
-          company_id?: string
-          created_at?: string | null
-          current_period_end?: string
-          current_period_start?: string
-          id?: string
-          plan_type?: string
-          price_per_month?: number
-          seats_included?: number | null
-          sessions_per_seat?: number | null
-          status?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      support_ticket_messages: {
-        Row: {
-          created_at: string | null
-          id: string
-          is_internal: boolean | null
-          message: string
-          sender_id: string | null
-          ticket_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          is_internal?: boolean | null
-          message: string
-          sender_id?: string | null
-          ticket_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          is_internal?: boolean | null
-          message?: string
-          sender_id?: string | null
-          ticket_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "support_ticket_messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "support_ticket_messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "support_ticket_messages_ticket_id_fkey"
-            columns: ["ticket_id"]
-            isOneToOne: false
-            referencedRelation: "support_tickets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      support_tickets: {
-        Row: {
-          assigned_to: string | null
-          category: string | null
-          company_id: string | null
-          created_at: string | null
-          description: string
-          id: string
-          priority: string | null
-          resolved_at: string | null
-          status: string | null
-          subject: string
-          ticket_number: string
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          assigned_to?: string | null
-          category?: string | null
-          company_id?: string | null
-          created_at?: string | null
-          description: string
-          id?: string
-          priority?: string | null
-          resolved_at?: string | null
-          status?: string | null
-          subject: string
-          ticket_number: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          assigned_to?: string | null
-          category?: string | null
-          company_id?: string | null
-          created_at?: string | null
-          description?: string
-          id?: string
-          priority?: string | null
-          resolved_at?: string | null
-          status?: string | null
-          subject?: string
-          ticket_number?: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "support_tickets_assigned_to_fkey"
-            columns: ["assigned_to"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "support_tickets_assigned_to_fkey"
-            columns: ["assigned_to"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "support_tickets_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "support_tickets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "support_tickets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
             referencedColumns: ["id"]
           },
         ]
@@ -1844,75 +1127,6 @@ export type Database = {
           },
         ]
       }
-      transactions: {
-        Row: {
-          amount: number
-          company_id: string
-          created_at: string | null
-          currency: string | null
-          failure_reason: string | null
-          id: string
-          invoice_id: string | null
-          metadata: Json | null
-          payment_method: string | null
-          refund_amount: number | null
-          refunded_at: string | null
-          status: string | null
-          stripe_charge_id: string | null
-          stripe_payment_intent_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          amount: number
-          company_id: string
-          created_at?: string | null
-          currency?: string | null
-          failure_reason?: string | null
-          id?: string
-          invoice_id?: string | null
-          metadata?: Json | null
-          payment_method?: string | null
-          refund_amount?: number | null
-          refunded_at?: string | null
-          status?: string | null
-          stripe_charge_id?: string | null
-          stripe_payment_intent_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          amount?: number
-          company_id?: string
-          created_at?: string | null
-          currency?: string | null
-          failure_reason?: string | null
-          id?: string
-          invoice_id?: string | null
-          metadata?: Json | null
-          payment_method?: string | null
-          refund_amount?: number | null
-          refunded_at?: string | null
-          status?: string | null
-          stripe_charge_id?: string | null
-          stripe_payment_intent_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transactions_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transactions_invoice_id_fkey"
-            columns: ["invoice_id"]
-            isOneToOne: false
-            referencedRelation: "invoices"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_milestones: {
         Row: {
           completed: boolean | null
@@ -1922,7 +1136,7 @@ export type Database = {
           milestone_id: string
           milestone_label: string
           points: number | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           completed?: boolean | null
@@ -1932,7 +1146,7 @@ export type Database = {
           milestone_id: string
           milestone_label: string
           points?: number | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           completed?: boolean | null
@@ -1942,52 +1156,40 @@ export type Database = {
           milestone_id?: string
           milestone_label?: string
           points?: number | null
-          user_id?: string | null
+          user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_milestones_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_milestones_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_progress: {
         Row: {
           action_date: string | null
-          action_type: string
+          action_type: string | null
+          created_at: string | null
           id: string
           metadata: Json | null
           pillar: string | null
           resource_id: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           action_date?: string | null
-          action_type: string
+          action_type?: string | null
+          created_at?: string | null
           id?: string
           metadata?: Json | null
           pillar?: string | null
           resource_id?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           action_date?: string | null
-          action_type?: string
+          action_type?: string | null
+          created_at?: string | null
           id?: string
           metadata?: Json | null
           pillar?: string | null
           resource_id?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -1997,89 +1199,54 @@ export type Database = {
             referencedRelation: "resources"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "user_progress_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_progress_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_with_roles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       user_roles: {
         Row: {
           created_at: string | null
-          created_by: string | null
           id: string
-          role: Database["public"]["Enums"]["app_role"]
+          role: string
           user_id: string
         }
         Insert: {
           created_at?: string | null
-          created_by?: string | null
           id?: string
-          role: Database["public"]["Enums"]["app_role"]
+          role: string
           user_id: string
         }
         Update: {
           created_at?: string | null
-          created_by?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-    }
-    Views: {
-      specialist_analytics: {
-        Row: {
-          ai_resolved: number | null
-          date: string | null
-          phone_escalated: number | null
-          pillar: string | null
-          satisfied_users: number | null
-          sessions_booked: number | null
-          total_chats: number | null
-          unsatisfied_users: number | null
-        }
-        Relationships: []
-      }
-      user_profile_with_roles: {
-        Row: {
-          company_id: string | null
-          company_name: string | null
-          created_at: string | null
-          department: string | null
-          email: string | null
-          id: string | null
-          is_active: boolean | null
-          is_admin: boolean | null
-          is_hr: boolean | null
-          is_prestador: boolean | null
-          is_specialist: boolean | null
-          is_user: boolean | null
-          name: string | null
-          role: string | null
-          roles: Database["public"]["Enums"]["app_role"][] | null
-          updated_at: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "profiles_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
+      }
+    }
+    Views: {
+      admin_analytics: {
+        Row: {
+          active_prestadores: number | null
+          active_resources: number | null
+          avg_rating: number | null
+          pending_bookings: number | null
+          sessions_allocated: number | null
+          sessions_used: number | null
+          total_admins: number | null
+          total_bookings: number | null
+          total_companies: number | null
+          total_prestadores: number | null
+          total_users: number | null
+        }
+        Relationships: []
       }
     }
     Functions: {
@@ -2087,15 +1254,19 @@ export type Database = {
         Args: { _employee_id: string; _quota: number }
         Returns: boolean
       }
+      assign_role_to_user: {
+        Args: { p_email: string; p_role: string }
+        Returns: string
+      }
       book_session_with_quota_check: {
         Args: {
           _booking_date: string
-          _end_time?: string
+          _end_time: string
           _meeting_type?: string
           _pillar_specialties: string[]
           _prestador_id: string
           _session_type: string
-          _start_time?: string
+          _start_time: string
           _topic?: string
           _user_id: string
         }
@@ -2110,10 +1281,26 @@ export type Database = {
           _booking_id: string
           _cancellation_reason: string
           _company_id: string
-          _refund_quota: boolean
+          _refund_quota?: boolean
           _user_id: string
         }
         Returns: Json
+      }
+      create_invite_code: { Args: { user_type: string }; Returns: Json }
+      create_notification: {
+        Args: {
+          p_action_url?: string
+          p_message?: string
+          p_metadata?: Json
+          p_title?: string
+          p_type?: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      generate_goals_from_onboarding: {
+        Args: { p_user_id: string }
+        Returns: undefined
       }
       get_company_analytics: {
         Args: { _company_id: string }
@@ -2170,7 +1357,7 @@ export type Database = {
           total_sessions: number
         }[]
       }
-      get_user_primary_role: { Args: { user_id: string }; Returns: string }
+      get_user_primary_role: { Args: { p_user_id: string }; Returns: string }
       get_user_session_balance: {
         Args: { _user_id: string }
         Returns: {
@@ -2181,20 +1368,31 @@ export type Database = {
           has_company_quota: boolean
         }[]
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
       increment_content_views: {
         Args: { content_id: string }
         Returns: undefined
       }
+      initialize_user_milestones: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      is_admin: { Args: never; Returns: boolean }
+      promote_to_admin: { Args: { user_email: string }; Returns: Json }
+      validate_access_code: {
+        Args: { p_code: string }
+        Returns: {
+          company_id: string
+          company_name: string
+          expires_at: string
+          invite_id: string
+          status: string
+          user_type: string
+        }[]
+      }
     }
     Enums: {
-      app_role: "admin" | "user" | "hr" | "prestador" | "specialist"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2321,8 +1519,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      app_role: ["admin", "user", "hr", "prestador", "specialist"],
-    },
+    Enums: {},
   },
 } as const

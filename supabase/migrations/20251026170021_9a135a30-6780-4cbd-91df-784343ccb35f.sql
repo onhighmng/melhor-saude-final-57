@@ -250,7 +250,7 @@ BEGIN
     COALESCE(ce.sessions_allocated, 0) as company_sessions_allocated,
     COALESCE(ce.sessions_used, 0) as company_sessions_used,
     COALESCE(ce.sessions_allocated - ce.sessions_used, 0) as company_sessions_remaining,
-    c.company_name,
+    c.name as company_name,
     (ce.id IS NOT NULL) as has_company_quota
   FROM company_employees ce
   LEFT JOIN companies c ON c.id = ce.company_id

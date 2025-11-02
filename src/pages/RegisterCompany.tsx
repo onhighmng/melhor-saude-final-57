@@ -132,7 +132,7 @@ export default function RegisterCompany() {
         .insert({
           id: authData.user.id,
           email: formData.contactEmail,
-          name: formData.contactName,
+          full_name: formData.contactName,
           phone: formData.contactPhone,
           company_id: company.id,
           is_active: true
