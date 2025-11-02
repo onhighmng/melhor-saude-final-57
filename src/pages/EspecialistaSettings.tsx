@@ -54,7 +54,14 @@ const EspecialistaSettings = () => {
   };
 
   const handleSaveProfile = async () => {
-    if (!profile?.id) return;
+    if (!profile?.id) {
+      toast({
+        title: 'Erro',
+        description: 'ID de utilizador não encontrado',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     try {
       let avatarUrl = profileData.avatar_url;
@@ -98,9 +105,10 @@ const EspecialistaSettings = () => {
       setIsProfileModalOpen(false);
       
       // Reload page to refresh auth context
-      window.location.reload();
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Não foi possível guardar as alterações.';
+      console.error('Error saving profile:', error);
       toast({
         title: 'Erro ao atualizar perfil',
         description: errorMessage,
@@ -109,12 +117,43 @@ const EspecialistaSettings = () => {
     }
   };
 
-  const handleSaveNotifications = () => {
-    toast({
-      title: 'Notificações configuradas',
-      description: 'As suas preferências de notificação foram guardadas.',
-    });
-    setIsNotificationsModalOpen(false);
+  const handleSaveNotifications = async () => {
+    try {
+      if (!profile?.id) {
+        toast({
+          title: 'Erro',
+          description: 'ID de utilizador não encontrado',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Get existing metadata or initialize as empty object
+      const existingMetadata = profile.metadata || {};
+      
+      const { error } = await supabase.from('profiles').update({
+        metadata: {
+          ...existingMetadata,
+          notifications: notificationSettings
+        },
+        updated_at: new Date().toISOString()
+      }).eq('id', profile.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Notificações configuradas',
+        description: 'As suas preferências de notificação foram guardadas.',
+      });
+      setIsNotificationsModalOpen(false);
+    } catch (error: any) {
+      console.error('Error saving notifications:', error);
+      toast({
+        title: 'Erro',
+        description: error.message || 'Erro ao guardar preferências',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (

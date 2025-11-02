@@ -40,6 +40,15 @@ const CompanyDashboard = () => {
     const loadCompanyData = async () => {
       if (!profile?.company_id) {
         setLoading(false);
+        // Set empty metrics to prevent infinite loading
+        setMetrics({
+          avgSatisfaction: '0',
+          activeEmployees: 0,
+          totalEmployees: 0,
+          sessionsUsed: 0,
+          sessionsAllocated: 0,
+          mostUsedPillar: 'Saúde Mental'
+        });
         return;
       }
 
@@ -158,6 +167,18 @@ const CompanyDashboard = () => {
   };
 
   const PillarIcon = getPillarIcon(metrics?.mostUsedPillar || 'Saúde Mental');
+
+  // Show loading state while data loads
+  if (loading || !metrics) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">A carregar dados da empresa...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full min-h-screen h-full flex flex-col">

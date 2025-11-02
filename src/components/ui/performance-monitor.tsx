@@ -12,6 +12,7 @@ export const PerformanceMonitor = () => {
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' && 'performance' in window) {
       const metrics: PerformanceMetrics = {};
+      let hasLogged = false; // Prevent infinite logging
 
       // Measure Core Web Vitals
       const observer = new PerformanceObserver((list) => {
@@ -40,16 +41,22 @@ export const PerformanceMonitor = () => {
           }
         });
 
-        // Log metrics periodically
-        setTimeout(() => {
-          console.group('[Performance] Metrics');
-          console.log('First Contentful Paint:', metrics.fcp?.toFixed(2), 'ms');
-          console.log('Largest Contentful Paint:', metrics.lcp?.toFixed(2), 'ms');
-          console.log('First Input Delay:', metrics.fid?.toFixed(2), 'ms');
-          console.log('Cumulative Layout Shift:', metrics.cls?.toFixed(4));
-          console.log('Time to First Byte:', metrics.ttfb?.toFixed(2), 'ms');
-          console.groupEnd();
-        }, 3000);
+        // Log metrics only once after 3 seconds
+        if (!hasLogged) {
+          hasLogged = true;
+          setTimeout(() => {
+            console.group('[Performance] Metrics');
+            console.log('First Contentful Paint:', metrics.fcp?.toFixed(2), 'ms');
+            console.log('Largest Contentful Paint:', metrics.lcp?.toFixed(2), 'ms');
+            console.log('First Input Delay:', metrics.fid?.toFixed(2), 'ms');
+            console.log('Cumulative Layout Shift:', metrics.cls?.toFixed(4));
+            console.log('Time to First Byte:', metrics.ttfb?.toFixed(2), 'ms');
+            console.groupEnd();
+            
+            // Disconnect after logging to prevent further updates
+            observer.disconnect();
+          }, 3000);
+        }
       });
 
       // Observe different entry types

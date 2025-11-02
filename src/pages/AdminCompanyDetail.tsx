@@ -66,7 +66,7 @@ interface Employee {
 
 interface CompanyData {
   id: string;
-  company_name: string;
+  name: string;
   contact_email: string;
   contact_phone: string;
   plan_type: string;
@@ -88,6 +88,46 @@ export default function AdminCompanyDetail() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [invites, setInvites] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
+  
+  // All hooks must be at the top, before any conditional returns
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
+  const [employeeToRemove, setEmployeeToRemove] = useState<string | null>(null);
+  const [emailToResend, setEmailToResend] = useState<{ id: string; email: string } | null>(null);
+  const [employeeToEdit, setEmployeeToEdit] = useState<{ id: string; name: string; sessions: number } | null>(null);
+  const [editEmployeeDialogOpen, setEditEmployeeDialogOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendingProgress, setSendingProgress] = useState({ current: 0, total: 0 });
+  const [csvPreview, setCsvPreview] = useState<CSVEmployee[] | null>(null);
+  const [csvErrors, setCsvErrors] = useState<CSVValidationError[]>([]);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const [lastSendTimestamp, setLastSendTimestamp] = useState<string | null>(null);
+  const [companyData, setCompanyData] = useState({
+    id: company?.id || '',
+    name: company?.name || '',
+    contactEmail: company?.contact_email || '',
+    contactPhone: company?.contact_phone || '',
+    planType: company?.plan_type || 'professional',
+    sessionsAllocated: company?.sessions_allocated || 0,
+    finalNotes: company?.final_notes || '',
+  });
+
+  // Update companyData when company is loaded
+  useEffect(() => {
+    if (company) {
+      setCompanyData({
+        id: company.id,
+        name: company.name,
+        contactEmail: company.contact_email,
+        contactPhone: company.contact_phone,
+        planType: company.plan_type,
+        sessionsAllocated: company.sessions_allocated,
+        finalNotes: company.final_notes,
+      });
+    }
+  }, [company]);
 
   useEffect(() => {
     const loadCompanyDetails = async () => {
@@ -181,29 +221,6 @@ export default function AdminCompanyDetail() {
       </div>
     );
   }
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
-  const [employeeToRemove, setEmployeeToRemove] = useState<string | null>(null);
-  const [emailToResend, setEmailToResend] = useState<{ id: string; email: string } | null>(null);
-  const [employeeToEdit, setEmployeeToEdit] = useState<{ id: string; name: string; sessions: number } | null>(null);
-  const [editEmployeeDialogOpen, setEditEmployeeDialogOpen] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isSending, setIsSending] = useState(false);
-  const [sendingProgress, setSendingProgress] = useState({ current: 0, total: 0 });
-  const [csvPreview, setCsvPreview] = useState<CSVEmployee[] | null>(null);
-  const [csvErrors, setCsvErrors] = useState<CSVValidationError[]>([]);
-  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
-  const [lastSendTimestamp, setLastSendTimestamp] = useState<string | null>(null);
-  const [companyData, setCompanyData] = useState({
-    id: company?.id || '',
-    name: company?.company_name || '',
-    contactEmail: company?.contact_email || '',
-    contactPhone: company?.contact_phone || '',
-    planType: company?.plan_type || 'professional',
-    sessionsAllocated: company?.sessions_allocated || 0,
-    finalNotes: company?.final_notes || '',
-  });
 
   const usagePercent = company && company.sessions_allocated > 0
     ? Math.round((company.sessions_used / company.sessions_allocated) * 100)
@@ -523,7 +540,7 @@ export default function AdminCompanyDetail() {
   };
 
   const handleExportCSV = () => {
-    exportEmployeesWithCodes(employees.map(e => ({ name: e.name, email: e.email, code: e.code || null })), company?.company_name || '');
+    exportEmployeesWithCodes(employees.map(e => ({ name: e.name, email: e.email, code: e.code || null })), company?.name || '');
     toast({ title: 'CSV Exportado', description: 'Ficheiro descarregado com sucesso' });
   };
 
@@ -577,7 +594,7 @@ export default function AdminCompanyDetail() {
       </div>
 
       <AdminCompanyFeatures company={{
-        name: company?.company_name || '',
+        name: company?.name || '',
         employees: employees.length,
         totalSessions: company?.sessions_allocated || 0,
         usedSessions: company?.sessions_used || 0,
@@ -637,7 +654,7 @@ export default function AdminCompanyDetail() {
                       action: 'company_deactivated',
                       entity_type: 'company',
                       entity_id: id,
-                      details: { company_name: company?.company_name, reason: 'Manual deactivation by admin' }
+                      details: { company_name: company?.name, reason: 'Manual deactivation by admin' }
                     });
                   }
 

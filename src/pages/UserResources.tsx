@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { EmptyState } from "@/components/ui/empty-state";
 // Pillar color mapping
 const getPillarColors = (pillar: string) => {
   const colorMap: Record<string, { bg: string; text: string; border: string; hover: string }> = {
@@ -215,6 +216,22 @@ export default function UserResources() {
     return (
       <div className="w-full min-h-screen bg-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Show empty state if no resources
+  if (resources.length === 0) {
+    return (
+      <div className="w-full min-h-screen bg-white">
+        <PageHeader title="Recursos de Bem-Estar" subtitle="Aceda a guias, vídeos e artigos sobre saúde e bem-estar" icon={BookOpen} sticky={false} />
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <EmptyState
+            icon={BookOpen}
+            title="Recursos disponíveis em breve"
+            description="Estamos a preparar conteúdo valioso para apoiar o seu bem-estar. Volte em breve para aceder a guias, vídeos e artigos."
+          />
+        </div>
       </div>
     );
   }

@@ -60,63 +60,86 @@ export const AdminProvidersTab = ({ onAddProvider }: AdminProvidersTabProps) => 
   const loadProviders = async () => {
     try {
       setLoading(true);
-      const { data: providersData, error: providersError } = await supabase
-        .from('prestadores')
-        .select(`
-          *,
-          profiles!prestadores_user_id_fkey(name, email)
-        `)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+      
+      // Load both prestadores AND specialists from profiles
+      const [prestadoresResult, specialistsResult] = await Promise.all([
+        // Get prestadores from prestadores table
+        supabase
+          .from('prestadores')
+          .select('*')
+          .order('created_at', { ascending: false }),
+        // Get specialists from profiles table
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('role', 'especialista_geral')
+          .order('created_at', { ascending: false })
+      ]);
 
-      if (providersError) throw providersError;
+      if (prestadoresResult.error) throw prestadoresResult.error;
+      if (specialistsResult.error) throw specialistsResult.error;
 
-      if (providersData) {
-        // Get scheduled sessions count for each provider
-        const providersWithSessions = await Promise.all(
-          providersData.map(async (provider: any) => {
-            const profile = provider.profiles as any;
-            
-            // Count scheduled/confirmed bookings
-            const { count: scheduledCount } = await supabase
-              .from('bookings')
-              .select('*', { count: 'exact', head: true })
-              .eq('prestador_id', provider.id)
-              .in('status', ['pending', 'confirmed']);
-            
-            const scheduledSessions = scheduledCount || 0;
-            
-            // Get first pillar from array - try different possible column names
-            const pillarArray = provider.pillar_specialties || provider.pillars || [];
-            const pillar = Array.isArray(pillarArray) && pillarArray.length > 0
-              ? pillarArray[0]
-              : 'N/A';
-            
-            // Get specialty - try different possible column names
-            const specialtyArray = provider.specialization || provider.specialties || [];
-            const specialty = Array.isArray(specialtyArray) && specialtyArray.length > 0
-              ? specialtyArray[0]
-              : provider.specialty || 'N/A';
-            
-            return {
-              id: provider.id,
-              name: profile?.name || provider.name || 'N/A',
-              email: profile?.email || provider.email || 'N/A',
-              specialty: specialty,
-              pillar: pillar,
-              totalSessions: provider.total_sessions || 0,
-              scheduledSessions: scheduledSessions,
-              status: provider.is_active ? ('Ativo' as const) : ('Inativo' as const),
-              costPerSession: provider.cost_per_session || 0,
-            };
-          })
-        );
+      const allProviders = [];
 
-        setProviders(providersWithSessions);
+      // Process prestadores
+      if (prestadoresResult.data) {
+        for (const provider of prestadoresResult.data) {
+          // Count scheduled/confirmed bookings
+          const { count: scheduledCount } = await supabase
+            .from('bookings')
+            .select('*', { count: 'exact', head: true })
+            .eq('prestador_id', provider.id)
+            .in('status', ['pending', 'confirmed']);
+          
+          const scheduledSessions = scheduledCount || 0;
+          
+          // Get first pillar from array
+          const pillarArray = provider.pillar_specialties || [];
+          const pillar = Array.isArray(pillarArray) && pillarArray.length > 0
+            ? pillarArray[0]
+            : 'N/A';
+          
+          // Get specialty from direct field or array
+          const specialtyArray = provider.specialties || [];
+          const specialty = Array.isArray(specialtyArray) && specialtyArray.length > 0
+            ? specialtyArray[0]
+            : provider.specialty || 'N/A';
+          
+          allProviders.push({
+            id: provider.id,
+            name: provider.name || 'N/A',
+            email: provider.email || 'N/A',
+            specialty: specialty,
+            pillar: pillar,
+            totalSessions: provider.total_sessions || 0,
+            scheduledSessions: scheduledSessions,
+            status: provider.is_active ? ('Ativo' as const) : ('Inativo' as const),
+            costPerSession: provider.cost_per_session || 0,
+          });
+        }
       }
+
+      // Process specialists (especialista_geral from profiles)
+      if (specialistsResult.data) {
+        for (const specialist of specialistsResult.data) {
+          allProviders.push({
+            id: specialist.id,
+            name: specialist.name || 'N/A',
+            email: specialist.email || 'N/A',
+            specialty: 'Especialista Geral',
+            pillar: 'Geral',
+            totalSessions: 0,
+            scheduledSessions: 0,
+            status: specialist.is_active ? ('Ativo' as const) : ('Inativo' as const),
+            costPerSession: 0,
+          });
+        }
+      }
+
+      setProviders(allProviders);
     } catch (error) {
       console.error('Error loading providers:', error);
-      toast.error('Erro ao carregar prestadores');
+      toast.error('Erro ao carregar prestadores e especialistas');
       setProviders([]);
     } finally {
       setLoading(false);

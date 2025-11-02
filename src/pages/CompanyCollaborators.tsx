@@ -36,6 +36,14 @@ const CompanyCollaborators = () => {
     const loadCompanyData = async () => {
       if (!profile?.company_id) {
         setLoading(false);
+        // Set empty data to prevent infinite loading
+        setCompanyData({
+          registeredEmployees: 0,
+          activeEmployees: 0,
+          totalSessions: 0,
+          avgSatisfaction: 0,
+          employees: []
+        });
         return;
       }
       
@@ -57,7 +65,7 @@ const CompanyCollaborators = () => {
           .from('company_employees')
           .select(`
             *,
-            profiles(name, email, avatar_url)
+            profiles(name, email, avatar_url, is_active)
           `)
           .eq('company_id', profile.company_id);
         
@@ -83,7 +91,7 @@ const CompanyCollaborators = () => {
         })) || [];
 
         const registeredEmployees = enrichedEmployees.length;
-        const activeEmployees = enrichedEmployees.filter(e => e.is_active).length;
+        const activeEmployees = enrichedEmployees.filter(e => e.profiles?.is_active !== false).length;
         const totalSessions = enrichedEmployees.reduce((sum, e) => sum + (e.sessions_used || 0), 0);
         const avgSessions = registeredEmployees > 0 ? totalSessions / registeredEmployees : 0;
         const allRatings = enrichedEmployees.flatMap(e => e.bookings.filter((b: any) => b.rating).map((b: any) => b.rating));
@@ -174,8 +182,9 @@ const CompanyCollaborators = () => {
         invited_by: profile?.id,
         email: '', // To be filled by invited user
         role: 'user',
+        user_type: 'user', // Ensure user_type is set for auto-promotion
         status: 'pending',
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
       });
 
       if (error) throw error;

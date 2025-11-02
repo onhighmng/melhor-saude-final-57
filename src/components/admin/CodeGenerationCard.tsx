@@ -37,45 +37,46 @@ export const CodeGenerationCard = ({
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
   const { toast } = useToast();
 
+  // Helper function to generate random access code
+  const generateAccessCode = (): string => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return code;
+  };
+
   const handleGenerateCode = async () => {
     setIsGenerating(true);
     try {
-      console.log('🔍 Calling create_invite_code with userType:', userType);
+      const code = generateAccessCode();
+      const role = userType === 'specialist' ? 'especialista_geral' : userType;
       
-      const { data, error } = await supabase.rpc('create_invite_code', {
-        user_type: userType
-      });
+      const { error } = await supabase
+        .from('invites')
+        .insert({
+          invite_code: code,
+          role: role,
+          user_type: userType,
+          company_id: null, // Platform-wide for prestador and specialist
+          status: 'pending',
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        });
 
-      console.log('📨 RPC Response:', { data, error });
+      if (error) throw error;
 
-      if (error) {
-        console.error('❌ RPC Error:', error);
-        throw new Error(error.message || 'Failed to generate code');
-      }
-
-      if (!data) {
-        throw new Error('No data returned from RPC');
-      }
-
-      // Parse JSONB response
-      const codeData = typeof data === 'string' ? JSON.parse(data) : data;
-      const inviteCode = codeData?.invite_code;
-      
-      if (!inviteCode) {
-        throw new Error('No invite code in response');
-      }
-
-      setGeneratedCode(inviteCode);
+      setGeneratedCode(code);
       setIsCodeModalOpen(true);
 
       toast({
         title: 'Código Gerado',
-        description: `Código ${inviteCode} criado com sucesso!`,
+        description: `Código ${code} criado com sucesso!`,
       });
 
       onStatsUpdate();
     } catch (error) {
-      console.error('❌ Error generating code:', error);
+      console.error('Error generating code:', error);
       toast({
         title: 'Erro',
         description: error instanceof Error ? error.message : 'Erro ao gerar código. Tente novamente.',

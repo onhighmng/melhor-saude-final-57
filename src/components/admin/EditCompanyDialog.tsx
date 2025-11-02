@@ -56,7 +56,7 @@ export function EditCompanyDialog({
       // Fetch current values for change tracking
       const { data: currentCompany } = await supabase
         .from('companies')
-        .select('company_name, contact_email, contact_phone, sessions_allocated, plan_type, final_notes')
+        .select('name, contact_email, contact_phone, sessions_allocated, plan_type, final_notes')
         .eq('id', company.id)
         .single();
 
@@ -64,7 +64,7 @@ export function EditCompanyDialog({
       const { error } = await supabase
         .from('companies')
         .update({
-          company_name: formData.name,
+          name: formData.name,
           contact_email: formData.contactEmail,
           contact_phone: formData.contactPhone,
           sessions_allocated: formData.sessionsAllocated,
@@ -80,7 +80,7 @@ export function EditCompanyDialog({
       const changes = {
         before: currentCompany,
         after: {
-          company_name: formData.name,
+          name: formData.name,
           contact_email: formData.contactEmail,
           contact_phone: formData.contactPhone,
           sessions_allocated: formData.sessionsAllocated,
@@ -88,7 +88,7 @@ export function EditCompanyDialog({
           final_notes: formData.finalNotes
         },
         modified_fields: Object.keys(formData).filter(key => {
-          const dbKey = key === 'name' ? 'company_name' : 
+          const dbKey = key === 'name' ? 'name' : 
                         key === 'contactEmail' ? 'contact_email' : 
                         key === 'contactPhone' ? 'contact_phone' : 
                         key === 'sessionsAllocated' ? 'sessions_allocated' : 

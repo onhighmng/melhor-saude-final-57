@@ -94,6 +94,15 @@ export default function PrestadorDashboard() {
 
         if (!prestador) {
           setLoading(false);
+          setMetrics({
+            todaySessions: 0,
+            totalSessions: 0,
+            completedSessions: 0,
+            weekSessions: 0,
+            uniqueUsers: 0,
+            avgRating: '0.0',
+            revenue: 0
+          });
           return;
         }
 
@@ -116,8 +125,8 @@ export default function PrestadorDashboard() {
             const company = Array.isArray(b.companies) ? b.companies[0] : b.companies;
             return {
               ...b,
-              profiles: profile ? { name: profile.full_name || '', email: profile.email || '' } : undefined,
-              userName: profile?.full_name || '',
+              profiles: profile ? { name: profile.name || '', email: profile.email || '' } : undefined,
+              userName: profile?.name || '',
               userEmail: profile?.email || '',
               userAvatar: profile?.avatar_url || '',
               companyName: company?.company_name || ''
@@ -136,14 +145,15 @@ export default function PrestadorDashboard() {
         const avgRating = bookings?.filter(b => b.rating)
           .reduce((sum, b) => sum + (b.rating || 0), 0) / (bookings?.filter(b => b.rating).length || 1);
 
+        // PAYMENT FEATURE DISABLED
         // Load revenue data from prestador_pricing
-        const { data: pricing } = await supabase
-          .from('prestador_pricing')
-          .select('session_price')
-          .eq('prestador_id', prestador.id)
-          .single();
+        // const { data: pricing } = await supabase
+        //   .from('prestador_pricing')
+        //   .select('session_price')
+        //   .eq('prestador_id', prestador.id)
+        //   .single();
 
-        const revenue = completedSessions * (pricing?.session_price || 0);
+        // const revenue = completedSessions * (pricing?.session_price || 0);
 
         setMetrics({
           todaySessions,
@@ -152,7 +162,7 @@ export default function PrestadorDashboard() {
           weekSessions,
           uniqueUsers,
           avgRating: avgRating.toFixed(1),
-          revenue
+          revenue: 0 // Payment feature disabled
         });
       } catch (error) {
         toast.error('Erro ao carregar dados');
@@ -280,6 +290,25 @@ export default function PrestadorDashboard() {
 
   const filteredSessions = getFilteredSessions();
   const groupedSessions = groupSessionsByDate(filteredSessions);
+
+  // Show empty state if no prestador record or no sessions
+  if (!loading && metrics && metrics.totalSessions === 0) {
+    return (
+      <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">
+            Bem-vindo, {prestadorName.split(' ')[0] || profile?.name || 'Prestador'}
+          </h1>
+          <p className="text-muted-foreground">Dashboard de gestão de sessões</p>
+        </div>
+        <EmptyState
+          icon={Activity}
+          title="Nenhuma sessão atribuída ainda"
+          description="Quando os colaboradores agendarem sessões consigo, elas aparecerão aqui. Mantenha o seu calendário atualizado para receber atribuições."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">

@@ -7,8 +7,12 @@ export interface AccessCode {
   company_id?: string;
   expires_at: string;
   status: 'pending' | 'used' | 'expired' | 'revoked';
-  created_by: string;
-  metadata: Record<string, any>;
+  created_by?: string;
+  metadata?: Record<string, any>;
+  created_at?: string;
+  company_name?: string;
+  email?: string;
+  accepted_at?: string;
 }
 
 export interface CodeValidationResult {

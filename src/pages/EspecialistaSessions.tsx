@@ -6,6 +6,7 @@ import { Calendar, Play, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const EspecialistaSessions = () => {
   const { toast } = useToast();
@@ -72,6 +73,25 @@ const EspecialistaSessions = () => {
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">A carregar sessões...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Show empty state if no sessions
+  if (filteredSessions.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-heading font-bold text-foreground">
+            Sessões Agendadas
+          </h1>
+          <p className="text-muted-foreground mt-1">Acompanhar sessões agendadas pelos colaboradores</p>
+        </div>
+        <EmptyState
+          icon={Calendar}
+          title="Nenhuma sessão agendada"
+          description="As sessões agendadas pelos colaboradores que necessitem de acompanhamento aparecerão aqui."
+        />
       </div>
     );
   }

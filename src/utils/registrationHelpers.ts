@@ -95,7 +95,7 @@ export const createUserFromCode = async (
   const roleFromInvite = invite.role || 'user';
 
   // Create profile with error handling
-  // NOTE: profiles table does NOT have a role column (migrated to user_roles table)
+  // NOTE: profiles table uses 'name' column (verified from database schema)
   const profileData: any = {
     id: userId,
     email: userData.email,
@@ -148,7 +148,7 @@ export const createUserFromCode = async (
     case 'personal':
       return await createPersonalUser(userId, userData as PersonalUserData);
     case 'hr':
-      return await createHRUser(userId, userData as HRUserData, invite.company_id);
+      return await createHRUser(userId, userData as HRUserData, invite.company_id, invite.sessions_allocated);
     case 'user':
       return await createEmployeeUser(userId, userData as EmployeeUserData, invite.company_id);
     case 'prestador':
@@ -290,7 +290,7 @@ export const createPersonalUser = async (userId: string, userData: PersonalUserD
   return { userId, type: 'personal' };
 };
 
-export const createHRUser = async (userId: string, userData: HRUserData, companyId?: string) => {
+export const createHRUser = async (userId: string, userData: HRUserData, companyId?: string, sessionsAllocated?: number) => {
   let finalCompanyId = companyId;
 
   // If no company ID from code, create company
@@ -298,13 +298,13 @@ export const createHRUser = async (userId: string, userData: HRUserData, company
     // Ensure we have a session before inserting
     const { data: { session } } = await supabase.auth.getSession();
     
-    // NOTE: Actual schema uses 'company_name' (not 'name') and 'contact_email' (not 'email')
-    // Based on migration 20251026165114, the companies table has: company_name, contact_email, contact_phone
+    // NOTE: Actual schema uses 'name' (not 'company_name') and 'contact_email' (not 'email')
+    // The companies table has: name, contact_email, contact_phone
     const companyInsert: any = {
-      company_name: userData.companyName, // REQUIRED in actual schema
+      name: userData.companyName, // REQUIRED in actual schema
       contact_email: userData.email, // REQUIRED in actual schema
       contact_phone: userData.phone, // Optional in actual schema
-      sessions_allocated: 100,
+      sessions_allocated: sessionsAllocated || 100, // Use sessions from invite or default to 100
       sessions_used: 0,
       is_active: false // Needs admin approval
     };
@@ -346,7 +346,7 @@ export const createHRUser = async (userId: string, userData: HRUserData, company
     .insert({
       company_id: finalCompanyId,
       user_id: userId,
-      sessions_quota: 100,
+      sessions_quota: sessionsAllocated || 100, // Use sessions from invite or default to 100
       sessions_used: 0,
       status: 'active'
     } as any);

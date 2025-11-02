@@ -89,12 +89,12 @@ export default function RegisterCompany() {
 
     try {
       // Create company
-      // NOTE: Actual schema uses 'company_name' (not 'name') and 'contact_email' (not 'email')
-      // Based on migration 20251026165114, the companies table has: company_name, contact_email, contact_phone
+      // NOTE: Actual schema uses 'name' (not 'company_name') and 'contact_email' (not 'email')
+      // The companies table has: name, contact_email, contact_phone
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .insert({
-          company_name: formData.companyName, // REQUIRED in actual schema
+          name: formData.companyName, // REQUIRED in actual schema
           contact_email: formData.contactEmail, // REQUIRED in actual schema
           contact_phone: formData.contactPhone, // Optional in actual schema
           sessions_allocated: formData.totalSessions,
@@ -126,13 +126,13 @@ export default function RegisterCompany() {
       if (!authData.user) throw new Error('Falha ao criar utilizador');
 
       // Create HR profile
-      // NOTE: profiles table does NOT have role column (moved to user_roles table)
+      // NOTE: profiles table uses 'name' column (not 'full_name')
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: authData.user.id,
           email: formData.contactEmail,
-          full_name: formData.contactName,
+          name: formData.contactName, // FIXED: Use 'name' not 'full_name'
           phone: formData.contactPhone,
           company_id: company.id,
           is_active: true

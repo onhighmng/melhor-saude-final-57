@@ -49,7 +49,7 @@ export default function SpecialistDashboard() {
       if (!profile?.id) return;
       const { data } = await supabase
         .from('bookings')
-        .select('*, profiles!bookings_user_id_fkey(full_name)')
+        .select('*, profiles!bookings_user_id_fkey(name)')
         .eq('booking_source', 'specialist_referral')
         .order('booking_date', { ascending: false });
       setFilteredSessions(data || []);

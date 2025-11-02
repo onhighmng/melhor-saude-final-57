@@ -163,8 +163,7 @@ export function AdminResourcesTab() {
           title: editFormData.title,
           description: editFormData.description,
           pillar: editFormData.pillar,
-          type: editFormData.type,
-          is_premium: editFormData.isPremium,
+          resource_type: editFormData.type,
           updated_at: new Date().toISOString()
         })
         .eq('id', selectedResource.id);
@@ -403,12 +402,12 @@ export function AdminResourcesTab() {
                             title: addFormData.title,
                             description: addFormData.description,
                             pillar: addFormData.pillar,
-                            type: addFormData.type,
+                            resource_type: addFormData.type,
                             thumbnail_url: addFormData.thumbnail,
                             url: addFormData.content_url,
-                            is_public: true,
-                            is_premium: false,
-                            created_by: profile?.id
+                            is_active: true,
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
                           });
                           
                           if (error) throw error;

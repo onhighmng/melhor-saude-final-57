@@ -25,6 +25,7 @@ import { motion } from 'framer-motion';
 import ResourceUsageCard from '@/components/ui/horizontal-bar-chart';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const CompanyReportsImpact = () => {
   const [isExporting, setIsExporting] = useState(false);
@@ -40,6 +41,15 @@ const CompanyReportsImpact = () => {
     const loadAnalytics = async () => {
       if (!profile?.company_id) {
         setLoading(false);
+        // Set empty data to prevent infinite loading
+        setCompanyMetrics({
+          activeEmployees: 0,
+          totalSessions: 0,
+          avgSatisfaction: 0,
+          utilizationRate: 0
+        });
+        setPillarDistribution([]);
+        setWellnessTrends([]);
         return;
       }
       
@@ -255,6 +265,27 @@ const CompanyReportsImpact = () => {
             <p className="text-muted-foreground">A carregar relatórios...</p>
           </div>
         </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no sessions or employees
+  if (companyMetrics.totalSessions === 0 && companyMetrics.activeEmployees === 0) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4">
+            Relatórios e Impacto
+          </h1>
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
+            Análise detalhada do bem-estar dos colaboradores e impacto dos programas
+          </p>
+        </div>
+        <EmptyState
+          icon={BarChart3}
+          title="Relatórios estarão disponíveis em breve"
+          description="Os relatórios de impacto estarão disponíveis quando os colaboradores começarem a usar a plataforma e completarem sessões."
+        />
       </section>
     );
   }

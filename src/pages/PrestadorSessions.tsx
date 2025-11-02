@@ -34,6 +34,7 @@ import { ProviderSessionManagementModal } from '@/components/sessions/ProviderSe
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function PrestadorSessions() {
   const { toast } = useToast();
@@ -267,6 +268,23 @@ export default function PrestadorSessions() {
       description: "Lista de sessões foi exportada com sucesso"
     });
   };
+
+  // Show empty state if no sessions
+  if (!loading && sessions.length === 0) {
+    return (
+      <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Sessões</h1>
+          <p className="text-muted-foreground">Gerir e acompanhar as suas sessões com colaboradores</p>
+        </div>
+        <EmptyState
+          icon={Calendar}
+          title="Nenhuma sessão atribuída ainda"
+          description="Quando os colaboradores agendarem sessões consigo, elas aparecerão aqui. Certifique-se de que o seu perfil está ativo e disponível."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">

@@ -115,45 +115,48 @@ const PrestadorPerformance = () => {
         }
         setSessionEvolution(evolution);
 
+        // PAYMENT FEATURE DISABLED
         // Fetch pricing from prestador_pricing table (with timeout and fallback)
-        const pricingQuery = supabase
-          .from('prestador_pricing')
-          .select('session_price, platform_commission_rate')
-          .eq('prestador_id', prestador.id)
-          .single();
+        // const pricingQuery = supabase
+        //   .from('prestador_pricing')
+        //   .select('session_price, platform_commission_rate')
+        //   .eq('prestador_id', prestador.id)
+        //   .single();
 
-        const { data: pricing } = await Promise.race([
-          pricingQuery,
-          new Promise<any>((_, reject) => 
-            setTimeout(() => reject(new Error('Query timeout')), 3000)
-          )
-        ]).catch(() => ({ data: null }));
+        // PAYMENT FEATURE DISABLED - No financial/earnings tracking
+        // const { data: pricing } = await Promise.race([
+        //   pricingQuery,
+        //   new Promise<any>((_, reject) => 
+        //     setTimeout(() => reject(new Error('Query timeout')), 3000)
+        //   )
+        // ]).catch(() => ({ data: null }));
 
-        const sessionPrice = pricing?.session_price || 1500;
-        const commissionRate = pricing?.platform_commission_rate || 0.25;
+        // const sessionPrice = pricing?.session_price || 1500;
+        // const commissionRate = pricing?.platform_commission_rate || 0.25;
 
         // Calculate financial data by month (last 6 months)
-        const financialByMonth = [];
-        for (let i = 5; i >= 0; i--) {
-          const date = new Date();
-          date.setMonth(date.getMonth() - i);
-          const monthStr = date.toISOString().slice(0, 7);
+        // PAYMENT FEATURE DISABLED
+        // const financialByMonth = [];
+        // for (let i = 5; i >= 0; i--) {
+        //   const date = new Date();
+        //   date.setMonth(date.getMonth() - i);
+        //   const monthStr = date.toISOString().slice(0, 7);
           
-          const monthBookings = bookings?.filter(b => b.date?.startsWith(monthStr) && b.status === 'completed') || [];
-          const monthSessions = monthBookings.length;
-          const grossValue = monthSessions * sessionPrice;
-          const commission = grossValue * commissionRate;
-          const netValue = grossValue - commission;
+        //   const monthBookings = bookings?.filter(b => b.date?.startsWith(monthStr) && b.status === 'completed') || [];
+        //   const monthSessions = monthBookings.length;
+        //   const grossValue = monthSessions * sessionPrice;
+        //   const commission = grossValue * commissionRate;
+        //   const netValue = grossValue - commission;
           
-          financialByMonth.push({
-            month: date.toLocaleDateString('pt-PT', { month: 'short', year: 'numeric' }),
-            sessions: monthSessions,
-            grossValue: Number(grossValue.toFixed(2)),
-            commission: Number(commission.toFixed(2)),
-            netValue: Number(netValue.toFixed(2))
-          });
-        }
-        setFinancialData(financialByMonth);
+        //   financialByMonth.push({
+        //     month: date.toLocaleDateString('pt-PT', { month: 'short', year: 'numeric' }),
+        //     sessions: monthSessions,
+        //     grossValue: Number(grossValue.toFixed(2)),
+        //     commission: Number(commission.toFixed(2)),
+        //     netValue: Number(netValue.toFixed(2))
+        //   });
+        // }
+        setFinancialData([]); // Payment feature disabled
       } catch (error) {
         // Silently fail - show empty stats instead of error
         console.warn('[PrestadorPerformance] Error loading performance data, showing empty stats:', error);

@@ -147,13 +147,24 @@ const PrestadorSettings = () => {
 
   const handleSaveProfile = async () => {
     try {
+      if (!profile?.id) {
+        toast({
+          title: "Erro",
+          description: "ID de utilizador não encontrado",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Note: Email is usually not updatable directly - it's managed by auth
       const { error } = await supabase
         .from('profiles')
         .update({
           name: settings.name,
-          email: settings.email
+          phone: settings.phone,
+          updated_at: new Date().toISOString()
         })
-        .eq('id', profile?.id);
+        .eq('id', profile.id);
 
       if (error) throw error;
 
@@ -162,11 +173,14 @@ const PrestadorSettings = () => {
         description: "As suas informações pessoais foram salvas com sucesso"
       });
       setIsEditing(false);
-    } catch (error) {
+
+      // Reload to update context
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error: any) {
       console.error('Error saving profile:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível guardar as alterações",
+        description: error.message || "Não foi possível guardar as alterações",
         variant: "destructive"
       });
     }

@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 interface Company {
   id: string;
-  company_name: string;
+  name: string;
   sessions_allocated: number;
   sessions_used: number;
   is_active: boolean;
@@ -45,7 +45,7 @@ export default function AdminCompanies() {
   };
 
   const filteredCompanies = companies.filter(company =>
-    company.company_name.toLowerCase().includes(searchQuery.toLowerCase())
+    company.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalCompanies = companies.length;
@@ -162,7 +162,7 @@ export default function AdminCompanies() {
                   
                   return (
                     <TableRow key={company.id}>
-                      <TableCell className="font-medium">{company.company_name}</TableCell>
+                      <TableCell className="font-medium">{company.name}</TableCell>
                       <TableCell>
                         <Badge variant="outline">{company.plan_type}</Badge>
                       </TableCell>

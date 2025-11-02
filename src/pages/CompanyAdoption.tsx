@@ -78,6 +78,18 @@ export const CompanyAdoption: React.FC = () => {
   useEffect(() => {
     if (profile?.company_id) {
       loadAdoptionData();
+    } else {
+      // No company_id, set empty state
+      setLoading(false);
+      setEmployees([]);
+      setStats({
+        totalEmployees: 0,
+        activeUsers: 0,
+        adoptionRate: 0,
+        avgSessionsPerUser: 0
+      });
+      setDepartmentStats([]);
+      setActivityTimeline([]);
     }
   }, [profile?.company_id, selectedPeriod]);
 

@@ -1,19 +1,36 @@
 import { MenuItem, MobileMenuItem } from './types';
 
 export const createAdminMenuItems = (
-  handleNavigation: (path: string) => void
+  handleNavigation: (path: string) => void,
+  handleSobreNosClick: () => void,
+  handlePillarClick: (pillarIndex: number) => void
 ): MenuItem[] => [
   {
-    title: 'Dashboard',
-    key: 'dashboard',
+    title: 'Sobre Nós',
+    key: 'sobre',
     hasDropdown: false,
-    onClick: () => handleNavigation('/admin')
+    onClick: handleSobreNosClick
   },
   {
-    title: 'Gestão',
-    key: 'gestao',
+    title: 'Pilares',
+    key: 'pilares',
     hasDropdown: true,
     items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick(3) }
+    ]
+  },
+  {
+    title: 'Admin',
+    key: 'admin-menu',
+    hasDropdown: true,
+    items: [
+      { 
+        title: 'Dashboard',
+        onClick: () => handleNavigation('/admin')
+      },
       { 
         title: 'Prestadores',
         onClick: () => {
@@ -33,58 +50,47 @@ export const createAdminMenuItems = (
             if (element) element.click();
           }, 100);
         }
-      },
-      { 
-        title: 'Solicitações',
-        onClick: () => {
-          handleNavigation('/admin');
-          setTimeout(() => {
-            const element = document.querySelector('[data-value="requests"]') as HTMLElement;
-            if (element) element.click();
-          }, 100);
-        }
-      }
-    ]
-  },
-  {
-    title: 'Relatórios',
-    key: 'relatorios',
-    hasDropdown: true,
-    items: [
-      { 
-        title: 'Alertas Email',
-        onClick: () => {
-          handleNavigation('/admin');
-          setTimeout(() => {
-            const element = document.querySelector('[data-value="notifications"]') as HTMLElement;
-            if (element) element.click();
-          }, 100);
-        }
-      },
-      { 
-        title: 'Feedback',
-        onClick: () => {
-          handleNavigation('/admin');
-          setTimeout(() => {
-            const element = document.querySelector('[data-value="feedback"]') as HTMLElement;
-            if (element) element.click();
-          }, 100);
-        }
-      },
-      { 
-        title: 'Contas Inativas',
-        onClick: () => {
-          handleNavigation('/admin');
-          setTimeout(() => {
-            const element = document.querySelector('[data-value="inactive"]') as HTMLElement;
-            if (element) element.click();
-          }, 100);
-        }
       }
     ]
   }
 ];
 
+// Regular authenticated user menu items
+export const createUserMenuItems = (
+  handleNavigation: (path: string) => void,
+  handleSobreNosClick: () => void,
+  handlePillarClick: (pillarIndex: number) => void
+): MenuItem[] => [
+  {
+    title: 'Sobre Nós',
+    key: 'sobre',
+    hasDropdown: false,
+    onClick: handleSobreNosClick
+  },
+  {
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick(3) }
+    ]
+  },
+  {
+    title: 'Minha Saúde',
+    key: 'user-menu',
+    hasDropdown: true,
+    items: [
+      { title: 'Dashboard', onClick: () => handleNavigation('/user/dashboard') },
+      { title: 'Agendar Sessão', onClick: () => handleNavigation('/user/book') },
+      { title: 'Meu Percurso', onClick: () => handleNavigation('/user/sessions') }
+    ]
+  }
+];
+
+// Unauthenticated user menu items
 export const createMenuItems = (
   handleSobreNosClick: () => void,
   handlePillarClick: (pillarIndex: number) => void,
@@ -135,56 +141,101 @@ export const createMenuItems = (
 
 // HR Menu Items
 export const createHRMenuItems = (
-  handleNavigation: (path: string) => void
+  handleNavigation: (path: string) => void,
+  handleSobreNosClick: () => void,
+  handlePillarClick: (pillarIndex: number) => void
 ): MenuItem[] => [
+  {
+    title: 'Sobre Nós',
+    key: 'sobre',
+    hasDropdown: false,
+    onClick: handleSobreNosClick
+  },
+  {
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick(3) }
+    ]
+  },
+  {
+    title: 'RH',
+    key: 'rh-menu',
+    hasDropdown: true,
+    items: [
+      { title: 'Dashboard', onClick: () => handleNavigation('/company/dashboard') },
+      { title: 'Colaboradores', onClick: () => handleNavigation('/company/colaboradores') },
+      { title: 'Relatórios', onClick: () => handleNavigation('/company/relatorios') }
+    ]
+  }
+];
+
+export const createHRMobileMenuItems = (
+  handleSobreNosClick?: () => void,
+  handlePillarClick?: (pillarIndex: number) => void
+): MobileMenuItem[] => [
+  {
+    title: 'Sobre Nós',
+    key: 'sobre',
+    hasDropdown: false,
+    onClick: handleSobreNosClick
+  },
+  {
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick?.(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick?.(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick?.(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick?.(3) }
+    ]
+  },
   {
     title: 'Dashboard',
     key: 'dashboard-rh',
     hasDropdown: false,
-    onClick: () => handleNavigation('/company/dashboard')
+    path: '/company/dashboard'
   },
   {
     title: 'Colaboradores',
     key: 'colaboradores-rh',
     hasDropdown: false,
-    onClick: () => handleNavigation('/company/colaboradores')
-  },
-  {
-    title: 'Sessões',
-    key: 'sessoes-rh',
-    hasDropdown: false,
-    onClick: () => handleNavigation('/company/sessions')
+    path: '/company/colaboradores'
   },
   {
     title: 'Relatórios',
     key: 'relatorios-rh',
     hasDropdown: false,
-    onClick: () => handleNavigation('/company/relatorios')
-  },
-  {
-    title: 'Definições',
-    key: 'definicoes-rh',
-    hasDropdown: false,
-    onClick: () => handleNavigation('/company/settings')
+    path: '/company/relatorios'
   }
 ];
 
-export const createHRMobileMenuItems = (): MobileMenuItem[] => [
+export const createAdminMobileMenuItems = (
+  handleSobreNosClick?: () => void,
+  handlePillarClick?: (pillarIndex: number) => void
+): MobileMenuItem[] => [
   {
-    title: 'Dashboard',
-    key: 'dashboard-rh',
+    title: 'Sobre Nós',
+    key: 'sobre',
     hasDropdown: false,
-    path: '/company/dashboard'
+    onClick: handleSobreNosClick
   },
   {
-    title: 'Relatórios',
-    key: 'relatorios-rh',
-    hasDropdown: false,
-    path: '/company/dashboard'
-  }
-];
-
-export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick?.(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick?.(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick?.(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick?.(3) }
+    ]
+  },
   {
     title: 'Dashboard',
     key: 'dashboard',
@@ -214,76 +265,65 @@ export const createAdminMobileMenuItems = (): MobileMenuItem[] => [
         if (element) element.click();
       }, 100);
     }
-  },
-  {
-    title: 'Solicitações',
-    key: 'solicitacoes',
-    hasDropdown: false,
-    path: '/admin',
-    onClick: () => {
-      setTimeout(() => {
-        const element = document.querySelector('[data-value="requests"]') as HTMLElement;
-        if (element) element.click();
-      }, 100);
-    }
-  },
-  {
-    title: 'Alertas Email',
-    key: 'notifications',
-    hasDropdown: false,
-    path: '/admin',
-    onClick: () => {
-      setTimeout(() => {
-        const element = document.querySelector('[data-value="notifications"]') as HTMLElement;
-        if (element) element.click();
-      }, 100);
-    }
-  },
-  {
-    title: 'Feedback',
-    key: 'feedback',
-    hasDropdown: false,
-    path: '/admin',
-    onClick: () => {
-      setTimeout(() => {
-        const element = document.querySelector('[data-value="feedback"]') as HTMLElement;
-        if (element) element.click();
-      }, 100);
-    }
   }
 ];
 
 // Prestador Menu Items
 export const createPrestadorMenuItems = (
-  handleNavigation: (path: string) => void
+  handleNavigation: (path: string) => void,
+  handleSobreNosClick: () => void,
+  handlePillarClick: (pillarIndex: number) => void
 ): MenuItem[] => [
   {
-    title: 'Dashboard',
-    key: 'dashboard-prestador',
+    title: 'Sobre Nós',
+    key: 'sobre',
     hasDropdown: false,
-    onClick: () => handleNavigation('/prestador/dashboard')
+    onClick: handleSobreNosClick
   },
   {
-    title: 'Calendário',
-    key: 'calendario-prestador',
-    hasDropdown: false,
-    onClick: () => handleNavigation('/prestador/calendario')
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick(3) }
+    ]
   },
   {
-    title: 'Sessões',
-    key: 'sessoes-prestador',
-    hasDropdown: false,
-    onClick: () => handleNavigation('/prestador/sessoes')
-  },
-  {
-    title: 'Estatísticas',
-    key: 'stats-prestador',
-    hasDropdown: false,
-    onClick: () => handleNavigation('/prestador/stats')
+    title: 'Prestador',
+    key: 'prestador-menu',
+    hasDropdown: true,
+    items: [
+      { title: 'Dashboard', onClick: () => handleNavigation('/prestador/dashboard') },
+      { title: 'Calendário', onClick: () => handleNavigation('/prestador/calendario') },
+      { title: 'Sessões', onClick: () => handleNavigation('/prestador/sessoes') }
+    ]
   }
 ];
 
-export const createPrestadorMobileMenuItems = (): MobileMenuItem[] => [
+export const createPrestadorMobileMenuItems = (
+  handleSobreNosClick?: () => void,
+  handlePillarClick?: (pillarIndex: number) => void
+): MobileMenuItem[] => [
+  {
+    title: 'Sobre Nós',
+    key: 'sobre',
+    hasDropdown: false,
+    onClick: handleSobreNosClick
+  },
+  {
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick?.(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick?.(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick?.(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick?.(3) }
+    ]
+  },
   {
     title: 'Dashboard',
     key: 'dashboard-prestador',
@@ -306,29 +346,60 @@ export const createPrestadorMobileMenuItems = (): MobileMenuItem[] => [
 
 // Especialista Menu Items
 export const createEspecialistaMenuItems = (
-  handleNavigation: (path: string) => void
+  handleNavigation: (path: string) => void,
+  handleSobreNosClick: () => void,
+  handlePillarClick: (pillarIndex: number) => void
 ): MenuItem[] => [
   {
-    title: 'Dashboard',
-    key: 'dashboard-especialista',
+    title: 'Sobre Nós',
+    key: 'sobre',
     hasDropdown: false,
-    onClick: () => handleNavigation('/especialista/dashboard')
+    onClick: handleSobreNosClick
   },
   {
-    title: 'Sessões',
-    key: 'sessoes-especialista',
-    hasDropdown: false,
-    onClick: () => handleNavigation('/especialista/sessoes')
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick(3) }
+    ]
   },
   {
-    title: 'Pacientes',
-    key: 'pacientes-especialista',
-    hasDropdown: false,
-    onClick: () => handleNavigation('/especialista/pacientes')
+    title: 'Especialista',
+    key: 'especialista-menu',
+    hasDropdown: true,
+    items: [
+      { title: 'Dashboard', onClick: () => handleNavigation('/especialista/dashboard') },
+      { title: 'Sessões', onClick: () => handleNavigation('/especialista/sessoes') },
+      { title: 'Pacientes', onClick: () => handleNavigation('/especialista/pacientes') }
+    ]
   }
 ];
 
-export const createEspecialistaMobileMenuItems = (): MobileMenuItem[] => [
+export const createEspecialistaMobileMenuItems = (
+  handleSobreNosClick?: () => void,
+  handlePillarClick?: (pillarIndex: number) => void
+): MobileMenuItem[] => [
+  {
+    title: 'Sobre Nós',
+    key: 'sobre',
+    hasDropdown: false,
+    onClick: handleSobreNosClick
+  },
+  {
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick?.(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick?.(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick?.(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick?.(3) }
+    ]
+  },
   {
     title: 'Dashboard',
     key: 'dashboard-especialista',
@@ -340,9 +411,58 @@ export const createEspecialistaMobileMenuItems = (): MobileMenuItem[] => [
     key: 'sessoes-especialista',
     hasDropdown: false,
     path: '/especialista/sessoes'
+  },
+  {
+    title: 'Pacientes',
+    key: 'pacientes-especialista',
+    hasDropdown: false,
+    path: '/especialista/pacientes'
   }
 ];
 
+// Regular user mobile menu items
+export const createUserMobileMenuItems = (
+  handleSobreNosClick?: () => void,
+  handlePillarClick?: (pillarIndex: number) => void
+): MobileMenuItem[] => [
+  {
+    title: 'Sobre Nós',
+    key: 'sobre',
+    hasDropdown: false,
+    onClick: handleSobreNosClick
+  },
+  {
+    title: 'Pilares',
+    key: 'pilares',
+    hasDropdown: true,
+    items: [
+      { title: 'Saúde Mental', onClick: () => handlePillarClick?.(0) },
+      { title: 'Bem-estar Físico', onClick: () => handlePillarClick?.(1) },
+      { title: 'Assistência Financeira', onClick: () => handlePillarClick?.(2) },
+      { title: 'Assistência Jurídica', onClick: () => handlePillarClick?.(3) }
+    ]
+  },
+  {
+    title: 'Dashboard',
+    key: 'dashboard-user',
+    hasDropdown: false,
+    path: '/user/dashboard'
+  },
+  {
+    title: 'Agendar Sessão',
+    key: 'book-user',
+    hasDropdown: false,
+    path: '/user/book'
+  },
+  {
+    title: 'Meu Percurso',
+    key: 'sessions-user',
+    hasDropdown: false,
+    path: '/user/sessions'
+  }
+];
+
+// Unauthenticated mobile menu items
 export const createMobileMenuItems = (
   isAuthenticated: boolean,
   handleAuthRedirect: (section: string) => void,

@@ -21,6 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { EmptyState } from '@/components/ui/empty-state';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -129,6 +130,14 @@ const CompanySessions = () => {
     const loadSessionAnalytics = async () => {
       if (!profile?.company_id) {
         setLoading(false);
+        // Set empty analytics to prevent infinite loading
+        setAnalytics({
+          totalContracted: 0,
+          totalUsed: 0,
+          utilizationRate: 0,
+          employeesUsingServices: 0,
+          pillarBreakdown: []
+        });
         return;
       }
       
@@ -136,7 +145,7 @@ const CompanySessions = () => {
       try {
         const { data: bookings, error } = await supabase
           .from('bookings')
-          .select(`*, profiles!inner(full_name), prestadores(name)`)
+          .select(`*, profiles!inner(name), prestadores(name)`)
           .eq('company_id', profile.company_id);
 
         if (error) throw error;
@@ -240,6 +249,27 @@ const CompanySessions = () => {
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
+  // Show empty state if no sessions yet
+  if (!loading && analytics && (analytics.totalUsed as number) === 0) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4">
+            Sessões & Utilização
+          </h1>
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
+            Análise detalhada da utilização de sessões por pilar e especialista
+          </p>
+        </div>
+        <EmptyState
+          icon={Calendar}
+          title="Nenhuma sessão agendada ainda"
+          description="As estatísticas de sessões aparecerão aqui quando os colaboradores começarem a agendar e completar sessões de bem-estar."
+        />
+      </section>
+    );
+  }
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">

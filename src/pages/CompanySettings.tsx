@@ -12,7 +12,7 @@ export default function CompanySettings() {
   const { profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [companyData, setCompanyData] = useState({
-    company_name: '',
+    name: '',
     contact_email: '',
     contact_phone: ''
   });
@@ -27,36 +27,45 @@ export default function CompanySettings() {
     try {
       const { data, error } = await supabase
         .from('companies')
-        .select('company_name, contact_email, contact_phone')
+        .select('name, contact_email, contact_phone')
         .eq('id', profile.company_id)
         .single();
       
+      if (error) throw error;
       if (data) setCompanyData(data);
     } catch (error) {
       console.error('Error loading company data:', error);
+      toast.error('Erro ao carregar dados da empresa');
     }
   };
 
   const handleSave = async () => {
+    if (!profile?.company_id) {
+      toast.error('ID da empresa não encontrado');
+      return;
+    }
+
     setLoading(true);
     try {
       // Sanitize all text inputs before saving
       const sanitizedData = {
-        company_name: sanitizeInput(companyData.company_name),
+        name: sanitizeInput(companyData.name),
         contact_email: sanitizeInput(companyData.contact_email),
-        contact_phone: sanitizeInput(companyData.contact_phone)
+        contact_phone: sanitizeInput(companyData.contact_phone),
+        updated_at: new Date().toISOString()
       };
 
       const { error } = await supabase
         .from('companies')
         .update(sanitizedData)
-        .eq('id', profile?.company_id);
+        .eq('id', profile.company_id);
       
       if (error) throw error;
       
       toast.success('Definições guardadas com sucesso');
-    } catch (error) {
-      toast.error('Erro ao guardar definições');
+    } catch (error: any) {
+      console.error('Error saving company settings:', error);
+      toast.error(error.message || 'Erro ao guardar definições');
     } finally {
       setLoading(false);
     }
@@ -74,8 +83,8 @@ export default function CompanySettings() {
           <div>
             <Label>Nome da Empresa</Label>
             <Input
-              value={companyData.company_name}
-              onChange={(e) => setCompanyData({...companyData, company_name: e.target.value})}
+              value={companyData.name}
+              onChange={(e) => setCompanyData({...companyData, name: e.target.value})}
             />
           </div>
           <div>

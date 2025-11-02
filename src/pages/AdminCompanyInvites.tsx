@@ -249,11 +249,11 @@ export default function AdminCompanyInvites() {
   const getStatusBadge = (status: InviteCode['status']) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="secondary">Pendente</Badge>;
+        return <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">✓ Pendente</Badge>;
       case 'accepted':
-        return <Badge variant="default">Aceito</Badge>;
+        return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Aceito</Badge>;
       case 'expired':
-        return <Badge variant="outline">Expirado</Badge>;
+        return <Badge className="bg-gray-100 text-gray-600 border-gray-200">⊗ Expirado</Badge>;
       default:
         return <Badge variant="outline">Desconhecido</Badge>;
     }
@@ -421,7 +421,7 @@ export default function AdminCompanyInvites() {
                 <TableRow>
                   <TableHead>Código</TableHead>
                   <TableHead>Estado</TableHead>
-                  <TableHead>Email</TableHead>
+                  <TableHead>Usado Por</TableHead>
                   <TableHead>Data de Utilização</TableHead>
                   <TableHead>Data de Criação</TableHead>
                   <TableHead>Ações</TableHead>
@@ -447,7 +447,11 @@ export default function AdminCompanyInvites() {
                     </TableCell>
                     <TableCell>{getStatusBadge(code.status)}</TableCell>
                     <TableCell>
-                      <div className="text-sm text-muted-foreground">{code.email || '—'}</div>
+                      {code.email ? (
+                        <span className="text-sm font-medium text-purple-700">{code.email}</span>
+                      ) : (
+                        <span className="text-sm text-gray-400">Não usado</span>
+                      )}
                     </TableCell>
                     <TableCell>{formatDate(code.accepted_at)}</TableCell>
                     <TableCell>{formatDate(code.created_at)}</TableCell>

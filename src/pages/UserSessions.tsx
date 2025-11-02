@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import { emailService } from '@/services/emailService';
 import { CANCELLATION_POLICY_HOURS } from "@/config/constants";
 import { useToast } from '@/hooks/use-toast';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Calendar } from "lucide-react";
 
 export default function UserSessions() {
   const navigate = useNavigate();
@@ -105,6 +107,24 @@ export default function UserSessions() {
   // Get summary stats
   const completedSessionsCount = pastSessions.filter(s => s.status === 'completed').length;
   const futureSessionsCount = futureSessions.length;
+
+  // Show empty state if no bookings
+  if (!bookingsLoading && allBookings.length === 0) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-foreground">Meu Percurso</h1>
+          <p className="text-muted-foreground">Acompanhe as suas sessões, objetivos e progresso</p>
+        </div>
+        <EmptyState
+          icon={Calendar}
+          title="Ainda não tens sessões agendadas"
+          description="Começa por agendar a tua primeira sessão de bem-estar para iniciar o teu percurso."
+          action={{ label: "Agendar Sessão", onClick: () => navigate('/user/book') }}
+        />
+      </div>
+    );
+  }
 
   const handleViewDetails = (sessionId: string) => {
     navigate(`/user/sessions`);

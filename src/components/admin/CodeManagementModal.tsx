@@ -52,27 +52,29 @@ export const CodeManagementModal = ({
           company_id,
           expires_at,
           status,
-          created_by,
-          metadata,
+          invited_by,
           created_at,
-          companies(company_name)
+          email,
+          accepted_at,
+          companies(name)
         `)
         .eq('user_type', userType)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const formattedCodes: AccessCode[] = (data || []).map(code => ({
+      const formattedCodes: AccessCode[] = (data || []).map((code: any) => ({
         id: code.id,
         invite_code: code.invite_code,
         user_type: code.user_type as UserType,
         company_id: code.company_id,
         expires_at: code.expires_at,
         status: code.status as 'pending' | 'used' | 'expired' | 'revoked',
-        created_by: code.created_by,
-        metadata: code.metadata || {},
+        created_by: code.invited_by,
         created_at: code.created_at,
-        company_name: (code.companies as any)?.company_name
+        email: code.email,
+        accepted_at: code.accepted_at,
+        company_name: code.companies?.name
       }));
 
       setCodes(formattedCodes);
@@ -170,13 +172,13 @@ export const CodeManagementModal = ({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge className="bg-green-100 text-green-700">Ativo</Badge>;
+        return <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">✓ Ativo</Badge>;
       case 'used':
-        return <Badge className="bg-blue-100 text-blue-700">Usado</Badge>;
+        return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
       case 'expired':
-        return <Badge className="bg-gray-100 text-gray-700">Expirado</Badge>;
+        return <Badge className="bg-gray-100 text-gray-600 border-gray-200">⊗ Expirado</Badge>;
       case 'revoked':
-        return <Badge className="bg-red-100 text-red-700">Revogado</Badge>;
+        return <Badge className="bg-red-100 text-red-800 border-red-300 font-medium">✕ Revogado</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -246,6 +248,7 @@ export const CodeManagementModal = ({
               <TableRow>
                 <TableHead>Código</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Usado Por</TableHead>
                 <TableHead>Empresa</TableHead>
                 <TableHead>Criado</TableHead>
                 <TableHead>Expira</TableHead>
@@ -255,14 +258,14 @@ export const CodeManagementModal = ({
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={7} className="text-center py-8">
                     <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
                     Carregando códigos...
                   </TableCell>
                 </TableRow>
               ) : filteredCodes.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                     Nenhum código encontrado
                   </TableCell>
                 </TableRow>
@@ -274,6 +277,20 @@ export const CodeManagementModal = ({
                     </TableCell>
                     <TableCell>
                       {getStatusBadge(code.status)}
+                    </TableCell>
+                    <TableCell>
+                      {code.email ? (
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-purple-700">{code.email}</span>
+                          {code.accepted_at && (
+                            <span className="text-xs text-gray-500">
+                              {formatDate(code.accepted_at)}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-sm">Não usado</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       {code.company_name || '-'}

@@ -199,10 +199,11 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       if (authError) throw authError;
 
       // Create profile WITHOUT role
+      // NOTE: profiles table uses 'name' column (not 'full_name')
       await supabase.from('profiles').insert({
         id: authData.user.id,
         email: data.email,
-        full_name: data.fullName,
+        name: data.fullName, // FIXED: Use 'name' not 'full_name'
         company_id: company.id
       });
 

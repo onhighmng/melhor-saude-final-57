@@ -24,6 +24,7 @@ import DisplayCards from '@/components/ui/display-cards';
 import recursosWellness from '@/assets/recursos-wellness.jpg';
 import cardBackground from '@/assets/card-background.png';
 import { supabase } from '@/integrations/supabase/client';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const UserDashboard = () => {
   const navigate = useNavigate();

@@ -199,12 +199,13 @@ const AdminProviderNew = () => {
       if (!authData.user) throw new Error('Falha ao criar utilizador');
 
       // Create profile WITHOUT role
+      // NOTE: profiles table uses 'name' column (not 'full_name')
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: authData.user.id,
           email: formData.email,
-          full_name: formData.name,
+          name: formData.name, // FIXED: Use 'name' not 'full_name'
           bio: formData.bio,
           metadata: {
             languages: formData.languages,

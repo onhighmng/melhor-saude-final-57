@@ -77,7 +77,7 @@ export const AdminCompaniesTab = ({ onAddCompany }: AdminCompaniesTabProps) => {
 
             return {
               id: company.id,
-              name: company.company_name || 'N/A',
+              name: company.name || 'N/A',
               nuit: company.nuit || 'N/A',
               employees: employeeCount,
               plan: company.plan_type || 'N/A',

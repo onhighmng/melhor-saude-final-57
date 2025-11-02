@@ -145,6 +145,17 @@ export default function AdminSessionsTab() {
     return <LoadingSkeleton variant="table" />;
   }
 
+  // Show empty state if no sessions
+  if (sessions.length === 0) {
+    return (
+      <EmptyState
+        icon={ClipboardList}
+        title="Nenhuma sessão agendada"
+        description="As sessões agendadas pelos colaboradores aparecerão aqui. Quando houver atividade na plataforma, poderá gerir e acompanhar todas as sessões."
+      />
+    );
+  }
+
   return (
     <Card>
       <CardHeader>

@@ -122,20 +122,34 @@ const UserSettings = () => {
 
   const handleSaveProfile = async (profileData: any) => {
     try {
-      if (!profile?.id) return;
+      if (!profile?.id) {
+        toast({
+          title: 'Erro',
+          description: 'ID de utilizador não encontrado',
+          variant: 'destructive'
+        });
+        return;
+      }
       
-      await supabase.from('profiles').update({
+      const { error } = await supabase.from('profiles').update({
         name: profileData.name,
         phone: profileData.phone,
         bio: profileData.bio,
-        avatar_url: profileData.avatar_url
+        avatar_url: profileData.avatar_url,
+        updated_at: new Date().toISOString()
       }).eq('id', profile.id);
+
+      if (error) throw error;
 
       toast({
         title: 'Perfil atualizado',
         description: 'As suas alterações foram guardadas com sucesso.'
       });
+
+      // Reload to update context
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error: any) {
+      console.error('Error updating profile:', error);
       toast({
         title: 'Erro',
         description: error.message || 'Erro ao atualizar perfil',
@@ -146,12 +160,19 @@ const UserSettings = () => {
 
   const handleSaveNotifications = async (preferences: any) => {
     try {
-      if (!profile?.id) return;
+      if (!profile?.id) {
+        toast({
+          title: 'Erro',
+          description: 'ID de utilizador não encontrado',
+          variant: 'destructive'
+        });
+        return;
+      }
       
       // Get existing metadata or initialize as empty object
       const existingMetadata = profile.metadata || {};
       
-      await supabase.from('profiles').update({
+      const { error } = await supabase.from('profiles').update({
         metadata: {
           ...existingMetadata,
           notifications: {
@@ -160,14 +181,18 @@ const UserSettings = () => {
             reminder24h: preferences.reminder24h,
             feedback: preferences.feedbackReminder
           }
-        }
+        },
+        updated_at: new Date().toISOString()
       }).eq('id', profile.id);
+
+      if (error) throw error;
 
       toast({
         title: 'Preferências atualizadas',
         description: 'As suas preferências de notificação foram guardadas.'
       });
     } catch (error: any) {
+      console.error('Error saving notifications:', error);
       toast({
         title: 'Erro',
         description: error.message || 'Erro ao salvar preferências',
@@ -178,12 +203,19 @@ const UserSettings = () => {
 
   const handleSaveConsents = async (consents: any) => {
     try {
-      if (!profile?.id) return;
+      if (!profile?.id) {
+        toast({
+          title: 'Erro',
+          description: 'ID de utilizador não encontrado',
+          variant: 'destructive'
+        });
+        return;
+      }
       
       // Get existing metadata or initialize as empty object
       const existingMetadata = profile.metadata || {};
       
-      await supabase.from('profiles').update({
+      const { error } = await supabase.from('profiles').update({
         metadata: {
           ...existingMetadata,
           consents: {
@@ -191,14 +223,18 @@ const UserSettings = () => {
             marketing: consents.wellnessCommunications,
             analytics: consents.anonymousReports
           }
-        }
+        },
+        updated_at: new Date().toISOString()
       }).eq('id', profile.id);
+
+      if (error) throw error;
 
       toast({
         title: 'Consentimentos atualizados',
         description: 'Os seus consentimentos foram guardados com sucesso.'
       });
     } catch (error: any) {
+      console.error('Error saving consents:', error);
       toast({
         title: 'Erro',
         description: error.message || 'Erro ao salvar consentimentos',

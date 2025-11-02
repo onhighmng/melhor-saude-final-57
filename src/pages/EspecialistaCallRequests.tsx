@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Phone, CheckCircle, Clock, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEscalatedChats } from '@/hooks/useEscalatedChats';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const EspecialistaCallRequests = () => {
   const { toast } = useToast();
@@ -64,6 +65,25 @@ const EspecialistaCallRequests = () => {
     };
     return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
   };
+
+  // Show empty state if no call requests
+  if (!isLoading && filteredRequests.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-heading font-bold text-foreground">
+            Pedidos de Chamada
+          </h1>
+          <p className="text-muted-foreground mt-1">Gerir pedidos de triagem e apoio aos colaboradores</p>
+        </div>
+        <EmptyState
+          icon={Phone}
+          title="Nenhum pedido de chamada pendente"
+          description="Quando os colaboradores precisarem de apoio adicional, os pedidos de chamada aparecerão aqui."
+        />
+      </div>
+    );
+  }
 
   return (
     <>

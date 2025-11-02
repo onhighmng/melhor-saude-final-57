@@ -12,6 +12,8 @@ interface DesktopMenuProps {
 }
 
 const DesktopMenu = ({ menuItems, activeDropdown, onDropdownToggle, onNavigation }: DesktopMenuProps) => {
+  const [localActiveDropdown, setLocalActiveDropdown] = React.useState<string | null>(null);
+
   const handleMenuItemClick = (item: MenuItem) => {
     if (item.onClick) {
       item.onClick();
@@ -23,6 +25,37 @@ const DesktopMenu = ({ menuItems, activeDropdown, onDropdownToggle, onNavigation
       item.onClick();
     }
   };
+
+  const handleDropdownItemClick = (itemOnClick?: () => void) => {
+    if (itemOnClick) {
+      itemOnClick();
+    }
+    setLocalActiveDropdown(null);
+  };
+
+  const toggleDropdown = (key: string) => {
+    setLocalActiveDropdown(localActiveDropdown === key ? null : key);
+  };
+
+  React.useEffect(() => {
+    if (!localActiveDropdown) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.dropdown-container')) {
+        setLocalActiveDropdown(null);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [localActiveDropdown]);
 
   return (
     <div className="flex items-center gap-1 sm:gap-2 lg:gap-6 overflow-visible">
@@ -49,10 +82,44 @@ const DesktopMenu = ({ menuItems, activeDropdown, onDropdownToggle, onNavigation
       {/* Show all items on desktop (lg and above) */}
       <div className="hidden lg:flex items-center gap-6 overflow-visible">
         {menuItems.map((item) => (
-          <div key={item.key} className="relative">
+          <div key={item.key} className="relative dropdown-container">
             {item.key === 'pilares' ? (
               // Use dedicated pillar dropdown
               <PillarDropdown />
+            ) : item.hasDropdown && item.items ? (
+              // Generic dropdown for role-specific menus
+              <div className="relative overflow-visible">
+                <button
+                  type="button"
+                  onClick={() => toggleDropdown(item.key)}
+                  className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-navy-blue hover:text-bright-royal transition-colors duration-200"
+                  aria-expanded={localActiveDropdown === item.key}
+                  aria-haspopup="true"
+                >
+                  <span>{item.title}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${localActiveDropdown === item.key ? 'rotate-180' : ''}`} />
+                </button>
+
+                {localActiveDropdown === item.key && (
+                  <div 
+                    className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999] overflow-visible"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="py-2">
+                      {item.items.map((dropdownItem, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => handleDropdownItemClick(dropdownItem.onClick)}
+                          className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200 border-none bg-transparent"
+                        >
+                          {dropdownItem.title}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : item.requiresAuth && item.hasDropdown ? (
               // Use authenticated dropdown for auth-required items
               <AuthenticatedDropdown

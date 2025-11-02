@@ -149,13 +149,13 @@ export default function RegisterEmployee() {
       if (!authData.user) throw new Error('Falha ao criar utilizador');
 
       // Create profile
-      // NOTE: profiles table HAS role column AND user_roles table
+      // NOTE: profiles table uses 'name' column (not 'full_name')
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: authData.user.id,
           email,
-          full_name: email.split('@')[0],
+          name: email.split('@')[0], // FIXED: Use 'name' not 'full_name'
           role: invite.role || 'user',
           company_id: invite.companies?.id || null,
           is_active: true
