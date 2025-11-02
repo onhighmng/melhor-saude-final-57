@@ -136,7 +136,7 @@ const CompanySessions = () => {
       try {
         const { data: bookings, error } = await supabase
           .from('bookings')
-          .select(`*, profiles!inner(name), prestadores(name)`)
+          .select(`*, profiles!inner(full_name), prestadores(name)`)
           .eq('company_id', profile.company_id);
 
         if (error) throw error;

@@ -49,12 +49,28 @@ const EspecialistaStatsRevamped = () => {
           return acc;
         }, {}) || {};
 
+        // Mock evolution data (replace with real historical data later)
+        const evolutionData = [
+          { month: 'Jan', cases: 45 },
+          { month: 'Fev', cases: 52 },
+          { month: 'Mar', cases: 61 },
+          { month: 'Abr', cases: monthlyCases?.length || 0 }
+        ];
+
+        const totalCases = monthlyCases?.length || 0;
+        const resolvedCases = monthlyCases?.filter(c => c.status === 'resolved').length || 0;
+        const internalResolutionRate = totalCases > 0 ? Math.round((resolvedCases / totalCases) * 100) : 0;
+        const referralRate = totalCases > 0 ? Math.round(((totalCases - resolvedCases) / totalCases) * 100) : 0;
+
         setStats({
-          total_cases: monthlyCases?.length || 0,
-          resolved_cases: monthlyCases?.filter(c => c.status === 'resolved').length || 0,
+          total_cases: totalCases,
+          resolved_cases: resolvedCases,
           avg_response_time: Math.round(avgResponseTime),
           satisfaction_rate: satisfactionRate,
-          top_pillars: Object.entries(pillarCounts).map(([pillar, count]) => ({ pillar, count }))
+          top_pillars: Object.entries(pillarCounts).map(([pillar, count]) => ({ pillar, count })),
+          evolution_data: evolutionData,
+          internal_resolution_rate: internalResolutionRate,
+          referral_rate: referralRate
         });
       } catch (error) {
         console.error('Error calculating stats:', error);
@@ -179,7 +195,11 @@ const EspecialistaStatsRevamped = () => {
             <div className="mt-4 text-center">
               <Badge variant="secondary" className="gap-1">
                 <TrendingUp className="h-3 w-3" />
-                Crescimento de {Math.round((stats.evolution_data[3].cases - stats.evolution_data[0].cases) / stats.evolution_data[0].cases * 100)}% em 4 meses
+                {stats.evolution_data && stats.evolution_data.length >= 4 && stats.evolution_data[0].cases > 0 ? (
+                  <>Crescimento de {Math.round((stats.evolution_data[3].cases - stats.evolution_data[0].cases) / stats.evolution_data[0].cases * 100)}% em 4 meses</>
+                ) : (
+                  <>Dados insuficientes para calcular crescimento</>
+                )}
               </Badge>
             </div>
           </div>

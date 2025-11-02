@@ -209,8 +209,7 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       // Create role in user_roles table
       await supabase.from('user_roles').insert({
         user_id: authData.user.id,
-        role: 'user',
-        created_by: profile?.id
+        role: 'user'
       });
 
       // Create company_employee link
