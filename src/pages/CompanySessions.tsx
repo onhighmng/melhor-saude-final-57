@@ -127,13 +127,16 @@ const CompanySessions = () => {
 
   useEffect(() => {
     const loadSessionAnalytics = async () => {
-      if (!profile?.company_id) return;
+      if (!profile?.company_id) {
+        setLoading(false);
+        return;
+      }
       
       setLoading(true);
       try {
         const { data: bookings, error } = await supabase
           .from('bookings')
-          .select(`*, profiles!inner(name), prestadores(name)`)
+          .select(`*, profiles!inner(full_name), prestadores(name)`)
           .eq('company_id', profile.company_id);
 
         if (error) throw error;

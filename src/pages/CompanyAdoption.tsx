@@ -82,7 +82,10 @@ export const CompanyAdoption: React.FC = () => {
   }, [profile?.company_id, selectedPeriod]);
 
   const loadAdoptionData = async () => {
-    if (!profile?.company_id) return;
+    if (!profile?.company_id) {
+      setLoading(false);
+      return;
+    }
     
     setLoading(true);
     try {
@@ -105,7 +108,9 @@ export const CompanyAdoption: React.FC = () => {
   };
 
   const loadEmployeeAdoption = async () => {
-    if (!profile?.company_id) return;
+    if (!profile?.company_id) {
+      return;
+    }
 
     // Get all invites for this company
     const { data: invites, error: invitesError } = await supabase
@@ -180,7 +185,9 @@ export const CompanyAdoption: React.FC = () => {
   };
 
   const loadAdoptionStats = async () => {
-    if (!profile?.company_id) return;
+    if (!profile?.company_id) {
+      return;
+    }
 
     const totalInvited = employees.length;
     const totalRegistered = employees.filter(e => e.status === 'active' || e.status === 'registered').length;

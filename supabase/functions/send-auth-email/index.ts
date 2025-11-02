@@ -3,6 +3,21 @@ import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0';
 import { Resend } from 'npm:resend@4.0.0';
 import { renderAsync } from 'npm:@react-email/components@0.0.22';
 import { PasswordResetEmail } from './_templates/password-reset.tsx';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+
+// Webhook payload validation schema
+const webhookDataSchema = z.object({
+  user: z.object({
+    email: z.string().email()
+  }),
+  email_data: z.object({
+    token: z.string().min(1),
+    token_hash: z.string().min(1),
+    redirect_to: z.string().url(),
+    email_action_type: z.string().min(1),
+    site_url: z.string().url()
+  })
+});
 
 // Initialize services - read secrets once at module load time
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? null;
@@ -119,8 +134,11 @@ Deno.serve(async (req: Request) => {
     
     try {
       const wh = new Webhook(hookSecret);
-      webhookData = wh.verify(payload, headers) as typeof webhookData;
-      console.log('✅ Webhook signature verified successfully');
+      const verifiedData = wh.verify(payload, headers);
+
+      // Validate webhook data structure with Zod
+      webhookData = webhookDataSchema.parse(verifiedData);
+      console.log('✅ Webhook signature verified and payload validated successfully');
       // METRIC: verified_success (could be tracked in production)
     } catch (webhookError: any) {
       // CRITICAL: Log verification failure with high severity for alerting

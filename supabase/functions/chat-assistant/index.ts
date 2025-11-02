@@ -1,6 +1,7 @@
 // Supabase Edge Function for Support Chat Assistant
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { captureException, captureMessage } from "../_shared/sentry.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -70,6 +71,12 @@ serve(async (req) => {
 
     if (userMsgError) {
       console.error('Error saving user message:', userMsgError)
+      await captureException(new Error(`Failed to save user message: ${userMsgError.message}`), {
+        sessionId,
+        userId,
+        pillar,
+        errorDetails: userMsgError,
+      })
     }
 
     // Generate response using rule-based logic
@@ -87,15 +94,37 @@ serve(async (req) => {
 
     if (botMsgError) {
       console.error('Error saving bot message:', botMsgError)
+      await captureException(new Error(`Failed to save bot message: ${botMsgError.message}`), {
+        sessionId,
+        userId,
+        pillar,
+        errorDetails: botMsgError,
+      })
     }
 
     // Update chat session if needed
     if (response.suggestEscalation) {
-      await supabase
+      const { error: updateError } = await supabase
         .from('chat_sessions')
         .update({ status: 'needs_escalation' })
         .eq('id', sessionId)
+
+      if (updateError) {
+        await captureException(new Error(`Failed to update chat session: ${updateError.message}`), {
+          sessionId,
+          userId,
+          pillar,
+          errorDetails: updateError,
+        })
+      }
     }
+
+    await captureMessage('Chat message processed successfully', 'info', {
+      sessionId,
+      userId,
+      pillar,
+      messageLength: message.length,
+    })
 
     return new Response(
       JSON.stringify(response),
@@ -106,9 +135,24 @@ serve(async (req) => {
     )
   } catch (error: any) {
     console.error('Error in chat-assistant:', error)
-    
+
+    // Handle validation errors
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid input',
+          details: error.errors,
+          message: 'Dados inválidos. Verifique os campos e tente novamente.'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400
+        }
+      )
+    }
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message,
         message: 'Desculpe, ocorreu um erro. Tente novamente.',
         confidence: 0

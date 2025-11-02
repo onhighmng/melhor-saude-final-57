@@ -149,13 +149,14 @@ export default function RegisterEmployee() {
       if (!authData.user) throw new Error('Falha ao criar utilizador');
 
       // Create profile
-      // NOTE: profiles table does NOT have role column (moved to user_roles table)
+      // NOTE: profiles table HAS role column AND user_roles table
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: authData.user.id,
           email,
-          name: email.split('@')[0],
+          full_name: email.split('@')[0],
+          role: invite.role || 'user',
           company_id: invite.companies?.id || null,
           is_active: true
         });
@@ -179,8 +180,7 @@ export default function RegisterEmployee() {
           .from('user_roles')
           .insert({
             user_id: authData.user.id,
-            role: 'user',
-            created_by: authData.user.id
+            role: invite.role || 'user' // FIX: Use role from invite instead of hardcoded 'user'
           } as any);
         if (roleError && roleError.code !== '23505') {
           console.error('Role creation error:', roleError);

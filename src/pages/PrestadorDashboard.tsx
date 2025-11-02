@@ -116,8 +116,8 @@ export default function PrestadorDashboard() {
             const company = Array.isArray(b.companies) ? b.companies[0] : b.companies;
             return {
               ...b,
-              profiles: profile ? { name: profile.name || '', email: profile.email || '' } : undefined,
-              userName: profile?.name || '',
+              profiles: profile ? { name: profile.full_name || '', email: profile.email || '' } : undefined,
+              userName: profile?.full_name || '',
               userEmail: profile?.email || '',
               userAvatar: profile?.avatar_url || '',
               companyName: company?.company_name || ''

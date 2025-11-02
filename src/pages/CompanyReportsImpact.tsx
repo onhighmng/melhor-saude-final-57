@@ -38,7 +38,10 @@ const CompanyReportsImpact = () => {
 
   useEffect(() => {
     const loadAnalytics = async () => {
-      if (!profile?.company_id) return;
+      if (!profile?.company_id) {
+        setLoading(false);
+        return;
+      }
       
       try {
         // Load company data
@@ -147,7 +150,7 @@ const CompanyReportsImpact = () => {
     };
 
     loadAnalytics();
-  }, [profile?.company_id, toast]);
+  }, [profile?.company_id]);
 
   const metricCards = companyMetrics ? [
     {

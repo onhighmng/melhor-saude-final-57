@@ -426,7 +426,7 @@ const BookingFlow = () => {
       // Send confirmation email (method not implemented yet)
       // try {
       //   await emailService.sendBookingConfirmation(profile.email, {
-      //     userName: profile.name || 'Utilizador',
+      //     userName: profile.full_name || 'Utilizador',
       //     providerName: selectedProvider.name,
       //     date: selectedDate.toISOString(),
       //     time: selectedTime,

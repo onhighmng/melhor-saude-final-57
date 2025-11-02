@@ -199,6 +199,20 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const loadCodes = async () => {
     try {
       setLoading(true);
+
+      // Check authentication first
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('User not authenticated');
+        toast({ 
+          title: 'Autenticação necessária', 
+          description: 'Você precisa estar autenticado como admin', 
+          variant: 'destructive' 
+        });
+        setCodes([]);
+        setLoading(false);
+        return;
+      }
       
       // Query all invites, then filter in JavaScript to avoid column issues
       const { data: allCodes, error } = await supabase
@@ -206,7 +220,21 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading codes:', error);
+        if (error.message.includes('permission') || error.code === 'PGRST301') {
+          toast({ 
+            title: 'Erro de permissão', 
+            description: 'Você não tem permissão para ver códigos. Certifique-se de ter role de admin.', 
+            variant: 'destructive' 
+          });
+        } else {
+          throw error;
+        }
+        setCodes([]);
+        setLoading(false);
+        return;
+      }
       
       // Filter by role in JavaScript (only HR codes - employees are managed by HR)
       const filteredCodes = (allCodes || []).filter((code: any) => 
@@ -228,7 +256,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     try {
       console.log('🔍 Calling create_invite_code RPC for HR...');
       
-      const { data, error } = await supabase.rpc('create_invite_code', {
+      const { data, error } = await supabase.rpc('create_invite_code' as any, {
         user_type: 'hr'
       });
 
@@ -549,6 +577,20 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const loadCodes = async () => {
     try {
       setLoading(true);
+
+      // Check authentication first
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('User not authenticated');
+        toast({ 
+          title: 'Autenticação necessária', 
+          description: 'Você precisa estar autenticado como admin', 
+          variant: 'destructive' 
+        });
+        setCodes([]);
+        setLoading(false);
+        return;
+      }
       
       // Query all invites, then filter in JavaScript to avoid column issues
       const { data: allCodes, error } = await supabase
@@ -556,7 +598,21 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading codes:', error);
+        if (error.message.includes('permission') || error.code === 'PGRST301') {
+          toast({ 
+            title: 'Erro de permissão', 
+            description: 'Você não tem permissão para ver códigos. Certifique-se de ter role de admin.', 
+            variant: 'destructive' 
+          });
+        } else {
+          throw error;
+        }
+        setCodes([]);
+        setLoading(false);
+        return;
+      }
       
       // Filter by role in JavaScript (both prestador and specialist)
       const filteredCodes = (allCodes || []).filter((code: any) => 
@@ -578,7 +634,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     try {
       console.log('🔍 Calling create_invite_code RPC for', userType);
       
-      const { data, error } = await supabase.rpc('create_invite_code', {
+      const { data, error } = await supabase.rpc('create_invite_code' as any, {
         user_type: userType
       });
 

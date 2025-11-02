@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'hr' | 'prestador' | 'especialista_geral' | 'us
 
 export interface UserProfile {
   id: string;
-  name: string;
+  full_name: string;
   email: string;
   role: UserRole;
   company_id: string | null;

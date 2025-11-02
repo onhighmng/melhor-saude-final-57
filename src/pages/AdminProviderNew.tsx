@@ -204,7 +204,7 @@ const AdminProviderNew = () => {
         .insert({
           id: authData.user.id,
           email: formData.email,
-          name: formData.name,
+          full_name: formData.name,
           bio: formData.bio,
           metadata: {
             languages: formData.languages,
@@ -220,8 +220,7 @@ const AdminProviderNew = () => {
         .from('user_roles')
         .insert({
           user_id: authData.user.id,
-          role: 'prestador',
-          created_by: profile?.id
+          role: 'prestador'
         });
 
       if (roleError) throw roleError;

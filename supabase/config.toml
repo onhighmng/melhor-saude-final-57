@@ -51,10 +51,57 @@ enable_signup = true
 double_confirm_changes = true
 enable_confirmations = false
 
-# Enable JWT verification for all edge functions
-[functions."*"]
+[functions.legal-chat]
+verify_jwt = false
+
+[functions.universal-specialist-chat]
+verify_jwt = false
+
+[functions.prediagnostic-chat]
+verify_jwt = false
+
+[functions.mental-health-chat]
+verify_jwt = false
+
+[functions.physical-wellness-chat]
+verify_jwt = false
+
+[functions.financial-assistance-chat]
+verify_jwt = false
+
+[functions.chat-assistant]
+verify_jwt = false
+
+[functions.create-employee]
+verify_jwt = true
+
+[functions.send-email]
+verify_jwt = true
+
+[functions.send-booking-email]
 verify_jwt = true
 
 # Exception: Auth webhook handlers don't need JWT (called by Supabase Auth service)
 [functions.send-auth-email]
 verify_jwt = false
+
+[functions.request-password-reset]
+verify_jwt = false
+
+[functions.verify-reset-token]
+verify_jwt = false
+
+[functions.reset-password]
+verify_jwt = false
+
+[functions.record-login-attempt]
+verify_jwt = false
+
+[functions.manage-sessions]
+verify_jwt = true
+
+[functions.process-booking-reminders]
+verify_jwt = false
+
+[functions.manage-availability]
+verify_jwt = true

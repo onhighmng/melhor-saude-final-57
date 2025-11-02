@@ -54,7 +54,7 @@ export const useBookings = (): UseBookingsReturn => {
     
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error} = await supabase
         .from('bookings')
         .select(`
           *,
@@ -65,7 +65,7 @@ export const useBookings = (): UseBookingsReturn => {
           )
         `)
         .eq('user_id', user.id)
-        .order('date', { ascending: true });
+        .order('booking_date', { ascending: true });
 
       if (error) throw error;
 

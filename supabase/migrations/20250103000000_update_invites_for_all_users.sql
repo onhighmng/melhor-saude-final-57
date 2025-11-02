@@ -114,7 +114,7 @@ BEGIN
     i.id,
     i.user_type,
     i.company_id,
-    c.company_name,
+    c.name as company_name,
     i.expires_at,
     i.status,
     i.metadata

@@ -132,7 +132,7 @@ export default function RegisterCompany() {
         .insert({
           id: authData.user.id,
           email: formData.contactEmail,
-          name: formData.contactName,
+          full_name: formData.contactName,
           phone: formData.contactPhone,
           company_id: company.id,
           is_active: true
@@ -157,8 +157,7 @@ export default function RegisterCompany() {
           .from('user_roles')
           .insert({
             user_id: authData.user.id,
-            role: 'hr',
-            created_by: authData.user.id // Self-registration
+            role: 'hr'
           } as any);
         if (roleError && roleError.code !== '23505') {
           console.error('Role creation error:', roleError);

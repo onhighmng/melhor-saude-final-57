@@ -181,7 +181,7 @@ export default function UserSessions() {
         //   
         // if (providerData?.name && profile?.email) {
         //   await emailService.sendBookingCancellation(profile.email, {
-        //     userName: profile.name,
+        //     userName: profile.full_name,
         //     providerName: providerData.name,
         //     date: booking.date,
         //     time: booking.start_time,

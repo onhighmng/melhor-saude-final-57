@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { FeaturesGrid } from '@/components/ui/features-grid';
+import { InviteRedemption } from '@/components/company/InviteRedemption';
 
 const CompanyCollaborators = () => {
   const { toast } = useToast();
@@ -29,10 +30,14 @@ const CompanyCollaborators = () => {
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
   const [companyData, setCompanyData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showInviteRedemption, setShowInviteRedemption] = useState(false);
   
   useEffect(() => {
     const loadCompanyData = async () => {
-      if (!profile?.company_id) return;
+      if (!profile?.company_id) {
+        setLoading(false);
+        return;
+      }
       
       setLoading(true);
       try {
@@ -42,23 +47,34 @@ const CompanyCollaborators = () => {
           .eq('id', profile.company_id)
           .single();
 
-        if (companyError) throw companyError;
+        if (companyError) {
+          console.error('Company error:', companyError);
+          throw companyError;
+        }
 
+        // Use left join instead of inner join to avoid missing data
         const { data: employees, error: empError } = await supabase
           .from('company_employees')
           .select(`
             *,
-            profiles!inner(name, email, avatar_url)
+            profiles(name, email, avatar_url)
           `)
           .eq('company_id', profile.company_id);
         
+        if (empError) {
+          console.error('Employees error:', empError);
+          throw empError;
+        }
+
         // Get bookings separately
-        const { data: bookings } = await supabase
+        const { data: bookings, error: bookingsError } = await supabase
           .from('bookings')
           .select('id, user_id, status, rating')
           .eq('company_id', profile.company_id);
 
-        if (empError) throw empError;
+        if (bookingsError) {
+          console.error('Bookings error:', bookingsError);
+        }
 
         // Merge bookings with employees
         const enrichedEmployees = employees?.map(emp => ({
@@ -88,13 +104,14 @@ const CompanyCollaborators = () => {
           description: 'Erro ao carregar dados da empresa',
           variant: 'destructive'
         });
+        setCompanyData(null);
       } finally {
         setLoading(false);
       }
     };
 
     loadCompanyData();
-  }, [profile?.company_id, toast]);
+  }, [profile?.company_id]);
 
   useEffect(() => {
     document.body.classList.add('company-page');
@@ -256,6 +273,42 @@ const CompanyCollaborators = () => {
 
       {/* Access Management Section */}
       <div className="max-w-7xl mx-auto px-6 py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5" />
+              Resgatar Código de Convite
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Se você recebeu um código de convite de sua empresa, use-o aqui para se vincular e começar a usar a plataforma.
+                </p>
+                <Button 
+                  onClick={() => setShowInviteRedemption(!showInviteRedemption)}
+                  variant={showInviteRedemption ? "secondary" : "default"}
+                >
+                  {showInviteRedemption ? "Fechar" : "Usar Código de Convite"}
+                </Button>
+              </div>
+            </div>
+            
+            {showInviteRedemption && (
+              <div className="mt-6 pt-6 border-t">
+                <InviteRedemption 
+                  onSuccess={(companyId, companyName) => {
+                    toast({
+                      title: "Sucesso",
+                      description: `Você foi vinculado a ${companyName}`,
+                    });
+                  }}
+                />
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

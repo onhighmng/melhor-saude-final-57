@@ -30,6 +30,26 @@ export const useAnalytics = () => {
     try {
       setLoading(true);
       setError(null);
+
+      // Check if user is authenticated first
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.warn('User not authenticated - showing default analytics');
+        setData({
+          total_users: 0,
+          active_users: 0,
+          total_prestadores: 0,
+          active_prestadores: 0,
+          total_companies: 0,
+          total_bookings: 0,
+          pending_change_requests: 0,
+          sessions_allocated: 0,
+          sessions_used: 0,
+          avg_rating: 0
+        });
+        setLoading(false);
+        return;
+      }
       
       // Add timeout to prevent infinite loading
       const timeoutPromise = new Promise((_, reject) => 

@@ -4,6 +4,7 @@ import HeroSection from '@/components/HeroSection';
 import { ModernHeroSection } from '@/components/ModernHeroSection';
 import SobreNosSection from '@/components/SobreNosSection';
 import { StackedCircularFooter } from '@/components/ui/stacked-circular-footer';
+import { SentryTestButton, SentryTestMessages } from '@/components/SentryTestButton';
 
 // Lazy load heavy below-the-fold components
 const CloudsScrollProvider = lazy(() => import('@/components/clouds/CloudsScrollProvider'));
@@ -55,6 +56,25 @@ const Index = () => {
         </CloudsScrollProvider>
       </Suspense>
       
+      
+      {/* Sentry Test Buttons - Development Only */}
+      {import.meta.env.DEV && (
+        <div className="py-8 px-4 bg-slate-100 border-t-2 border-dashed border-slate-300">
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">🧪 Sentry Testing (Development Only)</h3>
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-lg">
+                <p className="text-sm text-slate-600 mb-3">Click to test error tracking:</p>
+                <SentryTestButton />
+              </div>
+              <div className="bg-white p-4 rounded-lg">
+                <p className="text-sm text-slate-600 mb-3">Test different message levels:</p>
+                <SentryTestMessages />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       <StackedCircularFooter />
     </div>
