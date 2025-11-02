@@ -127,7 +127,10 @@ const CompanySessions = () => {
 
   useEffect(() => {
     const loadSessionAnalytics = async () => {
-      if (!profile?.company_id) return;
+      if (!profile?.company_id) {
+        setLoading(false);
+        return;
+      }
       
       setLoading(true);
       try {

@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { FeaturesGrid } from '@/components/ui/features-grid';
+import { InviteRedemption } from '@/components/company/InviteRedemption';
 
 const CompanyCollaborators = () => {
   const { toast } = useToast();
@@ -29,6 +30,7 @@ const CompanyCollaborators = () => {
   const [generatedCodes, setGeneratedCodes] = useState<string[]>([]);
   const [companyData, setCompanyData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showInviteRedemption, setShowInviteRedemption] = useState(false);
   
   useEffect(() => {
     const loadCompanyData = async () => {
@@ -271,6 +273,42 @@ const CompanyCollaborators = () => {
 
       {/* Access Management Section */}
       <div className="max-w-7xl mx-auto px-6 py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5" />
+              Resgatar Código de Convite
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Se você recebeu um código de convite de sua empresa, use-o aqui para se vincular e começar a usar a plataforma.
+                </p>
+                <Button 
+                  onClick={() => setShowInviteRedemption(!showInviteRedemption)}
+                  variant={showInviteRedemption ? "secondary" : "default"}
+                >
+                  {showInviteRedemption ? "Fechar" : "Usar Código de Convite"}
+                </Button>
+              </div>
+            </div>
+            
+            {showInviteRedemption && (
+              <div className="mt-6 pt-6 border-t">
+                <InviteRedemption 
+                  onSuccess={(companyId, companyName) => {
+                    toast({
+                      title: "Sucesso",
+                      description: `Você foi vinculado a ${companyName}`,
+                    });
+                  }}
+                />
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
