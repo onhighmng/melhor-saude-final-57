@@ -93,7 +93,7 @@ export default function UserResources() {
         // Get employee's company to check premium access (simplified)
         const { data: employee } = await supabase
           .from('company_employees')
-          .select('company_id')
+          .select('company_id, user_id')
           .eq('user_id', user.id)
           .maybeSingle();
 

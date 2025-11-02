@@ -36,12 +36,30 @@ export default function AdminResources() {
 
   const loadResources = async () => {
     try {
+      // Check authentication first
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('User not authenticated');
+        toast.error('Você precisa estar autenticado como admin para ver recursos');
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('resources')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading resources:', error);
+        // Check if it's a permission error (404 often means RLS blocking)
+        if (error.message.includes('permission') || error.code === 'PGRST301') {
+          toast.error('Você não tem permissão para ver recursos. Certifique-se de ter role de admin.');
+        } else {
+          throw error;
+        }
+        return;
+      }
       setResources(data || []);
     } catch (error) {
       console.error('Error loading resources:', error);

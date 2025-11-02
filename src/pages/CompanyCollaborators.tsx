@@ -32,7 +32,10 @@ const CompanyCollaborators = () => {
   
   useEffect(() => {
     const loadCompanyData = async () => {
-      if (!profile?.company_id) return;
+      if (!profile?.company_id) {
+        setLoading(false);
+        return;
+      }
       
       setLoading(true);
       try {
@@ -94,7 +97,7 @@ const CompanyCollaborators = () => {
     };
 
     loadCompanyData();
-  }, [profile?.company_id, toast]);
+  }, [profile?.company_id]);
 
   useEffect(() => {
     document.body.classList.add('company-page');
