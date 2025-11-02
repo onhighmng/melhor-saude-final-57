@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { FeaturesGrid } from '@/components/ui/features-grid';
+import { EmployeeListSection } from '@/components/company/EmployeeListSection';
 
 const CompanyCollaborators = () => {
   const { toast } = useToast();
@@ -380,29 +381,8 @@ const CompanyCollaborators = () => {
         seatUsagePercent={profile?.company_id ? seatUsagePercent : 0}
       />
 
-      {/* Employee Management Section - Coming Soon */}
-      <div className="max-w-7xl mx-auto px-6 pb-12">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Gestão de Colaboradores
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8">
-              <Users className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-20" />
-              <p className="text-lg font-medium text-muted-foreground mb-2">
-                Visualização de colaboradores em breve
-              </p>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                Em breve você poderá ver a lista de colaboradores registrados, status de ativação, 
-                e estatísticas de utilização dos serviços de bem-estar.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Employee Management Section */}
+      <EmployeeListSection companyId={profile?.company_id} />
     </div>
   );
 };

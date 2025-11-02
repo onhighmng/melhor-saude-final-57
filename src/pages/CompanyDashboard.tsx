@@ -36,6 +36,7 @@ const CompanyDashboard = () => {
   }
   const [metrics, setMetrics] = useState<CompanyMetrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mostUsedPillarPercentage, setMostUsedPillarPercentage] = useState(0);
 
   useEffect(() => {
     const loadCompanyData = async () => {
@@ -96,6 +97,13 @@ const CompanyDashboard = () => {
           ? Object.entries(pillarCounts).reduce((a, b) => 
               (pillarCounts[a[0]] || 0) > (pillarCounts[b[0]] || 0) ? a : b)[0]
           : 'N/A';
+
+        // Calculate percentage for most used pillar
+        const totalBookings = bookings?.length || 0;
+        const mostUsedPillarCount = mostUsedPillar !== 'N/A' ? (pillarCounts[mostUsedPillar] || 0) : 0;
+        const mostUsedPillarPct = totalBookings > 0 ? Math.round((mostUsedPillarCount / totalBookings) * 100) : 0;
+        
+        setMostUsedPillarPercentage(mostUsedPillarPct);
 
         setMetrics({
           avgSatisfaction: avgRating.toFixed(1),
@@ -338,9 +346,9 @@ const CompanyDashboard = () => {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-lg font-medium text-gray-900">{metrics?.mostUsedPillar || 'N/A'}</span>
-                          <span className="font-mono text-xl font-semibold text-purple-700">42%</span>
+                          <span className="font-mono text-xl font-semibold text-purple-700">{mostUsedPillarPercentage}%</span>
                         </div>
-                        <Progress value={42} className="h-2" />
+                        <Progress value={mostUsedPillarPercentage} className="h-2" />
                         <p className="text-sm text-gray-600">das sessões totais</p>
                       </div>
                     </div>
