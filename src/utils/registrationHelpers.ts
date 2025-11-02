@@ -86,6 +86,14 @@ export const createUserFromCode = async (
     await supabase.auth.setSession(authData.session);
   }
 
+  // Get the correct role from the invite (not from userType mapping)
+  // The invite.role contains the actual database role:
+  // - 'hr' for HR/company codes
+  // - 'prestador' for affiliate codes  
+  // - 'especialista_geral' for specialist codes
+  // - 'user' for employee/personal codes
+  const roleFromInvite = invite.role || 'user';
+
   // Create profile with error handling
   // NOTE: profiles table does NOT have a role column (migrated to user_roles table)
   const profileData: any = {
@@ -94,6 +102,7 @@ export const createUserFromCode = async (
     name: userData.name,
     phone: userData.phone || null,
     company_id: invite.company_id || null,
+    role: roleFromInvite, // Set role from invite
     is_active: true
   };
 
@@ -114,9 +123,10 @@ export const createUserFromCode = async (
     }
   }
 
-  // Assign user role with error handling
+  // Assign user role based on invite role (not userType)
+  // This ensures the correct role is assigned regardless of the form flow
   try {
-    await assignUserRole(userId, userType);
+    await assignUserRoleFromInvite(userId, roleFromInvite);
   } catch (error: any) {
     // If role already exists, continue
     if (error?.code !== '23505') {
@@ -150,13 +160,47 @@ export const createUserFromCode = async (
   }
 };
 
+// NEW FUNCTION: Assign user role directly from invite role
+// This bypasses the userType mapping and uses the exact role from the database
+export const assignUserRoleFromInvite = async (userId: string, inviteRole: string) => {
+  // Check if role already exists
+  const { data: existingRole } = await supabase
+    .from('user_roles')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('role', inviteRole)
+    .maybeSingle();
+  
+  if (existingRole) {
+    // Role already exists, skip
+    return;
+  }
+
+  const { error } = await supabase
+    .from('user_roles')
+    .insert({
+      user_id: userId,
+      role: inviteRole,
+      created_by: userId // Self-assigned during registration
+    } as any);
+
+  if (error) {
+    // If duplicate (race condition), ignore
+    if (error.code === '23505') {
+      return;
+    }
+    throw error;
+  }
+};
+
+// LEGACY FUNCTION: Keep for backward compatibility
 export const assignUserRole = async (userId: string, userType: UserType) => {
-  const roleMap: Record<UserType, 'user' | 'hr' | 'prestador' | 'admin' | 'specialist'> = {
+  const roleMap: Record<UserType, 'user' | 'hr' | 'prestador' | 'admin' | 'especialista_geral'> = {
     'personal': 'user',
     'hr': 'hr',
     'user': 'user',
     'prestador': 'prestador',
-    'specialist': 'specialist'
+    'specialist': 'especialista_geral' // FIXED: was 'specialist', should be 'especialista_geral'
   };
 
   const targetRole = roleMap[userType];
@@ -192,6 +236,10 @@ export const assignUserRole = async (userId: string, userType: UserType) => {
 };
 
 export const markCodeAsUsed = async (code: string, userId: string) => {
+  // Get user email for the trigger
+  const { data: userData } = await supabase.auth.getUser();
+  const userEmail = userData?.user?.email;
+  
   // Only update if code is still pending
   const { data: inviteData, error: checkError } = await supabase
     .from('invites')
@@ -209,13 +257,21 @@ export const markCodeAsUsed = async (code: string, userId: string) => {
     return;
   }
   
-  // Note: Actual schema has 'accepted_at' but NOT 'accepted_by'
+  // Update the invite to mark it as accepted
+  // Also update the email so the database trigger can find the user
+  const updateData: any = {
+    status: 'accepted',
+    accepted_at: new Date().toISOString()
+  };
+  
+  // Add email if available (needed for the trigger to work)
+  if (userEmail) {
+    updateData.email = userEmail;
+  }
+  
   const { error } = await supabase
     .from('invites')
-    .update({
-      status: 'accepted',
-      accepted_at: new Date().toISOString()
-    })
+    .update(updateData)
     .eq('invite_code', code.toUpperCase())
     .eq('status', 'pending'); // Only update if still pending
 
@@ -336,7 +392,6 @@ export const createPrestadorUser = async (userId: string, userData: PrestadorUse
       hourly_rate: userData.costPerSession || 0,
       session_type: userData.sessionType || 'both',
       availability: userData.availability ? JSON.parse(JSON.stringify(userData.availability)) : {},
-      is_approved: true, // Admin-generated codes are pre-approved
       is_active: true
     } as any);
 
