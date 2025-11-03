@@ -10,8 +10,8 @@ import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, User, Building2, UserCog, CheckCircle, X, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccessCodeValidation } from '@/hooks/useAccessCodeValidation';
-import { createUserFromCode } from '@/utils/registrationHelpers';
-import { UserType, PersonalUserData, HRUserData, EmployeeUserData, PrestadorUserData } from '@/types/accessCodes';
+import { createUserFromCode, PersonalUserData, HRUserData, EmployeeUserData, PrestadorUserData } from '@/utils/registrationHelpers';
+import { UserType } from '@/types/accessCodes';
 import { getAuthCallbackUrl } from '@/utils/authRedirects';
 
 const steps = [
@@ -143,7 +143,7 @@ export default function Register() {
             phone: formData.phone,
             companyName: formData.companyName,
             nuit: formData.nuit,
-            address: formData.prestadorAddress,
+            address: formData.address,
             contactPerson: formData.contactPerson
           };
           break;

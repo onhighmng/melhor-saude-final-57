@@ -43,6 +43,7 @@ const BookingFlow = () => {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState('');
+  const [lastBookingId, setLastBookingId] = useState<string | null>(null);
   
   // Reschedule mode state
   const [rescheduleBookingId, setRescheduleBookingId] = useState<string | null>(null);
@@ -102,11 +103,12 @@ const BookingFlow = () => {
           }
           
           // Pre-fill date and time
-          if (booking.date) {
-            setSelectedDate(new Date(booking.date));
+          const bookingData = booking as any; // Type assertion for outdated schema
+          if (bookingData.booking_date) {
+            setSelectedDate(new Date(bookingData.booking_date));
           }
-          if (booking.start_time) {
-            setSelectedTime(booking.start_time);
+          if (bookingData.start_time) {
+            setSelectedTime(bookingData.start_time);
           }
           
           // Show reschedule banner and go to datetime step
@@ -241,12 +243,12 @@ const BookingFlow = () => {
         const { error: updateError } = await supabase
           .from('bookings')
           .update({
-            date: selectedDate.toISOString().split('T')[0],
+            booking_date: selectedDate.toISOString().split('T')[0],
             start_time: selectedTime,
             end_time: endTime,
             prestador_id: selectedProvider.id,
             status: 'pending_confirmation',
-            rescheduled_from: (originalBooking as Record<string, unknown>).date as string,
+            rescheduled_from: (originalBooking as Record<string, unknown>).booking_date as string,
             rescheduled_at: new Date().toISOString()
           })
           .eq('id', rescheduleBookingId);
@@ -331,14 +333,16 @@ const BookingFlow = () => {
       // ========================================
       // STEP 2: CHECK PROVIDER AVAILABILITY
       // ========================================
-      const { data: existingBooking } = await supabase
+      const availabilityCheck: any = await (supabase
         .from('bookings')
         .select('id')
         .eq('prestador_id', selectedProvider.id)
-        .eq('date', selectedDate.toISOString().split('T')[0])
+        .eq('booking_date', selectedDate.toISOString().split('T')[0])
         .eq('start_time', selectedTime)
         .neq('status', 'cancelled')
-        .maybeSingle();
+        .maybeSingle() as any);
+      
+      const existingBooking = availabilityCheck.data;
       
       if (existingBooking) {
         toast({
@@ -355,73 +359,68 @@ const BookingFlow = () => {
 
       // Create booking with sanitized inputs
       const pillar = selectedPillar ? pillarMap[selectedPillar] : null;
+      
+      // Extract ONLY string values - force everything to primitives
+      const user_id = profile.id && typeof profile.id === 'string' ? profile.id : String(profile.id || '');
+      const company_id = companyId && typeof companyId === 'string' ? companyId : (companyId ? String(companyId) : null);
+      const prestador_id = selectedProvider.id && typeof selectedProvider.id === 'string' ? selectedProvider.id : String(selectedProvider.id || '');
+      
+      const bookingData = {
+        user_id: user_id,
+        company_id: company_id,
+        prestador_id: prestador_id,
+        pillar: pillar,
+        topic: selectedTopics.length > 0 ? sanitizeInput(selectedTopics.join(', ')) : null,
+        booking_date: String(selectedDate.toISOString().split('T')[0]),
+        start_time: String(selectedTime),
+        end_time: String(endTime),
+        status: 'pending',
+        session_type: meetingType === 'virtual' ? 'virtual' : meetingType === 'phone' ? 'phone' : 'presencial',
+        meeting_type: meetingType,
+        quota_type: 'employer',
+        meeting_link: meetingType === 'virtual' ? `https://meet.example.com/${profile.id}-${new Date().getTime()}` : null,
+        notes: additionalNotes ? sanitizeInput(additionalNotes) : null,
+        booking_source: 'direct'
+      };
+      
+      console.log('[BookingFlow] Inserting booking with primitives:', bookingData);
+      
+      // Use Supabase client with clean data
       const { data: booking, error } = await supabase
         .from('bookings')
-        .insert({
-          user_id: profile.id,
-          booking_date: new Date().toISOString(),
-          company_id: companyId,
-          prestador_id: selectedProvider.id,
-          pillar: pillar,
-          topic: sanitizeInput(selectedTopics.join(', ')),
-          date: selectedDate.toISOString().split('T')[0],
-          start_time: selectedTime,
-          end_time: endTime,
-          status: 'pending',
-          session_type: meetingType === 'virtual' ? 'virtual' : meetingType === 'phone' ? 'phone' : 'presencial',
-          meeting_type: meetingType,
-          quota_type: 'employer',
-          meeting_link: meetingType === 'virtual' ? `https://meet.example.com/${profile.id}-${new Date().getTime()}` : null,
-          notes: additionalNotes ? sanitizeInput(additionalNotes) : null,
-          booking_source: 'direct'
-        })
+        .insert(bookingData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[BookingFlow] Booking insert error:', error);
+        throw error;
+      }
+      
+      console.log('[BookingFlow] Booking created successfully:', booking);
 
-      // Track booking in user_progress
-      await supabase.from('user_progress').insert({
-        user_id: profile.id,
-        pillar: pillar,
-        action_type: 'session_scheduled',
-        action_date: new Date().toISOString(),
-        metadata: {
-          booking_id: booking.id,
-          prestador_id: selectedProvider.id,
-          booking_date: booking.booking_date
-        }
-      });
+      // Store booking ID for later chat session linking
+      setLastBookingId(booking.id);
 
-      // Get current sessions_used for user and increment
-      const { data: employeeData } = await supabase
-        .from('company_employees')
-        .select('sessions_used')
-        .eq('user_id', profile.id)
-        .single();
-
-      if (employeeData) {
-        await supabase
-          .from('company_employees')
-          .update({ sessions_used: employeeData.sessions_used + 1 })
-          .eq('user_id', profile.id);
+      // Track booking in user_progress (silently fail if error to not block booking)
+      try {
+        await supabase.from('user_progress').insert({
+          user_id: String(profile.id),
+          pillar: pillar,
+          action_type: 'session_scheduled',
+          action_date: new Date().toISOString(),
+          metadata: {
+            booking_id: String(booking.id),
+            prestador_id: String(selectedProvider.id),
+            booking_date: String(booking.booking_date || selectedDate.toISOString().split('T')[0])
+          }
+        });
+      } catch (progressError) {
+        console.error('[BookingFlow] Error tracking progress (non-blocking):', progressError);
       }
 
-      // Get current sessions_used for company and increment
-      if (companyId) {
-        const { data: companyData } = await supabase
-          .from('companies')
-          .select('sessions_used')
-          .eq('id', companyId)
-          .single();
-
-        if (companyData) {
-          await supabase
-            .from('companies')
-            .update({ sessions_used: companyData.sessions_used + 1 })
-            .eq('id', companyId);
-        }
-      }
+      // Note: Quota is NOT decremented here. It will be decremented automatically
+      // by the database trigger when the session status changes to 'completed'.
 
       // Send confirmation email (method not implemented yet)
       // try {
@@ -455,7 +454,19 @@ const BookingFlow = () => {
       }, 2000);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao agendar a sessão';
+      console.error('[BookingFlow] Error creating booking:', error);
+      
+      // Extract only the error message, avoid passing the entire error object
+      let errorMessage = 'Ocorreu um erro ao agendar a sessão';
+      
+      if (error && typeof error === 'object') {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if ('error_description' in error && typeof error.error_description === 'string') {
+          errorMessage = error.error_description;
+        }
+      }
+      
       toast({
         title: 'Erro ao agendar',
         description: errorMessage,
@@ -567,7 +578,16 @@ const BookingFlow = () => {
         return (
           <PreDiagnosticChat
             onBack={() => setCurrentStep('prediagnostic-cta')}
-            onComplete={() => navigate('/user/dashboard')}
+            onComplete={async (sessionId: string) => {
+              // Link chat session to the booking
+              if (lastBookingId && sessionId) {
+                await supabase
+                  .from('bookings')
+                  .update({ chat_session_id: sessionId })
+                  .eq('id', lastBookingId);
+              }
+              navigate('/user/dashboard');
+            }}
           />
         );
       

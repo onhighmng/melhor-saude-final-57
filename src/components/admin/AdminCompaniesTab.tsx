@@ -65,9 +65,24 @@ export const AdminCompaniesTab = ({ onAddCompany }: AdminCompaniesTabProps) => {
       if (companiesError) throw companiesError;
 
       if (companiesData) {
-        // Get employee counts for each company
-        const companiesWithEmployees = await Promise.all(
+        // Filter companies: only show those with at least one active HR user
+        const companiesWithHR = await Promise.all(
           companiesData.map(async (company) => {
+            // Check if company has an active HR user
+            const { data: hrUsers, error: hrError } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('company_id', company.id)
+              .eq('role', 'hr')
+              .eq('is_active', true)
+              .limit(1);
+
+            // Skip companies without active HR users
+            if (hrError || !hrUsers || hrUsers.length === 0) {
+              return null;
+            }
+
+            // Get employee counts for each company
             const { count, error: countError } = await supabase
               .from('company_employees')
               .select('*', { count: 'exact', head: true })
@@ -84,12 +99,14 @@ export const AdminCompaniesTab = ({ onAddCompany }: AdminCompaniesTabProps) => {
               totalSessions: company.sessions_allocated || 0,
               usedSessions: company.sessions_used || 0,
               status: company.is_active ? 'Ativa' : 'Em Onboarding',
-              monthlyFee: company.monthly_fee || 0,
+              monthlyFee: 0,
             };
           })
         );
 
-        setCompanies(companiesWithEmployees);
+        // Filter out null entries (companies without active HR)
+        const validCompanies = companiesWithHR.filter(c => c !== null) as Company[];
+        setCompanies(validCompanies);
       }
     } catch (error) {
       console.error('Error loading companies:', error);

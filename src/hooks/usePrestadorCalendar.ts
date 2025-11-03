@@ -11,6 +11,7 @@ export interface PrestadorCalendarEvent {
   company?: string;
   pillar?: string;
   status?: 'confirmed' | 'pending' | 'cancelled';
+  meetingLink?: string;
 }
 
 interface UsePrestadorCalendarReturn {
@@ -59,11 +60,9 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
         return;
       }
 
-      // Fetch bookings for the next 30 days
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(startDate.getDate() + 30);
-
+      // Fetch ALL bookings (same as user profile - no date filtering)
+      // This ensures specialists see all sessions, not just next 30 days
+      // BUT exclude cancelled sessions
       const bookingsQuery = supabase
         .from('bookings')
         .select(`
@@ -73,12 +72,12 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
           status,
           pillar,
           session_type,
+          meeting_link,
           profiles!bookings_user_id_fkey(name),
           companies!bookings_company_id_fkey(company_name)
         `)
         .eq('prestador_id', prestador.id)
-        .gte('booking_date', startDate.toISOString().split('T')[0])
-        .lte('booking_date', endDate.toISOString().split('T')[0])
+        .neq('status', 'cancelled')
         .order('booking_date', { ascending: true })
         .order('start_time', { ascending: true });
 
@@ -98,17 +97,29 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
       const bookings = bookingsResult.status === 'fulfilled' ? bookingsResult.value.data : [];
       const prestadorData = prestadorDataResult.status === 'fulfilled' ? prestadorDataResult.value.data : null;
 
+      console.log('[usePrestadorCalendar] Raw bookings from DB:', bookings);
+      console.log('[usePrestadorCalendar] Total bookings:', bookings?.length || 0);
+
       // Transform bookings to calendar events
-      const bookingEvents: PrestadorCalendarEvent[] = (bookings || []).map((booking: any) => ({
-        id: booking.id,
-        date: booking.booking_date,
-        time: booking.start_time || '09:00',
-        type: 'session' as const,
-        clientName: booking.profiles?.name,
-        company: booking.companies?.company_name,
-        pillar: booking.pillar,
-        status: booking.status as 'confirmed' | 'pending' | 'cancelled'
-      }));
+      // Use booking_date OR date field (bookings table has both columns)
+      const bookingEvents: PrestadorCalendarEvent[] = (bookings || []).map((booking: any) => {
+        const eventDate = booking.booking_date || booking.date;
+        console.log('[usePrestadorCalendar] Booking:', booking.id, 'Date:', eventDate, 'Time:', booking.start_time, 'Link:', booking.meeting_link);
+        
+        return {
+          id: booking.id,
+          date: eventDate,
+          time: booking.start_time || '09:00',
+          type: 'session' as const,
+          clientName: booking.profiles?.name,
+          company: booking.companies?.company_name,
+          pillar: booking.pillar,
+          status: booking.status as 'confirmed' | 'pending' | 'cancelled',
+          meetingLink: booking.meeting_link
+        };
+      }).filter(event => event.date); // Remove events with no date
+      
+      console.log('[usePrestadorCalendar] Booking events after transform:', bookingEvents);
 
       // Transform blocked dates from prestadores table to calendar events
       // Format: [{"date": "2024-01-15", "times": ["10:00", "14:00"]}, ...]
@@ -137,6 +148,9 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
         return a.time.localeCompare(b.time);
       });
 
+      console.log('[usePrestadorCalendar] All calendar events:', allEvents);
+      console.log('[usePrestadorCalendar] Total events:', allEvents.length);
+
       setCalendarEvents(allEvents);
     } catch (err) {
       // Silently fail - just show empty calendar, no error UI
@@ -150,6 +164,30 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
 
   useEffect(() => {
     fetchCalendarData();
+
+    // Set up realtime subscription for bookings changes
+    if (profile?.id) {
+      const channel = supabase
+        .channel('prestador-bookings-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'bookings',
+          },
+          (payload) => {
+            console.log('[usePrestadorCalendar] Booking changed:', payload);
+            // Refetch calendar when any booking changes
+            fetchCalendarData();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [profile?.id]);
 
   return {

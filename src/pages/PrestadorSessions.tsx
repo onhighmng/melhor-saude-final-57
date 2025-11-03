@@ -213,10 +213,15 @@ export default function PrestadorSessions() {
 
   const handleUpdateMeetingLink = async (sessionId: string, link: string) => {
     try {
+      // Normalize URL to ensure it has https:// protocol
+      const normalizedLink = link.trim() ? (
+        link.trim().match(/^https?:\/\//i) ? link.trim() : `https://${link.trim()}`
+      ) : null;
+
       // Update database first
       const { error: updateError } = await supabase
         .from('bookings')
-        .update({ meeting_link: link })
+        .update({ meeting_link: normalizedLink })
         .eq('id', sessionId);
 
       if (updateError) throw updateError;

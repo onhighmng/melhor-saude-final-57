@@ -2,6 +2,7 @@ import React from 'react';
 import { BookingCalendar } from '@/components/ui/booking-calendar';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { useProviderAvailability } from '@/hooks/useProviderAvailability';
 
 interface CalendarStepProps {
   selectedDate: Date | undefined;
@@ -11,22 +12,8 @@ interface CalendarStepProps {
   onNext: () => void;
   onBack?: () => void;
   pillarName: string;
+  providerId?: string | null; // Add provider ID to fetch real availability
 }
-
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 8; hour <= 17; hour++) {
-    for (let minute of [0, 30]) {
-      if (hour === 17 && minute === 30) break;
-      const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-      slots.push({
-        time,
-        available: true, // All slots available by default - real availability should be queried from prestador_availability table
-      });
-    }
-  }
-  return slots;
-};
 
 export default function CalendarStep({ 
   selectedDate, 
@@ -35,9 +22,11 @@ export default function CalendarStep({
   onTimeSelect,
   onNext, 
   onBack,
-  pillarName 
+  pillarName,
+  providerId
 }: CalendarStepProps) {
-  const timeSlots = generateTimeSlots();
+  // Fetch real availability from backend
+  const { availableSlots, loading } = useProviderAvailability(providerId || null, selectedDate);
 
   return (
     <div className="flex flex-col h-full max-w-7xl mx-auto w-full">
@@ -66,9 +55,14 @@ export default function CalendarStep({
           onDateSelect={onDateSelect}
           selectedTime={selectedTime}
           onTimeSelect={onTimeSelect}
-          timeSlots={timeSlots}
+          timeSlots={availableSlots}
           showTimeSelection={true}
         />
+        {loading && (
+          <div className="mt-4 text-center text-sm text-gray-500">
+            A carregar disponibilidade...
+          </div>
+        )}
       </div>
 
       {/* Continue Button */}

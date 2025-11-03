@@ -70,8 +70,8 @@ export const ProviderCalendarView = ({
         .from('bookings')
         .select('*, profiles(name), companies(company_name)')
         .eq('prestador_id', provider.id)
-        .gte('date', format(currentWeekStart, 'yyyy-MM-dd'))
-        .lte('date', format(weekEnd, 'yyyy-MM-dd'))
+        .gte('booking_date', format(currentWeekStart, 'yyyy-MM-dd'))
+        .lte('booking_date', format(weekEnd, 'yyyy-MM-dd'))
         .neq('status', 'cancelled');
 
       if (error) throw error;
@@ -86,7 +86,7 @@ export const ProviderCalendarView = ({
           slotDate.setHours(hour, 0, 0, 0);
           
           const booking = bookings?.find(b => {
-            const bookingDate = new Date(b.date);
+            const bookingDate = new Date(b.booking_date);
             const bookingHour = b.start_time ? parseInt(b.start_time.split(':')[0]) : null;
             return isSameDay(bookingDate, date) && bookingHour === hour;
           });

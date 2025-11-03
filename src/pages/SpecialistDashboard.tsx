@@ -44,21 +44,64 @@ export default function SpecialistDashboard() {
   const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'phone_escalated');
 
   // Load real sessions - get bookings assigned to this specialist
+  // Shows ALL bookings (same as user profile and prestador calendar)
   useEffect(() => {
     const loadSessions = async () => {
-      if (!profile?.id) return;
+      if (!profile?.id) {
+        console.log('[SpecialistDashboard] No profile ID');
+        return;
+      }
       
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      console.log('[SpecialistDashboard] Loading sessions for profile:', profile.id);
       
-      const { data } = await supabase
+      // First get the prestador ID for this user
+      const { data: prestador, error: prestadorError } = await supabase
+        .from('prestadores')
+        .select('id')
+        .eq('user_id', profile.id)
+        .single();
+      
+      if (prestadorError) {
+        console.error('[SpecialistDashboard] Error fetching prestador:', prestadorError);
+      }
+      
+      console.log('[SpecialistDashboard] Prestador data:', prestador);
+      
+      if (!prestador) {
+        console.log('[SpecialistDashboard] No prestador found, setting empty sessions');
+        setFilteredSessions([]);
+        return;
+      }
+      
+      // Then get bookings using the prestador ID (NOT profile.id)
+      const { data, error: bookingsError } = await supabase
         .from('bookings')
         .select('*, profiles!bookings_user_id_fkey(name)')
-        .eq('prestador_id', profile.id)
-        .gte('booking_date', today.toISOString())
+        .eq('prestador_id', prestador.id)
         .order('booking_date', { ascending: true })
         .order('start_time', { ascending: true });
-      setFilteredSessions(data || []);
+      
+      if (bookingsError) {
+        console.error('[SpecialistDashboard] Error fetching bookings:', bookingsError);
+      }
+      
+      console.log('[SpecialistDashboard] Bookings data:', data);
+      console.log('[SpecialistDashboard] Total bookings:', data?.length || 0);
+      
+      // Map the bookings to the expected session format
+      const mappedSessions = (data || []).map((booking: any) => ({
+        id: booking.id,
+        user_name: booking.profiles?.name || 'Unknown',
+        time: booking.start_time || '',
+        date: booking.booking_date || booking.date,
+        type: booking.session_type || booking.meeting_type || 'Session',
+        status: booking.status,
+        ...booking
+      }));
+      
+      console.log('[SpecialistDashboard] Mapped sessions:', mappedSessions);
+      
+      setFilteredSessions(mappedSessions);
     };
     loadSessions();
   }, [profile?.id]);

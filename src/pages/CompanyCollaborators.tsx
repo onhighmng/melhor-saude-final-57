@@ -21,10 +21,43 @@ const CompanyCollaborators = () => {
   const [companyData, setCompanyData] = useState<any>(null);
   const [seatStats, setSeatStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [resolvedCompanyId, setResolvedCompanyId] = useState<string | null>(null);
   
   useEffect(() => {
     const loadCompanyData = async () => {
-      if (!profile?.company_id) {
+      // First check if we have company_id directly
+      let companyId = profile?.company_id;
+      
+      // FALLBACK: If HR doesn't have company_id, try to find company by email
+      if (!companyId && profile?.role === 'hr' && profile?.email) {
+        console.log('[CompanyCollaborators] HR without company_id, looking up by email:', profile.email);
+        
+        try {
+          const { data: company, error } = await supabase
+            .from('companies')
+            .select('id')
+            .eq('email', profile.email)
+            .maybeSingle();
+          
+          if (!error && company) {
+            companyId = company.id;
+            console.log('[CompanyCollaborators] ✅ Found company by email:', companyId);
+            
+            // Update profile with company_id for future use
+            await supabase
+              .from('profiles')
+              .update({ company_id: companyId })
+              .eq('id', profile.id);
+          }
+        } catch (err) {
+          console.error('[CompanyCollaborators] Error finding company by email:', err);
+        }
+      }
+      
+      // Store resolved company ID in state
+      setResolvedCompanyId(companyId || null);
+      
+      if (!companyId) {
         setLoading(false);
         // Set empty data to prevent infinite loading
         setCompanyData({
@@ -49,11 +82,11 @@ const CompanyCollaborators = () => {
       
       setLoading(true);
       try {
-        // Get company basic info
+        // Get company basic info (using companyId from above, which might be from profile or fallback)
         const { data: company, error: companyError } = await supabase
           .from('companies')
           .select('*')
-          .eq('id', profile.company_id)
+          .eq('id', companyId)
           .single();
 
         if (companyError) {
@@ -72,25 +105,25 @@ const CompanyCollaborators = () => {
           setSeatStats(seatData);
         }
 
-        // Use left join instead of inner join to avoid missing data
+        // Use left join instead of inner join to avoid missing data (using companyId)
         const { data: employees, error: empError } = await supabase
           .from('company_employees')
           .select(`
             *,
             profiles(name, email, avatar_url, is_active)
           `)
-          .eq('company_id', profile.company_id);
+          .eq('company_id', companyId);
         
         if (empError) {
           console.error('Employees error:', empError);
           throw empError;
         }
 
-        // Get bookings separately
+        // Get bookings separately (using companyId)
         const { data: bookings, error: bookingsError } = await supabase
           .from('bookings')
           .select('id, user_id, status, rating')
-          .eq('company_id', profile.company_id);
+          .eq('company_id', companyId);
 
         if (bookingsError) {
           console.error('Bookings error:', bookingsError);
@@ -131,7 +164,7 @@ const CompanyCollaborators = () => {
     };
 
     loadCompanyData();
-  }, [profile?.company_id]);
+  }, [profile?.company_id, profile?.email, profile?.role, profile?.id]);
 
   useEffect(() => {
     document.body.classList.add('company-page');
@@ -381,8 +414,8 @@ const CompanyCollaborators = () => {
         seatUsagePercent={profile?.company_id ? seatUsagePercent : 0}
       />
 
-      {/* Employee Management Section */}
-      <EmployeeListSection companyId={profile?.company_id} />
+      {/* Employee Management Section - Use resolved company ID */}
+      <EmployeeListSection companyId={resolvedCompanyId || profile?.company_id} />
     </div>
   );
 };

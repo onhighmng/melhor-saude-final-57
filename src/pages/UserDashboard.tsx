@@ -29,7 +29,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const { sessionBalance } = useSessionBalance();
   const { upcomingBookings, allBookings, formatPillarName } = useBookings();
   const { milestones, loading: milestonesLoading, progress, reloadMilestones } = useMilestones();
@@ -74,35 +74,58 @@ const UserDashboard = () => {
   const [hasAnimated, setHasAnimated] = useState(false);
 
   const handleOnboardingComplete = async (data: OnboardingData) => {
-    setOnboardingData(data);
-    setShowOnboarding(false);
-    setJustCompletedOnboarding(true);
-    
-    // Update the profile in context to reflect onboarding completion
-    // This prevents onboarding from showing again if the component re-renders
-    if (profile) {
-      profile.has_completed_onboarding = true;
+    try {
+      console.log('[UserDashboard] Onboarding completed, starting cleanup...');
+      setOnboardingData(data);
+      setShowOnboarding(false);
+      setJustCompletedOnboarding(true);
+      
+      // CRITICAL: Refresh profile from database to get has_completed_onboarding flag
+      // This ensures onboarding won't show again even if user navigates away/back
+      console.log('[UserDashboard] Refreshing profile...');
+      await refreshProfile();
+      console.log('[UserDashboard] Profile refreshed successfully');
+      
+      // Reload milestones to get the updated data from database
+      console.log('[UserDashboard] Reloading milestones...');
+      await reloadMilestones();
+      console.log('[UserDashboard] Milestones reloaded successfully');
+      
+      // Reset animation flag so progress can animate
+      setHasAnimated(false);
+      
+      // Show success confetti
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      toast({
+        title: 'Bem-vindo!',
+        description: 'O seu perfil foi configurado com sucesso.',
+      });
+    } catch (error) {
+      console.error('[UserDashboard] Error in handleOnboardingComplete:', error);
+      toast({
+        title: 'Erro',
+        description: 'Ocorreu um erro ao finalizar o onboarding',
+        variant: 'destructive'
+      });
     }
-    
-    // Reload milestones to get the updated data from database
-    await reloadMilestones();
-    
-    // Show success confetti
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
   };
 
   // Animate progress bar when scrolled into view with smooth 4-second animation
   useEffect(() => {
-    if (!isProgressVisible || hasAnimated || progress === 0) return;
-    setHasAnimated(true);
+    // Always allow animation to run when progress changes (not just once)
+    if (!isProgressVisible || milestonesLoading) return;
+    
     setAnimatedProgress(0);
     setAnimatedMilestoneProgress(0);
+    setHasAnimated(true);
+    
     const startTime = Date.now();
-    const duration = 4000; // 4 seconds total animation
+    const duration = 2000; // 2 seconds animation for better UX
 
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
     const animate = () => {
@@ -116,7 +139,7 @@ const UserDashboard = () => {
       }
     };
     requestAnimationFrame(animate);
-  }, [isProgressVisible, progress, hasAnimated]);
+  }, [isProgressVisible, progress, milestonesLoading]); // Re-run when progress changes
 
   const completedSessions = allBookings?.filter(b => b.status === 'completed') || [];
   const recentCompleted = completedSessions.slice(0, 2);
@@ -208,11 +231,36 @@ const UserDashboard = () => {
 
   const handleJoinSession = (sessionId: string) => {
     console.log('Join session:', sessionId);
-    toast({
-      title: 'Entrar na Sessão',
-      description: 'A abrir link da sessão...'
-    });
-    // In production, this would open the actual meeting link
+    
+    // Find the session and open meeting link in new tab
+    const session = allBookings.find(b => b.id === sessionId);
+    
+    if (session?.meeting_link) {
+      let meetingUrl = session.meeting_link;
+      
+      // CRITICAL FIX: Ensure URL has https:// protocol
+      if (!meetingUrl.match(/^https?:\/\//i)) {
+        meetingUrl = `https://${meetingUrl}`;
+      }
+      
+      console.log('Opening meeting URL:', meetingUrl);
+      
+      // Open meeting link in a new tab (not as platform slug)
+      window.open(meetingUrl, '_blank', 'noopener,noreferrer');
+      
+      toast({
+        title: 'A abrir sessão',
+        description: 'O link da reunião foi aberto numa nova aba'
+      });
+    } else {
+      toast({
+        title: 'Link não disponível',
+        description: 'O link da reunião ainda não foi fornecido pelo especialista',
+        variant: 'destructive'
+      });
+    }
+    
+    setIsSessionModalOpen(false);
   };
 
   const handleCancelSession = (sessionId: string) => {
@@ -300,7 +348,7 @@ const UserDashboard = () => {
           {/* Welcome Header */}
           <div className="space-y-1 flex-shrink-0">
             <h1 className="text-2xl font-normal tracking-tight">
-              Olá, {profile?.name || 'ana.silva'}! 👋
+              Olá, {profile?.full_name || profile?.email?.split('@')[0] || 'Utilizador'}! 👋
             </h1>
             <p className="text-muted-foreground text-lg">
               Bem-vinda de volta ao seu espaço de saúde e bem-estar.

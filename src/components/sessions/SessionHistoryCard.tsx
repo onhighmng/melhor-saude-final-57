@@ -165,7 +165,14 @@ export function SessionHistoryCard({
                 </div>
                 <Button
                   size="sm"
-                  onClick={() => window.open(session.meetingLink, '_blank')}
+                  onClick={() => {
+                    let meetingUrl = session.meetingLink!;
+                    // CRITICAL FIX: Ensure URL has https:// protocol
+                    if (!meetingUrl.match(/^https?:\/\//i)) {
+                      meetingUrl = `https://${meetingUrl}`;
+                    }
+                    window.open(meetingUrl, '_blank', 'noopener,noreferrer');
+                  }}
                   className="gap-2"
                 >
                   <ExternalLink className="h-4 w-4" />

@@ -320,7 +320,7 @@ export const AdminProvidersTab = ({ onAddProvider }: AdminProvidersTabProps) => 
             {filteredProviders.length === 0 ? (
               <div className="p-8 text-center text-gray-500">
                 <UserCog className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Nenhum prestador encontrado</p>
+                <p>Nenhum affiliate encontrado</p>
               </div>
             ) : (
               filteredProviders.map((provider, index) => (

@@ -59,6 +59,7 @@ export const DirectBookingFlow = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [isConfirming, setIsConfirming] = useState(false);
+  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
 
   // Update state when URL parameters change - only handle initial load
   useEffect(() => {
@@ -104,8 +105,19 @@ export const DirectBookingFlow = () => {
     }
   };
 
-  const handleChooseHuman = async () => {
+  const handleChooseHuman = async (sessionIdOrEvent?: string | any) => {
     if (!selectedPillar) return;
+    
+    // Filter out React events - only accept strings
+    let sessionId: string | null = null;
+    if (sessionIdOrEvent && typeof sessionIdOrEvent === 'string') {
+      sessionId = sessionIdOrEvent;
+    }
+    
+    // Store chat session ID if provided
+    if (sessionId) {
+      setChatSessionId(sessionId);
+    }
     
     const pillarMapping = {
       'psicologica': 'saude_mental',
@@ -204,23 +216,106 @@ export const DirectBookingFlow = () => {
         .eq('user_id', profile.id)
         .maybeSingle();
 
-      // Create booking
+      // Map pillar to database format
+      const pillarMapping = {
+        'psicologica': 'saude_mental',
+        'fisica': 'bem_estar_fisico',
+        'financeira': 'assistencia_financeira',
+        'juridica': 'assistencia_juridica'
+      };
+      
+      const dbPillar = selectedPillar ? pillarMapping[selectedPillar] : 'saude_mental';
+
+      // Smart UUID extractor that handles strings, objects, and nulls
+      const extractUUID = (value: any, fieldName: string): string | null => {
+        // If null or undefined, return null
+        if (value === null || value === undefined) {
+          console.log(`[DirectBookingFlow] ${fieldName} is null/undefined`);
+          return null;
+        }
+        
+        // If already a string, return it
+        if (typeof value === 'string') {
+          console.log(`[DirectBookingFlow] ${fieldName} is string: ${value}`);
+          return value;
+        }
+        
+        // If it's an object (like a React event), handle it
+        if (typeof value === 'object') {
+          // Check if it's a React SyntheticEvent
+          if (value._reactName || value.nativeEvent) {
+            console.warn(`[DirectBookingFlow] ${fieldName} is a React event, ignoring and returning null`);
+            return null;
+          }
+          
+          console.error(`[DirectBookingFlow] ERROR: ${fieldName} is an object:`, value);
+          if (value.id && typeof value.id === 'string') {
+            console.log(`[DirectBookingFlow] Extracted ${fieldName}.id: ${value.id}`);
+            return value.id;
+          }
+          
+          // Object doesn't have a valid id, return null instead of throwing
+          console.warn(`[DirectBookingFlow] ${fieldName} is an object without valid id, returning null`);
+          return null;
+        }
+        
+        // Fallback - convert to string
+        console.warn(`[DirectBookingFlow] ${fieldName} is ${typeof value}, converting to string`);
+        return String(value);
+      };
+
+      // Extract UUIDs with validation
+      const user_id = extractUUID(profile?.id, 'profile.id');
+      const company_id = extractUUID(employee?.company_id, 'company_id');
+      const prestador_id = extractUUID(assignedProvider?.id, 'assignedProvider.id');
+      const chat_session_id = extractUUID(chatSessionId, 'chatSessionId');
+
+      // Create a COMPLETELY NEW plain object with ONLY string primitives
+      const rawData = {
+        user_id: user_id,
+        company_id: company_id,
+        prestador_id: prestador_id,
+        chat_session_id: chat_session_id,
+        pillar: String(dbPillar),
+        booking_date: String(selectedDate.toISOString().split('T')[0]),
+        start_time: String(selectedTime),
+        end_time: String(endTime),
+        status: 'pending',
+        session_type: 'virtual',
+        booking_source: 'direct'
+      };
+
+      console.log('[DirectBookingFlow] Clean booking data (all primitives):', rawData);
+
+      // Now insert using Supabase client with the clean data
       const { error } = await supabase
         .from('bookings')
-        .insert({
-          user_id: profile.id,
-          booking_date: new Date().toISOString(),
-          company_id: employee?.company_id || null,
-          prestador_id: assignedProvider.id,
-          date: selectedDate.toISOString().split('T')[0],
-          start_time: selectedTime,
-          end_time: endTime,
-          status: 'pending',
-          session_type: 'virtual',
-          booking_source: 'direct'
-        });
+        .insert(rawData);
 
-      if (error) throw error;
+      if (error) {
+        console.error('[DirectBookingFlow] Booking insert error:', error);
+        throw error;
+      }
+      
+      console.log('[DirectBookingFlow] Booking created successfully');
+
+      // Auto-complete "booking_confirmed" milestone  
+      try {
+        await supabase
+          .from('user_milestones')
+          .update({ 
+            completed: true, 
+            completed_at: new Date().toISOString() 
+          })
+          .eq('user_id', String(profile.id))
+          .eq('milestone_id', 'booking_confirmed') // FIXED: Use milestone_id (correct column name)
+          .eq('completed', false); // Only update if not already completed
+        
+        console.log('[DirectBookingFlow] booking_confirmed milestone completed');
+      } catch (milestoneError) {
+        console.error('Error completing booking_confirmed milestone:', milestoneError);
+        // Don't block the booking flow if milestone update fails
+      }
 
       toast({
         title: 'Sessão Agendada',
@@ -232,7 +327,19 @@ export const DirectBookingFlow = () => {
         navigate('/user/dashboard');
       }, 1500);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro ao agendar a sessão';
+      console.error('[DirectBookingFlow] Error creating booking:', error);
+      
+      // Extract only the error message, avoid passing the entire error object
+      let errorMessage = 'Ocorreu um erro ao agendar a sessão';
+      
+      if (error && typeof error === 'object') {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if ('error_description' in error && typeof error.error_description === 'string') {
+          errorMessage = error.error_description;
+        }
+      }
+      
       toast({
         title: 'Erro ao agendar',
         description: errorMessage,
@@ -349,6 +456,7 @@ export const DirectBookingFlow = () => {
           onNext={handleDateTimeNext}
           onBack={handleBack}
           pillarName={selectedPillar === 'psicologica' ? 'Saúde Mental' : selectedPillar === 'fisica' ? 'Bem-estar Físico' : selectedPillar === 'financeira' ? 'Assistência Financeira' : 'Assistência Jurídica'}
+          providerId={assignedProvider?.id}
         />
       )}
 

@@ -37,23 +37,23 @@ export default function AdminBookingsTab() {
         .from('bookings')
         .select(`
           id,
-          date,
+          booking_date,
           start_time,
           meeting_type,
           status,
           user:profiles!user_id(name),
           prestador:prestadores!prestador_id(name)
         `)
-        .gte('date', monthStart)
-        .lte('date', monthEnd)
-        .order('date', { ascending: true })
+        .gte('booking_date', monthStart)
+        .lte('booking_date', monthEnd)
+        .order('booking_date', { ascending: true })
         .range(0, PAGINATION_SIZE - 1);
 
       if (error) throw error;
 
       const formatted: Booking[] = (data || []).map(booking => ({
         id: booking.id,
-        date: booking.date,
+        date: booking.booking_date,
         time: booking.start_time || '00:00',
         collaborator: (booking.user as any)?.name || 'N/A',
         specialist: (booking.prestador as any)?.name || 'N/A',
@@ -105,10 +105,10 @@ export default function AdminBookingsTab() {
   }, [currentMonth]);
 
   const bookingsForSelectedDate = bookings.filter(booking =>
-    isSameDay(parseISO(booking.date), selectedDate)
+    isSameDay(parseISO(String(booking.date)), selectedDate)
   );
 
-  const datesWithBookings = bookings.map(b => parseISO(b.date));
+  const datesWithBookings = bookings.map(b => parseISO(String(b.date)));
 
   if (loading) {
     return (

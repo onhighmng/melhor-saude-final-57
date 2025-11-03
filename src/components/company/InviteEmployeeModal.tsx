@@ -42,8 +42,37 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
     email: '',
     password: '',
     role: 'user',
-    companySessions: 6 // Default sessions
+    companySessions: 0 // Will be calculated
   });
+
+  // Calculate default sessions per employee when modal opens
+  React.useEffect(() => {
+    const calculateDefaultSessions = async () => {
+      if (isOpen && company?.id) {
+        try {
+          const { data: companyData } = await supabase
+            .from('companies')
+            .select('sessions_allocated, employee_seats')
+            .eq('id', company.id)
+            .single();
+
+          if (companyData) {
+            // Calculate sessions per employee: total sessions / employee seats
+            const sessionsPerEmployee = Math.floor(
+              ((companyData as any).sessions_allocated || 0) / ((companyData as any).employee_seats || 1)
+            );
+            setFormData(prev => ({ ...prev, companySessions: sessionsPerEmployee }));
+          }
+        } catch (error) {
+          console.error('Error calculating default sessions:', error);
+          // Fallback to a default value if calculation fails
+          setFormData(prev => ({ ...prev, companySessions: 6 }));
+        }
+      }
+    };
+
+    calculateDefaultSessions();
+  }, [isOpen, company?.id]);
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
@@ -54,14 +83,35 @@ export function InviteEmployeeModal({ isOpen, onClose, company, onInviteSuccess 
     setFormData(prev => ({ ...prev, password }));
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      email: '',
-      password: '',
-      role: 'user',
-      companySessions: 6
-    });
+  const resetForm = async () => {
+    // Recalculate default sessions when resetting
+    try {
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('sessions_allocated, employee_seats')
+        .eq('id', company.id)
+        .single();
+
+      const sessionsPerEmployee = companyData 
+        ? Math.floor(((companyData as any).sessions_allocated || 0) / ((companyData as any).employee_seats || 1))
+        : 6;
+
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'user',
+        companySessions: sessionsPerEmployee
+      });
+    } catch (error) {
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'user',
+        companySessions: 6
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

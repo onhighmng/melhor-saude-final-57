@@ -20,6 +20,21 @@ const EspecialistaSessions = () => {
       
       setLoading(true);
       try {
+        // First get the prestador ID for this specialist
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
+
+        if (!prestador) {
+          console.log('[EspecialistaSessions] No prestador found for this user');
+          setFilteredSessions([]);
+          setLoading(false);
+          return;
+        }
+
+        // Get ALL bookings for this prestador (not just 'scheduled')
         const { data: sessions } = await supabase
           .from('bookings')
           .select(`
@@ -28,12 +43,14 @@ const EspecialistaSessions = () => {
             companies(company_name),
             prestadores(name, specialties)
           `)
-          .eq('status', 'scheduled')
+          .eq('prestador_id', prestador.id)
           .order('booking_date', { ascending: true });
 
+        console.log('[EspecialistaSessions] Loaded sessions:', sessions?.length || 0);
         setFilteredSessions(sessions || []);
       } catch (error) {
         console.error('Error loading sessions:', error);
+        setFilteredSessions([]);
       } finally {
         setLoading(false);
       }

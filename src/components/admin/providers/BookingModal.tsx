@@ -92,8 +92,7 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
           user_id: selectedEmployee.user_id,
           prestador_id: provider.id as string,
           company_id: selectedEmployee.company_id,
-          booking_date: slot.date.toISOString(),
-          date: format(slot.date, 'yyyy-MM-dd'),
+          booking_date: format(slot.date, 'yyyy-MM-dd'),
           start_time: format(slot.date, 'HH:mm:ss'),
           end_time: format(new Date(slot.date.getTime() + 60 * 60 * 1000), 'HH:mm:ss'),
           session_type: formData.sessionType,
@@ -108,35 +107,8 @@ export const BookingModal = ({ open, onOpenChange, provider, slot }: BookingModa
 
       if (bookingError) throw bookingError;
 
-      // Decrement employee quota
-      const { error: employeeError } = await supabase
-        .from('company_employees')
-        .update({
-          sessions_used: selectedEmployee.sessions_used + 1,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', selectedEmployee.user_id)
-        .eq('company_id', selectedEmployee.company_id);
-
-      if (employeeError) throw employeeError;
-
-      // Get current company sessions_used to increment
-      const { data: companyData } = await supabase
-        .from('companies')
-        .select('sessions_used')
-        .eq('id', selectedEmployee.company_id)
-        .single();
-
-      // Decrement company quota
-      const { error: companyError } = await supabase
-        .from('companies')
-        .update({
-          sessions_used: (companyData?.sessions_used || 0) + 1,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', selectedEmployee.company_id);
-
-      if (companyError) throw companyError;
+      // Note: Quota is NOT decremented here. It will be decremented automatically
+      // by the database trigger when the session status changes to 'completed'.
 
       toast({
         title: 'Sessão agendada com sucesso!',

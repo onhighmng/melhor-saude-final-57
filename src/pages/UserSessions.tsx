@@ -116,7 +116,8 @@ export default function UserSessions() {
     session_type: 'individual' as const,
     sessionType: 'individual' as const,
     meetingPlatform: (booking.meeting_link?.includes('zoom') ? 'zoom' : booking.meeting_link?.includes('teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
-    meetingLink: booking.meeting_link || ''
+    meetingLink: booking.meeting_link || '',
+    rating: booking.rating || undefined
   }));
 
   // Separate past and future sessions
@@ -190,7 +191,8 @@ export default function UserSessions() {
       if (fetchError) throw fetchError;
 
       // Check if booking is within 24 hours
-      const bookingDateTime = new Date(`${booking.date}T${booking.start_time}`);
+      const bookingDate = (booking as any).date || (booking as any).booking_date;
+      const bookingDateTime = new Date(`${bookingDate}T${(booking as any).start_time}`);
       const now = new Date();
       const hoursUntil = (bookingDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
@@ -214,12 +216,13 @@ export default function UserSessions() {
       if (cancelError) throw cancelError;
 
       // Create notification for provider
-      const prestadorUserId = booking.prestadores?.user_id || booking.prestador_id;
+      const prestadorUserId = (booking as any).prestadores?.user_id || (booking as any).prestador_id;
+      const notificationDate = (booking as any).date || (booking as any).booking_date;
       await supabase.from('notifications').insert({
         user_id: prestadorUserId,
         type: 'booking_cancelled',
         title: 'Sessão Cancelada',
-        message: `A sessão de ${booking.date} às ${booking.start_time} foi cancelada pelo utilizador.`,
+        message: `A sessão de ${notificationDate} às ${(booking as any).start_time} foi cancelada pelo utilizador.`,
         related_booking_id: sessionId,
         priority: 'high'
       });
@@ -302,9 +305,10 @@ export default function UserSessions() {
             goals={userGoals}
             balance={{
               userId: profile?.id || '',
-              companyQuota: sessionBalance?.employerRemaining || 0,
+              companyQuota: sessionBalance?.totalRemaining ? 
+                sessionBalance.employerRemaining + completedSessionsCount : 0,
               personalQuota: sessionBalance?.personalRemaining || 0,
-              usedCompany: 0,
+              usedCompany: completedSessionsCount,
               usedPersonal: 0,
               availableCompany: sessionBalance?.employerRemaining || 0,
               availablePersonal: sessionBalance?.personalRemaining || 0

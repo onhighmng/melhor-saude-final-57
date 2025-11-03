@@ -108,7 +108,7 @@ export default function PrestadorDashboard() {
 
         setPrestadorName(prestador.name);
 
-        // Load bookings for this prestador
+        // Load bookings for this prestador (using prestador.id, not profile.id)
         const { data: bookings } = await supabase
           .from('bookings')
           .select(`

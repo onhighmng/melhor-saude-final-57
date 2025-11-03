@@ -78,4 +78,10 @@ export interface SessionBalance {
   employerRemaining: number;
   personalRemaining: number;
   hasActiveSessions: boolean;
+  companyQuota: number;
+  usedCompany: number;
+  personalQuota: number;
+  usedPersonal: number;
+  availableCompany: number;
+  availablePersonal: number;
 }

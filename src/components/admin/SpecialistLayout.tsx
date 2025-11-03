@@ -128,9 +128,14 @@ export default function SpecialistLayout({ cases }: SpecialistLayoutProps) {
 
   const handleUpdateMeetingLink = async (caseId: string, link: string) => {
     try {
+      // Normalize URL to ensure it has https:// protocol
+      const normalizedLink = link.trim() ? (
+        link.trim().match(/^https?:\/\//i) ? link.trim() : `https://${link.trim()}`
+      ) : null;
+
       const { error } = await supabase
         .from('bookings')
-        .update({ meeting_link: link })
+        .update({ meeting_link: normalizedLink })
         .eq('id', caseId);
 
       if (error) throw error;

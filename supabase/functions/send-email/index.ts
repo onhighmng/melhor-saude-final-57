@@ -2,7 +2,7 @@
 // SECURITY: This function requires authentication and has strict rate limiting
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
-import { verifyAuth, corsHeaders } from "../_shared/auth.ts"
+import { verifyAuth, corsHeaders, hasRole } from "../_shared/auth.ts"
 import { checkRateLimit, getClientIP, RATE_LIMITS } from "../_shared/rateLimit.ts"
 import {
   withErrorHandling,
@@ -65,8 +65,11 @@ async function handler(req: Request): Promise<Response> {
   const { to, subject, html, type } = sendEmailSchema.parse(body)
 
   // SECURITY: Only allow sending to the authenticated user's email
+  // UNLESS the sender has admin/hr/prestador role (for invites, notifications, etc.)
   // This prevents abuse/spam to arbitrary email addresses
-  if (to !== auth.userEmail) {
+  const isPrivilegedRole = hasRole(auth, ['admin', 'hr', 'prestador'])
+  
+  if (!isPrivilegedRole && to !== auth.userEmail) {
     return new Response(
       JSON.stringify({
         error: 'Unauthorized. You can only send emails to your own email address.',
@@ -80,6 +83,8 @@ async function handler(req: Request): Promise<Response> {
     to,
     subject,
     userId: auth.userId,
+    userRole: auth.role,
+    isPrivilegedSender: isPrivilegedRole,
     timestamp: new Date().toISOString()
   })
 

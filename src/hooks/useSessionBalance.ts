@@ -20,29 +20,44 @@ export const useSessionBalance = () => {
       setLoading(true);
       const { data: employee, error: fetchError } = await supabase
         .from('company_employees')
-        .select('sessions_allocated, sessions_used')
+        .select('sessions_allocated, sessions_used, company_id')
         .eq('user_id', user.id)
-        .single(); // Use .single() as a user should only belong to one company record.
+        .maybeSingle(); // Use .maybeSingle() to handle cases where user is not a company employee
 
       if (fetchError) {
-        // Handle the case where a user might not be a company employee
-        if (fetchError.code === 'PGRST116') { // "Not a single row was found"
-          setSessionBalance({
-            totalRemaining: 0,
-            employerRemaining: 0,
-            personalRemaining: 0,
-            hasActiveSessions: false,
-          });
-        } else {
-          throw fetchError;
-        }
-      } else if (employee) {
-        const remaining = (employee.sessions_allocated || 0) - (employee.sessions_used || 0);
+        throw fetchError;
+      }
+      
+      if (!employee) {
+        // User is not a company employee
+        setSessionBalance({
+          totalRemaining: 0,
+          employerRemaining: 0,
+          personalRemaining: 0,
+          hasActiveSessions: false,
+          companyQuota: 0,
+          usedCompany: 0,
+          personalQuota: 0,
+          usedPersonal: 0,
+          availableCompany: 0,
+          availablePersonal: 0,
+        });
+      } else {
+        const allocated = employee.sessions_allocated || 0;
+        const used = employee.sessions_used || 0;
+        const remaining = allocated - used;
+        
         setSessionBalance({
           totalRemaining: remaining,
           employerRemaining: remaining,
           personalRemaining: 0, // Assuming no personal plans for now
           hasActiveSessions: remaining > 0,
+          companyQuota: allocated,
+          usedCompany: used,
+          personalQuota: 0, // No personal quota for now
+          usedPersonal: 0,
+          availableCompany: remaining,
+          availablePersonal: 0,
         });
       }
     } catch (err) {

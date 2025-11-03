@@ -165,10 +165,11 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       });
     } catch (error: any) {
       console.error('Error sending email:', error);
-      // Don't show error to user, just log it
+      // Show error to user so they know what happened
       toast({
-        title: 'Email enviado',
-        description: `Código de acesso: ${accessCode}`,
+        title: 'Erro ao enviar email',
+        description: error.message || 'Não foi possível enviar o email. O código de acesso ainda é válido.',
+        variant: 'destructive',
       });
     }
   };
@@ -213,11 +214,23 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
         role: 'user'
       });
 
-      // Create company_employee link
+      // Fetch company details to calculate fair share of sessions
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('sessions_allocated, employee_seats')
+        .eq('id', company.id)
+        .single();
+
+      // Calculate sessions per employee: total sessions / employee seats
+      const sessionsPerEmployee = companyData 
+        ? Math.floor(((companyData as any).sessions_allocated || 0) / ((companyData as any).employee_seats || 1))
+        : 0;
+
+      // Create company_employee link with calculated quota
       await supabase.from('company_employees').insert({
         company_id: company.id,
         user_id: authData.user.id,
-        sessions_allocated: 6 // Default quota
+        sessions_allocated: sessionsPerEmployee
       });
 
       // Create invite record

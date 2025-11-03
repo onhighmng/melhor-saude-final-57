@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Send, Loader2, User, Phone, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { ChatInput, ChatInputTextArea, ChatInputSubmit } from '@/components/ui/chat-input';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 interface Message {
@@ -20,7 +21,7 @@ interface MentalHealthChatInterfaceProps {
   assessment: MentalHealthAssessment;
   onBack: () => void;
   onComplete: () => void;
-  onChooseHuman?: () => void;
+  onChooseHuman?: (sessionId?: string) => void;
 }
 const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
   assessment,
@@ -32,7 +33,9 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
   const {
     toast
   } = useToast();
@@ -49,11 +52,39 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
     // Add body class for fullscreen background
     document.body.classList.add('mental-health-chat-page');
     
+    // Create chat session when component mounts
+    createChatSession();
+    
     // Cleanup on unmount
     return () => {
       document.body.classList.remove('mental-health-chat-page');
     };
   }, []);
+
+  const createChatSession = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data: session, error } = await supabase
+        .from('chat_sessions')
+        .insert({
+          user_id: user.id,
+          pillar: 'saude_mental',
+          status: 'active',
+          ai_resolution: false
+        })
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Error creating chat session:', error);
+      } else if (session) {
+        setChatSessionId(session.id);
+      }
+    } catch (error) {
+      console.error('Error creating chat session:', error);
+    }
+  };
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
     const userMessage: Message = {
@@ -65,6 +96,15 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
     setHasInteracted(true);
     setIsLoading(true);
     try {
+      // Save user message to database
+      if (chatSessionId) {
+        await supabase.from('chat_messages').insert({
+          session_id: chatSessionId,
+          role: 'user',
+          content: input
+        });
+      }
+
       const {
         data,
         error
@@ -80,6 +120,15 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
         content: data.response
       };
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Save assistant message to database
+      if (chatSessionId) {
+        await supabase.from('chat_messages').insert({
+          session_id: chatSessionId,
+          role: 'assistant',
+          content: data.response
+        });
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
@@ -109,7 +158,7 @@ const MentalHealthChatInterface: React.FC<MentalHealthChatInterfaceProps> = ({
           <h2 className="text-3xl font-semibold">Assistente de Saúde Mental</h2>
         </div>
         <InteractiveHoverButton 
-          onClick={onChooseHuman}
+          onClick={() => onChooseHuman?.(chatSessionId || undefined)}
           text="Solicitar Sessão 1-on-1"
           icon={<Phone className="h-4 w-4" />}
           className="text-sm px-10 py-4 min-w-[280px]"

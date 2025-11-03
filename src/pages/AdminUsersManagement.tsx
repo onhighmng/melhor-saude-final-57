@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Building2, Users, UserCog, ChevronLeft, ChevronRight, User, Trash2, Shield } from 'lucide-react';
+import { Building2, Users, UserCog, ChevronLeft, ChevronRight, User, Trash2, Shield, Copy } from 'lucide-react';
 import { AdminCompaniesTab } from '@/components/admin/AdminCompaniesTab';
 import { AdminProvidersTab } from '@/components/admin/AdminProvidersTab';
+import { ArchivedCodesModal } from '@/components/admin/ArchivedCodesModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -184,7 +185,9 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const [companies, setCompanies] = useState<any[]>([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
   const [showHRModal, setShowHRModal] = useState(false);
-  const [sessionsAllocated, setSessionsAllocated] = useState<number>(5);
+  const [sessionsAllocated, setSessionsAllocated] = useState<number>(100);
+  const [showArchivedModal, setShowArchivedModal] = useState(false);
+  const [archivedCount, setArchivedCount] = useState<number>(0);
 
   // Filter codes based on search query
   const filteredCodes = codes.filter(code => {
@@ -198,6 +201,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
 
   useEffect(() => {
     loadCodes();
+    loadArchivedCount();
   }, []);
 
   // Load companies when HR modal opens
@@ -224,6 +228,21 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
         description: 'Erro ao carregar empresas', 
         variant: 'destructive' 
       });
+    }
+  };
+
+  const loadArchivedCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from('invites')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'revoked')
+        .eq('role', 'hr');
+      
+      if (error) throw error;
+      setArchivedCount(count || 0);
+    } catch (error) {
+      console.error('Error loading archived count:', error);
     }
   };
 
@@ -267,9 +286,11 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
         return;
       }
       
-      // Show all admin-created codes (HR, Prestador, Especialista Geral)
+      // Show only HR codes in Companies tab
+      // Exclude revoked codes - they will be shown in the archive modal
       const filteredCodes = (allCodes || []).filter((code: any) => 
-        code.role === 'hr' || code.role === 'prestador' || code.role === 'especialista_geral'
+        code.role === 'hr' &&
+        code.status !== 'revoked'
       );
       
       setCodes(filteredCodes);
@@ -292,17 +313,8 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
     return code;
   };
 
-  // Generate HR code (requires company selection)
-  const handleGenerateHRCode = async (selectedCompanyId: string, sessions: number) => {
-    if (!selectedCompanyId) {
-      toast({
-        title: 'Erro',
-        description: 'Por favor, selecione uma empresa',
-        variant: 'destructive'
-      });
-      return;
-    }
-
+  // Generate HR code (HR will create company during registration)
+  const handleGenerateHRCode = async (sessions: number) => {
     if (!sessions || sessions < 1) {
       toast({
         title: 'Erro',
@@ -321,7 +333,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           invite_code: code,
           role: 'hr',
           user_type: 'hr',
-          company_id: selectedCompanyId,
+          company_id: null, // Company will be created during HR registration
           status: 'pending',
           sessions_allocated: sessions,
           expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
@@ -331,7 +343,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
 
       toast({
         title: 'Código HR gerado!',
-        description: `Código: ${code} com ${sessions} sessões alocadas`,
+        description: `Código: ${code} com ${sessions} sessões alocadas. A empresa será criada durante o registo.`,
         duration: 10000
       });
       loadCodes();
@@ -457,7 +469,10 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   };
 
   const getStatusBadge = (code: any) => {
-    if (code.status === 'accepted' || code.accepted_at) return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
+    // Check if code was used (either status is 'accepted' OR accepted_at exists OR email is set)
+    if (code.status === 'accepted' || code.accepted_at || code.email) {
+      return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
+    }
     if (code.status === 'revoked') return <Badge className="bg-red-100 text-red-800 border-red-300 font-medium">✕ Revogado</Badge>;
     return <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">✓ Pendente</Badge>;
   };
@@ -484,6 +499,20 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           </div>
           <div className="flex gap-2">
             <Button
+              onClick={() => setShowArchivedModal(true)}
+              variant="outline"
+              size="sm"
+              className="relative"
+            >
+              <Shield className="h-4 w-4 mr-2" />
+              Ver Arquivados
+              {archivedCount > 0 && (
+                <Badge className="ml-2 bg-red-100 text-red-800 border-red-300 h-5 min-w-5 px-1">
+                  {archivedCount}
+                </Badge>
+              )}
+            </Button>
+            <Button
               onClick={() => setShowHRModal(true)}
               disabled={isGenerating}
               size="sm"
@@ -500,35 +529,23 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Gerar Código HR</DialogTitle>
+              <p className="text-sm text-muted-foreground mt-2">
+                A empresa será criada durante o processo de registo do HR
+              </p>
             </DialogHeader>
             <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Selecionar Empresa</label>
-                <select
-                  value={selectedCompanyId}
-                  onChange={(e) => setSelectedCompanyId(e.target.value)}
-                  className="w-full p-2 border rounded-md"
-                >
-                  <option value="">Selecione uma empresa...</option>
-                  {companies.map((company) => (
-                    <option key={company.id} value={company.id}>
-                      {company.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Número de Sessões Alocadas</label>
                 <Input
                   type="number"
                   min="1"
                   value={sessionsAllocated}
-                  onChange={(e) => setSessionsAllocated(parseInt(e.target.value) || 5)}
-                  placeholder="Ex: 5"
+                  onChange={(e) => setSessionsAllocated(parseInt(e.target.value) || 100)}
+                  placeholder="Ex: 100"
                   className="w-full"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Define quantas sessões esta empresa terá disponíveis
+                  Define quantas sessões a empresa terá disponíveis após o registo
                 </p>
               </div>
               <div className="flex justify-end gap-2">
@@ -536,20 +553,18 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                   variant="outline"
                   onClick={() => {
                     setShowHRModal(false);
-                    setSelectedCompanyId('');
-                    setSessionsAllocated(5);
+                    setSessionsAllocated(100);
                   }}
                 >
                   Cancelar
                 </Button>
                 <Button
                   onClick={() => {
-                    handleGenerateHRCode(selectedCompanyId, sessionsAllocated);
+                    handleGenerateHRCode(sessionsAllocated);
                     setShowHRModal(false);
-                    setSelectedCompanyId('');
-                    setSessionsAllocated(5);
+                    setSessionsAllocated(100);
                   }}
-                  disabled={!selectedCompanyId || isGenerating}
+                  disabled={isGenerating}
                 >
                   Gerar Código
                 </Button>
@@ -599,7 +614,20 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                 className="grid grid-cols-8 gap-4 p-3 hover:bg-blue-50 rounded cursor-pointer transition-colors"
                 onClick={() => handleViewEmployees(code)}
               >
-                <div className="font-mono text-sm">{code.invite_code}</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm">{code.invite_code}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyToClipboard(code.invite_code);
+                    }}
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
                 <div className="text-sm">{getUserTypeLabel(code.role)}</div>
                 <div className="text-sm">
                   {code.email ? (
@@ -678,6 +706,13 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
             </ScrollArea>
           </DialogContent>
         </Dialog>
+
+        {/* Archived Codes Modal */}
+        <ArchivedCodesModal
+          open={showArchivedModal}
+          onOpenChange={setShowArchivedModal}
+          userType="hr"
+        />
       </CardContent>
     </Card>
   );
@@ -689,6 +724,8 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showArchivedModal, setShowArchivedModal] = useState(false);
+  const [archivedCount, setArchivedCount] = useState<number>(0);
 
   // Filter codes based on search query
   const filteredCodes = codes.filter(code => {
@@ -703,7 +740,23 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
 
   useEffect(() => {
     loadCodes();
+    loadArchivedCount();
   }, []);
+
+  const loadArchivedCount = async () => {
+    try {
+      const { count, error } = await supabase
+        .from('invites')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'revoked')
+        .in('role', ['prestador', 'especialista_geral']);
+      
+      if (error) throw error;
+      setArchivedCount(count || 0);
+    } catch (error) {
+      console.error('Error loading archived count:', error);
+    }
+  };
 
   const loadCodes = async () => {
     try {
@@ -746,8 +799,10 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
       }
       
       // Filter by role in JavaScript (both prestador and specialist)
+      // Exclude revoked codes - they will be shown in the archive modal
       const filteredCodes = (allCodes || []).filter((code: any) => 
-        code.role === 'prestador' || code.role === 'especialista_geral'
+        (code.role === 'prestador' || code.role === 'especialista_geral') &&
+        code.status !== 'revoked'
       );
       
       setCodes(filteredCodes);
@@ -851,7 +906,10 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   };
 
   const getStatusBadge = (code: any) => {
-    if (code.status === 'accepted' || code.accepted_at) return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
+    // Check if code was used (either status is 'accepted' OR accepted_at exists OR email is set)
+    if (code.status === 'accepted' || code.accepted_at || code.email) {
+      return <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">● Usado</Badge>;
+    }
     if (code.status === 'revoked') return <Badge className="bg-red-100 text-red-800 border-red-300 font-medium">✕ Revogado</Badge>;
     return <Badge className="bg-green-100 text-green-800 border-green-200 font-medium">✓ Pendente</Badge>;
   };
@@ -862,6 +920,20 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Códigos de Acesso</h2>
           <div className="flex gap-2">
+            <Button
+              onClick={() => setShowArchivedModal(true)}
+              variant="outline"
+              size="sm"
+              className="relative"
+            >
+              <Shield className="h-4 w-4 mr-2" />
+              Ver Arquivados
+              {archivedCount > 0 && (
+                <Badge className="ml-2 bg-red-100 text-red-800 border-red-300 h-5 min-w-5 px-1">
+                  {archivedCount}
+                </Badge>
+              )}
+            </Button>
             <Button
               onClick={() => handleGenerateCode('prestador')}
               disabled={isGenerating}
@@ -919,7 +991,21 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
             </div>
             {filteredCodes.slice(0, 10).map((code) => (
               <div key={code.id} className="grid grid-cols-7 gap-4 p-3 hover:bg-gray-50 rounded transition-colors">
-                <div className="font-mono text-sm">{code.invite_code}</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm">{code.invite_code}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(code.invite_code);
+                      toast({ title: 'Sucesso', description: 'Código copiado!' });
+                    }}
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
                 <div className="text-sm">
                   {code.role === 'prestador' ? 'Prestador' : 'Profesional de Permanencia'}
                 </div>
@@ -951,6 +1037,13 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
             ))}
           </div>
         )}
+
+        {/* Archived Codes Modal */}
+        <ArchivedCodesModal
+          open={showArchivedModal}
+          onOpenChange={setShowArchivedModal}
+          userType="affiliate"
+        />
       </CardContent>
     </Card>
   );

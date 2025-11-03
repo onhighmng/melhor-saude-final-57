@@ -8,13 +8,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone, Clock, CheckCircle, ArrowUpDown, User, Building2, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 import { CallModal } from '@/components/specialist/CallModal';
+import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const EspecialistaCallRequestsRevamped = () => {
   const { toast } = useToast();
+  const { profile } = useAuth();
   const navigate = useNavigate();
   const { filterByCompanyAccess } = useCompanyFilter();
   const { escalatedChats, isLoading } = useEscalatedChats();
@@ -59,26 +62,96 @@ const EspecialistaCallRequestsRevamped = () => {
     setIsUserInfoModalOpen(true);
   };
 
-  const handleMarkResolved = (requestId: string) => {
-    setResolvedRequestId(requestId);
-    setShowSuccessAnimation(true);
-    
-    setTimeout(() => {
+  const handleMarkResolved = async (requestId: string) => {
+    try {
+      setResolvedRequestId(requestId);
+      setShowSuccessAnimation(true);
+      
+      // Actually update the database
+      const { error } = await supabase
+        .from('chat_sessions')
+        .update({ 
+          status: 'resolved',
+          phone_contact_made: true,
+          ended_at: new Date().toISOString()
+        })
+        .eq('id', requestId);
+
+      if (error) throw error;
+      
+      setTimeout(() => {
+        setShowSuccessAnimation(false);
+        setResolvedRequestId(null);
+        toast({
+          title: 'Pedido Resolvido',
+          description: 'O pedido foi marcado como resolvido com sucesso.',
+        });
+        // Reload to refresh the list
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      console.error('Error resolving request:', error);
       setShowSuccessAnimation(false);
       setResolvedRequestId(null);
       toast({
-        title: 'Pedido Resolvido',
-        description: 'O pedido foi marcado como resolvido com sucesso.',
+        title: 'Erro',
+        description: 'Não foi possível marcar o pedido como resolvido.',
+        variant: 'destructive',
       });
-    }, 1500);
+    }
   };
 
-  const handleCallComplete = (outcome: string, notes: string) => {
-    toast({
-      title: 'Chamada Finalizada',
-      description: `Resultado: ${outcome}. Notas guardadas com sucesso.`,
-    });
-    setIsCallModalOpen(false);
+  const handleCallComplete = async (outcome: string, notes: string) => {
+    if (!selectedRequest) return;
+    
+    try {
+      // Save call log to database
+      const { error: callLogError } = await supabase
+        .from('specialist_call_logs')
+        .insert({
+          chat_session_id: selectedRequest.id,
+          user_id: selectedRequest.user_id,
+          specialist_id: profile?.id,
+          call_status: 'completed',
+          call_notes: notes,
+          outcome: outcome,
+          completed_at: new Date().toISOString(),
+        });
+
+      if (callLogError) throw callLogError;
+
+      // Update chat session status based on outcome
+      const newStatus = outcome === 'resolved_by_phone' || outcome === 'session_booked' 
+        ? 'resolved' 
+        : 'phone_escalated';
+      
+      const { error: sessionError } = await supabase
+        .from('chat_sessions')
+        .update({
+          status: newStatus,
+          phone_contact_made: true,
+          ...(newStatus === 'resolved' && { ended_at: new Date().toISOString() })
+        })
+        .eq('id', selectedRequest.id);
+
+      if (sessionError) throw sessionError;
+
+      toast({
+        title: 'Chamada Finalizada',
+        description: `Resultado: ${outcome}. Notas guardadas com sucesso.`,
+      });
+      
+      setIsCallModalOpen(false);
+      // Trigger refresh of escalated chats
+      window.location.reload();
+    } catch (error) {
+      console.error('Error saving call completion:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível guardar os detalhes da chamada.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const toggleSortOrder = () => {

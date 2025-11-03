@@ -41,19 +41,20 @@ const AuthCallback = () => {
       console.log(`%c[AuthCallback] Raw roles data:`, 'color: cyan;', rolesData);
       
       // Determine the highest-priority role (admin > hr > prestador > specialist > user)
-      // Note: Database stores 'specialist', not 'especialista_geral'
+      // Note: Database can store either 'specialist' or 'especialista_geral'
+      // We need to check for both for backward compatibility
       let primaryRole: UserRole = 'user';
       
-      // Check roles in priority order (admin > hr > prestador > specialist > user)
-      // The database enum uses: 'admin', 'user', 'hr', 'prestador', 'specialist'
+      // Check roles in priority order (admin > hr > prestador > especialista_geral/specialist > user)
       if (roles.includes('admin')) {
         primaryRole = 'admin';
       } else if (roles.includes('hr')) {
         primaryRole = 'hr';
       } else if (roles.includes('prestador')) {
         primaryRole = 'prestador';
-      } else if (roles.includes('specialist')) {
-        primaryRole = 'specialist';
+      } else if (roles.includes('especialista_geral') || roles.includes('specialist')) {
+        // Use 'especialista_geral' as the canonical role name
+        primaryRole = 'especialista_geral';
       } else {
         primaryRole = 'user';
       }

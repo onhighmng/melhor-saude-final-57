@@ -38,12 +38,14 @@ export const getSiteUrl = (): string => {
 
 /**
  * Role-based redirect targets after successful auth
+ * Note: Both 'specialist' and 'especialista_geral' map to the same dashboard
  */
 export const ROLE_REDIRECT_MAP = {
   admin: '/admin/dashboard',
   hr: '/company/dashboard',
   prestador: '/prestador/dashboard',
   specialist: '/especialista/dashboard',
+  especialista_geral: '/especialista/dashboard',  // Handle both role names
   user: '/user/dashboard'
 } as const;
 

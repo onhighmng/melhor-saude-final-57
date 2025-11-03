@@ -15,7 +15,10 @@ const EspecialistaCallRequests = () => {
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   
   // Use real data from hook (already filters by company access)
-  const filteredRequests = escalatedChats.filter((chat: any) => chat.status === 'pending');
+  // Filter for phone escalated chats that haven't been resolved yet
+  const filteredRequests = escalatedChats.filter((chat: any) => 
+    chat.status === 'phone_escalated' || chat.status === 'pending'
+  );
 
   if (isLoading) {
     return (

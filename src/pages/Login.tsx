@@ -37,7 +37,7 @@ const Login = () => {
         const { data: { user: authUser } } = await supabase.auth.getUser();
         if (!authUser) return;
 
-        const { data: role, error: roleError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: authUser.id });
+        const { data: role, error: roleError } = await (supabase.rpc as any)('get_user_primary_role', { user_id: authUser.id });
 
         if (roleError || !role) {
           console.error('[Login] Error fetching role for redirect:', roleError);
@@ -98,7 +98,7 @@ const Login = () => {
           return;
         }
         
-        const { data: role, error: roleError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: authUser.id });
+        const { data: role, error: roleError } = await (supabase.rpc as any)('get_user_primary_role', { user_id: authUser.id });
         
         if (roleError || !role) {
           console.error('[Login] Error fetching role:', roleError);

@@ -10,14 +10,15 @@ export interface Booking {
   provider_avatar: string;
   pillar?: string;
   date: string | null;
+  booking_date?: string | null; // Raw database field
   time?: string;
   status: string | null;
   session_type: string | null;
   notes: string | null;
   start_time?: string | null;
   end_time?: string | null;
-  booking_date: string;
   meeting_link?: string | null;
+  rating?: number | null;
   prestadores?: {
     id: string;
     name: string;
@@ -70,13 +71,30 @@ export const useBookings = (): UseBookingsReturn => {
       if (error) throw error;
 
       if (data) {
-        const bookings: Booking[] = data.map(b => ({
-          ...b,
+        console.log('[useBookings] Fetched raw bookings data:', data);
+        
+        const bookings: Booking[] = data.map((b: any) => ({
+          id: b.id,
+          user_id: b.user_id,
+          prestador_id: b.prestador_id,
           provider_name: b.prestadores?.name || '',
           provider_avatar: b.prestadores?.photo_url || '',
-          time: b.start_time || '',
-          pillar: b.pillar || ''
+          pillar: b.pillar || undefined,
+          date: b.booking_date, // Use booking_date consistently
+          booking_date: b.booking_date,
+          time: b.start_time || undefined,
+          status: b.status,
+          session_type: b.meeting_type,
+          notes: b.notes,
+          start_time: b.start_time,
+          end_time: b.end_time,
+          meeting_link: b.meeting_link,
+          rating: b.rating || null,
+          prestadores: b.prestadores
         }));
+        
+        console.log('[useBookings] Mapped bookings:', bookings);
+        console.log('[useBookings] Total bookings:', bookings.length);
         
         setAllBookings(bookings);
       }
@@ -110,10 +128,32 @@ export const useBookings = (): UseBookingsReturn => {
     return undefined;
   }, [user, isAuthLoading, fetchBookings]);
 
-  const upcomingBookings = useMemo(() => 
-    allBookings.filter(b => 
-      (b.status === 'confirmed' || b.status === 'scheduled') && b.date && new Date(b.date) >= new Date()
-    ), [allBookings]);
+  const upcomingBookings = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Reset time to start of day for fair comparison
+    
+    const upcoming = allBookings.filter(b => {
+      const isValidStatus = b.status === 'confirmed' || b.status === 'scheduled' || b.status === 'pending';
+      const hasDate = !!b.date;
+      const bookingDate = b.date ? new Date(b.date) : null;
+      const isFuture = bookingDate ? bookingDate >= now : false;
+      
+      console.log('[useBookings] Filtering booking:', {
+        id: b.id,
+        date: b.date,
+        status: b.status,
+        isValidStatus,
+        hasDate,
+        isFuture,
+        included: isValidStatus && hasDate && isFuture
+      });
+      
+      return isValidStatus && hasDate && isFuture;
+    });
+    
+    console.log('[useBookings] Upcoming bookings:', upcoming.length, upcoming);
+    return upcoming;
+  }, [allBookings]);
 
   const bookingStats = useMemo(() => ({
     totalBookings: allBookings.length,

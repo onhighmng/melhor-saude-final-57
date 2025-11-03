@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { X, Upload, Loader2 } from "lucide-react";
 import { useState, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { uploadAvatar } from "@/utils/avatarUpload";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -32,47 +32,20 @@ export const ProfileEditModal = ({ isOpen, onClose, profile, onSave }: ProfileEd
       const file = event.target.files?.[0];
       if (!file) return;
 
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
+      // Use the centralized uploadAvatar utility which handles RLS-compliant paths
+      const result = await uploadAvatar(profile.id, file);
+      
+      if (!result.success) {
         toast({
-          title: "Erro",
-          description: "Por favor, selecione um ficheiro de imagem válido",
+          title: "Erro ao fazer upload da foto",
+          description: result.error,
           variant: "destructive"
         });
         return;
       }
 
-      // Validate file size (max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        toast({
-          title: "Erro",
-          description: "O ficheiro deve ter menos de 2MB",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Create unique file name
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${profile.id}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
-
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      setProfileData({ ...profileData, avatar_url: publicUrl });
+      // Update profile data with new avatar URL
+      setProfileData({ ...profileData, avatar_url: result.url || '' });
 
       toast({
         title: "Sucesso",

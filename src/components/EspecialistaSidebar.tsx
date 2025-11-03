@@ -37,8 +37,8 @@ const EspecialistaSidebar = () => {
       icon: <Phone className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {
-      label: "Sessões Agendadas",
-      href: "/especialista/sessions",
+      label: "Calendário",
+      href: "/especialista/calendario",
       icon: <Calendar className="text-primary h-5 w-5 flex-shrink-0" />,
     },
     {

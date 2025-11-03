@@ -31,6 +31,7 @@ interface AuthContextType {
   signup: (email: string, password: string, name: string) => Promise<{ error?: string }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
+  refreshProfile: () => Promise<void>; // Add refresh function
   isLoading: boolean;
 }
 
@@ -68,7 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Fetch role using RPC (bypasses RLS, always works)
       console.log('%c[AuthContext] 🔄 Fetching role via RPC...', 'color: cyan;');
       const rpcStart = performance.now();
-      let { data: role, error: rpcError } = await (supabase.rpc as any)('get_user_primary_role', { p_user_id: userId });
+      let { data: role, error: rpcError } = await (supabase.rpc as any)('get_user_primary_role', { user_id: userId });
       const rpcTime = performance.now() - rpcStart;
       
       if (rpcError) {
@@ -95,17 +96,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       // Build profile from auth user + role + database profile
+      // Note: Allow both 'specialist' and 'especialista_geral' for backward compatibility
       const profile: UserProfile = {
         id: userId,
         user_id: userId,
         full_name: profileData?.name || authUser.user_metadata?.name || authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
         email: authUser.email || '',
-        role: (role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'specialist',
+        role: (role || 'user') as 'admin' | 'user' | 'hr' | 'prestador' | 'specialist' | 'especialista_geral',
         is_active: profileData?.is_active ?? true,
         company_id: profileData?.company_id || undefined,
         has_completed_onboarding: profileData?.has_completed_onboarding ?? false,
         metadata: {},
       };
+      
+      // Auto-complete onboarding milestone for regular users on first login
+      if (role === 'user') {
+        try {
+          await (supabase
+            .from('user_milestones')
+            .update({ 
+              completed: true, 
+              completed_at: new Date().toISOString() 
+            })
+            .eq('user_id', userId)
+            .eq('milestone_type', 'onboarding') // FIX: Use correct milestone type from database
+            .eq('completed', false) as any);
+          console.log('%c[AuthContext] ✅ onboarding milestone auto-completed', 'color: green;');
+        } catch (err) {
+          console.error('Error completing onboarding milestone:', err);
+        }
+      }
       
       console.log('%c[AuthContext] ✅ Profile built with company_id:', 'color: green; font-weight: bold;', profile);
       return profile;
@@ -300,6 +320,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Refresh profile from database (useful after onboarding completion or profile updates)
+  const refreshProfile = async () => {
+    if (!user?.id) {
+      console.warn('[AuthContext] Cannot refresh profile: No user logged in');
+      return;
+    }
+    
+    console.log('[AuthContext] Refreshing profile...');
+    const profileData = await loadProfileWithRoles(user.id);
+    if (profileData) {
+      setProfile(profileData);
+      console.log('[AuthContext] Profile refreshed successfully:', profileData);
+    }
+  };
+
   const logout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -482,6 +517,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signup,
     resetPassword,
     logout,
+    refreshProfile,
     isLoading,
   };
 

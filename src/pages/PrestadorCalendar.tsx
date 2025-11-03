@@ -5,19 +5,259 @@ import { usePrestadorCalendar } from '@/hooks/usePrestadorCalendar';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, User, Building, Brain, Dumbbell, DollarSign, Scale } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { isSameDay } from 'date-fns';
 import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
+import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
+
+const getPillarColors = (pillar: string) => {
+  const colors = {
+    'psychological': {
+      bgSolid: 'bg-blue-500',
+      text: 'text-blue-700',
+      border: 'border-blue-200'
+    },
+    'physical': {
+      bgSolid: 'bg-yellow-500',
+      text: 'text-yellow-700',
+      border: 'border-yellow-200'
+    },
+    'financial': {
+      bgSolid: 'bg-green-500',
+      text: 'text-green-700',
+      border: 'border-green-200'
+    },
+    'legal': {
+      bgSolid: 'bg-purple-500',
+      text: 'text-purple-700',
+      border: 'border-purple-200'
+    },
+    'saude_mental': {
+      bgSolid: 'bg-blue-500',
+      text: 'text-blue-700',
+      border: 'border-blue-200'
+    },
+    'bem_estar_fisico': {
+      bgSolid: 'bg-yellow-500',
+      text: 'text-yellow-700',
+      border: 'border-yellow-200'
+    },
+    'assistencia_financeira': {
+      bgSolid: 'bg-green-500',
+      text: 'text-green-700',
+      border: 'border-green-200'
+    },
+    'assistencia_juridica': {
+      bgSolid: 'bg-purple-500',
+      text: 'text-purple-700',
+      border: 'border-purple-200'
+    }
+  }
+  return colors[pillar as keyof typeof colors] || colors['psychological']
+}
+
+const getPillarIcon = (pillar: string) => {
+  switch (pillar) {
+    case 'psychological':
+    case 'saude_mental':
+      return Brain
+    case 'physical':
+    case 'bem_estar_fisico':
+      return Dumbbell
+    case 'financial':
+    case 'assistencia_financeira':
+      return DollarSign
+    case 'legal':
+    case 'assistencia_juridica':
+      return Scale
+    default:
+      return Brain
+  }
+}
+
+const getPillarName = (pillar: string) => {
+  const names = {
+    'psychological': 'Saúde Mental',
+    'physical': 'Bem-Estar Físico',
+    'financial': 'Assistência Financeira',
+    'legal': 'Assistência Jurídica',
+    'saude_mental': 'Saúde Mental',
+    'bem_estar_fisico': 'Bem-Estar Físico',
+    'assistencia_financeira': 'Assistência Financeira',
+    'assistencia_juridica': 'Assistência Jurídica'
+  }
+  return names[pillar as keyof typeof names] || pillar
+}
+
+// Session Event Card Component
+const SessionEventCard = ({ event, toast, onReschedule, onCancel }: { event: any; toast: any; onReschedule?: (id: string) => void; onCancel?: (id: string) => void; }) => {
+  const [meetingLink, setMeetingLink] = useState(event.meetingLink || '');
+  const [isEditingLink, setIsEditingLink] = useState(false);
+
+  const colors = getPillarColors(event.pillar);
+  const PillarIcon = getPillarIcon(event.pillar);
+
+  const handleSaveLink = async () => {
+    // Normalize URL to ensure it has https:// protocol
+    const normalizedLink = meetingLink.trim() ? (
+      meetingLink.trim().match(/^https?:\/\//i) ? meetingLink.trim() : `https://${meetingLink.trim()}`
+    ) : null;
+
+    const { error } = await supabase
+      .from('bookings')
+      .update({ meeting_link: normalizedLink })
+      .eq('id', event.id);
+    
+    if (error) {
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível guardar o link',
+        variant: 'destructive'
+      });
+    } else {
+      setIsEditingLink(false);
+      toast({
+        title: 'Link guardado',
+        description: 'O link da reunião foi atualizado'
+      });
+    }
+  };
+
+  return (
+    <div className={cn(
+      'group relative overflow-hidden rounded-3xl bg-gray-100 dark:bg-gray-800 p-6 shadow-[12px_12px_24px_rgba(0,0,0,0.15),-12px_-12px_24px_rgba(255,255,255,0.9)] transition-all duration-500 hover:shadow-[20px_20px_40px_rgba(0,0,0,0.2),-20px_-20px_40px_rgba(255,255,255,1)]'
+    )}>
+      {/* Pillar Icon */}
+      <div className="mb-4 flex justify-center relative z-10">
+        <div className="relative">
+          <div className={cn(
+            "h-20 w-20 overflow-hidden rounded-full p-1 shadow-[inset_6px_6px_12px_rgba(0,0,0,0.1),inset_-6px_-6px_12px_rgba(255,255,255,0.9)] flex items-center justify-center",
+            colors.bgSolid
+          )}>
+            <PillarIcon className="h-10 w-10 text-white" />
+          </div>
+        </div>
+      </div>
+
+      {/* Session Info */}
+      <div className="text-center relative z-10">
+        <h3 className={cn("text-lg font-semibold", colors.text)}>
+          {getPillarName(event.pillar)}
+        </h3>
+        
+        {/* Session Details */}
+        <div className="mt-4 flex flex-wrap justify-center items-center gap-4 text-sm text-gray-800 dark:text-gray-200">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            <span className="font-medium">{event.time}</span>
+          </div>
+          
+          {event.clientName && (
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              <span className="font-medium">{event.clientName}</span>
+            </div>
+          )}
+          
+          {event.company && (
+            <div className="flex items-center gap-2">
+              <Building className="h-4 w-4" />
+              <span className="font-medium text-xs">{event.company}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Meeting Link Section */}
+        {isEditingLink ? (
+          <div className="mt-4 space-y-2">
+            <Input
+              type="url"
+              value={meetingLink}
+              onChange={(e) => setMeetingLink(e.target.value)}
+              placeholder="https://meet.google.com/..."
+              className="w-full"
+            />
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleSaveLink} className="flex-1">
+                Guardar
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setIsEditingLink(false)} className="flex-1">
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        ) : meetingLink ? (
+          <div className="mt-4 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <p className="text-xs text-green-700 dark:text-green-300 truncate">{meetingLink}</p>
+          </div>
+        ) : (
+          <div className="mt-4">
+            <button
+              onClick={() => setIsEditingLink(true)}
+              className="text-xs text-blue-600 hover:underline"
+            >
+              + Adicionar link da reunião
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="mt-6 flex gap-2 relative z-10">
+        <button 
+          onClick={() => {
+            onReschedule?.(event.id);
+          }}
+          className="flex-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105"
+        >
+          Reagendar
+        </button>
+        
+        <button 
+          onClick={() => {
+            if (meetingLink) {
+              window.open(meetingLink, '_blank');
+            } else {
+              setIsEditingLink(true);
+            }
+          }}
+          disabled={!meetingLink}
+          className="flex-1 rounded-full bg-green-100 hover:bg-green-200 text-green-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Entrar
+        </button>
+        
+        <button 
+          onClick={() => {
+            onCancel?.(event.id);
+          }}
+          className="flex-1 rounded-full bg-red-100 hover:bg-red-200 text-red-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105"
+        >
+          Cancelar
+        </button>
+      </div>
+
+      {/* Animated border on hover */}
+      <div className={cn("absolute inset-0 rounded-3xl border opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none", colors.border)}></div>
+    </div>
+  );
+};
 
 const PrestadorCalendar = () => {
   const { toast } = useToast();
-  const { calendarEvents, loading } = usePrestadorCalendar();
+  const { calendarEvents, loading, refetch } = usePrestadorCalendar();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDayEventsModalOpen, setIsDayEventsModalOpen] = useState(false);
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
   const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState(false);
+  const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
+  const [rescheduleSessionId, setRescheduleSessionId] = useState<string | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState<Date | null>(null);
+  const [rescheduleTime, setRescheduleTime] = useState('');
 
   // Transform calendar events to FullScreenCalendar format
   const calendarData = useMemo(() => {
@@ -92,6 +332,118 @@ const PrestadorCalendar = () => {
       description: 'Nova sessão adicionada ao calendário com sucesso.',
     });
     setIsAddSessionModalOpen(false);
+  };
+
+  const handleCancelSession = async (sessionId: string) => {
+    console.log('🔴 [CANCEL] Button clicked! Session ID:', sessionId);
+    
+    try {
+      console.log('🔴 [CANCEL] Calling Supabase RPC function...');
+      const { data, error } = await supabase.rpc('cancel_booking_as_specialist' as any, {
+        _booking_id: sessionId,
+        _cancellation_reason: 'Cancelado pelo especialista'
+      }) as { data: any; error: any };
+
+      console.log('🔴 [CANCEL] Response:', { data, error });
+
+      if (error) {
+        console.error('🔴 [CANCEL] Supabase error:', error);
+        throw error;
+      }
+
+      if (data?.success) {
+        console.log('🔴 [CANCEL] Success!');
+        toast({
+          title: 'Sessão Cancelada',
+          description: 'A sessão foi cancelada com sucesso.',
+        });
+        // Reload calendar
+        await refetch();
+      } else {
+        console.error('🔴 [CANCEL] Function returned error:', data?.error);
+        throw new Error(data?.error || 'Failed to cancel booking');
+      }
+    } catch (error) {
+      console.error('🔴 [CANCEL] Caught error:', error);
+      toast({
+        title: 'Erro ao Cancelar',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleRescheduleSession = async (sessionId: string, newDate: Date, newTime: string) => {
+    console.log('🟢 [RESCHEDULE] Button clicked! Session ID:', sessionId);
+    
+    try {
+      console.log('🟢 [RESCHEDULE] Calling Supabase RPC function...');
+      const { data, error } = await supabase.rpc('reschedule_booking_as_specialist' as any, {
+        _booking_id: sessionId,
+        _new_booking_date: newDate.toISOString().split('T')[0],
+        _new_start_time: newTime
+      }) as { data: any; error: any };
+
+      console.log('🟢 [RESCHEDULE] Response:', { data, error });
+
+      if (error) {
+        console.error('🟢 [RESCHEDULE] Supabase error:', error);
+        throw error;
+      }
+
+      if (data?.success) {
+        console.log('🟢 [RESCHEDULE] Success!');
+        toast({
+          title: 'Sessão Reagendada',
+          description: 'A sessão foi reagendada com sucesso.',
+        });
+        // Reload calendar
+        await refetch();
+      } else {
+        console.error('🟢 [RESCHEDULE] Function returned error:', data?.error);
+        throw new Error(data?.error || 'Failed to reschedule booking');
+      }
+    } catch (error) {
+      console.error('🟢 [RESCHEDULE] Caught error:', error);
+      toast({
+        title: 'Erro ao Reagendar',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleUpdateMeetingLink = async (sessionId: string, meetingLink: string) => {
+    console.log('🔵 [LINK] Updating link for session:', sessionId);
+    
+    try {
+      const { data, error } = await supabase.rpc('update_meeting_link_as_specialist' as any, {
+        _booking_id: sessionId,
+        _meeting_link: meetingLink
+      }) as { data: any; error: any };
+
+      console.log('🔵 [LINK] Response:', { data, error });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast({
+          title: 'Link Atualizado',
+          description: 'O link da reunião foi atualizado com sucesso.',
+        });
+        // Reload calendar
+        await refetch();
+      } else {
+        throw new Error(data?.error || 'Failed to update link');
+      }
+    } catch (error) {
+      console.error('🔵 [LINK] Error:', error);
+      toast({
+        title: 'Erro ao Atualizar Link',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+        variant: 'destructive',
+      });
+    }
   };
 
   const getPillarLabel = (pillar: string) => {
@@ -192,44 +544,43 @@ const PrestadorCalendar = () => {
                   <p>Sem eventos neste dia</p>
                 </div>
               ) : (
-                selectedDateEvents.map((event) => (
-                  <Card key={event.id} className="p-4 hover:shadow-md transition-shadow">
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-sm mb-1">
-                            {event.clientName || getTypeLabel(event.type)}
-                          </h4>
-                          {event.company && (
-                            <p className="text-xs text-muted-foreground">{event.company}</p>
-                          )}
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <Badge className={`text-xs ${getTypeColor(event.type)}`}>
-                            {getTypeLabel(event.type)}
-                          </Badge>
-                          {event.pillar && (
-                            <Badge className={`text-xs ${getPillarColor(event.pillar)}`}>
-                              {getPillarLabel(event.pillar)}
+                selectedDateEvents.map((event) => {
+                  // Only show full session cards for session type events
+                  if (event.type !== 'session') {
+                    return (
+                      <Card key={event.id} className="p-4 hover:shadow-md transition-shadow">
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-sm mb-1">
+                                {getTypeLabel(event.type)}
+                              </h4>
+                            </div>
+                            <Badge className={`text-xs ${getTypeColor(event.type)}`}>
+                              {getTypeLabel(event.type)}
                             </Badge>
-                          )}
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            <span>{event.time}</span>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{event.time}</span>
-                        </div>
-                        {event.status && (
-                          <Badge variant="outline" className="text-xs">
-                            {event.status === 'confirmed' ? 'Confirmada' : event.status === 'cancelled' ? 'Cancelada' : event.status}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                ))
+                      </Card>
+                    );
+                  }
+
+                  // Session events get the beautiful card design
+                  return <SessionEventCard 
+                    key={event.id} 
+                    event={event} 
+                    toast={toast}
+                    onReschedule={(id) => {
+                      setRescheduleSessionId(id);
+                      setShowRescheduleDialog(true);
+                    }}
+                    onCancel={handleCancelSession}
+                  />;
+                })
               )}
             </div>
           </ScrollArea>
@@ -249,13 +600,65 @@ const PrestadorCalendar = () => {
             <DialogTitle>Adicionar Nova Sessão</DialogTitle>
           </DialogHeader>
           <div className="py-6 space-y-4">
-                          <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Funcionalidade para adicionar nova sessão em breve.
             </p>
             <Button onClick={handleConfirmAddSession} className="w-full">
               Confirmar
-                        </Button>
-                      </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reschedule Dialog */}
+      <Dialog open={showRescheduleDialog} onOpenChange={setShowRescheduleDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reagendar Sessão</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nova Data</label>
+              <Input
+                type="date"
+                min={new Date().toISOString().split('T')[0]}
+                value={rescheduleDate ? rescheduleDate.toISOString().split('T')[0] : ''}
+                onChange={(e) => setRescheduleDate(e.target.value ? new Date(e.target.value) : null)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nova Hora</label>
+              <Input
+                type="time"
+                value={rescheduleTime}
+                onChange={(e) => setRescheduleTime(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => {
+                setShowRescheduleDialog(false);
+                setRescheduleSessionId(null);
+                setRescheduleDate(null);
+                setRescheduleTime('');
+              }}>
+                Cancelar
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (rescheduleSessionId && rescheduleDate && rescheduleTime) {
+                    handleRescheduleSession(rescheduleSessionId, rescheduleDate, rescheduleTime);
+                    setShowRescheduleDialog(false);
+                    setRescheduleSessionId(null);
+                    setRescheduleDate(null);
+                    setRescheduleTime('');
+                  }
+                }}
+                disabled={!rescheduleDate || !rescheduleTime}
+              >
+                Confirmar
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

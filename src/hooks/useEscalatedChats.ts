@@ -61,7 +61,7 @@ export const useEscalatedChats = () => {
           return {
             ...session,
             pillar: session.pillar as 'legal' | 'psychological' | 'physical' | 'financial' | null,
-            status: session.status as 'active' | 'escalated' | 'resolved',
+            status: session.status as 'active' | 'escalated' | 'resolved' | 'phone_escalated' | 'pending',
             satisfaction_rating: session.satisfaction_rating as 'satisfied' | 'unsatisfied' | null,
             type: 'triage' as const,
             resolved: session.status === 'resolved',

@@ -67,7 +67,6 @@ const AdminPerformanceSupervision = lazy(() => import("./pages/AdminPerformanceS
 // Specialist pages
 const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboard"));
 const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequests"));
-const EspecialistaSessions = lazy(() => import("./pages/EspecialistaSessionsRevamped"));
 const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistory"));
 const EspecialistaStatsRevamped = lazy(() => import("./pages/EspecialistaStatsRevamped"));
 const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettings"));
@@ -206,7 +205,8 @@ const AppWithTracking = () => {
           {/* Especialista Geral routes - PROTECTED */}
           <Route path="/especialista/dashboard" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><SpecialistDashboard /></EspecialistaLayout></ProtectedRoute>} />
           <Route path="/especialista/call-requests" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaCallRequests /></EspecialistaLayout></ProtectedRoute>} />
-          <Route path="/especialista/sessions" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaSessions /></EspecialistaLayout></ProtectedRoute>} />
+          <Route path="/especialista/calendario" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><PrestadorCalendar /></EspecialistaLayout></ProtectedRoute>} />
+          <Route path="/especialista/calendar" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><PrestadorCalendar /></EspecialistaLayout></ProtectedRoute>} />
           <Route path="/especialista/user-history" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaUserHistory /></EspecialistaLayout></ProtectedRoute>} />
           <Route path="/especialista/stats" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaStatsRevamped /></EspecialistaLayout></ProtectedRoute>} />
           <Route path="/especialista/settings" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaSettings /></EspecialistaLayout></ProtectedRoute>} />

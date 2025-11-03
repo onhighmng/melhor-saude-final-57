@@ -123,7 +123,15 @@ export function SessionModal({
     // Find the session and open meeting link if available
     const session = sessions.find(s => s.id === sessionId);
     if (session && session.meetingLink) {
-      window.open(session.meetingLink, '_blank');
+      let meetingUrl = session.meetingLink;
+      
+      // CRITICAL FIX: Ensure URL has https:// protocol
+      if (!meetingUrl.match(/^https?:\/\//i)) {
+        meetingUrl = `https://${meetingUrl}`;
+      }
+      
+      console.log('Opening meeting URL:', meetingUrl);
+      window.open(meetingUrl, '_blank', 'noopener,noreferrer');
     }
   };
 

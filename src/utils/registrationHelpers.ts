@@ -293,7 +293,7 @@ export const createPersonalUser = async (userId: string, userData: PersonalUserD
 export const createHRUser = async (userId: string, userData: HRUserData, companyId?: string, sessionsAllocated?: number) => {
   let finalCompanyId = companyId;
 
-  // If no company ID from code, create company
+  // For HR codes, company_id is always null - create company from registration data
   if (!finalCompanyId) {
     // Ensure we have a session before inserting
     const { data: { session } } = await supabase.auth.getSession();
@@ -304,9 +304,9 @@ export const createHRUser = async (userId: string, userData: HRUserData, company
       name: userData.companyName, // REQUIRED in actual schema
       contact_email: userData.email, // REQUIRED in actual schema
       contact_phone: userData.phone, // Optional in actual schema
-      sessions_allocated: sessionsAllocated || 100, // Use sessions from invite or default to 100
+      sessions_allocated: sessionsAllocated || 100, // Use sessions from invite code
       sessions_used: 0,
-      is_active: false // Needs admin approval
+      is_active: true // HR IS the company - active immediately
     };
     
     const { data: company, error: companyError } = await supabase

@@ -17,7 +17,7 @@ export interface ChatSession {
   id: string;
   user_id: string;
   pillar: 'legal' | 'psychological' | 'physical' | 'financial' | null;
-  status: 'active' | 'resolved' | 'escalated';
+  status: 'active' | 'resolved' | 'escalated' | 'phone_escalated' | 'pending';
   ai_resolution: boolean;
   satisfaction_rating: 'satisfied' | 'unsatisfied' | null;
   phone_escalation_reason: string | null;

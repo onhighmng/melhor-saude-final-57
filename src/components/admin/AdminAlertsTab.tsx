@@ -64,7 +64,7 @@ const AdminAlertsTab = () => {
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('bookings')
         .select('*, user:profiles!user_id(name), provider:prestadores!prestador_id(name)')
-        .eq('date', today)
+        .eq('booking_date', today)
         .eq('status', 'scheduled');
 
       if (sessionsError) throw sessionsError;

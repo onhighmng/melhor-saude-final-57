@@ -105,16 +105,21 @@ export function MeetingInfoCard({ session, userRole = 'user' }: MeetingInfoCardP
                   <CheckCircle2 className="h-4 w-4 text-green-600" />
                   <span className="font-medium text-green-700">Link da sessão disponível</span>
                 </div>
-                <Button asChild className="w-full">
-                  <a 
-                    href={session.meetingLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
+                <Button 
+                  className="w-full"
+                  onClick={() => {
+                    let meetingUrl = session.meetingLink!;
+                    // CRITICAL FIX: Ensure URL has https:// protocol
+                    if (!meetingUrl.match(/^https?:\/\//i)) {
+                      meetingUrl = `https://${meetingUrl}`;
+                    }
+                    window.open(meetingUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                >
+                  <div className="flex items-center gap-2">
                     <ExternalLink className="h-4 w-4" />
                     Entrar na Sessão ({platformLabel})
-                  </a>
+                  </div>
                 </Button>
               </div>
             ) : isUpcoming ? (

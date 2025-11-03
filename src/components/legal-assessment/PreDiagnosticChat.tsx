@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Send, Bot } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -13,7 +14,7 @@ interface Message {
 
 interface PreDiagnosticChatProps {
   onBack: () => void;
-  onComplete: () => void;
+  onComplete: (sessionId: string) => void;
 }
 
 const PreDiagnosticChat: React.FC<PreDiagnosticChatProps> = ({ onBack, onComplete }) => {
@@ -25,7 +26,9 @@ const PreDiagnosticChat: React.FC<PreDiagnosticChatProps> = ({ onBack, onComplet
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const scrollToBottom = () => {
@@ -36,15 +39,55 @@ const PreDiagnosticChat: React.FC<PreDiagnosticChatProps> = ({ onBack, onComplet
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    // Create chat session when component mounts
+    createChatSession();
+  }, []);
+
+  const createChatSession = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data: session, error } = await supabase
+        .from('chat_sessions')
+        .insert({
+          user_id: user.id,
+          pillar: 'assistencia_juridica',
+          status: 'active',
+          ai_resolution: false
+        })
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Error creating chat session:', error);
+      } else if (session) {
+        setChatSessionId(session.id);
+      }
+    } catch (error) {
+      console.error('Error creating chat session:', error);
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
+    const messageContent = input;
     setInput('');
     setIsLoading(true);
 
     try {
+      // Save user message to database
+      if (chatSessionId) {
+        await supabase.from('chat_messages').insert({
+          session_id: chatSessionId,
+          role: 'user',
+          content: messageContent
+        });
+      }
+
       const { data, error } = await supabase.functions.invoke('legal-chat', {
         body: {
           messages: [...messages, userMessage],
@@ -60,6 +103,15 @@ const PreDiagnosticChat: React.FC<PreDiagnosticChatProps> = ({ onBack, onComplet
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Save assistant message to database
+      if (chatSessionId) {
+        await supabase.from('chat_messages').insert({
+          session_id: chatSessionId,
+          role: 'assistant',
+          content: data.response
+        });
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
@@ -87,7 +139,7 @@ const PreDiagnosticChat: React.FC<PreDiagnosticChatProps> = ({ onBack, onComplet
             <Button variant="ghost" onClick={onBack}>
               ← Voltar
             </Button>
-            <Button variant="outline" onClick={onComplete}>
+            <Button variant="outline" onClick={() => onComplete(chatSessionId || '')}>
               Concluir Mais Tarde
             </Button>
           </div>

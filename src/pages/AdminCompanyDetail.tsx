@@ -521,7 +521,8 @@ export default function AdminCompanyDetail() {
         ));
 
       } catch (error) {
-        // Silent fail for email sending
+        // Log error for debugging
+        console.error(`Failed to send email to ${employee.email}:`, error);
         setEmployees(prev => prev.map(emp => 
           emp.id === employee.id 
             ? { ...emp, status: 'erro' as const }
