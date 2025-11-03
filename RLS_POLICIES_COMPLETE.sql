@@ -839,3 +839,4 @@ SELECT '✅ ALL RLS POLICIES CREATED SUCCESSFULLY!' as status;
 SELECT 'Row Level Security is now fully configured.' as message;
 SELECT 'Proceed to run TRIGGERS_AND_AUTOMATION.sql next.' as next_step;
 
+

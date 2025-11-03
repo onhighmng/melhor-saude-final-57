@@ -112,3 +112,4 @@ export function useSentryErrorHandler(componentName: string) {
     captureMessage,
   };
 }
+

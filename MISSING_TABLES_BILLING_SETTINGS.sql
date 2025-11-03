@@ -609,3 +609,4 @@ SELECT 'Added: subscriptions, invoices, transactions, platform_settings' as new_
 SELECT 'Added missing columns to existing tables for full functionality.' as enhanced;
 SELECT 'All billing and configuration features are now supported.' as message;
 
+

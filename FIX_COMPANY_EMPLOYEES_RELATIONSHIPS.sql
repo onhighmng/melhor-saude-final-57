@@ -246,3 +246,4 @@ BEGIN
     RAISE NOTICE '🎉 You can now refresh your application and the 400 errors should be gone!';
 END $$;
 
+

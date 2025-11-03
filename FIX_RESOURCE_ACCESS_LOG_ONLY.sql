@@ -59,3 +59,4 @@ FROM information_schema.columns
 WHERE table_name = 'resource_access_log'
 ORDER BY ordinal_position;
 
+

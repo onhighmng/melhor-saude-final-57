@@ -135,3 +135,4 @@ ORDER BY p.created_at DESC;
 -- ✅ Trigger prevents future HR users from missing company_id
 -- ============================================================================
 
+

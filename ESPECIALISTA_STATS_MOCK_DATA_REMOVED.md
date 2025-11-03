@@ -227,3 +227,4 @@ const { data: recentFeedback } = await supabase
 - Data updates in real-time as new cases and feedback come in
 - Empty states provide good UX when no data exists
 
+

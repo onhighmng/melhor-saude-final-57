@@ -216,3 +216,4 @@ GRANT SELECT ON pillar_analytics TO authenticated;
 GRANT INSERT, SELECT ON user_activity_logs TO authenticated;
 GRANT SELECT ON system_settings TO authenticated;
 GRANT SELECT ON feature_flags TO authenticated;
+

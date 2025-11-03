@@ -185,3 +185,4 @@ SELECT
   (SELECT COUNT(*)::text || ' migrations applied' FROM supabase_migrations.schema_migrations) as applied,
   '~50 older migrations not applied (but may not be needed)' as note;
 
+

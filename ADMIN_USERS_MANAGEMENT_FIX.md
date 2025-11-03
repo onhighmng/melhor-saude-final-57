@@ -190,3 +190,4 @@ If you still see errors:
 4. Ensure database connection is working
 5. Try refreshing the page to reload data
 
+

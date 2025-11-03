@@ -354,3 +354,4 @@ Expected: **All rows show "✅ Linked"**
 **Solution:** 3-layer fix (Database + Frontend + Component)  
 **Result:** HR IS THE COMPANY! ✅
 
+

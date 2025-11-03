@@ -113,3 +113,4 @@ Implemented functionality allowing admins to specify the number of sessions when
 - The feature respects existing database constraints and RLS policies
 - All changes maintain compatibility with existing company registrations
 
+

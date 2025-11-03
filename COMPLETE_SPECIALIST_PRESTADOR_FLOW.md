@@ -392,3 +392,4 @@ WHERE prestadores.user_id = 'user-uuid';
 
 **No company assignment = Platform-wide access = Correct! 🎉**
 
+

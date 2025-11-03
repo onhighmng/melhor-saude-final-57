@@ -121,3 +121,4 @@ export default Sentry.withErrorBoundary(SentryErrorBoundary, {
   fallback: <div>Erro ao carregar a página</div>,
   showDialog: true,
 });
+

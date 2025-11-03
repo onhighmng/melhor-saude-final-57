@@ -56,3 +56,4 @@ To test this fix:
 - `src/components/ProtectedRoute.tsx` - Uses the same correct mapping (was already fixed)
 - `src/contexts/AuthContext.tsx` - Returns `'specialist'` role from RPC function
 
+

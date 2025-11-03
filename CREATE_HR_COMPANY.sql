@@ -60,3 +60,4 @@ INSERT INTO companies (
 -- LEFT JOIN companies c ON c.id = p.company_id
 -- WHERE p.email = 'lorinofrodriguesjunior@gmail.com';
 
+

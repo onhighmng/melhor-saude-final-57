@@ -406,3 +406,4 @@ curl -X POST http://localhost:54321/functions/v1/chat-assistant
 supabase secrets set SENTRY_DSN="..."
 supabase functions deploy
 ```
+

@@ -142,3 +142,4 @@ WHERE pillar_specialties @> ARRAY['assistencia_financeira']
 -- The error "Não há especialistas disponíveis no momento" should now be fixed!
 -- ========================================================================
 
+

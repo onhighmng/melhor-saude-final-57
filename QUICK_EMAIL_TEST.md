@@ -203,3 +203,4 @@ You'll know emails are working when:
 - Open browser console (F12) to see detailed logs
 - Check Supabase Edge Function logs for server-side errors
 
+

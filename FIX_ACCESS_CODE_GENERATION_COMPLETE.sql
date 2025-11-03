@@ -307,3 +307,4 @@ SELECT
   '✓ Role Constraint' as status,
   'Now supports: user, hr, prestador, especialista_geral' as message;
 
+

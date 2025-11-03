@@ -204,3 +204,4 @@ COMMENT ON FUNCTION check_and_complete_ratings_milestone IS 'Automatically marks
 COMMENT ON FUNCTION check_and_complete_specialist_milestone IS 'Automatically marks specialist milestone as complete when user confirms first booking';
 COMMENT ON FUNCTION check_and_complete_goal_milestone IS 'Automatically marks goal milestone as complete when user completes their first goal';
 
+

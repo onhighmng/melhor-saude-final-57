@@ -147,3 +147,4 @@ GRANT SELECT ON specialist_rates TO authenticated, anon;
 GRANT INSERT, UPDATE ON specialist_rates TO authenticated;
 GRANT SELECT ON specialist_working_hours TO authenticated, anon;
 GRANT INSERT, UPDATE ON specialist_working_hours TO authenticated;
+

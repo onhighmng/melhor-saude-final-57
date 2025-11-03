@@ -46,3 +46,4 @@ WHERE conrelid = 'public.invites'::regclass
 --   2. Run: supabase db push
 -- =====================================================
 
+

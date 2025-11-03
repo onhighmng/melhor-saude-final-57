@@ -163,3 +163,4 @@ SELECT * FROM user_milestones WHERE milestone_type = 'booking_confirmed'; -- emp
 3. Verify the specialist dashboard is querying the correct tables for call requests
 4. Monitor database logs for any trigger errors
 
+

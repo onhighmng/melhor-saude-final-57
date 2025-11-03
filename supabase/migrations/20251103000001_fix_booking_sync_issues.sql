@@ -215,3 +215,4 @@ COMMENT ON TRIGGER booking_notification_trigger ON bookings IS
 COMMENT ON TRIGGER quota_management_trigger ON bookings IS 
   'Manages quota increments/decrements based on booking status changes';
 
+

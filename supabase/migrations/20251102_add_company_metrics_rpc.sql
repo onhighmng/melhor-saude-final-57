@@ -122,3 +122,4 @@ GRANT EXECUTE ON FUNCTION get_company_monthly_metrics(UUID, DATE, DATE) TO authe
 -- Add comment
 COMMENT ON FUNCTION get_company_monthly_metrics IS 'Get comprehensive monthly metrics for a company including utilization, employees, pillar breakdown, and satisfaction';
 
+

@@ -216,3 +216,4 @@ SELECT '', 'C. Check auth.uid() returns correct user ID in browser console'
 UNION ALL
 SELECT '', 'D. Verify user has correct roles in user_roles table';
 
+

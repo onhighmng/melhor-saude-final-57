@@ -95,3 +95,4 @@ profiles (name, email)  // ✅ This is the actual column
 
 See `SCHEMA_COLUMN_FIX_SUMMARY.md` for complete details.
 
+

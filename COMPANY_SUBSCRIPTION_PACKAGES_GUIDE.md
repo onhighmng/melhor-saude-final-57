@@ -315,3 +315,4 @@ SELECT
 **Migration File**: `20251102_add_employee_seats_to_companies.sql`  
 **Status**: ✅ Fully Implemented
 
+

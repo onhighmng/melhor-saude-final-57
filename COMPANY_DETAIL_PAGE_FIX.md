@@ -233,3 +233,4 @@ The company detail page (`/admin/companies/{id}`) now:
 - ✅ Edit functionality works
 - ✅ All operations use correct column names
 
+

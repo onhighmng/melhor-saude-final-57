@@ -323,3 +323,4 @@ SELECT
   '✅✅✅ ALL FIXES APPLIED SUCCESSFULLY ✅✅✅' as status,
   'You can now generate access codes for all user types!' as message;
 
+

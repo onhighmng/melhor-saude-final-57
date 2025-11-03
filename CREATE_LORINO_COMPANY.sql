@@ -69,3 +69,4 @@ RETURNING id, name;
 -- | email                            | name              | role | company_id         | company_name      |
 -- | lorinofrodriguesjunior@gmail.com | Lorino...         | hr   | abc-123-...        | OnHigh Management |
 
+

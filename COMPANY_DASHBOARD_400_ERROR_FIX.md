@@ -138,3 +138,4 @@ const { data } = await supabase
 **Date**: November 2, 2025  
 **Impact**: Critical fix - Enables all company features
 
+

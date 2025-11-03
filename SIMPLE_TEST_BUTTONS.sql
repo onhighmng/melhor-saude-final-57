@@ -136,3 +136,4 @@ INSERT INTO bookings (
 -- FIX 4: If RLS policies are wrong (TEST 3 failed)
 -- You MUST run the complete SQL from RUN_THESE_SQL_COMMANDS.md
 
+

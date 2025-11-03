@@ -132,3 +132,4 @@ export function trackUserAction(action: string, data?: Record<string, any>) {
     data,
   });
 }
+

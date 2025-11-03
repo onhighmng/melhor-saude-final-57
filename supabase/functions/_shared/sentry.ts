@@ -158,3 +158,4 @@ export default {
   captureException,
   captureMessage,
 };
+

@@ -53,3 +53,4 @@ SELECT '✅ Function fixed! Test with a code:' as status;
 -- Test the function (replace MS-XXXX with your actual code)
 -- SELECT * FROM validate_access_code('MS-XXXX');
 
+

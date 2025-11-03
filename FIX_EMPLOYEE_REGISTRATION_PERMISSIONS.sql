@@ -173,3 +173,4 @@ WHERE schemaname = 'public'
 AND tablename IN ('invites', 'profiles', 'user_roles', 'company_employees')
 ORDER BY tablename;
 
+

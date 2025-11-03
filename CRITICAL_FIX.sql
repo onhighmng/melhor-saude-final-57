@@ -66,3 +66,4 @@ FROM bookings
 WHERE user_id = '72ec7142-9478-4b82-8c3a-66f4cdff461e'
 ORDER BY date DESC, start_time;
 
+

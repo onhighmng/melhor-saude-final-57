@@ -295,3 +295,4 @@ FOREIGN KEY (user_id) REFERENCES profiles(id);
 **Date**: November 2, 2025  
 **Impact**: Major feature - Enables employee management
 
+

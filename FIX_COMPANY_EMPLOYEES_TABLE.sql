@@ -34,3 +34,4 @@ FROM information_schema.columns
 WHERE table_name = 'company_employees' 
 ORDER BY ordinal_position;
 
+

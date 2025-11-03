@@ -364,3 +364,4 @@ The system will now automatically promote users to:
 - **Especialista_geral role** → when using specialist codes
 - **User role** → when using employee/personal codes
 
+

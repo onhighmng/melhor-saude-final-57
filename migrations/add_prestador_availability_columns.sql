@@ -19,3 +19,4 @@ FROM information_schema.columns
 WHERE table_name = 'prestadores' 
 AND column_name IN ('weekly_availability', 'blocked_dates', 'working_hours');
 
+

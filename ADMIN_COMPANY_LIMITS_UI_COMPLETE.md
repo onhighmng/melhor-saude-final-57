@@ -429,3 +429,4 @@ WHERE employee_seats IS NULL;
 4. Click edit icon to modify seats
 5. See real-time statistics update
 
+

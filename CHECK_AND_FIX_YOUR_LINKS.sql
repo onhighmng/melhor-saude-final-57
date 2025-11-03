@@ -77,3 +77,4 @@ WHERE meeting_link IS NOT NULL
   AND meeting_link NOT LIKE 'http://%'
   AND meeting_link NOT LIKE 'https://%';
 
+

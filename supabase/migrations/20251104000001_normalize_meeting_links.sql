@@ -26,3 +26,4 @@ WHERE meeting_link IS NOT NULL
 ORDER BY created_at DESC
 LIMIT 10;
 
+

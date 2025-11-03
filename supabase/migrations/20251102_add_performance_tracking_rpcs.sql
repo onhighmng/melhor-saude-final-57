@@ -85,3 +85,4 @@ GRANT EXECUTE ON FUNCTION get_prestador_performance(DATE, DATE) TO authenticated
 COMMENT ON FUNCTION get_specialist_performance IS 'Get performance metrics for all Especialista Geral users within a date range';
 COMMENT ON FUNCTION get_prestador_performance IS 'Get performance metrics for all Prestadores within a date range';
 
+

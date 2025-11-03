@@ -1350,3 +1350,4 @@ SELECT '✅ ALL RPC FUNCTIONS CREATED SUCCESSFULLY!' as status;
 SELECT 'All database functions are now available.' as message;
 SELECT 'Proceed to run RLS_POLICIES_COMPLETE.sql next.' as next_step;
 
+

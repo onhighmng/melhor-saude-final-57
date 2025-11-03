@@ -129,3 +129,4 @@ GRANT SELECT ON company_subscription_plans TO authenticated, anon;
 GRANT ALL ON company_subscription_plans TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON company_subscriptions TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON company_verification TO authenticated;
+

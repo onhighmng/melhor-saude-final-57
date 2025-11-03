@@ -72,3 +72,4 @@ SELECT
 FROM information_schema.tables 
 WHERE table_name = 'specialist_call_logs';
 
+

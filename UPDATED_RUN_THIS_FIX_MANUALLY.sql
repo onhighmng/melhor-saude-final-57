@@ -331,3 +331,4 @@ SELECT
   '✅✅✅ ALL FIXES APPLIED SUCCESSFULLY ✅✅✅' as status,
   'HR users can now generate codes with OR without company restriction!' as message;
 
+

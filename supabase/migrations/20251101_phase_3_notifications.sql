@@ -186,3 +186,4 @@ GRANT SELECT, INSERT, UPDATE ON notification_preferences TO authenticated;
 GRANT INSERT, SELECT ON communication_logs TO authenticated;
 GRANT SELECT, INSERT ON booking_reminders TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON company_employee_invitations TO authenticated;
+

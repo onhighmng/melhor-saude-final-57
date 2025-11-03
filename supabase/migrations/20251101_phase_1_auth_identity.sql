@@ -166,3 +166,4 @@ GRANT SELECT ON password_reset_tokens TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON terms_acceptance TO authenticated;
 GRANT SELECT ON audit_logs TO authenticated;
 GRANT ALL ON audit_logs TO authenticated;
+

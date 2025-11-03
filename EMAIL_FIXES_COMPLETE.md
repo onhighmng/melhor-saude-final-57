@@ -279,3 +279,4 @@ Admins, HR, and Prestadores can now send emails to users through the platform!
 - `src/components/admin/AddEmployeeModal.tsx`
 - `src/pages/AdminCompanyDetail.tsx`
 
+

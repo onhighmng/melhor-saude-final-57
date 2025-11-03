@@ -226,3 +226,4 @@ Need more help? Check:
 - `SETUP_TEST_HR_COMPANY.sql` - Full setup guide
 - `COMPANY_SUBSCRIPTION_PACKAGES_GUIDE.md` - How the system works
 
+

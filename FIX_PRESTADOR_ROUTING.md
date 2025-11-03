@@ -258,3 +258,4 @@ ON CONFLICT (user_id) DO NOTHING;
 
 **Auto-promotion trigger is now active and will handle all future registrations automatically.**
 
+
