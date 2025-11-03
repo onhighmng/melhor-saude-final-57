@@ -54,11 +54,14 @@ export function SessionRatingDialog({
 
       if (bookingFetchError || !booking) throw bookingFetchError;
 
+      // Convert 10-point scale to 5-point scale for database
+      const convertedRating = Math.ceil(parseInt(rating) / 2);
+
       // Update booking with rating and feedback
       const { error } = await supabase
         .from('bookings')
         .update({
-          rating: parseInt(rating),
+          rating: convertedRating,
           feedback: comments || null
         })
         .eq('id', sessionId);
@@ -71,8 +74,8 @@ export function SessionRatingDialog({
         .insert({
           user_id: booking.user_id,
           booking_id: sessionId,
-          rating: parseInt(rating),
-          message: comments,
+          rating: convertedRating,
+          message: comments || 'Sem comentários adicionais',
           status: 'new',
           category: 'session_rating'
         });

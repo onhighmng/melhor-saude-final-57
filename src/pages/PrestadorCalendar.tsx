@@ -94,7 +94,7 @@ const getPillarName = (pillar: string) => {
 }
 
 // Session Event Card Component
-const SessionEventCard = ({ event, toast, onReschedule, onCancel }: { event: any; toast: any; onReschedule?: (id: string) => void; onCancel?: (id: string) => void; }) => {
+const SessionEventCard = ({ event, toast, onReschedule, onCancel, onConclude }: { event: any; toast: any; onReschedule?: (id: string) => void; onCancel?: (id: string) => void; onConclude?: (id: string) => void; }) => {
   const [meetingLink, setMeetingLink] = useState(event.meetingLink || '');
   const [isEditingLink, setIsEditingLink] = useState(false);
 
@@ -207,37 +207,49 @@ const SessionEventCard = ({ event, toast, onReschedule, onCancel }: { event: any
       </div>
 
       {/* Action Buttons */}
-      <div className="mt-6 flex gap-2 relative z-10">
-        <button 
-          onClick={() => {
-            onReschedule?.(event.id);
-          }}
-          className="flex-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105"
-        >
-          Reagendar
-        </button>
+      <div className="mt-6 flex flex-col gap-2 relative z-10">
+        <div className="flex gap-2">
+          <button 
+            onClick={() => {
+              onReschedule?.(event.id);
+            }}
+            className="flex-1 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105"
+          >
+            Reagendar
+          </button>
+          
+          <button 
+            onClick={() => {
+              if (meetingLink) {
+                window.open(meetingLink, '_blank');
+              } else {
+                setIsEditingLink(true);
+              }
+            }}
+            disabled={!meetingLink}
+            className="flex-1 rounded-full bg-green-100 hover:bg-green-200 text-green-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Entrar
+          </button>
+          
+          <button 
+            onClick={() => {
+              onCancel?.(event.id);
+            }}
+            className="flex-1 rounded-full bg-red-100 hover:bg-red-200 text-red-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105"
+          >
+            Cancelar
+          </button>
+        </div>
         
+        {/* Conclude Button - Full Width Below */}
         <button 
           onClick={() => {
-            if (meetingLink) {
-              window.open(meetingLink, '_blank');
-            } else {
-              setIsEditingLink(true);
-            }
+            onConclude?.(event.id);
           }}
-          disabled={!meetingLink}
-          className="flex-1 rounded-full bg-green-100 hover:bg-green-200 text-green-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-full bg-purple-100 hover:bg-purple-200 text-purple-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105"
         >
-          Entrar
-        </button>
-        
-        <button 
-          onClick={() => {
-            onCancel?.(event.id);
-          }}
-          className="flex-1 rounded-full bg-red-100 hover:bg-red-200 text-red-700 py-3 px-2 text-sm font-medium shadow-md transition-all duration-300 hover:scale-105"
-        >
-          Cancelar
+          Concluir Sessão
         </button>
       </div>
 
@@ -367,6 +379,41 @@ const PrestadorCalendar = () => {
       console.error('🔴 [CANCEL] Caught error:', error);
       toast({
         title: 'Erro ao Cancelar',
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleConcludeSession = async (sessionId: string) => {
+    console.log('🟣 [CONCLUDE] Button clicked! Session ID:', sessionId);
+    
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', sessionId);
+
+      if (error) {
+        console.error('🟣 [CONCLUDE] Supabase error:', error);
+        throw error;
+      }
+
+      console.log('🟣 [CONCLUDE] Success!');
+      toast({
+        title: 'Sessão Concluída',
+        description: 'A sessão foi marcada como concluída com sucesso.',
+      });
+      
+      // Reload calendar
+      await refetch();
+    } catch (error) {
+      console.error('🟣 [CONCLUDE] Caught error:', error);
+      toast({
+        title: 'Erro ao Concluir',
         description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: 'destructive',
       });
@@ -579,6 +626,7 @@ const PrestadorCalendar = () => {
                       setShowRescheduleDialog(true);
                     }}
                     onCancel={handleCancelSession}
+                    onConclude={handleConcludeSession}
                   />;
                 })
               )}

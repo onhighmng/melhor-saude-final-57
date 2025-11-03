@@ -19,7 +19,6 @@ const EspecialistaCallRequestsRevamped = () => {
   const { toast } = useToast();
   const { profile } = useAuth();
   const navigate = useNavigate();
-  const { filterByCompanyAccess } = useCompanyFilter();
   const { escalatedChats, isLoading } = useEscalatedChats();
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
@@ -29,9 +28,8 @@ const EspecialistaCallRequestsRevamped = () => {
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [resolvedRequestId, setResolvedRequestId] = useState<string | null>(null);
 
-  // Use real data from hook
-  const allRequests = filterByCompanyAccess(escalatedChats);
-  const requestsToShow = allRequests;
+  // Especialista Geral sees ALL escalated chats (no company filtering)
+  const requestsToShow = escalatedChats;
 
   // Filter by status - use phone_escalated for pending requests
   const pendingRequests = useMemo(() => {
@@ -67,7 +65,7 @@ const EspecialistaCallRequestsRevamped = () => {
       setResolvedRequestId(requestId);
       setShowSuccessAnimation(true);
       
-      // Actually update the database
+      // Update chat session status to resolved
       const { error } = await supabase
         .from('chat_sessions')
         .update({ 
@@ -78,6 +76,15 @@ const EspecialistaCallRequestsRevamped = () => {
         .eq('id', requestId);
 
       if (error) throw error;
+
+      // Update specialist_call_logs status
+      await supabase
+        .from('specialist_call_logs')
+        .update({ 
+          call_status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('chat_session_id', requestId);
       
       setTimeout(() => {
         setShowSuccessAnimation(false);
@@ -86,8 +93,7 @@ const EspecialistaCallRequestsRevamped = () => {
           title: 'Pedido Resolvido',
           description: 'O pedido foi marcado como resolvido com sucesso.',
         });
-        // Reload to refresh the list
-        window.location.reload();
+        // The useEscalatedChats hook has a realtime subscription that will auto-refresh
       }, 1500);
     } catch (error) {
       console.error('Error resolving request:', error);

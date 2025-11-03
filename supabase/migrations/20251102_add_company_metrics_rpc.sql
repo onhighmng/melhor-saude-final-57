@@ -32,13 +32,25 @@ BEGIN
   ),
   pillar_usage AS (
     SELECT
-      b.pillar,
+      CASE 
+        WHEN b.pillar = 'saude_mental' THEN 'Saúde Mental'
+        WHEN b.pillar = 'bem_estar_fisico' THEN 'Bem-Estar Físico'
+        WHEN b.pillar = 'assistencia_financeira' THEN 'Assistência Financeira'
+        WHEN b.pillar = 'assistencia_juridica' THEN 'Assistência Jurídica'
+        ELSE b.pillar
+      END AS pillar,
       COUNT(*) AS session_count
     FROM bookings b
     WHERE b.company_id = p_company_id
       AND b.status = 'completed'
       AND b.booking_date BETWEEN p_start_date AND p_end_date
-    GROUP BY b.pillar
+    GROUP BY CASE 
+        WHEN b.pillar = 'saude_mental' THEN 'Saúde Mental'
+        WHEN b.pillar = 'bem_estar_fisico' THEN 'Bem-Estar Físico'
+        WHEN b.pillar = 'assistencia_financeira' THEN 'Assistência Financeira'
+        WHEN b.pillar = 'assistencia_juridica' THEN 'Assistência Jurídica'
+        ELSE b.pillar
+      END
   ),
   satisfaction_metrics AS (
     SELECT

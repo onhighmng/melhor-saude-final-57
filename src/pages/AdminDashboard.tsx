@@ -143,7 +143,7 @@ const AdminDashboard = () => {
               {/* Bottom Left - Sessions */}
               <BentoCard 
                 name="Sessões Este Mês" 
-                description={`${analytics?.total_bookings || 0} sessões realizadas`}
+                description={`${analytics?.sessions_this_month || 0} sessões realizadas`}
                 Icon={Calendar} 
                 onClick={() => navigate('/admin/operations')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 

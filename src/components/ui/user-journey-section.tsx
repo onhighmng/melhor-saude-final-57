@@ -93,12 +93,14 @@ export default function UserJourneySection({
     {
       name: "Quota da Empresa",
       desc: `${balance.usedCompany}/${balance.companyQuota} usadas • Disponível: ${balance.availableCompany}`,
+      allocated: balance.companyQuota,
       icon: "🏢",
       progress: balance.companyQuota > 0 ? (balance.usedCompany / balance.companyQuota) * 100 : 0
     },
     {
       name: "Quota Pessoal",
       desc: `${balance.usedPersonal}/${balance.personalQuota} usadas • Disponível: ${balance.availablePersonal}`,
+      allocated: balance.personalQuota,
       icon: "👤",
       progress: balance.personalQuota > 0 ? (balance.usedPersonal / balance.personalQuota) * 100 : 0
     }

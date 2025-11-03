@@ -8,6 +8,7 @@ interface AnalyticsData {
   active_prestadores: number;
   total_companies: number;
   total_bookings: number;
+  sessions_this_month: number;
   pending_change_requests: number;
   sessions_allocated: number;
   sessions_used: number;
@@ -42,6 +43,7 @@ export const useAnalytics = () => {
           active_prestadores: 0,
           total_companies: 0,
           total_bookings: 0,
+          sessions_this_month: 0,
           pending_change_requests: 0,
           sessions_allocated: 0,
           sessions_used: 0,
@@ -57,12 +59,19 @@ export const useAnalytics = () => {
       );
 
       const analyticsPromise = async () => {
+        // Calculate start of current month
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
         // Fetch basic counts directly from tables with individual error handling
         const results = await Promise.allSettled([
-          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+          // Count only company employees (users with role='user' and company_id)
+          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'user').not('company_id', 'is', null),
           supabase.from('prestadores').select('id', { count: 'exact', head: true }),
           supabase.from('companies').select('id', { count: 'exact', head: true }),
           supabase.from('bookings').select('id', { count: 'exact', head: true }),
+          // Count bookings created this month
+          supabase.from('bookings').select('id', { count: 'exact', head: true }).gte('created_at', startOfMonth),
           supabase.from('companies').select('sessions_allocated, sessions_used'),
           supabase.from('bookings').select('rating').not('rating', 'is', null)
         ]);
@@ -72,8 +81,9 @@ export const useAnalytics = () => {
         const providersResult = results[1].status === 'fulfilled' ? results[1].value : { count: 0 };
         const companiesResult = results[2].status === 'fulfilled' ? results[2].value : { count: 0 };
         const bookingsResult = results[3].status === 'fulfilled' ? results[3].value : { count: 0 };
-        const companiesData = results[4].status === 'fulfilled' ? results[4].value : { data: [] };
-        const ratingsData = results[5].status === 'fulfilled' ? results[5].value : { data: [] };
+        const sessionsThisMonthResult = results[4].status === 'fulfilled' ? results[4].value : { count: 0 };
+        const companiesData = results[5].status === 'fulfilled' ? results[5].value : { data: [] };
+        const ratingsData = results[6].status === 'fulfilled' ? results[6].value : { data: [] };
 
         // Calculate session totals safely
         const sessionTotals = (companiesData.data || []).reduce((acc, company) => ({
@@ -94,6 +104,7 @@ export const useAnalytics = () => {
           active_prestadores: providersResult.count || 0,
           total_companies: companiesResult.count || 0,
           total_bookings: bookingsResult.count || 0,
+          sessions_this_month: sessionsThisMonthResult.count || 0,
           pending_change_requests: 0,
           sessions_allocated: sessionTotals.allocated,
           sessions_used: sessionTotals.used,
@@ -115,6 +126,7 @@ export const useAnalytics = () => {
         active_prestadores: 0,
         total_companies: 0,
         total_bookings: 0,
+        sessions_this_month: 0,
         pending_change_requests: 0,
         sessions_allocated: 0,
         sessions_used: 0,

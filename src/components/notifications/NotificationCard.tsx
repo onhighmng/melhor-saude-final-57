@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bell, Calendar, AlertCircle, Star, CheckCircle } from "lucide-react";
+import { Bell, Calendar, AlertCircle, Star, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface Notification {
@@ -21,15 +21,15 @@ interface NotificationCardProps {
   onAction: (notification: Notification) => void;
 }
 
-const iconMap = {
+const iconMap: Record<string, any> = {
   quota_warning: AlertCircle,
-  booking_confirmation: CheckCircle,
+  booking_confirmation: Check,
   feedback_request: Star,
   session_reminder: Calendar,
   info: Bell,
 };
 
-const colorMap = {
+const colorMap: Record<string, string> = {
   quota_warning: 'text-amber-500',
   booking_confirmation: 'text-green-500',
   feedback_request: 'text-blue-500',
@@ -37,19 +37,18 @@ const colorMap = {
   info: 'text-gray-500',
 };
 
+const ctaMap: Record<string, string> = {
+  quota_warning: 'Renovar Plano',
+  booking_confirmation: 'Ver Detalhes',
+  feedback_request: 'Enviar Feedback',
+  session_reminder: 'Entrar na Sessão',
+  info: 'Ver Detalhes',
+};
+
 export function NotificationCard({ notification, onMarkRead, onAction }: NotificationCardProps) {
-  const Icon = iconMap[notification.type];
-  const colorClass = colorMap[notification.type];
-  
-  const ctaMap = {
-    quota_warning: 'Renovar Plano',
-    booking_confirmation: 'Ver Detalhes',
-    feedback_request: 'Enviar Feedback',
-    session_reminder: 'Entrar na Sessão',
-    info: 'Ver Detalhes',
-  };
-  
-  const ctaText = ctaMap[notification.type];
+  const Icon = iconMap[notification.type] || Bell;
+  const colorClass = colorMap[notification.type] || 'text-gray-500';
+  const ctaText = ctaMap[notification.type] || 'Ver Detalhes';
   
   return (
     <Card 

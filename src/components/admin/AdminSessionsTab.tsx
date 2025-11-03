@@ -59,7 +59,7 @@ export default function AdminSessionsTab() {
         const { data, error} = await supabase
           .from('bookings')
           .select('*')
-          .order('booking_date', { ascending: false })
+          .order('date', { ascending: false })
           .limit(100);
 
         if (error) throw error;
@@ -80,10 +80,10 @@ export default function AdminSessionsTab() {
               .eq('id', booking.company_id)
               .maybeSingle();
             
-            // Get prestador
+            // Get prestador with profile name
             const { data: prestador } = await supabase
               .from('prestadores')
-              .select('name')
+              .select('user_id, profiles(name)')
               .eq('id', booking.prestador_id)
               .maybeSingle();
 
@@ -92,8 +92,8 @@ export default function AdminSessionsTab() {
               collaborator: userProfile?.name || '',
               company: company?.name || '',
               pillar: booking.pillar,
-              specialist: prestador?.name || '',
-              date: booking.booking_date,
+              specialist: (prestador?.profiles as any)?.name || '',
+              date: booking.date,
               time: booking.start_time,
               status: booking.status,
               rating: booking.rating,

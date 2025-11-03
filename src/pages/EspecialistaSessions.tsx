@@ -47,7 +47,37 @@ const EspecialistaSessions = () => {
           .order('booking_date', { ascending: true });
 
         console.log('[EspecialistaSessions] Loaded sessions:', sessions?.length || 0);
-        setFilteredSessions(sessions || []);
+        
+        // Filter to show only future sessions
+        const now = new Date();
+        const currentDate = now.toISOString().split('T')[0];
+        const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM format
+        
+        const futureSessions = (sessions || []).filter((session: any) => {
+          const sessionDate = session.booking_date || session.date;
+          const sessionTime = session.start_time || '00:00';
+          
+          // Only show scheduled or confirmed sessions
+          if (session.status !== 'scheduled' && session.status !== 'confirmed') {
+            return false;
+          }
+          
+          // If session date is in the future, include it
+          if (sessionDate > currentDate) {
+            return true;
+          }
+          
+          // If session is today, check if the time hasn't passed
+          if (sessionDate === currentDate) {
+            return sessionTime >= currentTime;
+          }
+          
+          // Session is in the past
+          return false;
+        });
+        
+        console.log('[EspecialistaSessions] Future sessions:', futureSessions.length);
+        setFilteredSessions(futureSessions);
       } catch (error) {
         console.error('Error loading sessions:', error);
         setFilteredSessions([]);

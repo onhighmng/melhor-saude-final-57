@@ -139,7 +139,6 @@ const UserSettings = () => {
         .update({
           name: profileData.name,
           phone: profileData.phone,
-          bio: profileData.bio,
           avatar_url: profileData.avatar_url,
           updated_at: new Date().toISOString()
         })

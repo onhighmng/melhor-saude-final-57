@@ -65,23 +65,9 @@ export const AdminCompaniesTab = ({ onAddCompany }: AdminCompaniesTabProps) => {
       if (companiesError) throw companiesError;
 
       if (companiesData) {
-        // Filter companies: only show those with at least one active HR user
-        const companiesWithHR = await Promise.all(
+        // Show all companies
+        const formattedCompanies = await Promise.all(
           companiesData.map(async (company) => {
-            // Check if company has an active HR user
-            const { data: hrUsers, error: hrError } = await supabase
-              .from('profiles')
-              .select('id')
-              .eq('company_id', company.id)
-              .eq('role', 'hr')
-              .eq('is_active', true)
-              .limit(1);
-
-            // Skip companies without active HR users
-            if (hrError || !hrUsers || hrUsers.length === 0) {
-              return null;
-            }
-
             // Get employee counts for each company
             const { count, error: countError } = await supabase
               .from('company_employees')
@@ -104,9 +90,7 @@ export const AdminCompaniesTab = ({ onAddCompany }: AdminCompaniesTabProps) => {
           })
         );
 
-        // Filter out null entries (companies without active HR)
-        const validCompanies = companiesWithHR.filter(c => c !== null) as Company[];
-        setCompanies(validCompanies);
+        setCompanies(formattedCompanies);
       }
     } catch (error) {
       console.error('Error loading companies:', error);

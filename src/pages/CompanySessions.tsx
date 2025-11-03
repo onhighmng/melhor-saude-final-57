@@ -126,6 +126,10 @@ const CompanySessions = () => {
   const { profile } = useAuth();
   const [analytics, setAnalytics] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dateRange] = useState({ 
+    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    end: new Date().toISOString().split('T')[0]
+  });
 
   useEffect(() => {
     const loadSessionAnalytics = async () => {
@@ -144,66 +148,52 @@ const CompanySessions = () => {
       
       setLoading(true);
       try {
-        const { data: bookings, error } = await supabase
-          .from('bookings')
-          .select(`*, profiles!inner(name), prestadores(name)`)
-          .eq('company_id', profile.company_id);
+        // Use the same RPC function as CompanyReportsImpact
+        const { data, error } = await supabase.rpc('get_company_monthly_metrics' as any, {
+          p_company_id: profile.company_id,
+          p_start_date: dateRange.start,
+          p_end_date: dateRange.end
+        });
 
         if (error) throw error;
 
-        const pillarUsage: Record<string, number> = {};
-        bookings.forEach((b: Record<string, unknown>) => {
-          const pillar = (b.pillar as string) || 'unknown';
-          pillarUsage[pillar] = (pillarUsage[pillar] || 0) + 1;
-        });
+        const metricsData = data as any;
 
-        const monthlyTrend: Record<string, number> = {};
-        bookings.forEach((b: Record<string, unknown>) => {
-          const month = new Date(b.booking_date as string).toLocaleString('pt-PT', { month: 'short' });
-          monthlyTrend[month] = (monthlyTrend[month] || 0) + 1;
-        });
+        // Extract pillar breakdown with formatted names
+        const pillarBreakdown = metricsData?.pillar_breakdown?.map((p: any) => ({
+          pillar: p.pillar,
+          sessionsUsed: p.sessions,
+          sessionsAvailable: metricsData.subscription?.sessions_allocated || 0,
+          utilizationRate: p.percentage || 0
+        })) || [];
 
-        const statusBreakdown: Record<string, number> = {};
-        bookings.forEach((b: Record<string, unknown>) => {
-          const status = b.status as string;
-          statusBreakdown[status] = (statusBreakdown[status] || 0) + 1;
-        });
-
-        const providerWorkload: Record<string, number> = {};
-        bookings.forEach((b: Record<string, unknown>) => {
-          const prestadores = b.prestadores as Record<string, unknown>;
-          const name = (prestadores?.name as string) || 'Unknown';
-          providerWorkload[name] = (providerWorkload[name] || 0) + 1;
-        });
-
-        const pillarBreakdown = Object.entries(pillarUsage).map(([pillar, count]) => ({
-          pillar,
-          sessionsUsed: count,
-          sessionsAvailable: 100,
-          utilizationRate: Math.round(((count as number) / bookings.length) * 100)
-        }));
-
-        const totalContracted = 1000; // From company.sessions_allocated
-        const totalUsed = bookings.length;
-        const utilizationRate = Math.round((totalUsed / totalContracted) * 100);
-        const employeesUsingServices = new Set(bookings.map((b: Record<string, unknown>) => b.user_id as string)).size;
+        // Get employee count
+        const employeesUsingServices = metricsData?.employees?.active || 0;
 
         setAnalytics({
-          totalContracted,
-          totalUsed,
-          utilizationRate,
+          totalContracted: metricsData?.subscription?.sessions_allocated || 0,
+          totalUsed: metricsData?.subscription?.period_sessions_used || 0,
+          utilizationRate: metricsData?.subscription?.utilization_rate || 0,
           employeesUsingServices,
-          pillarBreakdown: pillarBreakdown
+          pillarBreakdown
         });
       } catch (error) {
-        // Silent fail for analytics loading
+        console.error('Error loading session analytics:', error);
+        // Set empty analytics on error
+        setAnalytics({
+          totalContracted: 0,
+          totalUsed: 0,
+          utilizationRate: 0,
+          employeesUsingServices: 0,
+          pillarBreakdown: []
+        });
       } finally {
         setLoading(false);
       }
     };
 
     loadSessionAnalytics();
-  }, [profile?.company_id]);
+  }, [profile?.company_id, dateRange.start, dateRange.end]);
   const { toast } = useToast();
 
   useEffect(() => {

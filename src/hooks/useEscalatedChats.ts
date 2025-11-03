@@ -29,7 +29,7 @@ export const useEscalatedChats = () => {
         const userIds = [...new Set(sessions.map(s => s.user_id).filter(Boolean))];
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
-          .select('id, name, email')
+          .select('id, name, email, phone')
           .in('id', userIds);
 
         if (profilesError) throw profilesError;
@@ -67,6 +67,7 @@ export const useEscalatedChats = () => {
             resolved: session.status === 'resolved',
             user_name: profile?.name || 'Utilizador Desconhecido',
             user_email: profile?.email || '',
+            user_phone: profile?.phone || 'N/A',
             messages: sessionMessages.map(m => ({
               ...m,
               role: m.role as 'user' | 'assistant',

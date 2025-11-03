@@ -150,7 +150,7 @@ const CompanyReportsImpact = () => {
   const handleExportReport = async () => {
     setIsExporting(true);
     try {
-      // Call edge function to generate PDF
+      // Call edge function to generate report
       const { data, error } = await supabase.functions.invoke('generate-company-report-pdf', {
         body: {
           company_id: profile?.company_id,
@@ -161,15 +161,30 @@ const CompanyReportsImpact = () => {
       
       if (error) throw error;
 
-      // Download PDF
+      // Download HTML report (can be printed to PDF)
       const link = document.createElement('a');
-      link.href = `data:application/pdf;base64,${data.pdf}`;
+      const contentType = data.contentType || 'text/html';
+      link.href = `data:${contentType};base64,${data.pdf}`;
       link.download = data.filename;
       link.click();
 
+      // Open in new tab for printing
+      const htmlContent = atob(data.pdf);
+      const newWindow = window.open();
+      if (newWindow) {
+        newWindow.document.write(htmlContent);
+        newWindow.document.close();
+        
+        // Auto-trigger print dialog after a short delay
+        setTimeout(() => {
+          newWindow.print();
+        }, 500);
+      }
+
       toast({
-        title: "Relatório exportado com sucesso!",
-        description: "O PDF foi gerado e transferido para downloads"
+        title: "Relatório gerado com sucesso!",
+        description: data.message || "O relatório foi aberto numa nova janela. Use Ctrl+P (Cmd+P) para guardar como PDF.",
+        duration: 6000
       });
     } catch (error) {
       console.error('Error exporting report:', error);
@@ -323,96 +338,99 @@ const CompanyReportsImpact = () => {
           {/* Resource Usage Chart */}
           <ResourceUsageCard />
 
-          {/* Distribution by Pillar */}
-          <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-3xl">
-              Distribuição por Pilar
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pillarDistribution}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="sessions"
-                    label={({ pillar, percentage }) => `${pillar}: ${percentage}%`}
-                    isAnimationActive={false}
-                    style={{ fontSize: '16px', fontWeight: '600' }}
-                  >
-                    {pillarDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {pillarDistribution.map((pillar, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div 
-                    className="w-4 h-4 rounded-full" 
-                    style={{ backgroundColor: pillar.color }}
-                  ></div>
-                  <div className="flex flex-col">
-                    <span className="text-lg font-medium">{pillar.pillar}</span>
-                    <span className="text-5xl font-extrabold text-foreground font-sans">{pillar.sessions}</span>
-                    <span className="text-base text-muted-foreground">sessões</span>
+          {/* Bottom two cards side by side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Distribution by Pillar */}
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-3xl">
+                  Distribuição por Pilar
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pillarDistribution}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="sessions"
+                        label={({ pillar, percentage }) => `${pillar}: ${percentage}%`}
+                        isAnimationActive={false}
+                        style={{ fontSize: '16px', fontWeight: '600' }}
+                      >
+                        {pillarDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  {pillarDistribution.map((pillar, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div 
+                        className="w-4 h-4 rounded-full" 
+                        style={{ backgroundColor: pillar.color }}
+                      ></div>
+                      <div className="flex flex-col">
+                        <span className="text-lg font-medium">{pillar.pillar}</span>
+                        <span className="text-5xl font-extrabold text-foreground font-sans">{pillar.sessions}</span>
+                        <span className="text-base text-muted-foreground">sessões</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Top Pillar & Satisfaction */}
+            <Card className="border-0 shadow-sm" style={{ height: '400px' }}>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <BarChart3 className="h-5 w-5" />
+                  Destaques do Período
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Pilar Mais Utilizado</h4>
+                  <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                      {metrics?.top_pillar?.name || 'N/A'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {metrics?.top_pillar?.sessions || 0} sessões realizadas
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Top Pillar & Satisfaction */}
-        <Card className="border-0 shadow-sm" style={{ height: '400px' }}>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <BarChart3 className="h-5 w-5" />
-              Destaques do Período
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">Pilar Mais Utilizado</h4>
-              <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                  {metrics?.top_pillar?.name || 'N/A'}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {metrics?.top_pillar?.sessions || 0} sessões realizadas
-                </p>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">Satisfação dos Colaboradores</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Avaliação Média</p>
-                  <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
-                    {metrics?.satisfaction?.avg_rating || 0}/10
-                  </p>
+                
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Satisfação dos Colaboradores</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Avaliação Média</p>
+                      <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
+                        {metrics?.satisfaction?.avg_rating || 0}/10
+                      </p>
+                    </div>
+                    <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Alta Satisfação</p>
+                      <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                        {metrics?.satisfaction?.satisfaction_rate || 0}%
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        ({metrics?.satisfaction?.high_satisfaction_count || 0} de {metrics?.satisfaction?.rated_sessions || 0})
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Alta Satisfação</p>
-                  <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-                    {metrics?.satisfaction?.satisfaction_rate || 0}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    ({metrics?.satisfaction?.high_satisfaction_count || 0} de {metrics?.satisfaction?.rated_sessions || 0})
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </section>

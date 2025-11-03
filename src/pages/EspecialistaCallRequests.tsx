@@ -3,22 +3,34 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Phone, CheckCircle, Clock, X } from 'lucide-react';
+import { Phone, CheckCircle, Clock, X, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 import { EmptyState } from '@/components/ui/empty-state';
+import { supabase } from '@/integrations/supabase/client';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const EspecialistaCallRequests = () => {
   const { toast } = useToast();
   const { escalatedChats, isLoading } = useEscalatedChats();
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
+  const [resolutionNotes, setResolutionNotes] = useState('');
+  const [isResolving, setIsResolving] = useState(false);
   
-  // Use real data from hook (already filters by company access)
+  // Especialista Geral sees ALL escalated chats (no company filtering)
   // Filter for phone escalated chats that haven't been resolved yet
-  const filteredRequests = escalatedChats.filter((chat: any) => 
+  const pendingRequests = escalatedChats.filter((chat: any) => 
     chat.status === 'phone_escalated' || chat.status === 'pending'
   );
+  
+  const resolvedRequests = escalatedChats.filter((chat: any) => 
+    chat.status === 'resolved'
+  );
+  
+  const filteredRequests = pendingRequests;
 
   if (isLoading) {
     return (
@@ -36,11 +48,61 @@ const EspecialistaCallRequests = () => {
     setIsCallModalOpen(true);
   };
 
-  const handleMarkResolved = (requestId: string) => {
-    toast({
-      title: 'Pedido resolvido',
-      description: 'O pedido foi marcado como resolvido.',
-    });
+  const handleResolveClick = (request: any) => {
+    setSelectedRequest(request);
+    setResolutionNotes('');
+    setIsResolveModalOpen(true);
+  };
+
+  const handleConfirmResolve = async (skipNotes: boolean = false) => {
+    if (!selectedRequest) return;
+    
+    setIsResolving(true);
+    try {
+      // Update chat session status to resolved
+      const { error } = await supabase
+        .from('chat_sessions')
+        .update({ 
+          status: 'resolved',
+          phone_contact_made: true,
+          ended_at: new Date().toISOString()
+        })
+        .eq('id', selectedRequest.id);
+
+      if (error) throw error;
+
+      // Update specialist_call_logs with notes and status
+      await supabase
+        .from('specialist_call_logs')
+        .update({ 
+          call_status: 'completed',
+          completed_at: new Date().toISOString(),
+          notes: skipNotes ? null : resolutionNotes || null,
+          outcome: 'resolved'
+        })
+        .eq('chat_session_id', selectedRequest.id);
+
+      toast({
+        title: 'Pedido resolvido',
+        description: 'O pedido foi marcado como resolvido com sucesso.',
+      });
+
+      // Close modal and reset
+      setIsResolveModalOpen(false);
+      setSelectedRequest(null);
+      setResolutionNotes('');
+      
+      // The useEscalatedChats hook has a realtime subscription that will auto-refresh
+    } catch (error) {
+      console.error('Error resolving request:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível resolver o pedido. Tente novamente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsResolving(false);
+    }
   };
 
   const getWaitTimeColor = (waitTime: number) => {
@@ -69,25 +131,6 @@ const EspecialistaCallRequests = () => {
     return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
   };
 
-  // Show empty state if no call requests
-  if (!isLoading && filteredRequests.length === 0) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">
-            Pedidos de Chamada
-          </h1>
-          <p className="text-muted-foreground mt-1">Gerir pedidos de triagem e apoio aos colaboradores</p>
-        </div>
-        <EmptyState
-          icon={Phone}
-          title="Nenhum pedido de chamada pendente"
-          description="Quando os colaboradores precisarem de apoio adicional, os pedidos de chamada aparecerão aqui."
-        />
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="space-y-6">
@@ -96,32 +139,40 @@ const EspecialistaCallRequests = () => {
             Pedidos de Chamada
           </h1>
           <p className="text-muted-foreground mt-1">
-            Gerir solicitações de chamada dos utilizadores das empresas atribuídas
+            Gerir solicitações de chamada dos utilizadores
           </p>
         </div>
 
-      {/* Call Requests List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Phone className="h-5 w-5" />
-            Pedidos de Chamada Pendentes
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            {filteredRequests.length} pedidos de chamada pendentes
-          </p>
-        </CardHeader>
-        <CardContent>
-          {filteredRequests.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Phone className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-sm text-muted-foreground text-center">
-                Não há chamadas pendentes no momento
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredRequests.map((request) => (
+      {/* Tabs for Pending and Resolved */}
+      <Tabs defaultValue="pending" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="pending">
+            Pendentes ({pendingRequests.length})
+          </TabsTrigger>
+          <TabsTrigger value="resolved">
+            Resolvidos ({resolvedRequests.length})
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Pending Requests Tab */}
+        <TabsContent value="pending">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Phone className="h-5 w-5" />
+                Pedidos de Chamada Pendentes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {pendingRequests.length === 0 ? (
+                <EmptyState
+                  icon={Phone}
+                  title="Nenhum pedido pendente"
+                  description="Quando os colaboradores solicitarem chamadas, aparecerão aqui."
+                />
+              ) : (
+                <div className="space-y-4">
+                  {pendingRequests.map((request) => (
                 <div key={request.id} className="flex items-start justify-between gap-4 p-4 border rounded-lg">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -147,7 +198,7 @@ const EspecialistaCallRequests = () => {
                       <Button 
                         size="default"
                         variant="outline"
-                        onClick={() => handleMarkResolved(request.id)}
+                        onClick={() => handleResolveClick(request)}
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
                         Resolver
@@ -159,12 +210,63 @@ const EspecialistaCallRequests = () => {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Resolved Requests Tab */}
+        <TabsContent value="resolved">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" />
+                Pedidos Resolvidos
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {resolvedRequests.length === 0 ? (
+                <EmptyState
+                  icon={CheckCircle}
+                  title="Nenhum pedido resolvido"
+                  description="Os pedidos resolvidos aparecerão aqui."
+                />
+              ) : (
+                <div className="space-y-4">
+                  {resolvedRequests.map((request) => (
+                    <div key={request.id} className="flex items-start justify-between gap-4 p-4 border rounded-lg bg-gray-50">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <h4 className="font-semibold">{request.user_name}</h4>
+                          <Badge variant="outline">{request.company_name}</Badge>
+                          <Badge variant="secondary" className={getPillarColor(request.pillar)}>{getPillarLabel(request.pillar)}</Badge>
+                          <Badge variant="default" className="bg-green-600">Resolvido</Badge>
+                        </div>
+                        <div className="text-sm text-muted-foreground space-y-1">
+                          <p><strong>Email:</strong> {request.user_email}</p>
+                          <p><strong>Telefone:</strong> {request.user_phone || 'N/A'}</p>
+                          {request.call_log?.notes && (
+                            <p><strong>Notas:</strong> {request.call_log.notes}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2 items-end">
+                        <div className={`text-sm font-medium text-muted-foreground flex items-center gap-1`}>
+                          <Clock className="h-4 w-4" />
+                          <span>{new Date(request.ended_at || request.created_at).toLocaleString('pt-PT')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
 
       {/* Call Modal */}
       <Dialog open={isCallModalOpen} onOpenChange={setIsCallModalOpen}>
@@ -185,6 +287,101 @@ const EspecialistaCallRequests = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Resolve Modal - Full Screen */}
+      <Dialog open={isResolveModalOpen} onOpenChange={setIsResolveModalOpen}>
+        <DialogContent className="max-w-4xl w-full h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <FileText className="h-6 w-6" />
+              Resolver Pedido de Chamada
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto space-y-6">
+            {/* User Info */}
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <h3 className="font-semibold mb-2">Informações do Utilizador</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Nome</p>
+                  <p className="font-medium">{selectedRequest?.user_name}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Email</p>
+                  <p className="font-medium">{selectedRequest?.user_email}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Telefone</p>
+                  <p className="font-medium">{selectedRequest?.user_phone || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Pilar</p>
+                  <p className="font-medium">{getPillarLabel(selectedRequest?.pillar)}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes Section */}
+            <div className="space-y-3">
+              <div>
+                <h3 className="font-semibold text-lg mb-1">Notas de Resolução</h3>
+                <p className="text-sm text-muted-foreground">
+                  Adicione notas sobre a chamada, resolução, ou próximos passos (opcional)
+                </p>
+              </div>
+              <Textarea
+                placeholder="Ex: Contactei o utilizador, discutimos o problema e marcamos sessão com psicólogo..."
+                value={resolutionNotes}
+                onChange={(e) => setResolutionNotes(e.target.value)}
+                className="min-h-[200px] text-base"
+              />
+              <p className="text-xs text-muted-foreground">
+                {resolutionNotes.length} caracteres
+              </p>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsResolveModalOpen(false);
+                setResolutionNotes('');
+              }}
+              disabled={isResolving}
+            >
+              <X className="h-4 w-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => handleConfirmResolve(true)}
+              disabled={isResolving}
+            >
+              Saltar e Resolver
+            </Button>
+            <Button
+              onClick={() => handleConfirmResolve(false)}
+              disabled={isResolving}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isResolving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                  A resolver...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Guardar e Resolver
+                </>
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </>

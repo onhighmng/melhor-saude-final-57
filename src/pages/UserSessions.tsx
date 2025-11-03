@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { SessionModal } from "@/components/sessions/SessionModal";
 import { SessionRatingDialog } from "@/components/sessions/SessionRatingDialog";
 import UserJourneySection from "@/components/ui/user-journey-section";
-import { JourneyProgressBar } from "@/components/progress/JourneyProgressBar";
 import { useBookings } from "@/hooks/useBookings";
 import { useSessionBalance } from "@/hooks/useSessionBalance";
 import { useUserGoals } from "@/hooks/useUserGoals";
@@ -284,7 +283,7 @@ export default function UserSessions() {
         </div>
 
         {/* Welcome message for new users with no bookings */}
-        {allBookings.length === 0 && (
+        {!bookingsLoading && allBookings.length === 0 && (
           <div className="container mx-auto px-6 mb-6">
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl p-8 text-center">
               <Sparkles className="w-12 h-12 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
@@ -305,13 +304,12 @@ export default function UserSessions() {
             goals={userGoals}
             balance={{
               userId: profile?.id || '',
-              companyQuota: sessionBalance?.totalRemaining ? 
-                sessionBalance.employerRemaining + completedSessionsCount : 0,
-              personalQuota: sessionBalance?.personalRemaining || 0,
-              usedCompany: completedSessionsCount,
-              usedPersonal: 0,
-              availableCompany: sessionBalance?.employerRemaining || 0,
-              availablePersonal: sessionBalance?.personalRemaining || 0
+              companyQuota: sessionBalance?.companyQuota || 0,
+              personalQuota: sessionBalance?.personalQuota || 0,
+              usedCompany: sessionBalance?.usedCompany || 0,
+              usedPersonal: sessionBalance?.usedPersonal || 0,
+              availableCompany: sessionBalance?.availableCompany || 0,
+              availablePersonal: sessionBalance?.availablePersonal || 0
             }}
             completedSessionsCount={completedSessionsCount}
             futureSessionsCount={futureSessionsCount}
@@ -320,10 +318,6 @@ export default function UserSessions() {
           />
         </div>
 
-        {/* Milestones & Progress Section */}
-        <div className="container mx-auto px-6 mt-8">
-          <JourneyProgressBar onboardingCompleted={profile?.has_completed_onboarding || false} />
-        </div>
 
         {/* Session Modals */}
         <SessionModal

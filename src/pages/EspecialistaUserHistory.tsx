@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, Star, FileText } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MessageSquare, Star, FileText, Calendar, Phone } from 'lucide-react';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,25 +25,52 @@ const EspecialistaUserHistory = () => {
       
       setLoading(true);
       try {
-        // Get chat sessions where this specialist actually handled a call
-        const { data: callLogs } = await supabase
-          .from('specialist_call_logs')
-          .select('chat_session_id, user_id, created_at, call_notes')
-          .eq('specialist_id', profile.id)
-          .not('chat_session_id', 'is', null)
-          .order('created_at', { ascending: false });
+        // Get prestador ID for this specialist
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
 
-        if (!callLogs || callLogs.length === 0) {
+        if (!prestador) {
+          console.log('[EspecialistaUserHistory] No prestador found');
           setFilteredUsers([]);
           setLoading(false);
           return;
         }
 
-        // Get unique session IDs
-        const sessionIds = [...new Set(callLogs.map(log => log.chat_session_id).filter(Boolean))];
+        // 1. Get users from bookings (sessions)
+        const { data: bookings } = await supabase
+          .from('bookings')
+          .select(`
+            user_id,
+            booking_date,
+            start_time,
+            status,
+            pillar,
+            session_type,
+            meeting_link,
+            rating,
+            profiles!bookings_user_id_fkey(name, email, company_id, companies!profiles_company_id_fkey(company_name))
+          `)
+          .eq('prestador_id', prestador.id)
+          .not('user_id', 'is', null);
 
-        // Fetch sessions with user profile and company info in one query
-        const { data: sessions } = await supabase
+        // 2. Get users from call logs
+        const { data: callLogs } = await supabase
+          .from('specialist_call_logs')
+          .select(`
+            user_id,
+            created_at,
+            call_notes,
+            outcome,
+            chat_session_id
+          `)
+          .eq('specialist_id', profile.id)
+          .not('user_id', 'is', null);
+
+        // 3. Get users from escalated chats
+        const { data: chatSessions } = await supabase
           .from('chat_sessions')
           .select(`
             id,
@@ -50,52 +78,133 @@ const EspecialistaUserHistory = () => {
             pillar,
             status,
             created_at,
-            satisfaction_rating,
-            profiles!chat_sessions_user_id_fkey(
-              name,
-              email,
-              company_id,
-              companies!profiles_company_id_fkey(company_name)
-            )
+            satisfaction_rating
           `)
-          .in('id', sessionIds);
+          .eq('status', 'phone_escalated')
+          .not('user_id', 'is', null);
 
-        // Get chat messages for these sessions
-        const { data: messages } = await supabase
+        // Get unique user IDs from all sources
+        const userIds = new Set<string>();
+        bookings?.forEach(b => b.user_id && userIds.add(b.user_id));
+        callLogs?.forEach(c => c.user_id && userIds.add(c.user_id));
+        chatSessions?.forEach(s => s.user_id && userIds.add(s.user_id));
+
+        if (userIds.size === 0) {
+          setFilteredUsers([]);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch user profiles for all unique users
+        const { data: userProfiles } = await supabase
+          .from('profiles')
+          .select(`
+            id,
+            name,
+            email,
+            company_id,
+            companies!profiles_company_id_fkey(company_name)
+          `)
+          .in('id', Array.from(userIds));
+
+        // Get chat messages for escalated sessions
+        const chatSessionIds = chatSessions?.map(s => s.id).filter(Boolean) || [];
+        const { data: messages } = chatSessionIds.length > 0 ? await supabase
           .from('chat_messages')
           .select('session_id, role, content, created_at')
-          .in('session_id', sessionIds)
-          .order('created_at', { ascending: true });
+          .in('session_id', chatSessionIds)
+          .order('created_at', { ascending: true }) : { data: [] };
 
-        // Map to enriched sessions
-        const enrichedSessions = (sessions || []).map((session: any) => {
-          const userProfile = session.profiles;
-          const sessionMessages = messages?.filter(m => m.session_id === session.id) || [];
-          const callLog = callLogs.find(log => log.chat_session_id === session.id);
+        // Build enriched user data
+        const enrichedUsers = (userProfiles || []).map((userProfile: any) => {
+          // Get all interactions for this user
+          const userBookings = bookings?.filter(b => b.user_id === userProfile.id) || [];
+          const userCallLogs = callLogs?.filter(c => c.user_id === userProfile.id) || [];
+          const userChatSessions = chatSessions?.filter(s => s.user_id === userProfile.id) || [];
 
-          return {
-            ...session,
-            user_name: userProfile?.name || 'Utilizador Desconhecido',
-            user_email: userProfile?.email || 'Email não disponível',
-            company_name: userProfile?.companies?.company_name || 'Empresa não disponível',
-            pillar_attended: session.pillar,
-            last_session_date: session.created_at,
-            average_rating: session.satisfaction_rating === 'satisfied' ? 10 : (session.satisfaction_rating === 'unsatisfied' ? 3 : null),
-            internal_notes: callLog?.call_notes ? [{ 
-              id: callLog.chat_session_id, 
-              content: callLog.call_notes,
+          // Get most recent interaction date
+          const dates = [
+            ...userBookings.map(b => new Date(b.booking_date)),
+            ...userCallLogs.map(c => new Date(c.created_at)),
+            ...userChatSessions.map(s => new Date(s.created_at))
+          ].sort((a, b) => b.getTime() - a.getTime());
+          const lastInteractionDate = dates[0]?.toISOString() || new Date().toISOString();
+
+          // Determine primary pillar (most common)
+          const pillarCounts: Record<string, number> = {};
+          [...userBookings, ...userChatSessions].forEach(item => {
+            if (item.pillar) {
+              pillarCounts[item.pillar] = (pillarCounts[item.pillar] || 0) + 1;
+            }
+          });
+          const primaryPillar = Object.entries(pillarCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'psychological';
+
+          // Calculate average rating from bookings
+          const ratingsFromBookings = userBookings.filter(b => b.rating).map(b => b.rating);
+          const avgRating = ratingsFromBookings.length > 0 
+            ? Math.round(ratingsFromBookings.reduce((sum, r) => sum + r, 0) / ratingsFromBookings.length)
+            : null;
+
+          // Build notes from call logs
+          const internalNotes = userCallLogs
+            .filter(log => log.call_notes)
+            .map(log => ({
+              id: `call-${log.chat_session_id || Date.now()}`,
+              content: log.call_notes,
               specialist_name: profile.full_name || 'Especialista',
-              created_at: callLog.created_at
-            }] : [],
-            chat_history: sessionMessages.map(m => ({
+              created_at: log.created_at,
+              type: 'call'
+            }));
+
+          // Build chat history for escalated sessions
+          const chatHistory = userChatSessions.flatMap(session => {
+            const sessionMessages = messages?.filter(m => m.session_id === session.id) || [];
+            return sessionMessages.map(m => ({
               role: m.role,
               content: m.content,
-              timestamp: m.created_at
-            }))
-          };
-        });
+              timestamp: m.created_at,
+              session_id: session.id
+            }));
+          });
 
-        setFilteredUsers(enrichedSessions);
+          // Build sessions list with details
+          const sessionsList = userBookings.map(booking => ({
+            id: booking.user_id,
+            date: booking.booking_date,
+            time: booking.start_time,
+            status: booking.status,
+            pillar: booking.pillar,
+            type: booking.session_type,
+            rating: booking.rating
+          }));
+
+          // Build calls list
+          const callsList = userCallLogs.map(call => ({
+            id: call.chat_session_id || `call-${call.created_at}`,
+            date: call.created_at,
+            outcome: call.outcome,
+            notes: call.call_notes
+          }));
+
+          return {
+            user_id: userProfile.id,
+            user_name: userProfile.name || 'Utilizador Desconhecido',
+            user_email: userProfile.email || 'Email não disponível',
+            company_name: userProfile.companies?.company_name || 'Empresa não disponível',
+            pillar_attended: primaryPillar,
+            last_session_date: lastInteractionDate,
+            average_rating: avgRating,
+            internal_notes: internalNotes,
+            chat_history: chatHistory,
+            sessions_list: sessionsList,
+            calls_list: callsList,
+            total_sessions: userBookings.length,
+            total_calls: userCallLogs.length,
+            total_chats: userChatSessions.length
+          };
+        }).sort((a, b) => new Date(b.last_session_date).getTime() - new Date(a.last_session_date).getTime());
+
+        setFilteredUsers(enrichedUsers);
       } catch (error) {
         console.error('Error loading user history:', error);
       } finally {
@@ -240,111 +349,179 @@ const EspecialistaUserHistory = () => {
         </Table>
       </Card>
 
-      {/* Chat History Modal */}
+      {/* User History Modal with Tabs */}
       <Dialog open={isChatModalOpen} onOpenChange={setIsChatModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+        <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>
-              Histórico de Triagem e Pré-Diagnóstico - {selectedUser?.user_name}
+              Histórico do Utilizador - {selectedUser?.user_name}
             </DialogTitle>
           </DialogHeader>
           {selectedUser && (
             <>
-              <ScrollArea className="flex-1 pr-4 min-h-0">
-                <div className="space-y-4">
-                  {/* User Info */}
-                  <div className="grid gap-4 md:grid-cols-3 p-4 bg-muted rounded-lg">
-                    <div className="text-sm">
-                      <p className="text-muted-foreground">Email</p>
-                      <p className="font-medium">{selectedUser.user_email}</p>
-                    </div>
-                    <div className="text-sm">
-                      <p className="text-muted-foreground">Empresa</p>
-                      <p className="font-medium">{selectedUser.company_name}</p>
-                    </div>
-                    <div className="text-sm">
-                      <p className="text-muted-foreground">Pilar</p>
-                      <Badge 
-                        className="text-xs border-transparent" 
-                        style={{ 
-                          backgroundColor: getPillarColor(selectedUser.pillar_attended).bg, 
-                          color: getPillarColor(selectedUser.pillar_attended).text 
-                        }}
-                      >
-                        {getPillarLabel(selectedUser.pillar_attended)}
-                      </Badge>
-                    </div>
-                  </div>
+              {/* User Info */}
+              <div className="grid gap-4 md:grid-cols-4 p-4 bg-muted rounded-lg">
+                <div className="text-sm">
+                  <p className="text-muted-foreground">Email</p>
+                  <p className="font-medium">{selectedUser.user_email}</p>
+                </div>
+                <div className="text-sm">
+                  <p className="text-muted-foreground">Empresa</p>
+                  <p className="font-medium">{selectedUser.company_name}</p>
+                </div>
+                <div className="text-sm">
+                  <p className="text-muted-foreground">Pilar Principal</p>
+                  <Badge 
+                    className="text-xs border-transparent" 
+                    style={{ 
+                      backgroundColor: getPillarColor(selectedUser.pillar_attended).bg, 
+                      color: getPillarColor(selectedUser.pillar_attended).text 
+                    }}
+                  >
+                    {getPillarLabel(selectedUser.pillar_attended)}
+                  </Badge>
+                </div>
+                <div className="text-sm">
+                  <p className="text-muted-foreground">Total Interações</p>
+                  <p className="font-medium">
+                    {selectedUser.total_sessions} sessões • {selectedUser.total_calls} chamadas • {selectedUser.total_chats} chats
+                  </p>
+                </div>
+              </div>
 
-                  {/* Chat History */}
-                  <div>
-                    <h4 className="font-medium mb-3 flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4" />
-                      Histórico de Conversas
-                    </h4>
-                    <div className="border rounded-lg p-4 max-h-[200px] overflow-y-auto">
-                      <div className="space-y-4">
-                        {selectedUser.chat_history && selectedUser.chat_history.length > 0 ? (
-                          selectedUser.chat_history.map((message: any, index: number) => (
-                            <div
-                              key={index}
-                              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                            >
-                              <div
-                                className={`max-w-[80%] rounded-lg p-3 ${
-                                  message.role === 'user'
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted'
-                                }`}
-                              >
-                                <p className="text-sm">{message.content}</p>
-                                <p className="text-xs opacity-70 mt-1">
-                                  {new Date(message.timestamp).toLocaleString('pt-PT')}
-                                </p>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-sm text-muted-foreground text-center py-8">
-                            Sem histórico de chat disponível
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+              <Tabs defaultValue="sessions" className="flex-1 flex flex-col min-h-0">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="sessions">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Sessões ({selectedUser.total_sessions})
+                  </TabsTrigger>
+                  <TabsTrigger value="calls">
+                    <Phone className="h-4 w-4 mr-2" />
+                    Chamadas ({selectedUser.total_calls})
+                  </TabsTrigger>
+                  <TabsTrigger value="chats">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Chats Escalados ({selectedUser.total_chats})
+                  </TabsTrigger>
+                </TabsList>
 
-                  {/* Internal Notes */}
-                  <div className="pb-4">
-                    <h4 className="font-medium mb-3 flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Notas Internas do Especialista
-                    </h4>
-                    {selectedUser.internal_notes && selectedUser.internal_notes.length > 0 ? (
+                {/* Sessions Tab */}
+                <TabsContent value="sessions" className="flex-1 overflow-hidden">
+                  <ScrollArea className="h-[400px] pr-4">
+                    {selectedUser.sessions_list && selectedUser.sessions_list.length > 0 ? (
                       <div className="space-y-3">
-                        {selectedUser.internal_notes.map((note: any) => (
-                          <Card key={note.id}>
-                            <div className="p-4">
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs font-medium">{note.specialist_name}</span>
-                                <span className="text-xs text-muted-foreground">•</span>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(note.created_at).toLocaleDateString('pt-PT')}
-                                </span>
+                        {selectedUser.sessions_list.map((session: any, index: number) => (
+                          <Card key={index} className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                                  <span className="font-medium">{new Date(session.date).toLocaleDateString('pt-PT')}</span>
+                                  <span className="text-muted-foreground">às {session.time}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline">{session.type || 'Individual'}</Badge>
+                                  <Badge 
+                                    className="text-xs border-transparent" 
+                                    style={{ 
+                                      backgroundColor: getPillarColor(session.pillar).bg, 
+                                      color: getPillarColor(session.pillar).text 
+                                    }}
+                                  >
+                                    {getPillarLabel(session.pillar)}
+                                  </Badge>
+                                  <Badge variant={session.status === 'completed' ? 'default' : 'secondary'}>
+                                    {session.status}
+                                  </Badge>
+                                </div>
                               </div>
-                              <p className="text-sm">{note.content}</p>
+                              {session.rating && (
+                                <div className="flex items-center gap-1">
+                                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                                  <span className="font-medium">{session.rating}/10</span>
+                                </div>
+                              )}
                             </div>
                           </Card>
                         ))}
                       </div>
                     ) : (
-                      <div className="border rounded-lg p-8 text-center text-muted-foreground">
-                        <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">Sem notas internas disponíveis</p>
+                      <div className="text-center py-12 text-muted-foreground">
+                        <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Sem sessões registadas</p>
                       </div>
                     )}
-                  </div>
-                </div>
-              </ScrollArea>
+                  </ScrollArea>
+                </TabsContent>
+
+                {/* Calls Tab */}
+                <TabsContent value="calls" className="flex-1 overflow-hidden">
+                  <ScrollArea className="h-[400px] pr-4">
+                    {selectedUser.calls_list && selectedUser.calls_list.length > 0 ? (
+                      <div className="space-y-3">
+                        {selectedUser.calls_list.map((call: any, index: number) => (
+                          <Card key={index} className="p-4">
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-medium">{new Date(call.date).toLocaleString('pt-PT')}</span>
+                                {call.outcome && (
+                                  <Badge variant="secondary">{call.outcome}</Badge>
+                                )}
+                              </div>
+                              {call.notes && (
+                                <div className="bg-muted p-3 rounded text-sm">
+                                  <p className="font-medium text-xs text-muted-foreground mb-1">Notas:</p>
+                                  <p>{call.notes}</p>
+                                </div>
+                              )}
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12 text-muted-foreground">
+                        <Phone className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Sem chamadas registadas</p>
+                      </div>
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+
+                {/* Chats Tab */}
+                <TabsContent value="chats" className="flex-1 overflow-hidden">
+                  <ScrollArea className="h-[400px] pr-4">
+                    {selectedUser.chat_history && selectedUser.chat_history.length > 0 ? (
+                      <div className="space-y-4">
+                        {selectedUser.chat_history.map((message: any, index: number) => (
+                          <div
+                            key={index}
+                            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                          >
+                            <div
+                              className={`max-w-[80%] rounded-lg p-3 ${
+                                message.role === 'user'
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted'
+                              }`}
+                            >
+                              <p className="text-sm">{message.content}</p>
+                              <p className="text-xs opacity-70 mt-1">
+                                {new Date(message.timestamp).toLocaleString('pt-PT')}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12 text-muted-foreground">
+                        <MessageSquare className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Sem chats escalados</p>
+                      </div>
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
 
               <div className="flex justify-end pt-4 border-t">
                 <Button onClick={() => setIsChatModalOpen(false)}>

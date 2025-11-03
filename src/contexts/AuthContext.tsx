@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Query profiles table to get company_id and other data
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('id, email, name, company_id, is_active, has_completed_onboarding')
+        .select('id, email, name, phone, avatar_url, bio, metadata, company_id, is_active, has_completed_onboarding')
         .eq('id', userId)
         .single();
       
@@ -106,7 +106,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         is_active: profileData?.is_active ?? true,
         company_id: profileData?.company_id || undefined,
         has_completed_onboarding: profileData?.has_completed_onboarding ?? false,
-        metadata: {},
+        phone: profileData?.phone || undefined,
+        avatar_url: profileData?.avatar_url || undefined,
+        bio: profileData?.bio || undefined,
+        metadata: (profileData?.metadata as Record<string, unknown>) || {},
       };
       
       // Auto-complete onboarding milestone for regular users on first login

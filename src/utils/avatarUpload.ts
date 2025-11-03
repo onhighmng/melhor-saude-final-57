@@ -57,6 +57,8 @@ export const uploadAvatar = async (
 
     // Get public URL
     const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+    
+    console.log('[avatarUpload] Upload successful, URL:', data.publicUrl);
 
     return {
       success: true,

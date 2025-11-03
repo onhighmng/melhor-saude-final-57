@@ -22,7 +22,6 @@ export default function SpecialistDashboard() {
   const { profile, isEspecialistaGeral } = useAuth();
   const { escalatedChats, isLoading: chatsLoading } = useEscalatedChats();
   const { metrics, isLoading: analyticsLoading } = useSpecialistAnalytics();
-  const { filterByCompanyAccess } = useCompanyFilter();
   const navigate = useNavigate();
   const [pillarFilter, setPillarFilter] = useState<string>('all');
 
@@ -38,9 +37,10 @@ export default function SpecialistDashboard() {
 
   // State for real data
   const [filteredSessions, setFilteredSessions] = useState<any[]>([]);
+  const [todaySessions, setTodaySessions] = useState<any[]>([]);
   const [assignedCompanies, setAssignedCompanies] = useState<any[]>([]);
   
-  // Use real data from hooks - filter by phone_escalated status
+  // Especialista Geral sees ALL escalated chats (no company filtering)
   const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'phone_escalated');
 
   // Load real sessions - get bookings assigned to this specialist
@@ -70,6 +70,7 @@ export default function SpecialistDashboard() {
       if (!prestador) {
         console.log('[SpecialistDashboard] No prestador found, setting empty sessions');
         setFilteredSessions([]);
+        setTodaySessions([]);
         return;
       }
       
@@ -101,7 +102,17 @@ export default function SpecialistDashboard() {
       
       console.log('[SpecialistDashboard] Mapped sessions:', mappedSessions);
       
+      // Filter sessions for today only
+      const today = new Date().toISOString().split('T')[0];
+      const todayFiltered = mappedSessions.filter((session: any) => {
+        const sessionDate = session.date || session.booking_date;
+        return sessionDate === today && (session.status === 'scheduled' || session.status === 'confirmed');
+      });
+      
+      console.log('[SpecialistDashboard] Today sessions:', todayFiltered);
+      
       setFilteredSessions(mappedSessions);
+      setTodaySessions(todayFiltered);
     };
     loadSessions();
   }, [profile?.id]);
@@ -172,9 +183,9 @@ export default function SpecialistDashboard() {
               {/* Top Right - Today's Sessions */}
               <BentoCard 
                 name="Sessões Hoje" 
-                description={`${filteredSessions.length} sessões agendadas para hoje`} 
+                description={`${todaySessions.length} sessões agendadas para hoje`} 
                 Icon={Calendar} 
-                onClick={() => navigate('/especialista/sessions')} 
+                onClick={() => navigate('/prestador/calendar')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2" 
                 background={
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100">
@@ -288,16 +299,16 @@ export default function SpecialistDashboard() {
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-5 w-5 text-blue-600" />
-                          <span className="font-semibold text-gray-900">Sessões Agendadas</span>
+                          <span className="font-semibold text-gray-900">Sessões Hoje</span>
                         </div>
-                        <Badge variant="secondary">{filteredSessions.length}</Badge>
+                        <Badge variant="secondary">{todaySessions.length}</Badge>
                       </div>
                       <div className="space-y-2">
-                        {filteredSessions.slice(0, 3).map((session) => (
+                        {todaySessions.slice(0, 3).map((session) => (
                           <div 
                             key={session.id} 
                             className="flex items-center gap-3 p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
-                            onClick={() => navigate('/especialista/sessions')}
+                            onClick={() => navigate('/prestador/calendar')}
                           >
                             <div className="p-2 bg-blue-100 rounded-full">
                               <Calendar className="h-3 w-3 text-blue-600" />
@@ -308,7 +319,7 @@ export default function SpecialistDashboard() {
                             </div>
                           </div>
                         ))}
-                        {filteredSessions.length === 0 && (
+                        {todaySessions.length === 0 && (
                           <div className="text-center py-4 text-gray-500">
                             <Calendar className="h-6 w-6 mx-auto mb-1 opacity-50" />
                             <p className="text-xs">Sem sessões hoje</p>

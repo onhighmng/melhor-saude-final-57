@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { uploadAvatar } from '@/utils/avatarUpload';
 
 const EspecialistaSettings = () => {
-  const { profile } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const { toast } = useToast();
   
   // Modal states
@@ -31,6 +31,14 @@ const EspecialistaSettings = () => {
   // Update profile data when profile context changes
   useEffect(() => {
     if (profile) {
+      console.log('[EspecialistaSettings] Loading profile from context:', {
+        full_name: profile.full_name,
+        email: profile.email,
+        phone: profile.phone,
+        avatar_url: profile.avatar_url,
+        metadata: profile.metadata
+      });
+      
       setProfileData({
         name: profile.full_name || '',
         email: profile.email || '',
@@ -38,6 +46,21 @@ const EspecialistaSettings = () => {
         avatar_url: profile.avatar_url || ''
       });
       setAvatarPreview(profile.avatar_url || '');
+      
+      // Load notification settings from metadata if they exist
+      if (profile.metadata && typeof profile.metadata === 'object') {
+        const metadata = profile.metadata as any;
+        if (metadata.notifications) {
+          setNotificationSettings({
+            newCallRequests: metadata.notifications.newCallRequests ?? true,
+            sessionReminders: metadata.notifications.sessionReminders ?? true,
+            sessionCancellations: metadata.notifications.sessionCancellations ?? true,
+            emailNotifications: metadata.notifications.emailNotifications ?? true,
+            smsNotifications: metadata.notifications.smsNotifications ?? false,
+            pushNotifications: metadata.notifications.pushNotifications ?? true,
+          });
+        }
+      }
     }
   }, [profile]);
 
@@ -77,11 +100,15 @@ const EspecialistaSettings = () => {
     }
 
     try {
+      console.log('[EspecialistaSettings] Saving profile:', profileData);
       let avatarUrl = profileData.avatar_url;
 
       // Upload avatar if file selected
       if (avatarFile) {
+        console.log('[EspecialistaSettings] Uploading avatar file:', avatarFile.name, avatarFile.type, avatarFile.size);
         const result = await uploadAvatar(profile.id, avatarFile);
+        
+        console.log('[EspecialistaSettings] Upload result:', result);
         
         if (!result.success) {
           toast({
@@ -93,28 +120,43 @@ const EspecialistaSettings = () => {
         }
 
         avatarUrl = result.url || avatarUrl;
+        console.log('[EspecialistaSettings] Avatar URL after upload:', avatarUrl);
       }
 
       // Update profile in database
-      const { error } = await supabase
+      const updateData = {
+        name: profileData.name,
+        phone: profileData.phone,
+        avatar_url: avatarUrl,
+        updated_at: new Date().toISOString(),
+      };
+      
+      console.log('[EspecialistaSettings] Updating database with:', updateData);
+      
+      const { data, error } = await supabase
         .from('profiles')
-        .update({
-          name: profileData.name,
-          phone: profileData.phone,
-          avatar_url: avatarUrl,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', profile.id);
+        .update(updateData)
+        .eq('id', profile.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[EspecialistaSettings] Database update error:', error);
+        throw error;
+      }
+      
+      console.log('[EspecialistaSettings] Database updated successfully:', data);
 
+      // Clear avatar file after successful upload
+      setAvatarFile(null);
+      
+      // Refresh profile in context to show updated avatar immediately
+      await refreshProfile();
+      
       toast({
         title: 'Perfil atualizado',
         description: 'As suas informações foram guardadas com sucesso.',
       });
 
-      // Clear avatar file after successful upload
-      setAvatarFile(null);
       setIsProfileModalOpen(false);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Não foi possível guardar as alterações.';
@@ -141,6 +183,8 @@ const EspecialistaSettings = () => {
       // Get existing metadata or initialize as empty object
       const existingMetadata = profile.metadata || {};
       
+      console.log('[EspecialistaSettings] Saving notification settings:', notificationSettings);
+      
       const { error } = await supabase.from('profiles').update({
         metadata: {
           ...existingMetadata,
@@ -151,6 +195,9 @@ const EspecialistaSettings = () => {
 
       if (error) throw error;
 
+      // Refresh profile in context
+      await refreshProfile();
+      
       toast({
         title: 'Notificações configuradas',
         description: 'As suas preferências de notificação foram guardadas.',
@@ -226,8 +273,13 @@ const EspecialistaSettings = () => {
               <div className="flex flex-col items-center gap-4 pb-4 border-b">
                 <div className="relative">
                   <div className="w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                    {avatarPreview ? (
-                      <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                    {(avatarPreview || profile?.avatar_url) ? (
+                      <img 
+                        src={`${avatarPreview || profile?.avatar_url}?t=${Date.now()}`} 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover"
+                        key={`${avatarPreview || profile?.avatar_url}-${Date.now()}`}
+                      />
                     ) : (
                       <User className="w-16 h-16 text-muted-foreground" />
                     )}
