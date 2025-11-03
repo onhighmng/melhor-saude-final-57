@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS payment_intents (
     client_secret TEXT NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('requires_payment_method', 'requires_confirmation', 'requires_action', 'processing', 'succeeded', 'canceled')),
     amount INTEGER NOT NULL, -- Amount in cents
-    currency TEXT NOT NULL DEFAULT 'eur',
+    currency TEXT NOT NULL DEFAULT 'mzn',
     description TEXT,
     metadata JSONB,
     customer_id TEXT,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS payments (
     id TEXT PRIMARY KEY,
     payment_intent_id TEXT NOT NULL REFERENCES payment_intents(id) ON DELETE CASCADE,
     amount INTEGER NOT NULL, -- Amount in cents
-    currency TEXT NOT NULL DEFAULT 'eur',
+    currency TEXT NOT NULL DEFAULT 'mzn',
     status TEXT NOT NULL CHECK (status IN ('pending', 'succeeded', 'failed', 'refunded')),
     description TEXT,
     metadata JSONB,
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS invoices (
     status TEXT NOT NULL CHECK (status IN ('draft', 'open', 'paid', 'void', 'uncollectible')),
     amount_paid INTEGER DEFAULT 0, -- Amount in cents
     amount_due INTEGER NOT NULL, -- Amount in cents
-    currency TEXT NOT NULL DEFAULT 'eur',
+    currency TEXT NOT NULL DEFAULT 'mzn',
     description TEXT,
     customer_id TEXT NOT NULL,
     subscription_id TEXT REFERENCES subscriptions(id) ON DELETE SET NULL,
@@ -435,7 +435,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Insert default payment configuration
 INSERT INTO payment_intents (id, client_secret, status, amount, currency, description, metadata) VALUES
-    ('config_default', 'config_secret', 'succeeded', 0, 'eur', 'Default configuration', '{}')
+    ('config_default', 'config_secret', 'succeeded', 0, 'mzn', 'Default configuration', '{}')
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert default webhook event for testing

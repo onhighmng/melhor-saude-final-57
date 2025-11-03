@@ -126,11 +126,11 @@ const AdminDashboard = () => {
                           <div className="flex justify-between items-center mb-3">
                             <span className="text-base font-medium text-gray-700">Satisfação Média</span>
                             <span className="text-2xl font-bold text-purple-700">
-                              {analytics?.avg_rating ? `${analytics.avg_rating}/5` : '0/5'}
+                              {analytics?.avg_rating ? `${analytics.avg_rating}/10` : '0/10'}
                             </span>
                           </div>
                           <Progress 
-                            value={analytics?.avg_rating ? (analytics.avg_rating / 5) * 100 : 0} 
+                            value={analytics?.avg_rating ? (analytics.avg_rating / 10) * 100 : 0} 
                             className="h-3" 
                           />
                         </div>

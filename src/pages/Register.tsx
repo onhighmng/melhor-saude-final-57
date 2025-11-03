@@ -434,7 +434,7 @@ export default function Register() {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="costPerSession">Custo por Sessão (€) *</Label>
+                    <Label htmlFor="costPerSession">Custo por Sessão (MZN) *</Label>
                     <Input
                       id="costPerSession"
                       type="number"
@@ -543,7 +543,7 @@ export default function Register() {
                 <div className="bg-purple-50 p-4 rounded-lg">
                   <h3 className="font-semibold mb-2">Informações Profissionais</h3>
                   <p><strong>Especialidade:</strong> {specialties.find(s => s.value === formData.specialty)?.label}</p>
-                  <p><strong>Custo por Sessão:</strong> €{formData.costPerSession}</p>
+                  <p><strong>Custo por Sessão:</strong> {formData.costPerSession} MZN</p>
                   <p><strong>Tipo de Sessão:</strong> {sessionTypes.find(t => t.value === formData.sessionType)?.label}</p>
                   <p><strong>Disponibilidade:</strong> {availabilityOptions.find(a => a.value === formData.availability)?.label}</p>
                   {formData.bio && <p><strong>Biografia:</strong> {formData.bio}</p>}

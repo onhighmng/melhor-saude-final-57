@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
@@ -37,7 +38,6 @@ const PrestadorSettings = () => {
     preferredHours: ''
   });
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
 
   // Load prestador settings from both profiles and prestadores tables
   useEffect(() => {
@@ -146,8 +146,8 @@ const PrestadorSettings = () => {
         return;
       }
 
-      // Note: Email is usually not updatable directly - it's managed by auth
-      const { error } = await supabase
+      // Update profile table (name, phone)
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           name: settings.name,
@@ -156,18 +156,81 @@ const PrestadorSettings = () => {
         })
         .eq('id', profile.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Update email if changed (requires auth update)
+      if (settings.email !== profile.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: settings.email
+        });
+        if (emailError) {
+          toast({
+            title: "Aviso",
+            description: "Email não pôde ser atualizado. Verifique se é válido.",
+            variant: "destructive"
+          });
+        }
+      }
+
+      // Update pillar in prestadores table
+      const pillarReverseMap: Record<string, string> = {
+        'Saúde Mental': 'psychological',
+        'Bem-Estar Físico': 'physical',
+        'Assistência Financeira': 'financial',
+        'Assistência Jurídica': 'legal'
+      };
+
+      const { error: prestadorError } = await supabase
+        .from('prestadores')
+        .update({
+          pillars: [pillarReverseMap[settings.pillar]]
+        })
+        .eq('user_id', profile.id);
+
+      if (prestadorError) throw prestadorError;
 
       toast({
         title: "Perfil atualizado",
         description: "As suas informações pessoais foram salvas com sucesso"
       });
-      setIsEditing(false);
+
+      // Close modal
+      setIsPersonalInfoOpen(false);
 
       // Reload to update context
       setTimeout(() => window.location.reload(), 1000);
     } catch (error: any) {
       console.error('Error saving profile:', error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível guardar as alterações",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleSaveFinancialInfo = async () => {
+    try {
+      if (!profile?.id) {
+        toast({
+          title: "Erro",
+          description: "ID de utilizador não encontrado",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Note: Currently, financial info is not stored in the database (PAYMENT FEATURE DISABLED)
+      // This function is a placeholder for future implementation
+      toast({
+        title: "Informação Financeira",
+        description: "As configurações financeiras foram atualizadas localmente. Funcionalidade completa será implementada em breve."
+      });
+
+      // Close modal
+      setIsFinancialInfoOpen(false);
+    } catch (error: any) {
+      console.error('Error saving financial info:', error);
       toast({
         title: "Erro",
         description: error.message || "Não foi possível guardar as alterações",
@@ -237,15 +300,6 @@ const PrestadorSettings = () => {
             Gerir as suas informações pessoais e configurações
           </p>
         </div>
-        
-        <Button 
-          onClick={() => setIsEditing(!isEditing)}
-          variant={isEditing ? "outline" : "default"}
-          className="gap-2"
-        >
-          <Settings className="h-4 w-4" />
-          {isEditing ? 'Cancelar' : 'Editar'}
-        </Button>
       </div>
 
       <div className="w-full h-[calc(100vh-200px)]">
@@ -329,12 +383,6 @@ const PrestadorSettings = () => {
                   {settings.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
-              {isEditing && (
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Camera className="h-4 w-4" />
-                  Alterar Foto
-                </Button>
-              )}
             </div>
 
             {/* Basic Info */}
@@ -345,7 +393,7 @@ const PrestadorSettings = () => {
                   id="name"
                   value={settings.name}
                   onChange={(e) => setSettings({ ...settings, name: e.target.value })}
-                  disabled={!isEditing}
+                  placeholder="Nome completo"
                   className="mt-1"
                 />
               </div>
@@ -357,38 +405,35 @@ const PrestadorSettings = () => {
                   type="email"
                   value={settings.email}
                   onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                  disabled={!isEditing}
+                  placeholder="email@exemplo.com"
                   className="mt-1"
                 />
+                <p className="text-xs text-amber-600 mt-1">
+                  ⚠️ Alterar o email requer reverificação
+                </p>
               </div>
 
               <div>
                 <Label htmlFor="pillar">Pilar</Label>
-                <div className="mt-1">
-                  <Badge className={`${getPillarBadgeColor(settings.pillar)} flex items-center gap-1 w-fit`}>
-                    {getPillarIcon(settings.pillar)}
-                    {settings.pillar}
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  O pilar não pode ser alterado
-                </p>
+                <Select value={settings.pillar} onValueChange={(val) => setSettings({ ...settings, pillar: val })}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Selecione o pilar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Saúde Mental">Saúde Mental</SelectItem>
+                    <SelectItem value="Bem-Estar Físico">Bem-Estar Físico</SelectItem>
+                    <SelectItem value="Assistência Financeira">Assistência Financeira</SelectItem>
+                    <SelectItem value="Assistência Jurídica">Assistência Jurídica</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={() => setIsEditing(!isEditing)} variant="outline" className="flex-1">
-                {isEditing ? 'Cancelar' : 'Editar'}
+              <Button onClick={handleSaveProfile} className="w-full gap-2">
+                <Save className="h-4 w-4" />
+                Guardar Alterações
               </Button>
-              {isEditing && (
-                <Button onClick={() => {
-                  handleSaveProfile();
-                  setIsEditing(false);
-                }} className="flex-1 gap-2">
-                  <Save className="h-4 w-4" />
-                  Guardar Alterações
-                </Button>
-              )}
             </div>
           </div>
         </DialogContent>
@@ -409,14 +454,16 @@ const PrestadorSettings = () => {
               <div className="relative mt-1">
                 <Input
                   id="costPerSession"
-                  value={`${settings.costPerSession} MZN`}
-                  disabled
+                  type="number"
+                  value={settings.costPerSession}
+                  onChange={(e) => setSettings({ ...settings, costPerSession: Number(e.target.value) })}
+                  placeholder="1500"
                   className="pl-12"
                 />
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm font-medium text-muted-foreground">MZN</span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Este valor é apenas para visualização e não pode ser alterado
+                Defina o valor que cobra por sessão
               </p>
             </div>
 
@@ -426,11 +473,18 @@ const PrestadorSettings = () => {
                 Informação sobre Pagamentos
               </h4>
               <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Recebe 75% do valor por sessão</li>
-                <li>• 25% é retido como comissão da plataforma</li>
+                <li>• Recebe 75% do valor por sessão ({(settings.costPerSession * 0.75).toFixed(2)} MZN)</li>
+                <li>• 25% é retido como comissão da plataforma ({(settings.costPerSession * 0.25).toFixed(2)} MZN)</li>
                 <li>• Pagamentos são processados mensalmente</li>
                 <li>• Consulte a secção "Desempenho" para detalhes financeiros</li>
               </ul>
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={handleSaveFinancialInfo} className="w-full gap-2">
+                <Save className="h-4 w-4" />
+                Guardar Alterações
+              </Button>
             </div>
           </div>
         </DialogContent>

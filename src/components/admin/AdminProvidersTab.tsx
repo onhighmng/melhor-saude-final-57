@@ -73,10 +73,10 @@ export const AdminProvidersTab = ({ onAddProvider }: AdminProvidersTabProps) => 
       
       // Load both prestadores AND specialists from profiles
       const [prestadoresResult, specialistsResult] = await Promise.all([
-        // Get prestadores from prestadores table
+        // Get prestadores from prestadores table with profiles join
         supabase
           .from('prestadores')
-          .select('*')
+          .select('*, profiles(name, email)')
           .order('created_at', { ascending: false }),
         // Get specialists from profiles table
         supabase
@@ -104,27 +104,30 @@ export const AdminProvidersTab = ({ onAddProvider }: AdminProvidersTabProps) => 
           const scheduledSessions = scheduledCount || 0;
           
           // Get first pillar from array
-          const pillarArray = provider.pillar_specialties || [];
+          const pillarArray = provider.pillars || provider.pillar_specialties || [];
           const pillar = Array.isArray(pillarArray) && pillarArray.length > 0
             ? pillarArray[0]
             : 'N/A';
           
           // Get specialty from direct field or array
-          const specialtyArray = provider.specialties || [];
+          const specialtyArray = provider.specialization || provider.specialties || [];
           const specialty = Array.isArray(specialtyArray) && specialtyArray.length > 0
             ? specialtyArray[0]
             : provider.specialty || 'N/A';
           
+          // Get name and email from joined profiles
+          const profileData = provider.profiles as any;
+          
           allProviders.push({
             id: provider.id,
-            name: provider.name || 'N/A',
-            email: provider.email || 'N/A',
+            name: profileData?.name || 'N/A',
+            email: profileData?.email || 'N/A',
             specialty: specialty,
             pillar: pillar,
-            totalSessions: (provider as any).total_sessions || 0,
+            totalSessions: provider.total_sessions || 0,
             scheduledSessions: scheduledSessions,
             status: provider.is_active ? ('Ativo' as const) : ('Inativo' as const),
-            costPerSession: (provider as any).cost_per_session || 0,
+            costPerSession: provider.cost_per_session || 0,
           });
         }
       }
@@ -439,7 +442,7 @@ export const AdminProvidersTab = ({ onAddProvider }: AdminProvidersTabProps) => 
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600">Custo por Sessão</label>
-                        <p className="text-base font-semibold">€{selectedProvider?.costPerSession || 0}</p>
+                        <p className="text-base font-semibold">{selectedProvider?.costPerSession || 0} MZN</p>
                       </div>
                     </div>
                   </CardContent>

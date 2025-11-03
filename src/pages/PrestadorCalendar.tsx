@@ -5,12 +5,13 @@ import { usePrestadorCalendar } from '@/hooks/usePrestadorCalendar';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar as CalendarIcon, Clock, User, Building, Brain, Dumbbell, DollarSign, Scale } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, User, Building, Brain, Dumbbell, DollarSign, Scale, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { isSameDay } from 'date-fns';
 import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettings';
+import { ReferralBookingModal } from '@/components/specialist/ReferralBookingModal';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
@@ -266,6 +267,7 @@ const PrestadorCalendar = () => {
   const [isDayEventsModalOpen, setIsDayEventsModalOpen] = useState(false);
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
   const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState(false);
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
   const [rescheduleSessionId, setRescheduleSessionId] = useState<string | null>(null);
   const [rescheduleDate, setRescheduleDate] = useState<Date | null>(null);
@@ -571,6 +573,16 @@ const PrestadorCalendar = () => {
           onDayClick={handleDateClick}
           onSetAvailability={() => setIsAvailabilityModalOpen(true)}
           onAddEvent={handleAddSession}
+          customButton={
+            <Button 
+              onClick={() => setIsReferralModalOpen(true)} 
+              variant="outline" 
+              className="w-full gap-2 md:w-auto h-8 text-sm"
+            >
+              <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
+              <span>Encaminhar sessão</span>
+            </Button>
+          }
         />
       </Card>
 
@@ -639,6 +651,19 @@ const PrestadorCalendar = () => {
       <AvailabilitySettings 
         open={isAvailabilityModalOpen}
         onOpenChange={setIsAvailabilityModalOpen}
+      />
+
+      {/* Referral Booking Modal */}
+      <ReferralBookingModal
+        open={isReferralModalOpen}
+        onOpenChange={setIsReferralModalOpen}
+        onSuccess={() => {
+          refetch();
+          toast({
+            title: 'Sessão Encaminhada',
+            description: 'A sessão foi agendada com sucesso'
+          });
+        }}
       />
 
       {/* Add Session Modal - Placeholder */}

@@ -91,10 +91,10 @@ export const useAnalytics = () => {
           used: acc.used + (company.sessions_used || 0)
         }), { allocated: 0, used: 0 });
 
-        // Calculate average rating safely
+        // Calculate average rating safely (convert from 5-point to 10-point scale)
         const ratings = (ratingsData.data || []).map(r => r.rating).filter(r => r !== null);
         const avgRating = ratings.length > 0 
-          ? Math.round((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length) * 10) / 10
+          ? Math.round((ratings.reduce((sum, rating) => sum + (rating * 2), 0) / ratings.length) * 10) / 10
           : 0;
         
         return {

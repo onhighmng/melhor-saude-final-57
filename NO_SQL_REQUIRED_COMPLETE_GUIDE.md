@@ -37,9 +37,9 @@ Since you already have an account, here's the **ONE-TIME UI setup** (no SQL!):
 
 **Step 3: Choose Package** (NEW!)
 - Click package card:
-  - **Starter**: 10 seats, €99/mês
-  - **Business**: 50 seats, €399/mês ⭐ Popular
-  - **Professional**: 100 seats, €699/mês
+  - **Starter**: 10 seats, 7.000 MZN/mês
+  - **Business**: 50 seats, 27.000 MZN/mês ⭐ Popular
+  - **Professional**: 100 seats, 47.000 MZN/mês
   - **Enterprise**: 200 seats, Custom
 - Click "Próximo" →
 

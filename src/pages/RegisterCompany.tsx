@@ -53,7 +53,7 @@ const packageOptions = [
     seats: 10, 
     sessions: 40,
     description: 'Ideal para pequenas equipas',
-    price: '€99/mês'
+    price: '7.000 MZN/mês'
   },
   { 
     id: 'business', 
@@ -61,7 +61,7 @@ const packageOptions = [
     seats: 50, 
     sessions: 200,
     description: 'Para empresas em crescimento',
-    price: '€399/mês',
+    price: '27.000 MZN/mês',
     popular: true
   },
   { 
@@ -70,7 +70,7 @@ const packageOptions = [
     seats: 100, 
     sessions: 400,
     description: 'Para organizações maiores',
-    price: '€699/mês'
+    price: '47.000 MZN/mês'
   },
   { 
     id: 'enterprise', 
@@ -147,7 +147,8 @@ export default function RegisterCompany() {
         options: {
           data: {
             name: formData.contactName,
-            company_name: formData.companyName
+            company_name: formData.companyName,
+            role: 'hr' // Pass HR role so trigger assigns it correctly
           },
           emailRedirectTo: getAuthCallbackUrl()
         }

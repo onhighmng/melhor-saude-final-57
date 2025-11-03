@@ -100,17 +100,17 @@ Create an admin page where super admins can:
 ### Starter (10 seats)
 - Small businesses
 - Testing the platform
-- €99/month
+- 7.000 MZN/month
 
 ### Business (50 seats)
 - Medium-sized companies
 - Growing teams
-- €399/month
+- 27.000 MZN/month
 
 ### Professional (100 seats)
 - Larger organizations
 - Multiple departments
-- €699/month
+- 47.000 MZN/month
 
 ### Enterprise (Unlimited*)
 - Large corporations

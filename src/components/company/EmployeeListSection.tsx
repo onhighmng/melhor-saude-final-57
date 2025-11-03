@@ -9,11 +9,22 @@ import {
   Activity,
   CheckCircle2,
   XCircle,
-  TrendingUp
+  TrendingUp,
+  Trash2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface EmployeeData {
   id: string;
@@ -28,6 +39,7 @@ interface EmployeeData {
     email: string;
     avatar_url: string | null;
     is_active: boolean;
+    role: string;
   };
 }
 
@@ -38,6 +50,9 @@ interface EmployeeListSectionProps {
 export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
   const [employees, setEmployees] = useState<EmployeeData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<EmployeeData | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -58,10 +73,12 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
               name,
               email,
               avatar_url,
-              is_active
+              is_active,
+              role
             )
           `)
           .eq('company_id', companyId)
+          .is('deleted_at', null)
           .order('joined_at', { ascending: false });
 
         if (error) {
@@ -102,6 +119,58 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
       supabase.removeChannel(channel);
     };
   }, [companyId, toast]);
+
+  const handleDeleteClick = (employee: EmployeeData) => {
+    // Prevent deletion of HR accounts
+    if (employee.profiles?.role === 'hr') {
+      toast({
+        title: 'Não é possível eliminar',
+        description: 'Contas de Recursos Humanos não podem ser eliminadas.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    setEmployeeToDelete(employee);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!employeeToDelete) return;
+
+    setDeleting(true);
+    try {
+      // Soft delete: mark the employee as deleted with timestamp
+      const { error } = await supabase
+        .from('company_employees')
+        .update({ 
+          deleted_at: new Date().toISOString(),
+          is_active: false
+        })
+        .eq('id', employeeToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Colaborador removido',
+        description: 'O colaborador foi removido com sucesso. O lugar ficará disponível dentro de 30 dias.',
+      });
+
+      // Reload employees list
+      setEmployees(prev => prev.filter(e => e.id !== employeeToDelete.id));
+    } catch (error) {
+      console.error('Error deleting employee:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível remover o colaborador. Tente novamente.',
+        variant: 'destructive'
+      });
+    } finally {
+      setDeleting(false);
+      setDeleteDialogOpen(false);
+      setEmployeeToDelete(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -295,12 +364,54 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
                       </div>
                     </div>
                   </div>
+
+                  {/* Delete Button - Only show for non-HR users */}
+                  {employee.profiles?.role !== 'hr' && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteClick(employee)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 ml-2"
+                      title="Remover colaborador"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               );
             })}
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover Colaborador</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem a certeza que deseja remover <strong>{employeeToDelete?.profiles?.name}</strong>?
+              <br /><br />
+              Esta ação irá:
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>Desativar o acesso do colaborador à plataforma</li>
+                <li>Manter o histórico de sessões para relatórios</li>
+                <li>O lugar ficará disponível dentro de 30 dias</li>
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleting ? 'A remover...' : 'Remover'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

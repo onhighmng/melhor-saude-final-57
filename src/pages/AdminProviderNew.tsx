@@ -186,12 +186,15 @@ const AdminProviderNew = () => {
       // Generate random password
       const randomPassword = Math.random().toString(36).slice(-12) + 'A1!';
 
-      // Create auth user
+      // Create auth user with prestador role
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: randomPassword,
         options: {
-          data: { name: formData.name }
+          data: { 
+            name: formData.name,
+            role: 'prestador' // Pass prestador role so trigger assigns it correctly
+          }
         }
       });
 

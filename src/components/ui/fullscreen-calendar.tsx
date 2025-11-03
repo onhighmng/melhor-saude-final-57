@@ -23,6 +23,7 @@ interface FullScreenCalendarProps {
   onEventClick?: (event: Event) => void;
   onDayClick?: (date: Date) => void;
   onSetAvailability?: () => void;
+  customButton?: React.ReactNode;
 }
 const colStartClasses = ["", "col-start-2", "col-start-3", "col-start-4", "col-start-5", "col-start-6", "col-start-7"];
 const getPillarColor = (pillar: string) => {
@@ -42,7 +43,8 @@ export function FullScreenCalendar({
   onAddEvent,
   onEventClick,
   onDayClick,
-  onSetAvailability
+  onSetAvailability,
+  customButton
 }: FullScreenCalendarProps) {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = React.useState(today);
@@ -67,6 +69,7 @@ export function FullScreenCalendar({
   }
   function goToToday() {
     setCurrentMonth(format(today, "MMM-yyyy"));
+    setSelectedDay(today);
   }
   return <div className="flex flex-1 flex-col">
       {/* Calendar Header */}
@@ -112,6 +115,8 @@ export function FullScreenCalendar({
           <Separator orientation="vertical" className="hidden h-5 md:block" />
           <Separator orientation="horizontal" className="block w-full md:hidden" />
 
+          {customButton}
+          
           {onSetAvailability && <Button onClick={onSetAvailability} variant="outline" className="w-full gap-2 md:w-auto h-8 text-sm">
               <Clock size={14} strokeWidth={2} aria-hidden="true" />
               <span>Disponibilidade</span>

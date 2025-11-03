@@ -341,11 +341,19 @@ export default function PrestadorSessions() {
     });
   };
 
+  // Calculate platform stats for this prestador
+  const platformStats = {
+    totalSessions: stats.completed,
+    uniqueClients: new Set(sessions.map(s => s.clientName)).size,
+    avgRating: stats.avgRating
+  };
+
   return (
     <div className="space-y-6 min-h-screen bg-blue-50 p-6 -m-6">
       {/* Feature Section with Stats Cards, Filters, and Sessions List */}
       <RuixenSection 
         stats={stats} 
+        platformStats={platformStats}
         sessions={filteredSessions}
         getStatusBadge={getStatusBadge}
         dateFilter={dateFilter}

@@ -59,14 +59,24 @@ export const createUserFromCode = async (
 
   const invite = codeData[0];
 
-  // Create auth user
+  // Get the correct role from the invite FIRST (before creating auth user)
+  // The invite.role contains the actual database role:
+  // - 'hr' for HR/company codes
+  // - 'prestador' for affiliate codes  
+  // - 'especialista_geral' for specialist codes
+  // - 'user' for employee/personal codes
+  const roleFromInvite = invite.role || 'user';
+
+  // Create auth user with the correct role in metadata
+  // IMPORTANT: Pass 'role' (not 'user_type') so the handle_new_user trigger uses the correct role
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: userData.email,
     password: userData.password,
     options: {
       data: {
         name: userData.name,
-        user_type: userType
+        user_type: userType,
+        role: roleFromInvite // Pass the actual role so the trigger assigns it correctly
       }
     }
   });
@@ -85,14 +95,6 @@ export const createUserFromCode = async (
     // Session was returned in signUp response, make sure it's set
     await supabase.auth.setSession(authData.session);
   }
-
-  // Get the correct role from the invite (not from userType mapping)
-  // The invite.role contains the actual database role:
-  // - 'hr' for HR/company codes
-  // - 'prestador' for affiliate codes  
-  // - 'especialista_geral' for specialist codes
-  // - 'user' for employee/personal codes
-  const roleFromInvite = invite.role || 'user';
 
   // Create profile with error handling
   // NOTE: profiles table uses 'name' column (verified from database schema)

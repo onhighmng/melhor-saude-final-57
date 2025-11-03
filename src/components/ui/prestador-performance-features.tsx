@@ -6,9 +6,12 @@ import {
   Users, 
   TrendingUp, 
   Download,
-  Euro,
+  DollarSign,
   Percent,
-  BarChart3
+  BarChart3,
+  CheckCircle2,
+  AlertTriangle,
+  Clock
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -18,6 +21,11 @@ interface PrestadorPerformanceFeaturesProps {
     avgSatisfaction: number;
     totalClients: number;
     retentionRate: number;
+    completionRate?: number;
+    noShowRate?: number;
+    cancellationRate?: number;
+    peakBookingDay?: string;
+    peakBookingHour?: string;
   };
   sessionEvolution: Array<{
     month: string;
@@ -162,7 +170,7 @@ export function PrestadorPerformanceFeatures({
             <div className="space-y-8">
               <div className="flex items-center justify-between p-6 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
                 <div className="flex items-center gap-4">
-                  <Euro className="h-10 w-10 text-blue-600" />
+                  <DollarSign className="h-10 w-10 text-blue-600" />
                   <div>
                     <p className="text-base text-muted-foreground">Total Bruto</p>
                     <p className="text-3xl font-bold">{totalGrossValue.toLocaleString('pt-PT')} MZN</p>
@@ -237,6 +245,73 @@ export function PrestadorPerformanceFeatures({
           </Card>
         </div>
 
+        {/* Additional Metrics Grid */}
+        <div className="mt-2 grid gap-2 sm:grid-cols-3">
+          {/* Completion Rate Card */}
+          <Card className="group overflow-hidden shadow-black/5">
+            <CardHeader className="p-6">
+              <div className="flex items-center gap-4">
+                <CheckCircle2 className="h-10 w-10 text-green-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Taxa de Conclusão</p>
+                  <p className="text-3xl font-bold">{performance.completionRate || 0}%</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="px-6 pb-6">
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-green-600 h-3 rounded-full transition-all" 
+                  style={{ width: `${performance.completionRate || 0}%` }}
+                ></div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* No-Show Rate Card */}
+          <Card className="group overflow-hidden shadow-black/5">
+            <CardHeader className="p-6">
+              <div className="flex items-center gap-4">
+                <AlertTriangle className="h-10 w-10 text-amber-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Taxa de Não Comparecimento</p>
+                  <p className="text-3xl font-bold">{performance.noShowRate || 0}%</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="px-6 pb-6">
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-amber-600 h-3 rounded-full transition-all" 
+                  style={{ width: `${performance.noShowRate || 0}%` }}
+                ></div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Peak Booking Times Card */}
+          <Card className="group overflow-hidden shadow-black/5">
+            <CardHeader className="p-6">
+              <div className="flex items-center gap-4">
+                <Clock className="h-10 w-10 text-blue-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Horários de Pico</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="px-6 pb-6 space-y-3">
+              <div>
+                <p className="text-xs text-muted-foreground">Dia da Semana</p>
+                <p className="text-2xl font-bold">{performance.peakBookingDay || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Hora do Dia</p>
+                <p className="text-2xl font-bold">{performance.peakBookingHour || 'N/A'}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Performance Insights - Full Width Bottom */}
         <Card className="mt-2 shadow-black/5">
           <CardHeader className="p-8 md:p-16">
@@ -250,36 +325,72 @@ export function PrestadorPerformanceFeatures({
               <div className="space-y-6">
                 <h4 className="font-semibold text-green-700 text-2xl">Pontos Fortes</h4>
                 <ul className="space-y-4 text-base">
-                  <li className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    Alta satisfação dos colaboradores ({performance.avgSatisfaction}/10)
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    Excelente taxa de retenção ({performance.retentionRate}%)
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    Crescimento consistente de sessões
-                  </li>
+                  {performance.avgSatisfaction >= 7 && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      Alta satisfação dos colaboradores ({performance.avgSatisfaction}/10)
+                    </li>
+                  )}
+                  {(performance.completionRate || 0) >= 80 && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      Excelente taxa de conclusão ({performance.completionRate}%)
+                    </li>
+                  )}
+                  {(performance.noShowRate || 0) < 10 && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      Baixa taxa de não comparecimento ({performance.noShowRate}%)
+                    </li>
+                  )}
+                  {performance.sessionsThisMonth > 0 && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      Atendendo {performance.totalClients} colaboradores este mês
+                    </li>
+                  )}
+                  {performance.peakBookingDay && performance.peakBookingDay !== 'N/A' && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      Maior demanda às {performance.peakBookingDay}s, {performance.peakBookingHour}
+                    </li>
+                  )}
                 </ul>
               </div>
               
               <div className="space-y-6">
                 <h4 className="font-semibold text-amber-700 text-2xl">Oportunidades</h4>
                 <ul className="space-y-4 text-base">
-                  <li className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                    Expandir para mais colaboradores únicos
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                    Aumentar número de sessões por mês
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                    Diversificar tipos de sessões oferecidas
-                  </li>
+                  {performance.avgSatisfaction < 7 && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                      Melhorar satisfação dos colaboradores (atual: {performance.avgSatisfaction}/10)
+                    </li>
+                  )}
+                  {(performance.noShowRate || 0) >= 10 && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                      Reduzir taxa de não comparecimento (atual: {performance.noShowRate}%)
+                    </li>
+                  )}
+                  {(performance.cancellationRate || 0) >= 15 && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                      Diminuir cancelamentos (atual: {performance.cancellationRate}%)
+                    </li>
+                  )}
+                  {performance.peakBookingDay && performance.peakBookingDay !== 'N/A' && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                      Otimizar disponibilidade para {performance.peakBookingDay}, {performance.peakBookingHour}
+                    </li>
+                  )}
+                  {performance.sessionsThisMonth < 10 && (
+                    <li className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                      Ampliar capacidade de atendimento mensal
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>

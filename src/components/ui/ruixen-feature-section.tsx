@@ -53,6 +53,11 @@ interface RuixenSectionProps {
     scheduled: number;
     avgRating: number;
   };
+  platformStats?: {
+    totalSessions: number;
+    uniqueClients: number;
+    avgRating: number;
+  };
   sessions?: Session[];
   getStatusBadge?: (status: string) => React.ReactNode;
   dateFilter?: string;
@@ -67,6 +72,7 @@ interface RuixenSectionProps {
 
 export default function RuixenSection({ 
   stats, 
+  platformStats,
   sessions = [], 
   getStatusBadge,
   dateFilter = 'all',
@@ -255,25 +261,33 @@ export default function RuixenSection({
         </div>
       </div>
       
-      {/* Stats Section */}
-      <div className="mt-12 sm:mt-16 lg:mt-20">
-        <div className="flex justify-center items-center p-4 sm:p-6">
-          <div className="grid grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left max-w-3xl">
-            <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">+150</div>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Prestadores Ativos</p>
-            </div>
-            <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">5K+</div>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Sessões Realizadas</p>
-            </div>
-            <div className="space-y-2 sm:space-y-3">
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">4.9</div>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Avaliação Média</p>
+      {/* Stats Section - Real Prestador Data */}
+      {platformStats && (
+        <div className="mt-12 sm:mt-16 lg:mt-20">
+          <div className="flex justify-center items-center p-4 sm:p-6">
+            <div className="grid grid-cols-3 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 w-full text-center sm:text-left max-w-3xl">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">
+                  {platformStats.totalSessions}
+                </div>
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Sessões Realizadas</p>
+              </div>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">
+                  {platformStats.uniqueClients}
+                </div>
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Clientes Atendidos</p>
+              </div>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-gray-900 dark:text-white">
+                  {platformStats.avgRating.toFixed(1)}/10
+                </div>
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-400">Avaliação Média</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </section>
   )
 }

@@ -37,10 +37,17 @@ const statusColors = {
 };
 
 const pillarColors = {
-  'Saúde Mental': 'bg-blue-100 text-blue-800',
-  'Bem-Estar Físico': 'bg-yellow-100 text-yellow-800',
-  'Assistência Financeira': 'bg-green-100 text-green-800',
-  'Assistência Jurídica': 'bg-purple-100 text-purple-800',
+  'saude_mental': 'bg-blue-100 text-blue-800',
+  'bem_estar_fisico': 'bg-yellow-100 text-yellow-800',
+  'assistencia_financeira': 'bg-green-100 text-green-800',
+  'assistencia_juridica': 'bg-purple-100 text-purple-800',
+};
+
+const pillarLabels: Record<string, string> = {
+  'saude_mental': 'Saúde Mental',
+  'bem_estar_fisico': 'Bem-Estar Físico',
+  'assistencia_financeira': 'Assistência Financeira',
+  'assistencia_juridica': 'Assistência Jurídica',
 };
 
 export default function AdminSessionsTab() {
@@ -50,12 +57,25 @@ export default function AdminSessionsTab() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [pillarFilter, setPillarFilter] = useState('all');
   const [sessions, setSessions] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<Array<{id: string, name: string}>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadSessions = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
+        
+        // Load companies for filter
+        const { data: companiesData } = await supabase
+          .from('companies')
+          .select('id, name')
+          .order('name');
+        
+        if (companiesData) {
+          setCompanies(companiesData);
+        }
+
+        // Load sessions
         const { data, error} = await supabase
           .from('bookings')
           .select('*')
@@ -113,7 +133,7 @@ export default function AdminSessionsTab() {
       }
     };
 
-    loadSessions();
+    loadData();
 
     // Real-time subscription
     const subscription = supabase
@@ -123,7 +143,7 @@ export default function AdminSessionsTab() {
         schema: 'public',
         table: 'bookings'
       }, () => {
-        loadSessions();
+        loadData();
       })
       .subscribe();
 
@@ -187,9 +207,11 @@ export default function AdminSessionsTab() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas</SelectItem>
-              <SelectItem value="Tech Corp">Tech Corp</SelectItem>
-              <SelectItem value="Innovation Ltd">Innovation Ltd</SelectItem>
-              <SelectItem value="StartUp Inc">StartUp Inc</SelectItem>
+              {companies.map((company) => (
+                <SelectItem key={company.id} value={company.name}>
+                  {company.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -199,10 +221,10 @@ export default function AdminSessionsTab() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="Saúde Mental">Saúde Mental</SelectItem>
-              <SelectItem value="Bem-Estar Físico">Bem-Estar Físico</SelectItem>
-              <SelectItem value="Assistência Financeira">Assistência Financeira</SelectItem>
-              <SelectItem value="Assistência Jurídica">Assistência Jurídica</SelectItem>
+              <SelectItem value="saude_mental">Saúde Mental</SelectItem>
+              <SelectItem value="bem_estar_fisico">Bem-Estar Físico</SelectItem>
+              <SelectItem value="assistencia_financeira">Assistência Financeira</SelectItem>
+              <SelectItem value="assistencia_juridica">Assistência Jurídica</SelectItem>
             </SelectContent>
           </Select>
 
@@ -252,8 +274,8 @@ export default function AdminSessionsTab() {
                     <TableCell className="font-medium">{session.collaborator}</TableCell>
                     <TableCell>{session.company}</TableCell>
                     <TableCell>
-                      <Badge className={`${pillarColors[session.pillar as keyof typeof pillarColors]} rounded-full px-3 py-1`}>
-                        {session.pillar}
+                      <Badge className={`${pillarColors[session.pillar as keyof typeof pillarColors] || 'bg-gray-100 text-gray-800'} rounded-full px-3 py-1`}>
+                        {pillarLabels[session.pillar] || session.pillar}
                       </Badge>
                     </TableCell>
                     <TableCell>{session.specialist}</TableCell>

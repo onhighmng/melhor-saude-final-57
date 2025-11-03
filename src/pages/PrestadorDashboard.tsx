@@ -384,7 +384,7 @@ export default function PrestadorDashboard() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-gray-600">Satisfação</span>
-                        <span className="font-medium text-sm">{metrics?.avgRating || '0.0'}/5</span>
+                        <span className="font-medium text-sm">{metrics?.avgRating || '0.0'}/10</span>
                       </div>
                     </div>
                   </div>

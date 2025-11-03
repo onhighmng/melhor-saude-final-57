@@ -88,11 +88,35 @@ const PrestadorPerformance = () => {
         const currentMonthBookings = bookings?.filter(b => b.booking_date?.startsWith(currentMonth)) || [];
         const sessionsThisMonth = currentMonthBookings.length;
 
+        // Calculate peak booking day
+        const dayCounts = (bookings || []).reduce((acc: any, b: any) => {
+          const day = new Date(b.booking_date || '').getDay();
+          acc[day] = (acc[day] || 0) + 1;
+          return acc;
+        }, {});
+        const peakDayEntry = Object.entries(dayCounts).sort((a: any, b: any) => b[1] - a[1])[0];
+        const peakBookingDay = peakDayEntry ? ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][parseInt(peakDayEntry[0])] : 'N/A';
+
+        // Calculate peak booking hour
+        const hourCounts = (bookings || []).reduce((acc: any, b: any) => {
+          const hour = parseInt(b.start_time?.split(':')[0] || '0');
+          acc[hour] = (acc[hour] || 0) + 1;
+          return acc;
+        }, {});
+        const peakHourEntry = Object.entries(hourCounts).sort((a: any, b: any) => b[1] - a[1])[0];
+        const peakBookingHour = peakHourEntry ? `${peakHourEntry[0]}:00` : 'N/A';
+
         setPerformance({
           sessionsThisMonth,
           avgSatisfaction: Number(avgRating.toFixed(1)),
           totalClients: new Set(bookings?.map(b => b.user_id)).size, // Unique clients
-          retentionRate: completionRate
+          retentionRate: completionRate,
+          // New metrics
+          completionRate: Number(completionRate.toFixed(1)),
+          noShowRate: total > 0 ? Number(((noShow / total) * 100).toFixed(1)) : 0,
+          cancellationRate: total > 0 ? Number(((cancelled / total) * 100).toFixed(1)) : 0,
+          peakBookingDay,
+          peakBookingHour
         });
 
         // Calculate monthly evolution (last 6 months)

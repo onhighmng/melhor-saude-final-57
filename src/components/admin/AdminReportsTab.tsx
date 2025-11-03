@@ -252,7 +252,7 @@ export const AdminReportsTab: React.FC = () => {
         : 0;
 
       // Calculate revenue (simplified - based on sessions)
-      const revenue = (sessionsUsed || 0) * 50; // Assuming €50 per session
+      const revenue = (sessionsUsed || 0) * 3500; // Assuming 3500 MZN per session
 
       stats.push({
         month: monthStart.toLocaleDateString('pt-PT', { month: 'short', year: 'numeric' }),
@@ -562,7 +562,7 @@ export const AdminReportsTab: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Receita</p>
-                      <p className="text-lg font-semibold">€{month.revenue}</p>
+                      <p className="text-lg font-semibold">{month.revenue} MZN</p>
                     </div>
                   </div>
                 </CardContent>

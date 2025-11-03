@@ -228,25 +228,25 @@ ORDER BY employee_seats;
 -- Revenue potential (if you have pricing)
 SELECT 
   CASE 
-    WHEN employee_seats <= 10 THEN 'Starter (€99/mo)'
-    WHEN employee_seats <= 50 THEN 'Business (€399/mo)'
-    WHEN employee_seats <= 100 THEN 'Professional (€699/mo)'
+    WHEN employee_seats <= 10 THEN 'Starter (7.000 MZN/mo)'
+    WHEN employee_seats <= 50 THEN 'Business (27.000 MZN/mo)'
+    WHEN employee_seats <= 100 THEN 'Professional (47.000 MZN/mo)'
     ELSE 'Enterprise (Custom)'
   END as "Package Tier",
   COUNT(*) as "Companies",
   CASE 
-    WHEN employee_seats <= 10 THEN COUNT(*) * 99
-    WHEN employee_seats <= 50 THEN COUNT(*) * 399
-    WHEN employee_seats <= 100 THEN COUNT(*) * 699
+    WHEN employee_seats <= 10 THEN COUNT(*) * 7000
+    WHEN employee_seats <= 50 THEN COUNT(*) * 27000
+    WHEN employee_seats <= 100 THEN COUNT(*) * 47000
     ELSE 0
-  END as "Monthly Revenue (€)"
+  END as "Monthly Revenue (MZN)"
 FROM companies 
 WHERE is_active = true
 GROUP BY 
   CASE 
-    WHEN employee_seats <= 10 THEN 'Starter (€99/mo)'
-    WHEN employee_seats <= 50 THEN 'Business (€399/mo)'
-    WHEN employee_seats <= 100 THEN 'Professional (€699/mo)'
+    WHEN employee_seats <= 10 THEN 'Starter (7.000 MZN/mo)'
+    WHEN employee_seats <= 50 THEN 'Business (27.000 MZN/mo)'
+    WHEN employee_seats <= 100 THEN 'Professional (47.000 MZN/mo)'
     ELSE 'Enterprise (Custom)'
   END,
   employee_seats;

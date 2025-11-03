@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, DollarSign, Users, Calendar, TrendingUp, Euro } from 'lucide-react';
+import { ArrowLeft, DollarSign, Users, Calendar, TrendingUp } from 'lucide-react';
 import { Provider, ProviderMetrics, ProviderHistoryItem, ProviderStatus } from '@/types/adminProvider';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';

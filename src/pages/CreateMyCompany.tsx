@@ -10,9 +10,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Building2, Users, Loader2, CheckCircle } from 'lucide-react';
 
 const packageOptions = [
-  { id: 'starter', name: 'Starter', seats: 10, sessions: 40, price: '€99/mês' },
-  { id: 'business', name: 'Business', seats: 50, sessions: 200, price: '€399/mês', popular: true },
-  { id: 'professional', name: 'Professional', seats: 100, sessions: 400, price: '€699/mês' },
+  { id: 'starter', name: 'Starter', seats: 10, sessions: 40, price: '7.000 MZN/mês' },
+  { id: 'business', name: 'Business', seats: 50, sessions: 200, price: '27.000 MZN/mês', popular: true },
+  { id: 'professional', name: 'Professional', seats: 100, sessions: 400, price: '47.000 MZN/mês' },
   { id: 'enterprise', name: 'Enterprise', seats: 200, sessions: 1000, price: 'Personalizado' }
 ];
 

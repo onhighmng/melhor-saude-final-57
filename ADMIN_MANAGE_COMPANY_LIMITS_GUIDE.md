@@ -154,9 +154,9 @@ Step 1: Company Info
 └─ Phone
 
 Step 2: Choose Package ⭐
-├─ ○ Starter (10 seats) - €99/month
-├─ ○ Business (50 seats) - €399/month
-├─ ○ Professional (100 seats) - €699/month
+├─ ○ Starter (10 seats) - 7.000 MZN/month
+├─ ○ Business (50 seats) - 27.000 MZN/month
+├─ ○ Professional (100 seats) - 47.000 MZN/month
 └─ ○ Enterprise (Custom) - Contact us
 
 Step 3: Payment
@@ -224,10 +224,10 @@ function getPlanSeats(planId: string): number {
 
 | Tier | Seats | Price/Month | Target Customer |
 |------|-------|-------------|-----------------|
-| **Free Trial** | 5 | €0 | Testing, very small teams |
-| **Starter** | 10 | €99 | Small businesses, startups |
-| **Business** | 50 | €399 | Medium companies |
-| **Professional** | 100 | €699 | Larger organizations |
+| **Free Trial** | 5 | 0 MZN | Testing, very small teams |
+| **Starter** | 10 | 7.000 MZN | Small businesses, startups |
+| **Business** | 50 | 27.000 MZN | Medium companies |
+| **Professional** | 100 | 47.000 MZN | Larger organizations |
 | **Enterprise** | 200+ | Custom | Corporations |
 | **Unlimited** | 10,000 | Custom | Special contracts |
 

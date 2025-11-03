@@ -155,18 +155,19 @@ const AdminUsersManagement = () => {
               
               {/* Content Based on Card */}
               {currentCard.id === 'companies' ? (
-                <div className="space-y-6">
-                  <AdminCompaniesTab />
-                  <CompaniesCodesSection toast={toast} />
-                </div>
+                <AdminCompaniesTab />
               ) : (
-                <div className="space-y-6">
-                  <AdminProvidersTab />
-                  <ProvidersCodesSection toast={toast} />
-                </div>
+                <AdminProvidersTab />
               )}
             </div>
           </div>
+
+          {/* Full-Width Access Codes Section Below */}
+          {currentCard.id === 'companies' ? (
+            <CompaniesCodesSection toast={toast} />
+          ) : (
+            <ProvidersCodesSection toast={toast} />
+          )}
         </div>
       </div>
     </div>
@@ -598,7 +599,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="grid grid-cols-8 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b">
+            <div className="grid gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b" style={{ gridTemplateColumns: '140px 130px 1fr 100px 110px 110px 130px 80px' }}>
               <div>Código</div>
               <div>Tipo</div>
               <div>Usado Por</div>
@@ -611,7 +612,8 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
             {filteredCodes.slice(0, 10).map((code) => (
               <div 
                 key={code.id} 
-                className="grid grid-cols-8 gap-4 p-3 hover:bg-blue-50 rounded cursor-pointer transition-colors"
+                className="grid gap-4 p-3 hover:bg-blue-50 rounded cursor-pointer transition-colors"
+                style={{ gridTemplateColumns: '140px 130px 1fr 100px 110px 110px 130px 80px' }}
                 onClick={() => handleViewEmployees(code)}
               >
                 <div className="flex items-center gap-2">
@@ -629,7 +631,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                   </Button>
                 </div>
                 <div className="text-sm">{getUserTypeLabel(code.role)}</div>
-                <div className="text-sm">
+                <div className="text-sm truncate" title={code.email || 'Não usado'}>
                   {code.email ? (
                     <span className="font-medium text-purple-700">{code.email}</span>
                   ) : (
@@ -980,7 +982,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="grid grid-cols-7 gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b">
+            <div className="grid gap-4 p-3 bg-gray-50 font-medium text-sm text-gray-600 border-b" style={{ gridTemplateColumns: '140px 200px 1fr 110px 110px 130px 80px' }}>
               <div>Código</div>
               <div>Tipo</div>
               <div>Usado Por</div>
@@ -990,7 +992,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
               <div>Ações</div>
             </div>
             {filteredCodes.slice(0, 10).map((code) => (
-              <div key={code.id} className="grid grid-cols-7 gap-4 p-3 hover:bg-gray-50 rounded transition-colors">
+              <div key={code.id} className="grid gap-4 p-3 hover:bg-gray-50 rounded transition-colors" style={{ gridTemplateColumns: '140px 200px 1fr 110px 110px 130px 80px' }}>
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-sm">{code.invite_code}</span>
                   <Button
@@ -1009,7 +1011,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                 <div className="text-sm">
                   {code.role === 'prestador' ? 'Prestador' : 'Profesional de Permanencia'}
                 </div>
-                <div className="text-sm">
+                <div className="text-sm truncate" title={code.email || 'Não usado'}>
                   {code.email ? (
                     <span className="font-medium text-purple-700">{code.email}</span>
                   ) : (

@@ -136,11 +136,15 @@ export default function RegisterEmployee() {
         throw new Error('Código de convite inválido ou expirado');
       }
 
-      // Create auth user
+      // Create auth user with correct role in metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          data: {
+            name: email.split('@')[0],
+            role: invite.role || 'user' // Pass role so trigger assigns it correctly
+          },
           emailRedirectTo: getAuthCallbackUrl()
         }
       });

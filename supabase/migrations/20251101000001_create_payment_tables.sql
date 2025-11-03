@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS stripe_customers (
 
   -- Billing details
   default_payment_method_id UUID REFERENCES payment_methods(id) ON DELETE SET NULL,
-  currency TEXT DEFAULT 'EUR',
+  currency TEXT DEFAULT 'MZN',
   balance INTEGER DEFAULT 0, -- In cents, negative = credit
 
   -- Metadata
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS stripe_payment_intents (
 
   -- Payment details
   amount INTEGER NOT NULL, -- In cents
-  currency TEXT NOT NULL DEFAULT 'EUR',
+  currency TEXT NOT NULL DEFAULT 'MZN',
   description TEXT,
 
   -- Status tracking
@@ -188,7 +188,7 @@ BEGIN
       type TEXT NOT NULL CHECK (type IN ('charge', 'refund', 'payout', 'adjustment', 'credit')),
       status TEXT NOT NULL CHECK (status IN ('pending', 'succeeded', 'failed', 'canceled')),
       amount INTEGER NOT NULL, -- In cents
-      currency TEXT DEFAULT 'EUR',
+      currency TEXT DEFAULT 'MZN',
       description TEXT,
 
       -- Fees and net
@@ -242,7 +242,7 @@ CREATE TABLE IF NOT EXISTS refunds (
 
   -- Refund details
   amount INTEGER NOT NULL, -- In cents
-  currency TEXT NOT NULL DEFAULT 'EUR',
+  currency TEXT NOT NULL DEFAULT 'MZN',
   reason TEXT CHECK (reason IN ('duplicate', 'fraudulent', 'requested_by_customer', 'canceled_booking', 'other')),
   description TEXT,
 
@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS subscription_plans (
 
   -- Pricing
   amount INTEGER NOT NULL, -- In cents per billing cycle
-  currency TEXT NOT NULL DEFAULT 'EUR',
+  currency TEXT NOT NULL DEFAULT 'MZN',
   interval TEXT NOT NULL CHECK (interval IN ('day', 'week', 'month', 'year')),
   interval_count INTEGER NOT NULL DEFAULT 1,
 

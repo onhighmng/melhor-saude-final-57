@@ -15,7 +15,7 @@ import {
   Send, 
   Calendar,
   Building2,
-  Euro,
+  DollarSign,
   CheckCircle,
   Clock,
   AlertCircle
@@ -258,9 +258,9 @@ Email: ${company?.contact_email || 'N/A'}
 Data de Emissão: ${new Date(invoice.invoice_date).toLocaleDateString('pt-PT')}
 Data de Vencimento: ${new Date(invoice.due_date).toLocaleDateString('pt-PT')}
 
-Subtotal: €${invoice.amount_due.toFixed(2)}
-IVA (${taxRate}%): €${invoice.tax_amount.toFixed(2)}
-TOTAL: €${invoice.total_amount.toFixed(2)}
+Subtotal: ${invoice.amount_due.toFixed(2)} MZN
+IVA (${taxRate}%): ${invoice.tax_amount.toFixed(2)} MZN
+TOTAL: ${invoice.total_amount.toFixed(2)} MZN
       `;
 
       const blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8;' });
@@ -400,7 +400,7 @@ TOTAL: €${invoice.total_amount.toFixed(2)}
                     <div className="col-span-2">
                       <Label>Total</Label>
                       <div className="p-2 border rounded bg-muted">
-                        €{item.total.toFixed(2)}
+                        {item.total.toFixed(2)} MZN
                       </div>
                     </div>
                     <div className="col-span-1">
@@ -460,15 +460,15 @@ TOTAL: €${invoice.total_amount.toFixed(2)}
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span>Subtotal:</span>
-                      <span>€{subtotal.toFixed(2)}</span>
+                      <span>{subtotal.toFixed(2)} MZN</span>
                     </div>
                     <div className="flex justify-between">
                       <span>IVA ({taxRate}%):</span>
-                      <span>€{taxAmount.toFixed(2)}</span>
+                      <span>{taxAmount.toFixed(2)} MZN</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg">
                       <span>Total:</span>
-                      <span>€{total.toFixed(2)}</span>
+                      <span>{total.toFixed(2)} MZN</span>
                     </div>
                   </div>
                 </CardContent>
@@ -508,7 +508,7 @@ TOTAL: €${invoice.total_amount.toFixed(2)}
                     </p>
                   </div>
                   <div>
-                    <p className="font-medium">€{invoice.total_amount.toFixed(2)}</p>
+                    <p className="font-medium">{invoice.total_amount.toFixed(2)} MZN</p>
                     <p className="text-sm text-muted-foreground">
                       Vence em {new Date(invoice.due_date).toLocaleDateString('pt-PT')}
                     </p>
