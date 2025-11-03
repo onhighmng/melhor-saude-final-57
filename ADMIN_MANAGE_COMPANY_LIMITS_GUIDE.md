@@ -440,3 +440,4 @@ SELECT * FROM get_company_seat_stats('company-uuid');
 **Audit:** Track all changes for compliance and support
 
 
+

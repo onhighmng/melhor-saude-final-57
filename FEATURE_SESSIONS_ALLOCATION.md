@@ -114,3 +114,4 @@ Implemented functionality allowing admins to specify the number of sessions when
 - All changes maintain compatibility with existing company registrations
 
 
+

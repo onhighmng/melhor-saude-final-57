@@ -234,3 +234,4 @@ The company detail page (`/admin/companies/{id}`) now:
 - ✅ All operations use correct column names
 
 
+

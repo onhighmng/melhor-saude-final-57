@@ -86,3 +86,4 @@ COMMENT ON FUNCTION get_specialist_performance IS 'Get performance metrics for a
 COMMENT ON FUNCTION get_prestador_performance IS 'Get performance metrics for all Prestadores within a date range';
 
 
+

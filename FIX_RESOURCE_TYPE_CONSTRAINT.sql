@@ -29,3 +29,4 @@ FROM pg_constraint
 WHERE conname = 'resources_resource_type_check';
 
 
+

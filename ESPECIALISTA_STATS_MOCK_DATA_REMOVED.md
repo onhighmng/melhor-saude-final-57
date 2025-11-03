@@ -228,3 +228,4 @@ const { data: recentFeedback } = await supabase
 - Empty states provide good UX when no data exists
 
 
+

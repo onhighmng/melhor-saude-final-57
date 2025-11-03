@@ -164,3 +164,4 @@ User Dropdown (Minha Saúde):
 All user roles now have consistent navigation with role-specific dropdowns while maintaining access to "Sobre Nós" and "4 Pilares".
 
 
+

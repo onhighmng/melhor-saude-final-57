@@ -164,3 +164,4 @@ SELECT * FROM user_milestones WHERE milestone_type = 'booking_confirmed'; -- emp
 4. Monitor database logs for any trigger errors
 
 
+

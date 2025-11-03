@@ -270,3 +270,4 @@ File: `FIX_EMPLOYEE_REGISTRATION_PERMISSIONS.sql`
 This will make your app production-ready! 🎉
 
 
+

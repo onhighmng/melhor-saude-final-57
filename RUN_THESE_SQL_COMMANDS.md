@@ -363,3 +363,4 @@ After running this SQL, the specialist calendar will work with all buttons funct
 No code deployment needed - the React app is already updated and ready to use these functions!
 
 
+

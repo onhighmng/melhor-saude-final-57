@@ -205,3 +205,4 @@ COMMENT ON FUNCTION check_and_complete_specialist_milestone IS 'Automatically ma
 COMMENT ON FUNCTION check_and_complete_goal_milestone IS 'Automatically marks goal milestone as complete when user completes their first goal';
 
 
+

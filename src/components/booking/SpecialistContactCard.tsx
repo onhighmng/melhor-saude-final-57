@@ -17,17 +17,12 @@ export const SpecialistContactCard = ({ pillar, context, sessionId }: Specialist
 
   const handleCallClick = async () => {
     // Log that user initiated phone escalation
+    // Note: Database trigger auto-creates specialist_call_logs entry
     if (user) {
       await supabase.from('chat_sessions').update({
         status: 'phone_escalated',
         phone_escalation_reason: context
       }).eq('id', sessionId);
-
-      await supabase.from('specialist_call_logs').insert({
-        chat_session_id: sessionId,
-        user_id: user.id,
-        call_status: 'pending'
-      });
     }
 
     // Open phone dialer

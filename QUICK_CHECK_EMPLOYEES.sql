@@ -101,3 +101,4 @@ SELECT
     (SELECT COUNT(*) FROM invites WHERE role = 'user' AND status = 'used') as used_invites;
 
 
+

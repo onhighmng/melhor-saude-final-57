@@ -296,3 +296,4 @@ FOREIGN KEY (user_id) REFERENCES profiles(id);
 **Impact**: Major feature - Enables employee management
 
 
+

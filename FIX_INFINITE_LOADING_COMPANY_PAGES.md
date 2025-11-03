@@ -175,3 +175,4 @@ if (!profile?.company_id) {
 **Next step: Create company data or show proper empty state UI**
 
 
+

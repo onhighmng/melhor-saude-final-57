@@ -60,3 +60,4 @@ WHERE table_name = 'resource_access_log'
 ORDER BY ordinal_position;
 
 
+

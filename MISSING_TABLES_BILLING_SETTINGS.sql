@@ -610,3 +610,4 @@ SELECT 'Added missing columns to existing tables for full functionality.' as enh
 SELECT 'All billing and configuration features are now supported.' as message;
 
 
+

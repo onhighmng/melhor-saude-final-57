@@ -374,3 +374,4 @@ WHERE schemaname = 'public' AND tablename = 'bookings';
 The specialist can now fully manage their calendar with proper authorization and security!
 
 
+

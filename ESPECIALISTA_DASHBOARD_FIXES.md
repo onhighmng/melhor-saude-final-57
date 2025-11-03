@@ -225,3 +225,4 @@ WHERE table_name = 'specialist_call_logs';
 The especialista dashboard should now load without errors!
 
 
+

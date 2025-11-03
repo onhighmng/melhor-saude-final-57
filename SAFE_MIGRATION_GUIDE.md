@@ -219,3 +219,4 @@ The NOTICES just mean it skipped operations that were already done or couldn't b
 The updated `FIX_COMPANIES_SCHEMA_MISMATCH.sql` is now safe and will handle all edge cases gracefully.
 
 
+

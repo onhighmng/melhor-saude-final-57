@@ -288,3 +288,4 @@ The company invite system is **well-designed and mostly functional**, but has **
 **Severity**: CRITICAL (1 issue), HIGH (0 issues), MEDIUM (0 issues), LOW (3 observations)
 
 
+

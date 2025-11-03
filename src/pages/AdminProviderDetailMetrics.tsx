@@ -34,7 +34,7 @@ const AdminProviderDetailMetrics = () => {
         .from('prestador_performance')
         .select('*')
         .eq('prestador_id', providerId)
-        .order('month', { ascending: false })
+        .order('period_start', { ascending: false })
         .limit(6);
 
       // Load pricing
@@ -49,7 +49,7 @@ const AdminProviderDetailMetrics = () => {
 
       // Calculate revenue from performance
       const monthlyRevenue = performanceData?.map(p => ({
-        month: p.month,
+        month: p.period_start,
         revenue: (p.completed_sessions || 0) * sessionPrice * (1 - commissionRate)
       })) || [];
 

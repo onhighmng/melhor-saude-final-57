@@ -57,3 +57,4 @@ To test this fix:
 - `src/contexts/AuthContext.tsx` - Returns `'specialist'` role from RPC function
 
 
+

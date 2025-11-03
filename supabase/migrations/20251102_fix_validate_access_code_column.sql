@@ -42,3 +42,4 @@ GRANT EXECUTE ON FUNCTION validate_access_code(TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION validate_access_code(TEXT) TO anon;
 
 
+

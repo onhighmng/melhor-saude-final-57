@@ -234,3 +234,4 @@ JOIN companies c ON c.id = i.company_id
 WHERE i.invite_code = 'MS-TEST01';
 
 
+
