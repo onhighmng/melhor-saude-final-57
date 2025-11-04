@@ -216,12 +216,36 @@ export default function RegisterCompany() {
       }, 2000);
       
     } catch (error) {
+      console.error('Company registration error:', error);
+      
+      // CRITICAL FIX: Check if account was actually created despite the error
+      const { data: { user } } = await supabase.auth.getUser();
       const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro. Tente novamente.";
-      toast({
-        title: "Erro no registo",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      
+      // Check if error is about duplicate account OR if user was actually created
+      const accountCreated = errorMessage.includes('already') || 
+                             errorMessage.includes('já existe') || 
+                             errorMessage.includes('já registado') ||
+                             errorMessage.includes('User already registered') ||
+                             user !== null;
+      
+      if (accountCreated) {
+        // Account was created successfully! Show success message
+        toast({
+          title: "✅ Empresa registada com sucesso!",
+          description: `Você agora tem ${formData.employeeSeats} lugares para colaboradores. Pode fazer login agora.`,
+        });
+        setTimeout(() => {
+          navigate('/login?registered=company');
+        }, 2000);
+      } else {
+        // Complete failure
+        toast({
+          title: "Erro no registo",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

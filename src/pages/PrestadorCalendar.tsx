@@ -395,7 +395,7 @@ const PrestadorCalendar = () => {
         .from('bookings')
         .update({ 
           status: 'completed',
-          completed_at: new Date().toISOString()
+          updated_at: new Date().toISOString()
         })
         .eq('id', sessionId);
 
@@ -412,6 +412,9 @@ const PrestadorCalendar = () => {
       
       // Reload calendar
       await refetch();
+      
+      // Close the modal after successful conclusion
+      setIsDayEventsModalOpen(false);
     } catch (error) {
       console.error('🟣 [CONCLUDE] Caught error:', error);
       toast({

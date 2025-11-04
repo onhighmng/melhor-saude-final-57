@@ -23,6 +23,7 @@ import { NotificationPrefsModal } from "@/components/settings/NotificationPrefsM
 import { SecurityModal } from "@/components/settings/SecurityModal";
 import { ConsentsModal } from "@/components/settings/ConsentsModal";
 import { NotificationHistoryModal } from "@/components/settings/NotificationHistoryModal";
+import { NotificationPreferences } from "@/components/settings/NotificationPreferences";
 import { supabase } from '@/integrations/supabase/client';
 
 const UserSettings = () => {
@@ -296,6 +297,7 @@ const UserSettings = () => {
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
   const [isConsentsModalOpen, setIsConsentsModalOpen] = useState(false);
   const [isNotificationHistoryModalOpen, setIsNotificationHistoryModalOpen] = useState(false);
+  const [isEmailPrefsModalOpen, setIsEmailPrefsModalOpen] = useState(false);
 
   const handleChangePassword = async () => {
     if (passwordData.new !== passwordData.confirm) {
@@ -477,12 +479,23 @@ const UserSettings = () => {
           />
 
           <BentoCard
+            name="Preferências de Email"
+            description="Gerir notificações por email"
+            Icon={Settings}
+            href="#"
+            cta="Configurar"
+            className="lg:row-start-2 lg:row-end-3 lg:col-start-1 lg:col-end-2"
+            background={<div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50" />}
+            onClick={() => setIsEmailPrefsModalOpen(true)}
+          />
+
+          <BentoCard
             name="Consentimentos"
             description="Tratamento de dados"
             Icon={FileText}
             href="#"
             cta="Rever"
-            className="lg:row-start-2 lg:row-end-3 lg:col-start-1 lg:col-end-2"
+            className="lg:row-start-2 lg:row-end-3 lg:col-start-2 lg:col-end-3"
             background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50" />}
             onClick={() => setIsConsentsModalOpen(true)}
           />
@@ -493,7 +506,7 @@ const UserSettings = () => {
             Icon={AlertTriangle}
             href="#"
             cta="Ver todas"
-            className="lg:row-start-2 lg:row-end-3 lg:col-start-2 lg:col-end-4"
+            className="lg:row-start-2 lg:row-end-3 lg:col-start-3 lg:col-end-4"
             background={<div className="absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-50" />}
             onClick={() => setIsNotificationHistoryModalOpen(true)}
           />
@@ -544,6 +557,19 @@ const UserSettings = () => {
           onMarkRead={handleMarkRead}
           onNotificationAction={handleNotificationAction}
         />
+
+        {/* Email Preferences Modal */}
+        <Dialog open={isEmailPrefsModalOpen} onOpenChange={setIsEmailPrefsModalOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Preferências de Email</DialogTitle>
+              <DialogDescription>
+                Gerir as suas preferências de notificações por email
+              </DialogDescription>
+            </DialogHeader>
+            <NotificationPreferences />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

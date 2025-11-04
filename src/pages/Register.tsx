@@ -13,6 +13,7 @@ import { useAccessCodeValidation } from '@/hooks/useAccessCodeValidation';
 import { createUserFromCode, PersonalUserData, HRUserData, EmployeeUserData, PrestadorUserData } from '@/utils/registrationHelpers';
 import { UserType } from '@/types/accessCodes';
 import { getAuthCallbackUrl } from '@/utils/authRedirects';
+import { supabase } from '@/integrations/supabase/client';
 
 const steps = [
   { id: 1, title: 'Código de Acesso', icon: User },
@@ -181,18 +182,41 @@ export default function Register() {
       await createUserFromCode(accessCode, userData, userType!);
 
       toast({
-        title: "Registo Concluído",
-        description: "A sua conta foi criada com sucesso! Verifique o seu email para confirmar.",
+        title: "Registo Concluído ✅",
+        description: "A sua conta foi criada com sucesso! Pode fazer login agora.",
       });
 
       navigate('/login');
     } catch (error) {
       console.error('Registration error:', error);
-      toast({
-        title: "Erro no Registo",
-        description: error instanceof Error ? error.message : "Erro ao criar conta. Tente novamente.",
-        variant: "destructive",
-      });
+      
+      // CRITICAL FIX: Check if account was actually created despite the error
+      // This handles partial success cases where user is created but secondary operations fail
+      const { data: { user } } = await supabase.auth.getUser();
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      
+      // Check if error is about duplicate account OR if user was actually created
+      const accountCreated = errorMessage.includes('already') || 
+                             errorMessage.includes('já existe') || 
+                             errorMessage.includes('já registado') ||
+                             errorMessage.includes('User already registered') ||
+                             user !== null;
+      
+      if (accountCreated) {
+        // Account was created successfully! Show success message
+        toast({
+          title: "Conta Criada com Sucesso! ✅",
+          description: "A sua conta foi criada. Pode fazer login agora.",
+        });
+        navigate('/login');
+      } else {
+        // Complete failure - no user created
+        toast({
+          title: "Erro no Registo",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

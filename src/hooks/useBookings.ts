@@ -109,6 +109,8 @@ export const useBookings = (): UseBookingsReturn => {
     fetchBookings();
 
     if (user?.id) {
+      // CRITICAL FIX #6: Realtime meeting link sync
+      // Subscribe to ALL changes on user's bookings including meeting_link updates
       const subscription = supabase
         .channel(`booking-updates-for-${user.id}`)
         .on('postgres_changes', {
@@ -116,7 +118,19 @@ export const useBookings = (): UseBookingsReturn => {
           schema: 'public',
           table: 'bookings',
           filter: `user_id=eq.${user.id}`
-        }, () => {
+        }, (payload) => {
+          console.log('[useBookings] Realtime update received:', payload);
+          
+          // Show toast notification for meeting link updates
+          if (payload.eventType === 'UPDATE' && payload.new?.meeting_link !== payload.old?.meeting_link) {
+            const meetingLink = payload.new.meeting_link;
+            if (meetingLink) {
+              // Toast notification will be handled by the component using this hook
+              console.log('[useBookings] Meeting link updated:', meetingLink);
+            }
+          }
+          
+          // Refresh bookings
           fetchBookings();
         })
         .subscribe();

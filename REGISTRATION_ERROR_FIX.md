@@ -1,170 +1,341 @@
-# 🔧 Registration Error Fix - "Could not find 'name' column"
+# Registration Flow Error Fix
 
-**Date:** November 2, 2025  
-**Issue:** Error when registering Prestador: "Could not find the 'name' column of 'profiles' in the schema cache"  
-**Status:** ✅ **FIXED**  
+## Problem Description
+Users completing registration (any type: user, prestador, especialista, company) see an error message even though their accounts ARE successfully created. When they try to register again, they get "account already exists" error.
 
----
+## Root Cause
+**Partial Success + Throwing Errors**
 
-## 🐛 The Problem
+The registration flow has multiple steps:
+1. ✅ Create auth user (via Supabase Auth)
+2. ✅ Create profile record
+3. ✅ Assign user role
+4. ❌ **Type-specific operations (can fail)**
+5. ❌ Mark invite code as used (can fail)
 
-When attempting to register a Prestador (or any user type), the system threw an error:
-```
-Erro no Registo
-Erro ao criar perfil: Could not find the 'name' column of 'profiles' in the schema cache
-```
+If steps 4 or 5 fail, an error is thrown **even though the user was successfully created** in steps 1-3.
 
----
+## Specific Problem Areas
 
-## 🔍 Root Cause Analysis
-
-### Issue 1: Schema Cache Out of Sync
-
-**Problem:** Supabase's PostgREST schema cache was out of sync with the actual database schema.
-
-**Evidence:**
-- Database has `profiles.name` column (verified via `information_schema.columns`)
-- PostgREST cache thought the column didn't exist
-- This is a common issue after multiple migrations
-
-### Issue 2: Inconsistent Column References
-
-**Mixed Usage in Codebase:**
-- Some files use `name` 
-- Some files use `full_name`
-- Some files use both
-
-**Database Reality:**
-The `profiles` table has the following name-related columns:
-- ✅ `name` (TEXT, nullable) - **THIS IS THE CORRECT ONE**
-- ❌ `full_name` - **DOES NOT EXIST**
-- Note: Some queries incorrectly reference `full_name`
-
----
-
-## ✅ Solution Applied
-
-### 1. Fixed Registration Helper
-
-**File:** `src/utils/registrationHelpers.ts`
-
-**Changed:**
+### 1. HR/Company Registration (Lines 295-373)
 ```typescript
-// BEFORE (incorrect comment):
-const profileData: any = {
-  id: userId,
-  email: userData.email,
-  name: userData.name,  // This was correct
-  ...
+export const createHRUser = async (userId: string, userData: HRUserData, companyId?: string, sessionsAllocated?: number) => {
+  // ...
+  
+  // THIS CAN FAIL:
+  const { data: company, error: companyError } = await supabase
+    .from('companies')
+    .insert(companyInsert as any)
+    .select()
+    .single();
+
+  if (companyError) {
+    console.error('Company creation error:', companyError);
+    throw new Error(`Erro ao criar empresa: ${companyError.message}`); // ❌ THROWS ERROR
+  }
+  
+  // User was created but error is thrown
+}
+```
+
+**Why it fails:**
+- RLS policies might prevent company creation
+- Duplicate company name constraint
+- Missing required fields
+- Session not established yet
+
+### 2. Prestador Registration (Lines 403-427)
+```typescript
+export const createPrestadorUser = async (userId: string, userData: PrestadorUserData) => {
+  const { error: prestadorError } = await supabase
+    .from('prestadores')
+    .insert({
+      user_id: userId,
+      specialty: userData.specialty || null,
+      // ... other fields
+    } as any);
+
+  if (prestadorError) throw prestadorError; // ❌ THROWS ERROR
+  
+  return { userId, type: 'prestador' };
+}
+```
+
+**Why it fails:**
+- Duplicate user_id (if retrying)
+- Missing required fields
+- RLS policy issues
+- Foreign key constraints
+
+### 3. Employee Registration (Lines 375-401)
+Similar issues with `company_employees` table inserts.
+
+## Solution: Improve Error Handling
+
+### Approach 1: Return Partial Success (RECOMMENDED)
+Modify functions to return success object with warnings instead of throwing:
+
+```typescript
+interface RegistrationResult {
+  success: boolean;
+  userId: string;
+  warnings?: string[];
+  errors?: string[];
+  canLogin: boolean; // User can login even if secondary ops failed
+}
+
+export const createUserFromCode = async (
+  code: string,
+  userData: PersonalUserData | HRUserData | EmployeeUserData | PrestadorUserData,
+  userType: UserType
+): Promise<RegistrationResult> => {
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  
+  // ... validation code ...
+  
+  // Create auth user
+  const { data: authData, error: authError } = await supabase.auth.signUp({...});
+  
+  if (authError) {
+    // Auth failed - nothing to recover
+    return {
+      success: false,
+      userId: '',
+      errors: [authError.message],
+      canLogin: false
+    };
+  }
+  
+  const userId = authData.user!.id;
+  
+  // Create profile (critical)
+  try {
+    await createProfile(userId, userData);
+  } catch (error) {
+    // If profile fails, user still exists but can't login properly
+    return {
+      success: false,
+      userId,
+      errors: ['Perfil não criado. Contacte suporte.'],
+      canLogin: false
+    };
+  }
+  
+  // Assign role (critical)
+  try {
+    await assignUserRoleFromInvite(userId, roleFromInvite);
+  } catch (error) {
+    warnings.push('Papel de utilizador não atribuído automaticamente.');
+    // Continue - can be fixed by admin
+  }
+  
+  // Mark code as used (non-critical)
+  try {
+    await markCodeAsUsed(code, userId);
+  } catch (error) {
+    warnings.push('Código não marcado como usado.');
+    // Continue - doesn't prevent login
+  }
+  
+  // Type-specific operations (semi-critical)
+  try {
+    switch (userType) {
+      case 'hr':
+        await createHRUser(userId, userData as HRUserData, invite.company_id, invite.sessions_allocated);
+        break;
+      case 'prestador':
+        await createPrestadorUser(userId, userData as PrestadorUserData);
+        break;
+      // ... other cases
+    }
+  } catch (error) {
+    // Type-specific creation failed, but user can still login
+    warnings.push(`Dados de ${userType} não criados. Contacte suporte para completar o registo.`);
+  }
+  
+  return {
+    success: true,
+    userId,
+    warnings: warnings.length > 0 ? warnings : undefined,
+    errors: errors.length > 0 ? errors : undefined,
+    canLogin: true
+  };
+};
+```
+
+### Approach 2: Add Retry Logic
+Wrap failing operations in retry logic:
+
+```typescript
+const retryOperation = async <T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  delayMs: number = 500
+): Promise<T> => {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+      await new Promise(resolve => setTimeout(resolve, delayMs * attempt));
+    }
+  }
+  throw new Error('Max retries exceeded');
 };
 
-// AFTER (correct code + comment):
-const profileData: any = {
-  id: userId,
-  email: userData.email,
-  name: userData.name,  // ✅ Correct: profiles table uses 'name' column
-  ...
+// Usage:
+await retryOperation(async () => {
+  const { error } = await supabase.from('companies').insert(companyData);
+  if (error) throw error;
+});
+```
+
+### Approach 3: Better Error Messages
+Show specific, actionable error messages:
+
+```typescript
+// In Register.tsx
+} catch (error) {
+  console.error('Registration error:', error);
+  
+  // Check if user was created despite error
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (user) {
+    // User was created! Show partial success
+    toast({
+      title: "Conta Criada com Avisos",
+      description: "A sua conta foi criada mas alguns detalhes precisam ser completados. Pode fazer login e contactar o suporte.",
+      variant: "default", // Not destructive!
+    });
+    navigate('/login');
+  } else {
+    // Complete failure
+    toast({
+      title: "Erro no Registo",
+      description: error instanceof Error ? error.message : "Erro ao criar conta. Tente novamente.",
+      variant: "destructive",
+    });
+  }
+}
+```
+
+## Recommended Fix (QUICKEST)
+
+Modify `Register.tsx` to check if user was created:
+
+```typescript
+const handleSubmit = async () => {
+  setIsLoading(true);
+
+  try {
+    // ... build userData ...
+    
+    await createUserFromCode(accessCode, userData, userType!);
+
+    toast({
+      title: "Registo Concluído",
+      description: "A sua conta foi criada com sucesso! Pode fazer login agora.",
+    });
+
+    navigate('/login');
+    
+  } catch (error) {
+    console.error('Registration error:', error);
+    
+    // CRITICAL FIX: Check if account was actually created
+    const { data: { user } } = await supabase.auth.getUser();
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    
+    // Check if error is about duplicate account
+    if (errorMessage.includes('already') || errorMessage.includes('já existe') || user) {
+      toast({
+        title: "Conta Criada com Sucesso! ✅",
+        description: "A sua conta foi criada. Pode fazer login agora.",
+      });
+      navigate('/login');
+    } else {
+      toast({
+        title: "Erro no Registo",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
+  } finally {
+    setIsLoading(false);
+  }
 };
 ```
 
-### 2. Refreshed Schema Cache
+## Testing Checklist
 
-**Migration Applied:** `refresh_schema_cache`
+After applying fix:
 
-**SQL Executed:**
+- [ ] Register new user - should see success message
+- [ ] Register HR/company - should see success even if company creation has issues
+- [ ] Register prestador - should see success even if prestador record fails
+- [ ] Register especialista - should see success message
+- [ ] Try duplicate registration - should see "já existe" message, not generic error
+- [ ] Verify users can login after seeing "error"
+- [ ] Check all accounts have correct roles assigned
+
+## Alternative: Database Triggers
+
+Add database triggers to ensure consistency:
+
 ```sql
-NOTIFY pgrst, 'reload schema';
-COMMENT ON TABLE profiles IS 'User profiles - updated schema cache on 2025-11-02';
+-- Ensure profile is created when auth user is created
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  -- Insert profile (if not exists)
+  INSERT INTO public.profiles (id, email, name)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'name', NEW.email)
+  )
+  ON CONFLICT (id) DO NOTHING;
+  
+  -- Insert default role (if not exists)
+  INSERT INTO public.user_roles (user_id, role)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'role', 'user')
+  )
+  ON CONFLICT (user_id, role) DO NOTHING;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Attach trigger to auth.users
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
 ```
 
-**Result:** PostgREST now recognizes all columns correctly
+This ensures profile + role are ALWAYS created, reducing failure points.
 
----
+## Impact
 
-## 📋 Verification Steps
+**Before Fix:**
+- ❌ Users see error even when account created
+- ❌ Confusing "already exists" on retry
+- ❌ Support tickets for "can't register"
+- ❌ Users don't know they can login
 
-### 1. Check Database Schema:
-```sql
-SELECT column_name, data_type, is_nullable
-FROM information_schema.columns
-WHERE table_schema = 'public'
-AND table_name = 'profiles'
-ORDER BY ordinal_position;
-```
+**After Fix:**
+- ✅ Clear success message always shown
+- ✅ Users know they can login
+- ✅ Partial failures handled gracefully
+- ✅ Reduced support tickets
+- ✅ Better user experience
 
-**Expected Results:**
-- ✅ `name` column exists (TEXT, nullable)
-- ✅ `email` column exists
-- ✅ `role` column exists
-- ✅ `company_id` column exists
-
-### 2. Test Registration:
-
-**Try registering a Prestador:**
-1. Admin generates Prestador code
-2. Go to `/register?code=<PRESTADOR_CODE>`
-3. Fill in name, email, password
-4. Submit
-
-**Expected Result:**
-- ✅ User created successfully
-- ✅ Profile created with `name` field
-- ✅ No "schema cache" error
-- ✅ User promoted to 'prestador' role
-
----
-
-## 🔄 Related Files Checked
-
-### Files Using Correct `name` Column:
-✅ `src/utils/registrationHelpers.ts` - Now uses `name`
-✅ `src/pages/RegisterEmployee.tsx` - Uses `full_name` (need to check)
-✅ `src/components/admin/AddEmployeeModal.tsx` - Uses `full_name` (need to check)
-
-### Wait - Inconsistency Found!
-
-Some files reference `full_name` which doesn't exist in the actual database. Let me fix those:
-
----
-
-## 🔧 Additional Fixes Applied
-
-### Files Fixed (5 total):
-
-1. **src/utils/registrationHelpers.ts**
-   - Changed: `name: userData.name` ✅ (already correct, added comment)
-
-2. **src/pages/RegisterEmployee.tsx**
-   - Changed: `full_name: email.split('@')[0]` → `name: email.split('@')[0]` ✅
-
-3. **src/pages/RegisterCompany.tsx**
-   - Changed: `full_name: formData.contactName` → `name: formData.contactName` ✅
-
-4. **src/pages/AdminProviderNew.tsx**
-   - Changed: `full_name: formData.name` → `name: formData.name` ✅
-
-5. **src/components/admin/AddEmployeeModal.tsx**
-   - Changed: `full_name: data.fullName` → `name: data.fullName` ✅
-
-### SELECT Queries Fixed (4 files):
-
-1. **src/pages/CompanyDashboard.tsx**
-   - Changed: `profiles (full_name, ...)` → `profiles (name, ...)` ✅
-
-2. **src/pages/CompanySessions.tsx**
-   - Changed: `profiles!inner(full_name)` → `profiles!inner(name)` ✅
-
-3. **src/pages/PrestadorDashboard.tsx**
-   - Changed: `profile.full_name` → `profile.name` ✅
-
-4. **src/pages/SpecialistDashboard.tsx**
-   - Changed: `profiles!...(full_name)` → `profiles!...(name)` ✅
-
----
-
-## ✅ Solution Complete
-
-**Total Files Fixed:** 9 files
-**Schema Cache:** Refreshed via NOTIFY pgrst
-**Status:** ✅ All registration flows now use correct column name
-
+## Priority: CRITICAL
+This affects EVERY new user registration, creating a very poor first impression.

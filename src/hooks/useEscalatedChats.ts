@@ -25,11 +25,18 @@ export const useEscalatedChats = () => {
           return;
         }
 
-        // Fetch user profiles for these sessions
+        // Fetch user profiles for these sessions (with company context)
         const userIds = [...new Set(sessions.map(s => s.user_id).filter(Boolean))];
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
-          .select('id, name, email, phone')
+          .select(`
+            id, 
+            name, 
+            email, 
+            phone,
+            company_id,
+            companies!profiles_company_id_fkey(company_name, is_active)
+          `)
           .in('id', userIds);
 
         if (profilesError) throw profilesError;
@@ -58,6 +65,11 @@ export const useEscalatedChats = () => {
           const sessionMessages = messages?.filter(m => m.session_id === session.id) || [];
           const callLog = callLogs?.find(cl => cl.chat_session_id === session.id);
 
+          // CRITICAL FIX #5: Add company context to escalated chats
+          const companies = (profile as any)?.companies;
+          const companyName = companies?.company_name || 'N/A';
+          const companyId = profile?.company_id || null;
+          
           return {
             ...session,
             pillar: session.pillar as 'legal' | 'psychological' | 'physical' | 'financial' | null,
@@ -68,6 +80,8 @@ export const useEscalatedChats = () => {
             user_name: profile?.name || 'Utilizador Desconhecido',
             user_email: profile?.email || '',
             user_phone: profile?.phone || 'N/A',
+            company_id: companyId,
+            company_name: companyName,
             messages: sessionMessages.map(m => ({
               ...m,
               role: m.role as 'user' | 'assistant',
