@@ -131,3 +131,4 @@ GRANT SELECT, INSERT, UPDATE ON company_subscriptions TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON company_verification TO authenticated;
 
 
+

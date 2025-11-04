@@ -260,3 +260,4 @@ WHERE table_name = 'bookings' AND column_name = 'booking_date';
 
 
 
+

@@ -377,3 +377,4 @@ Then apply:
 supabase db push
 ```
 
+

@@ -455,3 +455,4 @@ WHERE tablename = 'specialist_availability_exceptions';
 *Total backend tables: 48 (17 original + 31 new)*
 
 
+

@@ -73,3 +73,4 @@ GRANT SELECT ON booking_status_history TO authenticated;
 GRANT INSERT ON booking_status_history TO authenticated;
 
 
+

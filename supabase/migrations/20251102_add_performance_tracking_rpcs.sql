@@ -87,3 +87,4 @@ COMMENT ON FUNCTION get_prestador_performance IS 'Get performance metrics for al
 
 
 
+

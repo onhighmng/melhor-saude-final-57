@@ -144,3 +144,4 @@ WHERE pillar_specialties @> ARRAY['assistencia_financeira']
 
 
 
+

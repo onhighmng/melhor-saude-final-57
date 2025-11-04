@@ -71,3 +71,4 @@ $$;
 -- Update comment
 COMMENT ON FUNCTION get_company_seat_stats IS 'Returns comprehensive seat and session statistics for a company. Seats from deleted employees only become available 30 days after deletion.';
 
+

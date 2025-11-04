@@ -168,3 +168,4 @@ GRANT SELECT ON audit_logs TO authenticated;
 GRANT ALL ON audit_logs TO authenticated;
 
 
+
