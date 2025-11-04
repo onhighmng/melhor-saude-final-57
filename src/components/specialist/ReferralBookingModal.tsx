@@ -1,19 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
-  Check, 
-  ChevronsUpDown, 
   ArrowRight, 
   ArrowLeft, 
   Brain, 
@@ -21,9 +17,7 @@ import {
   DollarSign, 
   Scale,
   Calendar as CalendarIcon,
-  Clock,
-  User as UserIcon,
-  Building2
+  Clock
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -73,20 +67,18 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const timeSlotsRef = useRef<HTMLDivElement>(null);
 
   // Step 1: Company & User
   const [companies, setCompanies] = useState<Company[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>('');
   const [selectedUser, setSelectedUser] = useState<string>('');
-  const [companyOpen, setCompanyOpen] = useState(false);
-  const [userOpen, setUserOpen] = useState(false);
 
   // Step 2: Pillar & Prestador
   const [selectedPillar, setSelectedPillar] = useState<string>('');
   const [prestadores, setPrestadores] = useState<Prestador[]>([]);
   const [selectedPrestador, setSelectedPrestador] = useState<string>('');
-  const [prestadorOpen, setPrestadorOpen] = useState(false);
 
   // Step 3: Date & Time
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -126,20 +118,60 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
     }
   }, [selectedDate, selectedPrestador]);
 
+  // Auto-scroll to time slots when they become available
+  useEffect(() => {
+    if (selectedDate && availableSlots.length > 0 && timeSlotsRef.current) {
+      setTimeout(() => {
+        timeSlotsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  }, [availableSlots, selectedDate]);
+
   const loadCompanies = async () => {
     try {
       setLoading(true);
-      // Get companies the specialist has access to
-      const { data, error } = await supabase
+      
+      // First, try to get companies the specialist has specific access to
+      const { data: assignedCompanies, error: assignmentError } = await supabase
         .from('specialist_assignments')
         .select('companies!specialist_assignments_company_id_fkey(id, company_name)')
         .eq('specialist_id', profile?.id)
         .eq('is_active', true);
 
-      if (error) throw error;
+      if (assignmentError) {
+        console.error('Error loading specialist assignments:', assignmentError);
+      }
 
-      const uniqueCompanies = data?.map((a: any) => a.companies).filter(Boolean) || [];
-      setCompanies(uniqueCompanies);
+      // Safely extract companies and filter out null/undefined values
+      const specificCompanies = (assignedCompanies || [])
+        .map((a: any) => a?.companies)
+        .filter((c: any) => c && c.id && c.company_name) || [];
+
+      // If specialist has no specific assignments (platform-wide access), load all companies
+      if (specificCompanies.length === 0) {
+        console.log('No specific company assignments found - loading all companies (platform-wide access)');
+        const { data: allCompanies, error: companiesError } = await supabase
+          .from('companies')
+          .select('id, company_name')
+          .not('company_name', 'is', null)
+          .order('company_name');
+
+        if (companiesError) throw companiesError;
+
+        // Filter out any invalid entries
+        const validCompanies = (allCompanies || []).filter(c => c && c.id && c.company_name);
+        setCompanies(validCompanies);
+        
+        if (validCompanies.length === 0) {
+          toast({
+            title: 'Aviso',
+            description: 'Nenhuma empresa encontrada na base de dados',
+            variant: 'destructive'
+          });
+        }
+      } else {
+        setCompanies(specificCompanies);
+      }
     } catch (error) {
       console.error('Error loading companies:', error);
       toast({
@@ -163,7 +195,17 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
         .order('name');
 
       if (error) throw error;
-      setUsers(data || []);
+      
+      // Filter out any invalid user entries
+      const validUsers = (data || []).filter(u => u && u.id && u.name);
+      setUsers(validUsers);
+      
+      if (validUsers.length === 0) {
+        toast({
+          title: 'Aviso',
+          description: 'Nenhum utilizador encontrado nesta empresa',
+        });
+      }
     } catch (error) {
       console.error('Error loading users:', error);
       toast({
@@ -179,14 +221,35 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
   const loadPrestadores = async (pillar: string) => {
     try {
       setLoading(true);
+      
+      console.log('[ReferralModal] Loading prestadores for pillar:', pillar);
+      
+      // Query using specialties field (which has UI format: psychological, physical, etc.)
       const { data, error } = await supabase
         .from('prestadores')
-        .select('id, name, specialties, user_id, blocked_dates')
+        .select('id, name, specialties, pillar_specialties, user_id, blocked_dates')
         .contains('specialties', [pillar])
         .eq('is_active', true);
 
-      if (error) throw error;
-      setPrestadores(data || []);
+      if (error) {
+        console.error('[ReferralModal] Error loading prestadores:', error);
+        throw error;
+      }
+      
+      console.log('[ReferralModal] Found prestadores:', data);
+      
+      // Filter out any invalid prestador entries
+      const validPrestadores = (data || []).filter(p => p && p.id && p.name);
+      setPrestadores(validPrestadores);
+      
+      console.log('[ReferralModal] Valid prestadores:', validPrestadores.length);
+      
+      if (validPrestadores.length === 0) {
+        toast({
+          title: 'Aviso',
+          description: 'Nenhum prestador disponível para este pilar',
+        });
+      }
     } catch (error) {
       console.error('Error loading prestadores:', error);
       toast({
@@ -200,11 +263,15 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
   };
 
   const loadAvailableSlots = async () => {
-    if (!selectedDate || !selectedPrestador) return;
+    if (!selectedDate || !selectedPrestador) {
+      console.log('[Slots] Missing date or prestador', { selectedDate, selectedPrestador });
+      return;
+    }
 
     try {
       setLoading(true);
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
+      console.log('[Slots] Loading for date:', dateStr, 'prestador:', selectedPrestador);
       
       // Get prestador's blocked dates
       const prestador = prestadores.find(p => p.id === selectedPrestador);
@@ -212,6 +279,8 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
       const blockedTimes = blockedDates
         .find((b: any) => b.date === dateStr)
         ?.times || [];
+      
+      console.log('[Slots] Blocked times:', blockedTimes);
 
       // Get existing bookings for this prestador on this date
       const { data: bookings, error } = await supabase
@@ -221,16 +290,26 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
         .eq('booking_date', dateStr)
         .in('status', ['scheduled', 'confirmed']);
 
-      if (error) throw error;
+      if (error) {
+        console.error('[Slots] Error fetching bookings:', error);
+        throw error;
+      }
 
       const booked = bookings?.map(b => b.start_time) || [];
       setBookedSlots(booked);
+      console.log('[Slots] Booked times:', booked);
 
       // Filter available slots
       const available = TIME_SLOTS.filter(
         slot => !blockedTimes.includes(slot) && !booked.includes(slot)
       );
+      
+      console.log('[Slots] Available slots:', available, 'out of', TIME_SLOTS.length);
       setAvailableSlots(available);
+      
+      if (available.length === 0) {
+        console.warn('[Slots] No available slots for this date!');
+      }
     } catch (error) {
       console.error('Error loading available slots:', error);
       toast({
@@ -238,6 +317,8 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
         description: 'Não foi possível carregar os horários disponíveis',
         variant: 'destructive'
       });
+      // Set all slots as available on error as fallback
+      setAvailableSlots(TIME_SLOTS);
     } finally {
       setLoading(false);
     }
@@ -269,6 +350,15 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
       const prestador = prestadores.find(p => p.id === selectedPrestador);
       const pillarLabel = PILLARS.find(p => p.value === selectedPillar)?.label || selectedPillar;
 
+      // Map pillar values to database format
+      const pillarMapping: Record<string, string> = {
+        'psychological': 'saude_mental',
+        'physical': 'bem_estar_fisico',
+        'financial': 'assistencia_financeira',
+        'legal': 'assistencia_juridica'
+      };
+      const dbPillar = pillarMapping[selectedPillar] || selectedPillar;
+
       // Create booking
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
@@ -278,11 +368,11 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
           company_id: selectedCompany,
           booking_date: format(selectedDate, 'yyyy-MM-dd'),
           start_time: selectedTime,
-          pillar: selectedPillar,
+          pillar: dbPillar,
           session_type: sessionType,
           status: 'scheduled',
-          referred_by: profile?.id,
-          referral_notes: referralNotes
+          booking_source: 'specialist_referral',
+          notes: `Encaminhamento por ${profile?.name || 'Especialista'}\n\n${referralNotes}`
         })
         .select()
         .single();
@@ -381,117 +471,64 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
           <div className="space-y-6 py-4">
             {/* Step 1: Company & User */}
             {currentStep === 1 && (
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Selecionar Empresa e Utilizador</h3>
-                  
-                  <div className="space-y-4">
-                    {/* Company Select */}
-                    <div className="space-y-2">
-                      <Label>Empresa</Label>
-                      <Popover open={companyOpen} onOpenChange={setCompanyOpen}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={companyOpen}
-                            className="w-full justify-between"
-                          >
-                            {selectedCompany
-                              ? companies.find((c) => c.id === selectedCompany)?.company_name
-                              : "Selecionar empresa..."}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0">
-                          <Command>
-                            <CommandInput placeholder="Procurar empresa..." />
-                            <CommandEmpty>Nenhuma empresa encontrada.</CommandEmpty>
-                            <CommandGroup>
-                              <ScrollArea className="h-[200px]">
-                                {companies.map((company) => (
-                                  <CommandItem
-                                    key={company.id}
-                                    value={company.company_name}
-                                    onSelect={() => {
-                                      setSelectedCompany(company.id);
-                                      setSelectedUser('');
-                                      setCompanyOpen(false);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        selectedCompany === company.id ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                    <Building2 className="mr-2 h-4 w-4" />
-                                    {company.company_name}
-                                  </CommandItem>
-                                ))}
-                              </ScrollArea>
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
-                    {/* User Select */}
-                    {selectedCompany && (
-                      <div className="space-y-2">
-                        <Label>Utilizador</Label>
-                        <Popover open={userOpen} onOpenChange={setUserOpen}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={userOpen}
-                              className="w-full justify-between"
-                            >
-                              {selectedUser
-                                ? users.find((u) => u.id === selectedUser)?.name
-                                : "Selecionar utilizador..."}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                            <Command>
-                              <CommandInput placeholder="Procurar utilizador..." />
-                              <CommandEmpty>Nenhum utilizador encontrado.</CommandEmpty>
-                              <CommandGroup>
-                                <ScrollArea className="h-[200px]">
-                                  {users.map((user) => (
-                                    <CommandItem
-                                      key={user.id}
-                                      value={user.name}
-                                      onSelect={() => {
-                                        setSelectedUser(user.id);
-                                        setUserOpen(false);
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          "mr-2 h-4 w-4",
-                                          selectedUser === user.id ? "opacity-100" : "opacity-0"
-                                        )}
-                                      />
-                                      <UserIcon className="mr-2 h-4 w-4" />
-                                      <div>
-                                        <div>{user.name}</div>
-                                        <div className="text-xs text-muted-foreground">{user.email}</div>
-                                      </div>
-                                    </CommandItem>
-                                  ))}
-                                </ScrollArea>
-                              </CommandGroup>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    )}
+              loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">A carregar empresas...</p>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Selecionar Empresa e Utilizador</h3>
+                    
+                    <div className="space-y-4">
+                      {/* Company Select */}
+                      <div className="space-y-2">
+                        <Label>Empresa</Label>
+                        <Select value={selectedCompany} onValueChange={(value) => {
+                          setSelectedCompany(value);
+                          setSelectedUser('');
+                        }}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Selecionar empresa..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {companies.map((company) => (
+                              <SelectItem key={company.id} value={company.id}>
+                                {company.company_name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* User Select */}
+                      {selectedCompany && (
+                        <div className="space-y-2">
+                          <Label>Utilizador</Label>
+                          <Select value={selectedUser} onValueChange={setSelectedUser}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Selecionar utilizador..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {users.map((user) => (
+                                <SelectItem key={user.id} value={user.id}>
+                                  <div>
+                                    <div>{user.name}</div>
+                                    <div className="text-xs text-muted-foreground">{user.email}</div>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
             )}
 
             {/* Step 2: Pillar & Prestador */}
@@ -540,58 +577,37 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
                     {selectedPillar && (
                       <div className="space-y-2">
                         <Label>Prestador</Label>
-                        <Popover open={prestadorOpen} onOpenChange={setPrestadorOpen}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={prestadorOpen}
-                              className="w-full justify-between"
-                            >
-                              {selectedPrestador
-                                ? prestadores.find((p) => p.id === selectedPrestador)?.name
-                                : "Selecionar prestador..."}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                            <Command>
-                              <CommandInput placeholder="Procurar prestador..." />
-                              <CommandEmpty>Nenhum prestador encontrado.</CommandEmpty>
-                              <CommandGroup>
-                                <ScrollArea className="h-[200px]">
-                                  {prestadores.map((prestador) => (
-                                    <CommandItem
-                                      key={prestador.id}
-                                      value={prestador.name}
-                                      onSelect={() => {
-                                        setSelectedPrestador(prestador.id);
-                                        setPrestadorOpen(false);
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          "mr-2 h-4 w-4",
-                                          selectedPrestador === prestador.id ? "opacity-100" : "opacity-0"
-                                        )}
-                                      />
-                                      <div>
-                                        <div>{prestador.name}</div>
-                                        <div className="flex gap-1 mt-1">
-                                          {prestador.specialties?.map((spec: string) => (
-                                            <Badge key={spec} variant="secondary" className="text-xs">
-                                              {PILLARS.find(p => p.value === spec)?.label || spec}
-                                            </Badge>
-                                          ))}
-                                        </div>
+                        {loading ? (
+                          <div className="flex items-center justify-center py-8">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                          </div>
+                        ) : prestadores.length > 0 ? (
+                          <Select value={selectedPrestador} onValueChange={setSelectedPrestador}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Selecionar prestador..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {prestadores.map((prestador) => (
+                                <SelectItem key={prestador.id} value={prestador.id}>
+                                  <div>
+                                    <div>{prestador.name}</div>
+                                    {prestador.specialties && prestador.specialties.length > 0 && (
+                                      <div className="text-xs text-muted-foreground">
+                                        {prestador.specialties.map((spec: string) => 
+                                          PILLARS.find(p => p.value === spec)?.label || spec
+                                        ).join(', ')}
                                       </div>
-                                    </CommandItem>
-                                  ))}
-                                </ScrollArea>
-                              </CommandGroup>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                                    )}
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <div className="p-4 text-center text-sm text-muted-foreground border rounded-md">
+                            Nenhum prestador disponível para este pilar
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -612,20 +628,35 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
                       <Calendar
                         mode="single"
                         selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        disabled={(date) => date < new Date()}
+                        onSelect={(date) => {
+                          setSelectedDate(date);
+                          setSelectedTime(''); // Reset time when date changes
+                        }}
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          return date < today;
+                        }}
                         className="rounded-md border"
                       />
                     </div>
 
                     {/* Time Selection */}
                     {selectedDate && (
-                      <div className="space-y-2">
+                      <div ref={timeSlotsRef} className="space-y-2">
                         <Label>Horário Disponível</Label>
-                        {availableSlots.length === 0 ? (
+                        {loading ? (
+                          <div className="flex items-center justify-center py-8">
+                            <div className="text-center">
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                              <p className="text-sm text-muted-foreground">A carregar horários...</p>
+                            </div>
+                          </div>
+                        ) : availableSlots.length === 0 ? (
                           <div className="text-center py-8 text-muted-foreground border rounded-lg">
                             <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
                             <p>Sem horários disponíveis nesta data</p>
+                            <p className="text-xs mt-2">Tente outra data</p>
                           </div>
                         ) : (
                           <div className="grid grid-cols-5 gap-2">
@@ -777,4 +808,5 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
     </Dialog>
   );
 }
+
 

@@ -121,14 +121,17 @@ export default function UserSessions() {
 
   // Separate past and future sessions
   const now = new Date();
+  now.setHours(0, 0, 0, 0); // Reset to start of day for date-only comparison
   
   const pastSessions = sessions.filter(session => {
     const sessionDate = new Date(session.date);
+    sessionDate.setHours(0, 0, 0, 0);
     return sessionDate < now || session.status === 'completed' || session.status === 'cancelled' || session.status === 'no_show';
   });
   
   const futureSessions = sessions.filter(session => {
     const sessionDate = new Date(session.date);
+    sessionDate.setHours(0, 0, 0, 0);
     return sessionDate >= now && (session.status === 'scheduled' || session.status === 'confirmed');
   });
 

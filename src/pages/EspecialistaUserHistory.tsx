@@ -12,6 +12,35 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 
+// Utility functions for pillar labels and colors
+const getPillarLabel = (pillar: string): string => {
+  const labels: Record<string, string> = {
+    'saude_mental': 'Saúde Mental',
+    'psychological': 'Saúde Mental',
+    'bem_estar_fisico': 'Bem-estar Físico',
+    'physical': 'Bem-estar Físico',
+    'assistencia_financeira': 'Assistência Financeira',
+    'financial': 'Assistência Financeira',
+    'assistencia_juridica': 'Assistência Jurídica',
+    'legal': 'Assistência Jurídica'
+  };
+  return labels[pillar] || pillar;
+};
+
+const getPillarColor = (pillar: string): { bg: string; text: string } => {
+  const colors: Record<string, { bg: string; text: string }> = {
+    'saude_mental': { bg: '#3b82f6', text: '#ffffff' }, // Blue
+    'psychological': { bg: '#3b82f6', text: '#ffffff' },
+    'bem_estar_fisico': { bg: '#eab308', text: '#ffffff' }, // Yellow
+    'physical': { bg: '#eab308', text: '#ffffff' },
+    'assistencia_financeira': { bg: '#22c55e', text: '#ffffff' }, // Green
+    'financial': { bg: '#22c55e', text: '#ffffff' },
+    'assistencia_juridica': { bg: '#a855f7', text: '#ffffff' }, // Purple
+    'legal': { bg: '#a855f7', text: '#ffffff' }
+  };
+  return colors[pillar] || { bg: '#6b7280', text: '#ffffff' };
+};
+
 const EspecialistaUserHistory = () => {
   const { profile } = useAuth();
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -64,7 +93,8 @@ const EspecialistaUserHistory = () => {
             created_at,
             call_notes,
             outcome,
-            chat_session_id
+            chat_session_id,
+            call_status
           `)
           .eq('specialist_id', profile.id)
           .not('user_id', 'is', null);
@@ -96,7 +126,7 @@ const EspecialistaUserHistory = () => {
         }
 
         // Fetch user profiles for all unique users
-        const { data: userProfiles } = await supabase
+        const { data: userProfiles, error: profileError } = await supabase
           .from('profiles')
           .select(`
             id,
@@ -106,6 +136,12 @@ const EspecialistaUserHistory = () => {
             companies!profiles_company_id_fkey(company_name)
           `)
           .in('id', Array.from(userIds));
+
+        if (profileError) {
+          console.error('Error fetching user profiles:', profileError);
+        }
+        
+        console.log('User profiles with companies:', userProfiles);
 
         // Get chat messages for escalated sessions
         const chatSessionIds = chatSessions?.map(s => s.id).filter(Boolean) || [];
@@ -178,19 +214,33 @@ const EspecialistaUserHistory = () => {
             rating: booking.rating
           }));
 
-          // Build calls list
-          const callsList = userCallLogs.map(call => ({
-            id: call.chat_session_id || `call-${call.created_at}`,
-            date: call.created_at,
-            outcome: call.outcome,
-            notes: call.call_notes
-          }));
+          // Build calls list - only include completed calls
+          const callsList = userCallLogs
+            .filter(call => call.call_status === 'completed')
+            .map(call => ({
+              id: call.chat_session_id || `call-${call.created_at}`,
+              date: call.created_at,
+              outcome: call.outcome,
+              notes: call.call_notes
+            }));
+
+          // Extract company name - handle both nested object and direct access
+          const companyName = (userProfile as any).companies?.company_name || 
+                              userProfile.company_id || 
+                              'Empresa não disponível';
+          
+          console.log('User profile company data:', {
+            userId: userProfile.id,
+            companyId: userProfile.company_id,
+            companies: (userProfile as any).companies,
+            companyName
+          });
 
           return {
             user_id: userProfile.id,
             user_name: userProfile.name || 'Utilizador Desconhecido',
             user_email: userProfile.email || 'Email não disponível',
-            company_name: userProfile.companies?.company_name || 'Empresa não disponível',
+            company_name: companyName,
             pillar_attended: primaryPillar,
             last_session_date: lastInteractionDate,
             average_rating: avgRating,
@@ -199,7 +249,7 @@ const EspecialistaUserHistory = () => {
             sessions_list: sessionsList,
             calls_list: callsList,
             total_sessions: userBookings.length,
-            total_calls: userCallLogs.length,
+            total_calls: callsList.length, // Use filtered calls list length
             total_chats: userChatSessions.length
           };
         }).sort((a, b) => new Date(b.last_session_date).getTime() - new Date(a.last_session_date).getTime());
@@ -339,7 +389,7 @@ const EspecialistaUserHistory = () => {
                       onClick={() => handleViewChat(user)}
                     >
                       <MessageSquare className="h-4 w-4 mr-1" />
-                      Ver chat anterior
+                      Ver Histórico
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -411,7 +461,13 @@ const EspecialistaUserHistory = () => {
                     {selectedUser.sessions_list && selectedUser.sessions_list.length > 0 ? (
                       <div className="space-y-3">
                         {selectedUser.sessions_list.map((session: any, index: number) => (
-                          <Card key={index} className="p-4">
+                          <Card 
+                            key={index} 
+                            className="p-4 relative overflow-hidden"
+                            style={{
+                              borderLeft: `4px solid ${getPillarColor(session.pillar).bg}`
+                            }}
+                          >
                             <div className="flex items-start justify-between">
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">

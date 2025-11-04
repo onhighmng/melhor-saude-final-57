@@ -315,7 +315,8 @@ const UserDashboard = () => {
     }
   }, [justCompletedOnboarding]);
 
-  // Calculate sessions based on mock data structure
+  // Calculate session metrics
+  const completedSessionsCount = completedSessions.length;
   const remainingSessions = sessionBalance?.totalRemaining || 0;
   const totalSessions = 28; // Mock total from design
   const usedSessions = totalSessions - remainingSessions;
@@ -375,8 +376,8 @@ const UserDashboard = () => {
                 </div>
                 
                 <div className="space-y-1">
-                  <div className="font-mono text-6xl font-semibold text-white">{remainingSessions}</div>
-                  <div className="text-lg font-serif text-white">Sessões</div>
+                  <div className="font-mono text-6xl font-semibold text-white">{completedSessionsCount}</div>
+                  <div className="text-lg font-serif text-white">Sessões Completas</div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
@@ -392,7 +393,7 @@ const UserDashboard = () => {
               {/* Top Left - Session History */}
               <BentoCard 
                 name="Histórico de Sessões" 
-                description={`${completedSessions.length} sessões concluídas`}
+                description={`${completedSessionsCount} sessões concluídas`}
                 Icon={Calendar} 
                 onClick={() => navigate('/user/sessions')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 

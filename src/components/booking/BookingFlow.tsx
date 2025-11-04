@@ -374,7 +374,7 @@ const BookingFlow = () => {
         booking_date: String(selectedDate.toISOString().split('T')[0]),
         start_time: String(selectedTime),
         end_time: String(endTime),
-        status: 'pending',
+        status: 'scheduled',
         session_type: meetingType === 'virtual' ? 'virtual' : meetingType === 'phone' ? 'phone' : 'presencial',
         meeting_type: meetingType,
         quota_type: 'employer',

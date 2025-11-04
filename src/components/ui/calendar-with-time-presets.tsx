@@ -71,7 +71,17 @@ export function CalendarWithTimePresets({
             selected={selectedDate}
             onSelect={onDateSelect}
             defaultMonth={selectedDate}
-            disabled={bookedDates}
+            disabled={(date) => {
+              // Disable past dates
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              if (date < today) return true;
+              
+              // Disable booked dates
+              return bookedDates.some(bookedDate => 
+                bookedDate.toDateString() === date.toDateString()
+              );
+            }}
             showOutsideDays={false}
             modifiers={{
               booked: bookedDates,

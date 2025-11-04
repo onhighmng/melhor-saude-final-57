@@ -24,8 +24,8 @@ export const useMilestoneChecker = () => {
         if (!milestones) return;
 
         // Helper to complete a milestone
-        const completeMilestone = async (milestoneId: string) => {
-          const milestone = milestones.find(m => m.milestone_id === milestoneId);
+        const completeMilestone = async (milestoneType: string) => {
+          const milestone = milestones.find(m => m.milestone_type === milestoneType);
           if (!milestone || milestone.completed) return;
 
           await supabase
@@ -35,43 +35,42 @@ export const useMilestoneChecker = () => {
               completed_at: new Date().toISOString()
             })
             .eq('user_id', user.id)
-            .eq('milestone_id', milestoneId);
+            .eq('milestone_type', milestoneType);
 
           // Track in user_progress
           await supabase.from('user_progress').insert({
             user_id: user.id,
             action_type: 'milestone_achieved',
             action_date: new Date().toISOString(),
-            metadata: { milestone_id: milestoneId }
+            metadata: { milestone_type: milestoneType }
           });
 
           // Trigger event for UI update
           window.dispatchEvent(new CustomEvent('milestoneCompleted'));
         };
 
-        // Check 'specialist' milestone - has spoken to specialist via phone
-        const specialistMilestone = milestones.find(m => m.milestone_id === 'specialist');
-        if (specialistMilestone && !specialistMilestone.completed) {
-          const { data: chats } = await supabase
-            .from('chat_sessions')
-            .select('phone_contact_made')
+        // Check 'booking_confirmed' milestone - first booking scheduled
+        const bookingMilestone = milestones.find(m => m.milestone_type === 'booking_confirmed');
+        if (bookingMilestone && !bookingMilestone.completed) {
+          const { data: bookings } = await supabase
+            .from('bookings')
+            .select('id')
             .eq('user_id', user.id)
-            .eq('phone_contact_made', true)
             .limit(1);
 
-          if (chats && chats.length > 0) {
-            await completeMilestone('specialist');
+          if (bookings && bookings.length > 0) {
+            await completeMilestone('booking_confirmed');
           }
         }
 
         // Check 'first_session' milestone - completed first session
-        const firstSessionMilestone = milestones.find(m => m.milestone_id === 'first_session');
+        const firstSessionMilestone = milestones.find(m => m.milestone_type === 'first_session');
         if (firstSessionMilestone && !firstSessionMilestone.completed) {
           const { data: sessions } = await supabase
-            .from('user_progress')
-            .select('*')
+            .from('bookings')
+            .select('id')
             .eq('user_id', user.id)
-            .eq('action_type', 'session_completed')
+            .eq('status', 'completed')
             .limit(1);
 
           if (sessions && sessions.length > 0) {
@@ -79,31 +78,31 @@ export const useMilestoneChecker = () => {
           }
         }
 
-        // Check 'resources' milestone - viewed first resource
-        const resourcesMilestone = milestones.find(m => m.milestone_id === 'resources');
-        if (resourcesMilestone && !resourcesMilestone.completed) {
-          const { data: resources } = await supabase
-            .from('user_progress')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('action_type', 'resource_viewed')
-            .limit(1);
+        // Check 'complete_profile' milestone - profile has name, phone, and avatar
+        const profileMilestone = milestones.find(m => m.milestone_type === 'complete_profile');
+        if (profileMilestone && !profileMilestone.completed) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('name, phone, avatar_url')
+            .eq('id', user.id)
+            .single();
 
-          if (resources && resources.length > 0) {
-            await completeMilestone('resources');
+          if (profile && profile.name && profile.phone && profile.avatar_url) {
+            await completeMilestone('complete_profile');
           }
         }
 
-        // Check 'ratings' milestone - gave 3 ratings
-        const ratingsMilestone = milestones.find(m => m.milestone_id === 'ratings');
-        if (ratingsMilestone && !ratingsMilestone.completed) {
+        // Check 'fifth_session' milestone - completed 5 sessions
+        const fifthSessionMilestone = milestones.find(m => m.milestone_type === 'fifth_session');
+        if (fifthSessionMilestone && !fifthSessionMilestone.completed) {
           const { count } = await supabase
-            .from('feedback')
+            .from('bookings')
             .select('*', { count: 'exact', head: true })
-            .eq('user_id', user.id);
+            .eq('user_id', user.id)
+            .eq('status', 'completed');
 
-          if (count && count >= 3) {
-            await completeMilestone('ratings');
+          if (count && count >= 5) {
+            await completeMilestone('fifth_session');
           }
         }
       } catch (error) {
@@ -114,49 +113,35 @@ export const useMilestoneChecker = () => {
     // Check on mount
     checkMilestones();
 
-    // Subscribe to user_progress changes
-    const progressChannel = supabase
-      .channel('milestone-checker-progress')
+    // Subscribe to bookings changes (for booking_confirmed, first_session, and fifth_session milestones)
+    const bookingsChannel = supabase
+      .channel('milestone-checker-bookings')
       .on('postgres_changes', {
-        event: 'INSERT',
+        event: '*',
         schema: 'public',
-        table: 'user_progress',
+        table: 'bookings',
         filter: `user_id=eq.${user.id}`
       }, () => {
         checkMilestones();
       })
       .subscribe();
 
-    // Subscribe to feedback changes
-    const feedbackChannel = supabase
-      .channel('milestone-checker-feedback')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'feedback',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        checkMilestones();
-      })
-      .subscribe();
-
-    // Subscribe to chat_sessions changes
-    const chatChannel = supabase
-      .channel('milestone-checker-chat')
+    // Subscribe to profiles changes (for complete_profile milestone)
+    const profilesChannel = supabase
+      .channel('milestone-checker-profiles')
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',
-        table: 'chat_sessions',
-        filter: `user_id=eq.${user.id}`
+        table: 'profiles',
+        filter: `id=eq.${user.id}`
       }, () => {
         checkMilestones();
       })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(progressChannel);
-      supabase.removeChannel(feedbackChannel);
-      supabase.removeChannel(chatChannel);
+      supabase.removeChannel(bookingsChannel);
+      supabase.removeChannel(profilesChannel);
     };
   }, [user?.id]);
 };

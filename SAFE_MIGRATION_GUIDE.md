@@ -221,3 +221,4 @@ The updated `FIX_COMPANIES_SCHEMA_MISMATCH.sql` is now safe and will handle all 
 
 
 
+

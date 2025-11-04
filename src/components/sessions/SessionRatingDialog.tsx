@@ -68,19 +68,8 @@ export function SessionRatingDialog({
 
       if (error) throw error;
 
-      // Also insert feedback record for tracking
-      const { error: feedbackError } = await supabase
-        .from('feedback')
-        .insert({
-          user_id: booking.user_id,
-          booking_id: sessionId,
-          rating: convertedRating,
-          message: comments || 'Sem comentários adicionais',
-          status: 'new',
-          category: 'session_rating'
-        });
-
-      if (feedbackError) throw feedbackError;
+      // NOTE: The rating is stored in the bookings table.
+      // The feedback table is only for chat session feedback, not booking ratings.
 
       toast({
         title: userToastMessages.success.feedbackSubmitted,

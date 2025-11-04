@@ -12,6 +12,7 @@ interface Event {
   datetime: string;
   userName?: string;
   pillar?: string;
+  status?: string;
 }
 interface CalendarData {
   day: Date;
@@ -26,12 +27,21 @@ interface FullScreenCalendarProps {
   customButton?: React.ReactNode;
 }
 const colStartClasses = ["", "col-start-2", "col-start-3", "col-start-4", "col-start-5", "col-start-6", "col-start-7"];
-const getPillarColor = (pillar: string) => {
+const getPillarColor = (pillar: string, status?: string) => {
+  // If session is cancelled, completed, or rescheduled, show grey
+  if (status && ['cancelled', 'completed', 'rescheduled'].includes(status)) {
+    return 'bg-gray-400';
+  }
+  
   const colors = {
     psychological: 'bg-blue-500',
-    physical: 'bg-green-500',
-    financial: 'bg-purple-500',
-    legal: 'bg-orange-500'
+    saude_mental: 'bg-blue-500',
+    physical: 'bg-yellow-500',
+    bem_estar_fisico: 'bg-yellow-500',
+    financial: 'bg-green-500',
+    assistencia_financeira: 'bg-green-500',
+    legal: 'bg-purple-500',
+    assistencia_juridica: 'bg-purple-500'
   };
   return colors[pillar as keyof typeof colors] || 'bg-gray-500';
 };
@@ -165,7 +175,7 @@ export function FullScreenCalendar({
                           {dayData.events.map(event => <div key={event.id} onClick={e => {
                   e.stopPropagation();
                   onEventClick?.(event);
-                }} className={cn("h-8 w-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold cursor-pointer hover:opacity-80 transition-opacity", getPillarColor(event.pillar || ''))} title={event.name}>
+                }} className={cn("h-8 w-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold cursor-pointer hover:opacity-80 transition-opacity", getPillarColor(event.pillar || '', event.status))} title={event.name}>
                               {getUserInitials(event.userName || event.name)}
                             </div>)}
                         </div>)}
@@ -180,7 +190,7 @@ export function FullScreenCalendar({
                 </time>
                 {data.filter(date => isSameDay(date.day, day)).length > 0 && <div className="flex flex-wrap gap-0.5 mt-auto">
                     {data.filter(date => isSameDay(date.day, day)).map(dayData => <div key={dayData.day.toString()} className="flex flex-wrap gap-0.5">
-                          {dayData.events.slice(0, 3).map(event => <div key={event.id} className={cn("h-2 w-2 rounded-full", getPillarColor(event.pillar || ''))} title={event.name} />)}
+                          {dayData.events.slice(0, 3).map(event => <div key={event.id} className={cn("h-2 w-2 rounded-full", getPillarColor(event.pillar || '', event.status))} title={event.name} />)}
                         </div>)}
                   </div>}
               </button>)}

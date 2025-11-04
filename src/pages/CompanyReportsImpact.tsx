@@ -1,28 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
   Calendar, 
   Star, 
   TrendingUp, 
   FileText,
-  Download,
   Brain,
   Heart,
   DollarSign,
   Scale,
-  Activity,
-  CheckCircle,
-  Clock,
-  ArrowRight,
   BarChart3
 } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useToast } from "@/hooks/use-toast";
-import { motion } from 'framer-motion';
-import ResourceUsageCard from '@/components/ui/horizontal-bar-chart';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -30,13 +21,12 @@ import { CompanySubscriptionBanner } from '@/components/company/CompanySubscript
 
 const CompanyReportsImpact = () => {
   const [isExporting, setIsExporting] = useState(false);
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const { toast } = useToast();
   const { profile } = useAuth();
   const [metrics, setMetrics] = useState<any>(null);
   const [pillarDistribution, setPillarDistribution] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState({ 
+  const [dateRange] = useState({ 
     start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     end: new Date().toISOString().split('T')[0]
   });
@@ -137,14 +127,6 @@ const CompanyReportsImpact = () => {
     return () => {
       document.body.classList.remove('company-page');
     };
-  }, []);
-
-  // Cycle through cards every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentCardIndex((prev) => (prev + 1) % 4);
-    }, 4000);
-    return () => clearInterval(interval);
   }, []);
 
   const handleExportReport = async () => {
@@ -298,140 +280,112 @@ const CompanyReportsImpact = () => {
         </Button>
       </div>
 
-      {/* Main Content - Metrics Stack on Left, Charts on Right */}
+      {/* Main Metrics Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {metricCards.map((card) => (
+          <Card key={card.title} className={`${card.bgColor} border-0 shadow-sm`}>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-muted-foreground">{card.title}</h3>
+                <div className="p-2 bg-white/50 dark:bg-black/20 rounded-lg">
+                  {card.icon}
+                </div>
+              </div>
+              <p className={`text-4xl font-bold ${card.textColor}`}>{card.value}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Half - Stacked Animated Cards */}
-        <div className="relative h-96 flex items-center justify-center">
-          {metricCards.map((card, index) => {
-            const isActive = index === currentCardIndex;
-            const stackIndex = (index - currentCardIndex + 4) % 4;
-            
-            return (
-              <motion.div
-                key={card.title}
-                className={`absolute ${card.bgColor} rounded-2xl p-8 shadow-lg border border-border w-full max-w-sm`}
-                style={{
-                  top: `${stackIndex * 20}px`,
-                  scale: 1 - stackIndex * 0.08,
-                  zIndex: 4 - stackIndex,
-                }}
-                animate={{
-                  opacity: isActive ? 1 : 0.7,
-                  y: isActive ? 0 : stackIndex * 10,
-                }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-muted-foreground">{card.title}</h3>
-                  <div className={`${card.bgColor.replace('bg-gradient-to-br', 'bg')} p-2 rounded-lg`}>
-                    {card.icon}
-                  </div>
-                </div>
-                <p className={`text-5xl font-bold ${card.textColor}`}>{card.value}</p>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Right Half - All Charts */}
-        <div className="space-y-8">
-          {/* Resource Usage Chart */}
-          <ResourceUsageCard />
-
-          {/* Bottom two cards side by side */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Distribution by Pillar */}
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-3xl">
-                  Distribuição por Pilar
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pillarDistribution}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="sessions"
-                        label={({ pillar, percentage }) => `${pillar}: ${percentage}%`}
-                        isAnimationActive={false}
-                        style={{ fontSize: '16px', fontWeight: '600' }}
-                      >
-                        {pillarDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  {pillarDistribution.map((pillar, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div 
-                        className="w-4 h-4 rounded-full" 
-                        style={{ backgroundColor: pillar.color }}
-                      ></div>
-                      <div className="flex flex-col">
-                        <span className="text-lg font-medium">{pillar.pillar}</span>
-                        <span className="text-5xl font-extrabold text-foreground font-sans">{pillar.sessions}</span>
-                        <span className="text-base text-muted-foreground">sessões</span>
+        {/* Distribution by Pillar */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl">
+              Distribuição por Pilar
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {pillarDistribution.map((pillar, index) => {
+                const maxSessions = Math.max(...pillarDistribution.map(p => p.sessions));
+                const percentage = maxSessions > 0 ? (pillar.sessions / maxSessions) * 100 : 0;
+                
+                return (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-4 h-4 rounded-full" 
+                          style={{ backgroundColor: pillar.color }}
+                        />
+                        <span className="font-medium">{pillar.pillar}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold">{pillar.sessions}</span>
+                        <span className="text-sm text-muted-foreground ml-1">sessões</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${percentage}%`,
+                          backgroundColor: pillar.color
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
 
-            {/* Top Pillar & Satisfaction */}
-            <Card className="border-0 shadow-sm" style={{ height: '400px' }}>
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <BarChart3 className="h-5 w-5" />
-                  Destaques do Período
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-muted-foreground">Pilar Mais Utilizado</h4>
-                  <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                      {metrics?.top_pillar?.name || 'N/A'}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {metrics?.top_pillar?.sessions || 0} sessões realizadas
-                    </p>
-                  </div>
+        {/* Top Pillar & Satisfaction */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <BarChart3 className="h-5 w-5" />
+              Destaques do Período
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-muted-foreground">Pilar Mais Utilizado</h4>
+              <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                  {metrics?.top_pillar?.name || 'N/A'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {metrics?.top_pillar?.sessions || 0} sessões realizadas
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-muted-foreground">Satisfação dos Colaboradores</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">Avaliação Média</p>
+                  <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
+                    {metrics?.satisfaction?.avg_rating || 0}/10
+                  </p>
                 </div>
-                
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-muted-foreground">Satisfação dos Colaboradores</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">Avaliação Média</p>
-                      <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
-                        {metrics?.satisfaction?.avg_rating || 0}/10
-                      </p>
-                    </div>
-                    <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">Alta Satisfação</p>
-                      <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-                        {metrics?.satisfaction?.satisfaction_rate || 0}%
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        ({metrics?.satisfaction?.high_satisfaction_count || 0} de {metrics?.satisfaction?.rated_sessions || 0})
-                      </p>
-                    </div>
-                  </div>
+                <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">Alta Satisfação</p>
+                  <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                    {metrics?.satisfaction?.satisfaction_rate || 0}%
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    ({metrics?.satisfaction?.high_satisfaction_count || 0} de {metrics?.satisfaction?.rated_sessions || 0})
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

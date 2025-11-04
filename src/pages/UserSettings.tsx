@@ -68,11 +68,22 @@ const UserSettings = () => {
   }, [user?.id, profile?.company_id]);
 
   const [profileData, setProfileData] = useState({
-    name: (profile as any)?.name || "",
+    name: profile?.full_name || "",
     phone: profile?.phone || "",
     language: "pt",
     timezone: "Europe/Lisbon"
   });
+
+  // Sync profileData when profile context changes
+  useEffect(() => {
+    if (profile) {
+      setProfileData(prev => ({
+        ...prev,
+        name: profile.full_name || "",
+        phone: profile.phone || ""
+      }));
+    }
+  }, [profile?.full_name, profile?.phone]);
 
   const [notificationPreferences, setNotificationPreferences] = useState({
     emailConfirmation: true,
@@ -447,7 +458,7 @@ const UserSettings = () => {
         <BentoGrid className="lg:grid-rows-2">
           <BentoCard
             name="Perfil"
-            description={(profile as any)?.name || "Utilizador"}
+            description={profile?.full_name || "Utilizador"}
             Icon={Users}
             href="#"
             cta="Editar"

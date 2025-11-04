@@ -40,6 +40,7 @@ export function BookingCalendar({
   className,
 }: BookingCalendarProps) {
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset to start of day for accurate date comparison
   
   // Default time slots if none provided
   const defaultTimeSlots = [

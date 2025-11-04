@@ -150,3 +150,4 @@ GRANT INSERT, UPDATE ON specialist_working_hours TO authenticated;
 
 
 
+

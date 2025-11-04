@@ -23,12 +23,21 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
     setIsSubmitting(true);
 
     try {
+      // Get current session status first
+      const { data: currentSession } = await supabase
+        .from('chat_sessions')
+        .select('status')
+        .eq('id', sessionId)
+        .single();
+
       // Update session with satisfaction rating
+      // IMPORTANT: Don't override phone_escalated status - keep it so specialists can see it
       await supabase
         .from('chat_sessions')
         .update({
           satisfaction_rating: selectedRating,
-          status: 'resolved',
+          // Only set to resolved if it wasn't escalated
+          status: currentSession?.status === 'phone_escalated' ? 'phone_escalated' : 'resolved',
           ended_at: new Date().toISOString()
         })
         .eq('id', sessionId);

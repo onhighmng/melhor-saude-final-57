@@ -166,22 +166,30 @@ const EspecialistaCallRequestsRevamped = () => {
 
   const getPillarLabel = (pillar: string | null) => {
     const labels = {
-      psychological: 'Saúde Mental',
-      physical: 'Bem-Estar Físico',
-      financial: 'Assistência Financeira',
-      legal: 'Assistência Jurídica'
+      'saude_mental': 'Saúde Mental',
+      'psychological': 'Saúde Mental',
+      'bem_estar_fisico': 'Bem-estar Físico',
+      'physical': 'Bem-estar Físico',
+      'assistencia_financeira': 'Assistência Financeira',
+      'financial': 'Assistência Financeira',
+      'assistencia_juridica': 'Assistência Jurídica',
+      'legal': 'Assistência Jurídica'
     };
     return labels[pillar as keyof typeof labels] || 'Não definido';
   };
 
   const getPillarColor = (pillar: string | null) => {
     const colors = {
-      psychological: { bg: 'hsl(210 80% 95%)', text: 'hsl(210 80% 40%)' },
-      physical: { bg: 'hsl(45 90% 90%)', text: 'hsl(45 90% 35%)' },
-      financial: { bg: 'hsl(140 60% 95%)', text: 'hsl(140 60% 35%)' },
-      legal: { bg: 'hsl(270 60% 95%)', text: 'hsl(270 60% 40%)' }
+      'saude_mental': { bg: '#3b82f6', text: '#ffffff' }, // Blue
+      'psychological': { bg: '#3b82f6', text: '#ffffff' },
+      'bem_estar_fisico': { bg: '#eab308', text: '#ffffff' }, // Yellow
+      'physical': { bg: '#eab308', text: '#ffffff' },
+      'assistencia_financeira': { bg: '#22c55e', text: '#ffffff' }, // Green
+      'financial': { bg: '#22c55e', text: '#ffffff' },
+      'assistencia_juridica': { bg: '#a855f7', text: '#ffffff' }, // Purple
+      'legal': { bg: '#a855f7', text: '#ffffff' }
     };
-    return colors[pillar as keyof typeof colors] || { bg: 'hsl(0 0% 95%)', text: 'hsl(0 0% 40%)' };
+    return colors[pillar as keyof typeof colors] || { bg: '#6b7280', text: '#ffffff' };
   };
 
   const getStatusBadge = (status: string) => {
@@ -211,9 +219,9 @@ const EspecialistaCallRequestsRevamped = () => {
   const getWaitTimeColor = (createdAt: string) => {
     const elapsed = Date.now() - new Date(createdAt).getTime();
     const hours = elapsed / (1000 * 60 * 60);
-    if (hours >= 24) return 'text-red-600 font-bold';
-    if (hours >= 3) return 'text-orange-600 font-semibold';
-    return 'text-muted-foreground';
+    if (hours >= 15) return 'text-red-600 font-bold';
+    if (hours >= 5) return 'text-orange-600 font-semibold';
+    return 'text-green-600 font-medium';
   };
 
   return (

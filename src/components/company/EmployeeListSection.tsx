@@ -39,8 +39,7 @@ interface EmployeeData {
     email: string;
     avatar_url: string | null;
     is_active: boolean;
-    role: string;
-  };
+  } | null;
 }
 
 interface EmployeeListSectionProps {
@@ -73,12 +72,11 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
               name,
               email,
               avatar_url,
-              is_active,
-              role
+              is_active
             )
           `)
           .eq('company_id', companyId)
-          .is('deleted_at', null)
+          .eq('is_active', true)
           .order('joined_at', { ascending: false });
 
         if (error) {
@@ -121,16 +119,6 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
   }, [companyId, toast]);
 
   const handleDeleteClick = (employee: EmployeeData) => {
-    // Prevent deletion of HR accounts
-    if (employee.profiles?.role === 'hr') {
-      toast({
-        title: 'Não é possível eliminar',
-        description: 'Contas de Recursos Humanos não podem ser eliminadas.',
-        variant: 'destructive'
-      });
-      return;
-    }
-    
     setEmployeeToDelete(employee);
     setDeleteDialogOpen(true);
   };
@@ -140,11 +128,10 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
 
     setDeleting(true);
     try {
-      // Soft delete: mark the employee as deleted with timestamp
+      // Deactivate the employee
       const { error } = await supabase
         .from('company_employees')
         .update({ 
-          deleted_at: new Date().toISOString(),
           is_active: false
         })
         .eq('id', employeeToDelete.id);
@@ -153,7 +140,7 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
 
       toast({
         title: 'Colaborador removido',
-        description: 'O colaborador foi removido com sucesso. O lugar ficará disponível dentro de 30 dias.',
+        description: 'O colaborador foi desativado com sucesso.',
       });
 
       // Reload employees list
@@ -365,18 +352,16 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
                     </div>
                   </div>
 
-                  {/* Delete Button - Only show for non-HR users */}
-                  {employee.profiles?.role !== 'hr' && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteClick(employee)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 ml-2"
-                      title="Remover colaborador"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
+                  {/* Delete Button */}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDeleteClick(employee)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 ml-2"
+                    title="Remover colaborador"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               );
             })}
@@ -396,7 +381,7 @@ export function EmployeeListSection({ companyId }: EmployeeListSectionProps) {
               <ul className="list-disc list-inside mt-2 space-y-1">
                 <li>Desativar o acesso do colaborador à plataforma</li>
                 <li>Manter o histórico de sessões para relatórios</li>
-                <li>O lugar ficará disponível dentro de 30 dias</li>
+                <li>O lugar ficará disponível imediatamente</li>
               </ul>
             </AlertDialogDescription>
           </AlertDialogHeader>

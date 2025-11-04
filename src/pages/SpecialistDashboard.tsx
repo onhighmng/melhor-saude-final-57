@@ -39,6 +39,7 @@ export default function SpecialistDashboard() {
   const [filteredSessions, setFilteredSessions] = useState<any[]>([]);
   const [todaySessions, setTodaySessions] = useState<any[]>([]);
   const [assignedCompanies, setAssignedCompanies] = useState<any[]>([]);
+  const [monthlyCases, setMonthlyCases] = useState(0);
   
   // Especialista Geral sees ALL escalated chats (no company filtering)
   const filteredCallRequests = escalatedChats.filter((chat: any) => chat.status === 'phone_escalated');
@@ -131,7 +132,59 @@ export default function SpecialistDashboard() {
     loadCompanies();
   }, [profile?.id]);
   
-  const monthlyCases = metrics?.totalChats || 0;
+  // Calculate monthly cases from real data
+  useEffect(() => {
+    const calculateMonthlyCases = async () => {
+      if (!profile?.id) return;
+      
+      // Get date range for this month
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const firstDayISO = firstDayOfMonth.toISOString();
+      
+      try {
+        // Count chat sessions this month
+        const { count: chatCount } = await supabase
+          .from('chat_sessions')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', firstDayISO);
+        
+        // Get prestador ID for completed bookings count
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
+        
+        let bookingsCount = 0;
+        if (prestador) {
+          // Count completed bookings this month for this specialist
+          const { count: bookCount } = await supabase
+            .from('bookings')
+            .select('*', { count: 'exact', head: true })
+            .eq('prestador_id', prestador.id)
+            .eq('status', 'completed')
+            .gte('created_at', firstDayISO);
+          
+          bookingsCount = bookCount || 0;
+        }
+        
+        // Total cases = chat sessions + completed bookings
+        const totalCases = (chatCount || 0) + bookingsCount;
+        setMonthlyCases(totalCases);
+        
+        console.log('[SpecialistDashboard] Monthly cases calculated:', {
+          chatCount,
+          bookingsCount,
+          totalCases
+        });
+      } catch (error) {
+        console.error('[SpecialistDashboard] Error calculating monthly cases:', error);
+      }
+    };
+    
+    calculateMonthlyCases();
+  }, [profile?.id]);
 
   const filteredChats = pillarFilter === 'all' 
     ? escalatedChats 

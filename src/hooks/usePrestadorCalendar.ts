@@ -10,7 +10,7 @@ export interface PrestadorCalendarEvent {
   clientName?: string;
   company?: string;
   pillar?: string;
-  status?: 'confirmed' | 'pending' | 'cancelled';
+  status?: 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'rescheduled';
   meetingLink?: string;
 }
 
@@ -61,8 +61,7 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
       }
 
       // Fetch ALL bookings (same as user profile - no date filtering)
-      // This ensures specialists see all sessions, not just next 30 days
-      // BUT exclude cancelled sessions
+      // This ensures specialists see all sessions including cancelled/completed (shown in grey)
       const bookingsQuery = supabase
         .from('bookings')
         .select(`
@@ -77,7 +76,6 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
           companies!bookings_company_id_fkey(company_name)
         `)
         .eq('prestador_id', prestador.id)
-        .neq('status', 'cancelled')
         .order('booking_date', { ascending: true })
         .order('start_time', { ascending: true });
 
@@ -114,7 +112,7 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
           clientName: booking.profiles?.name,
           company: booking.companies?.company_name,
           pillar: booking.pillar,
-          status: booking.status as 'confirmed' | 'pending' | 'cancelled',
+          status: booking.status as 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'rescheduled',
           meetingLink: booking.meeting_link
         };
       }).filter(event => event.date); // Remove events with no date

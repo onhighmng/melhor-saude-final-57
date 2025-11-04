@@ -280,7 +280,7 @@ export const DirectBookingFlow = () => {
         booking_date: String(selectedDate.toISOString().split('T')[0]),
         start_time: String(selectedTime),
         end_time: String(endTime),
-        status: 'pending',
+        status: 'scheduled',
         session_type: 'virtual',
         booking_source: 'direct'
       };

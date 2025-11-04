@@ -22,3 +22,4 @@ AND column_name IN ('weekly_availability', 'blocked_dates', 'working_hours');
 
 
 
+

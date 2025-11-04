@@ -132,3 +132,4 @@ GRANT SELECT, INSERT, UPDATE ON company_verification TO authenticated;
 
 
 
+

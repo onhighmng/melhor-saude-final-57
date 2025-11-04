@@ -189,3 +189,4 @@ GRANT SELECT, INSERT, UPDATE ON company_employee_invitations TO authenticated;
 
 
 
+

@@ -109,12 +109,73 @@ export const UniversalAIChat = ({
     }
   };
 
-  const handleContactRequest = () => {
-    toast({
-      title: "Estamos disponíveis 24/7",
-      description: "A nossa equipa entrará em contacto consigo o mais breve possível.",
-      duration: 10000,
-    });
+  const handleContactRequest = async () => {
+    try {
+      if (!user?.id) {
+        toast({
+          title: "Erro",
+          description: "Utilizador não encontrado. Por favor, faça login novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // If no session exists, create one first
+      let currentSessionId = sessionId;
+      if (!currentSessionId) {
+        console.log('[UniversalAIChat] No session exists, creating one...');
+        await createSession();
+        // Wait a bit for session to be created
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Get the newly created session ID from the hook
+        currentSessionId = sessionId;
+        
+        if (!currentSessionId) {
+          toast({
+            title: "Erro",
+            description: "Não foi possível criar sessão. Tente novamente.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Update chat session to phone_escalated status
+      await supabase
+        .from('chat_sessions')
+        .update({
+          status: 'phone_escalated',
+          phone_escalation_reason: 'User requested call via button'
+        })
+        .eq('id', currentSessionId);
+
+      // Create specialist call log entry
+      await supabase
+        .from('specialist_call_logs')
+        .insert({
+          chat_session_id: currentSessionId,
+          user_id: user.id,
+          call_status: 'pending'
+        });
+
+      toast({
+        title: "Pedido Registado",
+        description: "Um especialista entrará em contacto consigo o mais breve possível (24/7).",
+        duration: 10000,
+      });
+    } catch (error) {
+      console.error('Error creating call request:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível registar o pedido. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCloseAttempt = () => {
+    // Always show feedback modal when trying to close
+    setShowExitFeedback(true);
   };
 
   const handleFeedbackComplete = () => {
@@ -130,7 +191,7 @@ export const UniversalAIChat = ({
       {/* Header */}
       <div className="flex items-center justify-between px-8 py-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={onClose} className="flex items-center gap-2 text-gray-600 hover:text-white">
+          <Button variant="ghost" onClick={handleCloseAttempt} className="flex items-center gap-2 text-gray-600 hover:text-white">
             <X className="h-4 w-4" />
             Fechar
           </Button>
@@ -273,7 +334,7 @@ export const UniversalAIChat = ({
         <ChatExitFeedbackButtons
           sessionId={sessionId}
           pillar={pillar}
-          onClose={() => setShowExitFeedback(false)}
+          onClose={handleFeedbackComplete}
         />
       )}
 

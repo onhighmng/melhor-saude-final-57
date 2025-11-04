@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone, CheckCircle, Clock, X, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 import { EmptyState } from '@/components/ui/empty-state';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const EspecialistaCallRequests = () => {
   const { toast } = useToast();
+  const { profile } = useAuth();
   const { escalatedChats, isLoading } = useEscalatedChats();
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
@@ -55,7 +57,7 @@ const EspecialistaCallRequests = () => {
   };
 
   const handleConfirmResolve = async (skipNotes: boolean = false) => {
-    if (!selectedRequest) return;
+    if (!selectedRequest || !profile?.id) return;
     
     setIsResolving(true);
     try {
@@ -71,16 +73,39 @@ const EspecialistaCallRequests = () => {
 
       if (error) throw error;
 
-      // Update specialist_call_logs with notes and status
-      await supabase
+      // Check if call log exists
+      const { data: existingLog } = await supabase
         .from('specialist_call_logs')
-        .update({ 
-          call_status: 'completed',
-          completed_at: new Date().toISOString(),
-          notes: skipNotes ? null : resolutionNotes || null,
-          outcome: 'resolved'
-        })
-        .eq('chat_session_id', selectedRequest.id);
+        .select('id')
+        .eq('chat_session_id', selectedRequest.id)
+        .single();
+
+      if (existingLog) {
+        // Update existing call log
+        await supabase
+          .from('specialist_call_logs')
+          .update({ 
+            call_status: 'completed',
+            completed_at: new Date().toISOString(),
+            call_notes: skipNotes ? null : resolutionNotes || null,
+            outcome: 'resolved',
+            specialist_id: profile.id
+          })
+          .eq('chat_session_id', selectedRequest.id);
+      } else {
+        // Create new call log if none exists
+        await supabase
+          .from('specialist_call_logs')
+          .insert({
+            chat_session_id: selectedRequest.id,
+            user_id: selectedRequest.user_id,
+            specialist_id: profile.id,
+            call_status: 'completed',
+            completed_at: new Date().toISOString(),
+            call_notes: skipNotes ? null : resolutionNotes || null,
+            outcome: 'resolved'
+          });
+      }
 
       toast({
         title: 'Pedido resolvido',
@@ -105,17 +130,30 @@ const EspecialistaCallRequests = () => {
     }
   };
 
-  const getWaitTimeColor = (waitTime: number) => {
-    if (waitTime < 60) return 'text-green-600';
-    if (waitTime < 240) return 'text-yellow-600';
-    return 'text-red-600';
+  const getWaitTimeColor = (createdAt: string) => {
+    const elapsed = Date.now() - new Date(createdAt).getTime();
+    const hours = elapsed / (1000 * 60 * 60);
+    if (hours >= 15) return 'text-red-600 font-bold';
+    if (hours >= 5) return 'text-orange-600 font-semibold';
+    return 'text-green-600 font-medium';
+  };
+  
+  const formatWaitTime = (createdAt: string) => {
+    const elapsed = Date.now() - new Date(createdAt).getTime();
+    const hours = Math.floor(elapsed / (1000 * 60 * 60));
+    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}min`;
   };
 
   const getPillarLabel = (pillar: string | null) => {
     const labels = {
+      'saude_mental': 'Saúde Mental',
       'psychological': 'Saúde Mental',
-      'physical': 'Bem-Estar Físico', 
+      'bem_estar_fisico': 'Bem-estar Físico',
+      'physical': 'Bem-estar Físico', 
+      'assistencia_financeira': 'Assistência Financeira',
       'financial': 'Assistência Financeira',
+      'assistencia_juridica': 'Assistência Jurídica',
       'legal': 'Assistência Jurídica'
     };
     return labels[pillar as keyof typeof labels] || 'Não definido';
@@ -123,9 +161,13 @@ const EspecialistaCallRequests = () => {
 
   const getPillarColor = (pillar: string | null) => {
     const colors = {
+      'saude_mental': 'bg-blue-100 text-blue-700 border-blue-300',
       'psychological': 'bg-blue-100 text-blue-700 border-blue-300',
+      'bem_estar_fisico': 'bg-yellow-100 text-yellow-700 border-yellow-300',
       'physical': 'bg-yellow-100 text-yellow-700 border-yellow-300',
+      'assistencia_financeira': 'bg-green-100 text-green-700 border-green-300',
       'financial': 'bg-green-100 text-green-700 border-green-300',
+      'assistencia_juridica': 'bg-purple-100 text-purple-700 border-purple-300',
       'legal': 'bg-purple-100 text-purple-700 border-purple-300'
     };
     return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
@@ -204,9 +246,9 @@ const EspecialistaCallRequests = () => {
                         Resolver
                       </Button>
                     </div>
-                    <div className={`text-sm font-medium text-muted-foreground flex items-center gap-1`}>
+                    <div className={`text-sm font-medium flex items-center gap-1 ${getWaitTimeColor(request.created_at)}`}>
                       <Clock className="h-4 w-4" />
-                      <span>{new Date(request.created_at).toLocaleString('pt-PT')}</span>
+                      <span>{formatWaitTime(request.created_at)}</span>
                     </div>
                   </div>
                 </div>
@@ -253,10 +295,10 @@ const EspecialistaCallRequests = () => {
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 items-end">
-                        <div className={`text-sm font-medium text-muted-foreground flex items-center gap-1`}>
-                          <Clock className="h-4 w-4" />
-                          <span>{new Date(request.ended_at || request.created_at).toLocaleString('pt-PT')}</span>
-                        </div>
+                      <div className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{new Date(request.ended_at || request.created_at).toLocaleString('pt-PT')}</span>
+                      </div>
                       </div>
                     </div>
                   ))}

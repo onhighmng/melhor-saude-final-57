@@ -14,6 +14,7 @@ import { AvailabilitySettings } from '@/components/specialist/AvailabilitySettin
 import { ReferralBookingModal } from '@/components/specialist/ReferralBookingModal';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 const getPillarColors = (pillar: string) => {
   const colors = {
@@ -262,6 +263,7 @@ const SessionEventCard = ({ event, toast, onReschedule, onCancel, onConclude }: 
 
 const PrestadorCalendar = () => {
   const { toast } = useToast();
+  const { profile } = useAuth();
   const { calendarEvents, loading, refetch } = usePrestadorCalendar();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDayEventsModalOpen, setIsDayEventsModalOpen] = useState(false);
@@ -272,6 +274,9 @@ const PrestadorCalendar = () => {
   const [rescheduleSessionId, setRescheduleSessionId] = useState<string | null>(null);
   const [rescheduleDate, setRescheduleDate] = useState<Date | null>(null);
   const [rescheduleTime, setRescheduleTime] = useState('');
+  
+  // Check if user is a specialist (should see forward session button)
+  const isSpecialist = profile?.role === 'especialista_geral';
 
   // Transform calendar events to FullScreenCalendar format
   const calendarData = useMemo(() => {
@@ -303,6 +308,7 @@ const PrestadorCalendar = () => {
         datetime: `${event.date}T${event.time}`,
         userName: event.clientName,
         pillar: event.pillar,
+        status: event.status,
       });
       return acc;
     }, {} as Record<string, any[]>);
@@ -577,14 +583,16 @@ const PrestadorCalendar = () => {
           onSetAvailability={() => setIsAvailabilityModalOpen(true)}
           onAddEvent={handleAddSession}
           customButton={
-            <Button 
-              onClick={() => setIsReferralModalOpen(true)} 
-              variant="outline" 
-              className="w-full gap-2 md:w-auto h-8 text-sm"
-            >
-              <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
-              <span>Encaminhar sessão</span>
-            </Button>
+            isSpecialist ? (
+              <Button 
+                onClick={() => setIsReferralModalOpen(true)} 
+                variant="outline" 
+                className="w-full gap-2 md:w-auto h-8 text-sm"
+              >
+                <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
+                <span>Encaminhar sessão</span>
+              </Button>
+            ) : undefined
           }
         />
       </Card>
@@ -656,18 +664,20 @@ const PrestadorCalendar = () => {
         onOpenChange={setIsAvailabilityModalOpen}
       />
 
-      {/* Referral Booking Modal */}
-      <ReferralBookingModal
-        open={isReferralModalOpen}
-        onOpenChange={setIsReferralModalOpen}
-        onSuccess={() => {
-          refetch();
-          toast({
-            title: 'Sessão Encaminhada',
-            description: 'A sessão foi agendada com sucesso'
-          });
-        }}
-      />
+      {/* Referral Booking Modal - Only for Specialists */}
+      {isSpecialist && (
+        <ReferralBookingModal
+          open={isReferralModalOpen}
+          onOpenChange={setIsReferralModalOpen}
+          onSuccess={() => {
+            refetch();
+            toast({
+              title: 'Sessão Encaminhada',
+              description: 'A sessão foi agendada com sucesso'
+            });
+          }}
+        />
+      )}
 
       {/* Add Session Modal - Placeholder */}
       <Dialog open={isAddSessionModalOpen} onOpenChange={setIsAddSessionModalOpen}>
