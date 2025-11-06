@@ -316,11 +316,8 @@ export default function PrestadorDashboard() {
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
             background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
             iconColor="text-blue-600"
-              textColor="text-black"
+            textColor="text-black"
             descriptionColor="text-black/70"
-            href="#"
-            cta=""
-
           />
 
           {/* Top Right - Configurações */}
@@ -332,19 +329,12 @@ export default function PrestadorDashboard() {
             className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
             background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100" />}
             iconColor="text-amber-600"
-              textColor="text-black"
+            textColor="text-black"
             descriptionColor="text-black/70"
-            href="#"
-            cta=""
-
           />
 
           {/* Middle - Desempenho (spanning 2 rows) */}
           <BentoCard 
-            name="" 
-            description="" 
-            href="#" 
-            cta="" 
             className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4"
             background={
               <div className="absolute inset-0 flex flex-col p-6 overflow-y-auto bg-gradient-to-br from-purple-50 to-purple-100">
@@ -405,10 +395,6 @@ export default function PrestadorDashboard() {
 
           {/* Bottom Left - Sessões (spanning 2 rows) */}
           <BentoCard 
-            name="" 
-            description="" 
-            href="#" 
-            cta="" 
             onClick={() => navigate('/prestador/sessoes')} 
             className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4 cursor-pointer" 
             background={
@@ -427,10 +413,6 @@ export default function PrestadorDashboard() {
 
           {/* Middle - Próximas Sessões (spanning 3 rows) */}
           <BentoCard 
-            name="" 
-            description="" 
-            href="#" 
-            cta="" 
             className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3"
             background={
               <div className="absolute inset-0 p-5 flex flex-col justify-between bg-gradient-to-br from-slate-50 to-slate-100">

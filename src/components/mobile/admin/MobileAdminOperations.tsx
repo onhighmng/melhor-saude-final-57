@@ -3,6 +3,7 @@ import { Activity, Calendar, Users, TrendingUp, AlertCircle } from 'lucide-react
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MobileBottomNav } from '../shared/MobileBottomNav';
 
 export function MobileAdminOperations() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -39,7 +40,7 @@ export function MobileAdminOperations() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-6">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-md mx-auto px-5 py-6">
@@ -93,6 +94,8 @@ export function MobileAdminOperations() {
           </div>
         </Card>
       </div>
+
+      <MobileBottomNav userType="admin" />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BookOpen, Download, FileText } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { MobileBottomNav } from '../shared/MobileBottomNav';
 
 interface Resource {
   id: number;
@@ -39,7 +40,7 @@ export function MobileCompanyResources() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-6">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-md mx-auto px-5 py-6">
@@ -103,6 +104,8 @@ export function MobileCompanyResources() {
           ))}
         </div>
       </div>
+
+      <MobileBottomNav userType="company" />
     </div>
   );
 }

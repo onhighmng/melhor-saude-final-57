@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Settings, User, Bell, Calendar, Shield, DollarSign } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
+import { MobileBottomNav } from '../shared/MobileBottomNav';
 
 export function MobileSpecialistSettings() {
   const { profile } = useAuth();
@@ -50,7 +51,7 @@ export function MobileSpecialistSettings() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-6">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-md mx-auto px-5 py-6">
@@ -90,6 +91,8 @@ export function MobileSpecialistSettings() {
           })}
         </div>
       </div>
+
+      <MobileBottomNav userType="specialist" />
     </div>
   );
 }

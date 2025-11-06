@@ -456,11 +456,8 @@ const UserDashboard = () => {
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
                 iconColor="text-black"
-                  textColor="text-black"
+                textColor="text-black"
                 descriptionColor="text-black/70"
-                href="#"
-                cta=""
-
               />
 
               {/* Top Right - Notifications */}
@@ -472,19 +469,12 @@ const UserDashboard = () => {
                 className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
                 iconColor="text-black"
-                  textColor="text-black"
+                textColor="text-black"
                 descriptionColor="text-black/70"
-                href="#"
-                cta=""
-
               />
 
               {/* Middle - Progress (Progreso Pessoal) */}
               <BentoCard 
-                name="" 
-                description="" 
-                href="#" 
-                cta="" 
                 className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
                 background={
                   <div className="absolute inset-0 flex flex-col p-8 overflow-y-auto">
@@ -543,13 +533,10 @@ const UserDashboard = () => {
               {/* Bottom Left - Resources */}
               <BentoCard 
                 name="Recursos" 
-                description="" 
-                href="#" 
-                cta="" 
                 Icon={BookOpen} 
                 onClick={() => navigate('/user/resources')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
-                  textColor="text-white" 
+                textColor="text-white" 
                 iconColor="text-white" 
                 background={
                   <div className="absolute inset-0">
@@ -557,15 +544,10 @@ const UserDashboard = () => {
                     <div className="absolute inset-0 bg-black/20" />
                   </div>
                 } 
-
               />
 
               {/* Bottom Right - Upcoming Sessions */}
               <BentoCard 
-                name="" 
-                description="" 
-                href="#" 
-                cta="" 
                 className="lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4" 
                 background={
                   <div className="absolute inset-0 p-5 flex flex-col">

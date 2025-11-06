@@ -3,6 +3,7 @@ import { BookOpen, Plus, FileText, Video, Download } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { MobileBottomNav } from '../shared/MobileBottomNav';
 
 export function MobileAdminResources() {
   const [selectedType, setSelectedType] = useState('all');
@@ -32,7 +33,7 @@ export function MobileAdminResources() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-6">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-md mx-auto px-5 py-6">
@@ -99,6 +100,8 @@ export function MobileAdminResources() {
           ))}
         </div>
       </div>
+
+      <MobileBottomNav userType="admin" />
     </div>
   );
 }

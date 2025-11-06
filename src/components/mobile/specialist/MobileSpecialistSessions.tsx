@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MobileBottomNav } from '../shared/MobileBottomNav';
 
 interface Session {
   id: string;
@@ -75,7 +76,7 @@ export function MobileSpecialistSessions() {
   const cancelledSessions = sessions.filter(s => s.status === 'cancelled');
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-6">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-md mx-auto px-5 py-6">
@@ -180,6 +181,8 @@ export function MobileSpecialistSessions() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <MobileBottomNav userType="specialist" />
     </div>
   );
 }

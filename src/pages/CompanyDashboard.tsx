@@ -207,11 +207,9 @@ const CompanyDashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100" />
                 }
                 iconColor="text-amber-700"
-                  textColor="text-slate-900"
+                textColor="text-slate-900"
                 descriptionColor="text-slate-600"
-                href="#"
                 cta="Ver Relatórios"
-
               />
 
               {/* Top Right - Sessions */}
@@ -225,11 +223,9 @@ const CompanyDashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />
                 }
                 iconColor="text-blue-700"
-                  textColor="text-slate-900"
+                textColor="text-slate-900"
                 descriptionColor="text-slate-600"
-                href="#"
                 cta="Ver Sessões"
-
               />
 
               {/* Bottom Left - Employee Registration Status */}
@@ -246,16 +242,13 @@ const CompanyDashboard = () => {
                       style={{
                         backgroundImage: "url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
                       }}
-
                     />
                   </div>
                 }
                 iconColor="text-purple-700"
-                  textColor="text-slate-900"
+                textColor="text-slate-900"
                 descriptionColor="text-slate-600"
-                href="#"
                 cta="Ver Detalhes"
-
               />
 
               {/* Bottom Right - Recursos */}
@@ -269,23 +262,16 @@ const CompanyDashboard = () => {
                   <div 
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: `url(${recursosWellness})` }}
-
                   />
                 }
                 iconColor="text-white"
-                  textColor="text-white"
+                textColor="text-white"
                 descriptionColor="text-white"
-                href="#"
                 cta="Ver Recursos"
-
               />
 
               {/* Center - Activity & Pillar Overview */}
               <BentoCard 
-                name="" 
-                description="" 
-                href="#" 
-                cta="" 
                 className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
                 onClick={() => navigate('/company/relatorios')}

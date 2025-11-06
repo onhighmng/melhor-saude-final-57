@@ -57,11 +57,9 @@ const AdminDashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />
                 }
                 iconColor="text-blue-700"
-                  textColor="text-slate-900"
+                textColor="text-slate-900"
                 descriptionColor="text-slate-600"
-                href="#"
                 cta="Gerir Empresas"
-
               />
 
               {/* Top Right - Users */}
@@ -75,19 +73,13 @@ const AdminDashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100" />
                 }
                 iconColor="text-yellow-700"
-                  textColor="text-slate-900"
+                textColor="text-slate-900"
                 descriptionColor="text-slate-600"
-                href="#"
                 cta="Ver Utilizadores"
-
               />
 
               {/* Center - Activity Overview (spanning all 3 rows) */}
               <BentoCard 
-                name="" 
-                description="" 
-                href="#"
-                cta=""
                 className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-4" 
                 background={
                   <div className="absolute inset-0 flex flex-col p-8 bg-white">
@@ -159,16 +151,13 @@ const AdminDashboard = () => {
                       style={{
                         backgroundImage: "url('https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
                       }}
-
                     />
                   </div>
                 }
                 iconColor="text-emerald-700"
-                  textColor="text-slate-900"
+                textColor="text-slate-900"
                 descriptionColor="text-slate-600"
-                href="#"
                 cta="Ver Sessões"
-
               />
 
               {/* Bottom Right - Recursos */}
@@ -184,16 +173,13 @@ const AdminDashboard = () => {
                       src={recursosWellness} 
                       alt="" 
                       className="w-full h-full object-cover" 
-
                     />
                   </div>
                 }
                 iconColor="text-white"
-                  textColor="text-white"
+                textColor="text-white"
                 descriptionColor="text-white/80"
-                href="#"
                 cta="Ver Recursos"
-
               />
             </BentoGrid>
           </div>

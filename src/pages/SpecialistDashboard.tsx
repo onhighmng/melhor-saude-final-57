@@ -220,11 +220,9 @@ export default function SpecialistDashboard() {
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100" />}
                 iconColor="text-yellow-600"
-                  textColor="text-gray-900"
+                textColor="text-gray-900"
                 descriptionColor="text-gray-600"
-                href="#"
                 cta="Ver Pedidos"
-
               />
 
               {/* Top Right - Today's Sessions */}
@@ -241,16 +239,13 @@ export default function SpecialistDashboard() {
                       style={{
                         backgroundImage: "url('https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
                       }}
-
                     />
                   </div>
                 }
                 iconColor="text-blue-600"
-                  textColor="text-gray-900"
+                textColor="text-gray-900"
                 descriptionColor="text-gray-600"
-                href="#"
                 cta="Ver Agenda"
-
               />
 
               {/* Bottom Left - Personal Stats */}
@@ -262,17 +257,13 @@ export default function SpecialistDashboard() {
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
                 iconColor="text-blue-600"
-                  textColor="text-gray-900"
+                textColor="text-gray-900"
                 descriptionColor="text-gray-600"
-                href="#"
                 cta="Ver Estatísticas"
-
               />
 
               {/* Bottom Right - Recursos */}
               <BentoCard 
-                name="" 
-                description="" 
                 onClick={() => navigate('/especialista/resources')} 
                 className="lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-4" 
                 background={
@@ -281,25 +272,18 @@ export default function SpecialistDashboard() {
                       src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
                       alt="" 
                       className="w-full h-full object-cover" 
-
                     />
                   </div>
                 }
-                href="#"
-                cta=""
               >
               </BentoCard>
 
               {/* Center - Activity Overview */}
               <BentoCard 
-                name="" 
-                description="" 
-                href="#" 
-                cta="" 
                 className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
                 iconColor="text-green-600"
-                  textColor="text-slate-900"
+                textColor="text-slate-900"
                 descriptionColor="text-slate-600"
               >
                 <div className="relative z-30 flex flex-col h-full p-6">

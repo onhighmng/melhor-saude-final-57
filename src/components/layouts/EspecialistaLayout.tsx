@@ -27,15 +27,21 @@ export function EspecialistaLayout({ children }: EspecialistaLayoutProps) {
   return (
     <AnimatedSidebarProvider open={sidebarOpen} setOpen={setSidebarOpen}>
       <div className="h-screen flex w-full relative overflow-hidden bg-gray-50">
-        <EspecialistaSidebar />
+        {/* Sidebar - hidden on mobile */}
+        <div className="hidden md:block">
+          <EspecialistaSidebar />
+        </div>
+        {/* Main content - full width on mobile, adjusted on desktop */}
         <motion.main 
-          className="flex flex-col relative z-10 h-screen min-w-0 overflow-hidden bg-transparent"
+          className="flex flex-col relative z-10 h-screen min-w-0 overflow-hidden bg-transparent w-full md:w-auto"
           animate={{
-            width: sidebarOpen ? 'calc(100% - 300px)' : 'calc(100% - 60px)',
+            width: typeof window !== 'undefined' && window.innerWidth >= 768 
+              ? (sidebarOpen ? 'calc(100% - 300px)' : 'calc(100% - 60px)')
+              : '100%',
           }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          <div className={`flex-1 ${isStaticPage ? 'overflow-hidden' : 'overflow-y-auto'} ${isFullScreenPage ? '' : 'p-6'} bg-transparent`}>
+          <div className={`flex-1 ${isStaticPage ? 'overflow-hidden' : 'overflow-y-auto'} ${isFullScreenPage ? '' : 'md:p-6'} bg-transparent`}>
             <div className={isFullScreenPage ? '' : 'max-w-7xl w-full mx-auto h-full'}>
               {children}
             </div>

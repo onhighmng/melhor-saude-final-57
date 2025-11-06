@@ -44,13 +44,13 @@ const BentoCard = ({
   children,
   style,
 }: {
-  name: string;
+  name?: string;
   className: string;
   background: ReactNode;
   Icon?: React.ComponentType<{className?: string; style?: React.CSSProperties}>;
-  description: string;
-  href: string;
-  cta: string;
+  description?: string;
+  href?: string;
+  cta?: string;
   onClick?: () => void;
   iconColor?: string;
   textColor?: string;

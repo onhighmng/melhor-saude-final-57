@@ -16,15 +16,21 @@ export function CompanyLayout({ children }: CompanyLayoutProps) {
   return (
     <AnimatedSidebarProvider open={sidebarOpen} setOpen={setSidebarOpen}>
       <div className="h-screen flex w-full relative overflow-hidden">
-        <CompanySidebar />
+        {/* Sidebar - hidden on mobile */}
+        <div className="hidden md:block">
+          <CompanySidebar />
+        </div>
+        {/* Main content - full width on mobile, adjusted on desktop */}
         <motion.main 
-          className="flex flex-col relative z-10 h-screen min-w-0 overflow-hidden"
+          className="flex flex-col relative z-10 h-screen min-w-0 overflow-hidden w-full md:w-auto"
           animate={{
-            width: sidebarOpen ? 'calc(100% - 300px)' : 'calc(100% - 60px)',
+            width: typeof window !== 'undefined' && window.innerWidth >= 768 
+              ? (sidebarOpen ? 'calc(100% - 300px)' : 'calc(100% - 60px)')
+              : '100%',
           }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
-          <div className={`flex-1 overflow-y-auto ${isFullScreenPage ? '' : 'p-6'}`}>
+          <div className={`flex-1 overflow-y-auto ${isFullScreenPage ? '' : 'md:p-6'}`}>
             <div className={isFullScreenPage ? '' : 'max-w-none w-full mx-auto'}>
               {children}
             </div>
