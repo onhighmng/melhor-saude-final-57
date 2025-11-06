@@ -5,33 +5,58 @@
 -- ============================================================================
 
 -- ============================================================================
--- 1. UPDATE EMAIL TYPE CONSTRAINT TO INCLUDE ALL EMAIL TYPES
+-- 1. FIRST, CHECK AND LOG EXISTING EMAIL TYPES (for debugging)
+-- ============================================================================
+
+DO $$
+DECLARE
+  v_email_types TEXT;
+BEGIN
+  SELECT string_agg(DISTINCT email_type, ', ') INTO v_email_types
+  FROM email_queue;
+
+  RAISE NOTICE 'Existing email types in queue: %', COALESCE(v_email_types, 'none');
+END $$;
+
+-- ============================================================================
+-- 2. UPDATE EMAIL TYPE CONSTRAINT TO INCLUDE ALL EMAIL TYPES
 -- ============================================================================
 
 -- Drop the old constraint
 ALTER TABLE email_queue DROP CONSTRAINT IF EXISTS email_queue_email_type_check;
 
--- Add new constraint with all email types
+-- Add new constraint with ALL possible email types (comprehensive list)
 ALTER TABLE email_queue ADD CONSTRAINT email_queue_email_type_check
 CHECK (email_type IN (
+  -- Original types
   'booking_confirmation',
   'booking_cancellation',
-  'booking_cancelled',
   'booking_reminder',
   'session_completed',
   'session_reminder_24h',
   'session_reminder_1h',
   'welcome',
   'milestone_achieved',
+  -- New types from notification templates
+  'booking_cancelled',
   'goal_progress',
   'message_from_specialist',
   'chat_escalation',
   'new_resource',
-  'system_alert'
+  'system_alert',
+  -- Additional potential types
+  'password_reset',
+  'email_verification',
+  'session_reminder',
+  'booking_reminder_24h',
+  'booking_reminder_1h',
+  'onboarding_complete',
+  'milestone',
+  'notification'
 ));
 
 -- ============================================================================
--- 2. CREATE QUEUE_NOTIFICATION_EMAIL WRAPPER FUNCTION
+-- 3. CREATE QUEUE_NOTIFICATION_EMAIL WRAPPER FUNCTION
 -- ============================================================================
 
 CREATE OR REPLACE FUNCTION queue_notification_email(
@@ -75,14 +100,14 @@ END;
 $$;
 
 -- ============================================================================
--- 3. GRANT PERMISSIONS
+-- 4. GRANT PERMISSIONS
 -- ============================================================================
 
 GRANT EXECUTE ON FUNCTION queue_notification_email(UUID, TEXT, TEXT, TEXT, JSONB)
 TO service_role, authenticated;
 
 -- ============================================================================
--- 4. ADD COMMENT
+-- 5. ADD COMMENT
 -- ============================================================================
 
 COMMENT ON FUNCTION queue_notification_email IS
