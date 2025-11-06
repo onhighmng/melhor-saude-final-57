@@ -35,6 +35,7 @@ CHECK (email_type IN (
   'session_completed',
   'session_reminder_24h',
   'session_reminder_1h',
+  'session_reminder_10min',
   'welcome',
   'milestone_achieved',
   -- New types from notification templates
@@ -50,6 +51,7 @@ CHECK (email_type IN (
   'session_reminder',
   'booking_reminder_24h',
   'booking_reminder_1h',
+  'booking_reminder_10min',
   'onboarding_complete',
   'milestone',
   'notification'
