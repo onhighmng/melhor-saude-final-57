@@ -131,7 +131,7 @@ export function ProviderCard({
                 {provider.phone && (
                   <div className="flex items-center gap-2 text-xs text-gray-500">
                     <Phone className="h-3 w-3" />
-                    <span>{provider.phone}</span>
+                    <span>{formatPhoneNumber(provider.phone)}</span>
                   </div>
                 )}
               </div>

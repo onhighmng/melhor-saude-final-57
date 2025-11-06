@@ -124,7 +124,6 @@ export default function AdminMatchingTab() {
         .insert({
           user_id: chatSession.user_id,
           prestador_id: selectedSpecialist,
-          booking_date: new Date(selectedDate).toISOString(),
           date: selectedDate,
           start_time: '10:00',
           end_time: '11:00',

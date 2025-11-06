@@ -8,7 +8,6 @@ import { Bell, Check, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';
-
 export default function UserNotifications() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -140,100 +139,105 @@ export default function UserNotifications() {
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Notificações</h1>
-          <p className="text-muted-foreground">
-            {error ? 'Erro ao carregar' : unreadCount > 0 ? `${unreadCount} não lida${unreadCount > 1 ? 's' : ''}` : 'Tudo lido'}
-          </p>
+    <div className="w-full min-h-screen bg-blue-50 m-0 p-0">
+      {/* Content */}
+      <div className="flex flex-col w-full">
+        {/* Header - White section */}
+        <div className="bg-white border-b border-gray-100 shadow-sm w-full">
+          <div className="px-6 py-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold">Notificações</h1>
+                <p className="text-muted-foreground">
+                  {error ? 'Erro ao carregar' : unreadCount > 0 ? `${unreadCount} não lida${unreadCount > 1 ? 's' : ''}` : 'Tudo lido'}
+                </p>
+              </div>
+              {unreadCount > 0 && !error && (
+                <Button onClick={markAllAsRead} variant="outline">
+                  <Check className="mr-2 h-4 w-4" />
+                  Marcar todas como lidas
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-        {unreadCount > 0 && !error && (
-          <Button onClick={markAllAsRead} variant="outline">
-            <Check className="mr-2 h-4 w-4" />
-            Marcar todas como lidas
-          </Button>
-        )}
-      </div>
 
-      {error && (
-        <Card className="border-destructive">
-          <CardContent className="p-6">
-            <p className="text-destructive">Erro: {error}</p>
-            <Button onClick={() => window.location.reload()} className="mt-4" variant="outline">
-              Tentar novamente
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="space-y-4">
-        {!error && notifications.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <Bell className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg text-muted-foreground">Nenhuma notificação por enquanto</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Receberá notificações sobre sessões, mensagens e atualizações
-              </p>
-            </CardContent>
-          </Card>
-        ) : !error ? (
-          notifications.map(notification => (
-            <Card key={notification.id} className={notification.is_read ? 'opacity-60' : ''}>
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Bell className="h-4 w-4" />
-                      <h3 className="font-semibold">{notification.title}</h3>
-                      {!notification.is_read && (
-                        <Badge variant="destructive" className="ml-2">Nova</Badge>
-                      )}
-                      {notification.priority === 'high' && (
-                        <Badge variant="secondary">Alta Prioridade</Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(notification.created_at), {
-                        addSuffix: true,
-                        locale: pt
-                      })}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {!notification.is_read && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => markAsRead(notification.id)}
-                      >
-                        <Check className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => deleteNotification(notification.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+        {/* Notification Cards - on blue background */}
+        <div className="px-6 py-6 space-y-6">
+          {error && (
+            <Card className="bg-white border-destructive shadow-md">
+              <CardContent className="p-6">
+                <p className="text-destructive">Erro: {error}</p>
+                <Button onClick={() => window.location.reload()} className="mt-4" variant="outline">
+                  Tentar novamente
+                </Button>
               </CardContent>
             </Card>
-          ))
-        ) : null}
+          )}
+
+          <div className="space-y-4">
+            {!error && notifications.length === 0 ? (
+              <Card className="bg-white shadow-md">
+                <CardContent className="p-12 text-center">
+                  <Bell className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-lg text-muted-foreground">Nenhuma notificação por enquanto</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Receberá notificações sobre sessões, mensagens e atualizações
+                  </p>
+                </CardContent>
+              </Card>
+            ) : !error ? (
+              notifications.map(notification => (
+                <Card key={notification.id} className={`bg-white shadow-md ${notification.is_read ? 'opacity-60' : ''}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Bell className="h-4 w-4" />
+                          <h3 className="font-semibold">{notification.title}</h3>
+                          {!notification.is_read && (
+                            <Badge variant="destructive" className="ml-2">Nova</Badge>
+                          )}
+                          {notification.priority === 'high' && (
+                            <Badge variant="secondary">Alta Prioridade</Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(notification.created_at), {
+                            addSuffix: true,
+                            locale: pt
+                          })}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        {!notification.is_read && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => markAsRead(notification.id)}
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteNotification(notification.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : null}
+          </div>
+        </div>
       </div>
     </div>
   );

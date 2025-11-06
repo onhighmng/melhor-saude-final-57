@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Phone, PhoneOff, CheckCircle, ArrowRight, Clock, MessageSquare } from 'lucide-react';
 import { CallRequest } from '@/types/specialist';
 import { supabase } from '@/integrations/supabase/client';
+import { formatPhoneNumber } from '@/utils/phoneFormat';
 
 interface CallModalProps {
   isOpen: boolean;
@@ -99,7 +100,7 @@ export const CallModal = ({ isOpen, onClose, request, onComplete }: CallModalPro
                 </div>
                 <div className="text-sm space-y-1">
                   <p><strong>Email:</strong> {request.user_email}</p>
-                  <p><strong>Telefone:</strong> {request.user_phone}</p>
+                  <p><strong>Telefone:</strong> {formatPhoneNumber(request.user_phone || '')}</p>
                   <p><strong>Pilar:</strong> {getPillarLabel(request.pillar)}</p>
                   <p><strong>Tempo de Espera:</strong> {new Date(request.created_at).toLocaleString('pt-PT')}</p>
                 </div>
@@ -159,7 +160,7 @@ export const CallModal = ({ isOpen, onClose, request, onComplete }: CallModalPro
                   </div>
                   <p className="text-lg font-semibold mb-2">A ligar...</p>
                   <p className="text-sm text-muted-foreground">
-                    {request.user_phone}
+                    {formatPhoneNumber(request.user_phone || '')}
                   </p>
                 </>
               )}

@@ -10,7 +10,7 @@ type Step = 'topics' | 'symptoms' | 'result' | 'chat';
 interface LegalAssessmentFlowProps {
   onBack: () => void;
   onComplete: () => void;
-  onChooseHuman: () => void;
+  onChooseHuman: (assessment: LegalAssessment) => void;
 }
 
 const LegalAssessmentFlow: React.FC<LegalAssessmentFlowProps> = ({
@@ -88,8 +88,8 @@ const LegalAssessmentFlow: React.FC<LegalAssessmentFlowProps> = ({
           <LegalChatInterface
             assessment={assessment}
             onBack={() => setStep('result')}
-            onComplete={onComplete}
-            onChooseHuman={onChooseHuman}
+            onComplete={() => onChooseHuman(assessment)}
+            onChooseHuman={() => onChooseHuman(assessment)}
           />
         );
       

@@ -346,6 +346,7 @@ export default function AdminCompanyInvites() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 w-full sm:w-[300px]"
+
             />
           </div>
           
@@ -366,7 +367,7 @@ export default function AdminCompanyInvites() {
           <Button
             onClick={handleGenerateMissingCodes}
             disabled={!canGenerateMoreCodes() || loading}
-            variant="outline"
+              variant="outline"
           >
             <Plus className="h-4 w-4 mr-2" />
             {loading ? 'A gerar...' : 'Gerar códigos em falta'}
@@ -437,7 +438,7 @@ export default function AdminCompanyInvites() {
                         </code>
                         <Button
                           size="sm"
-                          variant="ghost"
+                            variant="ghost"
                           onClick={() => handleCopyCode(code.invite_code)}
                           className="h-6 w-6 p-0"
                         >
@@ -460,7 +461,7 @@ export default function AdminCompanyInvites() {
                         {code.status === 'pending' && (
                           <Button
                             size="sm"
-                            variant="ghost"
+                              variant="ghost"
                             onClick={() => handleRevokeCode(code.id)}
                             className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10"
                           >
@@ -470,7 +471,7 @@ export default function AdminCompanyInvites() {
                         {(code.status === 'pending' || code.status === 'expired') && (
                           <Button
                             size="sm"
-                            variant="ghost"
+                              variant="ghost"
                             onClick={() => handleRegenerateCode(code.id)}
                             className="h-8 w-8 p-0"
                           >

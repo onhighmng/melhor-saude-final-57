@@ -108,6 +108,7 @@ const UpdatePassword = () => {
           src={heroBrain}
           alt="Saúde Mental"
           className="absolute inset-0 w-full h-full object-cover"
+
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
         <div className="relative z-10 flex flex-col justify-end p-12 text-white">
@@ -143,6 +144,7 @@ const UpdatePassword = () => {
                   {...register('password')}
                   className="h-11 pr-10"
                   disabled={isLoading}
+
                 />
                 <button
                   type="button"
@@ -169,6 +171,7 @@ const UpdatePassword = () => {
                   {...register('confirmPassword')}
                   className="h-11 pr-10"
                   disabled={isLoading}
+
                 />
                 <button
                   type="button"

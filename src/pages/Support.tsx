@@ -14,7 +14,7 @@ export default function Support() {
     <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
       {/* Back Button */}
       <Button
-        variant="ghost"
+          variant="ghost"
         onClick={() => navigate(-1)}
         className="mb-4 gap-2"
       >

@@ -42,7 +42,11 @@ export default function AdminChangeRequestsTab() {
         .from('change_requests')
         .select(`
           *,
-          prestador:prestadores!prestador_id(name, email)
+          prestador:prestadores!prestador_id(
+            name,
+            user_id,
+            profiles!prestadores_user_id_fkey (email, phone)
+          )
         `)
         .order('created_at', { ascending: false });
 
@@ -57,7 +61,7 @@ export default function AdminChangeRequestsTab() {
         createdAt: req.created_at,
         requestedBy: (req.prestador as any)?.name || 'N/A',
         providerName: (req.prestador as any)?.name || 'N/A',
-        providerEmail: (req.prestador as any)?.email || 'N/A'
+        providerEmail: (req.prestador as any)?.profiles?.email || 'N/A'
       }));
 
       setRequests(formatted);

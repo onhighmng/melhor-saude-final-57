@@ -68,6 +68,7 @@ const ResetPassword = () => {
             src={heroBrain}
             alt="Saúde Mental"
             className="absolute inset-0 w-full h-full object-cover"
+
           />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
           <div className="relative z-10 flex flex-col justify-end p-12 text-white">
@@ -94,7 +95,7 @@ const ResetPassword = () => {
 
             <Button
               type="button"
-              variant="outline"
+                variant="outline"
               className="w-full h-11"
               onClick={() => navigate('/login')}
             >
@@ -114,6 +115,7 @@ const ResetPassword = () => {
           src={heroBrain}
           alt="Saúde Mental"
           className="absolute inset-0 w-full h-full object-cover"
+
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40" />
         <div className="relative z-10 flex flex-col justify-end p-12 text-white">
@@ -159,6 +161,7 @@ const ResetPassword = () => {
                 {...register('email')}
                 className="h-11"
                 disabled={isLoading}
+
               />
               {errors.email && (
                 <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -173,7 +176,7 @@ const ResetPassword = () => {
               Lembrou-se da palavra-passe?{' '}
               <Button
                 type="button"
-                variant="link"
+                  variant="link"
                 className="px-1"
                 onClick={() => navigate('/login')}
               >

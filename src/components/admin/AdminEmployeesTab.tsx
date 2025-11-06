@@ -154,7 +154,7 @@ export const AdminEmployeesTab = () => {
             // Get company info
             const { data: company } = await supabase
               .from('companies')
-              .select('company_name')
+              .select('name')
               .eq('id', emp.company_id)
               .single();
 
@@ -187,7 +187,7 @@ export const AdminEmployeesTab = () => {
               id: emp.id,
               name: profile?.name || '',
               email: profile?.email || '',
-              company: company?.company_name || '',
+              company: company?.name || '',
               pillars: onboarding?.pillar_preferences || [],
               sessionsUsed: emp.sessions_used,
               sessionsAllocated: emp.sessions_allocated,

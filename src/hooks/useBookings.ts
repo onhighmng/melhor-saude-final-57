@@ -66,7 +66,7 @@ export const useBookings = (): UseBookingsReturn => {
           )
         `)
         .eq('user_id', user.id)
-        .order('booking_date', { ascending: true });
+        .order('date', { ascending: true });
 
       if (error) throw error;
 
@@ -80,8 +80,8 @@ export const useBookings = (): UseBookingsReturn => {
           provider_name: b.prestadores?.name || '',
           provider_avatar: b.prestadores?.photo_url || '',
           pillar: b.pillar || undefined,
-          date: b.booking_date, // Use booking_date consistently
-          booking_date: b.booking_date,
+          date: b.date, // Use date column from database
+          booking_date: b.date, // Keep for backward compatibility
           time: b.start_time || undefined,
           status: b.status,
           session_type: b.meeting_type,
@@ -90,6 +90,7 @@ export const useBookings = (): UseBookingsReturn => {
           end_time: b.end_time,
           meeting_link: b.meeting_link,
           rating: b.rating || null,
+          company_id: b.company_id,
           prestadores: b.prestadores
         }));
         

@@ -37,7 +37,7 @@ export const getBookingConfirmationEmail = (data: BookingEmailData): string => {
           .content { background-color: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
           .detail { margin: 10px 0; padding: 10px; background-color: white; border-left: 3px solid #4F46E5; }
           .button { display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }
-          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 16.1px; } /* 14px × 1.15 */
         </style>
       </head>
       <body>
@@ -64,7 +64,7 @@ export const getBookingConfirmationEmail = (data: BookingEmailData): string => {
           <div class="footer">
             <p>Melhor Saúde</p>
             <p>Cuidando de si e do seu bem-estar</p>
-            <p style="font-size: 12px; margin-top: 8px;">Este é um email automático, por favor não responda.</p>
+            <p style="font-size: 13.8px; margin-top: 8px;">Este é um email automático, por favor não responda.</p> {/* 12px × 1.15 */}
           </div>
         </div>
       </body>
@@ -94,7 +94,7 @@ export const getBookingCancellationEmail = (data: Omit<BookingEmailData, 'meetin
           .content { background-color: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
           .detail { margin: 10px 0; padding: 10px; background-color: white; border-left: 3px solid #EF4444; }
           .button { display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }
-          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 16.1px; } /* 14px × 1.15 */
         </style>
       </head>
       <body>
@@ -120,7 +120,7 @@ export const getBookingCancellationEmail = (data: Omit<BookingEmailData, 'meetin
           <div class="footer">
             <p>Melhor Saúde</p>
             <p>Cuidando de si e do seu bem-estar</p>
-            <p style="font-size: 12px; margin-top: 8px;">Este é um email automático, por favor não responda.</p>
+            <p style="font-size: 13.8px; margin-top: 8px;">Este é um email automático, por favor não responda.</p> {/* 12px × 1.15 */}
           </div>
         </div>
       </body>
@@ -153,7 +153,7 @@ export const getBookingReminderEmail = (data: BookingEmailData): string => {
           .content { background-color: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
           .detail { margin: 10px 0; padding: 10px; background-color: white; border-left: 3px solid #F59E0B; }
           .button { display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }
-          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 16.1px; } /* 14px × 1.15 */
         </style>
       </head>
       <body>
@@ -180,7 +180,7 @@ export const getBookingReminderEmail = (data: BookingEmailData): string => {
           <div class="footer">
             <p>Melhor Saúde</p>
             <p>Cuidando de si e do seu bem-estar</p>
-            <p style="font-size: 12px; margin-top: 8px;">Este é um email automático, por favor não responda.</p>
+            <p style="font-size: 13.8px; margin-top: 8px;">Este é um email automático, por favor não responda.</p> {/* 12px × 1.15 */}
           </div>
         </div>
       </body>
@@ -210,10 +210,10 @@ export const getMeetingLinkEmail = (data: BookingEmailData): string => {
           .content { background-color: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
           .detail { margin: 10px 0; padding: 10px; background-color: white; border-left: 3px solid #10B981; }
           .meeting-link-box { background-color: #D1FAE5; border: 2px solid #10B981; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
-          .meeting-link { font-size: 16px; color: #047857; word-break: break-all; }
+          .meeting-link { font-size: 18.4px; color: #047857; word-break: break-all; } /* 16px × 1.15 */
           .button { display: inline-block; background-color: #10B981; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; margin-top: 15px; font-weight: bold; }
           .button:hover { background-color: #059669; }
-          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 16.1px; } /* 14px × 1.15 */
           .important { background-color: #FEF3C7; border-left: 3px solid #F59E0B; padding: 15px; margin: 20px 0; border-radius: 4px; }
         </style>
       </head>
@@ -256,8 +256,8 @@ export const getMeetingLinkEmail = (data: BookingEmailData): string => {
           <div class="footer">
             <p><strong>Melhor Saúde</strong></p>
             <p>Cuidando de si e do seu bem-estar</p>
-            <p style="font-size: 12px; margin-top: 8px; color: #9ca3af;">Este é um email automático, por favor não responda.</p>
-            <p style="font-size: 12px; margin-top: 4px; color: #9ca3af;">Se tiver questões, contacte-nos através da plataforma.</p>
+            <p style="font-size: 13.8px; margin-top: 8px; color: #9ca3af;">Este é um email automático, por favor não responda.</p> {/* 12px × 1.15 */}
+            <p style="font-size: 13.8px; margin-top: 4px; color: #9ca3af;">Se tiver questões, contacte-nos através da plataforma.</p> {/* 12px × 1.15 */}
           </div>
         </div>
       </body>

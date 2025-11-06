@@ -4,8 +4,7 @@ export interface Booking {
   id: string;
   user_id: string;
   prestador_id: string | null;
-  booking_date: string;
-  date: string | null;
+  date: string;
   start_time: string | null;
   end_time: string | null;
   status: SessionStatus;

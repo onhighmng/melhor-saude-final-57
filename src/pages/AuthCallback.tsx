@@ -3,10 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { ROLE_REDIRECT_MAP, UserRole } from '@/utils/authRedirects';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { loadingAnimationConfig, loadingPresets } from '@/components/LoadingAnimationConfig';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { refreshProfile } = useAuth();
 
   useEffect(() => {
     const handleRedirect = async () => {
@@ -66,22 +70,35 @@ const AuthCallback = () => {
       console.log(`%c  - Primary role selected: ${primaryRole}`, 'color: green; font-weight: bold;');
       console.log(`%c  - Redirecting to: ${redirectPath}`, 'color: green;');
       
+      // CRITICAL FIX: Force AuthContext to refresh profile BEFORE navigating
+      // This ensures ProtectedRoute has the correct role when it checks
+      console.log(`%c[AuthCallback] 🔄 Forcing AuthContext to refresh profile...`, 'color: orange; font-weight: bold;');
+      await refreshProfile();
+      console.log(`%c[AuthCallback] ✅ Profile refreshed, waiting for state to propagate...`, 'color: green;');
+      
+      // Wait a moment for React state to propagate
+      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log(`%c[AuthCallback] ✅ State should be ready, navigating now...`, 'color: green; font-weight: bold;');
+      
       toast({ title: 'Login bem-sucedido!', description: 'Bem-vindo de volta.' });
       navigate(redirectPath, { replace: true });
     };
 
     handleRedirect();
-  }, [navigate, toast]);
+  }, [navigate, toast, refreshProfile]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
-      <div className="text-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-        <p className="text-sm text-muted-foreground">
-          Finalizando autenticação...
-        </p>
-      </div>
-    </div>
+      <LoadingAnimation
+        variant="fullscreen"
+        message="Finalizando autenticação..."
+        submessage="Aguarde enquanto finalizamos o seu login"
+        mascotSrc={loadingAnimationConfig.mascot}
+        wordmarkSrc={loadingAnimationConfig.wordmark}
+        primaryColor={loadingAnimationConfig.primaryColor}
+        textColor={loadingAnimationConfig.textColor}
+        showProgress={true}
+
+      />
   );
 };
 

@@ -68,10 +68,10 @@ export const ProviderCalendarView = ({
     try {
       const { data: bookings, error } = await supabase
         .from('bookings')
-        .select('*, profiles(name), companies(company_name)')
+        .select('*, profiles(name), companies(name)')
         .eq('prestador_id', provider.id)
-        .gte('booking_date', format(currentWeekStart, 'yyyy-MM-dd'))
-        .lte('booking_date', format(weekEnd, 'yyyy-MM-dd'))
+        .gte('date', format(currentWeekStart, 'yyyy-MM-dd'))
+        .lte('date', format(weekEnd, 'yyyy-MM-dd'))
         .neq('status', 'cancelled');
 
       if (error) throw error;
@@ -86,7 +86,7 @@ export const ProviderCalendarView = ({
           slotDate.setHours(hour, 0, 0, 0);
           
           const booking = bookings?.find(b => {
-            const bookingDate = new Date(b.booking_date);
+            const bookingDate = new Date(b.date);
             const bookingHour = b.start_time ? parseInt(b.start_time.split(':')[0]) : null;
             return isSameDay(bookingDate, date) && bookingHour === hour;
           });
@@ -98,7 +98,7 @@ export const ProviderCalendarView = ({
             ...(booking ? {
               bookingId: booking.id,
               collaboratorName: (booking.profiles as any)?.name || 'N/A',
-              company: booking.companies?.company_name || 'N/A',
+              company: booking.companies?.name || 'N/A',
               sessionType: booking.meeting_type as 'virtual' | 'presential',
             } : {}),
           });

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { X, Upload, Loader2 } from "lucide-react";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { uploadAvatar } from "@/utils/avatarUpload";
+import { formatPhoneNumber, PHONE_PLACEHOLDER } from "@/utils/phoneFormat";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -19,8 +20,8 @@ export const ProfileEditModal = ({ isOpen, onClose, profile, onSave }: ProfileEd
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profileData, setProfileData] = useState({
-    name: profile?.name || "",
-    phone: profile?.phone || "",
+    name: profile?.full_name || "",  // FIXED: Use full_name from profile
+    phone: profile?.phone ? formatPhoneNumber(profile.phone) : "+258 ",
     avatar_url: profile?.avatar_url || ""
   });
   const [uploading, setUploading] = useState(false);
@@ -70,7 +71,11 @@ export const ProfileEditModal = ({ isOpen, onClose, profile, onSave }: ProfileEd
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0">
+      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0" showClose={false} aria-describedby="profile-description">
+        <DialogTitle className="sr-only">Informação do Perfil</DialogTitle>
+        <DialogDescription id="profile-description" className="sr-only">
+          Atualize as suas informações pessoais
+        </DialogDescription>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b">
@@ -90,11 +95,11 @@ export const ProfileEditModal = ({ isOpen, onClose, profile, onSave }: ProfileEd
                 <Avatar className="w-24 h-24">
                   <AvatarImage src={profileData.avatar_url || profile?.avatar_url} />
                   <AvatarFallback className="text-2xl">
-                    {profile?.name?.charAt(0) || "U"}
+                    {profile?.full_name?.charAt(0) || "U"}  {/* FIXED: Use full_name */}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold text-lg">{profile?.name}</h3>
+                  <h3 className="font-semibold text-lg">{profile?.full_name}</h3>  {/* FIXED: Use full_name */}
                   <p className="text-sm text-muted-foreground">{profile?.email}</p>
                   <input
                     ref={fileInputRef}
@@ -139,7 +144,8 @@ export const ProfileEditModal = ({ isOpen, onClose, profile, onSave }: ProfileEd
                     id="phone"
                     type="tel"
                     value={profileData.phone}
-                    onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                    onChange={(e) => setProfileData({ ...profileData, phone: formatPhoneNumber(e.target.value) })}
+                    placeholder={PHONE_PLACEHOLDER}
                   />
                 </div>
               </div>

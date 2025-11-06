@@ -290,6 +290,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         companies: { ...settings.companies, autoApproveNewCompanies: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -305,6 +306,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         companies: { ...settings.companies, requireNUITVerification: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -323,6 +325,7 @@ const AdminSettings = () => {
                       companies: { ...settings.companies, defaultSessionsAllocation: parseInt(e.target.value) }
                     })}
                     min={1}
+
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Número de sessões atribuídas por defeito
@@ -340,6 +343,7 @@ const AdminSettings = () => {
                       companies: { ...settings.companies, maxEmployeesPerCompany: parseInt(e.target.value) }
                     })}
                     min={1}
+
                   />
                 </div>
               </div>
@@ -366,6 +370,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         users: { ...settings.users, autoActivateUsers: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -381,6 +386,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         users: { ...settings.users, requireEmailVerification: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -399,6 +405,7 @@ const AdminSettings = () => {
                       users: { ...settings.users, defaultQuotaPerUser: parseInt(e.target.value) }
                     })}
                     min={1}
+
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Sessões disponíveis para novos utilizadores
@@ -413,6 +420,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         users: { ...settings.users, allowSelfRegistration: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -443,6 +451,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         providers: { ...settings.providers, autoApproveProviders: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -458,6 +467,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         providers: { ...settings.providers, requireVideoIntro: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -499,6 +509,7 @@ const AdminSettings = () => {
                     })}
                     min={1}
                     max={12}
+
                   />
                 </div>
               </div>
@@ -549,6 +560,7 @@ const AdminSettings = () => {
                     max={30}
                     min={0}
                     step={5}
+
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
                     <span>0 min</span>
@@ -568,6 +580,7 @@ const AdminSettings = () => {
                     max={72}
                     min={1}
                     step={1}
+
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
                     <span>1h</span>
@@ -587,6 +600,7 @@ const AdminSettings = () => {
                     max={72}
                     min={1}
                     step={1}
+
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
                     <span>1h</span>
@@ -602,6 +616,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         sessions: { ...settings.sessions, noShowDeduction: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -632,6 +647,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         billing: { ...settings.billing, autoGenerateInvoices: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -651,6 +667,7 @@ const AdminSettings = () => {
                     })}
                     min={1}
                     max={28}
+
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Dia do mês para gerar faturas (1-28)
@@ -668,6 +685,7 @@ const AdminSettings = () => {
                       billing: { ...settings.billing, paymentTermsDays: parseInt(e.target.value) }
                     })}
                     min={1}
+
                   />
                 </div>
 
@@ -683,6 +701,7 @@ const AdminSettings = () => {
                     })}
                     min={0}
                     max={100}
+
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Percentagem aplicada em pagamentos atrasados
@@ -712,6 +731,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         notifications: { ...settings.notifications, emailNotifications: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -727,6 +747,7 @@ const AdminSettings = () => {
                       onCheckedChange={(value) => updateSettings({ 
                         notifications: { ...settings.notifications, smsNotifications: value }
                       })}
+
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -745,6 +766,7 @@ const AdminSettings = () => {
                       notifications: { ...settings.notifications, lowQuotaThreshold: parseInt(e.target.value) }
                     })}
                     min={1}
+
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Notificar quando sessões restantes ≤ este valor
@@ -763,6 +785,7 @@ const AdminSettings = () => {
                     })}
                     min={1}
                     max={72}
+
                   />
                 </div>
               </div>
@@ -830,6 +853,7 @@ const AdminSettings = () => {
                         id="encryptRecordings"
                         checked={settings.flags.encryptRecordings}
                         onCheckedChange={(checked) => updateFlags('encryptRecordings', checked as boolean)}
+
                       />
                       <Label htmlFor="encryptRecordings" className="text-sm font-normal cursor-pointer">
                         Encriptar gravações de sessões
@@ -841,6 +865,7 @@ const AdminSettings = () => {
                         id="notifyAdminOnPHI"
                         checked={settings.flags.notifyAdminOnPHI}
                         onCheckedChange={(checked) => updateFlags('notifyAdminOnPHI', checked as boolean)}
+
                       />
                       <Label htmlFor="notifyAdminOnPHI" className="text-sm font-normal cursor-pointer">
                         Notificar admin em acessos PHI
@@ -852,6 +877,7 @@ const AdminSettings = () => {
                         id="requireJustification"
                         checked={settings.flags.requireJustification}
                         onCheckedChange={(checked) => updateFlags('requireJustification', checked as boolean)}
+
                       />
                       <Label htmlFor="requireJustification" className="text-sm font-normal cursor-pointer">
                         Exigir justificação para visualização

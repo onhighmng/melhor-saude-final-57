@@ -71,7 +71,7 @@ export default function UserSessions() {
     const oneDayAgo = now - (24 * 60 * 60 * 1000);
     
     const unratedSessions = allBookings.filter(booking => {
-      const bookingTime = new Date(booking.booking_date).getTime();
+      const bookingTime = new Date(booking.date).getTime();
       return (
         booking.status === 'completed' &&
         !booking.rating &&
@@ -100,8 +100,7 @@ export default function UserSessions() {
     id: booking.id,
     user_id: booking.user_id,
     prestador_id: booking.prestador_id,
-    booking_date: booking.booking_date,
-    date: booking.booking_date,
+    date: booking.date,
     time: booking.start_time || '',
     prestadorName: booking.provider_name || 'Provider',
     pillar: (booking.pillar || 'saude_mental') as 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica',
@@ -109,9 +108,9 @@ export default function UserSessions() {
     minutes: 60,
     wasDeducted: booking.status === 'completed',
     payerSource: 'company' as const,
-    deductedAt: booking.status === 'completed' ? booking.booking_date : undefined,
-    createdAt: booking.booking_date,
-    updatedAt: booking.booking_date,
+    deductedAt: booking.status === 'completed' ? booking.date : undefined,
+    createdAt: booking.date,
+    updatedAt: booking.date,
     session_type: 'individual' as const,
     sessionType: 'individual' as const,
     meetingPlatform: (booking.meeting_link?.includes('zoom') ? 'zoom' : booking.meeting_link?.includes('teams') ? 'teams' : 'google_meet') as 'zoom' | 'google_meet' | 'teams',
@@ -185,7 +184,11 @@ export default function UserSessions() {
         .from('bookings')
         .select(`
           *,
-          prestadores!bookings_prestador_id_fkey (name, email, user_id)
+          prestadores!bookings_prestador_id_fkey (
+            name,
+            user_id,
+            profiles!prestadores_user_id_fkey (email, phone)
+          )
         `)
         .eq('id', sessionId)
         .single();
@@ -274,22 +277,24 @@ export default function UserSessions() {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-gray-50">
+    <div className="w-full min-h-screen bg-blue-50">
       {/* Content */}
-      <div className="relative z-10">
+      <div className="flex flex-col">
         {/* Header */}
-        <div className="container mx-auto p-6 pb-0">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Meu Percurso</h1>
-            <p className="text-muted-foreground">Acompanhe as suas sessões, objetivos e progresso</p>
+        <div className="bg-white border-b border-gray-100 shadow-sm">
+          <div className="container mx-auto px-6 py-6">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Meu Percurso</h1>
+              <p className="text-muted-foreground">Acompanhe as suas sessões, objetivos e progresso</p>
+            </div>
           </div>
         </div>
 
         {/* Welcome message for new users with no bookings */}
         {!bookingsLoading && allBookings.length === 0 && (
-          <div className="container mx-auto px-6 mb-6">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl p-8 text-center">
-              <Sparkles className="w-12 h-12 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
+          <div className="container mx-auto px-6 mb-6 mt-6">
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-md">
+              <Sparkles className="w-12 h-12 text-blue-600 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-foreground mb-2">Bem-vindo ao seu Percurso de Bem-Estar!</h2>
               <p className="text-muted-foreground mb-6">
                 Comece a sua jornada agendando a primeira sessão. Acompanhe os seus objetivos, progresso e conquiste marcos importantes.
@@ -318,9 +323,9 @@ export default function UserSessions() {
             futureSessionsCount={futureSessionsCount}
             onHistoryClick={() => setIsPastSessionsModalOpen(true)}
             onFutureSessionsClick={() => setIsFutureSessionsModalOpen(true)}
+
           />
         </div>
-
 
         {/* Session Modals */}
         <SessionModal
@@ -331,6 +336,7 @@ export default function UserSessions() {
           type="past"
           onViewDetails={handleViewDetails}
           onRate={handleRateSession}
+
         />
         <SessionModal
           isOpen={isFutureSessionsModalOpen}
@@ -341,6 +347,7 @@ export default function UserSessions() {
           onViewDetails={handleViewDetails}
           onReschedule={handleReschedule}
           onCancel={handleCancel}
+
         />
 
         {/* Rating Dialog */}
@@ -350,6 +357,7 @@ export default function UserSessions() {
             onOpenChange={setShowRatingDialog}
             sessionId={selectedSessionForRating}
             pillarName={sessions.find(s => s.id === selectedSessionForRating)?.pillar || ''}
+
           />
         )}
       </div>

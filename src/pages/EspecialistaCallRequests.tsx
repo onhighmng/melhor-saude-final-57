@@ -3,15 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Phone, CheckCircle, Clock, X, FileText } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Phone, CheckCircle, Clock, X, FileText, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 import { EmptyState } from '@/components/ui/empty-state';
 import { supabase } from '@/integrations/supabase/client';
+import { formatPhoneNumber } from '@/utils/phoneFormat';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 const EspecialistaCallRequests = () => {
   const { toast } = useToast();
   const { profile } = useAuth();
@@ -21,6 +23,7 @@ const EspecialistaCallRequests = () => {
   const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
   const [resolutionNotes, setResolutionNotes] = useState('');
   const [isResolving, setIsResolving] = useState(false);
+  const [selectedPillar, setSelectedPillar] = useState<string | null>(null);
   
   // Especialista Geral sees ALL escalated chats (no company filtering)
   // Filter for phone escalated chats that haven't been resolved yet
@@ -34,16 +37,7 @@ const EspecialistaCallRequests = () => {
   
   const filteredRequests = pendingRequests;
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">A carregar pedidos...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   const handleCallRequest = (request: any) => {
     setSelectedRequest(request);
@@ -52,6 +46,7 @@ const EspecialistaCallRequests = () => {
 
   const handleResolveClick = (request: any) => {
     setSelectedRequest(request);
+    setSelectedPillar(request.pillar);
     setResolutionNotes('');
     setIsResolveModalOpen(true);
   };
@@ -61,13 +56,14 @@ const EspecialistaCallRequests = () => {
     
     setIsResolving(true);
     try {
-      // Update chat session status to resolved
+      // Update chat session status to resolved and save pillar
       const { error } = await supabase
         .from('chat_sessions')
         .update({ 
           status: 'resolved',
           phone_contact_made: true,
-          ended_at: new Date().toISOString()
+          ended_at: new Date().toISOString(),
+          pillar: selectedPillar || selectedRequest.pillar
         })
         .eq('id', selectedRequest.id);
 
@@ -159,7 +155,7 @@ const EspecialistaCallRequests = () => {
     return labels[pillar as keyof typeof labels] || 'Não definido';
   };
 
-  const getPillarColor = (pillar: string | null) => {
+  const getPillarColorClasses = (pillar: string | null) => {
     const colors = {
       'saude_mental': 'bg-blue-100 text-blue-700 border-blue-300',
       'psychological': 'bg-blue-100 text-blue-700 border-blue-300',
@@ -171,6 +167,20 @@ const EspecialistaCallRequests = () => {
       'legal': 'bg-purple-100 text-purple-700 border-purple-300'
     };
     return colors[pillar as keyof typeof colors] || 'bg-gray-100 text-gray-700 border-gray-300';
+  };
+
+  const getPillarColor = (pillar: string | null) => {
+    const colors = {
+      'saude_mental': 'hsl(217, 91%, 60%)', // Blue for Mental Health
+      'psychological': 'hsl(217, 91%, 60%)', // Blue for Mental Health
+      'bem_estar_fisico': 'hsl(45, 95%, 55%)', // Yellow for Physical Wellness
+      'physical': 'hsl(45, 95%, 55%)', // Yellow for Physical Wellness
+      'assistencia_financeira': 'hsl(142, 76%, 36%)', // Green for Financial Assistance
+      'financial': 'hsl(142, 76%, 36%)', // Green for Financial Assistance
+      'assistencia_juridica': 'hsl(270, 60%, 50%)', // Purple for Legal Assistance
+      'legal': 'hsl(270, 60%, 50%)' // Purple for Legal Assistance
+    };
+    return colors[pillar as keyof typeof colors] || 'hsl(220, 9%, 46%)'; // Default gray
   };
 
   return (
@@ -211,6 +221,7 @@ const EspecialistaCallRequests = () => {
                   icon={Phone}
                   title="Nenhum pedido pendente"
                   description="Quando os colaboradores solicitarem chamadas, aparecerão aqui."
+
                 />
               ) : (
                 <div className="space-y-4">
@@ -219,12 +230,18 @@ const EspecialistaCallRequests = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <h4 className="font-semibold">{request.user_name}</h4>
-                      <Badge variant="outline">{request.company_name}</Badge>
-                      <Badge variant="secondary" className={getPillarColor(request.pillar)}>{getPillarLabel(request.pillar)}</Badge>
+                      <Badge variant="outline">{request.company_name || 'Sem empresa'}</Badge>
+                      <Badge 
+                        variant="secondary" 
+                        className="text-white border-transparent" 
+                        style={{ backgroundColor: getPillarColor(request.pillar) }}
+                      >
+                        {getPillarLabel(request.pillar)}
+                      </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <p><strong>Email:</strong> {request.user_email}</p>
-                      <p><strong>Telefone:</strong> {request.user_phone || 'N/A'}</p>
+                      <p><strong>Telefone:</strong> {formatPhoneNumber(request.user_phone || '')}</p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 items-end">
@@ -239,7 +256,7 @@ const EspecialistaCallRequests = () => {
                       </Button>
                       <Button 
                         size="default"
-                        variant="outline"
+                          variant="outline"
                         onClick={() => handleResolveClick(request)}
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
@@ -274,6 +291,7 @@ const EspecialistaCallRequests = () => {
                   icon={CheckCircle}
                   title="Nenhum pedido resolvido"
                   description="Os pedidos resolvidos aparecerão aqui."
+
                 />
               ) : (
                 <div className="space-y-4">
@@ -282,13 +300,19 @@ const EspecialistaCallRequests = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2 flex-wrap">
                           <h4 className="font-semibold">{request.user_name}</h4>
-                          <Badge variant="outline">{request.company_name}</Badge>
-                          <Badge variant="secondary" className={getPillarColor(request.pillar)}>{getPillarLabel(request.pillar)}</Badge>
+                          <Badge variant="outline">{request.company_name || 'Sem empresa'}</Badge>
+                          <Badge 
+                            variant="secondary" 
+                            className="text-white border-transparent" 
+                            style={{ backgroundColor: getPillarColor(request.pillar) }}
+                          >
+                            {getPillarLabel(request.pillar)}
+                          </Badge>
                           <Badge variant="default" className="bg-green-600">Resolvido</Badge>
                         </div>
                         <div className="text-sm text-muted-foreground space-y-1">
                           <p><strong>Email:</strong> {request.user_email}</p>
-                          <p><strong>Telefone:</strong> {request.user_phone || 'N/A'}</p>
+                          <p><strong>Telefone:</strong> {formatPhoneNumber(request.user_phone || '')}</p>
                           {request.call_log?.notes && (
                             <p><strong>Notas:</strong> {request.call_log.notes}</p>
                           )}
@@ -324,7 +348,7 @@ const EspecialistaCallRequests = () => {
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold mb-2">{selectedRequest.user_name}</h3>
-                  <p className="text-2xl font-mono text-primary font-bold">{selectedRequest.user_phone}</p>
+                  <p className="text-2xl font-mono text-primary font-bold">{formatPhoneNumber(selectedRequest.user_phone || '')}</p>
                 </div>
               </div>
             </div>
@@ -357,11 +381,44 @@ const EspecialistaCallRequests = () => {
                 </div>
                 <div>
                   <p className="text-muted-foreground">Telefone</p>
-                  <p className="font-medium">{selectedRequest?.user_phone || 'N/A'}</p>
+                  <p className="font-medium">{formatPhoneNumber(selectedRequest?.user_phone || '')}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Pilar</p>
-                  <p className="font-medium">{getPillarLabel(selectedRequest?.pillar)}</p>
+                  <Label className="text-muted-foreground flex items-center gap-1">
+                    <Tag className="h-3 w-3" />
+                    Pilar
+                  </Label>
+                  <Select value={selectedPillar || ''} onValueChange={setSelectedPillar}>
+                    <SelectTrigger className="w-full mt-1">
+                      <SelectValue placeholder="Selecione o pilar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="psychological">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(217, 91%, 60%)' }} />
+                          🔵 Saúde Mental
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="physical">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(45, 95%, 55%)' }} />
+                          🟡 Bem-estar Físico
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="financial">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(142, 76%, 36%)' }} />
+                          🟢 Assistência Financeira
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="legal">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(270, 60%, 50%)' }} />
+                          🟣 Assistência Jurídica
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -379,6 +436,7 @@ const EspecialistaCallRequests = () => {
                 value={resolutionNotes}
                 onChange={(e) => setResolutionNotes(e.target.value)}
                 className="min-h-[200px] text-base"
+
               />
               <p className="text-xs text-muted-foreground">
                 {resolutionNotes.length} caracteres
@@ -389,7 +447,7 @@ const EspecialistaCallRequests = () => {
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 pt-4 border-t">
             <Button
-              variant="outline"
+                variant="outline"
               onClick={() => {
                 setIsResolveModalOpen(false);
                 setResolutionNotes('');
@@ -400,7 +458,7 @@ const EspecialistaCallRequests = () => {
               Cancelar
             </Button>
             <Button
-              variant="secondary"
+                variant="secondary"
               onClick={() => handleConfirmResolve(true)}
               disabled={isResolving}
             >

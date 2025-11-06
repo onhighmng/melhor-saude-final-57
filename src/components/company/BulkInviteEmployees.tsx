@@ -162,6 +162,18 @@ export const BulkInviteEmployees: React.FC = () => {
     setProgress(0);
     setResults([]);
     
+    // Get company data to calculate proper allocation and include in metadata
+    const { data: companyData } = await supabase
+      .from('companies')
+      .select('sessions_allocated, employee_seats, name')
+      .eq('id', profile.company_id)
+      .single();
+    
+    // Calculate sessions per employee: total sessions / employee seats
+    const sessionsPerEmployee = companyData 
+      ? Math.floor(((companyData as any).sessions_allocated || 0) / ((companyData as any).employee_seats || 1))
+      : 0;
+    
     const newResults: BulkInviteResult[] = [];
     
     for (let i = 0; i < csvData.length; i++) {
@@ -171,7 +183,7 @@ export const BulkInviteEmployees: React.FC = () => {
         // Generate unique invite code
         const inviteCode = generateInviteCode();
         
-        // Create invite record
+        // Create invite record with calculated sessions and company metadata
         const { error } = await supabase
           .from('invites')
           .insert({
@@ -180,12 +192,16 @@ export const BulkInviteEmployees: React.FC = () => {
             email: employee.email,
             role: 'user',
             invited_by: profile.id,
+            sessions_allocated: employee.sessions_allocated || sessionsPerEmployee,
             expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
             metadata: {
               name: employee.name,
               department: employee.department,
               position: employee.position,
-              sessions_allocated: employee.sessions_allocated
+              company_name: companyData?.name,
+              company_total_sessions: companyData?.sessions_allocated,
+              company_employee_seats: (companyData as any)?.employee_seats,
+              sessions_per_employee: sessionsPerEmployee
             }
           });
         
@@ -219,7 +235,7 @@ export const BulkInviteEmployees: React.FC = () => {
     
     toast({
       title: "Convites processados",
-      description: `${successCount} sucessos, ${errorCount} erros`
+      description: `${successCount} sucessos, ${errorCount} erros (${sessionsPerEmployee} sessões cada)`
     });
     
     // Reload invite statuses

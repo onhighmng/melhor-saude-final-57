@@ -6,7 +6,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-
 const EspecialistaStatsRevamped = () => {
   const { profile } = useAuth();
   const [stats, setStats] = useState<any>(null);
@@ -145,12 +144,25 @@ const EspecialistaStatsRevamped = () => {
     }
   };
 
+  
+
+  // Show loading state while stats are being calculated
   if (!stats) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">A carregar estatísticas...</p>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-heading font-bold">
+            Estatísticas Pessoais
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Acompanhe o seu desempenho e métricas de atendimento
+          </p>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center space-y-3">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground">A carregar estatísticas...</p>
+          </div>
         </div>
       </div>
     );
@@ -176,7 +188,7 @@ const EspecialistaStatsRevamped = () => {
           className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
           background={<div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-amber-50" />}
           iconColor="text-orange-600"
-          textColor="text-gray-900"
+            textColor="text-gray-900"
           descriptionColor="text-gray-600"
           href="#"
           cta=""
@@ -192,6 +204,7 @@ const EspecialistaStatsRevamped = () => {
                   <div
                     className="h-full bg-blue-900 transition-all"
                     style={{ width: `${stats.internal_resolution_rate}%` }}
+
                   />
                 </div>
               </div>
@@ -204,6 +217,7 @@ const EspecialistaStatsRevamped = () => {
                   <div
                     className="h-full bg-blue-900 transition-all"
                     style={{ width: `${stats.referral_rate}%` }}
+
                   />
                 </div>
               </div>
@@ -219,7 +233,7 @@ const EspecialistaStatsRevamped = () => {
           className="lg:col-start-2 lg:col-end-4 lg:row-start-1 lg:row-end-2"
           background={<div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-blue-50" />}
           iconColor="text-indigo-600"
-          textColor="text-gray-900"
+            textColor="text-gray-900"
           descriptionColor="text-gray-600"
           href="#"
           cta=""
@@ -238,6 +252,7 @@ const EspecialistaStatsRevamped = () => {
                     stroke="#6366f1"
                     strokeWidth={3}
                     dot={{ fill: '#6366f1', r: 5 }}
+
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -263,7 +278,7 @@ const EspecialistaStatsRevamped = () => {
           className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3"
           background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
           iconColor="text-blue-600"
-          textColor="text-gray-900"
+            textColor="text-gray-900"
           descriptionColor="text-gray-600"
           href="#"
           cta=""
@@ -295,7 +310,7 @@ const EspecialistaStatsRevamped = () => {
           className="lg:col-start-2 lg:col-end-4 lg:row-start-2 lg:row-end-3"
           background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
           iconColor="text-yellow-600"
-          textColor="text-gray-900"
+            textColor="text-gray-900"
           descriptionColor="text-gray-600"
           href="#"
           cta=""

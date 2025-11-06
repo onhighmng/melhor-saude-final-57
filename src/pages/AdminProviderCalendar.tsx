@@ -70,10 +70,10 @@ const AdminProviderCalendar = () => {
       // Load bookings for this provider in the current week
       const { data: bookings, error } = await supabase
         .from('bookings')
-        .select('*, profiles(name), companies(company_name)')
+        .select('*, profiles(name), companies(name)')
         .eq('prestador_id', providerId)
-        .gte('booking_date', format(currentWeekStart, 'yyyy-MM-dd'))
-        .lte('booking_date', format(weekEnd, 'yyyy-MM-dd'))
+        .gte('date', format(currentWeekStart, 'yyyy-MM-dd'))
+        .lte('date', format(weekEnd, 'yyyy-MM-dd'))
         .neq('status', 'cancelled');
 
       if (error) throw error;
@@ -89,7 +89,7 @@ const AdminProviderCalendar = () => {
           slotDate.setHours(hour, 0, 0, 0);
           
           const booking = bookings?.find(b => {
-            const bookingDate = new Date(b.booking_date);
+            const bookingDate = new Date(b.date);
             const bookingHour = b.start_time ? parseInt(b.start_time.split(':')[0]) : null;
             return isSameDay(bookingDate, date) && bookingHour === hour;
           });
@@ -101,7 +101,7 @@ const AdminProviderCalendar = () => {
             ...(booking ? {
               bookingId: booking.id,
               collaboratorName: (booking.profiles as any)?.name as string || 'N/A',
-              company: (booking.companies as any)?.company_name as string || 'N/A',
+              company: (booking.companies as any)?.name as string || 'N/A',
               sessionType: booking.meeting_type as 'virtual' | 'presential',
             } : {}),
           });
@@ -134,13 +134,7 @@ const AdminProviderCalendar = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  
 
   if (!provider) {
     return (
@@ -293,6 +287,7 @@ const AdminProviderCalendar = () => {
           onOpenChange={setBookingModalOpen}
           provider={provider}
           slot={selectedSlot}
+
         />
       )}
     </div>

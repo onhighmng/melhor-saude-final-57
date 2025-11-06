@@ -73,6 +73,7 @@ const UserBooking = () => {
               hoverSize={8}
               gapSize={6}
               onPillarSelect={handlePillarSelect}
+
             />
           </div>
 

@@ -14,7 +14,13 @@ const topicLabels: Record<string, { emoji: string; title: string }> = {
   'budgeting': { emoji: '💰', title: 'Orçamento Pessoal' },
   'debt': { emoji: '💳', title: 'Gestão de Dívidas' },
   'investments': { emoji: '💵', title: 'Poupança e Investimentos' },
-  'housing': { emoji: '🏠', title: 'Financiamento Imobiliário' },
+  'retirement': { emoji: '👴', title: 'Planeamento de Reforma' },
+  'insurance': { emoji: '🛡️', title: 'Seguros' },
+  'financial-education': { emoji: '📚', title: 'Educação Financeira' },
+  'estate-planning': { emoji: '📋', title: 'Planeamento Sucessório' },
+  'housing': { emoji: '🏠', title: 'Crédito Habitação' },
+  'taxes': { emoji: '🧾', title: 'Impostos e Declarações' },
+  'debt-negotiation': { emoji: '🤝', title: 'Negociação de Dívidas' },
   'education': { emoji: '🎓', title: 'Planeamento de Educação' },
   'credit': { emoji: '🔄', title: 'Crédito e Empréstimos' }
 };
@@ -27,7 +33,19 @@ const symptomLabels: Record<string, string> = {
   'financial-worry': 'Preocupação com o futuro financeiro',
   'bad-credit': 'Problemas com negativação ou score baixo',
   'investment-desire': 'Desejo de investir mas não sei por onde começar',
-  'impulsive-spending': 'Gastos impulsivos frequentes'
+  'impulsive-spending': 'Gastos impulsivos frequentes',
+  'no-emergency-fund': 'Não tenho fundo de emergência',
+  'paycheck-to-paycheck': 'Vivo de ordenado em ordenado',
+  'multiple-debts': 'Tenho múltiplas dívidas ativas',
+  'cannot-save': 'Não consigo poupar mensalmente',
+  'job-loss-fear': 'Receio perder o emprego',
+  'money-tracking': 'Não sei onde vai o meu dinheiro',
+  'family-conflicts': 'Tenho conflitos financeiros na família',
+  'bill-anxiety': 'Sinto ansiedade ao pagar contas',
+  'bank-statements': 'Não entendo extratos bancários',
+  'no-financial-goals': 'Não tenho objetivos financeiros claros',
+  'late-payments': 'Atrasos frequentes em pagamentos',
+  'credit-card-maxed': 'Cartões de crédito no limite'
 };
 
 const AssessmentResult: React.FC<AssessmentResultProps> = ({

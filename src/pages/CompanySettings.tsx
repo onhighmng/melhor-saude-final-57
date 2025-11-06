@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { sanitizeInput } from '@/utils/sanitize';
+import { formatPhoneNumber, PHONE_PLACEHOLDER } from '@/utils/phoneFormat';
 import { CompanySubscriptionBanner } from '@/components/company/CompanySubscriptionBanner';
 
 export default function CompanySettings() {
@@ -15,7 +16,7 @@ export default function CompanySettings() {
   const [companyData, setCompanyData] = useState({
     name: '',
     contact_email: '',
-    contact_phone: ''
+    contact_phone: '+258 '
   });
 
   useEffect(() => {
@@ -91,6 +92,7 @@ export default function CompanySettings() {
             <Input
               value={companyData.name}
               onChange={(e) => setCompanyData({...companyData, name: e.target.value})}
+
             />
           </div>
           <div>
@@ -99,13 +101,16 @@ export default function CompanySettings() {
               type="email"
               value={companyData.contact_email}
               onChange={(e) => setCompanyData({...companyData, contact_email: e.target.value})}
+
             />
           </div>
           <div>
             <Label>Telefone</Label>
             <Input
+              type="tel"
               value={companyData.contact_phone}
-              onChange={(e) => setCompanyData({...companyData, contact_phone: e.target.value})}
+              onChange={(e) => setCompanyData({...companyData, contact_phone: formatPhoneNumber(e.target.value)})}
+              placeholder={PHONE_PLACEHOLDER}
             />
           </div>
           <Button onClick={handleSave} disabled={loading}>

@@ -231,6 +231,7 @@ export default function CompanyResources() {
             icon={BookOpen}
             title="Recursos disponíveis em breve"
             description="Estamos a preparar conteúdo valioso para os seus colaboradores. Os recursos estarão disponíveis brevemente."
+
           />
         </div>
       </div>

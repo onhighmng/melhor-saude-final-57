@@ -10,7 +10,7 @@ export default function Terms() {
     <div className="w-full px-6 py-8">
       {/* Back Button */}
       <Button
-        variant="ghost"
+          variant="ghost"
         onClick={() => navigate(-1)}
         className="mb-6 gap-2 text-lg"
       >
@@ -21,6 +21,7 @@ export default function Terms() {
       <PageHeader
         title="Termos e Condições"
         subtitle={`Última atualização: ${new Date().toLocaleDateString('pt-PT')}`}
+
       />
       
       <div className="prose prose-2xl max-w-none mt-8 space-y-12 text-lg">

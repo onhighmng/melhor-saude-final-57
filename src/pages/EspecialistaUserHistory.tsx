@@ -11,7 +11,6 @@ import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
-
 // Utility functions for pillar labels and colors
 const getPillarLabel = (pillar: string): string => {
   const labels: Record<string, string> = {
@@ -80,7 +79,7 @@ const EspecialistaUserHistory = () => {
             session_type,
             meeting_link,
             rating,
-            profiles!bookings_user_id_fkey(name, email, company_id, companies!profiles_company_id_fkey(company_name))
+            profiles!bookings_user_id_fkey(name, email, company_id, companies!profiles_company_id_fkey(name))
           `)
           .eq('prestador_id', prestador.id)
           .not('user_id', 'is', null);
@@ -133,7 +132,7 @@ const EspecialistaUserHistory = () => {
             name,
             email,
             company_id,
-            companies!profiles_company_id_fkey(company_name)
+            companies!profiles_company_id_fkey(name)
           `)
           .in('id', Array.from(userIds));
 
@@ -160,7 +159,7 @@ const EspecialistaUserHistory = () => {
 
           // Get most recent interaction date
           const dates = [
-            ...userBookings.map(b => new Date(b.booking_date)),
+            ...userBookings.map(b => new Date(b.date)),
             ...userCallLogs.map(c => new Date(c.created_at)),
             ...userChatSessions.map(s => new Date(s.created_at))
           ].sort((a, b) => b.getTime() - a.getTime());
@@ -206,7 +205,7 @@ const EspecialistaUserHistory = () => {
           // Build sessions list with details
           const sessionsList = userBookings.map(booking => ({
             id: booking.user_id,
-            date: booking.booking_date,
+            date: booking.date,
             time: booking.start_time,
             status: booking.status,
             pillar: booking.pillar,
@@ -225,7 +224,7 @@ const EspecialistaUserHistory = () => {
             }));
 
           // Extract company name - handle both nested object and direct access
-          const companyName = (userProfile as any).companies?.company_name || 
+          const companyName = (userProfile as any).companies?.name || 
                               userProfile.company_id || 
                               'Empresa não disponível';
           
@@ -290,16 +289,7 @@ const EspecialistaUserHistory = () => {
     return colors[pillar as keyof typeof colors] || { bg: 'hsl(0 0% 95%)', text: 'hsl(0 0% 40%)' };
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">A carregar historial...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="space-y-6">
@@ -385,7 +375,7 @@ const EspecialistaUserHistory = () => {
                   <TableCell className="text-right">
                     <Button
                       size="sm"
-                      variant="outline"
+                        variant="outline"
                       onClick={() => handleViewChat(user)}
                     >
                       <MessageSquare className="h-4 w-4 mr-1" />

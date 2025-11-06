@@ -139,7 +139,7 @@ const AdminUserDetail = () => {
 
       setUser({
         ...(profile as any),
-        company: (employee as any)?.companies?.company_name || '',
+        company: (employee as any)?.companies?.name || '',
         sessionsAllocated: employee?.sessions_allocated || 0,
         sessionsUsed: employee?.sessions_used || 0,
         companySessions: employee?.sessions_allocated || 0,
@@ -335,7 +335,7 @@ const AdminUserDetail = () => {
               Editar Perfil
             </Button>
             <Button
-              variant={user.status === 'active' ? 'destructive' : 'default'}
+                variant={user.status === 'active' ? 'destructive' : 'default'}
               onClick={() => handleStatusChange(user.status === 'active' ? 'inactive' : 'active')}
             >
               {user.status === 'active' ? (
@@ -415,6 +415,7 @@ const AdminUserDetail = () => {
                           type="number" 
                           value={user.companySessions} 
                           className="flex-1"
+
                         />
                         <Button size="sm">
                           <ArrowUpDown className="h-4 w-4" />
@@ -428,6 +429,7 @@ const AdminUserDetail = () => {
                           type="number" 
                           value={user.personalSessions} 
                           className="flex-1"
+
                         />
                         <Button size="sm">
                           <ArrowUpDown className="h-4 w-4" />
@@ -473,6 +475,7 @@ const AdminUserDetail = () => {
                       <Progress 
                         value={(user.usedCompanySessions / user.companySessions) * 100} 
                         className="mt-2"
+
                       />
                     </div>
                   </CardContent>
@@ -502,6 +505,7 @@ const AdminUserDetail = () => {
                       <Progress 
                         value={(user.usedPersonalSessions / user.personalSessions) * 100} 
                         className="mt-2"
+
                       />
                     </div>
                   </CardContent>
@@ -524,6 +528,7 @@ const AdminUserDetail = () => {
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px'
                         }}
+
                       />
                       <Bar dataKey="company" fill="hsl(var(--primary))" name="Empresa" />
                       <Bar dataKey="personal" fill="hsl(var(--secondary))" name="Pessoal" />
@@ -625,7 +630,7 @@ const AdminUserDetail = () => {
                               </Button>
                               <Button 
                                 size="sm" 
-                                variant="destructive"
+                                  variant="destructive"
                                 onClick={() => handleChangeRequestAction(request.id, 'reject')}
                               >
                                 <XCircle className="h-4 w-4 mr-1" />
@@ -707,6 +712,7 @@ const AdminUserDetail = () => {
           setIsEditDialogOpen(false);
           loadUser();
         }}
+
       />
     )}
     </div>

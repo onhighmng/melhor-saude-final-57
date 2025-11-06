@@ -155,13 +155,9 @@ export default function SetupHRAccount() {
               <p className="text-sm text-muted-foreground">
                 Nenhuma empresa disponível. 
                 <br />
-                <Button 
-                  variant="link" 
-                  className="p-0 h-auto mt-2"
-                  onClick={() => navigate('/register/company')}
-                >
-                  Registar nova empresa →
-                </Button>
+                <span className="text-xs mt-2 block">
+                  Contacte o administrador para obter um código de acesso para registar a sua empresa.
+                </span>
               </p>
             </div>
           )}
@@ -185,21 +181,14 @@ export default function SetupHRAccount() {
           </Button>
 
           <div className="text-center">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/register/company')}
-              className="text-sm"
-            >
-              Ou registar nova empresa
-            </Button>
+            <p className="text-sm text-muted-foreground">
+              Precisa de registar uma nova empresa?<br />
+              <span className="text-xs">Contacte o administrador para obter um código de acesso.</span>
+            </p>
           </div>
         </CardContent>
       </Card>
     </div>
   );
 }
-
-
-
-
 

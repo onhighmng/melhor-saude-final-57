@@ -277,7 +277,7 @@ export const DirectBookingFlow = () => {
         prestador_id: prestador_id,
         chat_session_id: chat_session_id,
         pillar: String(dbPillar),
-        booking_date: String(selectedDate.toISOString().split('T')[0]),
+        date: String(selectedDate.toISOString().split('T')[0]),
         start_time: String(selectedTime),
         end_time: String(endTime),
         status: 'scheduled',

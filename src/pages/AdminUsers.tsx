@@ -187,7 +187,6 @@ const AdminUsers = () => {
     });
   };
 
-
   // Calculate summary metrics
   const totalUsers = users.length;
   const activeUsers = users.filter(u => u.status === 'active').length;
@@ -256,6 +255,7 @@ const AdminUsers = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 w-80"
+
               />
             </div>
             
@@ -437,7 +437,7 @@ const AdminUsers = () => {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Button
-                            variant="ghost"
+                              variant="ghost"
                             size="sm"
                             asChild
                           >
@@ -446,7 +446,7 @@ const AdminUsers = () => {
                             </Link>
                           </Button>
                           <Button
-                            variant="ghost"
+                              variant="ghost"
                             size="sm"
                             onClick={() => handleStatusChange(
                               user.id, 

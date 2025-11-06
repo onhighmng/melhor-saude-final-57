@@ -70,7 +70,11 @@ export const SecurityModal = ({ isOpen, onClose, onChangePassword, onEnable2FA }
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0">
+        <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0" showClose={false} aria-describedby="security-description">
+          <DialogTitle className="sr-only">Segurança & Acesso</DialogTitle>
+          <DialogDescription id="security-description" className="sr-only">
+            Gerir as definições de segurança da sua conta
+          </DialogDescription>
           <div className="flex flex-col h-full">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b">

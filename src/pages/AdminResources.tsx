@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Edit, Trash2, FileText, Video, File } from 'lucide-react';
-
 export default function AdminResources() {
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -247,13 +246,7 @@ export default function AdminResources() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -316,6 +309,7 @@ export default function AdminResources() {
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
                 required
+
               />
             </div>
             <div>
@@ -324,6 +318,7 @@ export default function AdminResources() {
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 rows={3}
+
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -372,6 +367,7 @@ export default function AdminResources() {
                   value={formData.url}
                   onChange={(e) => setFormData({...formData, url: e.target.value})}
                   disabled={!!resourceFile}
+
                 />
                 <div className="text-sm text-muted-foreground text-center">ou</div>
                 <Input
@@ -384,6 +380,7 @@ export default function AdminResources() {
                       setFormData({...formData, url: ''});
                     }
                   }}
+
                 />
                 <p className="text-xs text-muted-foreground">
                   Formatos aceites: PDF, DOC, DOCX (documentos) | MP4, MOV, AVI (vídeos)
@@ -405,6 +402,7 @@ export default function AdminResources() {
                   value={formData.thumbnail_url}
                   onChange={(e) => setFormData({...formData, thumbnail_url: e.target.value})}
                   disabled={!!thumbnailFile}
+
                 />
                 <div className="text-sm text-muted-foreground text-center">ou</div>
                 <Input
@@ -417,6 +415,7 @@ export default function AdminResources() {
                       setFormData({...formData, thumbnail_url: ''});
                     }
                   }}
+
                 />
                 <p className="text-xs text-muted-foreground">
                   Formatos aceites: JPG, PNG, WEBP, GIF (imagens)
@@ -435,6 +434,7 @@ export default function AdminResources() {
                 id="is_active"
                 checked={formData.is_active}
                 onChange={(e) => setFormData({...formData, is_active: e.target.checked})}
+
               />
               <Label htmlFor="is_active">Recurso ativo</Label>
             </div>

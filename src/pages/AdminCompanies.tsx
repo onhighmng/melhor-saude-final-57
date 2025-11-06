@@ -5,9 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Users, Building2, TrendingUp, Edit2, Check, X, AlertCircle } from 'lucide-react';
+import { Search, Users, Building2, TrendingUp, Edit2, Check, X, AlertCircle, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { AddCompanyModal } from '@/components/admin/AddCompanyModal';
 
 interface Company {
   id: string;
@@ -38,6 +39,7 @@ export default function AdminCompanies() {
   const [companySeatStats, setCompanySeatStats] = useState<Map<string, CompanySeatStats>>(new Map());
   const [loading, setLoading] = useState(true);
   const [editingCompany, setEditingCompany] = useState<{ id: string; seats: number } | null>(null);
+  const [addCompanyModalOpen, setAddCompanyModalOpen] = useState(false);
 
   useEffect(() => {
     loadCompanies();
@@ -114,10 +116,16 @@ export default function AdminCompanies() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Empresas</h1>
           <p className="text-muted-foreground">Gerir empresas e alocação de vagas</p>
         </div>
+        <Button onClick={() => setAddCompanyModalOpen(true)} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Adicionar Empresa
+        </Button>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -183,6 +191,7 @@ export default function AdminCompanies() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
+
           />
         </div>
       </div>
@@ -244,17 +253,18 @@ export default function AdminCompanies() {
                               value={editingCompany.seats}
                               onChange={(e) => setEditingCompany({ ...editingCompany, seats: parseInt(e.target.value) || 0 })}
                               className="w-20"
+
                             />
                             <Button
                               size="sm"
-                              variant="ghost"
+                                variant="ghost"
                               onClick={() => handleUpdateSeats(company.id, editingCompany.seats)}
                             >
                               <Check className="h-4 w-4 text-green-600" />
                             </Button>
                             <Button
                               size="sm"
-                              variant="ghost"
+                                variant="ghost"
                               onClick={() => setEditingCompany(null)}
                             >
                               <X className="h-4 w-4 text-red-600" />
@@ -265,7 +275,7 @@ export default function AdminCompanies() {
                             <span className="font-semibold">{company.employee_seats || 0}</span>
                             <Button
                               size="sm"
-                              variant="ghost"
+                                variant="ghost"
                               onClick={() => setEditingCompany({ id: company.id, seats: company.employee_seats || 0 })}
                             >
                               <Edit2 className="h-3 w-3" />
@@ -304,6 +314,7 @@ export default function AdminCompanies() {
                                 'bg-green-500'
                               }`}
                               style={{ width: `${Math.min(usagePercent, 100)}%` }}
+
                             />
                           </div>
                         </div>
@@ -330,6 +341,13 @@ export default function AdminCompanies() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Add Company Modal */}
+      <AddCompanyModal
+        open={addCompanyModalOpen}
+        onOpenChange={setAddCompanyModalOpen}
+        onSuccess={loadCompanies}
+      />
     </div>
   );
 }

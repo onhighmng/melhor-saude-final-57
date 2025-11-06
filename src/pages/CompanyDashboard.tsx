@@ -174,16 +174,7 @@ const CompanyDashboard = () => {
   const PillarIcon = getPillarIcon(metrics?.mostUsedPillar || 'Saúde Mental');
 
   // Show loading state while data loads
-  if (loading || !metrics) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">A carregar dados da empresa...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="relative w-full min-h-screen h-full flex flex-col">
@@ -216,10 +207,11 @@ const CompanyDashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100" />
                 }
                 iconColor="text-amber-700"
-                textColor="text-slate-900"
+                  textColor="text-slate-900"
                 descriptionColor="text-slate-600"
                 href="#"
                 cta="Ver Relatórios"
+
               />
 
               {/* Top Right - Sessions */}
@@ -233,10 +225,11 @@ const CompanyDashboard = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />
                 }
                 iconColor="text-blue-700"
-                textColor="text-slate-900"
+                  textColor="text-slate-900"
                 descriptionColor="text-slate-600"
                 href="#"
                 cta="Ver Sessões"
+
               />
 
               {/* Bottom Left - Employee Registration Status */}
@@ -253,14 +246,16 @@ const CompanyDashboard = () => {
                       style={{
                         backgroundImage: "url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
                       }}
+
                     />
                   </div>
                 }
                 iconColor="text-purple-700"
-                textColor="text-slate-900"
+                  textColor="text-slate-900"
                 descriptionColor="text-slate-600"
                 href="#"
                 cta="Ver Detalhes"
+
               />
 
               {/* Bottom Right - Recursos */}
@@ -274,13 +269,15 @@ const CompanyDashboard = () => {
                   <div 
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: `url(${recursosWellness})` }}
+
                   />
                 }
                 iconColor="text-white"
-                textColor="text-white"
+                  textColor="text-white"
                 descriptionColor="text-white"
                 href="#"
                 cta="Ver Recursos"
+
               />
 
               {/* Center - Activity & Pillar Overview */}
@@ -367,6 +364,7 @@ const CompanyDashboard = () => {
                         <Progress 
                           value={(metrics?.sessionsAllocated || 0) > 0 ? ((metrics?.sessionsUsed || 0) / (metrics?.sessionsAllocated || 1)) * 100 : 0} 
                           className="h-1.5" 
+
                         />
                         <p className="text-xs text-gray-600">
                           {metrics?.sessionsUsed || 0} de {metrics?.sessionsAllocated || 0} sessões

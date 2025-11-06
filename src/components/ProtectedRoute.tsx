@@ -15,17 +15,30 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { isAuthenticated, profile, isLoading } = useAuth();
   const location = useLocation();
 
+  console.log('[ProtectedRoute] Check:', {
+    isLoading,
+    isAuthenticated,
+    hasProfile: !!profile,
+    profileRole: profile?.role,
+    requiredRole,
+    path: location.pathname
+  });
+
   // 1. Show a full-page loading spinner while the auth state is being determined.
   if (isLoading) {
+    console.log('[ProtectedRoute] Still loading, showing spinner...');
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
       </div>
     );
   }
 
   // 2. If not authenticated after loading, redirect to login.
   if (!isAuthenticated || !profile) {
+    console.log('[ProtectedRoute] Not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

@@ -16,7 +16,13 @@ const topicLabels: Record<string, { emoji: string; title: string }> = {
   'family': { emoji: '👨‍👩‍👧‍👦', title: 'Direito de Família' },
   'real-estate': { emoji: '🏠', title: 'Direito Imobiliário' },
   'criminal': { emoji: '⚖️', title: 'Direito Criminal' },
-  'civil': { emoji: '📜', title: 'Direito Civil' }
+  'civil': { emoji: '📜', title: 'Direito Civil' },
+  'digital': { emoji: '💻', title: 'Direito Digital e RGPD' },
+  'business': { emoji: '🏢', title: 'Direito Empresarial' },
+  'tax': { emoji: '💰', title: 'Direito Tributário' },
+  'inheritance': { emoji: '📋', title: 'Sucessões e Heranças' },
+  'intellectual-property': { emoji: '©️', title: 'Propriedade Intelectual' },
+  'traffic': { emoji: '🚗', title: 'Direito de Trânsito' }
 };
 
 const symptomLabels: Record<string, string> = {
@@ -24,7 +30,22 @@ const symptomLabels: Record<string, string> = {
   'moral-damage': 'Dano moral ou material sofrido',
   'judicial-debt': 'Dívidas ou cobrança judicial',
   'defamation': 'Nome sujo ou negativado indevidamente',
-  'civil-liability': 'Questões de responsabilidade civil'
+  'civil-liability': 'Questões de responsabilidade civil',
+  'judicial-citation': 'Recebi uma citação judicial',
+  'fraud-victim': 'Fui vítima de fraude ou burla',
+  'contract-understanding': 'Tenho um contrato que não entendo',
+  'neighbor-conflict': 'Estou em conflito com vizinhos',
+  'will-needed': 'Preciso de elaborar testamento',
+  'intellectual-property-issue': 'Tenho problemas com propriedade intelectual',
+  'traffic-accident': 'Sofri acidente de viação',
+  'fines-contestable': 'Tenho multas ou infrações contestáveis',
+  'legal-documents': 'Preciso de procuração ou documentos legais',
+  'asset-separation': 'Estou em processo de separação patrimonial',
+  'labor-rights': 'Questões de direitos laborais',
+  'consumer-complaint': 'Problemas com produto ou serviço adquirido',
+  'rental-issues': 'Problemas com arrendamento',
+  'inheritance-dispute': 'Disputa de herança ou partilha',
+  'data-breach': 'Violação de dados pessoais'
 };
 
 const AssessmentResult: React.FC<AssessmentResultProps> = ({

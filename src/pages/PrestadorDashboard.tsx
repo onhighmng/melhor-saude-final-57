@@ -114,10 +114,10 @@ export default function PrestadorDashboard() {
           .select(`
             *,
             profiles (name, email, avatar_url),
-            companies (company_name)
+            companies (name)
           `)
           .eq('prestador_id', prestador.id)
-          .order('booking_date', { ascending: true });
+          .order('date', { ascending: true });
 
         if (bookings) {
           setSessions(bookings.map((b) => {
@@ -125,23 +125,23 @@ export default function PrestadorDashboard() {
             const company = Array.isArray(b.companies) ? b.companies[0] : b.companies;
             return {
               ...b,
-              date: b.booking_date || '', // Map booking_date to date
+              date: b.date || '',
               profiles: profile ? { name: profile.name || '', email: profile.email || '' } : undefined,
               userName: profile?.name || '',
               userEmail: profile?.email || '',
               userAvatar: profile?.avatar_url || '',
-              companyName: company?.company_name || ''
+              companyName: company?.name || ''
             };
           }) as Session[]);
         }
 
         // Calculate metrics
         const totalSessions = bookings?.length || 0;
-        const todaySessions = bookings?.filter(b => b.booking_date === new Date().toISOString().split('T')[0]).length || 0;
+        const todaySessions = bookings?.filter(b => b.date === new Date().toISOString().split('T')[0]).length || 0;
         const completedSessions = bookings?.filter(b => b.status === 'completed').length || 0;
         const thisWeekStart = new Date();
         thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
-        const weekSessions = bookings?.filter(b => new Date(b.booking_date || '') >= thisWeekStart).length || 0;
+        const weekSessions = bookings?.filter(b => new Date(b.date || '') >= thisWeekStart).length || 0;
         const uniqueUsers = new Set(bookings?.map(b => b.user_id)).size;
         const avgRating = bookings?.filter(b => b.rating)
           .reduce((sum, b) => sum + (b.rating || 0), 0) / (bookings?.filter(b => b.rating).length || 1);
@@ -316,10 +316,11 @@ export default function PrestadorDashboard() {
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
             background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
             iconColor="text-blue-600"
-            textColor="text-black"
+              textColor="text-black"
             descriptionColor="text-black/70"
             href="#"
             cta=""
+
           />
 
           {/* Top Right - Configurações */}
@@ -331,10 +332,11 @@ export default function PrestadorDashboard() {
             className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
             background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100" />}
             iconColor="text-amber-600"
-            textColor="text-black"
+              textColor="text-black"
             descriptionColor="text-black/70"
             href="#"
             cta=""
+
           />
 
           {/* Middle - Desempenho (spanning 2 rows) */}
@@ -398,6 +400,7 @@ export default function PrestadorDashboard() {
                 </div>
               </div>
             }
+
           />
 
           {/* Bottom Left - Sessões (spanning 2 rows) */}
@@ -414,10 +417,12 @@ export default function PrestadorDashboard() {
                   src={sessionsCardBg} 
                   alt="Sessions" 
                   className="w-full h-full object-cover"
+
                 />
                 <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors" />
               </div>
             } 
+
           />
 
           {/* Middle - Próximas Sessões (spanning 3 rows) */}
@@ -460,6 +465,7 @@ export default function PrestadorDashboard() {
                 </div>
               </div>
             } 
+
           />
         </BentoGrid>
       </div>

@@ -282,8 +282,8 @@ export function SupportForm() {
             id="phone"
             type="tel"
             value={formData.phone}
-            onChange={(e) => handleInputChange('phone', e.target.value)}
-            placeholder="+258 XX XXX XXXX"
+            onChange={(e) => handleInputChange('phone', formatPhoneNumber(e.target.value))}
+            placeholder={PHONE_PLACEHOLDER}
             className="font-['Noto_Serif']"
           />
         </div>

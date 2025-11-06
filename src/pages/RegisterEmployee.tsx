@@ -353,6 +353,7 @@ export default function RegisterEmployee() {
                 className="pl-10 pr-12 h-12 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 uppercase font-mono text-sm tracking-wider shadow-inner"
                 required
                 readOnly={searchParams.get('code') ? true : false}
+
               />
               {inviteCode && !isValidating && (
                 <button
@@ -425,6 +426,7 @@ export default function RegisterEmployee() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 required
+
               />
             </div>
           </div>
@@ -443,6 +445,7 @@ export default function RegisterEmployee() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-12 h-12 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                 required
+
               />
               <button
                 type="button"
@@ -460,7 +463,7 @@ export default function RegisterEmployee() {
           <div className="flex gap-3">
             <Button
               type="button"
-              variant="outline"
+                variant="outline"
               onClick={handleBackToInviteCode}
               className="flex-1 h-12 border-gray-200 hover:bg-gray-50 rounded-lg"
             >
@@ -497,7 +500,7 @@ export default function RegisterEmployee() {
           <div className="mt-6">
             <Button
               type="button"
-              variant="outline"
+                variant="outline"
               onClick={handleGoogleLogin}
               className="w-full h-12 border-gray-200 hover:bg-gray-50 rounded-lg"
             >
@@ -536,6 +539,7 @@ export default function RegisterEmployee() {
           src={heroFitness}
           alt="Bem-estar e Saúde" 
           className="absolute inset-0 w-full h-full object-cover z-10"
+
         />
         <div className="relative z-10 flex flex-col justify-end p-12 text-white">
           <h1 className="text-4xl font-bold mb-4">Melhor Saúde</h1>
@@ -561,6 +565,7 @@ export default function RegisterEmployee() {
               src="/lovable-uploads/c207c3c2-eab3-483e-93b6-a55cf5e5fdf2.png" 
               alt="Melhor Saúde Logo" 
               className="w-20 h-20 mx-auto object-contain lg:hidden"
+
             />
             <h1 className="text-3xl font-bold text-gray-900 font-serif">
               {currentStep === 'invite-code' ? 'Código de Convite' : 'Criar Conta'}
@@ -600,10 +605,7 @@ export default function RegisterEmployee() {
               <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
                 Fazer login
               </Link>
-              {' '}ou{' '}
-              <Link to="/register/company" className="text-blue-600 hover:text-blue-700 font-medium">
-                Registar empresa
-              </Link>
+              {' '}ou contacte o administrador para obter um código de acesso
             </p>
           </div>
         </div>

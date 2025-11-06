@@ -85,12 +85,12 @@ const PrestadorPerformance = () => {
 
         // Get current month sessions
         const currentMonth = new Date().toISOString().slice(0, 7);
-        const currentMonthBookings = bookings?.filter(b => b.booking_date?.startsWith(currentMonth)) || [];
+        const currentMonthBookings = bookings?.filter(b => b.date?.startsWith(currentMonth)) || [];
         const sessionsThisMonth = currentMonthBookings.length;
 
         // Calculate peak booking day
         const dayCounts = (bookings || []).reduce((acc: any, b: any) => {
-          const day = new Date(b.booking_date || '').getDay();
+          const day = new Date(b.date || '').getDay();
           acc[day] = (acc[day] || 0) + 1;
           return acc;
         }, {});
@@ -126,7 +126,7 @@ const PrestadorPerformance = () => {
           date.setMonth(date.getMonth() - i);
           const monthStr = date.toISOString().slice(0, 7);
           
-          const monthBookings = bookings?.filter(b => b.booking_date?.startsWith(monthStr)) || [];
+          const monthBookings = bookings?.filter(b => b.date?.startsWith(monthStr)) || [];
           const monthCompleted = monthBookings.filter(b => b.status === 'completed');
           const monthAvgRating = monthCompleted.filter(b => b.rating)
             .reduce((sum, b) => sum + (b.rating || 0), 0) / (monthCompleted.filter(b => b.rating).length || 1) || 0;
@@ -249,6 +249,7 @@ const PrestadorPerformance = () => {
         financialData={financialData}
         onExportReport={handleExportReport}
         isExporting={isExporting}
+
       />
     </div>
   );

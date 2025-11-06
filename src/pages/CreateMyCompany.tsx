@@ -137,6 +137,7 @@ export default function CreateMyCompany() {
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="Ex: Tech Solutions Lda"
               className="h-12"
+
             />
           </div>
 
@@ -149,6 +150,7 @@ export default function CreateMyCompany() {
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+258 84 000 0000"
               className="h-12"
+
             />
           </div>
 
@@ -225,6 +227,4 @@ export default function CreateMyCompany() {
     </div>
   );
 }
-
-
 

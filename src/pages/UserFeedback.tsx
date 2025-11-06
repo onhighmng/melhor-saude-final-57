@@ -82,6 +82,7 @@ export default function UserFeedback() {
           icon={Star}
           showBackButton
           backUrl="/user/sessions"
+
         />
         
         <div className="max-w-2xl mx-auto px-6">
@@ -106,6 +107,7 @@ export default function UserFeedback() {
         icon={Star}
         showBackButton
         backUrl="/user/sessions"
+
       />
       
       <div className="max-w-2xl mx-auto px-6">
@@ -113,6 +115,7 @@ export default function UserFeedback() {
           session={session}
           onSubmit={handleSubmit}
           onSkip={handleSkip}
+
         />
       </div>
     </div>

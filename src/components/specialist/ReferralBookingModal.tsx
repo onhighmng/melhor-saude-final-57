@@ -24,6 +24,8 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { loadingAnimationConfig, loadingPresets } from '@/components/LoadingAnimationConfig';
 
 interface ReferralBookingModalProps {
   open: boolean;
@@ -33,7 +35,7 @@ interface ReferralBookingModalProps {
 
 interface Company {
   id: string;
-  company_name: string;
+  name: string;
 }
 
 interface User {
@@ -134,7 +136,7 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
       // First, try to get companies the specialist has specific access to
       const { data: assignedCompanies, error: assignmentError } = await supabase
         .from('specialist_assignments')
-        .select('companies!specialist_assignments_company_id_fkey(id, company_name)')
+        .select('companies!specialist_assignments_company_id_fkey(id, name)')
         .eq('specialist_id', profile?.id)
         .eq('is_active', true);
 
@@ -145,21 +147,21 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
       // Safely extract companies and filter out null/undefined values
       const specificCompanies = (assignedCompanies || [])
         .map((a: any) => a?.companies)
-        .filter((c: any) => c && c.id && c.company_name) || [];
+        .filter((c: any) => c && c.id && c.name) || [];
 
       // If specialist has no specific assignments (platform-wide access), load all companies
       if (specificCompanies.length === 0) {
         console.log('No specific company assignments found - loading all companies (platform-wide access)');
         const { data: allCompanies, error: companiesError } = await supabase
           .from('companies')
-          .select('id, company_name')
-          .not('company_name', 'is', null)
-          .order('company_name');
+          .select('id, name')
+          .not('name', 'is', null)
+          .order('name');
 
         if (companiesError) throw companiesError;
 
         // Filter out any invalid entries
-        const validCompanies = (allCompanies || []).filter(c => c && c.id && c.company_name);
+        const validCompanies = (allCompanies || []).filter(c => c && c.id && c.name);
         setCompanies(validCompanies);
         
         if (validCompanies.length === 0) {
@@ -287,7 +289,7 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
         .from('bookings')
         .select('start_time')
         .eq('prestador_id', selectedPrestador)
-        .eq('booking_date', dateStr)
+        .eq('date', dateStr)
         .in('status', ['scheduled', 'confirmed']);
 
       if (error) {
@@ -472,12 +474,16 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
             {/* Step 1: Company & User */}
             {currentStep === 1 && (
               loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-muted-foreground">A carregar empresas...</p>
-                  </div>
-                </div>
+                <LoadingAnimation
+                  variant="modal"
+                  message="A carregar empresas..."
+                  submessage="Aguarde um momento"
+                  showProgress={true}
+                  mascotSrc={loadingAnimationConfig.mascot}
+                  wordmarkSrc={loadingAnimationConfig.wordmark}
+                  primaryColor={loadingAnimationConfig.primaryColor}
+                  textColor={loadingAnimationConfig.textColor}
+                />
               ) : (
                 <div className="space-y-4">
                   <div>
@@ -497,7 +503,7 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
                           <SelectContent>
                             {companies.map((company) => (
                               <SelectItem key={company.id} value={company.id}>
-                                {company.company_name}
+                                {company.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -578,9 +584,15 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
                       <div className="space-y-2">
                         <Label>Prestador</Label>
                         {loading ? (
-                          <div className="flex items-center justify-center py-8">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                          </div>
+                          <LoadingAnimation
+                            variant="inline"
+                            message="A carregar prestadores..."
+                            submessage=""
+                            showProgress={false}
+                            mascotSrc={loadingAnimationConfig.mascot}
+                            primaryColor={loadingAnimationConfig.primaryColor}
+                            textColor={loadingAnimationConfig.textColor}
+                          />
                         ) : prestadores.length > 0 ? (
                           <Select value={selectedPrestador} onValueChange={setSelectedPrestador}>
                             <SelectTrigger className="w-full">
@@ -646,12 +658,15 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
                       <div ref={timeSlotsRef} className="space-y-2">
                         <Label>Horário Disponível</Label>
                         {loading ? (
-                          <div className="flex items-center justify-center py-8">
-                            <div className="text-center">
-                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                              <p className="text-sm text-muted-foreground">A carregar horários...</p>
-                            </div>
-                          </div>
+                          <LoadingAnimation
+                            variant="inline"
+                            message="A carregar horários..."
+                            submessage=""
+                            showProgress={false}
+                            mascotSrc={loadingAnimationConfig.mascot}
+                            primaryColor={loadingAnimationConfig.primaryColor}
+                            textColor={loadingAnimationConfig.textColor}
+                          />
                         ) : availableSlots.length === 0 ? (
                           <div className="text-center py-8 text-muted-foreground border rounded-lg">
                             <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -722,7 +737,7 @@ export function ReferralBookingModal({ open, onOpenChange, onSuccess }: Referral
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Empresa:</span>
                           <span className="font-medium">
-                            {companies.find(c => c.id === selectedCompany)?.company_name}
+                            {companies.find(c => c.id === selectedCompany)?.name}
                           </span>
                         </div>
                         <div className="flex justify-between">

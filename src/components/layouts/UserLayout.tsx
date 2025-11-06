@@ -10,13 +10,13 @@ interface UserLayoutProps {
 
 export function UserLayout({ children }: UserLayoutProps) {
   const location = useLocation();
-  const isFullScreenPage = location.pathname === '/user/chat' || location.pathname === '/user/book' || location.pathname === '/user/dashboard' || location.pathname === '/user/resources' || location.pathname === '/user/settings' || location.pathname === '/user/sessions';
+  const isFullScreenPage = location.pathname === '/user/book' || location.pathname === '/user/dashboard' || location.pathname === '/user/resources' || location.pathname === '/user/settings' || location.pathname === '/user/sessions' || location.pathname === '/user/notifications';
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <AnimatedSidebarProvider open={sidebarOpen} setOpen={setSidebarOpen}>
-      <div className="h-screen flex w-full relative overflow-hidden">
-        <div className="fixed inset-0 z-0 opacity-20">
+      <div className="h-screen flex w-full relative overflow-hidden bg-blue-50">
+        <div className="fixed inset-0 z-0 opacity-10 bg-blue-50">
           <img
             src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
             alt="Background"

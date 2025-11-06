@@ -313,10 +313,11 @@ const PrestadorSettings = () => {
             className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
             background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
             iconColor="text-blue-600"
-            textColor="text-gray-900"
+              textColor="text-gray-900"
             descriptionColor="text-gray-600"
             href="#"
             cta="Ver Detalhes"
+
           />
 
           {/* Financial Information - Minimal */}
@@ -328,10 +329,11 @@ const PrestadorSettings = () => {
             className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2"
             background={<div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100" />}
             iconColor="text-green-600"
-            textColor="text-gray-900"
+              textColor="text-gray-900"
             descriptionColor="text-gray-600"
             href="#"
             cta="Ver Detalhes"
+
           />
 
           {/* Availability Settings - Minimal */}
@@ -343,10 +345,11 @@ const PrestadorSettings = () => {
             className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3"
             background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100" />}
             iconColor="text-purple-600"
-            textColor="text-gray-900"
+              textColor="text-gray-900"
             descriptionColor="text-gray-600"
             href="#"
             cta="Gerir Horários"
+
           />
 
           {/* Security Settings - Minimal */}
@@ -358,10 +361,11 @@ const PrestadorSettings = () => {
             className="lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3"
             background={<div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100" />}
             iconColor="text-red-600"
-            textColor="text-gray-900"
+              textColor="text-gray-900"
             descriptionColor="text-gray-600"
             href="#"
             cta="Gerir Segurança"
+
           />
         </BentoGrid>
       </div>
@@ -395,6 +399,7 @@ const PrestadorSettings = () => {
                   onChange={(e) => setSettings({ ...settings, name: e.target.value })}
                   placeholder="Nome completo"
                   className="mt-1"
+
                 />
               </div>
 
@@ -407,6 +412,7 @@ const PrestadorSettings = () => {
                   onChange={(e) => setSettings({ ...settings, email: e.target.value })}
                   placeholder="email@exemplo.com"
                   className="mt-1"
+
                 />
                 <p className="text-xs text-amber-600 mt-1">
                   ⚠️ Alterar o email requer reverificação
@@ -459,6 +465,7 @@ const PrestadorSettings = () => {
                   onChange={(e) => setSettings({ ...settings, costPerSession: Number(e.target.value) })}
                   placeholder="1500"
                   className="pl-12"
+
                 />
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm font-medium text-muted-foreground">MZN</span>
               </div>
@@ -508,6 +515,7 @@ const PrestadorSettings = () => {
                 value={newPassword.current}
                 onChange={(e) => setNewPassword({ ...newPassword, current: e.target.value })}
                 className="mt-1"
+
               />
             </div>
 
@@ -519,6 +527,7 @@ const PrestadorSettings = () => {
                 value={newPassword.new}
                 onChange={(e) => setNewPassword({ ...newPassword, new: e.target.value })}
                 className="mt-1"
+
               />
             </div>
 
@@ -530,6 +539,7 @@ const PrestadorSettings = () => {
                 value={newPassword.confirm}
                 onChange={(e) => setNewPassword({ ...newPassword, confirm: e.target.value })}
                 className="mt-1"
+
               />
             </div>
 
@@ -569,6 +579,7 @@ const PrestadorSettings = () => {
       <AvailabilitySettings 
         open={isAvailabilityModalOpen}
         onOpenChange={setIsAvailabilityModalOpen}
+
       />
     </div>
   );

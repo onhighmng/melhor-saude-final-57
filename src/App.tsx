@@ -17,24 +17,8 @@ import { usePageTracking } from "@/hooks/usePageTracking";
 // Lazy load pages for better performance
 import { lazy } from "react";
 const Index = lazy(() => import("./pages/Index"));
-const UserSettings = lazy(() => 
-  import("./pages/UserSettings").catch((error) => {
-    console.error("Error loading UserSettings:", error);
-    // Return a simple error component as fallback
-    return {
-      default: () => (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-2">Erro ao carregar página</h2>
-            <p className="text-muted-foreground">Por favor, recarregue a página.</p>
-          </div>
-        </div>
-      )
-    };
-  })
-);
-const PrestadorDashboard = lazy(() => import("./pages/PrestadorDashboard"));
-const PrestadorSessions = lazy(() => import("./pages/PrestadorSessions"));
+const PrestadorDashboard = lazy(() => import("./pages/SpecialistDashboardResponsive"));
+const PrestadorSessions = lazy(() => import("./pages/SpecialistSessionsResponsive"));
 const PrestadorSessionDetail = lazy(() => import("./pages/PrestadorSessionDetail"));
 const PrestadorCalendar = lazy(() => import("./pages/PrestadorCalendar"));
 const PrestadorPerformance = lazy(() => import("./pages/PrestadorPerformance"));
@@ -43,20 +27,20 @@ const Login = lazy(() => import("./pages/Login"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
 const Register = lazy(() => import("./pages/Register"));
-const RegisterCompany = lazy(() => import("./pages/RegisterCompany"));
+// RegisterCompany route disabled - all companies must use admin-generated codes
 const RegisterEmployee = lazy(() => import("./pages/RegisterEmployee"));
 const SetupHRAccount = lazy(() => import("./pages/SetupHRAccount"));
 const CreateMyCompany = lazy(() => import("./pages/CreateMyCompany"));
 const QuickSetup = lazy(() => import("./pages/QuickSetup"));
 // Admin pages
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboardResponsive"));
 const AdminUsersManagement = lazy(() => import("./pages/AdminUsersManagement"));
 const AdminProviders = lazy(() => import("./pages/AdminProviders"));
 const AdminProviderDetailMetrics = lazy(() => import("./pages/AdminProviderDetailMetrics"));
 const AdminProviderCalendar = lazy(() => import("./pages/AdminProviderCalendar"));
-const AdminOperations = lazy(() => import("./pages/AdminOperations"));
-const AdminResources = lazy(() => import("./pages/AdminResources"));
-const AdminReports = lazy(() => import("./pages/AdminReports"));
+const AdminOperations = lazy(() => import("./pages/AdminOperationsResponsive"));
+const AdminResources = lazy(() => import("./pages/AdminResourcesResponsive"));
+const AdminReports = lazy(() => import("./pages/AdminReportsResponsive"));
 const AdminControlCenter = lazy(() => import("./pages/AdminControlCenter"));
 const AdminSupport = lazy(() => import("./pages/AdminSupport"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
@@ -65,31 +49,32 @@ const AdminCompanyDetail = lazy(() => import("./pages/AdminCompanyDetail"));
 const AdminPerformanceSupervision = lazy(() => import("./pages/AdminPerformanceSupervision"));
 
 // Specialist pages
-const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboard"));
-const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequests"));
-const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistory"));
-const EspecialistaStatsRevamped = lazy(() => import("./pages/EspecialistaStatsRevamped"));
-const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettings"));
+const SpecialistDashboard = lazy(() => import("./pages/SpecialistDashboardResponsive"));
+const EspecialistaCallRequests = lazy(() => import("./pages/EspecialistaCallRequestsResponsive"));
+const EspecialistaUserHistory = lazy(() => import("./pages/EspecialistaUserHistoryResponsive"));
+const EspecialistaStatsRevamped = lazy(() => import("./pages/EspecialistaStatsResponsive"));
+const EspecialistaSettings = lazy(() => import("./pages/EspecialistaSettingsResponsive"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 
 // Company pages
-const CompanyDashboard = lazy(() => import("./pages/CompanyDashboard"));
-const CompanyReportsImpact = lazy(() => import("./pages/CompanyReportsImpact"));
-const CompanyResources = lazy(() => import("./pages/CompanyResources"));
-const CompanySessions = lazy(() => import("./pages/CompanySessions"));
-const CompanyCollaborators = lazy(() => import("./pages/CompanyCollaborators"));
+const CompanyDashboard = lazy(() => import("./pages/CompanyDashboardResponsive"));
+const CompanyReportsImpact = lazy(() => import("./pages/CompanyReportsResponsive"));
+const CompanyResources = lazy(() => import("./pages/CompanyResourcesResponsive"));
+const CompanySessions = lazy(() => import("./pages/CompanySessionsResponsive"));
+const CompanyCollaborators = lazy(() => import("./pages/CompanyCollaboratorsResponsive"));
 const CompanySettings = lazy(() => import("./pages/CompanySettings"));
-const UserSessions = lazy(() => import("./pages/UserSessions"));
-const UserDashboard = lazy(() => import("./pages/UserDashboard"));
-const UserResources = lazy(() => import("./pages/UserResources"));
+const UserSessions = lazy(() => import("./pages/UserSessionsResponsive"));
+const UserDashboard = lazy(() => import("./pages/UserDashboardResponsive"));
+const UserResources = lazy(() => import("./pages/UserResourcesResponsive"));
 const UserFeedback = lazy(() => import("./pages/UserFeedback"));
-const UserChat = lazy(() => import("./pages/UserChat"));
-const UserNotifications = lazy(() => import("./pages/UserNotifications"));
+const UserNotifications = lazy(() => import("./pages/UserNotificationsResponsive"));
+const UserSettings = lazy(() => import("./pages/UserSettingsResponsive"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
 const BookingRouter = lazy(() => import("./components/booking/BookingRouter"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Support = lazy(() => import("./pages/Support"));
-import { Suspense } from "react";
+const N8NChatTest = lazy(() => import("./pages/N8NChatTest"));
+import { Suspense, useState } from "react";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
 import { PerformanceMonitor } from "@/components/ui/performance-monitor";
 import { UserLayout } from "@/components/layouts/UserLayout";
@@ -98,10 +83,13 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { EspecialistaLayout } from "@/components/layouts/EspecialistaLayout";
 import { CompanyLayout } from "@/components/layouts/CompanyLayout";
 import { AuthenticatedLayout } from "@/components/layouts/AuthenticatedLayout";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { loadingAnimationConfig } from "@/components/LoadingAnimationConfig";
 
 const AppWithTracking = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isNavigating, setIsNavigating] = useState(false);
   usePageTracking();
   
   // Set up navigate function for redirectService and error boundary
@@ -124,15 +112,43 @@ const AppWithTracking = () => {
     };
   }, []);
 
+  // Show loading animation on route changes
+  useEffect(() => {
+    setIsNavigating(true);
+    const timer = setTimeout(() => {
+      setIsNavigating(false);
+    }, 1500); // Show for minimum 1.5 seconds for smooth transition
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
   return (
     <>
+      {/* Route transition loading overlay */}
+      {isNavigating && (
+        <LoadingAnimation
+          variant="fullscreen"
+          message="Carregando página..."
+          submessage="Aguarde um momento"
+          mascotSrc={loadingAnimationConfig.mascot}
+          wordmarkSrc={loadingAnimationConfig.wordmark}
+          primaryColor={loadingAnimationConfig.primaryColor}
+          textColor={loadingAnimationConfig.textColor}
+          showProgress={true}
+        />
+      )}
+      
       <Suspense fallback={
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-muted">
-          <div className="text-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="text-sm text-muted-foreground">Carregando...</p>
-          </div>
-        </div>
+        <LoadingAnimation
+          variant="fullscreen"
+          message="Carregando..."
+          submessage="Aguarde enquanto carregamos a página"
+          mascotSrc={loadingAnimationConfig.mascot}
+          wordmarkSrc={loadingAnimationConfig.wordmark}
+          primaryColor={loadingAnimationConfig.primaryColor}
+          textColor={loadingAnimationConfig.textColor}
+          showProgress={true}
+        />
       }>
         <Routes>
           {/* Authentication callback - handles OAuth, magic links, email verification */}
@@ -143,7 +159,7 @@ const AppWithTracking = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/auth/reset" element={<UpdatePassword />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/register/company" element={<RegisterCompany />} />
+          {/* /register/company route disabled - all companies must use admin-generated codes */}
           <Route path="/register/employee" element={<RegisterEmployee />} />
           <Route path="/setup-hr" element={<ProtectedRoute><SetupHRAccount /></ProtectedRoute>} />
           <Route path="/create-company" element={<ProtectedRoute><CreateMyCompany /></ProtectedRoute>} />
@@ -156,6 +172,9 @@ const AppWithTracking = () => {
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />
           
+          {/* N8N Chatbot Test Page */}
+          <Route path="/n8n-chat-test" element={<N8NChatTest />} />
+          
           {/* User routes - PROTECTED */}
           <Route path="/user/dashboard" element={<ProtectedRoute requiredRole="user"><UserLayout><UserDashboard /></UserLayout></ProtectedRoute>} />
           <Route path="/user/sessions" element={<ProtectedRoute requiredRole="user"><UserLayout><UserSessions /></UserLayout></ProtectedRoute>} />
@@ -163,7 +182,6 @@ const AppWithTracking = () => {
           <Route path="/user/resources" element={<ProtectedRoute requiredRole="user"><UserLayout><UserResources /></UserLayout></ProtectedRoute>} />
           <Route path="/user/feedback" element={<ProtectedRoute requiredRole="user"><UserLayout><UserFeedback /></UserLayout></ProtectedRoute>} />
           <Route path="/user/notifications" element={<ProtectedRoute requiredRole="user"><UserLayout><UserNotifications /></UserLayout></ProtectedRoute>} />
-          <Route path="/user/chat" element={<ProtectedRoute requiredRole="user"><UserLayout><UserChat /></UserLayout></ProtectedRoute>} />
           <Route path="/user/book" element={<ProtectedRoute requiredRole="user"><UserLayout><BookingRouter /></UserLayout></ProtectedRoute>} />
           <Route path="/user/booking/:step" element={<ProtectedRoute requiredRole="user"><UserLayout><BookingFlow /></UserLayout></ProtectedRoute>} />
           

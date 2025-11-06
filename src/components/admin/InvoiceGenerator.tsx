@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 
 interface Company {
   id: string;
-  company_name: string;
+  name: string;
   contact_email: string;
   sessions_allocated: number;
   sessions_used: number;
@@ -82,9 +82,9 @@ export const InvoiceGenerator: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('companies')
-        .select('id, company_name, contact_email, sessions_allocated, sessions_used')
+        .select('id, name, contact_email, sessions_allocated, sessions_used')
         .eq('is_active', true)
-        .order('company_name');
+        .order('name');
 
       if (error) throw error;
       setCompanies(data || []);
@@ -253,7 +253,7 @@ export const InvoiceGenerator: React.FC = () => {
       const pdfContent = `
 FATURA ${invoice.invoice_number}
 
-Empresa: ${company?.company_name || 'N/A'}
+Empresa: ${company?.name || 'N/A'}
 Email: ${company?.contact_email || 'N/A'}
 Data de Emissão: ${new Date(invoice.invoice_date).toLocaleDateString('pt-PT')}
 Data de Vencimento: ${new Date(invoice.due_date).toLocaleDateString('pt-PT')}
@@ -349,7 +349,7 @@ TOTAL: ${invoice.total_amount.toFixed(2)} MZN
                   <SelectContent>
                     {companies.map((company) => (
                       <SelectItem key={company.id} value={company.id}>
-                        {company.company_name}
+                        {company.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -504,7 +504,7 @@ TOTAL: ${invoice.total_amount.toFixed(2)} MZN
                   <div>
                     <p className="font-medium">{invoice.invoice_number}</p>
                     <p className="text-sm text-muted-foreground">
-                      {companies.find(c => c.id === invoice.company_id)?.company_name}
+                      {companies.find(c => c.id === invoice.company_id)?.name}
                     </p>
                   </div>
                   <div>

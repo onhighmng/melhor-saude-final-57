@@ -15,7 +15,7 @@ interface MentalHealthAssessment {
 interface MentalHealthAssessmentFlowProps {
   onBack: () => void;
   onComplete: () => void;
-  onChooseHuman: () => void;
+  onChooseHuman: (assessment: MentalHealthAssessment) => void;
 }
 
 const MentalHealthAssessmentFlow: React.FC<MentalHealthAssessmentFlowProps> = ({
@@ -93,8 +93,8 @@ const MentalHealthAssessmentFlow: React.FC<MentalHealthAssessmentFlowProps> = ({
           <MentalHealthChatInterface
             assessment={assessment}
             onBack={() => setStep('result')}
-            onComplete={onComplete}
-            onChooseHuman={onChooseHuman}
+            onComplete={() => onChooseHuman(assessment)}
+            onChooseHuman={() => onChooseHuman(assessment)}
           />
         );
       

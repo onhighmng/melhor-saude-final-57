@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import TopicSelection from './TopicSelection';
 import SymptomSelection from './SymptomSelection';
 import AssessmentResult from './AssessmentResult';
@@ -16,7 +15,7 @@ interface PhysicalWellnessAssessment {
 interface PhysicalWellnessAssessmentFlowProps {
   onBack: () => void;
   onComplete: () => void;
-  onChooseHuman: () => void;
+  onChooseHuman: (assessment: PhysicalWellnessAssessment) => void;
 }
 
 const PhysicalWellnessAssessmentFlow: React.FC<PhysicalWellnessAssessmentFlowProps> = ({
@@ -24,7 +23,6 @@ const PhysicalWellnessAssessmentFlow: React.FC<PhysicalWellnessAssessmentFlowPro
   onComplete,
   onChooseHuman
 }) => {
-  const navigate = useNavigate();
   const [step, setStep] = useState<Step>('topics');
   const [assessment, setAssessment] = useState<PhysicalWellnessAssessment>({
     selectedTopics: [],
@@ -94,9 +92,9 @@ const PhysicalWellnessAssessmentFlow: React.FC<PhysicalWellnessAssessmentFlowPro
         return (
           <PhysicalWellnessChatInterface
             assessment={assessment}
-            onBack={() => window.location.replace('/user/book')}
-            onComplete={onComplete}
-            onChooseHuman={onChooseHuman}
+            onBack={() => setStep('result')}
+            onComplete={() => onChooseHuman(assessment)}
+            onChooseHuman={() => onChooseHuman(assessment)}
           />
         );
       

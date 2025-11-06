@@ -15,7 +15,9 @@ const ValuesStep: React.FC<ValuesStepProps> = ({ isVisible, onImplementPillars, 
   
   const handleImplementPillars = () => {
     onImplementPillars();
-    navigate('/register-company');
+    // Redirect to admin contact page instead of direct registration
+    // Companies must now use admin-generated codes
+    navigate('/login');
   };
   
   const handleLearnMore = () => {

@@ -155,7 +155,14 @@ const BookingFlow = () => {
     setCurrentStep('assessment');
   };
 
-  const handleChooseHuman = async () => {
+  const handleChooseHuman = async (assessment?: { selectedTopics: string[]; selectedSymptoms: string[]; additionalNotes: string; }) => {
+    // Store assessment data if provided
+    if (assessment) {
+      setSelectedTopics(assessment.selectedTopics);
+      setSelectedSymptoms(assessment.selectedSymptoms);
+      setAdditionalNotes(assessment.additionalNotes);
+    }
+
     const pillarMapping = {
       'psicologica': 'saude_mental',
       'fisica': 'bem_estar_fisico',
@@ -243,12 +250,12 @@ const BookingFlow = () => {
         const { error: updateError } = await supabase
           .from('bookings')
           .update({
-            booking_date: selectedDate.toISOString().split('T')[0],
+            date: selectedDate.toISOString().split('T')[0],
             start_time: selectedTime,
             end_time: endTime,
             prestador_id: selectedProvider.id,
             status: 'pending_confirmation',
-            rescheduled_from: (originalBooking as Record<string, unknown>).booking_date as string,
+            rescheduled_from: (originalBooking as Record<string, unknown>).date as string,
             rescheduled_at: new Date().toISOString()
           })
           .eq('id', rescheduleBookingId);
@@ -337,7 +344,7 @@ const BookingFlow = () => {
         .from('bookings')
         .select('id')
         .eq('prestador_id', selectedProvider.id)
-        .eq('booking_date', selectedDate.toISOString().split('T')[0])
+        .eq('date', selectedDate.toISOString().split('T')[0])
         .eq('start_time', selectedTime)
         .neq('status', 'cancelled')
         .maybeSingle() as any);
@@ -371,7 +378,7 @@ const BookingFlow = () => {
         prestador_id: prestador_id,
         pillar: pillar,
         topic: selectedTopics.length > 0 ? sanitizeInput(selectedTopics.join(', ')) : null,
-        booking_date: String(selectedDate.toISOString().split('T')[0]),
+        date: String(selectedDate.toISOString().split('T')[0]),
         start_time: String(selectedTime),
         end_time: String(endTime),
         status: 'scheduled',
@@ -412,7 +419,7 @@ const BookingFlow = () => {
           metadata: {
             booking_id: String(booking.id),
             prestador_id: String(selectedProvider.id),
-            booking_date: String(booking.booking_date || selectedDate.toISOString().split('T')[0])
+            date: String(booking.date || selectedDate.toISOString().split('T')[0])
           }
         });
       } catch (progressError) {

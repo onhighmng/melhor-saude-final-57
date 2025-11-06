@@ -34,12 +34,20 @@ export const useEscalatedChats = () => {
             name, 
             email, 
             phone,
-            company_id,
-            companies!profiles_company_id_fkey(company_name, is_active)
+            company_id
           `)
           .in('id', userIds);
 
         if (profilesError) throw profilesError;
+
+        // Fetch company data separately for better reliability
+        const companyIds = [...new Set(profiles?.map(p => p.company_id).filter(Boolean) || [])];
+        const { data: companies, error: companiesError } = await supabase
+          .from('companies')
+          .select('id, name')
+          .in('id', companyIds);
+
+        if (companiesError) console.error('Error fetching companies:', companiesError);
 
         // Fetch messages for each session
         const sessionIds = sessions.map(s => s.id);
@@ -66,9 +74,9 @@ export const useEscalatedChats = () => {
           const callLog = callLogs?.find(cl => cl.chat_session_id === session.id);
 
           // CRITICAL FIX #5: Add company context to escalated chats
-          const companies = (profile as any)?.companies;
-          const companyName = companies?.company_name || 'N/A';
           const companyId = profile?.company_id || null;
+          const company = companies?.find(c => c.id === companyId);
+          const companyName = company?.name || null;
           
           return {
             ...session,

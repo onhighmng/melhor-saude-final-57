@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { formatPhoneNumber, PHONE_PLACEHOLDER } from '@/utils/phoneFormat';
 
 interface Company {
   id: string;
@@ -48,6 +49,16 @@ export function EditCompanyDialog({
   const { profile } = useAuth();
   const [formData, setFormData] = useState<Company>(company);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Format phone number on mount and when company changes
+  useEffect(() => {
+    if (company.contactPhone) {
+      setFormData(prev => ({
+        ...prev,
+        contactPhone: formatPhoneNumber(company.contactPhone)
+      }));
+    }
+  }, [company]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -164,7 +175,8 @@ export function EditCompanyDialog({
                 id="contactPhone"
                 type="tel"
                 value={formData.contactPhone}
-                onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, contactPhone: formatPhoneNumber(e.target.value) })}
+                placeholder={PHONE_PLACEHOLDER}
               />
             </div>
           </div>

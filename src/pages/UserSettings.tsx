@@ -428,13 +428,13 @@ const UserSettings = () => {
   };
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full min-h-screen bg-blue-50">
       {/* Modern Header */}
         <div className="bg-white border-b border-gray-100 shadow-sm">
         <div className="w-full px-4 py-4">
           <div className="flex items-center gap-3">
             <Button
-              variant="ghost"
+                variant="ghost"
               size="icon"
               onClick={() => navigate('/user/dashboard')}
               className="h-9 w-9 hover:bg-gray-100 rounded-full"
@@ -465,6 +465,7 @@ const UserSettings = () => {
             className="lg:row-start-1 lg:row-end-2 lg:col-start-1 lg:col-end-2"
             background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50" />}
             onClick={() => setIsProfileModalOpen(true)}
+
           />
 
           <BentoCard
@@ -476,6 +477,7 @@ const UserSettings = () => {
             className="lg:row-start-1 lg:row-end-2 lg:col-start-2 lg:col-end-3"
             background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50" />}
             onClick={() => setIsNotifPrefsModalOpen(true)}
+
           />
 
           <BentoCard
@@ -487,6 +489,7 @@ const UserSettings = () => {
             className="lg:row-start-1 lg:row-end-2 lg:col-start-3 lg:col-end-4"
             background={<div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-50" />}
             onClick={() => setIsSecurityModalOpen(true)}
+
           />
 
           <BentoCard
@@ -498,6 +501,7 @@ const UserSettings = () => {
             className="lg:row-start-2 lg:row-end-3 lg:col-start-1 lg:col-end-2"
             background={<div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50" />}
             onClick={() => setIsEmailPrefsModalOpen(true)}
+
           />
 
           <BentoCard
@@ -509,6 +513,7 @@ const UserSettings = () => {
             className="lg:row-start-2 lg:row-end-3 lg:col-start-2 lg:col-end-3"
             background={<div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50" />}
             onClick={() => setIsConsentsModalOpen(true)}
+
           />
 
           <BentoCard
@@ -520,6 +525,7 @@ const UserSettings = () => {
             className="lg:row-start-2 lg:row-end-3 lg:col-start-3 lg:col-end-4"
             background={<div className="absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-50" />}
             onClick={() => setIsNotificationHistoryModalOpen(true)}
+
           />
         </BentoGrid>
 
@@ -532,6 +538,7 @@ const UserSettings = () => {
             setProfileData({ ...profileData, ...data });
             handleSaveProfile(data);
           }}
+
         />
 
         <NotificationPrefsModal
@@ -542,6 +549,7 @@ const UserSettings = () => {
             setNotificationPreferences(prefs);
             handleSaveNotifications(prefs);
           }}
+
         />
 
         <SecurityModal
@@ -549,6 +557,7 @@ const UserSettings = () => {
           onClose={() => setIsSecurityModalOpen(false)}
           onChangePassword={handleChangePassword}
           onEnable2FA={handleEnable2FA}
+
         />
 
         <ConsentsModal
@@ -559,6 +568,7 @@ const UserSettings = () => {
             setConsents(newConsents);
             handleSaveConsents(newConsents);
           }}
+
         />
 
         <NotificationHistoryModal
@@ -567,6 +577,7 @@ const UserSettings = () => {
           notifications={notifications}
           onMarkRead={handleMarkRead}
           onNotificationAction={handleNotificationAction}
+
         />
 
         {/* Email Preferences Modal */}

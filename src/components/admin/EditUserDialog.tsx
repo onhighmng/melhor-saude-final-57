@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { formatPhoneNumber, PHONE_PLACEHOLDER } from '@/utils/phoneFormat';
 
 interface EditUserDialogProps {
   open: boolean;
@@ -97,8 +98,10 @@ export const EditUserDialog = ({ open, onOpenChange, userId, currentData, onSucc
               <Label htmlFor="phone">Telefone</Label>
               <Input
                 id="phone"
+                type="tel"
                 value={formData.phone || ''}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
+                placeholder={PHONE_PLACEHOLDER}
               />
             </div>
 

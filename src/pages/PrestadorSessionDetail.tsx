@@ -90,7 +90,7 @@ export default function PrestadorSessionDetail() {
           .select(`
             *,
             profiles (name, avatar_url),
-            companies (company_name)
+            companies (name)
           `)
           .eq('id', id)
           .single();
@@ -116,7 +116,7 @@ export default function PrestadorSessionDetail() {
             location: booking.meeting_type === 'online' ? 'online' : 'presencial',
             status: booking.status as SessionStatus,
             deductionType: booking.company_id ? 'empresa' : 'pessoal',
-            companyName: (booking.companies as Record<string, unknown>)?.company_name as string,
+            companyName: (booking.companies as Record<string, unknown>)?.name as string,
             notes: booking.notes,
             chat_session_id: booking.chat_session_id,
             topic: booking.topic,
@@ -358,6 +358,7 @@ export default function PrestadorSessionDetail() {
             )}
           </div>
         }
+
       />
 
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
@@ -522,6 +523,7 @@ export default function PrestadorSessionDetail() {
                   value={privateNotes}
                   onChange={(e) => setPrivateNotes(e.target.value)}
                   className="min-h-[120px]"
+
                 />
                 <Button onClick={savePrivateNotes} className="gap-2">
                   <Save className="h-4 w-4" />
@@ -559,7 +561,7 @@ export default function PrestadorSessionDetail() {
                           </div>
                         </div>
                         <Button
-                          variant="ghost"
+                            variant="ghost"
                           size="sm"
                           onClick={() => removeAttachment(String(attachment.id))}
                           className="text-red-600 hover:text-red-700"
@@ -597,7 +599,7 @@ export default function PrestadorSessionDetail() {
 
                 <Button
                   onClick={() => setShowNoShowDialog(true)}
-                  variant="outline"
+                    variant="outline"
                   className="w-full gap-2 border-yellow-200 text-yellow-700 hover:bg-yellow-50"
                 >
                   <AlertTriangle className="h-5 w-5" />
@@ -607,7 +609,7 @@ export default function PrestadorSessionDetail() {
                 {canCancel && (
                   <Button
                     onClick={() => setShowCancelDialog(true)}
-                    variant="outline"
+                      variant="outline"
                     className="w-full gap-2 border-red-200 text-red-700 hover:bg-red-50"
                   >
                     <XCircle className="h-5 w-5" />
@@ -678,12 +680,13 @@ export default function PrestadorSessionDetail() {
                   onChange={(e) => setNoShowDescription(e.target.value)}
                   placeholder="Detalhes adicionais..."
                   className="min-h-[80px]"
+
                 />
               </div>
 
               <div className="flex gap-2">
                 <Button
-                  variant="outline"
+                    variant="outline"
                   onClick={() => setShowNoShowDialog(false)}
                   className="flex-1"
                 >
@@ -712,7 +715,7 @@ export default function PrestadorSessionDetail() {
 
               <div className="flex gap-2">
                 <Button
-                  variant="outline"
+                    variant="outline"
                   onClick={() => setShowCancelDialog(false)}
                   className="flex-1"
                 >
@@ -720,7 +723,7 @@ export default function PrestadorSessionDetail() {
                 </Button>
                 <Button
                   onClick={cancelSession}
-                  variant="destructive"
+                    variant="destructive"
                   className="flex-1"
                 >
                   Cancelar Sessão

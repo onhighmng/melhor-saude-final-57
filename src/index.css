@@ -11,7 +11,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    font-size: 104%; /* Scale entire platform - reduced by additional 5% from 109% */
+    font-size: 119.6%; /* Scale entire platform - increased by 15% from 104% (104% × 1.15 = 119.6%) */
     
     /* Modern Clean Color System */
     --royal-blue: 218 58% 40%;        
@@ -236,47 +236,47 @@ body.legal-assessment-page {
 }
 
 /* Typography System - Updated with specified requirements */
-/* Typography Classes */
+/* Typography Classes - Scaled by 15% */
 .text-h1 {
   font-family: 'Comfortaa', sans-serif;
-  font-size: 2rem; /* 32px */
+  font-size: 2rem; /* ~36.8px (32px × 1.15) */
   font-weight: 700;
-  line-height: 2.5rem; /* 40px */
+  line-height: 2.5rem; /* ~46px (40px × 1.15) */
 }
 
 .text-h2 {
   font-family: 'Comfortaa', sans-serif;
-  font-size: 1.5rem; /* 24px */
+  font-size: 1.5rem; /* ~27.6px (24px × 1.15) */
   font-weight: 600;
-  line-height: 2rem; /* 32px */
+  line-height: 2rem; /* ~36.8px (32px × 1.15) */
 }
 
 .text-h3 {
   font-family: 'Comfortaa', sans-serif;
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem; /* ~23px (20px × 1.15) */
   font-weight: 600;
-  line-height: 1.75rem; /* 28px */
+  line-height: 1.75rem; /* ~32.2px (28px × 1.15) */
 }
 
 .text-body {
   font-family: 'Baskervville', serif;
-  font-size: 1rem; /* 16px */
+  font-size: 1rem; /* ~18.4px (16px × 1.15) */
   font-weight: 400;
-  line-height: 1.5rem; /* 24px */
+  line-height: 1.5rem; /* ~27.6px (24px × 1.15) */
 }
 
 .text-small {
   font-family: 'Baskervville', serif;
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem; /* ~16.1px (14px × 1.15) */
   font-weight: 400;
-  line-height: 1.25rem; /* 20px */
+  line-height: 1.25rem; /* ~23px (20px × 1.15) */
 }
 
 .text-button {
   font-family: 'Baskervville', serif;
-  font-size: 1rem; /* 16px */
+  font-size: 1rem; /* ~18.4px (16px × 1.15) */
   font-weight: 500;
-  line-height: 1.5rem; /* 24px */
+  line-height: 1.5rem; /* ~27.6px (24px × 1.15) */
 }
 
 /* Legacy classes for compatibility */

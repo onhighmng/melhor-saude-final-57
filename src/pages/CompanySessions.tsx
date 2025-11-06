@@ -113,6 +113,7 @@ const AnimatedInsights = () => {
                     ? "w-8 bg-primary" 
                     : "w-1.5 bg-muted"
                 )}
+
               />
             ))}
           </div>
@@ -257,6 +258,7 @@ const CompanySessions = () => {
           icon={Calendar}
           title="Nenhuma sessão agendada ainda"
           description="As estatísticas de sessões aparecerão aqui quando os colaboradores começarem a agendar e completar sessões de bem-estar."
+
         />
       </section>
     );

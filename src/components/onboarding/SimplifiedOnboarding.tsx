@@ -167,12 +167,17 @@ export const SimplifiedOnboarding = ({
       if (onboardingError) throw onboardingError;
 
       // 2. Update profiles.has_completed_onboarding flag
+      console.log('[SimplifiedOnboarding] Updating has_completed_onboarding for user:', user?.id);
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ has_completed_onboarding: true })
         .eq('id', user?.id);
 
-      if (profileError) console.error('Error updating profile:', profileError);
+      if (profileError) {
+        console.error('[SimplifiedOnboarding] ❌ Error updating profile:', profileError);
+        throw new Error(`Failed to save onboarding completion: ${profileError.message}`);
+      }
+      console.log('[SimplifiedOnboarding] ✅ Successfully set has_completed_onboarding = true');
 
       // 3. Initialize user milestones
       try {

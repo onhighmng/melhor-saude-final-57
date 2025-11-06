@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare, BookOpen, Bell, Brain, Heart, DollarSign, Scale } from 'lucide-react';
+import { Calendar, Users, HelpCircle, Video, X, User, MessageSquare, BookOpen, Bell, Brain, Heart, DollarSign, Scale, Phone } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSessionBalance } from '@/hooks/useSessionBalance';
 import { useBookings, Booking } from '@/hooks/useBookings';
@@ -41,14 +42,18 @@ const UserDashboard = () => {
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
   const hasCheckedOnboarding = useRef(false); // Track if we've checked onboarding to prevent re-checks
   const [justCompletedOnboarding, setJustCompletedOnboarding] = useState(false);
+  const [isCallRequestModalOpen, setIsCallRequestModalOpen] = useState(false);
+  const [callRequestNotes, setCallRequestNotes] = useState('');
 
   // Check onboarding status ONCE on mount from profile context
   useEffect(() => {
-    // Only check once when profile is loaded and we haven't checked before
-    if (!profile?.id || profile.role !== 'user' || hasCheckedOnboarding.current) {
-      if (hasCheckedOnboarding.current) {
-        setCheckingOnboarding(false);
-      }
+    // Only check when profile is loaded for the first time
+    if (!profile?.id || profile.role !== 'user') {
+      return;
+    }
+
+    // If we've already checked and user has completed onboarding, never show again
+    if (hasCheckedOnboarding.current) {
       return;
     }
 
@@ -59,9 +64,13 @@ const UserDashboard = () => {
     const hasCompleted = profile.has_completed_onboarding ?? false;
     console.log(`[UserDashboard] Onboarding status for ${profile.id}: ${hasCompleted ? 'completed' : 'not completed'}`);
     
-    setShowOnboarding(!hasCompleted);
+    // CRITICAL FIX: Only show onboarding if NOT completed
+    // Once completed, this state should never change back to true
+    if (!hasCompleted && !showOnboarding) {
+      setShowOnboarding(true);
+    }
     setCheckingOnboarding(false);
-  }, [profile?.id, profile?.role, profile?.has_completed_onboarding]);
+  }, [profile?.id, profile?.role, profile?.has_completed_onboarding, showOnboarding]);
   
   // Session modal state
   const [selectedSession, setSelectedSession] = useState<Booking | null>(null);
@@ -78,6 +87,7 @@ const UserDashboard = () => {
       console.log('[UserDashboard] Onboarding completed, starting cleanup...');
       setOnboardingData(data);
       setShowOnboarding(false);
+      hasCheckedOnboarding.current = true; // CRITICAL FIX: Mark as checked to prevent re-showing
       setJustCompletedOnboarding(true);
       
       // CRITICAL: Refresh profile from database to get has_completed_onboarding flag
@@ -272,6 +282,43 @@ const UserDashboard = () => {
     setIsSessionModalOpen(false);
   };
 
+  // Handle call request
+  const handleCallRequest = async () => {
+    if (!profile?.id) return;
+
+    try {
+      // Create a new chat session for the call request
+      const { data: chatSession, error: sessionError } = await supabase
+        .from('chat_sessions')
+        .insert({
+          user_id: profile.id,
+          pillar: 'geral',
+          status: 'phone_escalated',
+          phone_escalation_reason: callRequestNotes || 'Solicitação de chamada pelo dashboard',
+          ai_resolution: false
+        })
+        .select()
+        .single();
+
+      if (sessionError) throw sessionError;
+
+      toast({
+        title: 'Chamada Solicitada',
+        description: 'Um especialista entrará em contacto consigo em breve.',
+      });
+
+      setIsCallRequestModalOpen(false);
+      setCallRequestNotes('');
+    } catch (error) {
+      console.error('Error requesting call:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível solicitar a chamada. Tente novamente.',
+        variant: 'destructive'
+      });
+    }
+  };
+
   // Trigger confetti when user first lands on dashboard after onboarding
   useEffect(() => {
     if (justCompletedOnboarding) {
@@ -338,6 +385,7 @@ const UserDashboard = () => {
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }}
+
       />
       
       {/* Gradient overlay */}
@@ -345,15 +393,24 @@ const UserDashboard = () => {
       
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4 h-full flex flex-col min-h-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8 h-full flex flex-col min-h-0">
           {/* Welcome Header */}
-          <div className="space-y-1 flex-shrink-0">
-            <h1 className="text-2xl font-normal tracking-tight">
-              Olá, {profile?.full_name || profile?.email?.split('@')[0] || 'Utilizador'}! 👋
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Bem-vinda de volta ao seu espaço de saúde e bem-estar.
-            </p>
+          <div className="flex items-start justify-between gap-4 flex-shrink-0">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-normal tracking-tight">
+                Olá, {profile?.full_name || profile?.email?.split('@')[0] || 'Utilizador'}! 👋
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                Bem-vinda de volta ao seu espaço de saúde e bem-estar.
+              </p>
+            </div>
+            <InteractiveHoverButton 
+              text="Solicitar Chamada"
+              icon={<Phone className="h-5 w-5" />}
+              inverted
+              onClick={() => setIsCallRequestModalOpen(true)}
+              className="flex-shrink-0 px-[34px] py-3 text-base"
+            />
           </div>
 
           {/* Session Balance Card - Full Width */}
@@ -381,7 +438,7 @@ const UserDashboard = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
-                  <InteractiveHoverButton text="Falar com Especialista" className="w-full" onClick={() => navigate('/user/chat')} />
+                  <InteractiveHoverButton text="Falar com Especialista" className="w-full px-[34px] py-3" onClick={() => navigate('/user/book')} />
                 </div>
               </CardContent>
             </Card>
@@ -399,10 +456,11 @@ const UserDashboard = () => {
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-amber-50" />}
                 iconColor="text-black"
-                textColor="text-black"
+                  textColor="text-black"
                 descriptionColor="text-black/70"
                 href="#"
                 cta=""
+
               />
 
               {/* Top Right - Notifications */}
@@ -414,10 +472,11 @@ const UserDashboard = () => {
                 className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-sky-50" />}
                 iconColor="text-black"
-                textColor="text-black"
+                  textColor="text-black"
                 descriptionColor="text-black/70"
                 href="#"
                 cta=""
+
               />
 
               {/* Middle - Progress (Progreso Pessoal) */}
@@ -478,6 +537,7 @@ const UserDashboard = () => {
                     </div>
                   </div>
                 } 
+
               />
 
               {/* Bottom Left - Resources */}
@@ -489,7 +549,7 @@ const UserDashboard = () => {
                 Icon={BookOpen} 
                 onClick={() => navigate('/user/resources')} 
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
-                textColor="text-white" 
+                  textColor="text-white" 
                 iconColor="text-white" 
                 background={
                   <div className="absolute inset-0">
@@ -497,6 +557,7 @@ const UserDashboard = () => {
                     <div className="absolute inset-0 bg-black/20" />
                   </div>
                 } 
+
               />
 
               {/* Bottom Right - Upcoming Sessions */}
@@ -533,6 +594,7 @@ const UserDashboard = () => {
                               onClick: () => handleSessionClick(booking),
                             };
                           })}
+
                         />
                       ) : (
                         <div className="text-center text-sm text-muted-foreground">
@@ -542,6 +604,7 @@ const UserDashboard = () => {
                     </div>
                   </div>
                 } 
+
               />
             </BentoGrid>
           </div>
@@ -558,8 +621,54 @@ const UserDashboard = () => {
               onJoin={handleJoinSession}
               onCancel={handleCancelSession}
               className="w-full"
+
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Call Request Modal */}
+      <Dialog open={isCallRequestModalOpen} onOpenChange={setIsCallRequestModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Phone className="h-5 w-5" />
+              Solicitar Chamada
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Um especialista entrará em contacto consigo brevemente. Deixe uma nota opcional sobre o que gostaria de discutir.
+            </p>
+            <div className="space-y-2">
+              <label htmlFor="call-notes" className="text-sm font-medium">
+                Motivo da Chamada (Opcional)
+              </label>
+              <Textarea
+                id="call-notes"
+                placeholder="Ex: Gostaria de discutir o meu progresso..."
+                value={callRequestNotes}
+                onChange={(e) => setCallRequestNotes(e.target.value)}
+                rows={4}
+                className="resize-none"
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsCallRequestModalOpen(false);
+                  setCallRequestNotes('');
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleCallRequest} className="bg-primary hover:bg-primary/90">
+                <Phone className="h-4 w-4 mr-2" />
+                Solicitar Chamada
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

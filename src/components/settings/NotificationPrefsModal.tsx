@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -27,7 +27,11 @@ export const NotificationPrefsModal = ({ isOpen, onClose, preferences, onSave }:
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0">
+      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0" showClose={false} aria-describedby="notif-prefs-description">
+        <DialogTitle className="sr-only">Preferências de Notificação</DialogTitle>
+        <DialogDescription id="notif-prefs-description" className="sr-only">
+          Gerir como quer ser notificado
+        </DialogDescription>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b">

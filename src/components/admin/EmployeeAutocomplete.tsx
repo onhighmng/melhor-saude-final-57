@@ -55,7 +55,7 @@ export const EmployeeAutocomplete = ({ value, onSelect, companyId }: EmployeeAut
           sessions_used,
           company_id,
           profiles!inner(name, email),
-          companies!inner(company_name)
+          companies!inner(name)
         `)
         .eq('is_active', true);
 
@@ -74,7 +74,7 @@ export const EmployeeAutocomplete = ({ value, onSelect, companyId }: EmployeeAut
           user_id: emp.user_id as string,
           name: (profiles?.name as string) || 'Unnamed',
           email: (profiles?.email as string) || '',
-          company_name: (companies?.company_name as string) || '',
+          company_name: (companies?.name as string) || '',
           sessions_allocated: emp.sessions_allocated as number,
           sessions_used: emp.sessions_used as number,
           sessions_remaining: (emp.sessions_allocated as number) - (emp.sessions_used as number),

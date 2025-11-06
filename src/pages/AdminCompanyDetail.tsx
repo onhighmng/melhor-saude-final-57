@@ -198,13 +198,7 @@ export default function AdminCompanyDetail() {
     loadCompanyDetails();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  
 
   if (!company) {
     return (
@@ -310,6 +304,19 @@ export default function AdminCompanyDetail() {
         return;
       }
 
+      // Calculate sessions per employee based on company package
+      // Get company data to calculate proper allocation
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('sessions_allocated, employee_seats')
+        .eq('id', id)
+        .single();
+      
+      // Calculate sessions per employee: total sessions / employee seats
+      const sessionsPerEmployee = companyData 
+        ? Math.floor(((companyData as any).sessions_allocated || 0) / ((companyData as any).employee_seats || 1))
+        : 0;
+
       // Import employees to database
       const createdEmployees = [];
       const errors = [];
@@ -348,13 +355,13 @@ export default function AdminCompanyDetail() {
             }
           }
 
-          // Insert into company_employees
+          // Insert into company_employees with calculated session allocation
           const { data, error } = await supabase
             .from('company_employees')
             .insert({
               user_id: userId,
               company_id: id,
-              sessions_allocated: emp.sessionsAllocated || 5,
+              sessions_allocated: emp.sessionsAllocated || sessionsPerEmployee,
               sessions_used: 0,
               is_active: true,
               joined_at: new Date().toISOString()
@@ -426,16 +433,36 @@ export default function AdminCompanyDetail() {
 
     setIsGenerating(true);
     try {
+      // Get company data to calculate proper allocation and include in metadata
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('sessions_allocated, employee_seats, name')
+        .eq('id', id)
+        .single();
+      
+      // Calculate sessions per employee: total sessions / employee seats
+      const sessionsPerEmployee = companyData 
+        ? Math.floor(((companyData as any).sessions_allocated || 0) / ((companyData as any).employee_seats || 1))
+        : 0;
+
       const existingCodes = new Set(employees.map(e => e.code).filter(Boolean));
       const newCodes = generateUniqueAccessCodes(employeesWithoutCodes.length, existingCodes, 'MS');
 
-      // Save codes to database
+      // Save codes to database with proper session allocation and metadata
       const inviteInserts = employeesWithoutCodes.map((emp, index) => ({
         company_id: id,
         email: emp.email,
         invite_code: newCodes[index],
+        role: 'user',
         status: 'pending',
-        sessions_allocated: 5,
+        sessions_allocated: sessionsPerEmployee,
+        metadata: {
+          company_name: companyData?.name,
+          company_total_sessions: companyData?.sessions_allocated,
+          company_employee_seats: (companyData as any)?.employee_seats,
+          sessions_per_employee: sessionsPerEmployee,
+          generated_at: new Date().toISOString()
+        },
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
       }));
 
@@ -455,7 +482,10 @@ export default function AdminCompanyDetail() {
       });
 
       setEmployees(updatedEmployees);
-      toast({ title: 'Códigos Gerados', description: `${newCodes.length} código(s) gerado(s) e guardado(s) com sucesso` });
+      toast({ 
+        title: 'Códigos Gerados', 
+        description: `${newCodes.length} código(s) gerado(s) com ${sessionsPerEmployee} sessões cada` 
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao gerar códigos';
       toast({ 
@@ -492,10 +522,10 @@ export default function AdminCompanyDetail() {
                 <h2 style="color: #333;">Bem-vindo à Plataforma OnHigh Management</h2>
                 <p>Olá <strong>${employee.name}</strong>,</p>
                 <p>A sua empresa registou-o na nossa plataforma de bem-estar corporativo.</p>
-                <p style="margin: 20px 0;">Seu código de acesso: <strong style="font-size: 18px; color: #2563eb;">${employee.code}</strong></p>
+                <p style="margin: 20px 0;">Seu código de acesso: <strong style="font-size: 20.7px; color: #2563eb;">${employee.code}</strong></p>
                 <p>Use este código para completar o seu registro em:</p>
                 <p><a href="${window.location.origin}/register/employee" style="color: #2563eb;">${window.location.origin}/register/employee</a></p>
-                <p style="margin-top: 30px; color: #666; font-size: 14px;">Se não solicitou este código, pode ignorar este email.</p>
+                <p style="margin-top: 30px; color: #666; font-size: 16.1px;">Se não solicitou este código, pode ignorar este email.</p>
               </div>
             `,
             type: 'invite'
@@ -573,7 +603,7 @@ export default function AdminCompanyDetail() {
     
     return (
       <Badge 
-        variant="outline" 
+          variant="outline" 
         className={cn(
           'font-medium px-3 py-1 text-sm border',
           config.className
@@ -620,6 +650,7 @@ export default function AdminCompanyDetail() {
           setCompanyData(updated);
           toast({ title: 'Empresa Atualizada', description: 'Dados atualizados com sucesso' });
         }}
+
       />
 
       <AlertDialog open={isDeactivateDialogOpen} onOpenChange={setIsDeactivateDialogOpen}>
@@ -851,6 +882,7 @@ export default function AdminCompanyDetail() {
             setEmployeeToEdit(null);
             window.location.reload();
           }}
+
         />
       )}
     </div>

@@ -6,7 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Phone, Clock, CheckCircle, ArrowUpDown, User, Building2, Mail } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Phone, Clock, CheckCircle, ArrowUpDown, User, Building2, Mail, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCompanyFilter } from '@/hooks/useCompanyFilter';
@@ -14,6 +16,7 @@ import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 import { CallModal } from '@/components/specialist/CallModal';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatPhoneNumber } from '@/utils/phoneFormat';
 
 const EspecialistaCallRequestsRevamped = () => {
   const { toast } = useToast();
@@ -27,6 +30,8 @@ const EspecialistaCallRequestsRevamped = () => {
   const [activeTab, setActiveTab] = useState('pending');
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [resolvedRequestId, setResolvedRequestId] = useState<string | null>(null);
+  const [editingPillar, setEditingPillar] = useState(false);
+  const [selectedPillar, setSelectedPillar] = useState<string | null>(null);
 
   // Especialista Geral sees ALL escalated chats (no company filtering)
   const requestsToShow = escalatedChats;
@@ -57,7 +62,50 @@ const EspecialistaCallRequestsRevamped = () => {
 
   const handleViewUserInfo = (request: any) => {
     setSelectedRequest(request);
+    setSelectedPillar(request.pillar);
+    setEditingPillar(false);
     setIsUserInfoModalOpen(true);
+  };
+
+  const handlePillarUpdate = async () => {
+    if (!selectedRequest || !selectedPillar) {
+      toast({
+        title: 'Erro',
+        description: 'Por favor, selecione um pilar.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    try {
+      const { error } = await supabase
+        .from('chat_sessions')
+        .update({ pillar: selectedPillar })
+        .eq('id', selectedRequest.id);
+
+      if (error) throw error;
+
+      // Update the local request object
+      setSelectedRequest({
+        ...selectedRequest,
+        pillar: selectedPillar
+      });
+
+      toast({
+        title: 'Pilar Atualizado',
+        description: 'O pilar foi atualizado com sucesso.',
+      });
+      
+      setEditingPillar(false);
+      // The realtime subscription will auto-refresh the list
+    } catch (error) {
+      console.error('Error updating pillar:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível atualizar o pilar.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleMarkResolved = async (requestId: string) => {
@@ -180,16 +228,16 @@ const EspecialistaCallRequestsRevamped = () => {
 
   const getPillarColor = (pillar: string | null) => {
     const colors = {
-      'saude_mental': { bg: '#3b82f6', text: '#ffffff' }, // Blue
-      'psychological': { bg: '#3b82f6', text: '#ffffff' },
-      'bem_estar_fisico': { bg: '#eab308', text: '#ffffff' }, // Yellow
-      'physical': { bg: '#eab308', text: '#ffffff' },
-      'assistencia_financeira': { bg: '#22c55e', text: '#ffffff' }, // Green
-      'financial': { bg: '#22c55e', text: '#ffffff' },
-      'assistencia_juridica': { bg: '#a855f7', text: '#ffffff' }, // Purple
-      'legal': { bg: '#a855f7', text: '#ffffff' }
+      'saude_mental': 'hsl(217, 91%, 60%)', // Blue for Mental Health
+      'psychological': 'hsl(217, 91%, 60%)', // Blue for Mental Health
+      'bem_estar_fisico': 'hsl(45, 95%, 55%)', // Yellow for Physical Wellness
+      'physical': 'hsl(45, 95%, 55%)', // Yellow for Physical Wellness
+      'assistencia_financeira': 'hsl(142, 76%, 36%)', // Green for Financial Assistance
+      'financial': 'hsl(142, 76%, 36%)', // Green for Financial Assistance
+      'assistencia_juridica': 'hsl(270, 60%, 50%)', // Purple for Legal Assistance
+      'legal': 'hsl(270, 60%, 50%)' // Purple for Legal Assistance
     };
-    return colors[pillar as keyof typeof colors] || { bg: '#6b7280', text: '#ffffff' };
+    return colors[pillar as keyof typeof colors] || 'hsl(220, 9%, 46%)'; // Default gray
   };
 
   const getStatusBadge = (status: string) => {
@@ -292,6 +340,7 @@ const EspecialistaCallRequestsRevamped = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Colaborador</TableHead>
+                  <TableHead>Empresa</TableHead>
                   <TableHead>Pilar Sugerido</TableHead>
                   <TableHead className="cursor-pointer" onClick={toggleSortOrder}>
                     <div className="flex items-center gap-2">
@@ -305,7 +354,7 @@ const EspecialistaCallRequestsRevamped = () => {
               <TableBody>
                 {sortedRequests.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
+                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
                       Sem pedidos pendentes
                     </TableCell>
                   </TableRow>
@@ -314,7 +363,7 @@ const EspecialistaCallRequestsRevamped = () => {
                     <TableRow key={request.id} className="hover:bg-muted/50">
                       <TableCell>
                         <Button
-                          variant="ghost"
+                            variant="ghost"
                           className="h-auto p-0 hover:bg-transparent"
                           onClick={() => handleViewUserInfo(request)}
                         >
@@ -331,11 +380,18 @@ const EspecialistaCallRequestsRevamped = () => {
                         </Button>
                       </TableCell>
                       <TableCell>
+                        <div className="flex items-center gap-1 text-sm">
+                          <Building2 className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-muted-foreground">
+                            {request.company_name || 'Sem empresa'}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
                         <Badge 
-                          className="text-xs border-transparent" 
+                          className="text-xs border-transparent text-white" 
                           style={{ 
-                            backgroundColor: getPillarColor(request.pillar).bg, 
-                            color: getPillarColor(request.pillar).text 
+                            backgroundColor: getPillarColor(request.pillar)
                           }}
                         >
                           {getPillarLabel(request.pillar)}
@@ -351,7 +407,7 @@ const EspecialistaCallRequestsRevamped = () => {
                         <div className="flex items-center justify-end gap-2">
                           <Button
                             size="sm"
-                            variant="outline"
+                              variant="outline"
                             onClick={() => handleCallClick(request)}
                           >
                             <Phone className="h-4 w-4 mr-1" />
@@ -359,7 +415,7 @@ const EspecialistaCallRequestsRevamped = () => {
                           </Button>
                           <Button
                             size="sm"
-                            variant="default"
+                              variant="default"
                             onClick={() => handleMarkResolved(request.id)}
                           >
                             <CheckCircle className="h-4 w-4 mr-1" />
@@ -381,6 +437,7 @@ const EspecialistaCallRequestsRevamped = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Colaborador</TableHead>
+                  <TableHead>Empresa</TableHead>
                   <TableHead>Pilar</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
@@ -389,7 +446,7 @@ const EspecialistaCallRequestsRevamped = () => {
               <TableBody>
                 {sortedRequests.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
+                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
                       Sem pedidos resolvidos
                     </TableCell>
                   </TableRow>
@@ -398,7 +455,7 @@ const EspecialistaCallRequestsRevamped = () => {
                     <TableRow key={request.id} className="hover:bg-muted/50">
                       <TableCell>
                         <Button
-                          variant="ghost"
+                            variant="ghost"
                           className="h-auto p-0 hover:bg-transparent"
                           onClick={() => handleViewUserInfo(request)}
                         >
@@ -415,11 +472,18 @@ const EspecialistaCallRequestsRevamped = () => {
                         </Button>
                       </TableCell>
                       <TableCell>
+                        <div className="flex items-center gap-1 text-sm">
+                          <Building2 className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-muted-foreground">
+                            {request.company_name || 'Sem empresa'}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
                         <Badge 
-                          className="text-xs border-transparent" 
+                          className="text-xs border-transparent text-white" 
                           style={{ 
-                            backgroundColor: getPillarColor(request.pillar).bg, 
-                            color: getPillarColor(request.pillar).text 
+                            backgroundColor: getPillarColor(request.pillar)
                           }}
                         >
                           {getPillarLabel(request.pillar)}
@@ -433,7 +497,7 @@ const EspecialistaCallRequestsRevamped = () => {
                       <TableCell className="text-right">
                         <Button
                           size="sm"
-                          variant="outline"
+                            variant="outline"
                           onClick={() => handleViewUserInfo(request)}
                         >
                           <User className="h-4 w-4 mr-1" />
@@ -469,18 +533,85 @@ const EspecialistaCallRequestsRevamped = () => {
                       <h3 className="text-2xl font-bold">{selectedRequest.user_name}</h3>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Building2 className="h-4 w-4" />
-                        <span>{selectedRequest.company_name}</span>
+                        <span>{selectedRequest.company_name || 'Sem empresa associada'}</span>
                       </div>
                     </div>
-                    <Badge 
-                      className="text-xs border-transparent" 
-                      style={{ 
-                        backgroundColor: getPillarColor(selectedRequest.pillar).bg, 
-                        color: getPillarColor(selectedRequest.pillar).text 
-                      }}
-                    >
-                      {getPillarLabel(selectedRequest.pillar)}
-                    </Badge>
+                    {!editingPillar ? (
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          className="text-xs border-transparent text-white" 
+                          style={{ 
+                            backgroundColor: getPillarColor(selectedRequest.pillar)
+                          }}
+                        >
+                          {getPillarLabel(selectedRequest.pillar)}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditingPillar(true)}
+                          title="Editar pilar"
+                        >
+                          <Tag className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <Label className="text-sm font-medium">Atribuir Pilar</Label>
+                        <div className="flex items-center gap-2">
+                          <Select value={selectedPillar || ''} onValueChange={setSelectedPillar}>
+                            <SelectTrigger className="w-[220px]">
+                              <SelectValue placeholder="Selecione o pilar" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="psychological">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(217, 91%, 60%)' }} />
+                                  Saúde Mental
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="physical">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(45, 95%, 55%)' }} />
+                                  Bem-estar Físico
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="financial">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(142, 76%, 36%)' }} />
+                                  Assistência Financeira
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="legal">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(270, 60%, 50%)' }} />
+                                  Assistência Jurídica
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button 
+                            size="sm" 
+                            onClick={handlePillarUpdate}
+                            className="bg-green-600 hover:bg-green-700"
+                            title="Guardar"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => {
+                              setEditingPillar(false);
+                              setSelectedPillar(selectedRequest.pillar);
+                            }}
+                            title="Cancelar"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Contact Information */}
@@ -500,7 +631,7 @@ const EspecialistaCallRequestsRevamped = () => {
                       <div className="flex items-center gap-2 text-sm">
                         <Phone className="h-4 w-4 text-primary" />
                         <a href={`tel:${selectedRequest.user_phone}`} className="hover:underline">
-                          {selectedRequest.user_phone}
+                          {formatPhoneNumber(selectedRequest.user_phone || '')}
                         </a>
                       </div>
                     </div>
@@ -520,6 +651,86 @@ const EspecialistaCallRequestsRevamped = () => {
                           {getStatusBadge(selectedRequest.status).label}
                         </Badge>
                       </div>
+                    </div>
+
+                    {/* Pillar Assignment Section */}
+                    <div className="grid gap-2 pt-2 border-t">
+                      <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                        <Tag className="h-4 w-4" />
+                        Atribuição de Pilar
+                      </label>
+                      {!editingPillar ? (
+                        <div className="flex items-center justify-between">
+                          <Badge 
+                            className="text-sm border-transparent text-white px-3 py-1" 
+                            style={{ 
+                              backgroundColor: getPillarColor(selectedRequest.pillar)
+                            }}
+                          >
+                            {getPillarLabel(selectedRequest.pillar)}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingPillar(true)}
+                          >
+                            <Tag className="h-4 w-4 mr-1" />
+                            Alterar Pilar
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <Select value={selectedPillar || ''} onValueChange={setSelectedPillar}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Selecione o pilar" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="psychological">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(217, 91%, 60%)' }} />
+                                  🔵 Saúde Mental
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="physical">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(45, 95%, 55%)' }} />
+                                  🟡 Bem-estar Físico
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="financial">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(142, 76%, 36%)' }} />
+                                  🟢 Assistência Financeira
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="legal">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(270, 60%, 50%)' }} />
+                                  🟣 Assistência Jurídica
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <div className="flex gap-2">
+                            <Button 
+                              className="flex-1 bg-green-600 hover:bg-green-700"
+                              onClick={handlePillarUpdate}
+                            >
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Guardar
+                            </Button>
+                            <Button 
+                              variant="outline"
+                              onClick={() => {
+                                setEditingPillar(false);
+                                setSelectedPillar(selectedRequest.pillar);
+                              }}
+                            >
+                              Cancelar
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -562,6 +773,7 @@ const EspecialistaCallRequestsRevamped = () => {
           onClose={() => setIsCallModalOpen(false)}
           request={selectedRequest}
           onComplete={handleCallComplete}
+
         />
       )}
     </div>

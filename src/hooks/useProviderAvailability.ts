@@ -44,7 +44,7 @@ export const useProviderAvailability = (
           .from('bookings')
           .select('start_time, end_time')
           .eq('prestador_id', providerId)
-          .eq('booking_date', dateStr)
+          .eq('date', dateStr)
           .in('status', ['pending', 'confirmed', 'scheduled']);
 
         if (bookingsError) throw bookingsError;

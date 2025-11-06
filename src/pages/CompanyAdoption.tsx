@@ -366,7 +366,7 @@ export const CompanyAdoption: React.FC = () => {
           <Button 
             onClick={sendReminderEmails} 
             disabled={isSendingReminders}
-            variant="outline"
+              variant="outline"
           >
             <Mail className="h-4 w-4 mr-2" />
             {isSendingReminders ? 'Enviando...' : 'Enviar Lembretes'}
@@ -577,6 +577,7 @@ export const CompanyAdoption: React.FC = () => {
                           <Progress 
                             value={employee.sessions_allocated > 0 ? (employee.sessions_used / employee.sessions_allocated) * 100 : 0} 
                             className="w-full" 
+
                           />
                         </div>
                       </div>

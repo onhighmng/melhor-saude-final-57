@@ -287,6 +287,7 @@ const AdminLogs = () => {
                     value={userFilter}
                     onChange={(e) => setUserFilter(e.target.value)}
                     className="pl-10"
+
                   />
                 </div>
               </div>
@@ -323,7 +324,7 @@ const AdminLogs = () => {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant="outline"
+                        variant="outline"
                       className={cn(
                         "justify-start text-left font-normal",
                         !dateFrom && "text-muted-foreground"
@@ -340,6 +341,7 @@ const AdminLogs = () => {
                       onSelect={setDateFrom}
                       initialFocus
                       className={cn("p-3 pointer-events-auto")}
+
                     />
                   </PopoverContent>
                 </Popover>
@@ -347,7 +349,7 @@ const AdminLogs = () => {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant="outline"
+                        variant="outline"
                       className={cn(
                         "justify-start text-left font-normal",
                         !dateTo && "text-muted-foreground"
@@ -364,6 +366,7 @@ const AdminLogs = () => {
                       onSelect={setDateTo}
                       initialFocus
                       className={cn("p-3 pointer-events-auto")}
+
                     />
                   </PopoverContent>
                 </Popover>
@@ -388,7 +391,7 @@ const AdminLogs = () => {
                   Ajuste os filtros para ver resultados diferentes.
                 </p>
                 <Button 
-                  variant="outline" 
+                    variant="outline" 
                   className="mt-4"
                   onClick={() => {
                     setTenantFilter("all");
@@ -473,7 +476,7 @@ const AdminLogs = () => {
                               <DialogTrigger asChild>
                                 <Button
                                   size="sm"
-                                  variant="outline"
+                                    variant="outline"
                                   onClick={() => setSelectedLog(log)}
                                   className="h-8 px-3"
                                 >

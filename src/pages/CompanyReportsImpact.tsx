@@ -18,7 +18,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { EmptyState } from '@/components/ui/empty-state';
 import { CompanySubscriptionBanner } from '@/components/company/CompanySubscriptionBanner';
-
 const CompanyReportsImpact = () => {
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
@@ -180,18 +179,7 @@ const CompanyReportsImpact = () => {
     }
   };
 
-  if (loading || !metrics) {
-    return (
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">A carregar relatórios...</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  
 
   // Show empty state if no sessions or employees
   if (metrics?.subscription?.period_sessions_used === 0 && metrics?.employees?.active === 0) {
@@ -209,6 +197,7 @@ const CompanyReportsImpact = () => {
           icon={BarChart3}
           title="Relatórios estarão disponíveis em breve"
           description="Os relatórios de impacto estarão disponíveis quando os colaboradores começarem a usar a plataforma e completarem sessões."
+
         />
       </section>
     );
@@ -319,6 +308,7 @@ const CompanyReportsImpact = () => {
                         <div 
                           className="w-4 h-4 rounded-full" 
                           style={{ backgroundColor: pillar.color }}
+
                         />
                         <span className="font-medium">{pillar.pillar}</span>
                       </div>
@@ -334,6 +324,7 @@ const CompanyReportsImpact = () => {
                           width: `${percentage}%`,
                           backgroundColor: pillar.color
                         }}
+
                       />
                     </div>
                   </div>

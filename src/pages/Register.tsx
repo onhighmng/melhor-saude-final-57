@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,12 @@ import { createUserFromCode, PersonalUserData, HRUserData, EmployeeUserData, Pre
 import { UserType } from '@/types/accessCodes';
 import { getAuthCallbackUrl } from '@/utils/authRedirects';
 import { supabase } from '@/integrations/supabase/client';
+import { formatPhoneNumber, PHONE_PLACEHOLDER } from '@/utils/phoneFormat';
+import heroFitness from '@/assets/hero-fitness.jpg';
+import heroBrain from '@/assets/hero-brain.jpg';
+import heroCalculator from '@/assets/hero-calculator.jpg';
+import heroNeural from '@/assets/hero-neural.jpg';
+import heroPlanning from '@/assets/hero-planning.jpg';
 
 const steps = [
   { id: 1, title: 'Código de Acesso', icon: User },
@@ -52,6 +58,34 @@ const availabilityOptions = [
   { value: 'fim_semana', label: 'Fim de Semana' }
 ];
 
+const carouselImages = [
+  { 
+    src: heroFitness, 
+    title: 'Bem-Estar Físico',
+    description: 'Cuide da sua saúde física com programas personalizados'
+  },
+  { 
+    src: heroBrain, 
+    title: 'Saúde Mental',
+    description: 'Apoio psicológico profissional quando você precisar'
+  },
+  { 
+    src: heroCalculator, 
+    title: 'Assistência Financeira',
+    description: 'Consultoria financeira para o seu bem-estar económico'
+  },
+  { 
+    src: heroNeural, 
+    title: 'Desenvolvimento Pessoal',
+    description: 'Cresça profissional e pessoalmente com nossos especialistas'
+  },
+  { 
+    src: heroPlanning, 
+    title: 'Assistência Jurídica',
+    description: 'Suporte legal completo para suas necessidades'
+  }
+];
+
 export default function Register() {
   const [currentStep, setCurrentStep] = useState(1);
   const [accessCode, setAccessCode] = useState('');
@@ -59,13 +93,14 @@ export default function Register() {
   const [companyName, setCompanyName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   // Form data
   const [formData, setFormData] = useState<any>({
     name: '',
     email: '',
     password: '',
-    phone: '',
+    phone: '+258 ',
     pillar: '',
     // HR specific
     companyName: '',
@@ -86,6 +121,17 @@ export default function Register() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isValid, isLoading: isValidating, userType: validatedUserType, companyName: validatedCompanyName, error } = useAccessCodeValidation(accessCode);
+
+  // Auto-scroll carousel effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const updateFormData = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -179,14 +225,23 @@ export default function Register() {
           throw new Error('Tipo de utilizador inválido: ' + userType);
       }
 
-      await createUserFromCode(accessCode, userData, userType!);
+      const result = await createUserFromCode(accessCode, userData, userType!);
 
       toast({
         title: "Registo Concluído ✅",
-        description: "A sua conta foi criada com sucesso! Pode fazer login agora.",
+        description: "A sua conta foi criada com sucesso!",
       });
 
-      navigate('/login');
+      // CRITICAL FIX: Redirect through AuthCallback for reliable role-based routing
+      // AuthCallback does a fresh database query and doesn't rely on cached state
+      console.log('[Register] ✅ Registration complete, redirecting to /auth/callback for role-based routing');
+      console.log('[Register] 🔄 AuthCallback will query database and redirect to correct dashboard');
+      
+      // Wait a bit for database consistency
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Redirect to AuthCallback which will handle role-based routing correctly
+      navigate('/auth/callback', { replace: true });
     } catch (error) {
       console.error('Registration error:', error);
       
@@ -206,9 +261,18 @@ export default function Register() {
         // Account was created successfully! Show success message
         toast({
           title: "Conta Criada com Sucesso! ✅",
-          description: "A sua conta foi criada. Pode fazer login agora.",
+          description: "A sua conta foi criada.",
         });
-        navigate('/login');
+        
+        // CRITICAL FIX: Redirect through AuthCallback for reliable role-based routing
+        console.log('[Register Error Recovery] ✅ Account created, redirecting to /auth/callback');
+        
+        // Wait a bit for database consistency
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Redirect to AuthCallback which will handle role-based routing correctly
+        navigate('/auth/callback', { replace: true });
+        return;
       } else {
         // Complete failure - no user created
         toast({
@@ -228,10 +292,10 @@ export default function Register() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
                 Código de Acesso
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm text-gray-600">
                 Insira o código de acesso fornecido para continuar com o registo
               </p>
             </div>
@@ -248,6 +312,7 @@ export default function Register() {
                     placeholder="Ex: MS-1234"
                     className={`pr-10 ${isValid ? 'border-green-500' : error ? 'border-red-500' : ''}`}
                     disabled={isValidating}
+
                   />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                     {isValidating ? (
@@ -294,10 +359,10 @@ export default function Register() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
                 Dados Pessoais
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm text-gray-600">
                 Preencha os seus dados pessoais
               </p>
             </div>
@@ -310,6 +375,7 @@ export default function Register() {
                   value={formData.name}
                   onChange={(e) => updateFormData('name', e.target.value)}
                   placeholder="O seu nome completo"
+
                 />
               </div>
 
@@ -321,6 +387,7 @@ export default function Register() {
                   value={formData.email}
                   onChange={(e) => updateFormData('email', e.target.value)}
                   placeholder="seu@email.com"
+
                 />
               </div>
 
@@ -333,10 +400,11 @@ export default function Register() {
                     value={formData.password}
                     onChange={(e) => updateFormData('password', e.target.value)}
                     placeholder="Mínimo 8 caracteres"
+
                   />
                   <Button
                     type="button"
-                    variant="ghost"
+                      variant="ghost"
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
@@ -354,9 +422,11 @@ export default function Register() {
                 <Label htmlFor="phone">Telefone</Label>
                 <Input
                   id="phone"
+                  type="tel"
                   value={formData.phone}
-                  onChange={(e) => updateFormData('phone', e.target.value)}
-                  placeholder="+351 123 456 789"
+                  onChange={(e) => updateFormData('phone', formatPhoneNumber(e.target.value))}
+                  placeholder={PHONE_PLACEHOLDER}
+
                 />
               </div>
 
@@ -385,12 +455,12 @@ export default function Register() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
                 {userType === 'hr' ? 'Dados da Empresa' : 
                  userType === 'prestador' ? 'Informações Profissionais' : 
                  'Informações Adicionais'}
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm text-gray-600">
                 {userType === 'hr' ? 'Preencha os dados da sua empresa' :
                  userType === 'prestador' ? 'Preencha as suas informações profissionais' :
                  'Informações adicionais sobre si'}
@@ -407,6 +477,7 @@ export default function Register() {
                       value={formData.companyName}
                       onChange={(e) => updateFormData('companyName', e.target.value)}
                       placeholder="Nome da sua empresa"
+
                     />
                   </div>
                   <div>
@@ -417,6 +488,7 @@ export default function Register() {
                       onChange={(e) => updateFormData('nuit', e.target.value)}
                       placeholder="123456789"
                       maxLength={9}
+
                     />
                   </div>
                   <div>
@@ -426,6 +498,7 @@ export default function Register() {
                       value={formData.address}
                       onChange={(e) => updateFormData('address', e.target.value)}
                       placeholder="Endereço da empresa"
+
                     />
                   </div>
                   <div>
@@ -435,6 +508,7 @@ export default function Register() {
                       value={formData.contactPerson}
                       onChange={(e) => updateFormData('contactPerson', e.target.value)}
                       placeholder="Nome da pessoa responsável"
+
                     />
                   </div>
                 </>
@@ -466,6 +540,7 @@ export default function Register() {
                       value={formData.costPerSession}
                       onChange={(e) => updateFormData('costPerSession', e.target.value)}
                       placeholder="0.00"
+
                     />
                   </div>
                   <div>
@@ -505,6 +580,7 @@ export default function Register() {
                       value={formData.bio}
                       onChange={(e) => updateFormData('bio', e.target.value)}
                       placeholder="Breve descrição profissional..."
+
                     />
                   </div>
                   <div>
@@ -514,6 +590,7 @@ export default function Register() {
                       value={formData.qualifications}
                       onChange={(e) => updateFormData('qualifications', e.target.value)}
                       placeholder="Formação académica e certificações..."
+
                     />
                   </div>
                   <div>
@@ -524,6 +601,7 @@ export default function Register() {
                       value={formData.experience}
                       onChange={(e) => updateFormData('experience', e.target.value)}
                       placeholder="Ex: 5"
+
                     />
                   </div>
                 </>
@@ -536,10 +614,10 @@ export default function Register() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
                 Confirmação
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm text-gray-600">
                 Revise os seus dados antes de criar a conta
               </p>
             </div>
@@ -590,83 +668,174 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        <Card className="shadow-xl">
-          <CardHeader className="text-center pb-4">
-            <CardTitle className="text-3xl font-bold text-gray-900">
+    <div className="min-h-screen flex">
+      {/* Left side - Image Carousel */}
+      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden bg-gradient-to-br from-blue-900 to-indigo-900">
+        {/* Carousel Images */}
+        {carouselImages.map((image, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <img
+              src={image.src}
+              alt={image.title}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+            
+            {/* Content Overlay */}
+            <div className="relative z-10 h-full flex flex-col justify-end p-12">
+              <div className="max-w-xl">
+                <h2 className="text-4xl font-bold text-white mb-4 animate-fade-in">
+                  {image.title}
+                </h2>
+                <p className="text-xl text-white/90 mb-8 animate-fade-in animation-delay-200">
+                  {image.description}
+                </p>
+                
+                {/* Carousel Indicators */}
+                <div className="flex gap-2">
+                  {carouselImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        idx === currentImageIndex 
+                          ? 'w-8 bg-white' 
+                          : 'w-2 bg-white/50 hover:bg-white/75'
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Logo on carousel */}
+        <div className="absolute top-12 left-8 z-20">
+          <img 
+            src="/lovable-uploads/c207c3c2-eab3-483e-93b6-a55cf5e5fdf2.png" 
+            alt="Melhor Saúde Logo" 
+            className="w-32 h-32 object-contain"
+          />
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-white overflow-y-auto">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <Link
+              to="/"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-800 mb-6 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar à página inicial
+            </Link>
+            <img 
+              src="/lovable-uploads/c207c3c2-eab3-483e-93b6-a55cf5e5fdf2.png" 
+              alt="Melhor Saúde Logo" 
+              className="w-32 h-32 mx-auto object-contain lg:hidden mb-4"
+            />
+            <h1 className="text-3xl font-bold text-gray-900">
               Registo na Plataforma
-            </CardTitle>
-            <p className="text-gray-600 mt-2">
+            </h1>
+            <p className="text-muted-foreground mt-2">
               Crie a sua conta usando o código de acesso fornecido
             </p>
-          </CardHeader>
+          </div>
 
-          <CardContent className="space-y-6">
-            {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Passo {currentStep} de 4</span>
-                <span>{Math.round((currentStep / 4) * 100)}%</span>
+          {/* Progress Bar */}
+          <div className="mb-8 space-y-3">
+            <div className="flex justify-between text-sm text-gray-600 font-semibold">
+              <span>Passo {currentStep} de 4</span>
+              <span>{Math.round((currentStep / 4) * 100)}%</span>
+            </div>
+            <Progress value={(currentStep / 4) * 100} className="h-3" />
+            
+            {/* Step indicators */}
+            <div className="flex justify-between pt-2">
+              {steps.map((step) => {
+                const StepIcon = step.icon;
+                return (
+                  <div 
+                    key={step.id} 
+                    className={`flex items-center gap-2 text-base ${
+                      currentStep >= step.id ? 'text-blue-600 font-semibold' : 'text-gray-400'
+                    }`}
+                  >
+                    <StepIcon className="h-6 w-6" />
+                    <span className="hidden sm:inline">{step.title}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Step Content */}
+          <Card className="shadow-sm border-gray-200">
+            <CardContent className="p-6 space-y-6">
+              {renderStepContent()}
+
+              {/* Navigation Buttons */}
+              <div className="flex justify-between pt-6 border-t">
+                <Button
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className="flex items-center gap-2 text-base h-12 px-6"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  Anterior
+                </Button>
+
+                {currentStep < 4 ? (
+                  <Button
+                    onClick={nextStep}
+                    className="flex items-center gap-2 text-base h-12 px-6"
+                  >
+                    Próximo
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={isLoading}
+                    className="flex items-center gap-2 text-base h-12 px-6 bg-emerald-green hover:bg-emerald-green/90"
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        Criando Conta...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="h-5 w-5" />
+                        Criar Conta
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
-              <Progress value={(currentStep / 4) * 100} className="h-2" />
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* Step Content */}
-            {renderStepContent()}
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-between pt-6">
-              <Button
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 1}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Anterior
-              </Button>
-
-              {currentStep < 4 ? (
-                <Button
-                  onClick={nextStep}
-                  className="flex items-center gap-2"
-                >
-                  Próximo
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleSubmit}
-                  disabled={isLoading}
-                  className="flex items-center gap-2"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Criando Conta...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-4 w-4" />
-                      Criar Conta
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
-
-            {/* Login Link */}
-            <div className="text-center pt-4 border-t">
-              <p className="text-gray-600">
-                Já tem uma conta?{' '}
-                <Link to="/login" className="text-blue-600 hover:underline font-medium">
-                  Iniciar Sessão
-                </Link>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Login Link */}
+          <div className="text-center mt-6">
+            <p className="text-lg text-gray-600">
+              Já tem uma conta?{' '}
+              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-bold text-lg">
+                Iniciar Sessão
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

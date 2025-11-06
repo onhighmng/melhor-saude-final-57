@@ -14,20 +14,38 @@ const topicLabels: Record<string, { emoji: string; title: string }> = {
   'anxiety': { emoji: '😰', title: 'Ansiedade' },
   'depression': { emoji: '😔', title: 'Depressão' },
   'stress': { emoji: '😫', title: 'Estresse' },
-  'relationships': { emoji: '💔', title: 'Relacionamentos' },
-  'self-esteem': { emoji: '🪞', title: 'Autoestima' },
-  'trauma': { emoji: '🌪️', title: 'Trauma' }
+  'burnout': { emoji: '🔥', title: 'Burnout / Esgotamento' },
+  'social-anxiety': { emoji: '😶', title: 'Ansiedade Social / Fobias' },
+  'eating-disorders': { emoji: '🍽️', title: 'Transtornos Alimentares' },
+  'relationships': { emoji: '💔', title: 'Dificuldades de Relacionamento' },
+  'self-esteem': { emoji: '🪞', title: 'Autoestima e Autoconfiança' },
+  'grief': { emoji: '🕊️', title: 'Luto e Perda' },
+  'trauma': { emoji: '🌪️', title: 'Traumas e PTSD' },
+  'identity': { emoji: '🌈', title: 'Questões de Identidade' },
+  'anger': { emoji: '😤', title: 'Gestão da Raiva' }
 };
 
 const symptomLabels: Record<string, string> = {
   'sleep-problems': 'Dificuldade para dormir ou sono excessivo',
   'lack-energy': 'Falta de energia ou cansaço constante',
-  'concentration': 'Dificuldade de concentração',
+  'concentration': 'Dificuldade de concentração persistente',
   'mood-swings': 'Mudanças repentinas de humor',
   'loss-interest': 'Perda de interesse em atividades que gostava',
-  'social-withdrawal': 'Evitar contato social',
+  'social-withdrawal': 'Isolamento social frequente',
   'physical-symptoms': 'Sintomas físicos (dor de cabeça, tensão muscular)',
-  'negative-thoughts': 'Pensamentos negativos recorrentes'
+  'negative-thoughts': 'Pensamentos negativos recorrentes',
+  'intrusive-thoughts': 'Pensamentos intrusivos recorrentes',
+  'appetite-changes': 'Mudanças significativas no apetite',
+  'mental-fatigue': 'Fadiga mental constante',
+  'irritability': 'Irritabilidade aumentada',
+  'decision-difficulty': 'Dificuldade em tomar decisões',
+  'emptiness': 'Sentimento de vazio ou desesperança',
+  'sleep-pattern-changes': 'Alterações nos padrões de sono',
+  'panic-attacks': 'Palpitações ou ataques de pânico',
+  'excessive-worry': 'Preocupação excessiva com o futuro',
+  'guilt-feelings': 'Sentimentos de culpa constantes',
+  'emotional-numbness': 'Sensação de anestesia emocional',
+  'crying-spells': 'Crises de choro frequentes'
 };
 
 const AssessmentResult: React.FC<AssessmentResultProps> = ({

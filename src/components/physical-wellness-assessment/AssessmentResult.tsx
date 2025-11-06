@@ -15,8 +15,15 @@ const topicLabels: Record<string, { emoji: string; title: string }> = {
   'exercise': { emoji: '🏃', title: 'Exercício Físico' },
   'sleep': { emoji: '😴', title: 'Sono' },
   'chronic-pain': { emoji: '🩹', title: 'Dor Crónica' },
-  'preventive-health': { emoji: '🏥', title: 'Saúde Preventiva' },
-  'lifestyle': { emoji: '🌱', title: 'Estilo de Vida' }
+  'chronic-diseases': { emoji: '💊', title: 'Gestão de Doenças Crónicas' },
+  'post-surgery': { emoji: '🏥', title: 'Reabilitação Pós-Cirúrgica' },
+  'reproductive-health': { emoji: '🤰', title: 'Saúde Reprodutiva' },
+  'physiotherapy': { emoji: '🦴', title: 'Fisioterapia e Recuperação' },
+  'preventive-health': { emoji: '🔬', title: 'Medicina Preventiva' },
+  'posture': { emoji: '🪑', title: 'Saúde Postural e Ergonomia' },
+  'allergies': { emoji: '🤧', title: 'Alergias e Imunidade' },
+  'digestive-health': { emoji: '🫃', title: 'Saúde Digestiva' },
+  'lifestyle': { emoji: '🌱', title: 'Estilo de Vida Saudável' }
 };
 
 const symptomLabels: Record<string, string> = {
@@ -27,7 +34,19 @@ const symptomLabels: Record<string, string> = {
   'muscle-pain': 'Dores musculares ou articulares',
   'poor-sleep-quality': 'Má qualidade de sono',
   'stress-physical': 'Sintomas físicos de estresse',
-  'lack-motivation': 'Falta de motivação para exercício'
+  'lack-motivation': 'Falta de motivação para exercício',
+  'joint-pain': 'Dores articulares persistentes',
+  'mobility-issues': 'Problemas de mobilidade',
+  'chronic-tension': 'Tensão muscular crónica',
+  'frequent-headaches': 'Cefaleias frequentes',
+  'digestive-problems': 'Problemas gastrointestinais recorrentes',
+  'breathing-difficulty': 'Dificuldade respiratória',
+  'skin-issues': 'Alterações na pele',
+  'dizziness': 'Vertigens ou tonturas',
+  'muscle-weakness': 'Fraqueza muscular',
+  'vision-problems': 'Problemas de visão',
+  'chronic-fatigue': 'Fadiga crónica severa',
+  'inflammation': 'Inflamação persistente'
 };
 
 const AssessmentResult: React.FC<AssessmentResultProps> = ({

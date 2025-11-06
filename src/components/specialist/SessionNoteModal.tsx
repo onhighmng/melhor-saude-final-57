@@ -213,8 +213,7 @@ export const SessionNoteModal = ({ isOpen, onClose, session, onSave }: SessionNo
               .insert({
                 user_id: session?.user_id,
                 prestador_id: prestadorId,
-                scheduled_at: dateTime.toISOString(),
-                booking_date: dateTime.toISOString().split('T')[0],
+                date: dateTime.toISOString().split('T')[0],
                 start_time: dateTime.toTimeString().split(' ')[0].substring(0, 5),
                 pillar: session?.pillar,
                 status: 'scheduled',

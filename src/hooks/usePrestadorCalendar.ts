@@ -66,17 +66,19 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
         .from('bookings')
         .select(`
           id,
-          booking_date,
+          date,
           start_time,
+          end_time,
           status,
           pillar,
           session_type,
           meeting_link,
-          profiles!bookings_user_id_fkey(name),
-          companies!bookings_company_id_fkey(company_name)
+          notes,
+          profiles!bookings_user_id_fkey(name, email),
+          companies!bookings_company_id_fkey(name)
         `)
         .eq('prestador_id', prestador.id)
-        .order('booking_date', { ascending: true })
+        .order('date', { ascending: true })
         .order('start_time', { ascending: true });
 
       // Fetch prestador data to get blocked_dates
@@ -99,9 +101,8 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
       console.log('[usePrestadorCalendar] Total bookings:', bookings?.length || 0);
 
       // Transform bookings to calendar events
-      // Use booking_date OR date field (bookings table has both columns)
       const bookingEvents: PrestadorCalendarEvent[] = (bookings || []).map((booking: any) => {
-        const eventDate = booking.booking_date || booking.date;
+        const eventDate = booking.date;
         console.log('[usePrestadorCalendar] Booking:', booking.id, 'Date:', eventDate, 'Time:', booking.start_time, 'Link:', booking.meeting_link);
         
         return {
@@ -110,7 +111,7 @@ export const usePrestadorCalendar = (): UsePrestadorCalendarReturn => {
           time: booking.start_time || '09:00',
           type: 'session' as const,
           clientName: booking.profiles?.name,
-          company: booking.companies?.company_name,
+          company: booking.companies?.name,
           pillar: booking.pillar,
           status: booking.status as 'confirmed' | 'pending' | 'cancelled' | 'completed' | 'rescheduled',
           meetingLink: booking.meeting_link

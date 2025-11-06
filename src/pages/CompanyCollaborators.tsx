@@ -204,15 +204,40 @@ const CompanyCollaborators = () => {
     // The company_id from their profile will be used if available, otherwise NULL
     
     try {
+      // Get company data to calculate proper allocation and include in metadata
+      let sessionsPerEmployee = 0;
+      let companyMetadata: any = {
+        generated_by: profile?.email || 'unknown',
+        generated_at: new Date().toISOString(),
+        hr_generated: true
+      };
+
+      if (profile?.company_id) {
+        const { data: companyData } = await supabase
+          .from('companies')
+          .select('sessions_allocated, employee_seats, name')
+          .eq('id', profile.company_id)
+          .single();
+        
+        // Calculate sessions per employee: total sessions / employee seats
+        sessionsPerEmployee = companyData 
+          ? Math.floor(((companyData as any).sessions_allocated || 0) / ((companyData as any).employee_seats || 1))
+          : 0;
+
+        companyMetadata = {
+          ...companyMetadata,
+          company_name: companyData?.name,
+          company_total_sessions: companyData?.sessions_allocated,
+          company_employee_seats: (companyData as any)?.employee_seats,
+          sessions_per_employee: sessionsPerEmployee
+        };
+      }
+
       // Use the RPC function to generate access code
       const { data, error } = await supabase.rpc('generate_access_code', {
         p_user_type: 'user',
         p_company_id: profile?.company_id || null, // Use company_id if exists, otherwise NULL
-        p_metadata: {
-          generated_by: profile?.email || 'unknown',
-          generated_at: new Date().toISOString(),
-          hr_generated: true
-        },
+        p_metadata: companyMetadata,
         p_expires_days: 30
       });
 
@@ -241,7 +266,9 @@ const CompanyCollaborators = () => {
 
       toast({
         title: "Código gerado com sucesso!",
-        description: `Código de acesso: ${code}`,
+        description: sessionsPerEmployee > 0 
+          ? `Código de acesso: ${code} (${sessionsPerEmployee} sessões)`
+          : `Código de acesso: ${code}`,
         duration: 5000
       });
     } catch (error) {
@@ -412,6 +439,7 @@ const CompanyCollaborators = () => {
         seatLimit={profile?.company_id ? seatLimit : 999}
         seatUsed={profile?.company_id ? seatUsed : 0}
         seatUsagePercent={profile?.company_id ? seatUsagePercent : 0}
+
       />
 
       {/* Employee Management Section - Use resolved company ID */}

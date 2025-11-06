@@ -270,6 +270,7 @@ export default function UserResources() {
             icon={BookOpen}
             title="Recursos disponíveis em breve"
             description="Estamos a preparar conteúdo valioso para apoiar o seu bem-estar. Volte em breve para aceder a guias, vídeos e artigos."
+
           />
         </div>
       </div>

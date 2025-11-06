@@ -72,15 +72,15 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
         setLoadingCompanies(true);
         const { data, error } = await supabase
           .from('companies')
-          .select('id, company_name')
+          .select('id, name')
           .eq('is_active', true)
-          .order('company_name');
+          .order('name');
 
         if (error) throw error;
 
         const companyList = (data || []).map(c => ({
           id: c.id,
-          name: c.company_name
+          name: c.name
         }));
 
         setCompanies(companyList);
@@ -184,7 +184,7 @@ export const AddEmployeeModal = ({ open, onOpenChange }: AddEmployeeModalProps) 
       const { data: company, error: companyError } = await supabase
         .from('companies')
         .select('id')
-        .eq('company_name', data.company)
+        .eq('name', data.company)
         .maybeSingle();
 
       if (companyError) throw companyError;

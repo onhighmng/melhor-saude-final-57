@@ -182,6 +182,7 @@ const SessionEventCard = ({ event, toast, onReschedule, onCancel, onConclude }: 
               onChange={(e) => setMeetingLink(e.target.value)}
               placeholder="https://meet.google.com/..."
               className="w-full"
+
             />
             <div className="flex gap-2">
               <Button size="sm" onClick={handleSaveLink} className="flex-1">
@@ -438,7 +439,7 @@ const PrestadorCalendar = () => {
       console.log('🟢 [RESCHEDULE] Calling Supabase RPC function...');
       const { data, error } = await supabase.rpc('reschedule_booking_as_specialist' as any, {
         _booking_id: sessionId,
-        _new_booking_date: newDate.toISOString().split('T')[0],
+        _new_date: newDate.toISOString().split('T')[0],
         _new_start_time: newTime
       }) as { data: any; error: any };
 
@@ -586,7 +587,7 @@ const PrestadorCalendar = () => {
             isSpecialist ? (
               <Button 
                 onClick={() => setIsReferralModalOpen(true)} 
-                variant="outline" 
+                  variant="outline" 
                 className="w-full gap-2 md:w-auto h-8 text-sm"
               >
                 <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
@@ -594,6 +595,7 @@ const PrestadorCalendar = () => {
               </Button>
             ) : undefined
           }
+
         />
       </Card>
 
@@ -662,6 +664,7 @@ const PrestadorCalendar = () => {
       <AvailabilitySettings 
         open={isAvailabilityModalOpen}
         onOpenChange={setIsAvailabilityModalOpen}
+
       />
 
       {/* Referral Booking Modal - Only for Specialists */}
@@ -676,6 +679,7 @@ const PrestadorCalendar = () => {
               description: 'A sessão foi agendada com sucesso'
             });
           }}
+
         />
       )}
 
@@ -710,6 +714,7 @@ const PrestadorCalendar = () => {
                 min={new Date().toISOString().split('T')[0]}
                 value={rescheduleDate ? rescheduleDate.toISOString().split('T')[0] : ''}
                 onChange={(e) => setRescheduleDate(e.target.value ? new Date(e.target.value) : null)}
+
               />
             </div>
             <div className="space-y-2">
@@ -718,6 +723,7 @@ const PrestadorCalendar = () => {
                 type="time"
                 value={rescheduleTime}
                 onChange={(e) => setRescheduleTime(e.target.value)}
+
               />
             </div>
             <div className="flex justify-end gap-2 pt-4">

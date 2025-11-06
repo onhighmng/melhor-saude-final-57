@@ -57,10 +57,11 @@ const AdminOperations = () => {
                 className={`col-span-1 ${activeTab === 'sessions' ? 'ring-2 ring-yellow-400' : ''}`}
                 background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'sessions' ? 'from-yellow-50 to-yellow-100' : 'from-yellow-50/50 to-yellow-50'}`} />}
                 iconColor="text-yellow-600"
-                textColor="text-gray-900"
+                  textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
                 cta=""
+
               />
 
               <BentoCard 
@@ -71,10 +72,11 @@ const AdminOperations = () => {
                 className={`col-span-1 ${activeTab === 'specialist' ? 'ring-2 ring-blue-400' : ''}`}
                 background={<div className={`absolute inset-0 bg-gradient-to-br ${activeTab === 'specialist' ? 'from-blue-200 to-blue-300' : 'from-blue-100 to-blue-200'}`} />}
                 iconColor="text-blue-600"
-                textColor="text-gray-900"
+                  textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
                 cta=""
+
               />
             </BentoGrid>
 

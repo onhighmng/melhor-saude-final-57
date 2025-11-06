@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { uploadAvatar } from '@/utils/avatarUpload';
+import { formatPhoneNumber, PHONE_PLACEHOLDER } from '@/utils/phoneFormat';
 
 const EspecialistaSettings = () => {
   const { profile, refreshProfile } = useAuth();
@@ -237,11 +238,12 @@ const EspecialistaSettings = () => {
             background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50" />}
             onClick={() => setIsProfileModalOpen(true)}
             iconColor="text-blue-600"
-            textColor="text-gray-900"
+              textColor="text-gray-900"
             descriptionColor="text-gray-600"
             iconSize={48}
             nameSize="text-3xl"
             descriptionSize="text-xl"
+
           />
 
           <BentoCard
@@ -254,11 +256,12 @@ const EspecialistaSettings = () => {
             background={<div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50" />}
             onClick={() => setIsNotificationsModalOpen(true)}
             iconColor="text-amber-600"
-            textColor="text-gray-900"
+              textColor="text-gray-900"
             descriptionColor="text-gray-600"
             iconSize={48}
             nameSize="text-3xl"
             descriptionSize="text-xl"
+
           />
         </BentoGrid>
 
@@ -279,6 +282,7 @@ const EspecialistaSettings = () => {
                         alt="Avatar" 
                         className="w-full h-full object-cover"
                         key={`${avatarPreview || profile?.avatar_url}-${Date.now()}`}
+
                       />
                     ) : (
                       <User className="w-16 h-16 text-muted-foreground" />
@@ -297,6 +301,7 @@ const EspecialistaSettings = () => {
                     accept="image/*"
                     className="hidden"
                     onChange={handleAvatarChange}
+
                   />
                   <p className="text-xs text-muted-foreground">JPG, PNG ou WEBP (máx. 5MB)</p>
                 </div>
@@ -309,6 +314,7 @@ const EspecialistaSettings = () => {
                     id="name" 
                     value={profileData.name} 
                     onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+
                   />
                 </div>
                 <div className="space-y-2">
@@ -319,9 +325,11 @@ const EspecialistaSettings = () => {
               <div className="space-y-2">
                 <Label htmlFor="phone">Telefone</Label>
                 <Input 
-                  id="phone" 
+                  id="phone"
+                  type="tel"
                   value={profileData.phone}
-                  onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                  onChange={(e) => setProfileData({...profileData, phone: formatPhoneNumber(e.target.value)})}
+                  placeholder={PHONE_PLACEHOLDER}
                 />
               </div>
               <div className="flex justify-end gap-2">
@@ -359,6 +367,7 @@ const EspecialistaSettings = () => {
                       <Switch 
                         checked={notificationSettings.newCallRequests}
                         onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, newCallRequests: checked})}
+
                       />
                     </div>
                     <div className="flex items-center justify-between">
@@ -369,6 +378,7 @@ const EspecialistaSettings = () => {
                       <Switch 
                         checked={notificationSettings.sessionReminders}
                         onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, sessionReminders: checked})}
+
                       />
                     </div>
                     <div className="flex items-center justify-between">
@@ -379,6 +389,7 @@ const EspecialistaSettings = () => {
                       <Switch 
                         checked={notificationSettings.sessionCancellations}
                         onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, sessionCancellations: checked})}
+
                       />
                     </div>
                   </CardContent>
@@ -396,6 +407,7 @@ const EspecialistaSettings = () => {
                       <Switch 
                         checked={notificationSettings.emailNotifications}
                         onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, emailNotifications: checked})}
+
                       />
                     </div>
                     <div className="flex items-center justify-between">
@@ -406,6 +418,7 @@ const EspecialistaSettings = () => {
                       <Switch 
                         checked={notificationSettings.pushNotifications}
                         onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, pushNotifications: checked})}
+
                       />
                     </div>
                   </CardContent>

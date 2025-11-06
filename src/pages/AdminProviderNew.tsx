@@ -338,6 +338,7 @@ const AdminProviderNew = () => {
                       placeholder={t('providerNew.basicData.fullNamePlaceholder')}
                       required
                       className="mt-1"
+
                     />
                   </div>
                   
@@ -351,6 +352,7 @@ const AdminProviderNew = () => {
                       placeholder={t('providerNew.basicData.emailPlaceholder')}
                       required
                       className="mt-1"
+
                     />
                   </div>
                 </div>
@@ -365,6 +367,7 @@ const AdminProviderNew = () => {
                       placeholder={t('providerNew.basicData.bioPlaceholder')}
                       rows={3}
                       className="mt-1"
+
                     />
                   </div>
 
@@ -416,6 +419,7 @@ const AdminProviderNew = () => {
                         onChange={(e) => handleFileUpload('avatar', e.target.files?.[0] || null)}
                         className="hidden"
                         id="avatar-upload"
+
                       />
                       <Label htmlFor="avatar-upload" className="cursor-pointer">
                         <Button type="button" variant="outline" asChild>
@@ -451,6 +455,7 @@ const AdminProviderNew = () => {
                       onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
                       placeholder={t('providerNew.credentials.licenseNumberPlaceholder')}
                       className="mt-1"
+
                     />
                   </div>
 
@@ -462,6 +467,7 @@ const AdminProviderNew = () => {
                       value={formData.licenseExpiry}
                       onChange={(e) => handleInputChange('licenseExpiry', e.target.value)}
                       className="mt-1"
+
                     />
                   </div>
                 </div>
@@ -475,6 +481,7 @@ const AdminProviderNew = () => {
                       onChange={(e) => handleFileUpload('licenseFile', e.target.files?.[0] || null)}
                       className="hidden"
                       id="license-upload"
+
                     />
                     <Label htmlFor="license-upload" className="cursor-pointer">
                       <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-primary transition-colors">
@@ -528,6 +535,7 @@ const AdminProviderNew = () => {
                     value={formData.maxSessionsPerDay}
                     onChange={(e) => handleInputChange('maxSessionsPerDay', parseInt(e.target.value) || 0)}
                     className="mt-1"
+
                   />
                 </div>
 
@@ -541,6 +549,7 @@ const AdminProviderNew = () => {
                     value={formData.maxSessionsPerWeek}
                     onChange={(e) => handleInputChange('maxSessionsPerWeek', parseInt(e.target.value) || 0)}
                     className="mt-1"
+
                   />
                 </div>
 
@@ -578,6 +587,7 @@ const AdminProviderNew = () => {
                         id={pillar.key}
                         checked={formData.pillars[pillar.key as keyof ProviderFormData['pillars']]}
                         onCheckedChange={(checked) => handlePillarChange(pillar.key as keyof ProviderFormData['pillars'], checked as boolean)}
+
                       />
                       <Label htmlFor={pillar.key} className="flex items-center gap-2 cursor-pointer flex-1">
                         <Icon className={`h-5 w-5 ${pillar.color}`} />
@@ -604,6 +614,7 @@ const AdminProviderNew = () => {
                         id={`company-${company}`}
                         checked={formData.restrictedCompanies.includes(company)}
                         onCheckedChange={() => toggleCompanyRestriction(company)}
+
                       />
                       <Label htmlFor={`company-${company}`} className="text-sm cursor-pointer flex-1">
                         {company}

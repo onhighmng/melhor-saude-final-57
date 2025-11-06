@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -26,7 +26,11 @@ export const ConsentsModal = ({ isOpen, onClose, consents, onSave }: ConsentsMod
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0">
+      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0" showClose={false} aria-describedby="consents-description">
+        <DialogTitle className="sr-only">Consentimentos</DialogTitle>
+        <DialogDescription id="consents-description" className="sr-only">
+          Gerir os seus consentimentos para tratamento de dados
+        </DialogDescription>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b">

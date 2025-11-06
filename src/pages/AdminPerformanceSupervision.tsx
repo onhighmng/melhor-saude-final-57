@@ -248,7 +248,7 @@ export default function AdminPerformanceSupervision() {
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant={specialist.is_active ? 'default' : 'secondary'}
+                              variant={specialist.is_active ? 'default' : 'secondary'}
                           >
                             {specialist.is_active ? 'Ativo' : 'Inativo'}
                           </Badge>
@@ -380,7 +380,7 @@ export default function AdminPerformanceSupervision() {
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant={provider.is_active ? 'default' : 'secondary'}
+                              variant={provider.is_active ? 'default' : 'secondary'}
                           >
                             {provider.is_active ? 'Ativo' : 'Inativo'}
                           </Badge>
@@ -397,8 +397,4 @@ export default function AdminPerformanceSupervision() {
     </section>
   );
 }
-
-
-
-
 

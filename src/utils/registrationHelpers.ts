@@ -127,13 +127,17 @@ export const createUserFromCode = async (
 
   // Assign user role based on invite role (not userType)
   // This ensures the correct role is assigned regardless of the form flow
+  console.log(`[createUserFromCode] 📝 Assigning role '${roleFromInvite}' to user ${userId}`);
   try {
     await assignUserRoleFromInvite(userId, roleFromInvite);
+    console.log(`[createUserFromCode] ✅ Role '${roleFromInvite}' assigned successfully`);
   } catch (error: any) {
     // If role already exists, continue
     if (error?.code !== '23505') {
-      console.error('Role assignment error:', error);
+      console.error('[createUserFromCode] ❌ Role assignment error:', error);
       // Don't throw - continue with registration
+    } else {
+      console.log(`[createUserFromCode] ℹ️ Role '${roleFromInvite}' already exists (duplicate)`);
     }
   }
 
@@ -150,7 +154,9 @@ export const createUserFromCode = async (
     case 'personal':
       return await createPersonalUser(userId, userData as PersonalUserData);
     case 'hr':
-      return await createHRUser(userId, userData as HRUserData, invite.company_id, invite.sessions_allocated);
+      // Extract employee_seats from invite metadata
+      const employeeSeats = invite.metadata?.employee_seats || 50;
+      return await createHRUser(userId, userData as HRUserData, invite.company_id, invite.sessions_allocated, employeeSeats);
     case 'user':
       return await createEmployeeUser(userId, userData as EmployeeUserData, invite.company_id);
     case 'prestador':
@@ -165,6 +171,8 @@ export const createUserFromCode = async (
 // NEW FUNCTION: Assign user role directly from invite role
 // This bypasses the userType mapping and uses the exact role from the database
 export const assignUserRoleFromInvite = async (userId: string, inviteRole: string) => {
+  console.log(`[assignUserRoleFromInvite] 🔍 Checking for existing role '${inviteRole}' for user ${userId}`);
+  
   // Check if role already exists
   const { data: existingRole } = await supabase
     .from('user_roles')
@@ -174,25 +182,29 @@ export const assignUserRoleFromInvite = async (userId: string, inviteRole: strin
     .maybeSingle();
   
   if (existingRole) {
-    // Role already exists, skip
+    console.log(`[assignUserRoleFromInvite] ✅ Role '${inviteRole}' already exists, skipping`);
     return;
   }
 
+  console.log(`[assignUserRoleFromInvite] 📝 Inserting role '${inviteRole}' into user_roles`);
   const { error } = await supabase
     .from('user_roles')
     .insert({
       user_id: userId,
-      role: inviteRole,
-      created_by: userId // Self-assigned during registration
-    } as any);
+      role: inviteRole
+    });
 
   if (error) {
+    console.error(`[assignUserRoleFromInvite] ❌ Insert error:`, error);
     // If duplicate (race condition), ignore
     if (error.code === '23505') {
+      console.log(`[assignUserRoleFromInvite] ℹ️ Duplicate key error, ignoring`);
       return;
     }
     throw error;
   }
+  
+  console.log(`[assignUserRoleFromInvite] ✅ Role '${inviteRole}' inserted successfully`);
 };
 
 // LEGACY FUNCTION: Keep for backward compatibility
@@ -224,9 +236,8 @@ export const assignUserRole = async (userId: string, userType: UserType) => {
     .from('user_roles')
     .insert({
       user_id: userId,
-      role: targetRole,
-      created_by: userId // Self-assigned during registration
-    } as any);
+      role: targetRole
+    });
 
   if (error) {
     // If duplicate (race condition), ignore
@@ -292,7 +303,7 @@ export const createPersonalUser = async (userId: string, userData: PersonalUserD
   return { userId, type: 'personal' };
 };
 
-export const createHRUser = async (userId: string, userData: HRUserData, companyId?: string, sessionsAllocated?: number) => {
+export const createHRUser = async (userId: string, userData: HRUserData, companyId?: string, sessionsAllocated?: number, employeeSeats?: number) => {
   let finalCompanyId = companyId;
 
   // For HR codes, company_id is always null - create company from registration data
@@ -300,13 +311,16 @@ export const createHRUser = async (userId: string, userData: HRUserData, company
     // Ensure we have a session before inserting
     const { data: { session } } = await supabase.auth.getSession();
     
-    // NOTE: Actual schema uses 'name' (not 'company_name') and 'contact_email' (not 'email')
-    // The companies table has: name, contact_email, contact_phone
+    // NOTE: Actual schema requires 'name' and 'email' (both NOT NULL)
+    // Also has optional: contact_email, contact_phone, etc.
     const companyInsert: any = {
-      name: userData.companyName, // REQUIRED in actual schema
-      contact_email: userData.email, // REQUIRED in actual schema
-      contact_phone: userData.phone, // Optional in actual schema
+      name: userData.companyName, // REQUIRED
+      email: userData.email, // REQUIRED - main company email
+      contact_email: userData.email, // Optional - duplicate for clarity
+      contact_phone: userData.phone, // Optional
+      phone: userData.phone, // Optional - some queries use 'phone'
       sessions_allocated: sessionsAllocated || 100, // Use sessions from invite code
+      employee_seats: employeeSeats || 50, // Use seats from invite code
       sessions_used: 0,
       is_active: true // HR IS the company - active immediately
     };

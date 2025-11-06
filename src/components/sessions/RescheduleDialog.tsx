@@ -50,13 +50,13 @@ export const RescheduleDialog = ({
       // Fetch existing bookings to exclude
       const { data: bookings } = await supabase
         .from('bookings')
-        .select('booking_date, start_time')
+        .select('date, start_time')
         .eq('prestador_id', providerId)
         .in('status', ['confirmed', 'scheduled'])
-        .gte('booking_date', new Date().toISOString().split('T')[0]);
+        .gte('date', new Date().toISOString().split('T')[0]);
 
       const bookedSlots = new Set(
-        (bookings || []).map(b => `${b.booking_date}T${b.start_time}`)
+        (bookings || []).map(b => `${b.date}T${b.start_time}`)
       );
 
       // Generate slots for next 30 days based on day_of_week
@@ -110,7 +110,7 @@ export const RescheduleDialog = ({
       const { error } = await supabase
         .from('bookings')
         .update({
-          booking_date: selectedSlot.date.toISOString().split('T')[0],
+          date: selectedSlot.date.toISOString().split('T')[0],
           start_time: selectedSlot.time,
           rescheduled_from: bookingId,
           rescheduled_at: new Date().toISOString()

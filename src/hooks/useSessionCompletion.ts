@@ -23,14 +23,14 @@ export const useSessionCompletion = () => {
           .select('*')
           .eq('user_id', user.id)
           .in('status', ['confirmed', 'pending_confirmation'])
-          .lte('booking_date', now.toISOString().split('T')[0]);
+          .lte('date', now.toISOString().split('T')[0]);
 
         if (error) throw error;
 
         if (bookings && bookings.length > 0) {
           for (const booking of bookings) {
             // Check if session has ended
-            const sessionDate = new Date(booking.booking_date);
+            const sessionDate = new Date(booking.date);
             const [hours, minutes] = (booking.end_time || '23:59').split(':');
             const endDateTime = new Date(sessionDate);
             endDateTime.setHours(parseInt(hours), parseInt(minutes));

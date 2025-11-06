@@ -88,7 +88,7 @@ const AdminUsersManagement = () => {
                       </div>
                       <div className="flex space-x-1">
                         <Button
-                          variant="ghost"
+                            variant="ghost"
                           size="sm"
                           onClick={prevCard}
                           className="h-8 w-8 p-0 rounded-full bg-white/20 hover:bg-white/30"
@@ -96,7 +96,7 @@ const AdminUsersManagement = () => {
                           <ChevronLeft className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="ghost"
+                            variant="ghost"
                           size="sm"
                           onClick={nextCard}
                           className="h-8 w-8 p-0 rounded-full bg-white/20 hover:bg-white/30"
@@ -187,6 +187,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
   const [showHRModal, setShowHRModal] = useState(false);
   const [sessionsAllocated, setSessionsAllocated] = useState<number>(100);
+  const [employeeSeats, setEmployeeSeats] = useState<number>(50);
   const [showArchivedModal, setShowArchivedModal] = useState(false);
   const [archivedCount, setArchivedCount] = useState<number>(0);
 
@@ -315,11 +316,20 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
   };
 
   // Generate HR code (HR will create company during registration)
-  const handleGenerateHRCode = async (sessions: number) => {
+  const handleGenerateHRCode = async (sessions: number, seats: number) => {
     if (!sessions || sessions < 1) {
       toast({
         title: 'Erro',
         description: 'Por favor, defina um número válido de sessões (mínimo 1)',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (!seats || seats < 1) {
+      toast({
+        title: 'Erro',
+        description: 'Por favor, defina um número válido de lugares (mínimo 1)',
         variant: 'destructive'
       });
       return;
@@ -337,6 +347,10 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           company_id: null, // Company will be created during HR registration
           status: 'pending',
           sessions_allocated: sessions,
+          metadata: {
+            employee_seats: seats,
+            sessions_per_employee: Math.floor(sessions / seats)
+          },
           expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
         });
       
@@ -344,7 +358,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
 
       toast({
         title: 'Código HR gerado!',
-        description: `Código: ${code} com ${sessions} sessões alocadas. A empresa será criada durante o registo.`,
+        description: `Código: ${code} com ${sessions} sessões e ${seats} lugares (~${Math.floor(sessions / seats)} sessões/colaborador). A empresa será criada durante o registo.`,
         duration: 10000
       });
       loadCodes();
@@ -359,7 +373,6 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
       setIsGenerating(false);
     }
   };
-
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -501,7 +514,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           <div className="flex gap-2">
             <Button
               onClick={() => setShowArchivedModal(true)}
-              variant="outline"
+                variant="outline"
               size="sm"
               className="relative"
             >
@@ -546,24 +559,50 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                   className="w-full"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Define quantas sessões a empresa terá disponíveis após o registo
+                  Total de sessões disponíveis para todos os colaboradores
                 </p>
               </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Número de Lugares (Seats)</label>
+                <Input
+                  type="number"
+                  min="1"
+                  value={employeeSeats}
+                  onChange={(e) => setEmployeeSeats(parseInt(e.target.value) || 50)}
+                  placeholder="Ex: 50"
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Máximo de contas de colaboradores permitidas
+                </p>
+              </div>
+              {sessionsAllocated > 0 && employeeSeats > 0 && (
+                <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-semibold text-blue-700">
+                      ~{Math.floor(sessionsAllocated / employeeSeats)} sessões
+                    </span>
+                    {' '}por colaborador (distribuição equitativa)
+                  </p>
+                </div>
+              )}
               <div className="flex justify-end gap-2">
                 <Button
-                  variant="outline"
+                    variant="outline"
                   onClick={() => {
                     setShowHRModal(false);
                     setSessionsAllocated(100);
+                    setEmployeeSeats(50);
                   }}
                 >
                   Cancelar
                 </Button>
                 <Button
                   onClick={() => {
-                    handleGenerateHRCode(sessionsAllocated);
+                    handleGenerateHRCode(sessionsAllocated, employeeSeats);
                     setShowHRModal(false);
                     setSessionsAllocated(100);
+                    setEmployeeSeats(50);
                   }}
                   disabled={isGenerating}
                 >
@@ -581,6 +620,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="max-w-md"
+
           />
       </div>
 
@@ -620,7 +660,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                   <span className="font-mono text-sm">{code.invite_code}</span>
                   <Button
                     size="sm"
-                    variant="ghost"
+                      variant="ghost"
                     className="h-6 w-6 p-0"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -649,7 +689,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                 <div>
                   <Button
                     size="sm"
-                    variant="ghost"
+                      variant="ghost"
                     className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                     onClick={(e) => handleDeleteCode(code, e)}
                   >
@@ -714,6 +754,7 @@ const CompaniesCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           open={showArchivedModal}
           onOpenChange={setShowArchivedModal}
           userType="hr"
+
         />
       </CardContent>
     </Card>
@@ -924,7 +965,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           <div className="flex gap-2">
             <Button
               onClick={() => setShowArchivedModal(true)}
-              variant="outline"
+                variant="outline"
               size="sm"
               className="relative"
             >
@@ -964,6 +1005,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="max-w-md"
+
       />
     </div>
 
@@ -997,7 +1039,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                   <span className="font-mono text-sm">{code.invite_code}</span>
                   <Button
                     size="sm"
-                    variant="ghost"
+                      variant="ghost"
                     className="h-6 w-6 p-0"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1028,7 +1070,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
                 <div>
                   <Button
                     size="sm"
-                    variant="ghost"
+                      variant="ghost"
                     className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                     onClick={(e) => handleDeleteCode(code, e)}
                   >
@@ -1045,6 +1087,7 @@ const ProvidersCodesSection = ({ toast }: { toast: ReturnType<typeof useToast>['
           open={showArchivedModal}
           onOpenChange={setShowArchivedModal}
           userType="affiliate"
+
         />
       </CardContent>
     </Card>

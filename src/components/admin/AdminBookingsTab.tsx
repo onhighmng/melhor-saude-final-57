@@ -44,16 +44,16 @@ export default function AdminBookingsTab() {
           user:profiles!user_id(name),
           prestador:prestadores!prestador_id(name)
         `)
-        .gte('booking_date', monthStart)
-        .lte('booking_date', monthEnd)
-        .order('booking_date', { ascending: true })
+        .gte('date', monthStart)
+        .lte('date', monthEnd)
+        .order('date', { ascending: true })
         .range(0, PAGINATION_SIZE - 1);
 
       if (error) throw error;
 
       const formatted: Booking[] = (data || []).map(booking => ({
         id: booking.id,
-        date: booking.booking_date,
+        date: booking.date,
         time: booking.start_time || '00:00',
         collaborator: (booking.user as any)?.name || 'N/A',
         specialist: (booking.prestador as any)?.name || 'N/A',

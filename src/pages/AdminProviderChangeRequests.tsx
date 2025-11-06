@@ -63,7 +63,11 @@ const AdminProviderChangeRequests = () => {
         .from('change_requests')
         .select(`
           *,
-          prestadores (name, email)
+          prestadores (
+            name,
+            user_id,
+            profiles!prestadores_user_id_fkey (email, phone)
+          )
         `)
         .order('created_at', { ascending: false });
 
@@ -241,7 +245,7 @@ const AdminProviderChangeRequests = () => {
                       <TableCell>
                         <div>
                           <div className="font-medium">{request.prestadores?.name}</div>
-                          <div className="text-sm text-muted-foreground">{request.prestadores?.email}</div>
+                          <div className="text-sm text-muted-foreground">{(request.prestadores as any)?.profiles?.email || 'N/A'}</div>
                         </div>
                       </TableCell>
                       <TableCell className="capitalize">{request.request_type.replace('_', ' ')}</TableCell>
@@ -267,7 +271,7 @@ const AdminProviderChangeRequests = () => {
                         ) : (
                           <Button
                             size="sm"
-                            variant="outline"
+                              variant="outline"
                             onClick={() => {
                               setSelectedRequest(request);
                               setReviewDialogOpen(true);
@@ -319,6 +323,7 @@ const AdminProviderChangeRequests = () => {
                       onChange={(e) => setReviewNotes(e.target.value)}
                       placeholder="Adicione notas sobre a decisão..."
                       rows={3}
+
                     />
                   </div>
                   <div className="flex gap-3">

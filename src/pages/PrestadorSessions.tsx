@@ -68,16 +68,16 @@ export default function PrestadorSessions() {
           .select(`
             *,
             profiles (name, email),
-            companies (company_name)
+            companies (name)
           `)
           .eq('prestador_id', prestador.id)
-          .order('booking_date', { ascending: false });
+          .order('date', { ascending: false });
 
         if (bookings) {
           setSessions(bookings.map((b: any) => ({
             id: b.id,
             clientName: (b.profiles as any)?.name || 'Utilizador',
-            date: b.booking_date,
+            date: b.date,
             time: b.start_time || '00:00',
             pillar: b.pillar === 'saude_mental' ? 'Saúde Mental' : 
                    b.pillar === 'bem_estar_fisico' ? 'Bem-Estar Físico' :
@@ -87,7 +87,7 @@ export default function PrestadorSessions() {
                     b.status === 'scheduled' ? 'Agendada' :
                     b.status === 'cancelled' ? 'Cancelada' : 'Agendada',
             type: b.meeting_type === 'online' ? 'Virtual' : 'Presencial',
-            company: (b.companies as any)?.company_name,
+            company: (b.companies as any)?.name,
             rating: b.rating,
             meetingLink: b.meeting_link,
             notes: b.notes
@@ -265,9 +265,9 @@ export default function PrestadorSessions() {
             to: booking.profiles.email,
             subject: 'Link da Sua Sessão Disponível',
             html: getMeetingLinkEmail({
-              userName: booking.profiles.name || 'Utilizador',
-              providerName: booking.prestadores?.profiles?.name || 'Prestador',
-              date: booking.booking_date || new Date().toISOString(),
+            userName: booking.profiles.name || 'Utilizador',
+            providerName: booking.prestadores?.profiles?.name || 'Prestador',
+            date: booking.date || new Date().toISOString(),
               time: booking.start_time || '00:00',
               pillar: booking.pillar,
               meetingLink: link,
@@ -366,6 +366,7 @@ export default function PrestadorSessions() {
         }}
         onExport={handleExportSessions}
         onSessionClick={handleViewSession}
+
       />
 
       {/* Provider Session Management Modal */}
@@ -387,6 +388,7 @@ export default function PrestadorSessions() {
         onUpdateMeetingLink={handleUpdateMeetingLink}
         onReschedule={handleRescheduleSession}
         onCancel={handleCancelSession}
+
       />
 
       {/* Add Notes Modal */}
@@ -406,6 +408,7 @@ export default function PrestadorSessions() {
                 onChange={(e) => setSessionNotes(e.target.value)}
                 className="mt-1"
                 rows={4}
+
               />
             </div>
             

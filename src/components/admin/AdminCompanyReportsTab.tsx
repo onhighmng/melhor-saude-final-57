@@ -42,7 +42,7 @@ const AdminCompanyReportsTab = () => {
 
       const { data: companies, error: companiesError } = await supabase
         .from('companies')
-        .select('id, company_name, sessions_allocated, sessions_used')
+        .select('id, name, sessions_allocated, sessions_used')
         .range(0, 99); // Pagination
 
       if (companiesError) throw companiesError;
@@ -77,7 +77,7 @@ const AdminCompanyReportsTab = () => {
 
         return {
           id: company.id,
-          name: company.company_name || 'N/A',
+          name: company.name || 'N/A',
           utilization: Math.round(utilization),
           satisfaction: Math.round(satisfaction * 10) / 10,
           progress: Math.round(progress),

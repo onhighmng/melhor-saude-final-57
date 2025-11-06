@@ -1,5 +1,6 @@
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Calendar, Activity, Mail, Phone, Building2 } from 'lucide-react';
+import { formatPhoneNumber } from '@/utils/phoneFormat';
 
 interface AdminCompanyFeaturesProps {
     company: {
@@ -82,7 +83,7 @@ export function AdminCompanyFeatures({ company }: AdminCompanyFeaturesProps) {
                                             <Phone className="h-6 w-6 text-green-600" />
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-sm text-muted-foreground">Telefone</p>
-                                                <p className="text-sm font-medium">{company.contactPhone}</p>
+                                                <p className="text-sm font-medium">{formatPhoneNumber(company.contactPhone)}</p>
                                             </div>
                                         </div>
                                     )}

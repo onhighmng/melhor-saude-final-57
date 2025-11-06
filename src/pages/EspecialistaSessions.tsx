@@ -7,7 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { EmptyState } from '@/components/ui/empty-state';
-
 const EspecialistaSessions = () => {
   const { toast } = useToast();
   const { profile } = useAuth();
@@ -40,11 +39,11 @@ const EspecialistaSessions = () => {
           .select(`
             *,
             profiles(name, email),
-            companies(company_name),
+            companies(name),
             prestadores(name, specialties)
           `)
           .eq('prestador_id', prestador.id)
-          .order('booking_date', { ascending: true });
+          .order('date', { ascending: true });
 
         console.log('[EspecialistaSessions] Loaded sessions:', sessions?.length || 0);
         
@@ -54,7 +53,7 @@ const EspecialistaSessions = () => {
         const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM format
         
         const futureSessions = (sessions || []).filter((session: any) => {
-          const sessionDate = session.booking_date || session.date;
+          const sessionDate = session.date;
           const sessionTime = session.start_time || '00:00';
           
           // Only show scheduled or confirmed sessions
@@ -113,16 +112,7 @@ const EspecialistaSessions = () => {
     return labels[pillar as keyof typeof labels] || pillar;
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">A carregar sessões...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   // Show empty state if no sessions
   if (filteredSessions.length === 0) {
@@ -138,6 +128,7 @@ const EspecialistaSessions = () => {
           icon={Calendar}
           title="Nenhuma sessão agendada"
           description="As sessões agendadas pelos colaboradores que necessitem de acompanhamento aparecerão aqui."
+
         />
       </div>
     );
@@ -196,7 +187,7 @@ const EspecialistaSessions = () => {
                   <div className="flex gap-2">
                     <Button 
                       size="sm" 
-                      variant="default"
+                        variant="default"
                       onClick={() => handleStartSession(session.id)}
                     >
                       <Play className="h-4 w-4 mr-1" />
@@ -204,7 +195,7 @@ const EspecialistaSessions = () => {
                     </Button>
                     <Button 
                       size="sm" 
-                      variant="outline"
+                        variant="outline"
                       onClick={() => handleEndSession(session.id)}
                     >
                       <CheckCircle className="h-4 w-4 mr-1" />

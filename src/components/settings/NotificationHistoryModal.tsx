@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { NotificationList } from "@/components/notifications/NotificationList";
 import { Notification } from "@/components/notifications/NotificationCard";
 
@@ -22,9 +22,12 @@ export const NotificationHistoryModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+      <DialogContent className="max-w-4xl h-[90vh] flex flex-col" showClose={false} aria-describedby="notif-history-description">
         <DialogHeader>
           <DialogTitle>Histórico de Notificações</DialogTitle>
+          <DialogDescription id="notif-history-description">
+            Ver todas as suas notificações
+          </DialogDescription>
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto space-y-6">

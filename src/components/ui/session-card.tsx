@@ -115,7 +115,8 @@ const getMeetingLabel = (meetingType: string, platform?: string) => {
   }
 }
 
-const formatDate = (date: string) => {
+const formatDate = (date: string | null | undefined) => {
+  if (!date) return 'Data não definida';
   const [year, month, day] = date.split('-')
   return `${day}/${month}/${year}`
 }

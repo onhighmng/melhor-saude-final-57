@@ -582,7 +582,7 @@ const AdminMatching = () => {
                                           <Edit className="h-4 w-4" />
                                         </Button>
                                         <Button 
-                                          variant="ghost" 
+                                            variant="ghost" 
                                           size="sm"
                                           onClick={() => removeProviderFromPillar(pillarKey, provider.id)}
                                         >
@@ -626,6 +626,7 @@ const AdminMatching = () => {
                           fairnessWindow: parseInt(e.target.value) || 5
                         }))}
                         className="w-20"
+
                       />
                       <span className="text-sm text-muted-foreground">dias</span>
                       <Tooltip>
@@ -661,6 +662,7 @@ const AdminMatching = () => {
                         ...prev,
                         stickinessEnabled: checked
                       }))}
+
                     />
                   </div>
                 </CardContent>

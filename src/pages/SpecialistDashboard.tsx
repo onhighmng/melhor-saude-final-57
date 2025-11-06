@@ -6,7 +6,6 @@ import { useCompanyFilter } from '@/hooks/useCompanyFilter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EscalatedChatCard } from '@/components/specialist/EscalatedChatCard';
 import { AnalyticsCard } from '@/components/specialist/AnalyticsCard';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Phone, TrendingUp, Users, Calendar, ThumbsUp, MessageSquare, ArrowRight, Clock, Building2, AlertTriangle, Star, BookOpen, User, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -80,7 +79,7 @@ export default function SpecialistDashboard() {
         .from('bookings')
         .select('*, profiles!bookings_user_id_fkey(name)')
         .eq('prestador_id', prestador.id)
-        .order('booking_date', { ascending: true })
+        .order('date', { ascending: true })
         .order('start_time', { ascending: true });
       
       if (bookingsError) {
@@ -95,7 +94,7 @@ export default function SpecialistDashboard() {
         id: booking.id,
         user_name: booking.profiles?.name || 'Unknown',
         time: booking.start_time || '',
-        date: booking.booking_date || booking.date,
+        date: booking.date,
         type: booking.session_type || booking.meeting_type || 'Session',
         status: booking.status,
         ...booking
@@ -190,13 +189,7 @@ export default function SpecialistDashboard() {
     ? escalatedChats 
     : escalatedChats.filter(chat => chat.pillar === pillarFilter);
 
-  if (chatsLoading || analyticsLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
+  
 
   return (
     <div className="relative w-full min-h-screen h-full flex flex-col">
@@ -227,10 +220,11 @@ export default function SpecialistDashboard() {
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100" />}
                 iconColor="text-yellow-600"
-                textColor="text-gray-900"
+                  textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
                 cta="Ver Pedidos"
+
               />
 
               {/* Top Right - Today's Sessions */}
@@ -247,14 +241,16 @@ export default function SpecialistDashboard() {
                       style={{
                         backgroundImage: "url('https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"
                       }}
+
                     />
                   </div>
                 }
                 iconColor="text-blue-600"
-                textColor="text-gray-900"
+                  textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
                 cta="Ver Agenda"
+
               />
 
               {/* Bottom Left - Personal Stats */}
@@ -266,10 +262,11 @@ export default function SpecialistDashboard() {
                 className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100" />}
                 iconColor="text-blue-600"
-                textColor="text-gray-900"
+                  textColor="text-gray-900"
                 descriptionColor="text-gray-600"
                 href="#"
                 cta="Ver Estatísticas"
+
               />
 
               {/* Bottom Right - Recursos */}
@@ -284,6 +281,7 @@ export default function SpecialistDashboard() {
                       src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
                       alt="" 
                       className="w-full h-full object-cover" 
+
                     />
                   </div>
                 }
@@ -301,7 +299,7 @@ export default function SpecialistDashboard() {
                 className="lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3" 
                 background={<div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100" />}
                 iconColor="text-green-600"
-                textColor="text-slate-900"
+                  textColor="text-slate-900"
                 descriptionColor="text-slate-600"
               >
                 <div className="relative z-30 flex flex-col h-full p-6">
@@ -404,24 +402,28 @@ export default function SpecialistDashboard() {
                 value={metrics.totalChats}
                 icon={MessageSquare}
                 description="Últimos 30 dias"
+
               />
               <AnalyticsCard
                 title="Taxa de Resolução AI"
                 value={`${metrics.aiResolvedRate.toFixed(1)}%`}
                 icon={TrendingUp}
                 description="Resolvidos sem escalação"
+
               />
               <AnalyticsCard
                 title="Taxa de Escalação"
                 value={`${metrics.phoneEscalationRate.toFixed(1)}%`}
                 icon={Phone}
                 description="Escalados para telefone"
+
               />
               <AnalyticsCard
                 title="Taxa de Satisfação"
                 value={`${metrics.satisfactionRate.toFixed(1)}%`}
                 icon={ThumbsUp}
                 description="Utilizadores satisfeitos"
+
               />
             </div>
 

@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
+import { formatPhoneNumber } from '@/utils/phoneFormat';
 import { 
   ArrowLeft, 
   Edit, 
@@ -274,7 +275,7 @@ const AdminProviderDetail = () => {
       <div className="min-h-screen bg-background p-6">
         <div className="container mx-auto">
           <Button
-            variant="ghost"
+              variant="ghost"
             onClick={() => navigate('/admin/prestadores')}
             className="mb-6"
           >
@@ -302,7 +303,7 @@ const AdminProviderDetail = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
-              variant="ghost"
+                variant="ghost"
               onClick={() => navigate('/admin/prestadores')}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -320,7 +321,7 @@ const AdminProviderDetail = () => {
               {t('providerDetail.edit')}
             </Button>
             <Button
-              variant={provider.availability === 'active' ? "destructive" : "default"}
+                variant={provider.availability === 'active' ? "destructive" : "default"}
               onClick={() => handleStatusChange(provider.availability === 'active' ? 'inactive' : 'active')}
             >
               {provider.availability === 'active' ? (
@@ -371,7 +372,7 @@ const AdminProviderDetail = () => {
                   {provider.phone && (
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>{provider.phone}</span>
+                      <span>{formatPhoneNumber(provider.phone)}</span>
                     </div>
                   )}
                   {provider.location && (
@@ -422,7 +423,7 @@ const AdminProviderDetail = () => {
                   {provider.phone && (
                     <div>
                       <Label>{t('providerDetail.profile.phone')}</Label>
-                      <p className="text-sm text-muted-foreground">{provider.phone}</p>
+                      <p className="text-sm text-muted-foreground">{formatPhoneNumber(provider.phone)}</p>
                     </div>
                   )}
                   <div>

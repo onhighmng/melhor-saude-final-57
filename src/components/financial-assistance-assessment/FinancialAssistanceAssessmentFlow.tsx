@@ -15,7 +15,7 @@ interface FinancialAssistanceAssessment {
 interface FinancialAssistanceAssessmentFlowProps {
   onBack: () => void;
   onComplete: () => void;
-  onChooseHuman: () => void;
+  onChooseHuman: (assessment: FinancialAssistanceAssessment) => void;
 }
 
 const FinancialAssistanceAssessmentFlow: React.FC<FinancialAssistanceAssessmentFlowProps> = ({
@@ -93,8 +93,8 @@ const FinancialAssistanceAssessmentFlow: React.FC<FinancialAssistanceAssessmentF
           <FinancialAssistanceChatInterface
             assessment={assessment}
             onBack={() => setStep('result')}
-            onComplete={onComplete}
-            onChooseHuman={onChooseHuman}
+            onComplete={() => onChooseHuman(assessment)}
+            onChooseHuman={() => onChooseHuman(assessment)}
           />
         );
       

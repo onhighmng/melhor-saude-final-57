@@ -371,7 +371,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // This prevents race condition where specialists initially see 'user' role
         // setProfile is now only called after actual role is fetched
         console.log('%c[AuthContext] Session found, fetching actual role...', 'color: cyan;');
-        
+      
         // Load profile in background (non-blocking)
         // CRITICAL: Use setTimeout(0) to defer outside the callback stack - prevents Supabase deadlock
         // GUARD: Only attempt once per user ID to prevent resource exhaustion
@@ -382,7 +382,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setTimeout(async () => {
             try {
               console.log('%c[AuthContext] 🔄 Attempting background profile load on mount...', 'color: cyan;');
-          const profileData = await loadProfileWithRoles(session.user.id);
+              const profileData = await loadProfileWithRoles(session.user.id);
               // FIX: Always update if we got profile data (remove role check)
               if (mounted && profileData) {
                 setProfile(profileData);
@@ -392,7 +392,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               } else {
                 console.warn('%c[AuthContext] ⚠️ Background profile load returned null (will retry on next mount)', 'color: orange;');
               }
-        } catch (error) {
+            } catch (error) {
               console.warn('%c[AuthContext] ⚠️ Background profile load failed (will retry on next mount):', 'color: orange;', error);
               // Don't mark as attempted so it can retry
             }
@@ -409,15 +409,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       }
     }).catch((error) => {
-      // CRITICAL: Always set loading to false, even on error
-      console.error('%c[AuthContext] ❌ Error getting initial session:', 'color: red;', error);
-      if (mounted) {
-        setProfile(null);
-        setUser(null);
-        setSession(null);
-        setIsLoading(false);
-      }
-    });
+        // CRITICAL: Always set loading to false, even on error
+        console.error('%c[AuthContext] ❌ Error getting initial session:', 'color: red;', error);
+        if (mounted) {
+          setProfile(null);
+          setUser(null);
+          setSession(null);
+          setIsLoading(false);
+        }
+      });
 
     // Listen for auth changes (login, logout, token refresh, etc) - FIXED VERSION
     // CRITICAL FIX: Make handler synchronous - don't await inside onAuthStateChange
@@ -494,6 +494,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const isHR = profile?.role === 'hr';
   const isPrestador = profile?.role === 'prestador';
   const isEspecialistaGeral = profile?.role === 'especialista_geral';
+  
+  console.log(`%c[AuthContext] Auth State: isAuthenticated=${isAuthenticated}, hasProfile=${!!profile}`, 'color: gray;');
 
   // Diagnostic logging
   useEffect(() => {

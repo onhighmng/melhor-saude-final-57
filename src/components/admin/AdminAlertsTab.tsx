@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
+import { formatPhoneNumber } from '@/utils/phoneFormat';
 
 const AdminAlertsTab = () => {
   const { t } = useTranslation('admin');
@@ -64,7 +65,7 @@ const AdminAlertsTab = () => {
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('bookings')
         .select('*, user:profiles!user_id(name), provider:prestadores!prestador_id(name)')
-        .eq('booking_date', today)
+        .eq('date', today)
         .eq('status', 'scheduled');
 
       if (sessionsError) throw sessionsError;
@@ -82,7 +83,7 @@ const AdminAlertsTab = () => {
       // Load inactive users (last seen > 30 days ago)
       const { data: inactiveData, error: inactiveError } = await supabase
         .from('profiles')
-        .select('*, company_employees(company:companies(company_name))')
+        .select('*, company_employees(company:companies(name))')
         .lt('last_seen', thirtyDaysAgo)
         .not('role', 'eq', 'prestador');
 
@@ -250,7 +251,7 @@ const AdminAlertsTab = () => {
                       </div>
                       <div className="text-sm text-muted-foreground mb-2">
                         <p><strong>Email:</strong> {request.user_email}</p>
-                        <p><strong>Telefone:</strong> {request.user_phone}</p>
+                        <p><strong>Telefone:</strong> {formatPhoneNumber(request.user_phone || '')}</p>
                         {request.notes && <p><strong>Notas:</strong> {request.notes}</p>}
                       </div>
                     </div>
