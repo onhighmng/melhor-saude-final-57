@@ -164,13 +164,9 @@ export function MobileUserResources() {
         </div>
 
         {/* Loading State */}
-        {loading && (
-          <LoadingAnimation 
-            variant="inline" 
-            message="A carregar recursos..." 
-            showProgress={false}
-          />
-        )}
+      {loading && (
+        <LoadingAnimation variant="inline" message="A carregar recursos..." showProgress={true} />
+      )}
 
         {/* Resource Cards Grid */}
         {!loading && (

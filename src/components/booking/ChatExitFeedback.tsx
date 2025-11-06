@@ -51,11 +51,18 @@ export const ChatExitFeedback = ({ sessionId, onClose }: ChatExitFeedbackProps) 
           .single();
 
         if (session) {
-          await supabase.from('specialist_call_logs').insert({
-            chat_session_id: sessionId,
-            user_id: session.user_id,
-            call_status: 'pending'
-          });
+          // Create call log entry using direct insert (bypasses type checking for missing table definition)
+          const { error: callLogError } = await supabase
+            .from('specialist_call_logs' as any)
+            .insert({
+              chat_session_id: sessionId,
+              user_id: session.user_id,
+              call_status: 'pending'
+            });
+
+          if (callLogError) {
+            console.error('Failed to create call log:', callLogError);
+          }
 
           toast({
             title: 'Feedback Recebido',

@@ -8,12 +8,13 @@ import { MobileBottomNav } from '../shared/MobileBottomNav';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 export function MobileUserSessions() {
   const navigate = useNavigate();
   const { profile } = useAuth();
-  const { sessionBalance } = useSessionBalance();
-  const { upcomingBookings, completedBookings } = useBookings();
+  const { sessionBalance, loading: balanceLoading } = useSessionBalance();
+  const { upcomingBookings, completedBookings, loading: bookingsLoading } = useBookings();
 
   const getPillarIcon = (pillar: string) => {
     if (pillar.toLowerCase().includes('mental')) return Brain;
@@ -31,6 +32,10 @@ export function MobileUserSessions() {
   const personalUsed = completedBookings.filter(b => 
     b.booking_source === 'personal' || !b.booking_source
   ).length;
+
+  if (balanceLoading || bookingsLoading) {
+    return <LoadingAnimation variant="fullscreen" message="A carregar sessões..." showProgress={true} />;
+  }
 
   return (
     <div className="min-h-screen bg-blue-50 pb-20">

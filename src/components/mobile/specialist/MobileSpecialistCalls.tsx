@@ -123,13 +123,9 @@ export function MobileSpecialistCalls() {
         </div>
 
         {/* Loading State */}
-        {chatsLoading && (
-          <LoadingAnimation 
-            variant="inline" 
-            message="A carregar pedidos..." 
-            showProgress={false}
-          />
-        )}
+      {chatsLoading && (
+        <LoadingAnimation variant="inline" message="A carregar pedidos..." showProgress={true} />
+      )}
 
         {/* Call Requests List */}
         {!chatsLoading && (

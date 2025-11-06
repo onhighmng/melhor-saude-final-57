@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 interface Employee {
   id: string;
@@ -48,6 +49,10 @@ export function MobileCompanyEmployees() {
     emp.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     emp.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return <LoadingAnimation variant="fullscreen" message="A carregar colaboradores..." showProgress={true} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

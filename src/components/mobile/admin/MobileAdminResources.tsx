@@ -92,11 +92,7 @@ export function MobileAdminResources() {
         </div>
 
         {loading ? (
-          <LoadingAnimation 
-            variant="inline" 
-            message="A carregar recursos..." 
-            showProgress={false}
-          />
+          <LoadingAnimation variant="inline" message="A carregar recursos..." showProgress={true} />
         ) : filteredResources.length === 0 ? (
           <div className="text-center py-12">
             <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />

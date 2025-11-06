@@ -134,15 +134,7 @@ export function MobileSpecialistHistory() {
   }, [profile?.id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 pb-20">
-        <LoadingAnimation 
-          variant="fullscreen" 
-          message="A carregar histórico..." 
-          submessage="Aguarde um momento"
-        />
-      </div>
-    );
+    return <LoadingAnimation variant="fullscreen" message="A carregar histórico..." showProgress={true} />;
   }
 
   const filteredHistory = history.filter(item => 

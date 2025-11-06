@@ -61,15 +61,7 @@ export function MobileCompanyReports() {
   }, [profile?.company_id, selectedPeriod]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 pb-20">
-        <LoadingAnimation 
-          variant="fullscreen" 
-          message="A carregar relatórios..." 
-          submessage="Aguarde um momento"
-        />
-      </div>
-    );
+    return <LoadingAnimation variant="fullscreen" message="A carregar relatórios..." showProgress={true} />;
   }
 
   const satisfactionRate = metrics?.satisfaction_rate 

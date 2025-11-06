@@ -134,7 +134,10 @@ export function MobileCompanySessions() {
           </TabsList>
 
           <TabsContent value="upcoming" className="space-y-3 mt-0">
-            {upcomingSessions.map((session) => (
+            {loading && (
+              <LoadingAnimation variant="inline" message="A carregar sessões..." showProgress={true} />
+            )}
+            {!loading && upcomingSessions.map((session) => (
               <Card 
                 key={session.id}
                 className="bg-white rounded-2xl p-4 border border-gray-200"
