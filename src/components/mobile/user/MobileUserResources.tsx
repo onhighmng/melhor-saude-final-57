@@ -1,65 +1,92 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
+import { supabase } from '@/integrations/supabase/client';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 type Category = 'todos' | 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica';
 
 interface Resource {
-  id: number;
+  id: string;
   title: string;
-  category: Category;
+  category: string;
   categoryLabel: string;
   image: string;
   categoryColor: string;
+  description?: string;
+  url?: string;
 }
 
 export function MobileUserResources() {
   const navigate = useNavigate();
-  const [activeCategory, setActiveCategory] = useState<Category>('saude_mental');
+  const [activeCategory, setActiveCategory] = useState<Category>('todos');
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const resources: Resource[] = [
-    {
-      id: 1,
-      title: 'Recurso de Saúde Mental',
-      category: 'saude_mental',
-      categoryLabel: 'Saúde Mental',
-      image: 'https://images.unsplash.com/photo-1759216853310-7d315a1fd07d?w=1080',
-      categoryColor: 'bg-blue-500'
-    },
-    {
-      id: 2,
-      title: 'Recurso de Saúde Mental',
-      category: 'saude_mental',
-      categoryLabel: 'Saúde Mental',
-      image: 'https://images.unsplash.com/photo-1759216853310-7d315a1fd07d?w=1080',
-      categoryColor: 'bg-blue-500'
-    },
-    {
-      id: 3,
-      title: 'Recurso de Bem-Estar Físico',
-      category: 'bem_estar_fisico',
-      categoryLabel: 'Bem-Estar Físico',
-      image: 'https://images.unsplash.com/photo-1666979290238-2d862b573345?w=1080',
-      categoryColor: 'bg-orange-500'
-    },
-    {
-      id: 4,
-      title: 'Recurso Financeiro',
-      category: 'assistencia_financeira',
-      categoryLabel: 'Financeiro',
-      image: 'https://images.unsplash.com/photo-1709080381729-965c62ab0471?w=1080',
-      categoryColor: 'bg-green-500'
-    },
-    {
-      id: 5,
-      title: 'Recurso Jurídico',
-      category: 'assistencia_juridica',
-      categoryLabel: 'Jurídico',
-      image: 'https://images.unsplash.com/photo-1715036857278-6f611e582506?w=1080',
-      categoryColor: 'bg-purple-500'
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  const fetchResources = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Map database resources to our format
+      const mappedResources: Resource[] = (data || []).map((resource: any) => ({
+        id: resource.id,
+        title: resource.title || 'Recurso',
+        category: resource.category || 'saude_mental',
+        categoryLabel: getCategoryLabel(resource.category),
+        image: resource.thumbnail_url || resource.image_url || 'https://images.unsplash.com/photo-1516302752625-fcc3c50ae61f?w=1080',
+        categoryColor: getCategoryColor(resource.category),
+        description: resource.description,
+        url: resource.url
+      }));
+
+      setResources(mappedResources);
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+      // Keep empty array on error
+      setResources([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const getCategoryLabel = (category: string): string => {
+    const labels: Record<string, string> = {
+      'saude_mental': 'Saúde Mental',
+      'bem_estar_fisico': 'Bem-Estar Físico',
+      'assistencia_financeira': 'Financeiro',
+      'assistencia_juridica': 'Jurídico',
+      'mental_health': 'Saúde Mental',
+      'physical_wellness': 'Bem-Estar Físico',
+      'financial': 'Financeiro',
+      'legal': 'Jurídico'
+    };
+    return labels[category] || 'Geral';
+  };
+
+  const getCategoryColor = (category: string): string => {
+    const colors: Record<string, string> = {
+      'saude_mental': 'bg-blue-500',
+      'bem_estar_fisico': 'bg-orange-500',
+      'assistencia_financeira': 'bg-green-500',
+      'assistencia_juridica': 'bg-purple-500',
+      'mental_health': 'bg-blue-500',
+      'physical_wellness': 'bg-orange-500',
+      'financial': 'bg-green-500',
+      'legal': 'bg-purple-500'
+    };
+    return colors[category] || 'bg-gray-500';
+  };
 
   const categories = [
     { id: 'todos' as Category, label: 'Todos', color: 'bg-gray-100 text-gray-700' },
@@ -71,7 +98,22 @@ export function MobileUserResources() {
 
   const filteredResources = activeCategory === 'todos' 
     ? resources 
-    : resources.filter(r => r.category === activeCategory);
+    : resources.filter(r => 
+        r.category === activeCategory || 
+        r.category === activeCategory.replace('_', '-') ||
+        (activeCategory === 'saude_mental' && r.category === 'mental_health') ||
+        (activeCategory === 'bem_estar_fisico' && r.category === 'physical_wellness')
+      );
+
+  const handleResourceClick = (resource: Resource) => {
+    if (resource.url) {
+      // Open external URL
+      window.open(resource.url, '_blank');
+    } else {
+      // Navigate to resource detail page
+      console.log('View resource:', resource.id);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -121,13 +163,24 @@ export function MobileUserResources() {
           ))}
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <LoadingAnimation 
+            variant="inline" 
+            message="A carregar recursos..." 
+            showProgress={false}
+          />
+        )}
+
         {/* Resource Cards Grid */}
-        <div className="grid grid-cols-1 gap-4">
-          {filteredResources.map((resource) => (
-            <button
-              key={resource.id}
-              className="group relative overflow-hidden rounded-3xl shadow-sm hover:shadow-md transition-all active:scale-95 bg-white"
-            >
+        {!loading && (
+          <div className="grid grid-cols-1 gap-4">
+            {filteredResources.map((resource) => (
+              <button
+                key={resource.id}
+                onClick={() => handleResourceClick(resource)}
+                className="group relative overflow-hidden rounded-3xl shadow-sm hover:shadow-md transition-all active:scale-95 bg-white"
+              >
               <div className="relative h-48">
                 <img
                   src={resource.image}
@@ -150,13 +203,15 @@ export function MobileUserResources() {
                   <h3 className="text-white font-semibold">{resource.title}</h3>
                 </div>
               </div>
-            </button>
-          ))}
-        </div>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
-        {filteredResources.length === 0 && (
+        {!loading && filteredResources.length === 0 && (
           <div className="text-center py-12">
+            <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">Nenhum recurso disponível nesta categoria.</p>
           </div>
         )}

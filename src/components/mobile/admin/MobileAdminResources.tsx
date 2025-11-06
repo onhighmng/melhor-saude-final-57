@@ -1,36 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BookOpen, Plus, FileText, Video, Download } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
+import { supabase } from '@/integrations/supabase/client';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
+
+interface Resource {
+  id: string;
+  title: string;
+  type: string;
+  category: string;
+  url?: string;
+}
 
 export function MobileAdminResources() {
   const [selectedType, setSelectedType] = useState('all');
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const resources = [
-    {
-      id: 1,
-      title: 'Guia de Onboarding para Empresas',
-      type: 'pdf',
-      category: 'Onboarding',
-      downloads: 124
-    },
-    {
-      id: 2,
-      title: 'Tutorial da Plataforma',
-      type: 'video',
-      category: 'Tutoriais',
-      downloads: 89
-    },
-    {
-      id: 3,
-      title: 'Política de Privacidade',
-      type: 'pdf',
-      category: 'Legal',
-      downloads: 210
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  const fetchResources = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const mappedResources: Resource[] = (data || []).map((resource: any) => ({
+        id: resource.id,
+        title: resource.title || 'Recurso',
+        type: resource.resource_type || 'pdf',
+        category: resource.category || 'Geral',
+        url: resource.url || resource.file_url
+      }));
+
+      setResources(mappedResources);
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+      setResources([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const filteredResources = selectedType === 'all' 
+    ? resources 
+    : resources.filter(r => r.type.toLowerCase() === selectedType.toLowerCase());
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -52,12 +75,12 @@ export function MobileAdminResources() {
       {/* Main Content */}
       <div className="max-w-md mx-auto px-5 py-4">
         {/* Type Filter */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {['all', 'pdf', 'video', 'article'].map((type) => (
             <button
               key={type}
               onClick={() => setSelectedType(type)}
-              className={`px-4 py-2 rounded-full text-sm transition-all ${
+              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all ${
                 selectedType === type
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-600'
@@ -68,9 +91,20 @@ export function MobileAdminResources() {
           ))}
         </div>
 
-        {/* Resources List */}
-        <div className="space-y-3">
-          {resources.map((resource) => (
+        {loading ? (
+          <LoadingAnimation 
+            variant="inline" 
+            message="A carregar recursos..." 
+            showProgress={false}
+          />
+        ) : filteredResources.length === 0 ? (
+          <div className="text-center py-12">
+            <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500">Nenhum recurso disponível</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredResources.map((resource) => (
             <Card 
               key={resource.id}
               className="bg-white rounded-2xl p-4 border border-gray-200"
@@ -89,16 +123,21 @@ export function MobileAdminResources() {
                     <Badge variant="secondary" className="text-xs">
                       {resource.category}
                     </Badge>
-                    <span className="text-xs text-gray-500">{resource.downloads} downloads</span>
                   </div>
                 </div>
-                <Button size="icon" variant="outline" className="flex-shrink-0">
+                <Button 
+                  size="icon" 
+                  variant="outline" 
+                  className="flex-shrink-0"
+                  onClick={() => resource.url && window.open(resource.url, '_blank')}
+                >
                   <Download className="w-4 h-4" />
                 </Button>
               </div>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <MobileBottomNav userType="admin" />

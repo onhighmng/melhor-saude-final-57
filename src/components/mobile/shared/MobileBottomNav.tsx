@@ -35,9 +35,9 @@ export function MobileBottomNav({ userType = 'user' }: MobileBottomNavProps) {
         return [
           { id: 'dashboard', label: 'Início', icon: Home, path: '/especialista/dashboard' },
           { id: 'sessions', label: 'Sessões', icon: Calendar, path: '/especialista/sessions' },
-          { id: 'clients', label: 'Clientes', icon: MessageCircle, path: '/especialista/clients' },
-          { id: 'calendar', label: 'Calendário', icon: BookOpen, path: '/especialista/availability' },
-          { id: 'settings', label: 'Definições', icon: Settings, path: '/especialista/profile' },
+          { id: 'clients', label: 'Clientes', icon: MessageCircle, path: '/especialista/user-history' },
+          { id: 'stats', label: 'Estatísticas', icon: BookOpen, path: '/especialista/stats' },
+          { id: 'settings', label: 'Definições', icon: Settings, path: '/especialista/settings' },
         ];
       case 'admin':
         return [

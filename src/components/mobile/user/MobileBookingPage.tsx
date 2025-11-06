@@ -3,8 +3,6 @@ import { ArrowLeft, Brain, Heart, DollarSign, Scale } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
-import mentalHealthImg from '@/assets/mental-health-pillar.jpg';
-import physicalWellnessImg from '@/assets/physical-wellness-pillar.jpg';
 
 type Pillar = 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica';
 
@@ -19,7 +17,6 @@ export function MobileBookingPage() {
       icon: Brain,
       bgColor: 'bg-blue-300',
       iconColor: 'text-blue-700',
-      image: mentalHealthImg,
     },
     {
       id: 'bem_estar_fisico' as Pillar,
@@ -28,7 +25,6 @@ export function MobileBookingPage() {
       icon: Heart,
       bgColor: 'bg-orange-300',
       iconColor: 'text-orange-700',
-      image: physicalWellnessImg,
     },
     {
       id: 'assistencia_financeira' as Pillar,
@@ -37,7 +33,6 @@ export function MobileBookingPage() {
       icon: DollarSign,
       bgColor: 'bg-green-300',
       iconColor: 'text-green-700',
-      image: mentalHealthImg,
     },
     {
       id: 'assistencia_juridica' as Pillar,
@@ -46,7 +41,6 @@ export function MobileBookingPage() {
       icon: Scale,
       bgColor: 'bg-purple-300',
       iconColor: 'text-purple-700',
-      image: physicalWellnessImg,
     },
   ];
 

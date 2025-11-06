@@ -25,8 +25,12 @@ export function MobileUserSessions() {
 
   const companyQuota = sessionBalance?.company || 0;
   const personalQuota = sessionBalance?.personal || 0;
-  const companyUsed = companyQuota > 0 ? Math.floor(Math.random() * companyQuota) : 0;
-  const personalUsed = personalQuota > 0 ? Math.floor(Math.random() * personalQuota) : 0;
+  
+  // Calculate actual used sessions from completed bookings
+  const companyUsed = completedBookings.filter(b => b.booking_source === 'company').length;
+  const personalUsed = completedBookings.filter(b => 
+    b.booking_source === 'personal' || !b.booking_source
+  ).length;
 
   return (
     <div className="min-h-screen bg-blue-50 pb-20">
@@ -122,7 +126,10 @@ export function MobileUserSessions() {
           {/* Past Sessions */}
           <Card 
             className="bg-orange-50 rounded-3xl p-5 shadow-sm border-orange-100 cursor-pointer active:scale-95 transition-transform"
-            onClick={() => {}}
+            onClick={() => {
+              // Navigate to sessions history view
+              console.log('View past sessions');
+            }}
           >
             <div className="text-center">
               <div className="w-10 h-10 bg-orange-200 rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -138,7 +145,10 @@ export function MobileUserSessions() {
           <Card 
             className="rounded-3xl p-5 shadow-sm border-gray-200 cursor-pointer active:scale-95 transition-transform"
             style={{ backgroundColor: '#E8E6DF' }}
-            onClick={() => {}}
+            onClick={() => {
+              // Navigate to upcoming sessions view
+              console.log('View upcoming sessions');
+            }}
           >
             <div className="text-center">
               <div className="w-10 h-10 bg-white/50 rounded-xl flex items-center justify-center mx-auto mb-3">

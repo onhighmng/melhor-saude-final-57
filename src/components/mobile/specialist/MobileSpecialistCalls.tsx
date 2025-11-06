@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Phone, User, Clock, Video, CheckCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
+import { useEscalatedChats } from '@/hooks/useEscalatedChats';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 interface CallRequest {
   id: string;
@@ -15,26 +19,77 @@ interface CallRequest {
 }
 
 export function MobileSpecialistCalls() {
+  const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('pending');
+  const { escalatedChats, loading: chatsLoading } = useEscalatedChats();
+  const [stats, setStats] = useState({
+    pending: 0,
+    today: 0,
+    totalTime: '0h'
+  });
 
-  const callRequests: CallRequest[] = [
-    {
-      id: '1',
-      user_name: 'Ana Silva',
-      company: 'Empresa Exemplo Lda',
-      pillar: 'Saúde Mental',
-      time_ago: 'há 5 mins',
-      status: 'pending'
-    },
-    {
-      id: '2',
-      user_name: 'Carlos Santos',
-      company: 'Tech Solutions MG',
-      pillar: 'Bem-Estar Físico',
-      time_ago: 'há 12 mins',
-      status: 'pending'
+  useEffect(() => {
+    fetchStats();
+  }, [profile?.id]);
+
+  const fetchStats = async () => {
+    try {
+      if (!profile?.id) return;
+
+      const { data: prestador } = await supabase
+        .from('prestadores')
+        .select('id')
+        .eq('user_id', profile.id)
+        .single();
+
+      if (!prestador) return;
+
+      const today = new Date().toISOString().split('T')[0];
+      const { data: todayBookings } = await supabase
+        .from('bookings')
+        .select('duration')
+        .eq('prestador_id', prestador.id)
+        .gte('scheduled_for', today)
+        .eq('status', 'completed');
+
+      const totalMinutes = (todayBookings || []).reduce((sum: number, b: any) => sum + (b.duration || 60), 0);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      setStats({
+        pending: escalatedChats.filter(c => c.status === 'phone_escalated').length,
+        today: (todayBookings || []).length,
+        totalTime: minutes > 0 ? `${hours}.${Math.round(minutes / 6)}h` : `${hours}h`
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
     }
-  ];
+  };
+
+  const callRequests: CallRequest[] = escalatedChats
+    .filter(chat => chat.status === 'phone_escalated')
+    .map(chat => ({
+      id: chat.id,
+      user_name: chat.user_name || 'Utilizador',
+      company: chat.company_name || 'Empresa',
+      pillar: chat.pillar || 'Geral',
+      time_ago: getTimeAgo(chat.escalated_at),
+      status: 'pending'
+    }));
+
+  function getTimeAgo(date: string | Date | null): string {
+    if (!date) return 'recente';
+    const now = new Date();
+    const past = new Date(date);
+    const diffMs = now.getTime() - past.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'agora';
+    if (diffMins < 60) return `há ${diffMins} mins`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `há ${diffHours}h`;
+    return `há ${Math.floor(diffHours / 24)} dias`;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -52,24 +107,34 @@ export function MobileSpecialistCalls() {
         <div className="grid grid-cols-3 gap-3 mb-6">
           <Card className="bg-orange-50 rounded-2xl p-4 border-none text-center">
             <Phone className="w-5 h-5 text-orange-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-orange-600">{callRequests.length}</p>
+            <p className="text-2xl font-bold text-orange-600">{stats.pending}</p>
             <p className="text-xs text-gray-600">Pendentes</p>
           </Card>
           <Card className="bg-green-50 rounded-2xl p-4 border-none text-center">
             <CheckCircle className="w-5 h-5 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-600">8</p>
+            <p className="text-2xl font-bold text-green-600">{stats.today}</p>
             <p className="text-xs text-gray-600">Hoje</p>
           </Card>
           <Card className="bg-blue-50 rounded-2xl p-4 border-none text-center">
             <Clock className="w-5 h-5 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-blue-600">2.5h</p>
+            <p className="text-2xl font-bold text-blue-600">{stats.totalTime}</p>
             <p className="text-xs text-gray-600">Tempo Total</p>
           </Card>
         </div>
 
+        {/* Loading State */}
+        {chatsLoading && (
+          <LoadingAnimation 
+            variant="inline" 
+            message="A carregar pedidos..." 
+            showProgress={false}
+          />
+        )}
+
         {/* Call Requests List */}
-        <div className="space-y-3">
-          {callRequests.map((request) => (
+        {!chatsLoading && (
+          <div className="space-y-3">
+            {callRequests.map((request) => (
             <Card 
               key={request.id}
               className="bg-white rounded-2xl p-4 border border-gray-200"
@@ -107,12 +172,14 @@ export function MobileSpecialistCalls() {
                 </Button>
               </div>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {callRequests.length === 0 && (
+        {/* Empty State */}
+        {!chatsLoading && callRequests.length === 0 && (
           <div className="text-center py-12">
-            <Phone className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+            <Phone className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">Nenhum pedido de chamada pendente</p>
           </div>
         )}

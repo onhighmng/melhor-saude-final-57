@@ -1,20 +1,132 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BarChart3, TrendingUp, Users, Star, Calendar, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 export function MobileSpecialistStats() {
+  const { profile } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState('month');
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalSessions: 0,
+    activeClients: 0,
+    averageRating: 0,
+    totalHours: 0,
+    completionRate: 0,
+    responseTime: '0h'
+  });
 
-  const stats = {
-    totalSessions: 45,
-    activeClients: 28,
-    averageRating: 4.8,
-    totalHours: 67,
-    completionRate: 92,
-    responseTime: '2.5h'
-  };
+  useEffect(() => {
+    const calculateStats = async () => {
+      if (!profile?.id) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        // Get prestador ID for this specialist
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
+
+        if (!prestador) {
+          setLoading(false);
+          return;
+        }
+
+        // Fetch bookings for stats calculation
+        const { data: bookings, error: bookingsError } = await supabase
+          .from('bookings')
+          .select('id, user_id, status, rating, booking_date, start_time, end_time')
+          .eq('prestador_id', prestador.id)
+          .gte('booking_date', startOfMonth.toISOString().split('T')[0]);
+
+        if (bookingsError) throw bookingsError;
+
+        // Fetch call logs for response time
+        const { data: callLogs, error: callLogsError } = await supabase
+          .from('specialist_call_logs')
+          .select('created_at, completed_at')
+          .eq('specialist_id', profile.id)
+          .not('completed_at', 'is', null)
+          .gte('created_at', startOfMonth.toISOString());
+
+        if (callLogsError) throw callLogsError;
+
+        // Calculate total sessions
+        const totalSessions = bookings?.length || 0;
+
+        // Calculate active clients (distinct user_ids)
+        const uniqueUserIds = new Set(bookings?.map(b => b.user_id) || []);
+        const activeClients = uniqueUserIds.size;
+
+        // Calculate average rating
+        const ratingsOnly = bookings?.filter(b => b.rating && b.rating > 0).map(b => b.rating) || [];
+        const averageRating = ratingsOnly.length > 0 
+          ? (ratingsOnly.reduce((sum, r) => sum + r, 0) / ratingsOnly.length)
+          : 0;
+
+        // Calculate total hours (assuming 1 hour per session for simplicity)
+        const totalHours = bookings?.filter(b => b.status === 'completed').length || 0;
+
+        // Calculate completion rate
+        const completedCount = bookings?.filter(b => b.status === 'completed').length || 0;
+        const completionRate = totalSessions > 0 
+          ? Math.round((completedCount / totalSessions) * 100) 
+          : 0;
+
+        // Calculate average response time
+        let avgResponseTime = 0;
+        if (callLogs && callLogs.length > 0) {
+          const totalResponseTime = callLogs.reduce((sum, log) => {
+            const diff = new Date(log.completed_at).getTime() - new Date(log.created_at).getTime();
+            return sum + diff;
+          }, 0);
+          avgResponseTime = totalResponseTime / callLogs.length / (1000 * 60 * 60); // Convert to hours
+        }
+        const responseTime = avgResponseTime > 0 
+          ? `${avgResponseTime.toFixed(1)}h` 
+          : '0h';
+
+        setStats({
+          totalSessions,
+          activeClients,
+          averageRating: Math.round(averageRating * 10) / 10,
+          totalHours,
+          completionRate,
+          responseTime
+        });
+      } catch (error) {
+        console.error('Error calculating stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    calculateStats();
+  }, [profile?.id, selectedPeriod]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <LoadingAnimation 
+          variant="fullscreen" 
+          message="A carregar estatísticas..." 
+          submessage="Aguarde um momento"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

@@ -1,33 +1,93 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, Users, TrendingUp, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 export function MobileCompanySessions() {
+  const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    thisMonth: 0,
+    attendanceRate: 0,
+    activeEmployees: 0
+  });
 
-  const sessions = [
-    {
-      id: '1',
-      employee: 'João Silva',
-      specialist: 'Dr. Ana Costa',
-      pillar: 'Saúde Mental',
-      date: '2025-11-10',
-      time: '10:00',
-      status: 'upcoming'
-    },
-    {
-      id: '2',
-      employee: 'Maria Santos',
-      specialist: 'Dr. Carlos Rodrigues',
-      pillar: 'Bem-Estar Físico',
-      date: '2025-11-09',
-      time: '14:00',
-      status: 'completed'
+  useEffect(() => {
+    if (profile?.company_id) {
+      fetchSessions();
+      fetchStats();
     }
-  ];
+  }, [profile?.company_id]);
+
+  const fetchSessions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          user:user_id (full_name),
+          specialist:prestador_id (name)
+        `)
+        .eq('company_id', profile?.company_id)
+        .order('scheduled_for', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      const mappedSessions = (data || []).map((booking: any) => ({
+        id: booking.id,
+        employee: booking.user?.full_name || 'Colaborador',
+        specialist: booking.specialist?.name || 'Especialista',
+        pillar: booking.service_type || 'Geral',
+        date: new Date(booking.scheduled_for).toISOString().split('T')[0],
+        time: new Date(booking.scheduled_for).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }),
+        status: booking.status === 'completed' ? 'completed' : 'upcoming'
+      }));
+
+      setSessions(mappedSessions);
+    } catch (error) {
+      console.error('Error fetching sessions:', error);
+      setSessions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('status, scheduled_for')
+        .eq('company_id', profile?.company_id);
+
+      if (error) throw error;
+
+      const now = new Date();
+      const thisMonthBookings = (data || []).filter((b: any) => {
+        const bookingDate = new Date(b.scheduled_for);
+        return bookingDate.getMonth() === now.getMonth() && 
+               bookingDate.getFullYear() === now.getFullYear();
+      });
+
+      const completedCount = (data || []).filter((b: any) => b.status === 'completed').length;
+      const totalCount = (data || []).length;
+
+      setStats({
+        thisMonth: thisMonthBookings.length,
+        attendanceRate: totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0,
+        activeEmployees: new Set((data || []).map((b: any) => b.user_id)).size
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
 
   const upcomingSessions = sessions.filter(s => s.status === 'upcoming');
   const completedSessions = sessions.filter(s => s.status === 'completed');
@@ -48,12 +108,12 @@ export function MobileCompanySessions() {
         <div className="grid grid-cols-3 gap-3 mb-6">
           <Card className="bg-blue-50 rounded-2xl p-4 border-none text-center">
             <Calendar className="w-5 h-5 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-blue-600">12</p>
+            <p className="text-2xl font-bold text-blue-600">{stats.thisMonth}</p>
             <p className="text-xs text-gray-600">Este Mês</p>
           </Card>
           <Card className="bg-green-50 rounded-2xl p-4 border-none text-center">
             <TrendingUp className="w-5 h-5 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-600">85%</p>
+            <p className="text-2xl font-bold text-green-600">{stats.attendanceRate}%</p>
             <p className="text-xs text-gray-600">Taxa Presença</p>
           </Card>
           <Card className="bg-purple-50 rounded-2xl p-4 border-none text-center">

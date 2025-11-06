@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 export function MobileCompanyDashboard() {
   const navigate = useNavigate();
@@ -62,11 +63,12 @@ export function MobileCompanyDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center pb-20">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">A carregar...</p>
-        </div>
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <LoadingAnimation 
+          variant="fullscreen" 
+          message="A carregar painel..." 
+          submessage="Aguarde um momento"
+        />
       </div>
     );
   }

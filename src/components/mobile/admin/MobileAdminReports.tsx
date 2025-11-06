@@ -7,33 +7,9 @@ import { MobileBottomNav } from '../shared/MobileBottomNav';
 
 export function MobileAdminReports() {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
-
-  const reports = [
-    {
-      id: 1,
-      title: 'Relatório de Uso Mensal',
-      description: 'Análise completa de utilização de serviços',
-      date: '2025-10-31',
-      type: 'usage',
-      status: 'ready'
-    },
-    {
-      id: 2,
-      title: 'Relatório Financeiro Q4',
-      description: 'Receitas e despesas do trimestre',
-      date: '2025-10-31',
-      type: 'financial',
-      status: 'ready'
-    },
-    {
-      id: 3,
-      title: 'Satisfação dos Utilizadores',
-      description: 'Feedback e avaliações de Outubro',
-      date: '2025-10-31',
-      type: 'feedback',
-      status: 'ready'
-    }
-  ];
+  
+  // Reports are generated on-demand from desktop
+  // No persistent reports table exists in the database
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -48,12 +24,12 @@ export function MobileAdminReports() {
       {/* Main Content */}
       <div className="max-w-md mx-auto px-5 py-4">
         {/* Period Filter */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {['week', 'month', 'quarter', 'year'].map((period) => (
             <button
               key={period}
               onClick={() => setSelectedPeriod(period)}
-              className={`px-4 py-2 rounded-full text-sm transition-all ${
+              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all ${
                 selectedPeriod === period
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-600'
@@ -67,40 +43,45 @@ export function MobileAdminReports() {
           ))}
         </div>
 
-        {/* Reports List */}
-        <div className="space-y-3">
-          {reports.map((report) => (
-            <Card 
-              key={report.id}
-              className="bg-white rounded-2xl p-4 border border-gray-200"
-            >
+        {/* Note about on-demand generation */}
+        <div className="text-center py-12">
+          <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-gray-900 font-semibold mb-2">Geração de Relatórios</h3>
+          <p className="text-gray-600 text-sm mb-4 px-4">
+            Os relatórios detalhados de faturação, métricas internas e relatórios para empresas são gerados sob demanda.
+          </p>
+          <p className="text-gray-500 text-xs px-4">
+            Aceda à versão desktop para gerar e descarregar relatórios completos com filtros avançados e exportação de dados.
+          </p>
+          <div className="mt-6 space-y-2 px-4">
+            <Card className="bg-blue-50 rounded-2xl p-4 border-none text-left">
               <div className="flex items-start gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-6 h-6 text-blue-600" />
+                <FileText className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Faturação</p>
+                  <p className="text-xs text-gray-600 mt-0.5">Gestão de faturas e pagamentos</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-gray-900 font-medium">{report.title}</h3>
-                  <p className="text-gray-500 text-sm mt-1">{report.description}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <CalendarIcon className="w-4 h-4 text-gray-400" />
-                    <span className="text-xs text-gray-600">
-                      {new Date(report.date).toLocaleDateString('pt-PT')}
-                    </span>
-                    <Badge variant="default" className="text-xs">
-                      Pronto
-                    </Badge>
-                  </div>
-                </div>
-                <Button 
-                  size="icon" 
-                  variant="outline"
-                  className="flex-shrink-0"
-                >
-                  <Download className="w-4 h-4" />
-                </Button>
               </div>
             </Card>
-          ))}
+            <Card className="bg-green-50 rounded-2xl p-4 border-none text-left">
+              <div className="flex items-start gap-3">
+                <FileText className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Relatórios Internos</p>
+                  <p className="text-xs text-gray-600 mt-0.5">Métricas e análises da plataforma</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="bg-purple-50 rounded-2xl p-4 border-none text-left">
+              <div className="flex items-start gap-3">
+                <FileText className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Relatórios para Empresas</p>
+                  <p className="text-xs text-gray-600 mt-0.5">Análises personalizadas por empresa</p>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
 

@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, Clock, User, Video, Phone, MapPin, CheckCircle, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 interface Session {
   id: string;
@@ -21,37 +23,92 @@ export function MobileSpecialistSessions() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with real hook
-  const sessions: Session[] = [
-    {
-      id: '1',
-      user_name: 'João Ferreira',
-      date: '2025-11-10',
-      time: '10:00',
-      type: 'online',
-      pillar: 'Saúde Mental',
-      status: 'upcoming'
-    },
-    {
-      id: '2',
-      user_name: 'Sofia Rodrigues',
-      date: '2025-11-10',
-      time: '14:00',
-      type: 'phone',
-      pillar: 'Bem-Estar Físico',
-      status: 'upcoming'
-    },
-    {
-      id: '3',
-      user_name: 'Ana Silva',
-      date: '2025-11-09',
-      time: '16:00',
-      type: 'online',
-      pillar: 'Saúde Mental',
-      status: 'completed'
-    }
-  ];
+  useEffect(() => {
+    const loadSessions = async () => {
+      if (!profile?.id) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Get prestador ID for this specialist
+        const { data: prestador } = await supabase
+          .from('prestadores')
+          .select('id')
+          .eq('user_id', profile.id)
+          .single();
+
+        if (!prestador) {
+          setSessions([]);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch bookings with user and company information
+        const { data: bookings, error } = await supabase
+          .from('bookings')
+          .select(`
+            id,
+            booking_date,
+            start_time,
+            meeting_type,
+            pillar,
+            status,
+            profiles!bookings_user_id_fkey(name),
+            companies(name)
+          `)
+          .eq('prestador_id', prestador.id)
+          .order('booking_date', { ascending: false });
+
+        if (error) throw error;
+
+        // Map bookings to Session interface
+        const mappedSessions: Session[] = (bookings || []).map((booking: any) => {
+          // Map pillar to Portuguese labels
+          let pillarLabel = 'Saúde Mental';
+          if (booking.pillar === 'bem_estar_fisico' || booking.pillar === 'physical') {
+            pillarLabel = 'Bem-Estar Físico';
+          } else if (booking.pillar === 'assistencia_financeira' || booking.pillar === 'financial') {
+            pillarLabel = 'Assistência Financeira';
+          } else if (booking.pillar === 'assistencia_juridica' || booking.pillar === 'legal') {
+            pillarLabel = 'Assistência Jurídica';
+          }
+
+          // Map meeting type
+          let type: 'online' | 'phone' | 'in-person' = 'online';
+          if (booking.meeting_type === 'phone') type = 'phone';
+          else if (booking.meeting_type === 'in-person') type = 'in-person';
+
+          // Map status
+          let sessionStatus: 'upcoming' | 'completed' | 'cancelled' = 'upcoming';
+          if (booking.status === 'completed') sessionStatus = 'completed';
+          else if (booking.status === 'cancelled') sessionStatus = 'cancelled';
+
+          return {
+            id: booking.id,
+            user_name: booking.profiles?.name || 'Utilizador',
+            date: booking.booking_date,
+            time: booking.start_time || '00:00',
+            type,
+            pillar: pillarLabel,
+            status: sessionStatus
+          };
+        });
+
+        setSessions(mappedSessions);
+      } catch (error) {
+        console.error('Error loading sessions:', error);
+        setSessions([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSessions();
+  }, [profile?.id]);
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -74,6 +131,18 @@ export function MobileSpecialistSessions() {
   const upcomingSessions = sessions.filter(s => s.status === 'upcoming');
   const completedSessions = sessions.filter(s => s.status === 'completed');
   const cancelledSessions = sessions.filter(s => s.status === 'cancelled');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <LoadingAnimation 
+          variant="fullscreen" 
+          message="A carregar sessões..." 
+          submessage="Aguarde um momento"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

@@ -66,11 +66,13 @@ const CompanySettings = lazy(() => import("./pages/CompanySettings"));
 const UserSessions = lazy(() => import("./pages/UserSessionsResponsive"));
 const UserDashboard = lazy(() => import("./pages/UserDashboardResponsive"));
 const UserResources = lazy(() => import("./pages/UserResourcesResponsive"));
+const UserChat = lazy(() => import("./pages/UserChatResponsive"));
 const UserFeedback = lazy(() => import("./pages/UserFeedback"));
 const UserNotifications = lazy(() => import("./pages/UserNotificationsResponsive"));
 const UserSettings = lazy(() => import("./pages/UserSettingsResponsive"));
 const BookingFlow = lazy(() => import("./components/booking/BookingFlow"));
-const BookingRouter = lazy(() => import("./components/booking/BookingRouter"));
+const BookingRouter = lazy(() => import("./pages/UserBookingResponsive"));
+const SpecialistSessions = lazy(() => import("./pages/SpecialistSessionsResponsive"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Support = lazy(() => import("./pages/Support"));
 const N8NChatTest = lazy(() => import("./pages/N8NChatTest"));
@@ -178,6 +180,7 @@ const AppWithTracking = () => {
           {/* User routes - PROTECTED */}
           <Route path="/user/dashboard" element={<ProtectedRoute requiredRole="user"><UserLayout><UserDashboard /></UserLayout></ProtectedRoute>} />
           <Route path="/user/sessions" element={<ProtectedRoute requiredRole="user"><UserLayout><UserSessions /></UserLayout></ProtectedRoute>} />
+          <Route path="/user/chat" element={<ProtectedRoute requiredRole="user"><UserLayout><UserChat /></UserLayout></ProtectedRoute>} />
           <Route path="/user/settings" element={<ProtectedRoute requiredRole="user"><UserLayout><UserSettings /></UserLayout></ProtectedRoute>} />
           <Route path="/user/resources" element={<ProtectedRoute requiredRole="user"><UserLayout><UserResources /></UserLayout></ProtectedRoute>} />
           <Route path="/user/feedback" element={<ProtectedRoute requiredRole="user"><UserLayout><UserFeedback /></UserLayout></ProtectedRoute>} />
@@ -222,6 +225,7 @@ const AppWithTracking = () => {
           
           {/* Especialista Geral routes - PROTECTED */}
           <Route path="/especialista/dashboard" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><SpecialistDashboard /></EspecialistaLayout></ProtectedRoute>} />
+          <Route path="/especialista/sessions" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><SpecialistSessions /></EspecialistaLayout></ProtectedRoute>} />
           <Route path="/especialista/call-requests" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><EspecialistaCallRequests /></EspecialistaLayout></ProtectedRoute>} />
           <Route path="/especialista/calendario" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><PrestadorCalendar /></EspecialistaLayout></ProtectedRoute>} />
           <Route path="/especialista/calendar" element={<ProtectedRoute requiredRole="especialista_geral"><EspecialistaLayout><PrestadorCalendar /></EspecialistaLayout></ProtectedRoute>} />

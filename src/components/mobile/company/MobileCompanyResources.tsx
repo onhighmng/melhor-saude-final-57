@@ -1,43 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BookOpen, Download, FileText } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
+import { supabase } from '@/integrations/supabase/client';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 interface Resource {
-  id: number;
+  id: string;
   title: string;
   category: string;
-  type: 'pdf' | 'video' | 'article';
-  downloads: number;
+  type: string;
+  downloads?: number;
+  url?: string;
 }
 
 export function MobileCompanyResources() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const resources: Resource[] = [
-    {
-      id: 1,
-      title: 'Guia de Bem-Estar Mental',
-      category: 'Saúde Mental',
-      type: 'pdf',
-      downloads: 45
-    },
-    {
-      id: 2,
-      title: 'Plano de Atividades Físicas',
-      category: 'Bem-Estar Físico',
-      type: 'pdf',
-      downloads: 32
-    },
-    {
-      id: 3,
-      title: 'Gestão Financeira Pessoal',
-      category: 'Assistência Financeira',
-      type: 'article',
-      downloads: 28
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  const fetchResources = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const mappedResources: Resource[] = (data || []).map((resource: any) => ({
+        id: resource.id,
+        title: resource.title || 'Recurso',
+        category: getCategoryLabel(resource.category),
+        type: resource.type || 'pdf',
+        downloads: 0,
+        url: resource.url
+      }));
+
+      setResources(mappedResources);
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+      setResources([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const getCategoryLabel = (category: string): string => {
+    const labels: Record<string, string> = {
+      'saude_mental': 'Saúde Mental',
+      'bem_estar_fisico': 'Bem-Estar Físico',
+      'assistencia_financeira': 'Assistência Financeira',
+      'assistencia_juridica': 'Assistência Jurídica',
+      'mental_health': 'Saúde Mental',
+      'physical_wellness': 'Bem-Estar Físico',
+      'financial': 'Assistência Financeira',
+      'legal': 'Assistência Jurídica'
+    };
+    return labels[category] || 'Geral';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

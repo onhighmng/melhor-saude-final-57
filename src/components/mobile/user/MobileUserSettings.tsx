@@ -35,6 +35,19 @@ export function MobileUserSettings() {
     anonymousData: true
   });
 
+  const [notificationPrefs, setNotificationPrefs] = useState({
+    emailConfirmation: true,
+    pushNotification: false,
+    reminder24h: true,
+    feedbackReminder: true
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    current: '',
+    new: '',
+    confirm: ''
+  });
+
   const settingsCards = [
     {
       id: 'profile',
@@ -207,6 +220,135 @@ export function MobileUserSettings() {
                 }
               />
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Notifications Modal */}
+      <Dialog open={activeModal === 'notifications'} onOpenChange={(open) => !open && setActiveModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Preferências de Notificação</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-900">Email de Confirmação</p>
+                <p className="text-sm text-gray-500">Quando sessão for confirmada</p>
+              </div>
+              <Switch
+                checked={notificationPrefs.emailConfirmation}
+                onCheckedChange={(checked) =>
+                  setNotificationPrefs({ ...notificationPrefs, emailConfirmation: checked })
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-900">Notificação Push</p>
+                <p className="text-sm text-gray-500">Notificações no dispositivo</p>
+              </div>
+              <Switch
+                checked={notificationPrefs.pushNotification}
+                onCheckedChange={(checked) =>
+                  setNotificationPrefs({ ...notificationPrefs, pushNotification: checked })
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-900">Lembrete 24h antes</p>
+                <p className="text-sm text-gray-500">Dia anterior à sessão</p>
+              </div>
+              <Switch
+                checked={notificationPrefs.reminder24h}
+                onCheckedChange={(checked) =>
+                  setNotificationPrefs({ ...notificationPrefs, reminder24h: checked })
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-900">Lembrete de Feedback</p>
+                <p className="text-sm text-gray-500">Após cada sessão</p>
+              </div>
+              <Switch
+                checked={notificationPrefs.feedbackReminder}
+                onCheckedChange={(checked) =>
+                  setNotificationPrefs({ ...notificationPrefs, feedbackReminder: checked })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <button
+              onClick={() => setActiveModal(null)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => setActiveModal(null)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              Guardar
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Security Modal */}
+      <Dialog open={activeModal === 'security'} onOpenChange={(open) => !open && setActiveModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Segurança</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="current-password">Palavra-passe Atual</Label>
+              <Input
+                id="current-password"
+                type="password"
+                value={passwordData.current}
+                onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">Nova Palavra-passe</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={passwordData.new}
+                onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirmar Palavra-passe</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={passwordData.confirm}
+                onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <button
+              onClick={() => setActiveModal(null)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => setActiveModal(null)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              Alterar Palavra-passe
+            </button>
           </div>
         </DialogContent>
       </Dialog>
