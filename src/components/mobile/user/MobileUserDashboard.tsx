@@ -30,11 +30,11 @@ export function MobileUserDashboard() {
         <div className="max-w-md mx-auto px-5 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-gray-900 text-2xl font-bold">
+              <h1 className="text-gray-900">
                 Olá, {profile?.full_name?.split(' ')[0] || 'Utilizador'}! 👋
               </h1>
               <p className="text-gray-500 text-sm mt-1">
-                Bem-vindo ao seu espaço de saúde e bem-estar.
+                Bem-vinda de volta ao seu espaço de saúde e bem-estar.
               </p>
             </div>
           </div>
@@ -43,74 +43,107 @@ export function MobileUserDashboard() {
 
       {/* Main Content */}
       <div className="max-w-md mx-auto px-5 py-6 space-y-5">
-        {/* Progress Card */}
-        <Card className="bg-white rounded-3xl p-6 shadow-md border-none">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-gray-900 text-lg font-semibold">Sessões Completas</h3>
-                <p className="text-gray-500 text-sm">Continue a sua jornada</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-3xl font-bold text-blue-600">{completedSessionsCount}</span>
-                <span className="text-gray-400 text-sm">/28</span>
+        {/* 1. Progress Card - Blue Gradient */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 p-6 shadow-lg">
+          {/* Decorative gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent" />
+          
+          <div className="relative z-10 flex flex-col items-center text-white space-y-4">
+            {/* Calendar Icon */}
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                <Calendar className="w-5 h-5" />
               </div>
             </div>
-            
-            <Progress value={usagePercent} className="h-2" />
-            
-            <Button 
+
+            {/* Title and percentage */}
+            <div className="text-center w-full">
+              <h3 className="text-white/90 mb-1">Progresso Pessoal</h3>
+              <div className="text-5xl text-white">{usagePercent}%</div>
+              
+              {/* Progress Bar */}
+              <div className="mt-4 w-full">
+                <Progress value={usagePercent} className="h-2 bg-white/30" indicatorClassName="bg-white" />
+              </div>
+            </div>
+
+            {/* Sessions completed */}
+            <div className="flex items-center gap-2">
+              <div className="text-6xl">{completedSessionsCount}</div>
+            </div>
+            <div className="text-white/90">Sessões Completas</div>
+
+            {/* CTA Button */}
+            <button 
               onClick={() => navigate('/user/book')}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full py-3"
+              className="w-full mt-2 bg-white text-blue-600 rounded-full py-3 px-6 shadow-md active:scale-95 transition-transform"
             >
               Falar com Especialista
-            </Button>
+            </button>
           </div>
-        </Card>
+        </div>
 
-        {/* Personal Progress Checklist */}
-        <Card className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-6 shadow-md border-none">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-purple-600" />
+        {/* 2. Progress Checklist Card */}
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="p-2 bg-blue-50 rounded-xl">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
             </div>
-            <div>
-              <h3 className="text-gray-900 font-semibold">Progresso Pessoal</h3>
-              <p className="text-gray-600 text-sm">Acompanhe a sua evolução</p>
+            <h3 className="text-gray-900">Progresso Pessoal</h3>
+          </div>
+
+          <p className="text-gray-500 text-sm mb-4 italic">
+            "Pequenos passos todos os dias levam a grandes conquistas"
+          </p>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-gray-700">Progresso</span>
+              <span className="text-blue-600">{Math.round(progress)}%</span>
             </div>
+            <Progress value={progress} className="h-2" />
+
+            <div className="space-y-3 mt-5">
+              {milestones.slice(0, 4).map((milestone) => (
+                <div key={milestone.id} className="flex items-center gap-3">
+                  <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 ${
+                    milestone.completed 
+                      ? 'border-blue-600 bg-blue-600' 
+                      : 'border-gray-300'
+                  }`}>
+                    {milestone.completed && (
+                      <svg className="w-full h-full text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className={`text-sm ${milestone.completed ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
+                      {milestone.title}
+                    </p>
+                  </div>
+                  <span className="text-xs text-gray-400">+{milestone.points || 90}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Upcoming Sessions */}
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-gray-900">Próximas Sessões</h3>
+            <span className="text-sm text-gray-500">{upcomingBookings.length} agendadas</span>
           </div>
           
-          <div className="space-y-3">
-            {milestones.slice(0, 3).map((milestone) => (
-              <div key={milestone.id} className="flex items-center gap-3">
-                <CheckCircle 
-                  className={`w-5 h-5 ${
-                    milestone.completed ? 'text-green-600' : 'text-gray-300'
-                  }`}
-                />
-                <span className={`text-sm ${
-                  milestone.completed ? 'text-gray-900 font-medium' : 'text-gray-500'
-                }`}>
-                  {milestone.title}
-                </span>
+          {upcomingBookings.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <div className="p-4 bg-yellow-100 rounded-full mb-3">
+                <Calendar className="w-8 h-8 text-yellow-600" />
               </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Upcoming Sessions */}
-        {upcomingBookings.length > 0 && (
-          <Card className="bg-white rounded-3xl p-6 shadow-md border-none">
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="text-gray-900 font-semibold">Próximas Sessões</h3>
-                <p className="text-gray-600 text-sm">{upcomingBookings.length} agendadas</p>
-              </div>
+              <p className="text-gray-600">Nenhuma sessão agendada</p>
             </div>
-            
+          ) : (
             <div className="space-y-3">
               {upcomingBookings.slice(0, 2).map((booking) => (
                 <div 
@@ -120,8 +153,10 @@ export function MobileUserDashboard() {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-900 font-medium">{booking.pillar}</p>
-                      <p className="text-gray-500 text-sm">{booking.date} às {booking.time}</p>
+                      <p className="text-gray-900 font-medium">{booking.pillar || 'Sessão'}</p>
+                      <p className="text-gray-500 text-sm">
+                        {booking.date || booking.booking_date} às {booking.time || booking.start_time}
+                      </p>
                     </div>
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <Calendar className="w-4 h-4 text-blue-600" />
@@ -130,33 +165,37 @@ export function MobileUserDashboard() {
                 </div>
               ))}
             </div>
-          </Card>
-        )}
+          )}
+        </div>
 
-        {/* Resources Card */}
-        <Card 
-          className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 shadow-md border-none cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => navigate('/user/resources')}
-        >
-          <div className="flex items-start gap-3">
-            <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-amber-600" />
-            </div>
-            <div>
-              <h3 className="text-gray-900 font-semibold">Recursos de Bem-Estar</h3>
-              <p className="text-gray-600 text-sm">Explore conteúdos personalizados</p>
+        {/* 4. Resources Image Card */}
+        <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+          <div className="relative h-48 rounded-3xl overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1744648525155-5ff1f8373766?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZW9wbGUlMjB3YWxraW5nJTIwc3Vuc2V0JTIwdGhlcmFweXxlbnwxfHx8fDE3NjIzNDcxMTd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+              alt="Recursos de terapia"
+              className="w-full h-full object-cover"
+            />
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4">
+              <div className="flex items-center gap-2 text-white">
+                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <span>Recursos</span>
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Call Request Button */}
-        <Button 
+        {/* Call Button - Last Element */}
+        <button 
           onClick={() => navigate('/user/chat')}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full py-3 flex items-center justify-center gap-2 shadow-md"
+          className="w-full bg-blue-600 text-white rounded-full py-3 px-5 flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform mb-6"
         >
           <Phone className="w-5 h-5" />
           Solicitar Chamada
-        </Button>
+        </button>
       </div>
 
       {/* Mobile Bottom Navigation */}

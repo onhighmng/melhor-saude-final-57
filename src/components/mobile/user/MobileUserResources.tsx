@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 
 type Category = 'todos' | 'saude_mental' | 'bem_estar_fisico' | 'assistencia_financeira' | 'assistencia_juridica';
 
@@ -119,15 +120,15 @@ export function MobileUserResources() {
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-100">
-        <div className="max-w-md mx-auto px-5 py-6">
+        <div className="max-w-6xl mx-auto px-5 py-6">
           <div className="flex items-start gap-3">
             <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
               <BookOpen className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-gray-900 text-2xl font-bold">Recursos de Bem-Estar</h1>
+              <h1 className="text-gray-900">Recursos de Bem-Estar</h1>
               <p className="text-gray-500 text-sm mt-1">
-                Aceda a guias, vídeos e artigos sobre saúde
+                Aceda a guias, vídeos e artigos sobre saúde e bem-estar
               </p>
             </div>
           </div>
@@ -135,27 +136,27 @@ export function MobileUserResources() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-md mx-auto px-5 py-8">
+      <div className="max-w-6xl mx-auto px-5 py-12">
         {/* Title Section */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl text-gray-900 mb-2 font-semibold">
+        <div className="text-center mb-8">
+          <h2 className="text-4xl text-gray-900 mb-4">
             Recursos Mais Populares De 2025
           </h2>
-          <p className="text-gray-500 text-sm">
-            Descubra conteúdo relevante para o seu bem-estar
+          <p className="text-gray-500 max-w-2xl mx-auto">
+            Descubra o conteúdo mais relevante para o seu bem-estar físico, mental, financeiro e jurídico
           </p>
         </div>
 
         {/* Category Filter Tabs */}
-        <div className="flex flex-wrap gap-2 justify-center mb-6">
+        <div className="flex flex-wrap gap-3 justify-center mb-8">
           {categories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`px-4 py-2 rounded-full transition-all active:scale-95 text-sm ${
+              className={`px-6 py-2 rounded-full transition-all active:scale-95 ${
                 activeCategory === category.id
-                  ? category.color + ' font-medium'
-                  : 'bg-gray-100 text-gray-600'
+                  ? category.color
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               {category.label}
@@ -165,19 +166,25 @@ export function MobileUserResources() {
 
         {/* Loading State */}
       {loading && (
-        <LoadingAnimation variant="inline" message="A carregar recursos..." showProgress={true} />
+        <LoadingAnimation 
+          variant="inline" 
+          message="A carregar recursos..." 
+          showProgress={true}
+          mascotSrc={melhorSaudeLogo}
+          wordmarkSrc={melhorSaudeLogo}
+        />
       )}
 
         {/* Resource Cards Grid */}
-        {!loading && (
-          <div className="grid grid-cols-1 gap-4">
+        {!loading && filteredResources.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredResources.map((resource) => (
               <button
                 key={resource.id}
                 onClick={() => handleResourceClick(resource)}
-                className="group relative overflow-hidden rounded-3xl shadow-sm hover:shadow-md transition-all active:scale-95 bg-white"
+                className="group relative overflow-hidden rounded-3xl shadow-sm hover:shadow-lg transition-all active:scale-95 bg-white"
               >
-              <div className="relative h-48">
+              <div className="relative h-64">
                 <img
                   src={resource.image}
                   alt={resource.title}
@@ -190,13 +197,13 @@ export function MobileUserResources() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 
                 {/* Content Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-left">
+                <div className="absolute bottom-0 left-0 right-0 p-5 text-left">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`px-3 py-1 rounded-full text-white text-xs font-medium ${resource.categoryColor}`}>
+                    <span className={`px-3 py-1 rounded-full text-white text-sm ${resource.categoryColor}`}>
                       {resource.categoryLabel}
                     </span>
                   </div>
-                  <h3 className="text-white font-semibold">{resource.title}</h3>
+                  <h3 className="text-white">{resource.title}</h3>
                 </div>
               </div>
               </button>
@@ -207,7 +214,6 @@ export function MobileUserResources() {
         {/* Empty State */}
         {!loading && filteredResources.length === 0 && (
           <div className="text-center py-12">
-            <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">Nenhum recurso disponível nesta categoria.</p>
           </div>
         )}

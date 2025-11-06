@@ -51,9 +51,9 @@ export function MobileSpecialistSettings() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
+      <div className="bg-white border-b border-slate-100 sticky top-0 z-40">
         <div className="max-w-md mx-auto px-5 py-6">
           <div className="flex items-start gap-3">
             <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 
 interface Resource {
   id: string;
@@ -56,7 +57,7 @@ export function MobileAdminResources() {
     : resources.filter(r => r.type.toLowerCase() === selectedType.toLowerCase());
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-md mx-auto px-5 py-6">
@@ -91,9 +92,15 @@ export function MobileAdminResources() {
           ))}
         </div>
 
-        {loading ? (
-          <LoadingAnimation variant="inline" message="A carregar recursos..." showProgress={true} />
-        ) : filteredResources.length === 0 ? (
+            {loading ? (
+              <LoadingAnimation 
+                variant="inline" 
+                message="A carregar recursos..." 
+                showProgress={true}
+                mascotSrc={melhorSaudeLogo}
+                wordmarkSrc={melhorSaudeLogo}
+              />
+            ) : filteredResources.length === 0 ? (
           <div className="text-center py-12">
             <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">Nenhum recurso disponível</p>

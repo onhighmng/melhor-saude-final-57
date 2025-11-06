@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 
 export function MobileSpecialistDashboard() {
   const navigate = useNavigate();
@@ -61,120 +62,142 @@ export function MobileSpecialistDashboard() {
   }, [profile?.id]);
 
   if (loading) {
-    return <LoadingAnimation variant="fullscreen" message="A carregar painel..." showProgress={true} />;
+    return (
+      <LoadingAnimation 
+        variant="fullscreen" 
+        message="A carregar painel..." 
+        showProgress={true}
+        mascotSrc={melhorSaudeLogo}
+        wordmarkSrc={melhorSaudeLogo}
+      />
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* iOS-style Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-md mx-auto px-5 py-6">
-          <h1 className="text-gray-900 text-2xl font-bold mb-1">
-            Bem-vindo, {profile?.full_name?.split(' ')[0]}
-          </h1>
-          <p className="text-gray-500 text-sm">
-            Gerir clientes e sessões
+        <div className="px-4 pt-12 pb-4">
+          <h1 className="text-center">Dashboard</h1>
+          <p className="text-center text-gray-500 text-sm mt-1">
+            Profissional de Permanência
           </p>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-md mx-auto px-5 py-6 space-y-4">
-        {/* Call Requests Card */}
-        {callRequests.length > 0 && (
-          <Card className="bg-gradient-to-br from-red-50 to-orange-50 rounded-3xl p-6 shadow-sm border-none">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-gray-900 font-semibold">Pedidos de Chamada</h2>
-                <p className="text-gray-600 text-sm">{callRequests.length} pendentes</p>
-              </div>
-              <Badge className="bg-red-500 text-white">{callRequests.length}</Badge>
-            </div>
-            
-            <div className="space-y-3">
-              {callRequests.map((request: any, idx: number) => (
-                <div 
-                  key={idx}
-                  className="bg-white/70 rounded-2xl p-4 cursor-pointer hover:bg-white transition-colors"
-                  onClick={() => navigate('/especialista/call-requests')}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-900 font-medium">{request.user_name || 'Cliente'}</p>
-                      <p className="text-gray-500 text-sm">{request.company_name || 'Empresa'}</p>
-                    </div>
-                    <Phone className="w-5 h-5 text-red-500" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        )}
-
-        {/* Today's Sessions */}
-        <Card className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-          <div className="flex items-start gap-3 mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-blue-600" />
+      {/* Content */}
+      <div className="p-4 space-y-4 pb-24">
+        {/* Pending Calls Card */}
+        <div 
+          className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-6 shadow-sm cursor-pointer active:scale-95 transition-transform"
+          onClick={() => navigate('/especialista/call-requests')}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+              <Phone className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-gray-900 font-semibold">Sessões de Hoje</h2>
-              <p className="text-gray-600 text-sm">{todaySessions.length} agendadas</p>
+              <h2>Chamadas Pendentes</h2>
+              <p className="text-sm text-gray-600">{callRequests.length} chamadas aguardam ligação</p>
             </div>
           </div>
+        </div>
 
-          {todaySessions.length > 0 ? (
-            <div className="space-y-3">
-              {todaySessions.map((session: any) => (
-                <div 
-                  key={session.id}
-                  className="bg-gray-50 rounded-2xl p-4 cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => navigate('/especialista/calendar')}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-900 font-medium">
-                        {session.profiles?.name || 'Cliente'}
-                      </p>
-                      <p className="text-gray-500 text-sm">{session.start_time}</p>
-                    </div>
-                    <Badge>{session.status}</Badge>
+        {/* Today's Sessions Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2>Sessões Hoje</h2>
+              <p className="text-sm text-gray-600">{todaySessions.length} sessões agendadas para hoje</p>
+            </div>
+          </div>
+          <img 
+            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop" 
+            alt="Sessions" 
+            className="w-full h-32 object-cover rounded-xl"
+          />
+        </div>
+
+        {/* General Overview */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+          <div className="mb-4">
+            <h2>Visão Geral</h2>
+            <p className="text-sm text-gray-600">Atividade recente e métricas principais</p>
+          </div>
+
+          {/* Call Requests Section */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 mb-3">
+              <Phone className="w-4 h-4 text-red-500" />
+              <h3 className="text-sm">Pedidos de Chamada</h3>
+            </div>
+            {callRequests.slice(0, 3).map((request: any, index: number) => (
+              <div 
+                key={index}
+                className="flex items-center justify-between p-3 bg-orange-50 rounded-xl"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-orange-200 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-orange-700" />
+                  </div>
+                  <div>
+                    <p className="text-sm">{request.user_name || 'Cliente'}</p>
+                    <p className="text-xs text-gray-600">{request.company_name || 'Empresa'}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-4">Sem sessões agendadas</p>
-          )}
-        </Card>
-
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-2 gap-4 mt-6">
-          <Card 
-            className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-3xl p-6 shadow-sm border-none cursor-pointer active:scale-95 transition-transform"
-            onClick={() => navigate('/especialista/clients')}
-          >
-            <div className="text-center">
-              <div className="w-12 h-12 bg-white/60 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <Users className="w-6 h-6 text-purple-600" />
+                <span className="text-xs text-gray-500">há {index * 5 + 5} mins</span>
               </div>
-              <h3 className="text-gray-900 font-semibold mb-1">Clientes</h3>
-              <p className="text-2xl font-bold text-purple-600">{metrics?.totalClients || 0}</p>
-            </div>
-          </Card>
+            ))}
+            <button 
+              className="w-full text-sm text-purple-600 mt-3" 
+              onClick={() => navigate('/especialista/stats')}
+            >
+              Ver Estatísticas Completas →
+            </button>
+          </div>
 
-          <Card 
-            className="bg-gradient-to-br from-green-50 to-green-100 rounded-3xl p-6 shadow-sm border-none cursor-pointer active:scale-95 transition-transform"
-            onClick={() => navigate('/especialista/stats')}
-          >
-            <div className="text-center">
-              <div className="w-12 h-12 bg-white/60 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <BarChart3 className="w-6 h-6 text-green-600" />
-              </div>
-              <h3 className="text-gray-900 font-semibold mb-1">Estatísticas</h3>
-              <p className="text-2xl font-bold text-green-600">{metrics?.completedSessions || 0}</p>
+          {/* Scheduled Sessions Section */}
+          <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
+            <div className="flex items-center gap-2 mb-3">
+              <Calendar className="w-4 h-4 text-blue-500" />
+              <h3 className="text-sm">Sessões Agendadas</h3>
             </div>
-          </Card>
+            {todaySessions.slice(0, 3).map((session: any, index: number) => (
+              <div 
+                key={index}
+                className="flex items-center justify-between p-3 bg-blue-50 rounded-xl"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-blue-700" />
+                  </div>
+                  <div>
+                    <p className="text-sm">{session.profiles?.name || 'Cliente'}</p>
+                    <p className="text-xs text-gray-600">{session.start_time} - Individual</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Personal Performance */}
+        <div 
+          className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-sm cursor-pointer active:scale-95 transition-transform"
+          onClick={() => navigate('/especialista/stats')}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2>Desempenho Pessoal</h2>
+              <p className="text-sm text-gray-600">{metrics?.completedSessions || 0} casos este mês</p>
+            </div>
+          </div>
         </div>
       </div>
 

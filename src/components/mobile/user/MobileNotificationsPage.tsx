@@ -1,85 +1,223 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, Check, Trash2, ChevronRight } from 'lucide-react';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
+import { pt } from 'date-fns/locale';
+import { toast } from 'sonner';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
+import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 
 interface Notification {
-  id: number;
-  emoji: string;
+  id: string;
+  type: string;
   title: string;
   message: string;
-  timestamp: string;
-  isNew: boolean;
-  isHighPriority: boolean;
-  isRead: boolean;
-  category: 'today' | 'earlier';
+  priority: string;
+  is_read: boolean;
+  created_at: string;
+  read_at: string | null;
 }
 
 export function MobileNotificationsPage() {
-  const navigate = useNavigate();
-  
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      emoji: '✅',
-      title: 'Sessão Confirmada',
-      message: 'A sua sessão foi agendada com sucesso.',
-      timestamp: 'há 1 hora',
-      isNew: true,
-      isHighPriority: true,
-      isRead: false,
-      category: 'today'
-    },
-    {
-      id: 2,
-      emoji: '🎉',
-      title: 'Bem-vindo à Melhor Saúde!',
-      message: 'Parabéns por completar o seu perfil! A sua jornada de bem-estar começa agora.',
-      timestamp: 'há 2 horas',
-      isNew: true,
-      isHighPriority: false,
-      isRead: false,
-      category: 'today'
-    },
-    {
-      id: 3,
-      emoji: '🔔',
-      title: 'Bem-vindo à Plataforma!',
-      message: 'Obrigado por se juntar a nós. Aqui receberá notificações sobre as suas sessões e mensagens.',
-      timestamp: 'há 3 horas',
-      isNew: false,
-      isHighPriority: false,
-      isRead: false,
-      category: 'earlier'
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
     }
-  ]);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+    const fetchNotifications = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
 
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, isRead: true, isNew: false })));
+        if (error) throw error;
+
+        if (data) {
+          setNotifications(data);
+          
+          // If user has no notifications, create a welcome notification
+          if (data.length === 0) {
+            const { error: insertError } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: user.id,
+                type: 'system_alert',
+                title: 'Bem-vindo à Plataforma!',
+                message: 'Obrigado por se juntar a nós. Aqui receberá notificações sobre as suas sessões, mensagens e atualizações importantes.',
+                priority: 'normal',
+                is_read: false
+              });
+            
+            if (!insertError) {
+              // Refetch to show the welcome notification
+              const { data: newData } = await supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+              
+              if (newData) setNotifications(newData);
+            }
+          }
+        }
+      } catch (error: any) {
+        console.error('Error fetching notifications:', error);
+        toast.error('Erro ao carregar notificações');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+
+    // Real-time subscription
+    const subscription = supabase
+      .channel('user-notifications-mobile')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications',
+        filter: `user_id=eq.${user.id}`
+      }, (payload) => {
+        setNotifications(prev => [payload.new as Notification, ...prev]);
+        toast.success('Nova notificação');
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user?.id]);
+
+  const markAllAsRead = async () => {
+    if (!user?.id) return;
+
+    try {
+      const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+      
+      if (unreadIds.length === 0) return;
+
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .in('id', unreadIds);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      toast.success('Todas as notificações marcadas como lidas');
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      toast.error('Erro ao marcar notificações como lidas');
+    }
   };
 
-  const toggleRead = (id: number) => {
-    setNotifications(notifications.map(n => 
-      n.id === id ? { ...n, isRead: !n.isRead, isNew: false } : n
-    ));
+  const toggleRead = async (id: string) => {
+    const notification = notifications.find(n => n.id === id);
+    if (!notification) return;
+
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ 
+          is_read: !notification.is_read,
+          read_at: !notification.is_read ? new Date().toISOString() : null
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.map(n => 
+        n.id === id ? { ...n, is_read: !n.is_read } : n
+      ));
+    } catch (error) {
+      console.error('Error toggling read status:', error);
+      toast.error('Erro ao atualizar notificação');
+    }
   };
 
-  const deleteNotification = (id: number) => {
-    setNotifications(notifications.filter(n => n.id !== id));
+  const deleteNotification = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.filter(n => n.id !== id));
+      toast.success('Notificação eliminada');
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      toast.error('Erro ao eliminar notificação');
+    }
   };
 
-  const todayNotifications = notifications.filter(n => n.category === 'today');
-  const earlierNotifications = notifications.filter(n => n.category === 'earlier');
+  const getNotificationEmoji = (type: string): string => {
+    const emojiMap: Record<string, string> = {
+      'booking_confirmed': '✅',
+      'booking_cancelled': '❌',
+      'session_reminder': '⏰',
+      'new_resource': '📚',
+      'milestone_achieved': '🎉',
+      'message_from_specialist': '💬',
+      'session_completed': '✨',
+      'goal_progress': '📈',
+      'system_alert': '🔔',
+      'chat_escalation': '📞'
+    };
+    return emojiMap[type] || '📬';
+  };
+
+  const getTimeAgo = (timestamp: string): string => {
+    try {
+      return formatDistanceToNow(new Date(timestamp), { 
+        addSuffix: true, 
+        locale: pt 
+      });
+    } catch {
+      return 'recentemente';
+    }
+  };
+
+  const isToday = (timestamp: string): boolean => {
+    const notifDate = new Date(timestamp);
+    const today = new Date();
+    return notifDate.toDateString() === today.toDateString();
+  };
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+  const todayNotifications = notifications.filter(n => isToday(n.created_at));
+  const earlierNotifications = notifications.filter(n => !isToday(n.created_at));
+
+  if (loading) {
+    return (
+      <LoadingAnimation 
+        variant="fullscreen" 
+        message="A carregar notificações..." 
+        showProgress={true}
+        mascotSrc={melhorSaudeLogo}
+        wordmarkSrc={melhorSaudeLogo}
+      />
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-white border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-5 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-gray-900 text-2xl font-bold">Notificações</h1>
+            <h1 className="text-slate-900 text-2xl font-bold">Notificações</h1>
             
             {unreadCount > 0 && (
               <button
@@ -110,7 +248,7 @@ export function MobileNotificationsPage() {
                       {/* Emoji Icon */}
                       <div className="flex-shrink-0">
                         <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-xl">
-                          {notification.emoji}
+                          {getNotificationEmoji(notification.type)}
                         </div>
                       </div>
 
@@ -118,8 +256,13 @@ export function MobileNotificationsPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-gray-900 font-medium">{notification.title}</h3>
-                          {!notification.isRead && (
+                          {!notification.is_read && (
                             <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                          )}
+                          {notification.priority === 'high' || notification.priority === 'urgent' && (
+                            <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+                              Urgente
+                            </span>
                           )}
                         </div>
 
@@ -128,7 +271,7 @@ export function MobileNotificationsPage() {
                         </p>
 
                         <p className="text-gray-400 text-xs">
-                          {notification.timestamp}
+                          {getTimeAgo(notification.created_at)}
                         </p>
                       </div>
 
@@ -146,7 +289,7 @@ export function MobileNotificationsPage() {
                     >
                       <Check className="w-4 h-4" />
                       <span className="text-sm">
-                        {notification.isRead ? 'Marcar não lida' : 'Marcar lida'}
+                        {notification.is_read ? 'Marcar não lida' : 'Marcar lida'}
                       </span>
                     </button>
                     <div className="w-px bg-gray-100"></div>
@@ -178,14 +321,14 @@ export function MobileNotificationsPage() {
                     <div className="flex gap-4">
                       <div className="flex-shrink-0">
                         <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-xl">
-                          {notification.emoji}
+                          {getNotificationEmoji(notification.type)}
                         </div>
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-gray-900 font-medium">{notification.title}</h3>
-                          {!notification.isRead && (
+                          {!notification.is_read && (
                             <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
                           )}
                         </div>
@@ -195,7 +338,7 @@ export function MobileNotificationsPage() {
                         </p>
 
                         <p className="text-gray-400 text-xs">
-                          {notification.timestamp}
+                          {getTimeAgo(notification.created_at)}
                         </p>
                       </div>
 
@@ -212,7 +355,7 @@ export function MobileNotificationsPage() {
                     >
                       <Check className="w-4 h-4" />
                       <span className="text-sm">
-                        {notification.isRead ? 'Marcar não lida' : 'Marcar lida'}
+                        {notification.is_read ? 'Marcar não lida' : 'Marcar lida'}
                       </span>
                     </button>
                     <div className="w-px bg-gray-100"></div>
@@ -245,4 +388,3 @@ export function MobileNotificationsPage() {
     </div>
   );
 }
-

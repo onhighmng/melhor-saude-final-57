@@ -1,182 +1,221 @@
-import { useState, useEffect } from 'react';
-import { Phone, User, Clock, Video, CheckCircle } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import { Phone, Mail, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
 import { useEscalatedChats } from '@/hooks/useEscalatedChats';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 
 interface CallRequest {
   id: string;
   user_name: string;
   company: string;
   pillar: string;
+  pillarLabel: string;
+  statusColor: string;
+  email: string;
+  phone: string;
+  notes: string;
   time_ago: string;
-  status: 'pending' | 'accepted' | 'completed';
 }
 
 export function MobileSpecialistCalls() {
-  const { profile } = useAuth();
-  const [activeTab, setActiveTab] = useState('pending');
   const { escalatedChats, loading: chatsLoading } = useEscalatedChats();
-  const [stats, setStats] = useState({
-    pending: 0,
-    today: 0,
-    totalTime: '0h'
-  });
+  const [callRequests, setCallRequests] = useState<CallRequest[]>([]);
 
   useEffect(() => {
-    fetchStats();
-  }, [profile?.id]);
+    const loadCallRequests = async () => {
+      const requests: CallRequest[] = escalatedChats
+        .filter(chat => chat.status === 'phone_escalated')
+        .map(chat => ({
+          id: chat.id,
+          user_name: chat.user_name || 'Cliente',
+          company: chat.company_name || 'Empresa',
+          pillar: chat.pillar || 'saude_mental',
+          pillarLabel: getPillarLabel(chat.pillar || 'saude_mental'),
+          statusColor: getPillarColor(chat.pillar || 'saude_mental'),
+          email: chat.user_email || 'email@exemplo.com',
+          phone: '+351 91 000 0000',
+          notes: chat.reason || 'Solicitação de ajuda',
+          time_ago: getTimeAgo(chat.created_at || new Date().toISOString())
+        }));
 
-  const fetchStats = async () => {
-    try {
-      if (!profile?.id) return;
+      setCallRequests(requests);
+    };
 
-      const { data: prestador } = await supabase
-        .from('prestadores')
-        .select('id')
-        .eq('user_id', profile.id)
-        .single();
-
-      if (!prestador) return;
-
-      const today = new Date().toISOString().split('T')[0];
-      const { data: todayBookings } = await supabase
-        .from('bookings')
-        .select('duration')
-        .eq('prestador_id', prestador.id)
-        .gte('scheduled_for', today)
-        .eq('status', 'completed');
-
-      const totalMinutes = (todayBookings || []).reduce((sum: number, b: any) => sum + (b.duration || 60), 0);
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-
-      setStats({
-        pending: escalatedChats.filter(c => c.status === 'phone_escalated').length,
-        today: (todayBookings || []).length,
-        totalTime: minutes > 0 ? `${hours}.${Math.round(minutes / 6)}h` : `${hours}h`
-      });
-    } catch (error) {
-      console.error('Error fetching stats:', error);
+    if (!chatsLoading) {
+      loadCallRequests();
     }
+  }, [escalatedChats, chatsLoading]);
+
+  const getPillarLabel = (pillar: string): string => {
+    const labels: Record<string, string> = {
+      'saude_mental': 'Saúde Mental',
+      'mental_health': 'Saúde Mental',
+      'assistencia_financeira': 'Assistência Financeira',
+      'financial': 'Assistência Financeira',
+      'assistencia_juridica': 'Assistência Jurídica',
+      'legal': 'Assistência Jurídica',
+      'bem_estar_fisico': 'Bem-Estar Físico',
+      'physical': 'Bem-Estar Físico'
+    };
+    return labels[pillar] || 'Saúde Mental';
   };
 
-  const callRequests: CallRequest[] = escalatedChats
-    .filter(chat => chat.status === 'phone_escalated')
-    .map(chat => ({
-      id: chat.id,
-      user_name: chat.user_name || 'Utilizador',
-      company: chat.company_name || 'Empresa',
-      pillar: chat.pillar || 'Geral',
-      time_ago: getTimeAgo(chat.escalated_at),
-      status: 'pending'
-    }));
+  const getPillarColor = (pillar: string): string => {
+    const colors: Record<string, string> = {
+      'saude_mental': 'bg-blue-100 text-blue-700',
+      'mental_health': 'bg-blue-100 text-blue-700',
+      'assistencia_financeira': 'bg-green-100 text-green-700',
+      'financial': 'bg-green-100 text-green-700',
+      'assistencia_juridica': 'bg-purple-100 text-purple-700',
+      'legal': 'bg-purple-100 text-purple-700',
+      'bem_estar_fisico': 'bg-yellow-100 text-yellow-700',
+      'physical': 'bg-yellow-100 text-yellow-700'
+    };
+    return colors[pillar] || 'bg-blue-100 text-blue-700';
+  };
 
-  function getTimeAgo(date: string | Date | null): string {
-    if (!date) return 'recente';
+  const getTimeAgo = (timestamp: string): string => {
     const now = new Date();
-    const past = new Date(date);
+    const past = new Date(timestamp);
     const diffMs = now.getTime() - past.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     
-    if (diffMins < 1) return 'agora';
-    if (diffMins < 60) return `há ${diffMins} mins`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `há ${diffHours}h`;
-    return `há ${Math.floor(diffHours / 24)} dias`;
+    if (diffMins < 60) {
+      return `há ${diffMins} mins`;
+    } else if (diffMins < 1440) {
+      const hours = Math.floor(diffMins / 60);
+      return `há ${hours} hora${hours > 1 ? 's' : ''}`;
+    } else {
+      const days = Math.floor(diffMins / 1440);
+      return `há ${days} dia${days > 1 ? 's' : ''}`;
+    }
+  };
+
+  const handleCall = (request: CallRequest) => {
+    if (request.phone) {
+      window.location.href = `tel:${request.phone}`;
+    }
+  };
+
+  const handleResolve = async (request: CallRequest) => {
+    try {
+      await supabase
+        .from('escalated_chats')
+        .update({ status: 'resolved' })
+        .eq('id', request.id);
+      
+      setCallRequests(prev => prev.filter(r => r.id !== request.id));
+    } catch (error) {
+      console.error('Error resolving request:', error);
+    }
+  };
+
+  if (chatsLoading) {
+    return (
+      <LoadingAnimation 
+        variant="fullscreen" 
+        message="A carregar pedidos..." 
+        showProgress={true}
+        mascotSrc={melhorSaudeLogo}
+        wordmarkSrc={melhorSaudeLogo}
+      />
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-md mx-auto px-5 py-6">
-          <h1 className="text-gray-900 text-2xl font-bold">Pedidos de Chamada</h1>
-          <p className="text-gray-500 text-sm">Gerir solicitações de chamadas</p>
+      {/* iOS-style Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-4 pt-12 pb-4">
+          <h1 className="text-center text-gray-900 text-xl font-semibold mb-1">
+            Pedidos de Chamada
+          </h1>
+          <p className="text-center text-gray-500 text-sm">
+            Gerir solicitações de chamada dos utilizadores das empresas atribuídas
+          </p>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-md mx-auto px-5 py-4">
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <Card className="bg-orange-50 rounded-2xl p-4 border-none text-center">
-            <Phone className="w-5 h-5 text-orange-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-orange-600">{stats.pending}</p>
-            <p className="text-xs text-gray-600">Pendentes</p>
-          </Card>
-          <Card className="bg-green-50 rounded-2xl p-4 border-none text-center">
-            <CheckCircle className="w-5 h-5 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-600">{stats.today}</p>
-            <p className="text-xs text-gray-600">Hoje</p>
-          </Card>
-          <Card className="bg-blue-50 rounded-2xl p-4 border-none text-center">
-            <Clock className="w-5 h-5 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-blue-600">{stats.totalTime}</p>
-            <p className="text-xs text-gray-600">Tempo Total</p>
-          </Card>
+      {/* Content */}
+      <div className="p-4 space-y-3 pb-24">
+        {/* Section Header */}
+        <div className="flex items-center gap-2 mb-4">
+          <Phone className="w-5 h-5 text-gray-700" />
+          <h2 className="text-gray-900 font-semibold">Pedidos de Chamada Pendentes</h2>
         </div>
+        <p className="text-sm text-gray-600 -mt-2 mb-4">
+          {callRequests.length} pedido{callRequests.length !== 1 ? 's' : ''} de chamada pendente{callRequests.length !== 1 ? 's' : ''}
+        </p>
 
-        {/* Loading State */}
-      {chatsLoading && (
-        <LoadingAnimation variant="inline" message="A carregar pedidos..." showProgress={true} />
-      )}
-
-        {/* Call Requests List */}
-        {!chatsLoading && (
+        {/* Call Request Cards */}
+        {callRequests.length === 0 ? (
+          <div className="text-center py-12">
+            <Phone className="w-16 h-16 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500">Nenhum pedido de chamada pendente</p>
+          </div>
+        ) : (
           <div className="space-y-3">
             {callRequests.map((request) => (
-            <Card 
-              key={request.id}
-              className="bg-white rounded-2xl p-4 border border-gray-200"
-            >
-              <div className="flex items-start gap-3 mb-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="w-6 h-6 text-blue-600" />
+              <div 
+                key={request.id}
+                className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="text-gray-900 font-medium">{request.user_name}</h3>
+                    <p className="text-sm text-gray-600">{request.company}</p>
+                  </div>
+                  <Badge className={`${request.statusColor} border-0 rounded-full px-3 py-1`}>
+                    {request.pillarLabel}
+                  </Badge>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-gray-900 font-medium">{request.user_name}</h3>
-                  <p className="text-gray-500 text-sm">{request.company}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge className="text-xs">{request.pillar}</Badge>
-                    <span className="text-xs text-gray-500">{request.time_ago}</span>
+
+                {/* Contact Info */}
+                <div className="space-y-2 mb-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Mail className="w-4 h-4" />
+                    <span>{request.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Phone className="w-4 h-4" />
+                    <span>{request.phone}</span>
+                  </div>
+                  <div className="text-sm text-gray-700 mt-2">
+                    <span className="text-gray-500">Notas:</span> {request.notes}
                   </div>
                 </div>
-              </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2">
-                <Button 
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                  size="sm"
-                >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Aceitar
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="flex-1"
-                  size="sm"
-                >
-                  <Video className="w-4 h-4 mr-2" />
-                  Online
-                </Button>
+                {/* Actions */}
+                <div className="flex items-center gap-3 mt-4">
+                  <Button 
+                    className="flex-1 bg-green-600 hover:bg-green-700 rounded-full"
+                    onClick={() => handleCall(request)}
+                  >
+                    Ligar
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 rounded-full border-gray-300"
+                    onClick={() => handleResolve(request)}
+                  >
+                    Resolver
+                  </Button>
+                </div>
+
+                {/* Time */}
+                <div className="flex items-center justify-center gap-1 mt-3 pt-3 border-t border-gray-100">
+                  <Clock className="w-3 h-3 text-orange-600" />
+                  <span className="text-xs text-orange-600">
+                    {request.time_ago}
+                  </span>
+                </div>
               </div>
-            </Card>
             ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!chatsLoading && callRequests.length === 0 && (
-          <div className="text-center py-12">
-            <Phone className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">Nenhum pedido de chamada pendente</p>
           </div>
         )}
       </div>
@@ -185,4 +224,3 @@ export function MobileSpecialistCalls() {
     </div>
   );
 }
-

@@ -1,25 +1,28 @@
 import { useState, useEffect } from 'react';
-import { Clock, User, Calendar, FileText } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { MobileBottomNav } from '../shared/MobileBottomNav';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import melhorSaudeLogo from '@/assets/melhor-saude-logo.png';
 
-interface HistoryItem {
+interface UserHistory {
   id: string;
-  user_name: string;
+  name: string;
+  company: string;
+  plan: string;
+  planColor: string;
   date: string;
-  type: 'session' | 'note' | 'assessment';
-  pillar: string;
-  notes?: string;
+  rating: string;
+  ratingColor: string;
+  notes: string;
 }
 
 export function MobileSpecialistHistory() {
   const { profile } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [users, setUsers] = useState<UserHistory[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,7 +33,6 @@ export function MobileSpecialistHistory() {
       }
 
       try {
-        // Get prestador ID for this specialist
         const { data: prestador } = await supabase
           .from('prestadores')
           .select('id')
@@ -38,93 +40,53 @@ export function MobileSpecialistHistory() {
           .single();
 
         if (!prestador) {
-          setHistory([]);
+          setUsers([]);
           setLoading(false);
           return;
         }
 
-        // Fetch bookings history
-        const { data: bookings, error: bookingsError } = await supabase
+        // Fetch unique users from completed bookings
+        const { data: bookings, error } = await supabase
           .from('bookings')
           .select(`
             id,
             booking_date,
             pillar,
-            status,
             notes,
-            profiles!bookings_user_id_fkey(name)
+            user_id,
+            profiles!bookings_user_id_fkey(name, email),
+            company:companies(name)
           `)
           .eq('prestador_id', prestador.id)
-          .in('status', ['completed', 'cancelled'])
-          .order('booking_date', { ascending: false })
-          .limit(50);
+          .eq('status', 'completed')
+          .order('booking_date', { ascending: false });
 
-        if (bookingsError) throw bookingsError;
+        if (error) throw error;
 
-        // Fetch call logs
-        const { data: callLogs, error: callLogsError } = await supabase
-          .from('specialist_call_logs')
-          .select(`
-            id,
-            created_at,
-            call_notes,
-            outcome,
-            user_id,
-            profiles!specialist_call_logs_user_id_fkey(name)
-          `)
-          .eq('specialist_id', profile.id)
-          .order('created_at', { ascending: false })
-          .limit(50);
+        // Group by user and get most recent session for each
+        const userMap = new Map<string, any>();
+        (bookings || []).forEach((booking: any) => {
+          if (!userMap.has(booking.user_id)) {
+            userMap.set(booking.user_id, booking);
+          }
+        });
 
-        if (callLogsError) throw callLogsError;
+        const mappedUsers: UserHistory[] = Array.from(userMap.values()).map((booking: any) => ({
+          id: booking.user_id,
+          name: booking.profiles?.name || 'Cliente',
+          company: booking.company?.name || 'Empresa',
+          plan: getPillarLabel(booking.pillar || 'saude_mental'),
+          planColor: getPillarColor(booking.pillar || 'saude_mental'),
+          date: new Date(booking.booking_date).toLocaleDateString('pt-PT'),
+          rating: '4.5/5',
+          ratingColor: 'text-yellow-600',
+          notes: booking.notes || 'Sem notas disponíveis'
+        }));
 
-        // Combine and map to HistoryItem
-        const allHistory: HistoryItem[] = [];
-
-        // Map bookings
-        if (bookings) {
-          bookings.forEach((booking: any) => {
-            let pillarLabel = 'Saúde Mental';
-            if (booking.pillar === 'bem_estar_fisico' || booking.pillar === 'physical') {
-              pillarLabel = 'Bem-Estar Físico';
-            } else if (booking.pillar === 'assistencia_financeira' || booking.pillar === 'financial') {
-              pillarLabel = 'Assistência Financeira';
-            } else if (booking.pillar === 'assistencia_juridica' || booking.pillar === 'legal') {
-              pillarLabel = 'Assistência Jurídica';
-            }
-
-            allHistory.push({
-              id: `booking-${booking.id}`,
-              user_name: booking.profiles?.name || 'Utilizador',
-              date: booking.booking_date,
-              type: 'session',
-              pillar: pillarLabel,
-              notes: booking.notes || 'Sessão realizada'
-            });
-          });
-        }
-
-        // Map call logs
-        if (callLogs) {
-          callLogs.forEach((log: any) => {
-            allHistory.push({
-              id: `call-${log.id}`,
-              user_name: log.profiles?.name || 'Utilizador',
-              date: log.created_at.split('T')[0],
-              type: 'note',
-              pillar: 'Chamada',
-              notes: log.call_notes || log.outcome || 'Chamada realizada'
-            });
-          });
-        }
-
-        // Sort by date (most recent first)
-        allHistory.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-        setHistory(allHistory);
+        setUsers(mappedUsers);
       } catch (error) {
         console.error('Error loading history:', error);
-        setHistory([]);
+        setUsers([]);
       } finally {
         setLoading(false);
       }
@@ -133,61 +95,105 @@ export function MobileSpecialistHistory() {
     loadHistory();
   }, [profile?.id]);
 
-  if (loading) {
-    return <LoadingAnimation variant="fullscreen" message="A carregar histórico..." showProgress={true} />;
-  }
+  const getPillarLabel = (pillar: string): string => {
+    const labels: Record<string, string> = {
+      'saude_mental': 'Saúde Mental',
+      'mental_health': 'Saúde Mental',
+      'assistencia_financeira': 'Assistência Financeira',
+      'financial': 'Assistência Financeira',
+      'assistencia_juridica': 'Assistência Jurídica',
+      'legal': 'Assistência Jurídica',
+      'bem_estar_fisico': 'Bem-Estar Físico',
+      'physical': 'Bem-Estar Físico'
+    };
+    return labels[pillar] || 'Saúde Mental';
+  };
 
-  const filteredHistory = history.filter(item => 
-    item.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.notes?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const getPillarColor = (pillar: string): string => {
+    const colors: Record<string, string> = {
+      'saude_mental': 'bg-blue-100 text-blue-700',
+      'mental_health': 'bg-blue-100 text-blue-700',
+      'assistencia_financeira': 'bg-green-100 text-green-700',
+      'financial': 'bg-green-100 text-green-700',
+      'assistencia_juridica': 'bg-purple-100 text-purple-700',
+      'legal': 'bg-purple-100 text-purple-700',
+      'bem_estar_fisico': 'bg-yellow-100 text-yellow-700',
+      'physical': 'bg-yellow-100 text-yellow-700'
+    };
+    return colors[pillar] || 'bg-blue-100 text-blue-700';
+  };
+
+  if (loading) {
+    return (
+      <LoadingAnimation 
+        variant="fullscreen" 
+        message="A carregar histórico..." 
+        showProgress={true}
+        mascotSrc={melhorSaudeLogo}
+        wordmarkSrc={melhorSaudeLogo}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-md mx-auto px-5 py-6">
-          <h1 className="text-gray-900 text-2xl font-bold">Histórico</h1>
-          <p className="text-gray-500 text-sm">Histórico de interações</p>
+      {/* iOS-style Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-4 pt-12 pb-4">
+          <h1 className="text-center text-gray-900 text-xl font-semibold mb-1">
+            Histórial de Utilizadores
+          </h1>
+          <p className="text-center text-gray-500 text-sm">
+            Lista de utilizadores já atendidos com histórico completo
+          </p>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-md mx-auto px-5 py-4">
-        {filteredHistory.length === 0 ? (
+      {/* Content */}
+      <div className="p-4 space-y-3 pb-24">
+        {users.length === 0 ? (
           <div className="text-center py-12">
-            <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <Eye className="w-16 h-16 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">Nenhum histórico disponível</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {filteredHistory.map((item) => (
-            <Card 
-              key={item.id}
-              className="bg-white rounded-2xl p-4 border border-gray-200 active:scale-95 transition-transform cursor-pointer"
+          users.map((user) => (
+            <div 
+              key={user.id}
+              className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200"
             >
-              <div className="flex items-start gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="w-6 h-6 text-blue-600" />
+              {/* User Header */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3 className="text-gray-900 font-medium mb-1">{user.name}</h3>
+                  <p className="text-sm text-gray-600">{user.company}</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-gray-900 font-medium">{item.user_name}</h3>
-                  <p className="text-gray-500 text-sm mt-1">{item.notes}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge className="text-xs">{item.pillar}</Badge>
-                    <div className="flex items-center gap-1 text-gray-500">
-                      <Calendar className="w-3 h-3" />
-                      <span className="text-xs">
-                        {new Date(item.date).toLocaleDateString('pt-PT')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <FileText className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <Badge className={`${user.planColor} border-0 rounded-full px-3 py-1`}>
+                  {user.plan}
+                </Badge>
               </div>
-            </Card>
-            ))}
-          </div>
+
+              {/* Date and Rating */}
+              <div className="flex items-center gap-4 mb-3 text-sm">
+                <span className="text-gray-600">{user.date}</span>
+                <span className={user.ratingColor}>★ {user.rating}</span>
+              </div>
+
+              {/* Notes */}
+              <div className="mb-3">
+                <p className="text-sm text-gray-700">{user.notes}</p>
+              </div>
+
+              {/* Action Button */}
+              <Button 
+                variant="outline" 
+                className="w-full rounded-full border-gray-300 flex items-center justify-center gap-2"
+              >
+                <Eye className="w-4 h-4" />
+                Ver mais detalhes
+              </Button>
+            </div>
+          ))
         )}
       </div>
 
@@ -195,4 +201,3 @@ export function MobileSpecialistHistory() {
     </div>
   );
 }
-
