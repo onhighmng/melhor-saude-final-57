@@ -1,24 +1,33 @@
 // Supabase Edge Function for Support Chat Assistant
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-<<<<<<< Updated upstream
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
-=======
 import { captureException, captureMessage } from "../_shared/sentry.ts"
->>>>>>> Stashed changes
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Input validation schema
-const chatAssistantSchema = z.object({
-  sessionId: z.string().uuid(),
-  message: z.string().min(1).max(5000),
-  userId: z.string().uuid(),
-  pillar: z.enum(['saude_mental', 'saude_fisica', 'apoio_juridico', 'apoio_financeiro']).optional()
-})
+// JWT parsing helper
+function parseJWT(authHeader: string | null): { userId: string; role: string } | null {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null
+  }
+
+  try {
+    const token = authHeader.substring(7) // Remove 'Bearer '
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+
+    const payload = JSON.parse(atob(parts[1]))
+    return {
+      userId: payload.sub,
+      role: payload.user_role || payload.role || 'user'
+    }
+  } catch {
+    return null
+  }
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -27,9 +36,22 @@ serve(async (req) => {
   }
 
   try {
-    // Validate and parse input
-    const body = await req.json()
-    const { sessionId, message, userId, pillar } = chatAssistantSchema.parse(body)
+    // ✅ Parse JWT properly (don't trust userId from request body)
+    const authHeader = req.headers.get('Authorization')
+    const jwt = parseJWT(authHeader)
+
+    if (!jwt) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid or missing JWT' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    const { sessionId, message, pillar } = await req.json()
+    const userId = jwt.userId // ✅ Get user_id from JWT payload
 
     console.log(`[CHAT ASSISTANT] Session: ${sessionId}, User: ${userId}, Pillar: ${pillar}`)
 
@@ -113,7 +135,6 @@ serve(async (req) => {
     )
   } catch (error: any) {
     console.error('Error in chat-assistant:', error)
-<<<<<<< Updated upstream
 
     // Handle validation errors
     if (error instanceof z.ZodError) {
@@ -136,18 +157,6 @@ serve(async (req) => {
         message: 'Desculpe, ocorreu um erro. Tente novamente.',
         confidence: 0
       }),
-=======
-    
-    await captureException(error, {
-      function: 'chat-assistant',
-      timestamp: new Date().toISOString(),
-      errorType: error.name,
-      errorMessage: error.message,
-    })
-
-    return new Response(
-      JSON.stringify({ error: error.message }),
->>>>>>> Stashed changes
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500

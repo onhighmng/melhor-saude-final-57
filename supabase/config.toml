@@ -81,6 +81,7 @@ verify_jwt = true
 [functions.send-booking-email]
 verify_jwt = true
 
+# Exception: Auth webhook handlers don't need JWT (called by Supabase Auth service)
 [functions.send-auth-email]
 verify_jwt = false
 

@@ -71,17 +71,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const rpcStart = performance.now();
       let { data: role, error: rpcError } = await (supabase.rpc as any)('get_user_primary_role', { user_id: userId });
       const rpcTime = performance.now() - rpcStart;
-      
+
       if (rpcError) {
         console.error(`%c[AuthContext] ❌ RPC error in ${rpcTime.toFixed(0)}ms:`, 'color: red;', rpcError);
         return null;
       }
-      
-      if (!role) {
+
+      // Use fallback if no role returned
+      const role = roleData || 'user';
+
+      if (!roleData) {
         console.warn(`%c[AuthContext] ⚠️ RPC returned no role - using "user" as fallback`, 'color: orange;');
-        role = 'user';
       }
-      
+
       console.log(`%c[AuthContext] ✅ RPC succeeded in ${rpcTime.toFixed(0)}ms - role: ${role}`, 'color: green; font-weight: bold;');
       
       // Query profiles table to get company_id and other data
